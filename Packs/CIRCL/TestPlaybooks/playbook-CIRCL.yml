@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -74,6 +75,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "4"
@@ -108,6 +110,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -151,6 +154,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: Query.Value should exist.
@@ -176,6 +180,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: Query.Record is invalid.
@@ -200,6 +205,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -222,6 +228,7 @@ tasks:
       type: regular
       iscommand: true
       brand: CIRCL
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -250,6 +257,7 @@ tasks:
       type: regular
       iscommand: true
       brand: CIRCL
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -278,6 +286,7 @@ tasks:
       type: regular
       iscommand: true
       brand: CIRCL
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -307,6 +316,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "12"
@@ -376,6 +386,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "14"
@@ -414,6 +425,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: ssl-get-certificate Fields missing
@@ -438,6 +450,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -460,6 +473,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: SHA1 does NOT equal to the queried SHA1
@@ -484,6 +498,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "16"
@@ -529,6 +544,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: ssl-list-certificates missing fields.
@@ -553,6 +569,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -574,6 +591,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "19"
@@ -619,6 +637,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: ssl-query-certificate missing fields.
@@ -643,6 +662,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "21"
@@ -681,6 +701,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: ssl-query-certificate - Certificate.SHA1 is different than queried.
@@ -705,6 +726,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "23"
@@ -743,6 +765,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: ssl-query-certificate - IPs length expected to be 10 after limit.
@@ -767,6 +790,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -822,6 +846,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -851,6 +876,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -873,6 +899,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: circl-ssl-query-certificate - Should have error for bad SHA-1 input.
@@ -898,6 +925,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -927,6 +955,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "31"
@@ -957,6 +986,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: circl-ssl-get-certificate - Should have error for bad SHA-1 input.
@@ -981,6 +1011,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1032,6 +1063,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1054,6 +1086,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -1082,6 +1115,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "41"
@@ -1112,6 +1146,7 @@ tasks:
       type: regular
       iscommand: true
       brand: CIRCL
+      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1141,6 +1176,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "39"
@@ -1171,6 +1207,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: circl-ssl-list-certificates - Should raise error for invalid IP CIDR
@@ -1195,6 +1232,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1216,6 +1254,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1240,3 +1279,5 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
+fromversion: 1.0.0

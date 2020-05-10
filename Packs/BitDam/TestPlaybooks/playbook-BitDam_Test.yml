@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -33,11 +34,12 @@ tasks:
     task:
       id: def55e04-3ec5-4160-88d6-edd57d1ddb6b
       version: -1
-      name: Scan File - BitDam
+      name: Detonate File - BitDam
       playbookName: Detonate File - BitDam
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -62,6 +64,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -93,6 +96,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -122,6 +126,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "5"
@@ -172,6 +177,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -195,3 +201,5 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
+fromversion: 4.1.0

@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -40,6 +41,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -161,6 +163,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -190,6 +193,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -219,6 +223,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -248,6 +253,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -277,6 +283,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -305,6 +312,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "16"
@@ -341,6 +349,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -364,6 +373,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -395,6 +405,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "13"
@@ -428,6 +439,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "13"
@@ -461,6 +473,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "13"
@@ -497,6 +510,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "13"
@@ -526,9 +540,9 @@ tasks:
     task:
       id: 3857d09f-bc71-4758-88cf-2234fc14a987
       version: -1
-      name: CallTableToMarkdown encoding non-ascii chars 
-      description: Tests that tableToMarkdown handles encoding of non-ascii
-        chars in nested dicts (python 2)
+      name: CallTableToMarkdown encoding non-ascii chars
+      description: Tests that tableToMarkdown handles encoding of non-ascii chars
+        in nested dicts (python 2)
       scriptName: CallTableToMarkdown
       type: regular
       iscommand: false
@@ -561,3 +575,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''

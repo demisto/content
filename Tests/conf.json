@@ -2810,6 +2810,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "ArcSight Logger": "Issue 24303",
         "AttackIQFireDrill": "Issue 24281",
         "Nessus": "No instance",
         "MxToolBox": "No instance",

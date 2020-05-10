@@ -151,11 +151,11 @@ tasks:
     nexttasks:
       '#default#':
       - '41'
-      yes:
+      'yes':
       - '71'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -538,11 +538,11 @@ tasks:
     nexttasks:
       '#default#':
       - '57'
-      yes:
+      'yes':
       - '72'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
