@@ -9,8 +9,6 @@ from distutils.util import strtobool
 from threatconnect import ThreatConnect
 from threatconnect.RequestObject import RequestObject
 from threatconnect.Config.ResourceType import ResourceType
-from threatconnect.Config.FilterOperator import FilterOperator
-from threatconnect.Config.IndicatorType import IndicatorType
 import copy
 
 '''GLOBAL VARS'''
@@ -163,11 +161,54 @@ def create_context(indicators, include_dbot_score=False):
     return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
 
 
+def get_xindapi(indicator_value, indicatorType, owner, tc):
+    stdout = []
+    types = tc_get_indicator_types_request()['data']['indicatorType']
+    if indicatorType:
+        for item in types:
+            if item['apiEntity'] == indicatorType:
+                apiBranch = item['apiBranch']
+                ro = RequestObject()
+                ro.set_http_method('GET')
+                ro.set_owner(owner)
+                ro.set_request_uri('/v2/indicators/' + str(apiBranch) + "/" + quote(indicator_value).replace("/", "%2F"))
+                demisto.log('/v2/indicators/' + str(apiBranch) + "/" + quote(indicator_value).replace("/", "%2F"))
+                results = tc.api_request(ro)
+                if results.headers['content-type'] == 'application/json':
+                    if results.json()['status'] == 'Success':
+                        res = results.json()['data'][item['apiEntity']]
+                        res['owner'] = res['owner']['name']
+                        res['type'] = item['name']
+                        stdout.append(res)
+                        break
+    else:
+        for item in types:
+            if indicatorType and item['apiEntity'] == indicatorType:
+                apiBranch = item['apiBranch']
+            else:
+                apiBranch = item['apiBranch']
+            ro = RequestObject()
+            ro.set_http_method('GET')
+            ro.set_owner(owner)
+            ro.set_request_uri('/v2/indicators/' + str(apiBranch) + "/" + quote(indicator_value).replace("/", "%2F"))
+            results = tc.api_request(ro)
+            if results.headers['content-type'] == 'application/json':
+                if results.json()['status'] == 'Success':
+                    res =  results.json()['data'][item['apiEntity']]
+                    res['ownerName'] = res['owner']['name']
+                    res['type'] = item['name']
+                    stdout.append(res)
+                    break
+
+    return stdout
+
+
 def get_indapi(indicator_value, owner, tc):
     ro = RequestObject()
     ro.set_http_method('GET')
     ro.set_owner(owner)
-    ro.set_request_uri('/v2/indicators?filters=summary=' + indicator_value)
+    ro.set_request_uri('/v2/indicators?filters=summary/v2/indicators?filters=summary%3D'
+                       + quote(indicator_value).replace("/", "%2F"))
     results = tc.api_request(ro)
     if results.headers['content-type'] == 'application/json':
         return results.json()
@@ -177,126 +218,93 @@ def get_indapi(indicator_value, owner, tc):
 
 def get_indicatorOwner(indicator_value, owner=demisto.params()['defaultOrg']):
     tc = get_client()
-    apiBranch = ''
-    indApiData = get_indapi(indicator_value, owner, tc)
-    if 'status' in indApiData:
-        if indApiData['status'] == 'Success':
-            if indApiData['data']['resultCount'] == 1:
-                indicator_type = indApiData['data']['indicator'][0]['type'].lower()
-                types = tc_get_indicator_types_request()['data']['indicatorType']
-                for item in types:
-                    if item['apiEntity'] == indicator_type.lower():
-                        if 'apiBranch' in item:
-                            apiBranch = item['apiBranch']
-    ro = RequestObject()
-    ro.set_http_method('GET')
-    ro.set_owner(owner)
-    ro.set_request_uri('/v2/indicators/' + apiBranch + '/' + indicator_value + '/owners')
-    results = tc.api_request(ro)
-    if results.headers['content-type'] == 'application/json':
-        return results.json()
-    else:
-        return {}
+    indsowners = {}
+    types = tc_get_indicator_types_request()['data']['indicatorType']
+    for item in types:
+        apiBranch = item['apiBranch']
+        ro = RequestObject()
+        ro.set_http_method('GET')
+        ro.set_owner(owner)
+        ro.set_request_uri('/v2/indicators/{}/{}/owners'.format(apiBranch, quote(indicator_value).replace("/", "%2F")))
+        results = tc.api_request(ro)
+        if results.headers['content-type'] == 'application/json':
+            ownersRaw = results.json()
+            if 'status' in ownersRaw:
+                if ownersRaw['status'] == 'Success':
+                    if len(ownersRaw['data']['owner']) > 0:
+                        indsowners = results.json()
+                        break
+    return indsowners
 
 
 # pylint: disable=E1101
 def get_indicators(indicator_value=None, indicator_type=None, owners=None, rating_threshold=-1, confidence_threshold=-1,
                    freshness=None, associated_groups=False, associated_indicators=False, include_observations=False,
-                   include_tags=False):
-    custom = False
+                   include_tags=False, loopowners=False):
     tc = get_client()
-    indicators_obj = tc.indicators()
-    _filter = indicators_obj.add_filter()
-    if indicator_type is not None:
-        types = tc_get_indicator_types_request()['data']['indicatorType']
-        for item in types:
-            if item['apiEntity'] == indicator_type.lower():
-                if 'value1Label' in item:
-                    value1Label = item['value1Label']
-                apiEntity = item['apiEntity']
-                custom = json.loads(item['custom'])
-        if custom is not False:
-            _filter = indicators_obj.add_filter(IndicatorType.CUSTOM_INDICATORS, api_entity=apiEntity)
-        else:
-            _filter.add_indicator(indicator_value)
+    raw_indicators = []
+    if owners and owners.find(",") > -1:
+        owners = owners.split(",")
+        for owner in owners:
+            raw_indicators = get_xindapi(indicator_value, indicator_type, owner, tc)
+            if len(raw_indicators) > 0:
+                owners = owner
+                break
     else:
-        indApiData = get_indapi(indicator_value, owners, tc)
-        if 'status' in indApiData:
-            if indApiData['status'] == 'Success':
-                if indApiData['data']['resultCount'] == 1:
-                    indicator_type = indApiData['data']['indicator'][0]['type']
-                    types = tc_get_indicator_types_request()['data']['indicatorType']
-                    for item in types:
-                        if item['apiEntity'] == indicator_type.lower():
-                            if 'value1Label' in item:
-                                value1Label = item['value1Label']
-                            apiEntity = item['apiEntity']
-                            custom = json.loads(item['custom'])
-                    if custom is not False:
-                        _filter = indicators_obj.add_filter(IndicatorType.CUSTOM_INDICATORS, api_entity=apiEntity)
-                    else:
-                        _filter.add_indicator(indicator_value)
+        raw_indicators = get_xindapi(indicator_value, indicator_type, owners, tc)
+        if len(raw_indicators) == 0 and loopowners is True:
+            owners = get_indicatorOwner(indicator_value)
+            if 'data' in owners:
+                if 'owner' in owners['data']:
+                    for owner in owners['data']['owner']:
+                        raw_indicators = get_xindapi(indicator_value, indicator_type, owner['name'], tc)
+                        if len(raw_indicators) > 0:
+                            owners = owner['name']
+                            break
+                else:
+                    demisto.results("Unable to indentify the owner for the given indicator")
+            else:
+                demisto.results("Unable to indentify the owner for the given indicator")
 
-    if indicator_type is None:
-        if indicator_value is not None:
-            _filter.add_indicator(indicator_value)
-
-    if custom is False:
-        if indicator_type is not None:
-            _filter.add_pf_type(indicator_type, FilterOperator.EQ)
-        elif indicator_value.find("http://") > -1 and indicator_value.find("https://") > -1:
-            _filter.add_pf_type("URL", FilterOperator.EQ)
-
-    if owners is not None:
-        _filter.add_owner(owners)
-
-    if rating_threshold != -1:
-        _filter.add_pf_rating(rating_threshold, FilterOperator.GE)
-    if confidence_threshold != -1:
-        _filter.add_pf_confidence(confidence_threshold, FilterOperator.GE)
-    if freshness is not None:
-        _filter.add_pf_last_modified(calculate_freshness_time(freshness), FilterOperator.GE)
-
-    raw_indicators = indicators_obj.retrieve()
-    indicators = [indicator.json for indicator in raw_indicators]
-    if indicator_type is not None and custom is not False:
-        for item in indicators:
-            if item[value1Label] == indicator_value:
-                indicators = [item]
-                indicators[0]["summary"] = indicator_value
-
+    indicators = raw_indicators
     associatedIndicators = []
     indicator_observations = []
 
-    if associated_groups:
-        indicators[0]['group_associations'] = tc_associated_groups(tc, owners, indicator_value, indicators[0]['type'])
+    if len(raw_indicators) > 0:
+        if associated_groups:
+            indicators[0]['group_associations'] = tc_associated_groups(tc, owners, indicator_value, raw_indicators[0]['type'])
 
-    if include_tags:
-        indicators[0]['indicator_tags'] = tc_indicator_get_tags(tc, owners, indicator_value, indicators[0]['type'])
+        if include_tags:
+            indicators[0]['indicator_tags'] = tc_indicator_get_tags(tc, owners, indicator_value, raw_indicators[0]['type'])
 
-    if include_observations:
-        try:
-            for indicator in raw_indicators:
-                for observation in indicator.observations:
-                    indicator_observations.append(
-                        {"count": observation.count, "date_observed": observation.date_observed})
-            indicators[0]['indicator_observations'] = indicator_observations
-        except Exception:
-            indicators[0]['indicator_observations'] = indicator_observations
+        if include_observations:
+            try:
+                for indicator in raw_indicators:
+                    for observation in indicator.observations:
+                        indicator_observations.append({"count": observation.count, "date_observed": observation.date_observed})
+                indicators[0]['indicator_observations'] = indicator_observations
+            except Exception:
+                indicators[0]['indicator_observations'] = indicator_observations
+                pass
 
-    if associated_indicators:
-        try:
-            for indicator in raw_indicators:
-                for associated_indicator in indicator.indicator_associations:
-                    associatedIndicators.append(
-                        {"id": associated_indicator.id, "indicator": associated_indicator.indicator,
-                         "type": associated_indicator.type, "description": associated_indicator.description,
-                         "owner_name": associated_indicator.owner_name, "rating": associated_indicator.rating,
-                         "confidence": associated_indicator.confidence, "date_added": associated_indicator.date_added,
-                         "last_modified": associated_indicator.last_modified, "weblink": associated_indicator.weblink})
-            indicators[0]['indicator_associations'] = associatedIndicators
-        except Exception:
-            indicators[0]['indicator_associations'] = associatedIndicators
+        if associated_indicators:
+            try:
+                for indicator in raw_indicators:
+                    for associated_indicator in indicator.indicator_associations:
+                        associatedIndicators.append({"id": associated_indicator.id,
+                                                     "indicator": associated_indicator.indicator,
+                                                     "type": associated_indicator.type,
+                                                     "description": associated_indicator.description,
+                                                     "owner_name": associated_indicator.owner_name,
+                                                     "rating": associated_indicator.rating,
+                                                     "confidence": associated_indicator.confidence,
+                                                     "date_added": associated_indicator.date_added,
+                                                     "last_modified": associated_indicator.last_modified,
+                                                     "weblink": associated_indicator.weblink})
+                indicators[0]['indicator_associations'] = associatedIndicators
+            except Exception as e:
+                indicators[0]['indicator_associations'] = associatedIndicators
+                pass
 
     return indicators
 
@@ -326,6 +334,7 @@ def ip_command():
     })
 
 
+@logger
 def ip(ip_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold)
 
@@ -360,6 +369,7 @@ def url_command():
     })
 
 
+@logger
 def url(url_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold)
     if not indicators:
@@ -390,6 +400,7 @@ def file_command():
     })
 
 
+@logger
 def _file(url_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold)
     if not indicators:
@@ -420,6 +431,7 @@ def domain_command():
     })
 
 
+@logger
 def domain(domain_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold)
     ec, indicators = create_context(indicators, include_dbot_score=True)
@@ -489,7 +501,7 @@ def tc_associated_groups(tc, owners, indicator_value, indicator_type):
     ro.set_http_method('GET')
     ro.set_owner(owners)
     if apiBranch is not None:
-        ro.set_request_uri("/v2/indicators/" + apiBranch + "/" + indicator_value + "/groups")
+        ro.set_request_uri("/v2/indicators/{}/{}/groups".format(apiBranch, indicator_value))
         results = tc.api_request(ro)
         if results.headers['content-type'] == 'application/json':
             if 'data' in results.json():
@@ -501,7 +513,7 @@ def tc_associated_groups(tc, owners, indicator_value, indicator_type):
         try:
             for item in types:
                 ro.set_request_uri(
-                    "/v2/indicators/" + item['apiBranch'] + "/" + quote(indicator_value, safe='') + "/groups")
+                    "/v2/indicators/{}/{}/groups".format(item['apiBranch'], quote(indicator_value, safe='')))
                 results = tc.api_request(ro)
                 if results.headers['content-type'] == 'application/json':
                     if 'data' in results.json():
@@ -531,7 +543,7 @@ def tc_indicator_get_tags(tc, owners, indicator_value, indicator_type):
     ro.set_http_method('GET')
     ro.set_owner(owners)
     if apiBranch is not None:
-        ro.set_request_uri("/v2/indicators/" + apiBranch + "/" + indicator_value + "/tags")
+        ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, indicator_value))
         results = tc.api_request(ro)
         if results.headers['content-type'] == 'application/json':
             if 'data' in results.json():
@@ -543,7 +555,7 @@ def tc_indicator_get_tags(tc, owners, indicator_value, indicator_type):
         try:
             for item in types:
                 ro.set_request_uri(
-                    "/v2/indicators/" + item['apiBranch'] + "/" + quote(indicator_value, safe='') + "/tags")
+                    "/v2/indicators/{}/{}/tags".format(item['apiBranch'], quote(indicator_value, safe='')))
                 results = tc.api_request(ro)
                 if results.headers['content-type'] == 'application/json':
                     if 'data' in results.json():
@@ -574,6 +586,7 @@ def tc_indicators_command():
     })
 
 
+# @loger
 def tc_indicators(owners, limit):
     tc = get_client()
     tc.set_api_result_limit(limit)
@@ -652,11 +665,13 @@ def tc_tag_indicator(indicator, tag, owners=None):
 
 
 def tc_get_indicator_command():
+    loopowners = False
     args = demisto.args()
     owners = args.get('owners')
     if not owners:
         if 'defaultOrg' in demisto.params():
             owners = demisto.params().get('defaultOrg')
+            loopowners = True
         else:
             return_error('You must specify an owner in the command, or by using the Organization parameter.')
     rating_threshold = int(args.get('ratingThreshold', -1))
@@ -675,7 +690,9 @@ def tc_get_indicator_command():
         = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
                            associated_indicators, include_observations, include_tags, indicator_type)
     # remove extra items from the indicator markdown
-    if ec:
+    if str(ec) == '[]':
+        ec = {}
+    if len(ec) > 0:
         indicators = copy.deepcopy(ec)
         indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
 
@@ -691,8 +708,6 @@ def tc_get_indicator_command():
         if include_observations:
             if 'IndicatorsObservations' in indicators[0]:
                 del indicators[0]['IndicatorsObservations']
-    else:
-        indicators = []
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -748,23 +763,30 @@ def tc_get_indicator_command():
         })
 
 
-def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
-                     associated_indicators, include_observations, include_tags, indicator_type):
-    raw_indicators = get_indicators(indicator, indicator_type=indicator_type, owners=owners,
-                                    rating_threshold=rating_threshold,
-                                    confidence_threshold=confidence_threshold, associated_groups=associated_groups,
-                                    associated_indicators=associated_indicators,
-                                    include_observations=include_observations, include_tags=include_tags)
-    ec, indicators = create_context(raw_indicators, include_dbot_score=True)
+# @loger
+def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups, associated_indicators, include_observations, include_tags, indicator_type, loopowners=False):
+    raw_indicators = get_indicators(indicator, indicator_type=indicator_type, owners=owners, rating_threshold=rating_threshold,
+                                    confidence_threshold=confidence_threshold,associated_groups=associated_groups,associated_indicators=associated_indicators,include_observations=include_observations,include_tags=include_tags,loopowners=loopowners)
+    ec = []
+    indicators = []
+    indicator_groups = []
+    indicators_associations = []
+    indicator_tags = []
+    indicator_observations = []
 
-    if raw_indicators:
-        indicator_groups = raw_indicators[0].get('group_associations', [])
-        indicators_associations = raw_indicators[0].get('indicator_associations', [])
-        indicator_tags = raw_indicators[0].get('indicator_tags', [])
-        indicator_observations = raw_indicators[0].get('indicator_observations', [])
+    if len(raw_indicators) > 0:
+        ec, indicators = create_context(raw_indicators, include_dbot_score=True)
+        if 'group_associations' in raw_indicators[0]:
+            indicator_groups = raw_indicators[0]['group_associations']
 
-    else:
-        indicators_associations = indicator_groups = indicator_observations = indicator_tags = []
+        if 'indicator_associations' in raw_indicators[0]:
+            indicators_associations = raw_indicators[0]['indicator_associations']
+
+        if 'indicator_tags' in raw_indicators[0]:
+            indicator_tags = raw_indicators[0]['indicator_tags']
+
+        if 'indicator_observations' in raw_indicators[0]:
+            indicator_observations = raw_indicators[0]['indicator_observations']
 
     return ec, indicators, raw_indicators, indicators_associations, indicator_groups, indicator_observations, indicator_tags
 
@@ -788,6 +810,7 @@ def tc_get_indicators_by_tag_command():
     })
 
 
+# @loger
 def tc_get_indicators_by_tag(tag, owner):
     tc = get_client()
     ro = RequestObject()
@@ -826,6 +849,7 @@ def tc_add_indicator_command():
     })
 
 
+# @loger
 def tc_add_indicator(indicator, organization, rating=0, confidence=0):
     tc = get_client()
     indicators = tc.indicators()
@@ -868,6 +892,7 @@ def tc_create_incident_command():
     })
 
 
+# @loger
 def tc_create_incident(incident_name, owner, event_date, tag=None, security_label=None, description=None):
     tc = get_client()
     incidents = tc.incidents()
@@ -903,6 +928,7 @@ def tc_fetch_incidents_command():
     })
 
 
+# @loger
 def tc_fetch_incidents(incident_id, incident_name, owner):
     tc = get_client()
     incidents = tc.incidents()
@@ -938,6 +964,7 @@ def tc_get_incident_associate_indicators_command():
     })
 
 
+# @loger
 def tc_get_incident_associate_indicators(incident_id, owners):
     tc = get_client()
     incidents = tc.incidents()
@@ -977,7 +1004,7 @@ def tc_incident_associate_indicator_command():
         'HOSTS': ResourceType.HOSTS,
         'URLS': ResourceType.URLS,
     }
-    indicator_type = types.get(args['indicatorType'])
+    indicator_type = types.get(args['indicatorType'], args['indicatorType'])
     owners = args.get('owner')
     if owners is not None:
         owners = owners.split(",")
@@ -997,6 +1024,7 @@ def tc_incident_associate_indicator_command():
     })
 
 
+# @loger
 def tc_incident_associate_indicator(incident_id, indicator_type, indicator, owners):
     tc = get_client()
     incidents = tc.incidents()
@@ -1046,6 +1074,7 @@ def tc_update_indicator_command():
     })
 
 
+# @loger
 def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_active=None, whois_active=None,
                         false_positive=False, observations=0, security_label=None, threat_assess_confidence=-1,
                         threat_assess_rating=-1):
@@ -1096,6 +1125,7 @@ def tc_delete_indicator_command():
     })
 
 
+# @loger
 def tc_delete_indicator(indicator):
     tc = get_client()
     indicators = tc.indicators()
@@ -1131,6 +1161,7 @@ def tc_delete_indicator_tag_command():
     })
 
 
+# @loger
 def tc_delete_indicator_tag(indicator, tag, owners=None):
     tc = get_client()
     indicators = tc.indicators()
@@ -1183,6 +1214,7 @@ def tc_create_campaign_command():
     })
 
 
+# @loger
 def tc_create_campaign(name, owner, first_seen, tag=None, security_label=None, description=None):
     tc = get_client()
     ro = RequestObject()
@@ -1951,7 +1983,8 @@ def associate_group_to_group():
         return_error(response.get('message'))
 
 
-def create_document_group_request(contents, file_name, name, owner, malware, password, security_label, description):
+def create_document_group_request(contents, file_name, name, owner, res, malware, password, security_label,
+                                  description):
     tc = get_client()
     documents = tc.documents()
     document = documents.add(name, owner)
@@ -1987,7 +2020,7 @@ def create_document_group():
     f = open(res['path'], 'rb')
     contents = f.read()
 
-    raw_document = create_document_group_request(contents, file_name, name, owner, malware, password,
+    raw_document = create_document_group_request(contents, file_name, name, owner, res, malware, password,
                                                  security_label, description)
     content = {
         'ID': raw_document.get('id'),
