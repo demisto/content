@@ -2413,9 +2413,8 @@ class CommandResults:
         if self.indicators:
             for indicator in self.indicators:
                 context_outputs = indicator.to_context()
-                for key in context_outputs.keys():
-                    value = context_outputs[key]
 
+                for key, value in context_outputs.items():
                     if key not in outputs:
                         outputs[key] = []
 
@@ -2436,10 +2435,10 @@ class CommandResults:
 
             if self.outputs_prefix and self.outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                outputs_key = '{}(val.{} == obj.{})'.format(self.outputs_prefix, self.outputs_key_field, self.outputs_key_field)
+                outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
-                outputs_key = '{}'.format(self.outputs_prefix, self.outputs_key_field)
+                outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
                 outputs = self.outputs
