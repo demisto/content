@@ -167,7 +167,7 @@ You should never use ``demisto.results()`` directly.
 Sometimes you will need to return values in a format that is not compatible
 with ``CommandResults`` (for example files): in that case you must return a
 data structure that is then pass passed to ``return.results()``. (i.e.
-check the ``scan_results_command`` function in this filethat has the option
+check the ``scan_results_command`` function in this file that has the option
 to return a file to Cortex XSOAR).
 
 In any case you should never call ``return_results()`` directly from the

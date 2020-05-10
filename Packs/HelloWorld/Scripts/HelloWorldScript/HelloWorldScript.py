@@ -1,6 +1,6 @@
 """HelloWorld Script for Cortex XSOAR (aka Demisto)
 
-This script is just a simple example on Code Convetions to write automation
+This script is just a simple example on Code Conventions to write automation
 scripts in Cortex XSOAR using Python 3.
 Please follow the documentation links below and make sure that
 your integration follows the Code Conventions and passes the Linting phase.
