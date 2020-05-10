@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added a pack for Crisis Management.
+Added a beta pack for Crisis Management.
