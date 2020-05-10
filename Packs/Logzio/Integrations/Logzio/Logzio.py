@@ -145,7 +145,7 @@ class Client(BaseClient):
 def test_module(client):
     try:
         client.fetch_triggered_rules()
-        client.search_logs('*', 10, "", "")
+        client.search_logs('*', 10, None, None)
         return 'ok'
     except Exception as e:
         return 'Test failed: {}'.format(e)
