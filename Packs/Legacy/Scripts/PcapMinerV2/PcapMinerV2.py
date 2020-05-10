@@ -375,11 +375,7 @@ class PCAP():
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
                                       decryption_key=decrypt_key, encryption_type='WPA-PWD', keep_packets=False)
 
-            j = 0
             for packet in cap:
-                j += 1
-                if (j % 100 == 0):
-                    print(j)
                 self.last_layer.add(packet.layers[-1].layer_name)
 
                 layers = str(packet.layers)
@@ -693,53 +689,5 @@ def main():
                          'File': pcap_filter_new_file_name, 'FileID': temp})
 
 
-def local_main():  # TODO remove this function
-    # Variables from demisto
-    # file_path = "/Users/olichter/Downloads/chargen-udp.pcap"
-    # file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
-    # file_path = "/Users/olichter/Downloads/dns.cap"                        # DNS
-    # file_path = "/Users/olichter/Downloads/tftp_rrq.pcap"                 # tftp
-    # file_path = "/Users/olichter/Downloads/rsasnakeoil2.cap"              # encrypted SSL
-    # file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
-    # file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP#
-    # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
-    # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
-    # file_path = "/Users/olichter/Downloads/iseries.cap"
-    file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
-    file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
-    # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"                  # telnet
-    # file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
-    # file_path = "/Users/olichter/Downloads/SkypeIRC.cap"                        #IRC
-    # file_path = "/Users/olichter/Downloads/ftp.pcapng"                      #FTP
-    # PC Script
-    entry_id = ''
-
-    decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-    conversation_number_to_display = 15
-    is_flows = True
-    is_reg_extract = True
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH',
-                           'IRC', 'FTP', 'TELNET', 'LLMNR']
-
-    pcap_filter = ''
-    # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
-    homemade_regex = ''  # 'Layer (.+):'
-    pcap_filter_new_file_path = ''
-    unique_ips = True
-
-    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
-    pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
-    hr, ec, raw = pcap.get_outputs(entry_id, conversation_number_to_display, is_flows, is_reg_extract)
-    return_outputs(hr, ec, raw)
-
-
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    # main()
-
-    from datetime import datetime
-
-    startTime = datetime.now()
-    local_main()
-    print(datetime.now() - startTime)
-
-# TODO: fix todos
+    main()
