@@ -395,18 +395,10 @@
         },
         {
             "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
+            "playbookID": "Pentera Run Scan and Create Incidents - Test"
         },
         {
             "playbookID": "StringContainsArray_test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pcysys-Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
         },
         {
             "integrations": "Fidelis Elevate Network",
