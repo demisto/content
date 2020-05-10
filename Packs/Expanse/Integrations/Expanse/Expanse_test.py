@@ -54,6 +54,7 @@ def test_fetch_incidents(mocker):
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
     assert r[0]['severity'] == 1
 
+
 def test_fetch_incidents_severity(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'api_key': TEST_API_KEY,
@@ -751,7 +752,7 @@ MOCK_EVENTS = {
                         }
                     }
                 },
-                'severity': 'ROUTINE',
+                'severity': 'WARNING',
                 'tags': {
                     'ipRange': ['untagged']
                 },
