@@ -548,7 +548,8 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID" :  "test playbook - QRadarCorreltaions"
+            "playbookID" :  "test playbook - QRadarCorreltaions",
+            "timeout": 600
         },
         {
             "integrations": "Awake Security",
