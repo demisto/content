@@ -908,7 +908,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # Create the DBotScore structure first using the Common.DBotScore class.
         dbot_score = Common.DBotScore(
             indicator=ip,
-            indicator_type='ip',
+            indicator_type=DBotScoreType.IP,
             integration_name='HelloWorld',
             score=score,
             malicious_description=f'Hello World returned reputation {reputation}'
