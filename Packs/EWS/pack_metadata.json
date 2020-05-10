@@ -1,5 +1,5 @@
 {
-    "name": "EWS v2",
+    "name": "EWS",
     "description": "Exchange Web Services and Office 365 (mail)",
     "support": "Cortex XSOAR",
     "serverMinVersion": "1.0.0",

@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MITRE ATT&CK",
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+        },
+        {
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
@@ -541,6 +545,11 @@
         },
         {
             "playbookID": "WordTokenizeTest"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID" :  "test playbook - QRadarCorreltaions",
+            "timeout": 600
         },
         {
             "integrations": "Awake Security",
@@ -2324,7 +2333,7 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0"
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2769,7 +2778,6 @@
         }
     ],
     "skipped_tests": {
-        "Send Investigation Summary Reports - Test": "Issue 24133",
         "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
@@ -2830,10 +2838,11 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "AttackIQFireDrill": "Issue 24281",
         "Nessus": "No instance",
         "MxToolBox": "No instance",
         "Traps": "Issue 24122",
-        "skyformation": "No instance, old partner",
+        "Skyformation": "No instance, old partner",
         "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "URLhaus": "No instance",
