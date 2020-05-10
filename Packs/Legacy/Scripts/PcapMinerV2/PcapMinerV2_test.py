@@ -50,8 +50,65 @@ args_to_test = [
     ({}, {'noID': 15}, None, {})  # Test that data without ID isn't added
 ]
 @pytest.mark.parametrize("main_data, data_to_add, future_id, wanted_output", args_to_test)
-def test_add_to_data(mocker, main_data, data_to_add, future_id, wanted_output):
+def test_add_to_data(main_data, data_to_add, future_id, wanted_output):
     from PcapMinerV2 import add_to_data
     add_to_data(main_data, data_to_add, future_id)
 
     assert main_data == wanted_output
+
+
+def test_mine_pcap():
+    file_path = '../../../../TestData/smb-on-windows-10.pcapng'
+    decrypt_key = ""
+    conversation_number_to_display = 15
+    is_flows = True
+    is_reg_extract = True
+    extracted_protocols = ['DNS', 'SMB2']
+    pcap_filter = ''
+    homemade_regex = ''
+    pcap_filter_new_file_path = ''
+    unique_ips = False
+    from PcapMinerV2 import PCAP
+    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
+    pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
+    hr, ec, raw = pcap.get_outputs('entry_id', conversation_number_to_display, is_flows, is_reg_extract)
+    assert raw['EntryID'] == 'entry_id'
+    assert raw['StartTime'] == 'Sun Oct 16 11:07:57 2016'
+    assert raw['Packets'] == 1000
+    assert len(raw['DNS']) == 80
+    assert len(raw['SMB2']) == 8
+    assert raw['URL'][0] == 'http://239.255.255.250:1900*'
+
+
+def test_mine_pcap_ipv6_regex():
+    file_path = '../../../../TestData/smb-on-windows-10.pcapng'
+    decrypt_key = ""
+    conversation_number_to_display = 15
+    is_flows = True
+    is_reg_extract = True
+    extracted_protocols = ['DNS', 'SMB2']
+    pcap_filter = ''
+    homemade_regex = '(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]' \
+                     '{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|::(?:' \
+                     '[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|' \
+                     '2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]' \
+                     '{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]' \
+                     '|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|' \
+                     '(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]' \
+                     '{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]' \
+                     '{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}' \
+                     ':){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25' \
+                     '[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]' \
+                     '{1,4}:){,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}' \
+                     '|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2' \
+                     '}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4' \
+                     '}:[0-9A-Fa-f]{1,4}|(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0' \
+                     '-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]' \
+                     '{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){,6}[0-9A-Fa-f]{1,4})?::)$'
+    pcap_filter_new_file_path = ''
+    unique_ips = False
+    from PcapMinerV2 import PCAP
+    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
+    pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
+    hr, ec, raw = pcap.get_outputs('entry_id', conversation_number_to_display, is_flows, is_reg_extract)
+    assert raw['Regex'] != []

@@ -157,8 +157,8 @@ class PCAP():
                 'ID': llmnr_layer.get('dns_id'),
                 'QueryType': None if len(query_type_results) == 0 else query_type_results[0],
                 'QueryClass': None if len(query_class_results) == 0 else query_class_results[0],
-                'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
-                'Questions': int(llmnr_layer[0].get('dns_count_queries'))
+                'QueryName': str(llmnr_layer.get('dns_qry_name')),
+                'Questions': int(llmnr_layer.get('dns_count_queries'))
             }
             add_to_data(self.protocol_data['LLMNR'], llmnr_data)
             return
@@ -485,8 +485,7 @@ class PCAP():
                              "or that filter is of the correct syntax.")
 
         except Exception as error:
-            print(str(error))
-            traceback.print_exc()
+            raise error
 
 
 '''HELPER FUNCTIONS'''
@@ -680,11 +679,14 @@ def main():
     if pcap_filter_new_file_name:
         temp = demisto.uniqueFile()
         pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
+    try:
+        pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
+        pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
+        hr, ec, raw = pcap.get_outputs(entry_id, conversation_number_to_display, is_flows, is_reg_extract)
+        return_outputs(hr, ec, raw)
 
-    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
-    pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
-    hr, ec, raw = pcap.get_outputs(entry_id, conversation_number_to_display, is_flows, is_reg_extract)
-    return_outputs(hr, ec, raw)
+    except Exception as e:
+        return_error(f'Unexpected error: {str(e)}', error=traceback.format_exc())
 
     if pcap_filter_new_file_name:
         demisto.results({'Contents': '', 'ContentsFormat': formats['text'], 'Type': 3,
@@ -704,7 +706,7 @@ def local_main():  # TODO remove this function
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
     file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
-    # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
+    file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
     # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"                  # telnet
     # file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
     # file_path = "/Users/olichter/Downloads/SkypeIRC.cap"                        #IRC
@@ -732,12 +734,12 @@ def local_main():  # TODO remove this function
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    main()
-    #
-    # from datetime import datetime
-    #
-    # startTime = datetime.now()
-    # local_main()
-    # print(datetime.now() - startTime)
+    # main()
+
+    from datetime import datetime
+
+    startTime = datetime.now()
+    local_main()
+    print(datetime.now() - startTime)
 
 # TODO: fix todos
