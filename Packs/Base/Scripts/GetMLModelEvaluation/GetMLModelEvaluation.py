@@ -243,8 +243,7 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
         'The following tables present evlauation of the model per class at different confidence thresholds:']
     class_to_thresholds = {class_: {} for class_ in labels}
     for class_ in labels:
-        y_pred_class = y_pred_per_class[class_]
-        class_to_thresholds[class_] = set([min(y_pred_class[y_pred_class > 0])])
+        class_to_thresholds[class_] = set([0.001])  # using no threshold
         for target_precision in np.arange(0.95, 0.5, -0.05):
             # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
             for i, precision in enumerate(class_to_arrs[class_]['precisions'][:-1]):
@@ -266,6 +265,9 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
         class_threshold_df = reformat_df_fractions_to_percentage(class_threshold_df)
         class_threshold_df['Threshold'] = class_threshold_df['Threshold'].apply(lambda p: '{:.2f}'.format(p))
         class_threshold_df = class_threshold_df[['Threshold', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
+        class_threshold_df.sort_values(by='Coverage', ascending=False, inplace=True)
+        class_threshold_df.drop_duplicates(subset='Threshold', inplace=True, keep='first')
+        class_threshold_df.drop_duplicates(subset='Precision', inplace=True, keep='first')
         class_threshold_df.set_index('Threshold', inplace=True)
         per_class_context[class_] = class_threshold_df.to_json()
         tabulated_class_df = tabulate(class_threshold_df, tablefmt="pipe", headers="keys")
