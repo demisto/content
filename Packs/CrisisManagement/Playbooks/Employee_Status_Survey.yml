@@ -1,12 +1,16 @@
 id: Employee Status Survey
 version: -1
 name: Employee Status Survey
-description: Manages a crisis event where employees have to work remotely due to a
-  pandemic, issues with the workplace or similar situations. Sends a questionnaire
-  to all direct reports under a given manager. The questionnaire asks the employees
-  for their health status and whether they need any help. The data is saved as employee
-  indicators in Cortex XSOAR, while IT and HR incidents are created to provide assistance
-  to employees who requested it.
+description: "Note: This is a beta playbook, which lets you implement and test pre-release
+               software. Since the playbook is beta, it might contain bugs. Updates to the playbook
+               during the beta phase might include non-backward compatible features. We appreciate
+               your feedback on the quality and usability of the playbook to help us identify issues,
+               fix them, and continually improve. Manages a crisis event where employees have to
+               work remotely due to a pandemic, issues with the workplace or similar situations.
+               Sends a questionnaire to all direct reports under a given manager. The questionnaire
+               asks the employees for their health status and whether they need any help. The data
+               is saved as employee indicators in Cortex XSOAR, while IT and HR incidents are created
+               to provide assistance to employees who requested it."
 starttaskid: '0'
 tasks:
   '0':
