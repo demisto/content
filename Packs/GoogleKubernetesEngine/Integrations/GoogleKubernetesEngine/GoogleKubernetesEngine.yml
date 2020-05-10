@@ -64,7 +64,7 @@ script:
       type: String
     - contextPath: GKE.Cluster.ClusterIpv4Cidr
       description: The IP address range of the container pods in this cluster, in
-        CIDR notation (e.g. 10.96.0.0/14).
+        CIDR notation (e.g. 10.0.0.24).
       type: String
     - contextPath: GKE.Cluster.AddonsConfig.HttpLoadBalancing.Disabled
       description: Configuration for the http load balancing addon.
@@ -165,11 +165,11 @@ script:
       type: Number
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterIpv4Cidr
       description: The IP address range of the container pods in this cluster, in
-        CIDR notation (e.g. 10.96.0.0/14).
+        CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ServicesIpv4Cidr
       description: The IP address range of the Kubernetes services in this cluster,
-        in CIDR notation (e.g. 1.2.3.4/29).
+        in CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterSecondaryRangeName
       description: The name of the secondary range to be used for the cluster CIDR
@@ -227,7 +227,7 @@ script:
       type: String
     - contextPath: GKE.Cluster.ServicesIpv4Cidr
       description: The IP address range of the Kubernetes services in this cluster,
-        in CIDR notation (e.g. 1.2.3.4/29).'
+        in CIDR notation (e.g. 10.0.0.0/24).'
       type: String
     - contextPath: GKE.Cluster.Location
       description: The name of the Google Compute Engine zone or region in which the
@@ -278,7 +278,7 @@ script:
       type: String
     - contextPath: GKE.Cluster.ClusterIpv4Cidr
       description: The IP address range of the container pods in this cluster, in
-        CIDR notation (e.g. 10.96.0.0/14).
+        CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.AddonsConfig.HttpLoadBalancing.Disabled
       description: Configuration for the http load balancing addon.
@@ -379,11 +379,11 @@ script:
       type: Number
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterIpv4Cidr
       description: The IP address range of the container pods in this cluster, in
-        CIDR notation (e.g. 10.96.0.0/14).
+        CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ServicesIpv4Cidr
       description: The IP address range of the Kubernetes services in this cluster,
-        in CIDR notation (e.g. 1.2.3.4/29).
+        in CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterSecondaryRangeName
       description: The name of the secondary range to be used for the cluster CIDR
@@ -441,7 +441,7 @@ script:
       type: String
     - contextPath: GKE.Cluster.ServicesIpv4Cidr
       description: The IP address range of the Kubernetes services in this cluster,
-        in CIDR notation (e.g. 1.2.3.4/29).'
+        in CIDR notation (e.g. 10.0.0.0/24).'
       type: String
     - contextPath: GKE.Cluster.Location
       description: The name of the Google Compute Engine zone or region in which the

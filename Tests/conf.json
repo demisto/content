@@ -66,6 +66,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GoogleKubernetesEngine",
+            "playbookID": "GoogleKubernetesEngine_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
