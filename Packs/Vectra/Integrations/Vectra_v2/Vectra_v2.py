@@ -154,7 +154,7 @@ class Client:
                 for detection in detections:
                     incidents.append(create_incident_from_detection(detection))  # type: ignore
                     # format from response: %Y-%m-%dT%H:%M:%SZ
-                    response_last_timestamp = datetime.strptime(detection.get('last_timestamp'),
+                    response_last_timestamp = datetime.strptime(detection.get('last_timestamp'),    # type: ignore
                                                                 "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H%M")
                     last_timestamp = max_timestamp(last_timestamp, response_last_timestamp)  # type: ignore
 
