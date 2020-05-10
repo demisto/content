@@ -1,8 +1,5 @@
 ## [Unreleased]
--
-
-## [20.4.1] - 2020-04-29
-- 
+Improved conditional task.
 
 ## [20.3.4] - 2020-04-08
 Removed default list names.

@@ -338,7 +338,7 @@
         },
         {
             "integrations": "Tufin",
-            "playbookID": "Tufin Test"
+            "playbookID": "Tufin-Test"
         },
         {
             "integrations": "Looker",
@@ -545,6 +545,11 @@
         },
         {
             "playbookID": "WordTokenizeTest"
+        },
+        {
+            "integrations": "QRadar",
+            "playbookID" :  "test playbook - QRadarCorreltaions",
+            "timeout": 600
         },
         {
             "integrations": "Awake Security",
@@ -2328,7 +2333,7 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0"
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2773,7 +2778,6 @@
         }
     ],
     "skipped_tests": {
-        "Send Investigation Summary Reports - Test": "Issue 24133",
         "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
@@ -2963,6 +2967,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
