@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2f48483d-548b-4bbe-8a11-ee9ecb1adf47
+    taskid: dcec9b1e-550c-4e44-827d-e6fab92ffc9e
     type: start
     task:
-      id: 2f48483d-548b-4bbe-8a11-ee9ecb1adf47
+      id: dcec9b1e-550c-4e44-827d-e6fab92ffc9e
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +27,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 4928fe37-57cb-4b6f-8839-191d034c35df
+    taskid: 793b8169-d455-4e53-8621-f148afea307a
     type: regular
     task:
-      id: 4928fe37-57cb-4b6f-8839-191d034c35df
+      id: 793b8169-d455-4e53-8621-f148afea307a
       version: -1
       name: Create good indicator
       description: Modify indicator reputation
@@ -71,12 +73,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: f89c42d6-da73-48be-8065-cba5317222bf
+    taskid: 1981e2f1-a458-4866-8218-9b70cb6c560e
     type: condition
     task:
-      id: f89c42d6-da73-48be-8065-cba5317222bf
+      id: 1981e2f1-a458-4866-8218-9b70cb6c560e
       version: -1
       name: IsMaliciuosFound
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -105,12 +109,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: b7b3cdb7-7377-4d8c-8fbe-5878577bf9ed
+    taskid: be276019-cd8c-4661-81ba-f8c467d3b081
     type: regular
     task:
-      id: b7b3cdb7-7377-4d8c-8fbe-5878577bf9ed
+      id: be276019-cd8c-4661-81ba-f8c467d3b081
       version: -1
       name: Create Bad indicator
       script: Builtin|||createNewIndicator
@@ -158,12 +164,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: aeb63c6f-3d84-44ef-834a-7d74a7edf0e7
+    taskid: d17f4a94-9a53-4455-8ec3-e8c9427bba29
     type: condition
     task:
-      id: aeb63c6f-3d84-44ef-834a-7d74a7edf0e7
+      id: d17f4a94-9a53-4455-8ec3-e8c9427bba29
       version: -1
       name: IsMaliciuosFound
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -191,12 +199,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 87f029fc-86f9-4d64-804b-a359e44f69d8
+    taskid: d809e135-f716-4d47-87ef-c4d926d2f80e
     type: regular
     task:
-      id: 87f029fc-86f9-4d64-804b-a359e44f69d8
+      id: d809e135-f716-4d47-87ef-c4d926d2f80e
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -244,12 +254,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: b2dab9ea-0165-4b0c-830b-15126ea778da
+    taskid: 0953ee65-4264-4a5c-8dd4-ceaaaf53dad8
     type: condition
     task:
-      id: b2dab9ea-0165-4b0c-830b-15126ea778da
+      id: 0953ee65-4264-4a5c-8dd4-ceaaaf53dad8
       version: -1
       name: IsMaliciuosFound-no-suspicious
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -278,12 +290,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: eee1f03a-24d3-42fc-8d0e-d97867a7d5a4
+    taskid: d635b4dc-1c80-4299-8360-0a479d5b8d9b
     type: condition
     task:
-      id: eee1f03a-24d3-42fc-8d0e-d97867a7d5a4
+      id: d635b4dc-1c80-4299-8360-0a479d5b8d9b
       version: -1
       name: IsMaliciuosFound-include-suspicious
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -312,12 +326,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: 31b8dce1-86cf-4379-8431-d7b1f0f5fd36
+    taskid: bef226a4-4895-41c7-8e70-a7e9d2e5c032
     type: title
     task:
-      id: 31b8dce1-86cf-4379-8431-d7b1f0f5fd36
+      id: bef226a4-4895-41c7-8e70-a7e9d2e5c032
       version: -1
       name: Done
       type: title
@@ -328,18 +344,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3345
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: d1f32ee9-684f-41d8-88da-eddd23d85ab5
+    taskid: 04d3d065-6a15-4c12-8e9f-f43f6b676e94
     type: regular
     task:
-      id: d1f32ee9-684f-41d8-88da-eddd23d85ab5
+      id: 04d3d065-6a15-4c12-8e9f-f43f6b676e94
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -367,12 +385,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: a804f18c-bd89-49b2-8d86-e842d0b71071
+    taskid: 8a7e48d2-ca24-4bfc-8037-fde1aa45dfe0
     type: regular
     task:
-      id: a804f18c-bd89-49b2-8d86-e842d0b71071
+      id: 8a7e48d2-ca24-4bfc-8037-fde1aa45dfe0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -401,12 +421,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 97599b43-104a-4651-8b1a-bd9ee8530236
+    taskid: c37a30fc-74ba-47b6-8ed6-0f828eb14280
     type: regular
     task:
-      id: 97599b43-104a-4651-8b1a-bd9ee8530236
+      id: c37a30fc-74ba-47b6-8ed6-0f828eb14280
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -434,12 +456,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 9254dff8-2f5c-49ac-8041-d7511f84bbe2
+    taskid: 189a236c-c17c-4341-8792-38f912dd8daf
     type: regular
     task:
-      id: 9254dff8-2f5c-49ac-8041-d7511f84bbe2
+      id: 189a236c-c17c-4341-8792-38f912dd8daf
       version: -1
       name: FileReputation-multiple bad
       description: A context script for hash entities
@@ -464,12 +488,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: b7f3d050-26c1-44ca-8cb2-232e53918f00
+    taskid: df245dba-d0f6-4998-825f-da617215b4da
     type: condition
     task:
-      id: b7f3d050-26c1-44ca-8cb2-232e53918f00
+      id: df245dba-d0f6-4998-825f-da617215b4da
       version: -1
       name: IsMaliciuosFound
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -480,7 +506,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "28"
+      - "32"
     scriptarguments:
       includeManual: {}
       includeSuspicious: {}
@@ -497,12 +523,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 4ff93622-cddf-480c-84fe-437b8254b5f3
+    taskid: a87b2042-8c7d-46bf-8cc5-e38360de68a0
     type: condition
     task:
-      id: 4ff93622-cddf-480c-84fe-437b8254b5f3
+      id: a87b2042-8c7d-46bf-8cc5-e38360de68a0
       version: -1
       name: IsMaliciuosFound
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -524,18 +552,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3170
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: b4b37b3b-5711-4b18-81a8-d8ce082fcf00
+    taskid: c858b092-01de-4e5b-87c1-ebd9dc5b2c17
     type: regular
     task:
-      id: b4b37b3b-5711-4b18-81a8-d8ce082fcf00
+      id: c858b092-01de-4e5b-87c1-ebd9dc5b2c17
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -641,18 +671,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 80ea702a-777c-49b7-8860-2b67d3395bd8
+    taskid: f69c2c1a-a882-4703-8f71-e3b570cda227
     type: regular
     task:
-      id: 80ea702a-777c-49b7-8860-2b67d3395bd8
+      id: f69c2c1a-a882-4703-8f71-e3b570cda227
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -758,18 +790,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: 20cecbc3-6ccb-45c4-86ba-df4586abc76d
+    taskid: 8e4403c2-2c2f-452f-8363-df12a1249f74
     type: regular
     task:
-      id: 20cecbc3-6ccb-45c4-86ba-df4586abc76d
+      id: 8e4403c2-2c2f-452f-8363-df12a1249f74
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -875,18 +909,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2995
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: 3b50e06f-ae60-4234-8bec-eef9228b888f
+    taskid: 0a0145b9-24b6-4369-850e-66ee9ce580fb
     type: regular
     task:
-      id: 3b50e06f-ae60-4234-8bec-eef9228b888f
+      id: 0a0145b9-24b6-4369-850e-66ee9ce580fb
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -992,18 +1028,56 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 2b1f057e-bb11-4048-8d7d-bd5598ccfa70
+    type: regular
+    task:
+      id: 2b1f057e-bb11-4048-8d7d-bd5598ccfa70
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3185,
+        "height": 3360,
         "width": 380,
         "x": 50,
         "y": 50
