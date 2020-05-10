@@ -547,6 +547,11 @@
             "playbookID": "WordTokenizeTest"
         },
         {
+            "integrations": "QRadar",
+            "playbookID" :  "test playbook - QRadarCorreltaions",
+            "timeout": 600
+        },
+        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
