@@ -1,9 +1,9 @@
 id: Breach Notification - California
 version: -1
 name: Breach Notification - California
-description: "This playbook helps the analyst check if the breached data meets the\
-  \ criteria for breach notification according to California law, and follows through\
-  \ with notification procedures if it does.\n\nDISCLAIMER: Please consult with your\
+description: "This playbook helps an analyst determine if the breached data meets the\
+  \ criteria for breach notification according to California law, and, if necessary, follows through\
+  \ with the notification procedures. \n\nDISCLAIMER: Please consult with your\
   \ legal team before implementing this playbook.\n\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
 starttaskid: '0'
 tasks:
@@ -37,7 +37,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ''
-      description: ''
+      description: 'Notifies the Data Protection Officer of a suspected data breach.'
     nexttasks:
       '#none#':
       - '66'
@@ -94,8 +94,8 @@ tasks:
         - No
         fieldassociated: ''
         placeholder: ''
-        tooltip: If the answer is 'Yes', please proceed and fill out the following
-          questions. In that case the breach will be documented.
+        tooltip: If the answer is 'Yes', the breach will be documented. Please fill out the following
+          questions.
         readonly: false
       - id: '1'
         label: ''
@@ -111,11 +111,11 @@ tasks:
         fieldassociated: ''
         placeholder: ''
         tooltip: Risk - The resulting risk of the impact of the breach on individuals.
-          When assessing the risk to individuals as a result of a breach, the controller
+          When assessing the risk to individuals as a result of a breach, the DPO
           should consider the specific circumstances of the breach, including the
           severity of the potential impact and the likelihood of this occurring. If
-          the answer is 'Likely' to result in a risk to individuals, please process
-          to fill out the next question, and the section regarding the information
+          the answer is 'Likely' to result in a risk to individuals, please 
+          fill out the next question, and the section regarding the information
           for the breach report.
         readonly: false
       - id: '2'
@@ -183,7 +183,7 @@ tasks:
         - Other
         fieldassociated: ''
         placeholder: ''
-        tooltip: '"A data protection impact assessment (...) shall in particular be
+        tooltip: 'A data protection impact assessment (...) shall in particular be
           required in the case of: (a) a systematic and extensive evaluation of personal
           aspects relating to natural persons which is based on automated processing,
           including profiling, and on which decisions are based that produce legal
@@ -205,8 +205,8 @@ tasks:
         options: []
         fieldassociated: ''
         placeholder: ''
-        tooltip: '"(d) describe the measures taken or proposed to be taken by the
-          controller to address the personal data breach, including, where appropriate,
+        tooltip: '(d) describe the measures taken or proposed to be taken by the
+          DPO to address the personal data breach, including, where appropriate,
           measures to mitigate its possible adverse effects." - GDPR Art. 33'
         readonly: false
       - id: '6'
@@ -279,7 +279,7 @@ tasks:
     task:
       id: 1dbc4101-2448-4c93-882c-14a4d243aac5
       version: -1
-      name: DPO confirmed a breach happened
+      name: DPO confirmed the breach
       type: condition
       iscommand: false
       brand: ''
@@ -291,7 +291,7 @@ tasks:
       - '46'
     separatecontext: false
     defaultassigneecomplex:
-      simple: ${Suspected GDPR data breach.Answers.0}
+      simple: ${Suspected PII data breach.Answers.0}
     conditions:
     - label: yes
       condition:
@@ -377,7 +377,7 @@ tasks:
       - '38'
     scriptarguments:
       value:
-        simple: The breach was reported and is documented in Demisto.
+        simple: The breach was reported and is documented in Cortex XSOAR.
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 4110\n  }\n}"
     note: false
@@ -408,13 +408,13 @@ tasks:
       id: 66b59375-0ee8-4c4b-8b67-8ef3ae4e4e45
       version: -1
       name: Upload the report to California attorney general
-      description: "\"A person or business that is required to issue a security breach\
+      description: "\A person or business that is required to issue a security breach\
         \ notification pursuant to this section to more than 500 California residents\
         \ as a result of a single breach of the security system shall electronically\
         \ submit a single sample copy of that security breach notification, excluding\
         \ any personally identifiable information, to the Attorney General. A single\
         \ sample copy of a security breach notification shall not be deemed to be\
-        \ within subdivision (f) of Section 6254 of the Government Code.\"\nSubmit\
+        \ within subdivision (f) of Section 6254 of the Government Code.\nSubmit\
         \ the report to https://oag.ca.gov/privacy/databreach/report-a-breach\n\n\
         **Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82.\n\
         **Email:** : ISO@dds.ca.gov, Security@state.ca.gov  \n**Phone:** (916) 445-5239"
@@ -452,7 +452,7 @@ tasks:
       bcc: {}
       body:
         simple: "Hello,\nWe have discovered that your personal data has been compromised,\
-          \ and maybe at high risk.\nWhat happened:\nThe nature of the data breached:\n\
+          \ and might be at high risk.\nWhat happened:\nThe nature of the data breached:\n\
           Data type: ${incident.affecteddatatype}\nData encryption status: ${incident.dataencryptionstatus}\n\
           Involve information:\nThe steps we have taken to mitigate the breach:\n\
           ${incident.measurestomitigate}\n\nWhat you can do:\n${Suspected PII data\
@@ -541,7 +541,7 @@ tasks:
     task:
       id: 41fd0fa4-f8e1-4762-8019-a722f8236ea7
       version: -1
-      name: Send report to DPO approval
+      name: Send report for DPO approval
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -558,12 +558,12 @@ tasks:
         simple: ${Report.Name}
       bcc: {}
       body:
-        simple: This is the data breach report generated from Demisto.
+        simple: This is the data breach report generated from Cortex XSOAR.
       cc: {}
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: Generated data breach report from Demisto
+        simple: Generated data breach report from Cortex XSOAR
       to:
         simple: ${incident.dpoemailaddress}
       transientFile: {}
@@ -602,8 +602,8 @@ tasks:
         simple: 'Data Breach report approval '
       body:
         simple: "Hello,\n\nPlease specify if you approve sending the data breach report\
-          \ to the General Attorney office.\n\nApprove sending the data breach report\
-          \ generated from Cortex XSOAR, click Yes.\n\nDecline to send the data breach\
+          \ to the Attorney General's office.\n\n To approve sending the data breach report\
+          \ generated from Cortex XSOAR, click Yes.\n\nTo decline sending the data breach\
           \ report generated from Cortex XSOAR, click No.\nIf you decline to send\
           \ the report, please generate a new report and forward it to your SOC team."
       methods:
@@ -738,8 +738,8 @@ tasks:
       subject:
         simple: ${incident.rawName} | Analyst review required
       body:
-        simple: "Hello,\n\nA breach incident has opened.\nThe breached data is encrypted,\
-          \ and the encryption key does not compromise.\n\nPlease review the information\
+        simple: "Hello,\n\nA breach incident has been opened.\nThe breached data is encrypted,\
+          \ and the encryption key was not compromised.\n\nPlease review the information\
           \ and the incident details to make sure there is no breach."
       methods:
       - email
@@ -778,12 +778,12 @@ tasks:
         options: []
         fieldassociated: ''
         placeholder: ''
-        tooltip: Explain in your words the incident origin, what you have checked,
+        tooltip: Explain, in your words, the incident origin, what you have checked,
           and any information related to this incident.
         readonly: false
       title: Analyst review
-      description: "A breach incident has opened.\nThe breached data is encrypted,\
-        \ and the encryption key does not compromise.\n\nPlease review the information\
+      description: "A breach incident has been opened.\nThe breached data is encrypted,\
+        \ and the encryption key was not compromised.\n\nPlease review the information\
         \ and the incident details to make sure there is no breach."
       sender: ''
       expired: false
@@ -870,8 +870,8 @@ tasks:
       id: 699e7138-8a29-4cb2-809a-b42d0e4c63b0
       version: -1
       name: Breach notification - PII Check
-      description: "This playbook goes through a checklist to help the analyst discern\
-        \ whether the breached data contain any Personally Identifiable Information\
+      description: "This playbook goes through a checklist to help the analyst determine\
+        \ whether the breached data contains any Personally Identifiable Information\
         \ (PII) according to California law.\n\nDISCLAIMER: Please consult with your\
         \ legal team before implementing this playbook.\n\n**Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
       playbookName: Breach notification - PII Check
@@ -1016,9 +1016,9 @@ tasks:
     task:
       id: 693c9b6b-59db-40ba-8d8c-1f806aa2c6a4
       version: -1
-      name: Does breach contain California residents information?
+      name: Does breach contain California resident information?
       description: "California breach notification laws come into effect only if data\
-        \ of California residents have been breached.\nIf yes, continue the investigation.\n\
+        \ of California residents has been breached.\nIf yes, continue the investigation.\n\
         If no, decide on the further course of action."
       type: condition
       iscommand: false
@@ -1227,7 +1227,7 @@ tasks:
     task:
       id: 7931c4b4-243f-4a61-8c01-e54df95fd86e
       version: -1
-      name: Is the cost of reaching out to residents less than $250,000 OR Are less
+      name: Is the cost of reaching out to residents less than $250,000 OR are less
         than 500,000 residents impacted?
       description: "If these conditions are met, the organization can request a substitute\
         \ notification.\n\n\"Substitute notice, if the person or business demonstrates\
@@ -1393,7 +1393,7 @@ tasks:
       version: -1
       name: Send notification to residents?
       description: If yes, the playbook will send a notification to all residents
-        that exists in the incident details.
+        that exist in the incident details.
       type: condition
       iscommand: false
       brand: ''
@@ -1831,17 +1831,17 @@ inputs:
 - key: ContactName
   value: {}
   required: false
-  description: In case of a breach, the contact details to send to the general attorney
+  description: In case of a breach, the contact details to send to the Attorney General
     and the affected residents.
 - key: ContactEmailAddress
   value: {}
   required: false
-  description: In case of a breach, the contact details to send to the general attorney
+  description: In case of a breach, the contact details to send to the Attorney General
     and the affected residents.
 - key: ContactTelNumber
   value: {}
   required: false
-  description: In case of a breach, the contact details to send to the general attorney
+  description: In case of a breach, the contact details to send to the Attorney General
     and the affected residents.
 - key: CompanyName
   value: {}
@@ -1861,34 +1861,33 @@ inputs:
   description: In case of a breach, the company details to display in the breach report.
 outputs:
 - contextPath: PIICompromised
-  description: Store the fact that PII compromised.
+  description: Set a flag indicating that PII has been compromised.
   type: boolean
 - contextPath: HealthInsuranceBreached
-  description: Store the fact that the breach contains PII type of health insurance
+  description: Set a flag indicating that the breach contains PII of health insurance
     information.
   type: unknown
 - contextPath: MedicalInformationBreached
-  description: Store the fact that the breach contains PII type of medical information.
+  description: Set a flag indicating that the breach contains PII of medical information.
   type: unknown
 - contextPath: FinancialInformationBreached
-  description: Store the fact that the breach contains PII type of financial information.
+  description: Set a flag indicating that the breach contains PII of financial information.
   type: unknown
 - contextPath: AccountInformationBreached
-  description: Store the fact that the breach contains PII type of account information.
+  description: Set a flag indicating that the breach contains PII of account information.
   type: unknown
 - contextPath: UniqueIdentificationNumberBreached
-  description: Store the fact that the breach contains PII type of unique identification
+  description: Set a flag indicating that the breach contains PII of unique identification
     number.
   type: unknown
 - contextPath: UniqueBiometricDataBreached
-  description: Store the fact that the breach contains PII type of unique biometric
+  description: Set a flag indicating that the breach contains PII of unique biometric
     data.
   type: unknown
 - contextPath: Analyst review.Answers.1
-  description: Explain in your words the incident origin, what you have checked, and
+  description: Explain, in your words, the incident origin, what you have checked, and
     any information related to this incident.
   type: longText
-sourceplaybookid: GDPR Breach Notification
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
