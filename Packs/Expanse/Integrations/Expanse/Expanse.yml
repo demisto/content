@@ -549,7 +549,7 @@ script:
       type: String
     - contextPath: Expanse.Behavior.Flows
       description: Array of flow objects.
-      type: String
+      type: Unknown
     - contextPath: Expanse.Behavior.Flows.InternalAddress
       description: Internal IP address for flow
       type: String
@@ -580,7 +580,73 @@ script:
     - contextPath: Expanse.Behavior.Flows.RiskRule
       description: Risk rule violated by the flow.
       type: String
-  dockerimage: demisto/python3:3.7.4.2245
+  - arguments:
+    - default: true
+      description: The ip to search.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns exposure information about the ip.
+    execution: false
+    name: expanse-get-exposures
+    outputs:
+    - contextPath: Expanse.Exposures.SearchTerm
+      description: The ip that was searched.
+      type: String
+    - contextPath: Expanse.Exposures.TotalExposureCount
+      description: The total count of exposures for the IP
+      type: Number
+    - contextPath: Expanse.Exposures.CriticalExposureCount
+      description: The total count of CRITICAL exposures for the IP
+      type: Number
+    - contextPath: Expanse.Exposures.WarningExposureCount
+      description: The total count of WARNING exposures for the IP
+      type: Number
+    - contextPath: Expanse.Exposures.RoutineExposureCount
+      description: The total count of ROUTINE exposures for the IP
+      type: Number
+    - contextPath: Expanse.Exposures.UnknownExposureCount
+      description: The total count of UNKNOWN exposures for the IP
+      type: Number
+    - contextPath: Expanse.Exposures.ExposureSummaries
+      description: Summaries of exposures for the IP address
+      type: String
+    - contextPath: Expanse.Exposures.Exposures
+      description: Array of Exposures for the IP address
+      type: Unknown
+    - contextPath: Expanse.Exposures.Exposures.ExposureType
+      description: Exposure type of the Exposure
+      type: String
+    - contextPath: Expanse.Exposures.Exposures.BusinessUnit
+      description: Business Unit of the Exposure
+      type: String
+    - contextPath: Expanse.Exposures.Exposures.Ip
+      description: IP Address the Exposure was found on
+      type: String
+    - contextPath: Expanse.Exposures.Exposures.Port
+      description: Port the Exposure was found on
+      type: String
+    - contextPath: Expanse.Exposures.Exposures.Severity
+      description: Severity of the Exposure
+      type: String
+    - contextPath: Expanse.Exposures.Exposures.Certificate
+      description: Certificate details associated with Exposure
+      type: Unknown
+    - contextPath: Expanse.Exposures.Exposures.FirstObservsation
+      description: First Observation of the Exposure
+      type: Unknown
+    - contextPath: Expanse.Exposures.Exposures.LastObservsation
+      description: Last Observation of the Exposure
+      type: Unknown
+    - contextPath: Expanse.Exposures.Exposures.Status
+      description: Status details of the Exposure
+      type: Unknown
+    - contextPath: Expanse.Exposures.Exposures.Provider
+      description: Provider details of the Exposure
+      type: Unknown
+  dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: true
   longRunning: false

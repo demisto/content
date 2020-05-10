@@ -471,7 +471,7 @@ Key - Client Secret</p></p>
 </tr>
 <tr>
 <td style="width: 206px;">user_principal_name</td>
-<td style="width: 363px;">The user principal name, for example: someuser@contoso.com.</td>
+<td style="width: 363px;">The user principal name, for example: foo@test.com.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>

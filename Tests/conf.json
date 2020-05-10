@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MITRE ATT&CK",
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+        },
+        {
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
@@ -1501,19 +1505,19 @@
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_oproxy_dev",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_oproxy_prod",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test",
             "instance_names": "ms_graph_device_management_self_deployed_prod",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "RedLock",
@@ -2830,10 +2834,11 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "AttackIQFireDrill": "Issue 24281",
         "Nessus": "No instance",
         "MxToolBox": "No instance",
         "Traps": "Issue 24122",
-        "skyformation": "No instance, old partner",
+        "Skyformation": "No instance, old partner",
         "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "URLhaus": "No instance",
@@ -3005,6 +3010,10 @@
         "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "Azure Security Center v2": "Test direct access to oproxy",
+        "Microsoft Graph Calendar": "Test direct access to oproxy",
+        "Microsoft Graph Device Management": "Test direct access to oproxy",
+        "Azure Compute v2": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
