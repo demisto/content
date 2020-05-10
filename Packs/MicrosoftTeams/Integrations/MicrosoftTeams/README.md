@@ -23,23 +23,23 @@ The web server for the integration runs within a long-running Docker container. 
  `...`
  `-----END PRIVATE KEY-----`
 ```
- - Microsoft do not support self-signed certificate, and require a chain-trusted certificate issued by a trusted CA.
+ - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
  
 ## Setup Examples
 
 ### 1. Using Cortex XSOAR rerouting
-In this configuration, we will use Cortex XSOAR functionality, which reroutes HTTPS requests that hit the default port (443) to the webserver the integration spins up.
+In this configuration, we will use Cortex XSOAR functionality, which reroutes HTTPS requests that hit the default port (443) to the web server that the integration spins up.
 
-The messaging endpoint need to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g. `https://my.demisto.live/instance/execute/teams`
+The messaging endpoint needs to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g. `https://my.demisto.live/instance/execute/teams`
 
-The integration instance name, `teams` in this example, need to be configured in the [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step.
+The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step.
 
 The port to be configured in [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step should be any available port that is not used by another service.
 
- - Note: This optional is available only to Cortex XSOAR version 5.5.0 and later.
+ - Note: This option is available from Cortex XSOAR v5.5.0 and later.
 
 ### 2. Using NGINX as reverse proxy
-In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. NGINX) which relay the HTTPS requests posted from Microsoft Teams
+In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. NGINX) which relays the HTTPS requests posted from Microsoft Teams
 to the Cortex XSOAR server on HTTP.
 
 On NGINX, configure the following:
@@ -55,7 +55,7 @@ The port (`7000` in this example), to which the reverse proxy should forward the
 ![image](./doc_files/InstanceConfig7000.png)
 
 ### 3. Using Apache reverse proxy and Cortex XSOAR engine
-In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. Apache) and possibly a load balancer, which relay the HTTPS requests posted from Microsoft Teams
+In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. Apache) and possibly a load balancer, which relays the HTTPS requests posted from Microsoft Teams
 to a Cortex XSOAR engine, which can be put in a DMZ, on HTTP.
 
 The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the webserver the integration spins up, listens on that port.
@@ -76,7 +76,7 @@ In the [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demi
 
 The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxies it to the webserver.
 
-Every HTTPS traffic that will hit the selected messaging endpoint, will be directed to the HTTPS webserver the integration spins up, and will then be processed.
+All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS webserver the integration spins up, and will then be processed.
 
 ## Prerequisites
 
@@ -422,7 +422,7 @@ You can send the message `help` in order to see the supported commands:
 
 ## Troubleshooting
 
-The way the integration works is that it spins up a webserver which listens to events and data posted to it from Microsoft Teams.
+The integration works by spinning up a webserver that listens to events and data posted to it from Microsoft Teams.
 
 If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the webserver, which should happen for the first time when the bot is added to the configured team.
 
