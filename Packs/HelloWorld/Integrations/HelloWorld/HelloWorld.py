@@ -1044,7 +1044,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
         dbot_score = Common.DBotScore(
             indicator=domain,
             integration_name='HelloWorld',
-            indicator_type='domain',
+            indicator_type=DBotScoreType.DOMAIN,
             score=score,
             malicious_description=f'Hello World returned reputation {reputation}'
         )
