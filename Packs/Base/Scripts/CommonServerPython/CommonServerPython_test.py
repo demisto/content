@@ -1611,6 +1611,7 @@ CONTEXT_MOCK = {
         'key1': 'val1',
         'key2': 'val2'
     },
+    'int_key': 1,
     'list_key_str': ['val1', 'val2'],
     'list_key_list': ['val1', 'val2'],
     'list_key_dict': ['val1', 'val2']
@@ -1623,10 +1624,10 @@ UPDATED_CONTEXT = {
         'key2': 'val2',
         'data_key': 'data_val'
     },
+    'int_key': [1, 2],
     'list_key_str': ['val1', 'val2', 'str_data'],
     'list_key_list': ['val1', 'val2', 'val1', 'val2'],
     'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
-
 }
 
 DATA_MOCK_STRING = "str_data"
@@ -1634,17 +1635,18 @@ DATA_MOCK_LIST = ['val1', 'val2']
 DATA_MOCK_DICT = {
     'data_key': 'data_val'
 }
+DATA_MOCK_INT = 2
 
 STR_KEY = "str_key"
 DICT_KEY = "dict_key"
 
 APPEND_CONTEXT_INPUT = [
     (CONTEXT_MOCK, DATA_MOCK_STRING, STR_KEY, "key = {}, val = {}".format(STR_KEY, UPDATED_CONTEXT[STR_KEY])),
-    (CONTEXT_MOCK, DATA_MOCK_LIST, STR_KEY, "Cannot append data to the existing context"),
-    (CONTEXT_MOCK, DATA_MOCK_DICT, STR_KEY, "Cannot append data to the existing context"),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, STR_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_DICT, STR_KEY, "TypeError"),
 
-    (CONTEXT_MOCK, DATA_MOCK_STRING, DICT_KEY, "Cannot append data to the existing context"),
-    (CONTEXT_MOCK, DATA_MOCK_LIST, DICT_KEY, "Cannot append data to the existing context"),
+    (CONTEXT_MOCK, DATA_MOCK_STRING, DICT_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, DICT_KEY, "TypeError"),
     (CONTEXT_MOCK, DATA_MOCK_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT[DICT_KEY])),
 
     (CONTEXT_MOCK, DATA_MOCK_STRING, 'list_key_str',
@@ -1653,6 +1655,8 @@ APPEND_CONTEXT_INPUT = [
      "key = {}, val = {}".format('list_key_list', UPDATED_CONTEXT['list_key_list'])),
     (CONTEXT_MOCK, DATA_MOCK_DICT, 'list_key_dict',
      "key = {}, val = {}".format('list_key_dict', UPDATED_CONTEXT['list_key_dict'])),
+
+    (CONTEXT_MOCK, DATA_MOCK_INT, 'int_key', "key = {}, val = {}".format('int_key', UPDATED_CONTEXT['int_key'])),
 ]
 
 
@@ -1668,7 +1672,12 @@ def test_append_context(mocker, context_mock, data_mock, key, expected_answer):
     mocker.patch.object(demisto, 'setContext', side_effect=get_set_context)
     mocker.patch.object(demisto, 'results')
 
-    with raises(SystemExit, match='0'):
-        appendContext(key, data_mock)
+    if "TypeError" not in expected_answer:
+        with raises(SystemExit, match='0'):
+            appendContext(key, data_mock)
+            assert expected_answer in demisto.results.call_args[0][0]['Contents']
 
-    assert expected_answer in demisto.results.call_args[0][0]['Contents']
+    else:
+        with raises(TypeError) as e:
+            appendContext(key, data_mock)
+            assert expected_answer in e.value

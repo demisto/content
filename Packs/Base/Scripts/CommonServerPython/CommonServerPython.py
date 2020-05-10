@@ -1162,25 +1162,25 @@ def appendContext(key, data, dedup=False):
             if isinstance(data, STRING_TYPES):
                 new_val = data + ',' + existing
             else:
-                return_error("Cannot append data to the existing context - \n The data is of type {} while the "
-                             "context in the specified path is of instance {}.".format(type(data), type(existing)))
+                new_val = data + existing  # will raise a self explanatory TypeError
 
-        if isinstance(existing, dict):
+        elif isinstance(existing, dict):
             if isinstance(data, dict):
-                existing.update(data)
-                new_val = existing
+                new_val = [existing, data]
             else:
-                return_error("Cannot append data to the existing context - \n The data is of type {} while the "
-                            "context in the specified path is of instance {}.".format(type(data), type(existing)))
+                new_val = data + existing  # will raise a self explanatory TypeError
 
-        if isinstance(existing, list):
+        elif isinstance(existing, list):
             if isinstance(data, list):
                 existing.extend(data)
             else:
                 existing.append(data)
             new_val = existing
 
-        if dedup:
+        else:
+            new_val = [existing, data]
+
+        if dedup and isinstance(new_val, list):
             new_val = list(set(new_val))
 
         demisto.setContext(key, new_val)
