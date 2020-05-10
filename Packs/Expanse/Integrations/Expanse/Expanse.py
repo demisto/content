@@ -568,6 +568,53 @@ def get_expanse_behavior_context(data):
     }
 
 
+def get_expanse_exposure_context(data):
+    """
+    provides custom context information from the Expanse Exposure API
+    """
+
+    def exposure_to_obj(exposure):
+        return {
+            "ExposureType": exposure['exposureType'],
+            "BusinessUnit": exposure['businessUnit']['name'],
+            "Ip": exposure['ip'],
+            "Port": exposure['port'],
+            "Severity": exposure['severity'],
+            "Certificate": exposure['certificate'],
+            "FirstObservsation": exposure['firstObservation'],
+            "LastObservsation": exposure['lastObservation'],
+            "Status": exposure['statuses'],
+            "Provider": exposure['provider']
+        }
+
+    def exposure_to_summary(exposure):
+        return "{exposureType} exposure on {ip}:{port}".format(**exposure)
+
+    def exposure_stats(exposures):
+        results = {
+            "CRITICAL": 0,
+            "WARNING": 0,
+            "ROUTINE": 0,
+            "UNKNOWN": 0
+        }
+        for exposure in exposures:
+            results[exposure['severity']] += 1
+
+        return results
+
+    counts = exposure_stats(data)
+    return {
+        "SearchTerm": data[0]['ip'],
+        "TotalExposureCount": len(data),
+        "CriticalExposureCount": counts['CRITICAL'],
+        "WarningExposureCount": counts['WARNING'],
+        "RoutineExposureCount": counts['ROUTINE'],
+        "UnknownExposureCount": counts['UNKNOWN'],
+        "ExposureSummaries": '\n'.join([exposure_to_summary(exposure) for exposure in data]),
+        "Exposures": [exposure_to_obj(exposure) for exposure in data]
+    }
+
+
 def fetch_events_incidents_command(start_date, end_date, token, next_=None):
     """
     retrieve active exposures from Expanse API and create incidents
@@ -824,10 +871,45 @@ def behavior_command():
         'Expanse.Behavior(val.SearchTerm == obj.SearchTerm)': expanse_behavior_context
     }
 
+    raw_flows = expanse_behavior_context['Flows']
     del expanse_behavior_context['Flows']  # Remove flow objects from human readable response
     human_readable = tableToMarkdown("Expanse Behavior information for: {search}".format(search=search), expanse_behavior_context)
-
+    expanse_behavior_context['Flows'] = raw_flows
     return_outputs(human_readable, ec, behaviors)
+
+
+def exposures_command():
+    """
+    searches by ip for exposure data from Expanse
+    """
+    search = demisto.args()['ip']
+
+    params = {
+        "inet": search,
+        "activityStatus": "active"
+    }
+    token = do_auth()
+    results = http_request('GET', 'exposures/ip-ports', params, token=token)
+    try:
+        exposures = results['data']
+        if len(exposures) == 0:
+            demisto.results("No data found")
+            return
+    except Exception:
+        demisto.results("No data found")
+        return
+
+    expanse_exposure_context = get_expanse_exposure_context(exposures)
+
+    ec = {
+        'Expanse.Exposures(val.SearchTerm == obj.SearchTerm)': expanse_exposure_context
+    }
+
+    raw_exposures = expanse_exposure_context['Exposures']
+    del expanse_exposure_context['Exposures']  # Remove exposure objects from human readable response
+    human_readable = tableToMarkdown("Expanse Exposure information for: {search}".format(search=search), expanse_exposure_context)
+    expanse_exposure_context['Exposures'] = raw_exposures
+    return_outputs(human_readable, ec, exposures)
 
 
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
@@ -892,6 +974,9 @@ def main():
 
         elif active_command == 'expanse-get-behavior':
             behavior_command()
+
+        elif active_command == 'expanse-get-exposures':
+            exposures_command()
 
     # Log exceptions
     except Exception as e:
