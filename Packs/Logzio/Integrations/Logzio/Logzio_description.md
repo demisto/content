@@ -22,7 +22,7 @@ If incident fetching is enabled, the integration runs a command to import new Lo
 
 6. **Filter by rule severity** - You can test your filter on [this page](https://app.logz.io/#/dashboard/security/rules/rule-definitions?). Make sure you’re logged into your Logz.io Security account.
     
-7. **First-time retroactive fetch** - Fetches rules that triggered before the integration was established. This is a one-time retroactive fetch. Valid format:  <number> <time unit> in minutes/hours/months/years. E.g., 12 hours, 7 days (with a space).
+7. **First fetch time range** - Fetches rules that triggered before the integration was established. This is a one-time retroactive fetch. Valid format:  <number> <time unit> in minutes/hours/months/years. E.g., 12 hours, 7 days (with a space).
 
 8. **Max. number of incidents fetched per run** - The maximum number of incidents returned per query is configurable, but capped at 50.  
 
