@@ -6,7 +6,7 @@
 	"name": "Manager Email",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The user's manager email.",
+	"description": "The email of the manager whose direct reports should be contacted for their health status and offered assistance.",
 	"cliName": "manageremail",
 	"type": "shortText",
 	"closeForm": false,
