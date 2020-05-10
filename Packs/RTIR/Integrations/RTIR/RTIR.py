@@ -103,7 +103,6 @@ def login():
         return_error("Error: login failed. please check your credentials.")
 
 
-
 def logout():
     suffix_url = 'logout'
     http_request('POST', suffix_url)
