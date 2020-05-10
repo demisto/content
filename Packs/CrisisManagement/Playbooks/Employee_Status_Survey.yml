@@ -1,16 +1,17 @@
 id: Employee Status Survey
 version: -1
 name: Employee Status Survey
-description: "Note: This is a beta playbook, which lets you implement and test pre-release
-               software. Since the playbook is beta, it might contain bugs. Updates to the playbook
-               during the beta phase might include non-backward compatible features. We appreciate
-               your feedback on the quality and usability of the playbook to help us identify issues,
-               fix them, and continually improve. Manages a crisis event where employees have to
-               work remotely due to a pandemic, issues with the workplace or similar situations.
-               Sends a questionnaire to all direct reports under a given manager. The questionnaire
-               asks the employees for their health status and whether they need any help. The data
-               is saved as employee indicators in Cortex XSOAR, while IT and HR incidents are created
-               to provide assistance to employees who requested it."
+description: 'Note: This is a beta playbook, which lets you implement and test pre-release
+  software. Since the playbook is beta, it might contain bugs. Updates to the playbook
+  during the beta phase might include non-backward compatible features. We appreciate
+  your feedback on the quality and usability of the playbook to help us identify issues,
+  fix them, and continually improve. Manages a crisis event where employees have to
+  work remotely due to a pandemic, issues with the workplace or similar situations.
+  Sends a questionnaire to all direct reports under a given manager. The questionnaire
+  asks the employees for their health status and whether they need any help. The data
+  is saved as employee indicators in Cortex XSOAR, while IT and HR incidents are created
+  to provide assistance to employees who requested it. The questionnaire expires after
+  24 hours by default, and during that time the responses are processed every 5 minutes.'
 starttaskid: '0'
 tasks:
   '0':
@@ -36,10 +37,10 @@ tasks:
     quietmode: 0
   '3':
     id: '3'
-    taskid: bfb4f562-f2ab-4e4d-8fc4-9d71c447cd8b
+    taskid: bf8e9709-ae78-4d41-82df-9b95562eab06
     type: collection
     task:
-      id: bfb4f562-f2ab-4e4d-8fc4-9d71c447cd8b
+      id: bf8e9709-ae78-4d41-82df-9b95562eab06
       version: -1
       name: Send employee status questionnaire
       description: Sends a questionnaire to the direct reports of the configured user,
@@ -52,8 +53,8 @@ tasks:
       - '15'
     separatecontext: false
     sla:
-      hours: 1
-      days: 0
+      hours: 0
+      days: 1
       weeks: 0
     view: "{\n  \"position\": {\n    \"x\": 90,\n    \"y\": 1515\n  }\n}"
     note: false
@@ -70,9 +71,8 @@ tasks:
         simple: Voluntary employee checkin
       body:
         simple: "Hi,\n\nYour voluntary participation in this employee\nhealth check\
-          \ enables us to be proactive in protecting our employees.\
-          \ Thank you for your participation.\n\nRegards,\nEmployee Health Monitoring\
-          \ Team"
+          \ enables us to be proactive in protecting our employees. Thank you for\
+          \ your participation.\n\nRegards,\nEmployee Health Monitoring Team"
       methods:
       - email
       - SlackV2
@@ -131,8 +131,8 @@ tasks:
         - No, I am good
         fieldassociated: ''
         placeholder: ''
-        tooltip: 'If you are facing challenges, please describe your problem in the comments
-          field below. '
+        tooltip: 'If you are facing challenges, please describe your problem in the
+          comments field below. '
         readonly: false
       - id: '3'
         label: ''
@@ -241,10 +241,10 @@ tasks:
     quietmode: 0
   '14':
     id: '14'
-    taskid: 1af63f0d-df4c-4049-8905-b76f6a02b2d8
+    taskid: 90169082-c8c4-42d6-8c75-8b040c304d7e
     type: playbook
     task:
-      id: 1af63f0d-df4c-4049-8905-b76f6a02b2d8
+      id: 90169082-c8c4-42d6-8c75-8b040c304d7e
       version: -1
       name: Continuously Process Survey Responses
       description: Continuously processes new questionnaire responses as they are
@@ -274,8 +274,8 @@ tasks:
             value:
               simple: '1'
       exitCondition: ''
-      wait: 30
-      max: 200
+      wait: 300
+      max: 290
     view: "{\n  \"position\": {\n    \"x\": 662.5,\n    \"y\": 1515\n  }\n}"
     note: false
     timertriggers: []
@@ -486,10 +486,10 @@ tasks:
     quietmode: 0
   '22':
     id: '22'
-    taskid: bb86aa50-332b-4d02-8585-6d55c95d60b6
+    taskid: b768d7be-9794-4b19-8647-375b7a1123a3
     type: regular
     task:
-      id: bb86aa50-332b-4d02-8585-6d55c95d60b6
+      id: b768d7be-9794-4b19-8647-375b7a1123a3
       version: -1
       name: Get manager details
       description: "Retrieves the properties and relationships of a user object. For\
@@ -498,7 +498,7 @@ tasks:
       script: '|||msgraph-user-get'
       type: regular
       iscommand: true
-      brand: Microsoft Graph User
+      brand: ''
     nexttasks:
       '#none#':
       - '23'
@@ -516,18 +516,18 @@ tasks:
     quietmode: 0
   '23':
     id: '23'
-    taskid: 9a8fe33e-72d5-4017-8bff-90cda1015c05
+    taskid: a6cd6476-f0e9-4a13-8b1f-b4809717237b
     type: regular
     task:
-      id: 9a8fe33e-72d5-4017-8bff-90cda1015c05
+      id: a6cd6476-f0e9-4a13-8b1f-b4809717237b
       version: -1
       name: Get manager's direct reports
-      description: Retrieves the direct reports for a specific user. Direct reports are the
+      description: Retrieves the direct reports for a user. Direct reports are the
         people who have that user configured as their manager.
       script: '|||msgraph-direct-reports'
       type: regular
       iscommand: true
-      brand: Microsoft Graph User
+      brand: ''
     nexttasks:
       '#none#':
       - '19'
