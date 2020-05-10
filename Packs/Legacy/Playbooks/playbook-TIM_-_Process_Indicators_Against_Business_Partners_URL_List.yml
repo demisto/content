@@ -90,7 +90,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "105"
+      - "108"
       "yes":
       - "102"
     separatecontext: false
@@ -334,6 +334,57 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "108":
+    id: "108"
+    taskid: 4709e8af-66f1-4877-8bde-89739d7f8a66
+    type: regular
+    task:
+      id: 4709e8af-66f1-4877-8bde-89739d7f8a66
+      version: -1
+      name: Set values
+      description: Checks if the specified value exists in context. If the value exists,
+        it is set in context, otherwise no value is set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NotBusinessPartnerUrl
+      stringify: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -342,7 +393,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1215,
-        "width": 1260,
+        "width": 1550,
         "x": -370,
         "y": -1390
       }

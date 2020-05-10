@@ -870,8 +870,17 @@ class TestBuildDBotEntry(object):
 class TestCommandResults:
     def test_return_command_results(self):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
         ip = Common.IP(
             ip='8.8.8.8',
+            dbot_score=dbot_score,
             asn='some asn',
             hostname='test.com',
             geo_country=None,
@@ -881,14 +890,6 @@ class TestCommandResults:
             positive_engines=None,
             detection_engines=None
         )
-
-        dbot_score = Common.DBotScore(
-            indicator='8.8.8.8',
-            integration_name='Virus Total',
-            indicator_type=DBotScoreType.IP,
-            score=Common.DBotScore.GOOD
-        )
-        ip.set_dbot_score(dbot_score)
 
         results = CommandResults(
             outputs_key_field=None,
@@ -903,36 +904,70 @@ class TestCommandResults:
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
-                'IP(val.Address && val.Address == obj.Address)': {
-                    'Address': '8.8.8.8',
-                    'ASN': 'some asn',
-                    'Hostname': 'test.com'
-                },
+                'IP(val.Address && val.Address == obj.Address)': [
+                    {
+                        'Address': '8.8.8.8',
+                        'ASN': 'some asn',
+                        'Hostname': 'test.com'
+                    }
+                ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Indicator': '8.8.8.8',
-                    'Vendor': 'Virus Total',
-                    'Score': 1,
-                    'Type': 'ip'
-                }
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': '8.8.8.8',
+                        'Vendor': 'Virus Total',
+                        'Score': 1,
+                        'Type': 'ip'
+                    }
+                ]
             }
         }
 
-    def test_create_dbot_score(self):
+    def test_multiple_indicators(self):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
-
-        dbot_score = Common.DBotScore(
+        dbot_score1 = Common.DBotScore(
             indicator='8.8.8.8',
             integration_name='Virus Total',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
+        )
+        ip1 = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score1,
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
+        )
+
+        dbot_score2 = Common.DBotScore(
+            indicator='5.5.5.5',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+        ip2 = Common.IP(
+            ip='5.5.5.5',
+            dbot_score=dbot_score2,
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
         )
 
         results = CommandResults(
             outputs_key_field=None,
             outputs_prefix=None,
             outputs=None,
-            indicators=[dbot_score]
+            indicators=[ip1, ip2]
         )
 
         assert results.to_context() == {
@@ -941,13 +976,33 @@ class TestCommandResults:
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
+                'IP(val.Address && val.Address == obj.Address)': [
+                    {
+                        'Address': '8.8.8.8',
+                        'ASN': 'some asn',
+                        'Hostname': 'test.com'
+                    },
+                    {
+                        'Address': '5.5.5.5',
+                        'ASN': 'some asn',
+                        'Hostname': 'test.com'
+                    }
+                ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Indicator': '8.8.8.8',
-                    'Vendor': 'Virus Total',
-                    'Score': 1,
-                    'Type': 'ip'
-                }
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': '8.8.8.8',
+                        'Vendor': 'Virus Total',
+                        'Score': 1,
+                        'Type': 'ip'
+                    },
+                    {
+                        'Indicator': '5.5.5.5',
+                        'Vendor': 'Virus Total',
+                        'Score': 1,
+                        'Type': 'ip'
+                    }
+                ]
             }
         }
 
@@ -979,6 +1034,37 @@ class TestCommandResults:
             }
         }
 
+    def test_return_list_of_items_the_old_way(self):
+        from CommonServerPython import CommandResults, EntryFormat, EntryType
+        tickets = [
+            {
+                'ticket_id': 1,
+                'title': 'foo'
+            },
+            {
+                'ticket_id': 2,
+                'title': 'goo'
+            }
+        ]
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs={
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+            },
+            raw_response=tickets
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': tickets,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+            }
+        }
+
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
 
@@ -994,43 +1080,32 @@ class TestCommandResults:
         except TypeError:
             assert True
 
-    def test_create_ip(self):
-        from CommonServerPython import Common
-
-        ip = Common.IP(
-            ip='8.8.8.8',
-            asn='some asn',
-            hostname='test.com',
-            geo_country=None,
-            geo_description=None,
-            geo_latitude=None,
-            geo_longitude=None,
-            positive_engines=None,
-            detection_engines=None
-        )
-
-        assert ip is not None
-
     def test_create_domain(self):
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
 
+        dbot_score = Common.DBotScore(
+            indicator='somedomain.com',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.DOMAIN,
+            score=Common.DBotScore.GOOD
+        )
+
         domain = Common.Domain(
             domain='somedomain.com',
+            dbot_score=dbot_score,
             dns='dns.somedomain',
             detection_engines=10,
             positive_detections=5,
             organization='Some Organization',
-            whois=Common.WHOIS(
-                admin_phone='18000000',
-                admin_email='admin@test.com',
+            admin_phone='18000000',
+            admin_email='admin@test.com',
 
-                registrant_name='Mr Registrant',
+            registrant_name='Mr Registrant',
 
-                registrar_name='Mr Registrar',
-                registrar_abuse_email='registrar@test.com'
-            ),
+            registrar_name='Mr Registrar',
+            registrar_abuse_email='registrar@test.com',
             creation_date='2019-01-01T00:00:00',
-            update_date='2019-01-02T00:00:00',
+            updated_date='2019-01-02T00:00:00',
             expiration_date=None,
             domain_status='ACTIVE',
             name_servers=[
@@ -1043,14 +1118,6 @@ class TestCommandResults:
                 'sub-domain3.somedomain.com'
             ]
         )
-
-        dbot_score = Common.DBotScore(
-            indicator='somedomain.com',
-            integration_name='Virus Total',
-            indicator_type=DBotScoreType.DOMAIN,
-            score=Common.DBotScore.GOOD
-        )
-        domain.set_dbot_score(dbot_score)
 
         results = CommandResults(
             outputs_key_field=None,
@@ -1065,59 +1132,79 @@ class TestCommandResults:
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
-                'Domain(val.Name && val.Name == obj.Name)': {
-                    'Name': 'somedomain.com',
-                    'DNS': 'dns.somedomain',
-                    'DetectionEngines': 10,
-                    'PositiveDetections': 5,
-                    'Organization': 'Some Organization',
-                    'CreationDate': '2019-01-01T00:00:00',
-                    'UpdateDate': '2019-01-02T00:00:00',
-                    'DomainStatus': 'ACTIVE',
-                    'NameServers': [
-                        'PNS31.CLOUDNS.NET',
-                        'PNS32.CLOUDNS.NET'
-                    ],
-                    'Subdomains': [
-                        'sub-domain1.somedomain.com',
-                        'sub-domain2.somedomain.com',
-                        'sub-domain3.somedomain.com'
-                    ],
-                    'Admin': {
-                        'Phone': '18000000',
-                        'Email': 'admin@test.com',
-                        'Name': None
-                    },
-                    'Registrant': {
-                        'Name': 'Mr Registrant',
-                        'Email': None,
-                        'Phone': None
-                    },
-                    'WHOIS': {
-                        'Admin': {
-                            'Name': None,
-                            'Phone': '18000000',
-                            'Email': 'admin@test.com'
+                'Domain(val.Name && val.Name == obj.Name)': [
+                    {
+                        "Name": "somedomain.com",
+                        "DNS": "dns.somedomain",
+                        "DetectionEngines": 10,
+                        "PositiveDetections": 5,
+                        "Registrar": {
+                            "Name": "Mr Registrar",
+                            "AbuseEmail": "registrar@test.com",
+                            "AbusePhone": None
                         },
-                        'Registrar': {
-                            'Name': 'Mr Registrar',
-                            'AbuseEmail': 'registrar@test.com',
-                            'AbusePhone': None
+                        "Registrant": {
+                            "Name": "Mr Registrant",
+                            "Email": None,
+                            "Phone": None,
+                            "Country": None
                         },
-                        'Registrant': {
-                            'Name': 'Mr Registrant',
-                            'Email': None,
-                            'Phone': None
+                        "Admin": {
+                            "Name": None,
+                            "Email": "admin@test.com",
+                            "Phone": "18000000",
+                            "Country": None
+                        },
+                        "Organization": "Some Organization",
+                        "Subdomains": [
+                            "sub-domain1.somedomain.com",
+                            "sub-domain2.somedomain.com",
+                            "sub-domain3.somedomain.com"
+                        ],
+                        "DomainStatus": "ACTIVE",
+                        "CreationDate": "2019-01-01T00:00:00",
+                        "UpdatedDate": "2019-01-02T00:00:00",
+                        "NameServers": [
+                            "PNS31.CLOUDNS.NET",
+                            "PNS32.CLOUDNS.NET"
+                        ],
+                        "WHOIS": {
+                            "Registrar": {
+                                "Name": "Mr Registrar",
+                                "AbuseEmail": "registrar@test.com",
+                                "AbusePhone": None
+                            },
+                            "Registrant": {
+                                "Name": "Mr Registrant",
+                                "Email": None,
+                                "Phone": None,
+                                "Country": None
+                            },
+                            "Admin": {
+                                "Name": None,
+                                "Email": "admin@test.com",
+                                "Phone": "18000000",
+                                "Country": None
+                            },
+                            "DomainStatus": "ACTIVE",
+                            "CreationDate": "2019-01-01T00:00:00",
+                            "UpdatedDate": "2019-01-02T00:00:00",
+                            "NameServers": [
+                                "PNS31.CLOUDNS.NET",
+                                "PNS32.CLOUDNS.NET"
+                            ]
                         }
                     }
-                },
+                ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Indicator': 'somedomain.com',
-                    'Vendor': 'Virus Total',
-                    'Score': 1,
-                    'Type': 'domain'
-                }
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'somedomain.com',
+                        'Vendor': 'Virus Total',
+                        'Score': 1,
+                        'Type': 'domain'
+                    }
+                ]
             }
         }
 
