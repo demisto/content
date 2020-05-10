@@ -727,6 +727,11 @@ def main():
     username = secret_conf.get('username') if not username else username
     password = secret_conf.get('userPassword') if not password else password
 
+    testing_server = servers[0]  # test integration instances only on a single server
+    client = demisto_client.configure(base_url=testing_server, username=username, password=password,
+                                      verify_ssl=False)
+    set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
+
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
     all_module_instances = []
@@ -750,13 +755,9 @@ def main():
     new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
     new_integrations_names, modified_integrations_names = [], []
 
-    pack_ids = []
-    with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
-        pack_ids = packs_stream.readlines()
-        pack_ids = [pack_id.rstrip('\n') for pack_id in pack_ids]
-
     if server_version_compare(server_numeric_version, '6.0') >= 0:
-        # Test packs search and installation - beginning of infrastructure
+        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+            pack_ids = [pack_id.rstrip('\n') for pack_id in packs_stream.readlines()]
         client = demisto_client.configure(base_url=servers[0], username=username, password=password,
                                           verify_ssl=False)
         search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
@@ -781,10 +782,7 @@ def main():
     # of an integration that we want to configure with different configuration values. Look at
     # [conf.json](../conf.json) for examples
     brand_new_integrations = []
-    testing_server = servers[0]  # test integration instances only on a single server
-    client = demisto_client.configure(base_url=testing_server, username=username, password=password,
-                                      verify_ssl=False)
-    set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
+
     for test in tests_for_iteration:
         testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
                                                   verify_ssl=False)
