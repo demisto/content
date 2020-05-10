@@ -1530,10 +1530,6 @@
         },
         {
             "integrations": "ThreatConnect v2",
-            "playbookID": "test-ThreatConnect"
-        },
-        {
-            "integrations": "ThreatConnect v2",
             "playbookID": "ThreatConnect v2 - Test"
         },
         {

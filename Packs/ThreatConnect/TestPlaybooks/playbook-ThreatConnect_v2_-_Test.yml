@@ -1,4 +1,4 @@
-id: b155073d-4060-41e1-8f89-0b9683ef1ca8
+id: ThreatConnect v2 - Test
 version: -1
 name: ThreatConnect v2 - Test
 starttaskid: "0"
@@ -78,6 +78,7 @@ tasks:
       script: 'ip'
       type: regular
       iscommand: true
+      brand: ThreatConnect v2
     nexttasks:
       '#none#':
       - "47"
@@ -1033,6 +1034,7 @@ tasks:
       script: 'domain'
       type: regular
       iscommand: true
+      brand: ThreatConnect v2
     nexttasks:
       '#none#':
       - "47"
@@ -1069,6 +1071,7 @@ tasks:
       script: 'file'
       type: regular
       iscommand: true
+      brand: ThreatConnect v2
     nexttasks:
       '#none#':
       - "47"
@@ -1104,6 +1107,7 @@ tasks:
       script: 'url'
       type: regular
       iscommand: true
+      brand: ThreatConnect v2
     nexttasks:
       '#none#':
       - "47"

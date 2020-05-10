@@ -194,7 +194,7 @@ def get_xindapi(indicator_value, indicatorType, owner, tc):
             results = tc.api_request(ro)
             if results.headers['content-type'] == 'application/json':
                 if results.json()['status'] == 'Success':
-                    res =  results.json()['data'][item['apiEntity']]
+                    res = results.json()['data'][item['apiEntity']]
                     res['ownerName'] = res['owner']['name']
                     res['type'] = item['name']
                     stdout.append(res)
@@ -285,7 +285,6 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                 indicators[0]['indicator_observations'] = indicator_observations
             except Exception:
                 indicators[0]['indicator_observations'] = indicator_observations
-                pass
 
         if associated_indicators:
             try:
@@ -302,9 +301,8 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                                                      "last_modified": associated_indicator.last_modified,
                                                      "weblink": associated_indicator.weblink})
                 indicators[0]['indicator_associations'] = associatedIndicators
-            except Exception as e:
+            except Exception:
                 indicators[0]['indicator_associations'] = associatedIndicators
-                pass
 
     return indicators
 
@@ -665,13 +663,11 @@ def tc_tag_indicator(indicator, tag, owners=None):
 
 
 def tc_get_indicator_command():
-    loopowners = False
     args = demisto.args()
     owners = args.get('owners')
     if not owners:
         if 'defaultOrg' in demisto.params():
             owners = demisto.params().get('defaultOrg')
-            loopowners = True
         else:
             return_error('You must specify an owner in the command, or by using the Organization parameter.')
     rating_threshold = int(args.get('ratingThreshold', -1))
@@ -764,9 +760,12 @@ def tc_get_indicator_command():
 
 
 # @loger
-def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups, associated_indicators, include_observations, include_tags, indicator_type, loopowners=False):
+def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups, associated_indicators,
+                     include_observations, include_tags, indicator_type, loopowners=False):
     raw_indicators = get_indicators(indicator, indicator_type=indicator_type, owners=owners, rating_threshold=rating_threshold,
-                                    confidence_threshold=confidence_threshold,associated_groups=associated_groups,associated_indicators=associated_indicators,include_observations=include_observations,include_tags=include_tags,loopowners=loopowners)
+                                    confidence_threshold=confidence_threshold, associated_groups=associated_groups,
+                                    associated_indicators=associated_indicators, include_observations=include_observations,
+                                    include_tags=include_tags, loopowners=loopowners)
     ec = []
     indicators = []
     indicator_groups = []
@@ -2124,7 +2123,7 @@ COMMANDS = {
     'tc-get-group-indicators': get_group_indicator,
     'tc-get-associated-groups': get_group_associated,
     'tc-associate-group-to-group': associate_group_to_group,
-    'tc-get-indicator-owners': tc_get_indicator_owners
+    'tc-get-indicator-owners': tc_get_indicator_owners,
 }
 
 
@@ -2136,4 +2135,4 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
             COMMANDS[command_func]()
 
     except Exception as e:
-        return_error('error has occurred: {}'.format(str(e), ))
+        return_error(f'error has occurred: {str(e)}', error=e)
