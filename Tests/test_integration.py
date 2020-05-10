@@ -585,26 +585,33 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
     # inc_filter.query
     search_filter.filter = inc_filter
 
+    incident_search_responses = []
+
     try:
         incidents = client.search_incidents(filter=search_filter)
+        incident_search_responses.append(incidents)
     except ApiException as err:
         prints_manager.add_print_job(err, print, thread_index)
         incidents = {'total': 0}
 
-    # poll the incidents queue for a max time of 120 seconds
-    timeout = time.time() + 120
-    while incidents['total'] != 1:
+    # poll the incidents queue for a max time of 300 seconds
+    timeout = time.time() + 300
+    while incidents['total'] < 1:
         try:
             incidents = client.search_incidents(filter=search_filter)
+            incident_search_responses.append(incidents)
         except ApiException as err:
             prints_manager.add_print_job(err, print, thread_index)
         if time.time() > timeout:
             error_message = 'Got timeout for searching incident with id {}, ' \
                             'got {} incidents in the search'.format(inc_id, incidents['total'])
             prints_manager.add_print_job(error_message, print_error, thread_index)
+            prints_manager.add_print_job(
+                'Incident search responses: {}'.format(str(incident_search_responses)), print, thread_index
+            )
             return False, -1
 
-        time.sleep(1)
+        time.sleep(10)
 
     return incidents['data'][0], inc_id
 

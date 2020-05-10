@@ -238,6 +238,7 @@ script: |-
                           'ReadableContentsFormat' : formats['markdown'],
                           'EntryContext' : {}})
 type: python
+subtype: python2
 tags:
 - active directory
 - enhancement

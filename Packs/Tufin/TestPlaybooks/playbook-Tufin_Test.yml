@@ -1,0 +1,167 @@
+id: Tufin Test
+version: -1
+name: Tufin Playbook Test
+description: Test playbook for Tufin integration.  Search your policies for blocking
+  shadowed rules and notify the war room of results.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c64ddce8-c2f2-41c4-8967-abf7de114d77
+    type: start
+    task:
+      id: c64ddce8-c2f2-41c4-8967-abf7de114d77
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 6a0f4878-94d7-49d9-8af2-e155d5a89056
+    type: regular
+    task:
+      id: 6a0f4878-94d7-49d9-8af2-e155d5a89056
+      version: -1
+      name: Search for Shadowed Blocking Rules
+      description: Search the policies of all devices managed by Tufin
+      script: Tufin|||tufin-policy-search
+      type: regular
+      iscommand: true
+      brand: Tufin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      search:
+        simple: 'action: deny shadowed: true '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: ba31017f-513c-4ce4-8588-b697d8b0dd56
+    type: condition
+    task:
+      id: ba31017f-513c-4ce4-8588-b697d8b0dd56
+      version: -1
+      name: Rules Found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Tufin.Policysearch.NumberRulesFound
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    - label: "no"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Tufin.Policysearch.NumberRulesFound
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: c1c985e1-60ff-4f6d-8529-39631ec6ad7b
+    type: regular
+    task:
+      id: c1c985e1-60ff-4f6d-8529-39631ec6ad7b
+      version: -1
+      name: 'Rules Found: Notify War Room'
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: ${Tufin.Policysearch.NumberRulesFound} Shadowed Blocking Rules Found!
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 680
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 97f568c2-ebb3-429b-8bb4-2a28f8ece226
+    type: regular
+    task:
+      id: 97f568c2-ebb3-429b-8bb4-2a28f8ece226
+      version: -1
+      name: 'No Rules Found: Notify War Room'
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: No Shadowed Blocking Rules Found.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 680
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 860,
+        "x": 240,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

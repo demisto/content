@@ -37,8 +37,13 @@ configuration:
   name: connect_parameters
   required: false
   type: 0
-description: ' Use the Generic SQL integration to run SQL queries on the following databases: MYSQL, PostgreSQL,Microsoft SQL Server,
-  and Oracle. '
+- display: Use an SSL connection
+  hidden: false
+  name: ssl_connect
+  required: false
+  type: 8
+description: 'Use the Generic SQL integration to run SQL queries on the following
+  databases: MYSQL, PostgreSQL,Microsoft SQL Server, and Oracle.'
 display: Generic SQL
 name: Generic SQL
 script:
@@ -117,6 +122,7 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
+  dockerimage45: demisto/genericsql:1.0.0.6768
   dockerimage: demisto/genericsql:1.0.0.7446
   feed: false
   isfetch: false
@@ -126,3 +132,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- generic-sql
+

@@ -75,6 +75,7 @@ script: |-
       "EntryContext": ec
   })
 type: python
+subtype: python2
 tags:
 - url
 - Enrichment
