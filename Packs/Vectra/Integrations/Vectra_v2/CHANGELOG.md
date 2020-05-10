@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Fixed an issue where the ***fetch-incidents*** command failed due to incorrect date format.
 
 ## [20.4.1] - 2020-04-29
 -
