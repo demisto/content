@@ -1704,22 +1704,3 @@ Fetches the logs that triggered a security event in Logz.io Cloud SIEM
 |@metadata|@timestamp|beat_agent|ecs|event|log_information|logzio_codec|message|tags|timestamp|type|winlog|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | beat: winlogbeat<br>type: _doc<br>version: 7.6.2 | 2020-05-06T08:28:04.640Z | hostname: WinTesting<br>id: 3aa2739f-7d9c-48d1-8d95-9441d5fbffe1<br>version: 7.6.2<br>type: winlogbeat<br>ephemeral_id: 2e94ea91-0375-4b60-8766-ee6d3f254832 | version: 1.4.0 | kind: event<br>code: 1116<br>provider: Microsoft-Windows-Windows Defender<br>created: 2020-05-06T08:28:05.674Z | level: warning | json | Windows Defender Antivirus has detected malware or other potentially unwanted software.<br> For more information please see the following:<br>https://go.microsoft.com/fwlink/?linkid=37020&name=Virus:DOS/EICAR_Test_File&threatid=2147519003&enterprise=0<br> 	Name: Virus:DOS/EICAR_Test_File<br> 	ID: 2147519003<br> 	Severity: Severe<br> 	Category: Virus<br> 	Path: containerfile:_C:\Users\test_user\Downloads\eicar_com.zip; file:_C:\Users\test_user\Downloads\eicar_com.zip->eicar.com; webfile:_C:\Users\test_user\Downloads\eicar_com.zip\|https://www.eicar.org/download/eicar_com.zip\|pid:7500,ProcessStart:132332202146885957<br> 	Detection Origin: Internet<br> 	Detection Type: Concrete<br> 	Detection Source: Downloads and attachments<br> 	User: WinTesting\test_user<br> 	Process Name: Unknown<br> 	Signature Version: AV: 1.315.44.0, AS: 1.315.44.0, NIS: 1.315.44.0<br> 	Engine Version: AM: 1.1.17000.7, NIS: 1.1.17000.7 | beats-5015,<br>_logzio_codec_json,<br>_jsonparsefailure | 2020-05-06T08:28:04.640Z | wineventlog | channel: Microsoft-Windows-Windows Defender/Operational<br>provider_name: Microsoft-Windows-Windows Defender<br>api: wineventlog<br>computer_name: WinTesting<br>user: {"name": "SYSTEM", "domain": "NT AUTHORITY", "type": "User", "identifier": "S-1-5-18"}<br>provider_guid: {11cd958a-c507-4ef3-b3f2-5fd9dfbd2c78}<br>activity_id: {2baa0795-dcd6-4cf7-b921-d9ad5e9cd6f0}<br>process: {"pid": 3232, "thread": {"id": 4992}}<br>event_data: {"Path": "containerfile:_C:\\Users\\test_user\\Downloads\\eicar_com.zip; file:_C:\\Users\\test_user\\Downloads\\eicar_com.zip->eicar.com; webfile:_C:\\Users\\test_user\\Downloads\\eicar_com.zip\|https://www.eicar.org/download/eicar_com.zip\|pid:7500,ProcessStart:132332202146885957", "Action Name": "%%887", "Product Version": "4.18.2004.6", "Severity ID": "5", "Signature Version": "AV: 1.315.44.0, AS: 1.315.44.0, NIS: 1.315.44.0", "Post Clean Status": "0", "Execution Name": "%%812", "Type ID": "0", "Category ID": "42", "Engine Version": "AM: 1.1.17000.7, NIS: 1.1.17000.7", "Threat Name": "Virus:DOS/EICAR_Test_File", "Category Name": "Virus", "Origin ID": "4", "Error Description": "The operation completed successfully. ", "Detection User": "WinTesting\\test_user", "Product Name": "%%827", "State": "1", "Detection Time": "2020-05-06T08:28:04.604Z", "Error Code": "0x00000000", "Source Name": "%%819", "FWLink": "https://go.microsoft.com/fwlink/?linkid=37020&name=Virus:DOS/EICAR_Test_File&threatid=2147519003&enterprise=0", "Threat ID": "2147519003", "Source ID": "4", "Detection ID": "{26C3583A-98B2-4E88-9B8A-0E9BDEBEB9B4}", "Status Code": "1", "Additional Actions ID": "0", "Additional Actions String": "No additional actions required", "Severity Name": "Severe", "Action ID": "9", "Execution ID": "0", "Type Name": "%%822", "Origin Name": "%%847", "Pre Execution Status": "0", "Process Name": "Unknown"}<br>task: <br>opcode: Info<br>event_id: 1116<br>record_id: 136<br>event_id_description: Unknown |
-
-
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
-* "Operational API Token wasn't provided, cannot perform search"
-* "Security API Token wasn't provided, cannot perform search"
-* "Security API Token wasn't provided, cannot fetch incidents"
-* 'No tokens were provided. Please provide either Logz.io Operational API token,'
-' Logz.io Security API token, or both.'
-* 'Failed to execute command. Error: {}'.format(str(e
