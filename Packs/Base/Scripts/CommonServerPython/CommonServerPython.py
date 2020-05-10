@@ -2439,7 +2439,7 @@ class CommandResults:
                 outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
-                outputs_key = '{}'.format(self.outputs_prefix, self.outputs_key_field)
+                outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
                 outputs = self.outputs
