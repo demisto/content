@@ -9,9 +9,7 @@
     "categories": [
         "Authentication"
     ],
-    "tags": [
-        "Microsoft Graph Files"
-    ],
+    "tags": [],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
     "beta": false,
@@ -19,5 +17,6 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {},
+    "price": 0,
     "displayedImages": []
 }

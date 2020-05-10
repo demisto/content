@@ -17,6 +17,7 @@ script: |2
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - Trend Micro
 comment: Get last alerts

@@ -11,13 +11,11 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: 'false'
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8

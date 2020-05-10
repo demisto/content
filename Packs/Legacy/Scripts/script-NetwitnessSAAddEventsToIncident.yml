@@ -16,6 +16,7 @@ script: |
       else:
           demisto.results("No results.")
 type: python
+subtype: python2
 tags:
 - RSA NetWitness Security Analytics
 comment: This command will add new events to an existing NetWitness SA incident

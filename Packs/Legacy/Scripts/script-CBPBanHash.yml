@@ -16,6 +16,7 @@ script: |-
   res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': t} )
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - carbon-black-protection
 - bit9

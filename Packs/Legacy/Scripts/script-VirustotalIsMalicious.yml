@@ -1,6 +1,6 @@
 commonfields:
   id: dbbdc2e4-6105-4ee9-8e83-563a4b991a89
-  version: 12
+  version: -1
 name: VirustotalIsMalicious
 deprecated: true
 script: |-
@@ -52,6 +52,7 @@ script: |-
           res.append('No results.')
       demisto.results(res)
 type: python
+subtype: python2
 tags:
 - virustotal
 comment: Query Virustotal with a file hash

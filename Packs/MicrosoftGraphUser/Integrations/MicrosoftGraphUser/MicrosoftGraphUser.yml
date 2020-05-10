@@ -175,7 +175,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' The user principal name, for example: someuser@contoso.com. '
+      description: ' The user principal name, for example: foo@test.com. '
       isArray: false
       name: user_principal_name
       required: true
@@ -338,8 +338,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ' A CSV list of properties by which to filter the results, for
-        example: "displayName,jobTitle,mobilePhone" '
+      description: 'A CSV list of properties by which to filter the results, for
+        example: "displayName,jobTitle,mobilePhone"'
       isArray: false
       name: properties
       required: false
@@ -395,7 +395,51 @@ script:
     - contextPath: MSGraphUser.NextPage
       description: A token to pass to the next list command to retrieve additional results.
       type: String
-  dockerimage: demisto/crypto:1.0.0.303
+  - arguments:
+    - name: user
+      required: true
+      description: The user for which to search direct reports.
+    name: msgraph-direct-reports
+    outputs:
+    - contextPath: MSGraphUserDirectReports.Manager
+      description: The manager's user principal name (UPN).
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.@Odata.Type
+      description: A string value that can be used to classify user types in your directory, such as "Member" and "Guest".
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.DisplayName
+      description: The name displayed in the address book for the user. This is usually the combination of the user's first name, middle initial and last name.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.GivenName
+      description: The given name (first name) of the user.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.ID
+      description: The user ID in Microsoft Graph User.
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.JobTitle
+      description: The user's job title.
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.Mail
+      description: The email address of the user.
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.MobilePhone
+      description: The primary cellular telephone number for the user.
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.OfficeLocation
+      description: The office location in the user's place of business.
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.PreferredLanguage
+      description: 'The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US.'
+      type: Unknown
+    - contextPath: MSGraphUserDirectReports.Reports.Surname
+      description: The user's surname (family name or last name).
+      type: String
+    - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
+      description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
+      type: String
+    description: Retrieves the direct reports for a user. Direct reports are the people
+        who have that user configured as their manager.
+  dockerimage: demisto/crypto:1.0.0.7634
   isfetch: false
   longRunning: false
   longRunningPort: false
