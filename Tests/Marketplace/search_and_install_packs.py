@@ -80,7 +80,7 @@ def get_pack_dependencies(client, prints_manager, pack_data):
                                                                                  pack_id)
         if dependencies_data:
             prints_manager.add_print_job('Found the following dependencies for pack {}:\n{}'.format(pack_id,
-                                                                                                    dependencies_data),
+                                                                                                    dependencies_str),
                                          print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         return dependencies_data
@@ -199,6 +199,11 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
 
         current_packs_to_install = [pack_data]
         current_packs_to_install.extend(dependencies)
+
+        # TODO: remove print
+        req_str = 'pack {} depends: {}\nto_install: {}'.format(pack_id, dependencies, current_packs_to_install)
+        prints_manager.add_print_job(req_str, print_color, 0, LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(0)
 
         lock.acquire()
         for pack in current_packs_to_install:
