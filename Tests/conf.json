@@ -2178,10 +2178,6 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
-            "integrations": "AWS - CloudWatchLogs",
-            "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
-        },
-        {
             "integrations": "AWS - CloudTrail",
             "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
         },
