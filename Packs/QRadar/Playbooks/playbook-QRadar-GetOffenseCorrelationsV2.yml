@@ -537,8 +537,6 @@ outputs:
   description: The QRadar offense correlations
 - contextPath: QRadar.Correlation.SourceIP
   description: The correlation source IP
-- contextPath: QRadar
-  description: QRadar context output
 - contextPath: QRadar.Correlation.DestinationIP
   description: The correlation destination IP
 - contextPath: QRadar.Correlation.Category
