@@ -2783,6 +2783,7 @@
         }
     ],
     "skipped_tests": {
+        "Endace": "Issue 24304",
         "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
