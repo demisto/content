@@ -61,6 +61,9 @@ def get_pack_dependencies(client, prints_manager, pack_data):
         client (demisto_client): The configured client to use.
         prints_manager (ParallelPrintsManager): A prints manager object.
         pack_data (dict): Contains the pack ID and version.
+
+    Returns:
+        (list) The pack's dependencies.
     """
     pack_id = pack_data['id']
 
@@ -77,7 +80,7 @@ def get_pack_dependencies(client, prints_manager, pack_data):
                                                                                  pack_id)
         if dependencies_data:
             prints_manager.add_print_job('Found the following dependencies for pack {}:\n{}'.format(pack_id,
-                                                                                                    dependencies_str),
+                                                                                                    str(dependencies_data)),  # todo: revert
                                          print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         return dependencies_data
@@ -87,7 +90,7 @@ def get_pack_dependencies(client, prints_manager, pack_data):
         err_msg = 'Failed to get pack {} dependencies - with status code {}\n{}'.format(pack_id, status_code, message)
         prints_manager.add_print_job(err_msg, print_error, 0)
         prints_manager.execute_thread_prints(0)
-        return {}
+        return []
 
 
 def search_pack(client, prints_manager, pack_display_name):
@@ -193,7 +196,9 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
 
     if pack_data:
         dependencies = get_pack_dependencies(client, prints_manager, pack_data)
-        current_packs_to_install = [pack_data] + dependencies
+
+        current_packs_to_install = [pack_data]
+        current_packs_to_install.extend(dependencies)
 
         lock.acquire()
         for pack in current_packs_to_install:
@@ -201,6 +206,11 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
                 packs_to_install.append(pack_id)
                 installation_request_body.append(pack)
         lock.release()
+
+        # TODO: remove print
+        req_str = 'packs to install for {}: {}'.format(pack_id, str(packs_to_install))
+        prints_manager.add_print_job(req_str, print_color, 0, LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(0)
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager):
@@ -237,3 +247,12 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     install_packs(client, prints_manager, installation_request_body)
 
     return packs_to_install
+
+
+def main():
+    from Tests.test_content import ParallelPrintsManager
+    client = demisto_client.configure(verify_ssl=False)
+    search_and_install_packs_and_their_dependencies(['MicrosoftTeams', 'Slack'], client, ParallelPrintsManager(1))
+
+
+main()
