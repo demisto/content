@@ -309,7 +309,7 @@ def main():
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
     store_model = demisto.args()['storeModel'] == 'true'
-    model_override = demisto.args()['overrideExistingModel'] == 'true'
+    model_override = demisto.args().get(['overrideExistingModel'], 'false') == 'true'
     target_accuracy = float(demisto.args()['targetAccuracy'])
     text_field = demisto.args()['textField']
     tag_fields = demisto.args()['tagField'].split(",")
