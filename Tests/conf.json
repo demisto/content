@@ -2328,7 +2328,7 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0"
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2773,7 +2773,6 @@
         }
     ],
     "skipped_tests": {
-        "Send Investigation Summary Reports - Test": "Issue 24133",
         "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
