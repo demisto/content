@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: RTIR_copy_test
+  id: RTIR
   version: -1
 configuration:
 - display: Server URL (e.g. http://192.168.0.1)
@@ -48,8 +48,8 @@ configuration:
   type: 0
 description: Request Tracker for Incident Response is a ticketing system which provides
   pre-configured queues and workflows designed for incident response teams.
-display: RTIR_copy_test
-name: RTIR_copy_test
+display: RTIR
+name: RTIR
 script:
   commands:
   - arguments:
