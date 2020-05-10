@@ -80,7 +80,7 @@ def get_pack_dependencies(client, prints_manager, pack_data):
                                                                                  pack_id)
         if dependencies_data:
             prints_manager.add_print_job('Found the following dependencies for pack {}:\n{}'.format(pack_id,
-                                                                                                    str(dependencies_data)),  # todo: revert
+                                                                                                    dependencies_data),
                                          print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         return dependencies_data
@@ -247,12 +247,3 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     install_packs(client, prints_manager, installation_request_body)
 
     return packs_to_install
-
-
-def main():
-    from Tests.test_content import ParallelPrintsManager
-    client = demisto_client.configure(verify_ssl=False)
-    search_and_install_packs_and_their_dependencies(['MicrosoftTeams', 'Slack'], client, ParallelPrintsManager(1))
-
-
-main()
