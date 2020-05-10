@@ -22,7 +22,17 @@ RESPONSE_CODE = r'Response code: (.+)'
 
 
 class PCAP():
-    def __init__(self, is_reg_extract, extracted_protocols, homemade_regex, unique_ips):
+    def __init__(self, is_reg_extract: bool, extracted_protocols: list, homemade_regex: str, unique_ips: bool):
+        """
+        PCAP class. This class will contain all data and functions in order to mine the pcap.
+
+        Args:
+            is_reg_extract: Whether to extract regular expressions from the PCAP. URL, IP, Email
+            extracted_protocols: A list of protocols to extract
+            homemade_regex: A regex to extract from the PCAP
+            unique_ips: Whether to export to context the unique source and dest IPs from the PCAP.
+        """
+
         # setup data structures
         self.hierarchy = {}  # type: Dict[str, int]
         self.num_of_packets = 0
@@ -87,7 +97,15 @@ class PCAP():
         if homemade_regex:
             self.reg_homemade = re.compile(self.homemade_regex)
 
-    def extract_context_from_packet(self, packet, layers_str, is_reg_extract=False):
+    def extract_context_from_packet(self, packet, layers_str: str, is_reg_extract: bool=False) -> None:
+        """
+        Get a packet and extract context from it for the specified protocols specified in `self.extracted_protocols`
+        Args:
+            packet: The packet itself.
+            layers_str: A comma-seperated string of the layers in the packet.
+            is_reg_extract: Whether to export to context the unique source and dest IPs from the PCAP.
+        """
+
         layers = layers_str.split(',')
         if is_reg_extract:
             self.ips_extracted.update(self.reg_ip.findall(str(packet)))
@@ -187,7 +205,7 @@ class PCAP():
                 'UserName': smb_layer.get('ntlmssp_auth_username'),
                 'Domain': smb_layer.get('ntlmssp_auth_domain'),
                 'HostName': smb_layer.get('ntlmssp_auth_hostname'),
-                'Command': command_results if command_results else None,
+                'Command': command_results[0] if command_results else None,
                 'FileName': smb_layer.get('smb2.filename'),
                 'Tree': smb_layer.get('tree')
             }
@@ -210,8 +228,8 @@ class PCAP():
         if 'ICMP' in self.extracted_protocols and 'ICMP' in layers:
             icmp_layer = packet.icmp
             type_results = self.reg_type.findall(str(icmp_layer))
-            if type_results:
-                self.icmp_data.add(type_results)
+            for result in type_results:
+                self.icmp_data.add(result)
             return
 
         if 'SSH' in self.extracted_protocols and 'SSH' in layers:
@@ -278,6 +296,206 @@ class PCAP():
             else:
                 add_to_data(self.protocol_data['FTP'], ftp_data, next_id=packet.tcp.ack)
 
+    # def extract_context_from_packet(self, packet, is_reg_extract=False):
+    #     if is_reg_extract:
+    #         self.ips_extracted.update(self.reg_ip.findall(str(packet)))
+    #         self.emails_extracted.update(self.reg_email.findall(str(packet)))
+    #         self.urls_extracted.update(self.reg_url.findall(str(packet)))
+    #
+    #     if self.homemade_regex:
+    #         self.homemade_extracted.update(self.reg_homemade.findall((str(packet))))
+    #
+    #     if 'DNS' in self.extracted_protocols:
+    #         dns_layer = packet.get_multiple_layers('dns')
+    #         if dns_layer:
+    #             temp_dns = {
+    #                 'ID': dns_layer[0].get('id'),
+    #                 'Request': dns_layer[0].get('qry_name'),
+    #                 'Response': dns_layer[0].get('a'),
+    #                 'Type': self.reg_type.findall(str(dns_layer[0]))[0] if self.reg_type.findall(
+    #                     str(dns_layer[0])) else None
+    #             }
+    #             add_to_data(self.protocol_data['DNS'], temp_dns)
+    #             return
+    #
+    #     if 'KERBEROS' in self.extracted_protocols:
+    #         kerb_layer = packet.get_multiple_layers('kerberos')
+    #         if kerb_layer:
+    #             sname_results = self.reg_sname.findall(str(kerb_layer[0]))
+    #             self.kerb_data.update({
+    #                 'Realm': kerb_layer[0].get('realm'),
+    #                 'CName': kerb_layer[0].get('CNameString'),
+    #                 'SName': sname_results if sname_results else None,
+    #             })
+    #             return
+    #
+    #     if 'TELNET' in self.extracted_protocols:
+    #         telnet_layer = packet.get_multiple_layers('telnet')
+    #         if telnet_layer:
+    #             for message in telnet_layer[0]._get_all_field_lines():
+    #                 if 'Data:' in message:
+    #                     self.telnet_data.add(message.lstrip('Data: '))
+    #                     continue
+    #                 if ':' not in message:
+    #                     self.telnet_commands.add(message.lstrip('\t').rstrip('\n'))
+    #             return
+    #
+    #
+    #     if 'LLMNR' in self.extracted_protocols :
+    #         llmnr_layer = packet.get_multiple_layers('llmnr')
+    #         if llmnr_layer:
+    #             llmnr_layer_string = str(llmnr_layer[0])
+    #             query_type_results = self.llmnr_type.findall(llmnr_layer_string)
+    #             query_class_results = self.llmnr_class.findall(llmnr_layer_string)
+    #             llmnr_data = {
+    #                 'ID': llmnr_layer[0].get('dns_id'),
+    #                 'QueryType': None if len(query_type_results) == 0 else query_type_results[0],
+    #                 'QueryClass': None if len(query_class_results) == 0 else query_class_results[0],
+    #                 'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
+    #                 'Questions': int(llmnr_layer[0].get('dns_count_queries'))
+    #             }
+    #             add_to_data(self.protocol_data['LLMNR'], llmnr_data)
+    #             return
+    #
+    #     if 'SYSLOG' in self.extracted_protocols:
+    #         syslog_layer = packet.get_multiple_layers('syslog')
+    #         if syslog_layer:
+    #             syslog_data = {
+    #                 'ID': syslog_layer[0].get('msgid'),
+    #                 'Message': syslog_layer[0].get('msg'),
+    #                 'Hostname': syslog_layer[0].get('hostname'),
+    #                 'Timestamp': syslog_layer[0].get('timestamp')
+    #             }
+    #             add_to_data(self.protocol_data['SYSLOG'], syslog_data)
+    #             return
+    #
+    #     if 'SMTP' in self.extracted_protocols:
+    #         imf_layer = packet.get_multiple_layers('imf')
+    #         if imf_layer:
+    #             imf_data = {
+    #                 'ID': imf_layer[0].get('Message-ID', -1),
+    #                 'To': imf_layer[0].get('to'),
+    #                 'From': imf_layer[0].get('from'),
+    #                 'Subject': imf_layer[0].get('subject'),
+    #                 'MimeVersion': imf_layer[0].get('mime-version')
+    #             }
+    #             add_to_data(self.protocol_data['SMTP'], imf_data)
+    #             return
+    #         smtp_layer = packet.get_multiple_layers('smtp')
+    #         if smtp_layer:
+    #             parameters = smtp_layer[0].req_parameter.split(':')
+    #             smtp_data = {'ID': packet.tcp.seq}
+    #             if len(parameters) == 2:
+    #                 smtp_data[parameters[0].title()] = strip(parameters[1], ['<', '>'])
+    #             add_to_data(self.protocol_data['SMTP'], smtp_data, packet.tcp.nxtseq)
+    #             return
+    #
+    #
+    #     if 'SMB2' in self.extracted_protocols:
+    #         smb_layer = packet.get_multiple_layers('smb2')
+    #         if smb_layer:
+    #             command_results = self.reg_cmd.findall(str(smb_layer[0]))
+    #             smb_data = {
+    #                 'ID': smb_layer[0].get('sesid', -1),
+    #                 'UserName': smb_layer[0].get('ntlmssp_auth_username'),
+    #                 'Domain': smb_layer[0].get('ntlmssp_auth_domain'),
+    #                 'HostName': smb_layer[0].get('ntlmssp_auth_hostname'),
+    #                 'Command': command_results if command_results else None,
+    #                 'FileName': smb_layer[0].get('smb2.filename'),
+    #                 'Tree': smb_layer[0].get('tree')
+    #             }
+    #             add_to_data(self.protocol_data['SMB2'], smb_data)
+    #         return
+    #
+    #     if 'NETBIOS' in self.extracted_protocols:
+    #         netbios_layer = packet.get_multiple_layers('nbns')
+    #         if netbios_layer:
+    #             type_results = self.reg_type.findall(str(netbios_layer[0]))
+    #             class_results = self.reg_class.findall(str(netbios_layer[0]))
+    #             netbios_data = {
+    #                 'ID': netbios_layer[0].get('id', -1),
+    #                 'Name': netbios_layer[0].get('name'),
+    #                 'Type': type_results if type_results else None,
+    #                 'Class': class_results if class_results else None
+    #             }
+    #             add_to_data(self.protocol_data['NETBIOS'], netbios_data)
+    #             return
+    #
+    #     if 'ICMP' in self.extracted_protocols and 'ICMP' in layers:
+    #         icmp_layer = packet.get_multiple_layers('icmp')
+    #         if icmp_layer:
+    #             type_results = self.reg_type.findall(str(icmp_layer[0]))
+    #             for result in type_results:
+    #                 self.icmp_data.add(result)
+    #             return
+    #
+    #     if 'SSH' in self.extracted_protocols:
+    #         ssh_layer = packet.get_multiple_layers('ssh')
+    #         if ssh_layer:
+    #             protocol = ssh_layer[0].get('protocol')
+    #             message_code_results = self.reg_message_code.findall(str(ssh_layer[0]))
+    #             if protocol and ssh_layer[0].get('direction') == 1:
+    #                 # direction is server to client
+    #                 self.ssh_data['ServerProtocols'].add(protocol)
+    #             if protocol and ssh_layer[0].get('direction') == 0:
+    #                 # direction is client to server
+    #                 self.ssh_data['ClientProtocols'].add(protocol)
+    #             if message_code_results:
+    #                 if message_code_results:
+    #                     self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])
+    #             return
+    #
+    #     if 'IRC' in self.extracted_protocols:
+    #         irc_layer = packet.get_multiple_layers('irc')
+    #         if irc_layer:
+    #             if irc_layer[0].get('request'):
+    #                 command = irc_layer[0].get('request_command')
+    #                 trailer = irc_layer[0].get('request_trailer', '')
+    #                 prefix = irc_layer[0].get('request_prefix', '')
+    #                 parameters = irc_layer[0].get('request').replace(command,'').replace(trailer, '')\
+    #                     .replace(prefix, '').split(' ')
+    #                 parameters.remove(' ')
+    #                 irc_data = {
+    #                     'ID': packet.tcp.get('ack'),
+    #                     'RequestCommand': command,
+    #                     'RequestTrailer': trailer,
+    #                     'RequestPrefix': prefix,
+    #                     'RequestParameters': parameters
+    #                 }
+    #             else:
+    #                 command = irc_layer[0].get('response_command')
+    #                 trailer = irc_layer[0].get('response_trailer', '')
+    #                 prefix = irc_layer[0].get('response_prefix', '')
+    #                 parameters = irc_layer[0].get('response').replace(command, '').replace(trailer, '')\
+    #                     .replace(prefix, '').split(' ')
+    #                 parameters.remove(' ')
+    #                 irc_data = {
+    #                     'ID': packet.tcp.get('seq'),
+    #                     'ResponseCommand': command,
+    #                     'ResponseTrailer': trailer,
+    #                     'ResponsePrefix': prefix,
+    #                     'ResponseParameters': parameters
+    #                 }
+    #             add_to_data(self.protocol_data['IRC'], irc_data, next_id=packet.tcp.nxtseq)
+    #             return
+    #
+    #     if 'FTP' in self.extracted_protocols:
+    #         ftp_layer = packet.get_multiple_layers('ftp')
+    #         if ftp_layer:
+    #             res_code_results = self.reg_res_code.findall(str(ftp_layer[0]))
+    #             ftp_data = {
+    #                 'ID': packet.tcp.get('seq'),
+    #                 'RequestCommand': ftp_layer[0].get('request_command'),
+    #                 'ResponseArgs': ftp_layer[0].get('response_arg'),
+    #                 'ResponseCode': res_code_results[0] if res_code_results else None
+    #             }
+    #             if ftp_data['ResponseCode']:
+    #                 # if packet is a response, don't update ID. This is because FTP may have a lot of requests and
+    #                 # responses in the same conversation
+    #                 add_to_data(self.protocol_data['FTP'], ftp_data)
+    #             else:
+    #                 add_to_data(self.protocol_data['FTP'], ftp_data, next_id=packet.tcp.ack)
+
 
     def get_outputs(self, entry_id, conversation_number_to_display=15, is_flows=False, is_reg_extract=False):
         if self.num_of_packets == 0:
@@ -340,7 +558,21 @@ class PCAP():
         ec = {'PcapResults(val.EntryID == obj.EntryID)': general_context}
         return md, ec, general_context
 
-    def mine(self, file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path):
+    def mine(self, file_path: str, decrypt_key: str, is_flows: bool, is_reg_extract: bool, pcap_filter: str,
+             pcap_filter_new_file_path: str):
+        """
+        The main function of the script. Mines the PCAP.
+
+        Args:
+            file_path: The PCAP's file path.
+            decrypt_key: The decryption key (if needed) to decrypt the PCAP.
+            is_flows: Whether to extract flows.
+            is_reg_extract: Whether to extract regexes from the PCAP.
+            pcap_filter: A filter to apply on the PCAP. Same filter syntax as in Wireshark
+            pcap_filter_new_file_path: The new path to save the filtered PCAP in
+
+        """
+
         try:
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
                                       decryption_key=decrypt_key, encryption_type='WPA-PWD', keep_packets=False)
@@ -348,8 +580,8 @@ class PCAP():
             j = 0
             for packet in cap:
                 j += 1
-                # if (j % 100 == 0):
-                #     print(j)
+                if (j % 100 == 0):
+                    print(j)
                 self.last_layer.add(packet.layers[-1].layer_name)
 
                 layers = str(packet.layers)
@@ -412,30 +644,31 @@ class PCAP():
                     if 'HTTP' in self.extracted_protocols:
                         http_layer = packet.get_multiple_layers('http')
                         if http_layer:
-                            all_fields = http_layer[0]._all_fields
+                            http_layer = http_layer[0]
+                            all_fields = http_layer._all_fields
                             temp_http = {
-                                "ID": http_layer[0].get('request_in', packet.number),
+                                "ID": http_layer.get('request_in', packet.number),
                                 'RequestAgent': all_fields.get("http.user_agent"),
                                 'RequestHost': all_fields.get('http.host'),
                                 'RequestSourceIP': a,
-                                'RequestURI': http_layer[0].get('request_full_uri'),
-                                'RequestMethod': http_layer[0].get('request_method'),
-                                'RequestVersion': http_layer[0].get('request_version'),
-                                'RequestAcceptEncoding': http_layer[0].get('accept_encoding'),
-                                'RequestPragma': self.reg_pragma.findall(str(http_layer[0]))[0]
-                                if self.reg_pragma.findall(str(http_layer[0])) else None,
-                                'RequestAcceptLanguage': http_layer[0].get('accept_language'),
-                                'RequestCacheControl': http_layer[0].get('cache_control')
+                                'RequestURI': http_layer.get('request_full_uri'),
+                                'RequestMethod': http_layer.get('request_method'),
+                                'RequestVersion': http_layer.get('request_version'),
+                                'RequestAcceptEncoding': http_layer.get('accept_encoding'),
+                                'RequestPragma': self.reg_pragma.findall(str(http_layer))[0]
+                                if self.reg_pragma.findall(str(http_layer)) else None,
+                                'RequestAcceptLanguage': http_layer.get('accept_language'),
+                                'RequestCacheControl': http_layer.get('cache_control')
 
                             }
                             # if the packet is a response
                             if all_fields.get('http.response'):
                                 temp_http.update({
-                                    'ResponseStatusCode': http_layer[0].get('response_code'),
+                                    'ResponseStatusCode': http_layer.get('response_code'),
                                     'ResponseVersion': all_fields.get('http.response.version'),
-                                    'ResponseCodeDesc': http_layer[0].get('response_code_desc'),
-                                    'ResponseContentLength': http_layer[0].get('content_length'),
-                                    'ResponseContentType': http_layer[0].get('content_type'),
+                                    'ResponseCodeDesc': http_layer.get('response_code_desc'),
+                                    'ResponseContentLength': http_layer.get('content_length'),
+                                    'ResponseContentType': http_layer.get('content_type'),
                                     'ResponseDate': formatEpochDate(packet_epoch_time)
                                 })
                             add_to_data(self.protocol_data['HTTP'], temp_http)
@@ -672,8 +905,8 @@ def local_main():  # TODO remove this function
     # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
-    #file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
-    file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
+    file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
+    # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
     # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"                  # telnet
     # file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
     # file_path = "/Users/olichter/Downloads/SkypeIRC.cap"                        #IRC
@@ -685,7 +918,7 @@ def local_main():  # TODO remove this function
     conversation_number_to_display = 15
     is_flows = True
     is_reg_extract = True
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH', 'IRC', 'FTP', 'TELNET']
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH', 'IRC', 'FTP', 'TELNET', 'LLMNR']
 
     pcap_filter = ''
     # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
@@ -700,15 +933,13 @@ def local_main():  # TODO remove this function
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    main()
-    #
-    # from datetime import datetime
-    #
-    # startTime = datetime.now()
-    # local_main()
-    # print(datetime.now() - startTime)
+    # main()
+
+    from datetime import datetime
+
+    startTime = datetime.now()
+    local_main()
+    print(datetime.now() - startTime)
 
 # TODO: fix todos
-# TODO: see how to add SSH ID
 # TODO: Document all function
-#TODO: test all protocols (Net BIOS)
