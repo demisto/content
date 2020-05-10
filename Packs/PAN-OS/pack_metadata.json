@@ -1,5 +1,5 @@
 {
-    "name": "Palo Alto Networks PAN-OS",
+    "name": "PAN-OS",
     "description": "Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
