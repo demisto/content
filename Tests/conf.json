@@ -818,7 +818,7 @@
         },
         {
             "integrations": "Devo",
-            "playbookID": "devo_test_playbook",
+            "playbookID": "Devo test",
             "timeout": 500
         },
         {
@@ -1178,7 +1178,7 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "crowdstrike_falconhost_test"
+            "playbookID": "FalconHost Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -2218,7 +2218,7 @@
         },
         {
             "integrations": "Cisco Spark",
-            "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
+            "playbookID": "Cisco Spark Test"
         },
         {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
