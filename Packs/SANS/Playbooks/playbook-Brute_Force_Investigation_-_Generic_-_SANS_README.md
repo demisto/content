@@ -98,3 +98,10 @@ This check is done through the 'Successful Login' incident field which is associ
 ## Playbook Image
 ---
 ![Playbook Image](https://github.com/demisto/content/raw/e06676ff43e3c080a3297757f9c3d0ce01201ce8/Packs/Legacy/doc_files/Brute_Force_Investigation_-_Generic_-_SANS.png)
+
+## Playbook Demo Video
+<video controls>
+    <source src="https://github.com/demisto/content/raw/9f58da72cadfcf64bedf79db1ae05940694c75db/Packs/SANS/doc_files/SANS-Demo.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/9f58da72cadfcf64bedf79db1ae05940694c75db/Packs/SANS/doc_files/SANS-Demo.mp4
+</video>
