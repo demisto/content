@@ -210,7 +210,7 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
                 if i == 0:
                     continue
                 if precision > target_unified_precision:
-                    threshold_per_class[class_] = class_to_arrs[class_]['thresholds'][i-1]
+                    threshold_per_class[class_] = class_to_arrs[class_]['thresholds'][i - 1]
                     precision_per_class[class_] = precision
                     break
         if len(threshold_per_class) == len(labels):
@@ -219,8 +219,8 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
                 legal_threshold_for_all_classes = True
                 threshold_precision = sys.maxint
                 for class_ in labels:
-                    i = np.argmax(class_to_arrs[class_]['thresholds']>= threshold)
-                    threshold_precision_for_class = class_to_arrs[class_]['precisions'][i+1]
+                    i = np.argmax(class_to_arrs[class_]['thresholds'] >= threshold)
+                    threshold_precision_for_class = class_to_arrs[class_]['precisions'][i + 1]
                     threshold_precision = min(threshold_precision, threshold_precision_for_class)
                     if threshold_precision_for_class >= target_unified_precision:
                         legal_threshold_for_all_classes = True
@@ -249,7 +249,7 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
                 if i == 0:
                     continue
                 if precision > target_precision and class_to_arrs[class_]['recalls'][i] > 0:
-                    threshold = class_to_arrs[class_]['thresholds'][i-1]
+                    threshold = class_to_arrs[class_]['thresholds'][i - 1]
                     class_to_thresholds[class_].add(threshold)
                     break
             if len(class_to_thresholds[class_]) >= 4:

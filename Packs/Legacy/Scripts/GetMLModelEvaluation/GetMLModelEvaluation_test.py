@@ -80,7 +80,8 @@ def test_plabook_test_simulation(mocker):
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.7,
                                 target_recall=0)
-    assert abs(entry['Contents']['threshold'] - 1) < 10 **-2
+    assert abs(entry['Contents']['threshold'] - 1) < 10 ** -2
+
 
 def test_all_wrong_predictions(mocker):
     y_true = ['class1'] * 7 + ['class2'] * 7
@@ -88,5 +89,15 @@ def test_all_wrong_predictions(mocker):
     [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
                                 y_true_str=json.dumps(y_true),
                                 customer_target_precision=0.6,
+                                target_recall=0)
+    assert entry['Contents']['threshold'] >= 0
+
+
+def test_simulate_playbook_tests_results(mocker):
+    y_pred = [{"spam": 0.9985581040382385}, {"ham": 0.9985547065734863}]
+    y_true = ["spam", "ham"]
+    [entry, _] = find_threshold(y_pred_str=json.dumps(y_pred),
+                                y_true_str=json.dumps(y_true),
+                                customer_target_precision=0.8,
                                 target_recall=0)
     assert entry['Contents']['threshold'] >= 0
