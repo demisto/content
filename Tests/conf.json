@@ -395,18 +395,10 @@
         },
         {
             "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
+            "playbookID": "Pentera Run Scan and Create Incidents - Test"
         },
         {
             "playbookID": "StringContainsArray_test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pcysys-Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
         },
         {
             "integrations": "Fidelis Elevate Network",
@@ -826,7 +818,7 @@
         },
         {
             "integrations": "Devo",
-            "playbookID": "devo_test_playbook",
+            "playbookID": "Devo test",
             "timeout": 500
         },
         {
@@ -1186,7 +1178,7 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "crowdstrike_falconhost_test"
+            "playbookID": "FalconHost Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -2226,7 +2218,7 @@
         },
         {
             "integrations": "Cisco Spark",
-            "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
+            "playbookID": "Cisco Spark Test"
         },
         {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
@@ -2775,6 +2767,11 @@
             "integrations": "GCP Whitelist Feed",
             "playbookID": "GCPWhitelist_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Endace",
+            "playbookID": "Endace-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -2934,6 +2931,7 @@
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
         "_comment": "~~~ OTHER ~~~",
+        "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
