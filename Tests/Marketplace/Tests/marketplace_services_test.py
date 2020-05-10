@@ -435,6 +435,14 @@ class TestLoadUserMetadata:
         return Pack(pack_name="TestPack", pack_path="dummy_path")
 
     def test_load_user_metadata_with_missing_file(self, mocker, dummy_pack):
+        """
+           Given:
+               - Pack with missing pack metadata.
+           When:
+               - Pack is invalid.
+           Then:
+               - Task should not fail with referenced before assignment error.
+       """
         mocker.patch("os.path.exists", return_value=False)
         print_error_mock = mocker.patch("Tests.Marketplace.marketplace_services.print_error")
         task_status, user_metadata = dummy_pack.load_user_metadata()
