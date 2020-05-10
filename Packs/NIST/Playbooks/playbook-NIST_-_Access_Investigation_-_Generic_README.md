@@ -73,3 +73,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Image
 ---
 ![NIST_Access_Investigation_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Access_Investigation_Generic_NIST.png)
+
+## Playbook Demo Video
+<video controls>
+    <source src="https://github.com/demisto/content/raw/b0962770bbabf8a1c1923261d4b43d9a1c25eb99/Packs/GDPR/doc_files/GDPR_Data_Breach_Notification.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/b0962770bbabf8a1c1923261d4b43d9a1c25eb99/Packs/GDPR/doc_files/GDPR_Data_Breach_Notification.mp4
+</video>
