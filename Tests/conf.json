@@ -689,11 +689,6 @@
             "playbookID": "ParseEmailFiles-test"
         },
         {
-            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
-            "integrations": "palo_alto_networks_pan_os_edl_management",
-            "fromversion": "4.0.0"
-        },
-        {
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
@@ -2088,15 +2083,6 @@
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "timeout": 1000
-        },
-        {
-            "playbookID": "PAN-OS EDL Setup V2 Test",
-            "integrations": [
-                "Panorama",
-                "palo_alto_networks_pan_os_edl_management"
-            ],
             "instance_names": "palo_alto_panorama",
             "timeout": 1000
         },
