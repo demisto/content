@@ -768,11 +768,11 @@ def get_ticket_command(client: Client, args: dict):
 
     result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
     if not result or 'result' not in result:
-        return 'Ticket was not found.', {}, {}
+        return 'Ticket was not found.'
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
-            return 'Ticket was not found.', {}, {}
+            return 'Ticket was not found.'
         ticket = result['result'][0]
     else:
         ticket = result['result']

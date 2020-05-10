@@ -249,7 +249,7 @@ def test_populate_context_emails():
                  "createdAt":"2019-05-13T16:54:18Z",
                  "id":"def",
                  "name":"from",
-                 "value":"someuser@contoso.com"
+                 "value":"foo@test.com"
               },
               {
                  "createdAt":"2019-05-13T16:54:18Z",
@@ -279,7 +279,7 @@ def test_populate_context_emails():
         'ID': 'ghi',
         'CreatedAt': '2019-05-13T16:54:18Z',
         'To': ('example@gmail.com',),
-        'From': ('someuser@contoso.com',),
+        'From': ('foo@test.com',),
         'Body': '-----Original Message-----From: A Sent: Monday, May 13, 2019 12:22 PMTo:',
         'Subject': 'FW: Task',
         'Attribute':
@@ -293,7 +293,7 @@ def test_populate_context_emails():
                 'CreatedAt': '2019-05-13T16:54:18Z',
                 'Type': None,
                 'Name': 'from',
-                'Value': 'someuser@contoso.com'
+                'Value': 'foo@test.com'
             },
             {
                 'CreatedAt': '2019-05-13T16:54:18Z',
@@ -312,7 +312,7 @@ def test_populate_context_emails():
 
     global_result = [{
         'To': 'example@gmail.com',
-        'From': 'someuser@contoso.com',
+        'From': 'foo@test.com',
         'Body': '-----Original Message-----From: A Sent: Monday, May 13, 2019 12:22 PMTo:',
         'Subject': 'FW: Task'
     }]
