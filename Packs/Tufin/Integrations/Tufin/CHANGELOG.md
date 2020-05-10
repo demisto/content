@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added the following actions:
+Added new commands:
   - tufin-get-zone-for-ip
   - tufin-submit-change-request
   - tufin-search-devices
