@@ -424,11 +424,11 @@ tasks:
     nexttasks:
       '#default#':
       - '79'
-      yes:
+      'yes':
       - '71'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -540,12 +540,12 @@ tasks:
     nexttasks:
       '#default#':
       - '54'
-      yes:
+      'yes':
       - '58'
       - '59'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -832,11 +832,11 @@ tasks:
     nexttasks:
       '#default#':
       - '66'
-      yes:
+      'yes':
       - '84'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: greaterThan
           left:
@@ -1134,11 +1134,11 @@ tasks:
     nexttasks:
       '#default#':
       - '32'
-      yes:
+      'yes':
       - '69'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: in
           left:
@@ -1199,11 +1199,11 @@ tasks:
     nexttasks:
       '#default#':
       - '32'
-      yes:
+      'yes':
       - '67'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1647,11 +1647,11 @@ tasks:
     nexttasks:
       '#default#':
       - '75'
-      yes:
+      'yes':
       - '95'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -1747,11 +1747,11 @@ tasks:
     nexttasks:
       '#default#':
       - '51'
-      yes:
+      'yes':
       - '81'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -1840,11 +1840,11 @@ tasks:
     nexttasks:
       '#default#':
       - '68'
-      yes:
+      'yes':
       - '86'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1932,9 +1932,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      No:
+      'No':
       - '68'
-      Yes:
+      'yes':
       - '88'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 590,\n    \"y\": 2320\n  }\n}"
@@ -2241,11 +2241,11 @@ tasks:
     nexttasks:
       '#default#':
       - '51'
-      yes:
+      'yes':
       - '92'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -2303,11 +2303,11 @@ tasks:
     nexttasks:
       '#default#':
       - '51'
-      yes:
+      'yes':
       - '93'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -2900,11 +2900,11 @@ tasks:
     nexttasks:
       '#default#':
       - '76'
-      yes:
+      'yes':
       - '34'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
