@@ -9,6 +9,7 @@ script: |
   else:
       demisto.results(value)
 type: python
+subtype: python2
 tags:
 - transformer
 - general
