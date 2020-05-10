@@ -2413,8 +2413,7 @@ class CommandResults:
         if self.indicators:
             for indicator in self.indicators:
                 context_outputs = indicator.to_context()
-                for key in context_outputs.keys():
-                    value = context_outputs[key]
+                for key, value in context_outputs.items():
 
                     if key not in outputs:
                         outputs[key] = []
