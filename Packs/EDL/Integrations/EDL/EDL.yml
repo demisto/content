@@ -102,7 +102,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Boolean
+      description: Whether to print stored indicators or not.
       isArray: false
       name: print_indicators
       predefined:
