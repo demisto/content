@@ -204,7 +204,7 @@ def get_email_properties(indicator: dict) -> tuple:
             "createdAt": "2019-05-13T16:54:18Z",
             "id": "def",
             "name": "from",
-            "value": "someuser@contoso.com"
+            "value": "foo@test.com"
         },
         {
             "createdAt": "2019-05-13T16:54:18Z",
