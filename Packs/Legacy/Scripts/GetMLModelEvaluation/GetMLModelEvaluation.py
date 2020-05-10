@@ -24,7 +24,7 @@ def bold_hr(s):
 
 
 def binarize(arr, threshold):
-    return np.where(arr > threshold, 1.0, 0)
+    return np.where(arr >= threshold, 1.0, 0)
 
 
 def calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, threshold):
