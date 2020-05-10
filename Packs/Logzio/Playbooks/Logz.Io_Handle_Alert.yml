@@ -1,4 +1,4 @@
-id: 38b3a41b-04ce-4417-89b3-4efd95d28059
+id: Logz.Io Handle Alert
 version: 4
 name: Logz.Io Handle Alert
 description: Handles a Logz.io Alert by retrieving the events that generated it.
