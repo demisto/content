@@ -2,7 +2,6 @@ from collections import OrderedDict
 
 from PenteraOperationToIncident import pentera_operation_to_incident
 
-import demistomock as demisto
 from CommonServerPython import argToList
 
 MOCK_AUTHENTICATION_EXP = 1579763364

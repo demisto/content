@@ -1,5 +1,4 @@
 from PenteraDynamicTable import pentera_dynamic_table
-import demistomock as demisto
 
 PENTERA_INCIDENT = {
     "details": "Pentera Insight details: BlueKeep (CVE-2019-0708) Vulnerability Discovery",
