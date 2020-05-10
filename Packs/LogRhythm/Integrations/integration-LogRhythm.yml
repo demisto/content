@@ -47,6 +47,16 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Use Windows Authentication
+  name: use_ntlm
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Domain of windows authentication user (used for windows authentication)
+  name: domain
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
   script: |-
     // SOAP templates
@@ -300,9 +310,9 @@ script:
 
     var soapActionURIGetNextPageAlarms               = 'http://www.logrhythm.com/webservices/AlarmService/GetNextPageAlarms';
     var soapActionURIGetFirstPageAlarmsByAlarmStatus = 'http://www.logrhythm.com/webservices/AlarmService/GetFirstPageAlarmsByAlarmStatus';
-    var logRhythmAlarmAPI = 'AlarmServiceBasicAuth.svc';
-    var logRhythmHostAPI = 'HostServiceBasicAuth.svc';
-    var logRhythmQueryAPI = 'LogQueryServiceBasicAuth.svc'
+    var logRhythmAlarmAPI = params.use_ntlm ? 'AlarmServiceWindowsAuth.svc' : 'AlarmServiceBasicAuth.svc';
+    var logRhythmHostAPI = params.use_ntlm ? 'HostServiceWindowsAuth.svc' : 'HostServiceBasicAuth.svc';
+    var logRhythmQueryAPI = params.use_ntlm ? 'LogQueryServiceWindowsAuth.svc' : 'LogQueryServiceBasicAuth.svc';
     var defaultAlarmsPageSize = 2000;
     var defaultCount = 1000;
     var alarmsFieldsToRemove = ["EntityID","LastUpdatedID","LastUpdatedName","DateInserted","DateUpdated","EventDateFirst","EventDateLast","EventCount","RuleID"];
@@ -333,14 +343,32 @@ script:
 
 
     var getRaw = function(url) {
-         res = http(
-            url,
-            {
-                Method: 'GET',
-            },
-            params.Insecure,
-            params.useproxy
-        );
+        username = params.Credentials.identifier.split('\\')[1]
+        password = params.Credentials.password
+        domain = params.domain
+        if (params.use_ntlm) {
+            res = http(
+                url,
+                {
+                    AuthProtocol:['NTLM'],
+                    Username: username,
+                    Password: password,
+                    Domain: domain,
+                    Method: 'GET'
+                },
+                params.Insecure,
+                params.useproxy
+            );
+        } else {
+            res = http(
+                url,
+                {
+                    Method: 'GET',
+                },
+                params.Insecure,
+                params.useproxy
+            );
+        }
         return res;
     };
 
@@ -354,21 +382,45 @@ script:
     };
 
     var sendRequest = function(envelope, soapAction, apiUrl) {
+        username = params.Credentials.identifier.split('\\')[1]
+        password = params.Credentials.password
+        domain = params.domain
         url = getRequestUrl(apiUrl)
-         res = http(
-            url,
-            {
-                Method: 'POST',
-                Body: envelope,
-                Headers: {
-                    'Content-Type': ['text/xml; charset=utf-8'],
-                    Soapaction: [soapAction]
-                }
-            },
-            params.Insecure,
-            params.useproxy
-         );
-         if (res.StatusCode < 200 || res.StatusCode >= 300) {
+        if (params.use_ntlm) {
+            res = http(
+                url,
+                {
+                    Method: 'POST',
+                    AuthProtocol:['NTLM'],
+                    Username: username,
+                    Password: password,
+                    Domain: domain,
+                    Body: envelope,
+                    Headers: {
+                        'Content-Type': ['text/xml'],
+                        Soapaction: [soapAction]
+                    }
+                },
+                params.Insecure,
+                params.useproxy
+            );
+        } else {
+            res = http(
+                url,
+                {
+                    Method: 'POST',
+                    Body: envelope,
+                    Headers: {
+                        'Content-Type': ['text/xml; charset=utf-8'],
+                        Soapaction: [soapAction]
+                    }
+                },
+                params.Insecure,
+                params.useproxy
+            );
+        }
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request to LogRhythm ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
         return res.Body;
@@ -1038,7 +1090,7 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            var url = getRequestUrl('AlarmServiceBasicAuth.svc?singleWsdl')
+            var url = params.use_ntlm ? getRequestUrl('AlarmServiceWindowsAuth.svc?singleWsdl') : getRequestUrl('AlarmServiceBasicAuth.svc?singleWsdl')
             var resp = getRaw(url);
             var alarmsArgs = {};
             alarmsArgs['all-users'] = "true";
