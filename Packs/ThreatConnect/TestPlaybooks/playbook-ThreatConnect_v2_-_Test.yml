@@ -12,6 +12,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -1300,6 +1301,7 @@ tasks:
       name: done
       type: title
       iscommand: false
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1361,6 +1363,7 @@ tasks:
       name: delete
       type: title
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -1456,6 +1459,7 @@ tasks:
       name: groups
       type: title
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -1485,6 +1489,7 @@ tasks:
       name: get commands
       type: title
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -1516,6 +1521,7 @@ tasks:
       name: get output tests
       type: title
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
       - "51"
@@ -1542,6 +1548,7 @@ tasks:
       name: indicators
       type: title
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1571,6 +1578,7 @@ tasks:
       name: indicators output
       type: title
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -1597,6 +1605,7 @@ tasks:
       name: indicator commands
       type: title
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -1623,6 +1632,7 @@ tasks:
       name: output testing
       type: condition
       iscommand: false
+      description: ''
     nexttasks:
       '#default#':
       - "50"
@@ -1705,6 +1715,7 @@ tasks:
       name: test outputs for get commands
       type: condition
       iscommand: false
+      description: ''
     nexttasks:
       '#default#':
       - "52"
@@ -1796,6 +1807,7 @@ tasks:
       name: error
       type: title
       iscommand: false
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1823,3 +1835,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
