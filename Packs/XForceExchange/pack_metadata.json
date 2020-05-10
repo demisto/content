@@ -1,5 +1,5 @@
 {
-    "name": "IBM X-Force Exchange (v2)",
+    "name": "IBM X-Force Exchange",
     "description": "IBM X-Force Exchange lets you receive threat intelligence about applications,\n  IP addresses, URls and hashes",
     "support": "xsoar",
     "serverMinVersion": "5.0.0",
