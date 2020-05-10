@@ -100,6 +100,18 @@ def login():
     }
 
     response = session.post(login_url, headers=headers, data=data, verify=VERIFY_SSL)  # type: ignore
+    try:
+        LOG('Login response code: ' + str(response.status_code))
+    except Exception:
+        pass
+    try:
+        LOG('Login response text: ' + response.text)
+    except Exception:
+        pass
+    try:
+        LOG('Login response cookies ' + str(response.cookies))
+    except Exception:
+        pass
     return session
 
 
