@@ -4,21 +4,20 @@ import ast
 import json
 import demisto_client
 from threading import Thread, Lock
-from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, is_file_path_in_pack, \
-    get_pack_name, run_threads_list
+from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, run_threads_list
 
 
-def get_pack_display_name(path):
-    if is_file_path_in_pack(path):
-        pack_id = get_pack_name(path)
-        if pack_id:
-            with open('./Packs/{}/pack_metadata.json'.format(pack_id), 'r') as json_file:
-                pack_metadata = json.load(json_file)
-            return pack_metadata.get('name')
+def get_pack_display_name(pack_id):
+    if pack_id:
+        with open('./Packs/{}/pack_metadata.json'.format(pack_id), 'r') as json_file:
+            pack_metadata = json.load(json_file)
+        return pack_metadata.get('name')
     return ''
 
 
 def get_pack_data_from_results(search_results, pack_display_name):
+    if not search_results:
+        return {}
     for pack in search_results:
         if pack.get('name') == pack_display_name:
             return {
@@ -62,6 +61,9 @@ def get_pack_dependencies(client, prints_manager, pack_data):
         client (demisto_client): The configured client to use.
         prints_manager (ParallelPrintsManager): A prints manager object.
         pack_data (dict): Contains the pack ID and version.
+
+    Returns:
+        (list) The pack's dependencies.
     """
     pack_id = pack_data['id']
 
@@ -88,7 +90,7 @@ def get_pack_dependencies(client, prints_manager, pack_data):
         err_msg = 'Failed to get pack {} dependencies - with status code {}\n{}'.format(pack_id, status_code, message)
         prints_manager.add_print_job(err_msg, print_error, 0)
         prints_manager.execute_thread_prints(0)
-        return {}
+        return []
 
 
 def search_pack(client, prints_manager, pack_display_name):
@@ -172,24 +174,26 @@ def install_packs(client, prints_manager, packs_to_install):
         prints_manager.execute_thread_prints(0)
 
 
-def search_pack_and_its_dependencies(client, prints_manager, file_path, packs_to_install, installation_request_body, lock):
+def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install, installation_request_body, lock):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
 
     Args:
         client (demisto_client): The configured client to use.
         prints_manager (ParallelPrintsManager): A prints manager object.
-        file_path (str): A file path from the pack to be installed.
+        pack_id (str): The id of the pack to be installed.
         packs_to_install (list): A list of packs to be installed.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
     """
-    pack_display_name = get_pack_display_name(file_path)
+    pack_display_name = get_pack_display_name(pack_id)
     pack_data = search_pack(client, prints_manager, pack_display_name)
 
     if pack_data:
         dependencies = get_pack_dependencies(client, prints_manager, pack_data)
-        current_packs_to_install = [pack_data] + dependencies
+
+        current_packs_to_install = [pack_data]
+        current_packs_to_install.extend(dependencies)
 
         lock.acquire()
         for pack in current_packs_to_install:
@@ -199,10 +203,10 @@ def search_pack_and_its_dependencies(client, prints_manager, file_path, packs_to
         lock.release()
 
 
-def search_and_install_packs_and_their_dependencies(files_paths, client, prints_manager):
-    """ Searches for the packs from the specified files paths, searches their dependencies, and then installs them.
+def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager):
+    """ Searches for the packs from the specified list, searches their dependencies, and then installs them.
     Args:
-        files_paths (list): A list of files paths in packs.
+        pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
         prints_manager (ParallelPrintsManager): A prints manager object.
 
@@ -219,11 +223,11 @@ def search_and_install_packs_and_their_dependencies(files_paths, client, prints_
     prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
-    for file_path in files_paths:
+    for pack_id in pack_ids:
         thread = Thread(target=search_pack_and_its_dependencies,
                         kwargs={'client': client,
                                 'prints_manager': prints_manager,
-                                'file_path': file_path,
+                                'pack_id': pack_id,
                                 'packs_to_install': packs_to_install,
                                 'installation_request_body': installation_request_body,
                                 'lock': lock})

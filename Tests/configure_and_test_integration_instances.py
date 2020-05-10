@@ -750,25 +750,24 @@ def main():
     new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
     new_integrations_names, modified_integrations_names = [], []
 
-    if new_integrations_files:
-        if server_version_compare(server_numeric_version, '6.0') >= 0:
-            # Test packs search and installation - beginning of infrastructure
-            client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-                                              verify_ssl=False)
-            search_and_install_packs_and_their_dependencies(new_integrations_files, client, prints_manager)
+    pack_ids = []
+    with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+        pack_ids = packs_stream.readlines()
+        pack_ids = [pack_id.rstrip('\n') for pack_id in pack_ids]
 
+    if server_version_compare(server_numeric_version, '6.0') >= 0:
+        # Test packs search and installation - beginning of infrastructure
+        client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+                                          verify_ssl=False)
+        search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+
+    if new_integrations_files:
         new_integrations_names = get_integration_names_from_files(new_integrations_files)
         new_integrations_names_message = \
             'New Integrations Since Last Release:\n{}\n'.format('\n'.join(new_integrations_names))
         prints_manager.add_print_job(new_integrations_names_message, print_warning, 0)
 
     if modified_integrations_files:
-        if server_version_compare(server_numeric_version, '6.0') >= 0:
-            # Test packs search and installation - beginning of infrastructure
-            client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-                                              verify_ssl=False)
-            search_and_install_packs_and_their_dependencies(modified_integrations_files, client, prints_manager)
-
         modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
         modified_integrations_names_message = \
             'Updated Integrations Since Last Release:\n{}\n'.format('\n'.join(modified_integrations_names))
