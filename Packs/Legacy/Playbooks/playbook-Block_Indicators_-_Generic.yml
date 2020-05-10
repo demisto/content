@@ -3,7 +3,8 @@ version: -1
 name: Block Indicators - Generic
 fromversion: 4.0.0
 description: |
-  This playbook blocks malicious Indicators using all integrations that are enabled.
+  Deprecated - We recommend using the 'Block Indicators - Generic v2' playbook instead.
+  This playbook blocks malicious indicators using all integrations that are enabled.
 
   Supported integrations for this playbook:
   * Active Directory

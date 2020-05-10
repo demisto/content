@@ -29,4 +29,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://github.com/demisto/content/raw/308423391b388c7785e7b1211691770131465d79/Packs/CortexXDR/doc_files/Cortex_XDR_-_Isolate_Endpoint.png)

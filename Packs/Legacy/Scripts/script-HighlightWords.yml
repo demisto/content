@@ -55,6 +55,7 @@ script: |-
   else:
       demisto.results("The text does not contains any of the input words")
 type: python
+subtype: python2
 tags: []
 comment: Highlight words inside a given text.
 args:
