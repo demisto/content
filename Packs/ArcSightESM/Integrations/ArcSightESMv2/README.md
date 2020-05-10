@@ -229,7 +229,7 @@ Gets information about a single case.
 >### Case 12ax-uGgBABCWb2puJdY8ZA==
 >|Action|CaseID|CreatedTime|EventIDs|Name|Severity|Stage|
 >|---|---|---|---|---|---|---|
->| BLOCK_OR_SHUTDOWN | 12ax-uGgBABCWb2puJdY8ZA== | 2019-02-04 12:33:21 | 12395741,<br>45696713,<br>7896719 | test | INSIGNIFICANT | QUEUED |
+>| BLOCK_OR_SHUTDOWN | 12ax-uGgBABCWb2puJdY8ZA== | 2019-02-04 12:33:21 | 12395741, 45696713, 7896719 | test | INSIGNIFICANT | QUEUED |
 
 
 ### as-get-matrix-data
@@ -1514,7 +1514,7 @@ Updates a specific case.
 >### Case 12ax-uGgBABCWb2puJdY8ZA==
 >|Action|CaseID|CreatedTime|EventIDs|Name|Severity|Stage|
 >|---|---|---|---|---|---|---|
->| BLOCK_OR_SHUTDOWN | 12ax-uGgBABCWb2puJdY8ZA== | 2019-02-04 12:33:21 | 12395741,<br>45696713,<br>78996719 | test | INSIGNIFICANT | QUEUED |
+>| BLOCK_OR_SHUTDOWN | 12ax-uGgBABCWb2puJdY8ZA== | 2019-02-04 12:33:21 | 12395741, 45696713, 78996719 | test | INSIGNIFICANT | QUEUED |
 
 
 ### as-get-all-query-viewers
