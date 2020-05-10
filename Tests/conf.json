@@ -268,16 +268,8 @@
             "playbookID": "Alienvault_OTX_v2 - Test"
         },
         {
-            "integrations": "AWS - SQS",
-            "playbookID": "AWS - SQS Test Playbook"
-        },
-        {
             "integrations": "AWS - CloudWatchLogs",
             "playbookID": "AWS - CloudWatchLogs Test Playbook"
-        },
-        {
-            "integrations": "AWS - Route53",
-            "playbookID": "AWS - Route53 Test Playbook"
         },
         {
             "integrations": "SlackV2",
