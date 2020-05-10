@@ -3,36 +3,31 @@ version: -1
 name: Pentera Filter And Create Incident
 description: Sub-playbook to select specific entries from the Pentera action report
   and create incidents for each of the selected entries
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: ed5fe622-78c8-499a-8122-404fad3e2339
     type: start
     task:
       id: ed5fe622-78c8-499a-8122-404fad3e2339
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 2ff4fb91-5267-486a-8139-c6bd26c43e42
     type: regular
     task:
@@ -44,13 +39,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: FilteredBySeverity
       stringify: {}
@@ -68,20 +63,14 @@ tasks:
                   simple: inputs.Filter Minimum Severity
                 iscontext: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1165,
-          "y": 835
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1165,\n    \"y\": 835\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 8a58b205-8db2-4f66-833e-26292c0f4164
     type: condition
     task:
@@ -90,15 +79,16 @@ tasks:
       name: Is Minimum Severity Greater Than Zero
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "1"
+      - '3'
+      yes:
+      - '1'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: greaterThan
           left:
@@ -107,21 +97,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 660
-        }
-      }
+              simple: '0'
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 660\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: a0aa3683-ff03-44d8-8c00-641e2791ae3a
     type: regular
     task:
@@ -133,13 +117,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: FilteredBySeverity
       stringify: {}
@@ -147,20 +131,14 @@ tasks:
         complex:
           root: SuccessfulOperations
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 735,
-          "y": 835
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 735,\n    \"y\": 835\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 0cdc17a2-92ca-49db-8fbb-282b27ff6ec0
     type: title
     task:
@@ -169,29 +147,24 @@ tasks:
       name: Filter by Operation Type and a successful Status
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
-      - "9"
-      - "11"
-      - "13"
-      - "25"
+      - '5'
+      - '9'
+      - '11'
+      - '13'
+      - '25'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 1010
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 1010\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 2c797aac-dfe4-4586-8833-660c3f57ba2b
     type: condition
     task:
@@ -200,15 +173,16 @@ tasks:
       name: Are we filtering BlueKeep
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "20"
+      - '8'
+      yes:
+      - '20'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -217,22 +191,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1155
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1155\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: f97ebe5a-1bad-432c-8cd2-4cce1ff9051c
     type: title
     task:
@@ -241,22 +209,17 @@ tasks:
       name: Incidents
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -250,
-          "y": 2280
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -250,\n    \"y\": 2280\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: cccf54e0-f450-4e83-8299-036f0f144870
     type: condition
     task:
@@ -265,15 +228,16 @@ tasks:
       name: Are filtering we MS17-010 vulnerability
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "10"
+      - '8'
+      yes:
+      - '10'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -282,22 +246,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 1155
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 1155\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: ec9c975c-1556-4a4a-8d95-c5bf56968034
     type: regular
     task:
@@ -309,13 +267,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: FilterPenteraOperations
       stringify: {}
@@ -333,20 +291,14 @@ tasks:
                   simple: MS017-10 Analysis
               ignorecase: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 1330
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 1330\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 93c28eb8-dd1f-470e-869f-95cce6ff4162
     type: condition
     task:
@@ -355,15 +307,16 @@ tasks:
       name: Are we filtering password cracking
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "12"
+      - '8'
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -372,22 +325,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 1155
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 1155\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 98ca5d8e-849f-4f7a-8e5a-90e748794ab8
     type: regular
     task:
@@ -399,13 +346,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: FilterPenteraOperations
       stringify: {}
@@ -423,20 +370,14 @@ tasks:
                   simple: Password Crack Level
               ignorecase: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1062.5,
-          "y": 1330
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1062.5,\n    \"y\": 1330\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 950328b4-5ced-4d17-8da7-4d7ddb56ca3b
     type: condition
     task:
@@ -445,15 +386,16 @@ tasks:
       name: Are we filtering network device default password usage
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "14"
+      - '8'
+      yes:
+      - '14'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -462,22 +404,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 1400,
-          "y": 1155
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1400,\n    \"y\": 1155\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 3d4d8e9b-e83a-4513-8a87-6ea8f45e6497
     type: regular
     task:
@@ -489,13 +425,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: FilterPenteraOperations
       stringify: {}
@@ -513,20 +449,14 @@ tasks:
                   simple: Using default credentials on a network device or a Firewall
               ignorecase: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1512.5,
-          "y": 1330
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1512.5,\n    \"y\": 1330\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 69b6dab6-7d90-459f-864f-49938335a70d
     type: title
     task:
@@ -535,25 +465,20 @@ tasks:
       name: Filter by "success" status
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 195
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 0643290f-a130-4c67-8bf8-008791c20138
     type: regular
     task:
@@ -565,13 +490,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       append:
-        simple: "false"
+        simple: 'false'
       key:
         simple: SuccessfulOperations
       stringify: {}
@@ -589,20 +514,14 @@ tasks:
                   simple: success
               ignorecase: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 340
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 340\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: f34f18b2-efb3-433d-8aaf-391dd5166b21
     type: title
     task:
@@ -611,25 +530,20 @@ tasks:
       name: Filter by severity
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 515
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 950,\n    \"y\": 515\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: be8973c3-d090-4c22-8203-b1bf29dea320
     type: regular
     task:
@@ -643,7 +557,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -965,20 +879,14 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 2020
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1050,\n    \"y\": 2020\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 8c0987ae-977b-4e76-8e51-559ee51c1cf2
     type: regular
     task:
@@ -990,13 +898,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: FilterPenteraOperations
       stringify: {}
@@ -1014,20 +922,14 @@ tasks:
                   simple: CVE-2019-0708
               ignorecase: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1330
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1330\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 9633a8b1-efb1-4750-8d67-c9c102caf026
     type: condition
     task:
@@ -1036,35 +938,30 @@ tasks:
       name: Is Pentera Operations not empty?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "26"
+      - '8'
+      yes:
+      - '26'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: FilterPenteraOperations
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 1640
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1050,\n    \"y\": 1640\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 9e73be18-14ab-43e2-87f2-6803f907f992
     type: regular
     task:
@@ -1076,13 +973,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: FilterPenteraOperations
       stringify: {}
@@ -1100,20 +997,14 @@ tasks:
                   simple: Ability to access an open share
               ignorecase: true
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1962.5,
-          "y": 1330
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1962.5,\n    \"y\": 1330\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 7d3b5789-9dce-49a5-8232-47040ef4e08b
     type: condition
     task:
@@ -1122,15 +1013,16 @@ tasks:
       name: Are we filtering open shares
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "24"
+      - '8'
+      yes:
+      - '24'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1139,22 +1031,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 1850,
-          "y": 1155
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1850,\n    \"y\": 1155\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: 2466a731-6e00-4f30-8a8b-6079bd4d92ed
     type: regular
     task:
@@ -1164,10 +1050,11 @@ tasks:
       scriptName: PenteraOperationToIncident
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       context_key: {}
       custom_fields_output:
@@ -1176,75 +1063,60 @@ tasks:
         complex:
           root: FilterPenteraOperations
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 1860
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1050,\n    \"y\": 1860\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2295,
-        "width": 2592.5,
-        "x": -250,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2295,\n      \"width\": 2592.5,\n      \"x\": -250,\n      \"\
+  y\": 50\n    }\n  }\n}"
 inputs:
 - key: Filter password cracking
   value:
-    simple: "True"
+    simple: 'True'
   required: true
-  description: Filter all password cracking operation types. Any other value will be considered as "False"
-  playbookInputQuery: null
+  description: Filter all password cracking operation types
+  playbookInputQuery:
 - key: Filter BlueKeep vulnerability
   value:
-    simple: "True"
+    simple: 'True'
   required: true
-  description: Filter all BlueKeep operation types. Any other value will be considered as "False"
-  playbookInputQuery: null
+  description: Filter all BlueKeep operation types
+  playbookInputQuery:
 - key: Filter Minimum Severity
   value:
-    simple: "0"
+    simple: '0'
   required: true
-  description: "Filters actions according to given value. \nWill not filter anything
-    if got zero (0) as value."
-  playbookInputQuery: null
+  description: "Filters actions according to given value. \nWill not filter anything\
+    \ if got zero (0) as value."
+  playbookInputQuery:
 - key: FullActionReport
-  value:
-    complex:
-      root: Pentera
-      accessor: TaskRun.FullActionReport
+  value: {}
   required: true
-  description: Pentera Full Action Report
-  playbookInputQuery: null
+  description: "Pentera Full Action Report is the summary of the given TaskName in\
+    \ a CSV format, that contains all the actions that Pentera performed during the\
+    \ task run. \nThe value will be provided from Pentera Run Scan and Create Incidents\
+    \ playbook."
+  playbookInputQuery:
 - key: Filter MS17-010 vulnerability
   value:
-    simple: "True"
+    simple: 'True'
   required: true
-  description: Filter all MS17-010 operation types. Any other value will be considered as "False"
-  playbookInputQuery: null
+  description: Filter all MS17-010 operation types
+  playbookInputQuery:
 - key: Filter network device default password usage
   value:
-    simple: "True"
+    simple: 'True'
   required: true
-  description: Filter all network device default password operation types. Any other value will be considered as "False"
-  playbookInputQuery: null
+  description: Filter all network device default password operation types
+  playbookInputQuery:
 - key: 'Filter open shares '
   value:
-    simple: "True"
+    simple: 'True'
   required: true
-  description: Filter all open shares operation types. Any other value will be considered as "False"
-  playbookInputQuery: null
+  description: Filter all open shares operation types
+  playbookInputQuery:
 outputs: []
-
+fromversion: 5.0.0
