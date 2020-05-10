@@ -188,8 +188,9 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
     unified_threshold, unified_threshold_precision, target_unified_precision = find_best_threshold_for_target_precision(
         class_to_arrs, customer_target_precision, labels)
     if unified_threshold is None or unified_threshold_precision is None:
-        return_error('Could not find any threshold at ranges {}-{:.2f}'.format(target_unified_precision,
-                                                                               customer_target_precision))
+        error_message = 'Could not find any threshold at ranges {} - {:.2f}.'.format(target_unified_precision,
+                                                                                     customer_target_precision)
+        return_error(error_message)
     entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class, unified_threshold,
                           customer_target_precision, unified_threshold_precision, detailed_output)
     per_class_entry = calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_true_per_class)
@@ -197,7 +198,7 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
 
 
 def find_best_threshold_for_target_precision(class_to_arrs, customer_target_precision, labels):
-    target_unified_precision = customer_target_precision
+    target_unified_precision = round(customer_target_precision, 2)
     unified_threshold_found = False
     threshold = None
     threshold_precision = None
@@ -206,11 +207,11 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
         precision_per_class = {}
         for class_ in labels:
             # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
-            for i, precision in enumerate(class_to_arrs[class_]['precisions']):
-                if i == 0:
+            for i, precision in enumerate(class_to_arrs[class_]['precisions'][:-1]):
+                if class_to_arrs[class_]['thresholds'][i] == 0:
                     continue
                 if precision > target_unified_precision:
-                    threshold_per_class[class_] = class_to_arrs[class_]['thresholds'][i - 1]
+                    threshold_per_class[class_] = class_to_arrs[class_]['thresholds'][i]
                     precision_per_class[class_] = precision
                     break
         if len(threshold_per_class) == len(labels):
@@ -220,7 +221,7 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
                 threshold_precision = sys.maxint
                 for class_ in labels:
                     i = np.argmax(class_to_arrs[class_]['thresholds'] >= threshold)
-                    threshold_precision_for_class = class_to_arrs[class_]['precisions'][i + 1]
+                    threshold_precision_for_class = class_to_arrs[class_]['precisions'][i]
                     threshold_precision = min(threshold_precision, threshold_precision_for_class)
                     if threshold_precision_for_class >= target_unified_precision:
                         legal_threshold_for_all_classes = True
@@ -230,7 +231,7 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
                 if legal_threshold_for_all_classes:
                     unified_threshold_found = True
                     break
-        elif target_unified_precision <= 0:
+        elif target_unified_precision < 0:
             break
         target_unified_precision -= 0.01
     return threshold, threshold_precision, target_unified_precision
@@ -242,14 +243,15 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
         'The following tables present evlauation of the model per class at different confidence thresholds:']
     class_to_thresholds = {class_: {} for class_ in labels}
     for class_ in labels:
-        class_to_thresholds[class_] = set([0])
+        y_pred_class = y_pred_per_class[class_]
+        class_to_thresholds[class_] = set([min(y_pred_class[y_pred_class > 0])])
         for target_precision in np.arange(0.95, 0.5, -0.05):
             # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
-            for i, precision in enumerate(class_to_arrs[class_]['precisions']):
-                if i == 0:
+            for i, precision in enumerate(class_to_arrs[class_]['precisions'][:-1]):
+                if class_to_arrs[class_]['thresholds'][i] == 0:
                     continue
                 if precision > target_precision and class_to_arrs[class_]['recalls'][i] > 0:
-                    threshold = class_to_arrs[class_]['thresholds'][i - 1]
+                    threshold = class_to_arrs[class_]['thresholds'][i]
                     class_to_thresholds[class_].add(threshold)
                     break
             if len(class_to_thresholds[class_]) >= 4:
