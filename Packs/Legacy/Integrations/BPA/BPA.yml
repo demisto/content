@@ -74,6 +74,24 @@ script:
     - contextPath: PAN-OS-BPA.JobResults.Checks
       description: The list of checks.
       type: Unknown
+    - contextPath: InfoFile.Name
+      description: File name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: File entry ID
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false

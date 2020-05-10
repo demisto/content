@@ -12,8 +12,7 @@ requests.packages.urllib3.disable_warnings()
 BPA_HOST = 'https://bpa.paloaltonetworks.com'
 BPA_VERSION = 'v1'
 BPA_URL = BPA_HOST + '/api/' + BPA_VERSION + '/'
-DOWNLOADED_REPORT_NAME = 'panorama-report'
-DOWNLOADED_REPORT_SUFFIX = '.zip'
+DOWNLOADED_REPORT_NAME_SUFFIX = '_BPA-report.zip'
 
 
 class LightPanoramaClient(BaseClient):
@@ -104,7 +103,7 @@ class Client(BaseClient):
         response = self._http_request('GET', f'results/{task_id}/')
         return response
 
-    def get_download_results_request(self, task_id: str):
+    def get_download_results_request(self, task_id: str) -> bytes:
         response = self._http_request('GET', f'results/{task_id}/download', resp_type='content')
         return response
 
@@ -191,7 +190,7 @@ def get_results_command(client: Client, args: Dict):
     download_url = results.get('download_url')
 
     # check that a report was generated, and can be downloaded
-    if download_url is not None:
+    if download_url:
         download_report_handler(client, task_id)
 
     context = {'PAN-OS-BPA.JobResults(val.JobID && val.JobID === obj.JobID)': {
@@ -207,7 +206,7 @@ def get_results_command(client: Client, args: Dict):
 def download_report_handler(client: Client, task_id):
     downloaded_report = client.get_download_results_request(task_id)
     demisto.results(
-        fileResult(DOWNLOADED_REPORT_NAME + DOWNLOADED_REPORT_SUFFIX, downloaded_report, entryTypes['entryInfoFile']))
+        fileResult(task_id + DOWNLOADED_REPORT_NAME_SUFFIX, downloaded_report, entryTypes['entryInfoFile']))
 
 
 def test_module(client, panorama):
