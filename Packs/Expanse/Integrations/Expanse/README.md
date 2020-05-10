@@ -140,6 +140,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 2. domain
 3. expanse-get-certificate
 4. expanse-get-behavior
+5. expanse-get-exposures
 
 ### 1. ip
 ---
@@ -690,6 +691,169 @@ expanse-get-behavior command
 |BusinessUnit|ExternalAddresses|FlowSummaries|InternalAddress|InternalCountryCode|InternalDomains|InternalExposureTypes|InternalIPRanges|SearchTerm|
 |---|---|---|---|---|---|---|---|---|
 | VanDelay Industries | 66.110.49.36,66.110.49.72 | 74.142.119.130:57475 (US) -> 66.110.49.72:443 (CA) TCP violates Outbound Flows from Servers at 2020-04-05T21:18:56.889Z<br />74.142.119.130:61694 (US) -> 66.110.49.36:443 (CA) TCP violates Outbound Flows from Servers at 2020-04-05T21:03:50.867Z | 74.142.119.130 | US |  | HttpServer |  | 74.142.119.130 |
+
+
+### 4. expanse-get-exposures
+---
+expanse-get-exposures command
+##### Required Permissions
+**none**
+##### Base Command
+
+`expanse-get-exposures`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | ip to search| Required |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.Exposures.SearchTerm | string | IP used to search |
+| Expanse.Exposures.TotalExposureCount | number | The total count of exposures for the IP |
+| Expanse.Exposures.CriticalExposureCount | number | The total count of CRITICAL exposures for the IP |
+| Expanse.Exposures.WarningExposureCount | number | The total count of WARNING exposures for the IP |
+| Expanse.Exposures.RoutineExposureCount | number | The total count of ROUTINE exposures for the IP |
+| Expanse.Exposures.UnknownExposureCount | number | The total count of UNKNOWN exposures for the IP |
+| Expanse.Exposures.ExposureSummaries | string | Summaries of exposures for the IP address |
+| Expanse.Exposures.Exposures | unknown | Array of Exposures for the IP address |
+| Expanse.Exposures.Exposures.ExposureType | string | Exposure type of the Exposure |
+| Expanse.Exposures.Exposures.BusinessUnit | string | Business Unit of the Exposure |
+| Expanse.Exposures.Exposures.Ip | string | IP Address the Exposure was found on |
+| Expanse.Exposures.Exposures.Port | string | Port the Exposure was found on |
+| Expanse.Exposures.Exposures.Severity | string | Severity of the Exposure |
+| Expanse.Exposures.Exposures.Certificate | unknown | Certificate details associated with Exposure |
+| Expanse.Exposures.Exposures.FirstObservsation | unknown | First Observation of the Exposure |
+| Expanse.Exposures.Exposures.LastObservsation | unknown | Last Observation of the Exposure |
+| Expanse.Exposures.Exposures.Status | unknown | Status details of the Exposure |
+| Expanse.Exposures.Exposures.Provider | unknown | Provider details of the Exposure |
+
+
+##### Command Example
+```!expanse-get-exposures ip=33.2.243.123```
+
+##### Context Example
+```
+{
+    "CriticalExposureCount": 0,
+    "ExposureSummaries": "NTP_SERVER exposure on 33.2.243.123:UDP123",
+    "Exposures": [
+        {
+            "BusinessUnit": "VanDelay Industries",
+            "Certificate": null,
+            "ExposureType": "NTP_SERVER",
+            "FirstObservsation": {
+                "configuration": {
+                    "certificate": null,
+                    "response": {
+                        "ntp": {
+                            "delay": 0,
+                            "dispersion": 65537,
+                            "extentionData": null,
+                            "keyIdentifier": null,
+                            "leapIndicator": 3,
+                            "messageDigest": null,
+                            "mode": 4,
+                            "originateTime": "2004-11-24T15:12:11.444Z",
+                            "poll": 4,
+                            "precision": -18,
+                            "receiveTime": "2019-02-01T00:32:17.693Z",
+                            "reference": {
+                                "ref_str": {
+                                    "reference": ""
+                                }
+                            },
+                            "stratum": 0,
+                            "transmitTime": "2019-02-01T00:32:17.693Z",
+                            "updateTime": "2036-02-07T06:28:16Z",
+                            "version": 4
+                        }
+                    }
+                },
+                "geolocation": {
+                    "city": "VICTOR",
+                    "countryCode": "US",
+                    "latitude": 42.982,
+                    "longitude": -77.4245,
+                    "regionCode": "NY"
+                },
+                "hostname": null,
+                "id": "2d349139-1111-3c92-a168-557d34729bf8",
+                "ip": "33.2.243.123",
+                "portNumber": 123,
+                "portProtocol": "UDP",
+                "qrispTaskId": 21716146,
+                "scanned": "2019-02-01T00:19:16Z"
+            },
+            "Ip": "33.2.243.123",
+            "LastObservsation": {
+                "configuration": {
+                    "certificate": null,
+                    "response": {
+                        "ntp": {
+                            "delay": 0,
+                            "dispersion": 65537,
+                            "extentionData": null,
+                            "keyIdentifier": null,
+                            "leapIndicator": 3,
+                            "messageDigest": null,
+                            "mode": 4,
+                            "originateTime": "2004-11-24T15:12:11.444Z",
+                            "poll": 4,
+                            "precision": -18,
+                            "receiveTime": "2020-05-05T16:05:36.606Z",
+                            "reference": {
+                                "ref_str": {
+                                    "reference": ""
+                                }
+                            },
+                            "stratum": 0,
+                            "transmitTime": "2020-05-05T16:05:36.606Z",
+                            "updateTime": "2036-02-07T06:28:16Z",
+                            "version": 4
+                        }
+                    }
+                },
+                "geolocation": {
+                    "city": "VICTOR",
+                    "countryCode": "US",
+                    "latitude": 42.982,
+                    "longitude": -77.4245,
+                    "regionCode": "NY"
+                },
+                "hostname": null,
+                "id": "69a0159b-facc-3c55-b71d-3e6b8ae9252b",
+                "ip": "33.2.243.123",
+                "portNumber": 123,
+                "portProtocol": "UDP",
+                "qrispTaskId": 41755001,
+                "scanned": "2020-05-05T16:03:30Z"
+            },
+            "Port": "UDP123",
+            "Provider": null,
+            "Severity": "ROUTINE",
+            "Status": {
+                "remediation": [],
+                "snooze": []
+            }
+        }
+    ],
+    "RoutineExposureCount": 1,
+    "SearchTerm": "33.2.243.123",
+    "TotalExposureCount": 1,
+    "UnknownExposureCount": 0,
+    "WarningExposureCount": 0
+}
+```
+
+##### Human Readable Output
+### Expanse Exposure information for: 33.2.243.123
+|CriticalExposureCount|ExposureSummaries|RoutineExposureCount|SearchTerm|TotalExposureCount|UnknownExposureCount|WarningExposureCount|
+|---|---|---|---|---|---|---|
+| 0 | NTP_SERVER exposure on 33.2.243.123:UDP123 | 1 | 33.2.243.123 | 1 | 0 | 0 |
 
 
 ## Additional Information

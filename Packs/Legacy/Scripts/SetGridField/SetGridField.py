@@ -94,7 +94,7 @@ def validate_entry_context(entry_context: Any, keys: List[str]):
 
         for key, value in item.items():
             if key in keys:
-                if not isinstance(value, (str, int, float)):
+                if not isinstance(value, (str, int, float, bool)):
                     raise ValueError(exception_msg)
 
 

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Added support for the ***expanse-get-exposures*** command.
 
 ## [20.4.1] - 2020-04-29
 Fixed an issue where incident polling did not behave as expected in some situations.
