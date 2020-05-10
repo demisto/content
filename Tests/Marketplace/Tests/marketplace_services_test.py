@@ -415,7 +415,7 @@ class TestImagesUpload:
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
-        mocker.patch('builtins.open', mock_open(read_data="image_data"))
+        mocker.patch("builtins.open", mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.print")
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
@@ -425,3 +425,28 @@ class TestImagesUpload:
         assert task_status
         assert len(expected_result) == len(integration_images)
         assert integration_images == expected_result
+
+
+class TestLoadUserMetadata:
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    def test_load_user_metadata_with_missing_file(self, mocker, dummy_pack):
+        """
+           Given:
+               - Pack with missing pack metadata.
+           When:
+               - Pack is invalid.
+           Then:
+               - Task should not fail with referenced before assignment error.
+       """
+        mocker.patch("os.path.exists", return_value=False)
+        print_error_mock = mocker.patch("Tests.Marketplace.marketplace_services.print_error")
+        task_status, user_metadata = dummy_pack.load_user_metadata()
+
+        assert print_error_mock.call_count == 1
+        assert not task_status
+        assert user_metadata == {}
