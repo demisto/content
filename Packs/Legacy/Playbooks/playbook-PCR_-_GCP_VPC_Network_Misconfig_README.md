@@ -48,4 +48,5 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+https://github.com/demisto/content/raw/308d2beeb7f87711dec93fee4ce19c6acf69c58b/Packs/Legacy/doc_files/PCR_-_GCP_VPC_Network_Misconfig.png
