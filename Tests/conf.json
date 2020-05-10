@@ -662,7 +662,7 @@
             "playbookID": "Google-Vault-Generic-Test",
             "nightly": true,
             "timeout": 3600,
-            "memory_threshold": 65
+            "memory_threshold": 80
         },
         {
             "integrations": "google-vault",
