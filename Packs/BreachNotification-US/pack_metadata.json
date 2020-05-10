@@ -1,7 +1,7 @@
 {
     "name": "Breach Notification - US",
     "description": "This pack performs a PII classification check and helps with the required notification process in case of a data breach in the United States.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "",
