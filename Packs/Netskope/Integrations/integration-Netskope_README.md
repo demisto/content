@@ -46,7 +46,7 @@
 </tr>
 <tr>
 <td style="width: 161px;">query</td>
-<td style="width: 479px;">Filter query, for example, jtesarz@netskope.com</td>
+<td style="width: 479px;">Filter query, for example, foo@test.com</td>
 </tr>
 <tr>
 <td style="width: 161px;">timeperiod</td>
