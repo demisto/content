@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added a delimiter argument, which defines the character that delimits fields.
 
 
 ## [20.4.0] - 2020-04-14
