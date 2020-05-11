@@ -67,30 +67,31 @@ def get_pack_dependencies(client, prints_manager, pack_data):
     """
     pack_id = pack_data['id']
 
-    response_data, status_code, _ = demisto_client.generic_request_func(
-        client,
-        path='/contentpacks/marketplace/search/dependencies',
-        method='POST',
-        body=[pack_data],
-        accept='application/json'
-    )
+    try:
+        response_data, status_code, _ = demisto_client.generic_request_func(
+            client,
+            path='/contentpacks/marketplace/search/dependencies',
+            method='POST',
+            body=[pack_data],
+            accept='application/json'
+        )
 
-    if 200 <= status_code < 300:
-        dependencies_data, dependencies_str = create_dependencies_data_structure(ast.literal_eval(response_data),
-                                                                                 pack_id)
-        if dependencies_data:
-            prints_manager.add_print_job('Found the following dependencies for pack {}:\n{}'.format(pack_id,
-                                                                                                    dependencies_str),
-                                         print_color, 0, LOG_COLORS.GREEN)
-            prints_manager.execute_thread_prints(0)
-        return dependencies_data
-    else:
-        result_object = ast.literal_eval(response_data)
-        message = result_object.get('message', '')
-        err_msg = 'Failed to get pack {} dependencies - with status code {}\n{}'.format(pack_id, status_code, message)
-        prints_manager.add_print_job(err_msg, print_error, 0)
-        prints_manager.execute_thread_prints(0)
-        return []
+        if 200 <= status_code < 300:
+            dependencies_data, dependencies_str = create_dependencies_data_structure(ast.literal_eval(response_data),
+                                                                                     pack_id)
+            if dependencies_data:
+                message = 'Found the following dependencies for pack {}:\n{}'.format(pack_id, dependencies_str)
+                prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
+                prints_manager.execute_thread_prints(0)
+            return dependencies_data
+        else:
+            result_object = ast.literal_eval(response_data)
+            msg = result_object.get('message', '')
+            err_msg = 'Failed to get pack {} dependencies - with status code {}\n{}'.format(pack_id, status_code, msg)
+            raise Exception(err_msg)
+    except Exception as e:
+        err_msg = 'The request to get pack {} dependencies has failed. Reason:\n{}'.format(pack_id, str(e))
+        raise Exception(err_msg)
 
 
 def search_pack(client, prints_manager, pack_display_name):
@@ -105,43 +106,45 @@ def search_pack(client, prints_manager, pack_display_name):
         (dict): Returns the pack data if found, or empty dict otherwise.
     """
 
-    # make the search request
-    response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                        path='/contentpacks/marketplace/search',
-                                                                        method='POST',
-                                                                        body={"packsQuery": pack_display_name},
-                                                                        accept='application/json')
+    try:
+        # make the search request
+        response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                            path='/contentpacks/marketplace/search',
+                                                                            method='POST',
+                                                                            body={"packsQuery": pack_display_name},
+                                                                            accept='application/json')
 
-    if 200 <= status_code < 300:
-        result_object = ast.literal_eval(response_data)
-        search_results = result_object.get('packs', [])
-        pack_data = get_pack_data_from_results(search_results, pack_display_name)
-        if pack_data:
-            print_msg = 'Found pack {} in bucket!\n'.format(pack_display_name)
-            prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.GREEN)
-            prints_manager.execute_thread_prints(0)
-            return pack_data
+        if 200 <= status_code < 300:
+            result_object = ast.literal_eval(response_data)
+            search_results = result_object.get('packs', [])
+            pack_data = get_pack_data_from_results(search_results, pack_display_name)
+            if pack_data:
+                print_msg = 'Found pack {} in bucket!\n'.format(pack_display_name)
+                prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.GREEN)
+                prints_manager.execute_thread_prints(0)
+                return pack_data
 
+            else:
+                print_msg = 'Did not find pack {} in bucket.\n'.format(pack_display_name)
+                prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.YELLOW)
+                prints_manager.execute_thread_prints(0)
+                return {}
         else:
-            print_msg = 'Did not find pack {} in bucket.\n'.format(pack_display_name)
-            prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.YELLOW)
-            prints_manager.execute_thread_prints(0)
-            return {}
-    else:
-        result_object = ast.literal_eval(response_data)
-        msg = result_object.get('message', '')
-        err_msg = 'Pack {} search request failed - with status code {}\n{}'.format(pack_display_name, status_code, msg)
-        prints_manager.add_print_job(err_msg, print_error, 0)
-        prints_manager.execute_thread_prints(0)
-        return {}
+            result_object = ast.literal_eval(response_data)
+            msg = result_object.get('message', '')
+            err_msg = 'Pack {} search request failed - with status code {}\n{}'.format(pack_display_name,
+                                                                                       status_code, msg)
+            raise Exception(err_msg)
+    except Exception as e:
+        err_msg = 'The request to search pack {} has failed. Reason:\n{}'.format(pack_display_name, str(e))
+        raise Exception(err_msg)
 
 
-def install_packs(client, prints_manager, packs_to_install):
+def install_packs(client, packs_to_install):
     """ Make a packs installation request.
 
     Args:
         client (demisto_client): The configured client to use.
-        prints_manager (ParallelPrintsManager): A prints manager object.
         packs_to_install (list): A list of the packs to install.
     """
 
@@ -158,25 +161,18 @@ def install_packs(client, prints_manager, packs_to_install):
                                                                             body=request_data,
                                                                             accept='application/json')
 
-        if 200 <= status_code < 300:
-            prints_manager.add_print_job('Packs Successfully Installed!\n', print_color, 0,
-                                         LOG_COLORS.GREEN)
-            prints_manager.execute_thread_prints(0)
-        else:
+        if not 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
             err_msg = 'Failed to install packs - with status code {}\n{}'.format(status_code, message)
-            prints_manager.add_print_job(err_msg, print_error, 0)
-            prints_manager.execute_thread_prints(0)
+            raise Exception(err_msg)
     except Exception as e:
         err_msg = 'The request to install packs has failed. Reason:\n{}'.format(str(e))
-        prints_manager.add_print_job(err_msg, print_error, 0)
-        prints_manager.execute_thread_prints(0)
-        return False
-    return True
+        raise Exception(err_msg)
 
 
-def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install, installation_request_body, lock):
+def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
+                                     installation_request_body, lock):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
 
@@ -236,6 +232,12 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         threads_list.append(thread)
     run_threads_list(threads_list)
 
-    installed_packs_successfully = install_packs(client, prints_manager, installation_request_body)
+    install_packs(client, installation_request_body)
 
-    return installed_packs_successfully, packs_to_install
+    packs_str = '\n'.join(packs_to_install)
+    message = 'Successully installed the following packs in server {}:\n{}'.format(host, packs_str)
+    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(0)
+
+    return packs_to_install
+

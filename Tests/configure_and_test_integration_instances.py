@@ -10,6 +10,7 @@ import sys
 import demisto_client
 from time import sleep
 from threading import Thread
+from distutils.version import LooseVersion
 
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
@@ -256,8 +257,8 @@ def get_content_packs_to_install():
     file_validator = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(git_sha1))
     modified_files, added_files, removed_files, old_format_files = file_validator.get_modified_files(change_log, tag)
-    all_integration_regexes = YML_INTEGRATION_REGEXES
-    all_integration_regexes.extend([INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX])
+    all_integration_regexes = YML_INTEGRATION_REGEXES + [INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX,
+                                                         BETA_INTEGRATION_REGEX]
 
     new_integration_files = [
         file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
@@ -758,16 +759,20 @@ def main():
 
     installed_content_packs_successfully = True
 
-    if server_version_compare(server_numeric_version, '6.0') >= 0:
+    if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
         with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = [pack_id.rstrip('\n') for pack_id in packs_stream.readlines()]
-        client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-                                          verify_ssl=False)
-        installed_content_packs_successfully, installed_packs = search_and_install_packs_and_their_dependencies(
-            pack_ids, client, prints_manager
-        )
-        installed_packs_message = "Installed the content packs: {}".format(installed_packs)
-        prints_manager.add_print_job(installed_packs_message, print_color, 0, LOG_COLORS.GREEN)
+
+        # install content packs in every server
+        try:
+            for server_url in servers:
+                client = demisto_client.configure(base_url=server_url, username=username, password=password,
+                                                  verify_ssl=False)
+                search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+        except Exception as e:
+            prints_manager.add_print_job(str(e), print_error, 0)
+            prints_manager.execute_thread_prints(0)
+            installed_content_packs_successfully = False
 
     if new_integrations_files:
         new_integrations_names = get_integration_names_from_files(new_integrations_files)
