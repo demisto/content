@@ -1,28 +1,98 @@
-ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).
-This integration was integrated and tested with version 7.0.0.2436.1 of ArcSight ESM
-## Configure ArcSight ESM v2 on Demisto
+# ArcSight ESM
+ArcSight ESM is a security information and event management (SIEM) product.
+It collects security log data from an enterprise’s security technologies, operating systems, applications and other log sources, and analyzes that data for signs of compromise, attacks or other malicious activity.
+The product generates cases to security administrators and analysts.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ArcSight ESM v2.
-3. Click **Add instance** to create and configure a new integration instance.
+#### NOTE: 
+ArcSight XML is no longer supported. Use the ArcSight ESM integration instead.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| server | Server full URL \(e.g., https://192.168.0.1:8443\) | True |
-| credentials | Credentials | True |
-| viewerId | Fetch events as incidents via Query Viewer ID. Mandatory fields for query are "Start Time" and "Event ID". | False |
-| casesQueryViewerId | Fetch cases as incidents via Query Viewer ID. Mandatory fields for query are "Create Time" and "ID". | False |
-| max_unique | The maximum number of unique IDs expected to be fetched. | False |
-| fetch_chunk_size | The maximum number of incidents to fetch each time. Maximum is 50. | False |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+## Use Cases
+1. Fetching events and cases based on a query viewer.
+2. Getting additional information by event or case ID.
+3. Searching for events.
+4. Updating a case or deleting it.
+5. Getting all entries from an active list, updating an entry and clearing the list.
 
+## Set up ArcSight ESM to work with Demisto
+The set up for using ArcSight ESM to work with Demisto depends on whether you will be using the integration to fetch events or cases.
+
+#### For fetching Events/Cases:
+
+1. Create an Event/Case query.
+
+2. Add a row limit (1000).
+
+3. Add a start time limit (e.g. $Now-10m).
+
+4. Go to the following fields and add conditions if needed:
+
+    - Select the Event ID and Start Time fields for Events (mandatory).
+    - Select the ID and Create Time fields for Cases (mandatory).
+    - Select additional fields of your choice.
+    - Add conditions if needed (malicious/suspicious behavior such as malware found, failed login,
+      access to a known malicious site and/or conditions like severity, criticality, assets etc).
+#### Note: 
+Demisto is designed for an automatic response, so make sure to define conditions for actionable/sever/critical events only.
+
+5.Create a query viewer based on the query.
+
+    - In your ArcSight ESM environment, navigate to the Query Viewer > Attributes tab.
+    - Set the Refresh Data After parameter to 1.
+    - Configure the rest of the query viewer as necessary.
+    
+6.Save the Query Viewer resource ID integration configuration in Demisto.
+
+
+# Configure ArcSight ESM on Demisto
+1. Navigate to Settings>Integrations>Servers & Services.
+2. Search for ArcSight ESM.
+3. Click Add instance to create and configure a new integration instance.
+    - **Name**: a textual name for the integration instance.
+    - **Server URL (e.g. https://192.168.0.1:8443)**: The hostname or IP address of the appliance being used, for example, https://your_arcsight_esm:port.
+    - **Credentials and Password**: Use the username and password used to access the ArcSight ESM account.
+    - **Fetch Events as incidents via Query Viewer ID**: Must have Start Time and Event ID fields.
+    - **Fetch Cases as incidents via Query Viewer ID**: Must have Create Time and ID fields.
+    - **The maximum number of unique IDs expected to be fetched**: If unique IDs exceeds the maximum, duplicates will be fetched.
+    - **Do not validate server certificate (unsecured)**: Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate).
+    - **Use system proxy settings**: Select whether to communicate via the system proxy server or not.
+    - **Fetch incidents**: Mark the Fetch incidents checkbox to automatically create Demisto incidents from this integration instance.
+    - **Incident type**: Select the incident type to trigger.
 4. Click **Test** to validate the URLs, token, and connection.
+    If you are experiencing issues with the service configuration, please contact Demisto support at support@demisto.com.
+5. After completing the test successfully, press the ‘Done’ button.
+
+## Use-Cases
+- **Fetch events** - New events that match the predefined condition will be fetched to Demisto as an incident and will trigger playbooks for automation and response. Such events could be any kind of security events.
+- **Fetch cases** - New cases that match the predefined condition will be fetched to Demisto as an incident and will trigger playbooks for automation and response. Such cases could include any kind of security events. The final step of the playbook could be updating, closing or deleting the case.
+- **Search events** - Query specific events based on an existing query viewer.
+- **Getting active** list entries - Returning active list entries (such as “Blacklist IPS”, “Malicious MD5s”, etc) by using as-get-entries and providing the resource ID of the active list. The entries can be added as a list in Demisto for cross-platform usage, additional automation, and data enrichment.
+
+## Fetched Incidents Data
+The integration can fetch events and cases.
+
+- When first turned on, the integration fetches all events/cases from the query viewer.
+- The fetched incidents are later filtered by timestamp (start time/create time).
+
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Demisto CLI, as part of automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+1. (Deprecated) Get all case resource IDs: as-get-all-cases
+2. Get information for a single case: as-get-case
+3. Get query viewer results: as-get-matrix-data
+4. Add entries to the Active List: as-add-entries
+5. Delete all entries from the Active List: as-clear-entries
+6. Get all entries on the Active List: as-get-entries
+7. Get details for security event: as-get-security-events
+8. Get all case event IDs: as-get-case-event-ids
+9. Update a single case: as-update-case
+10. Get all query viewer IDs: as-get-all-query-viewers
+11. Delete a single case: as-case-delete
+12. Get all query viewer results: as-get-query-viewer-results
+13. Fetches incidents: as-fetch-incidents
+14. Delete entries from the Active List: as-delete-entries
+
+
 ### as-get-all-cases
 ***
 (Deprecated) Retrieves all case resource IDs.
@@ -741,11 +811,30 @@ Returns all entries in the Active List
 
 
 #### Command Example
-```!as-get-entries resourceId=A1LvlmWgBABCA5+HbRyHZoQ== entryFilter="name:test"```
+```!as-get-entries resourceId=A1LvlmWgBABCA5+HbRyHZoQ==```
 
 #### Context Example
 ```
-{}
+{
+    "ArcSightESM": {
+        "ActiveList": {
+            "A1LvlmWgBABCA5+HbRyHZoQ==": [
+                {
+                    "eventId": "9", 
+                    "startDate": "None", 
+                    "name": "T4", 
+                    "startTime": "31 Dec 1969 19:00:00 EST"
+                }, 
+                {
+                    "eventId": "9", 
+                    "startDate": "None", 
+                    "name": "T3", 
+                    "startTime": "31 Dec 1969 19:00:00 EST"
+                }
+            ]
+        }
+    }
+}
 ```
 
 #### Human Readable Output
