@@ -134,10 +134,10 @@ def merge_two_dicts(dict_a, dict_b):
 
 def create_deepsight_domain_entry_context(generic_domain_entry_context, domain_data_json):
     network_data = domain_data_json.get("network", None)
-    first_seen_date = domain_data_json.get("firstSeen", "")
-    first_seen_date = convert_deepsight_date_to_demisto_format(first_seen_date)
-    last_seen_date = domain_data_json.get("lastSeen", "")
-    last_seen_date = convert_deepsight_date_to_demisto_format(last_seen_date)
+    first_seen = domain_data_json.get("firstSeen", "")
+    first_seen_date = convert_deepsight_date_to_demisto_format(first_seen)
+    last_seen = domain_data_json.get("lastSeen", "")
+    last_seen_date = convert_deepsight_date_to_demisto_format(last_seen)
     deepsight_domain_entry_context = {
         'Whitelisted': domain_data_json.get("whitelisted", ""),
         'FirstSeen': first_seen_date,
@@ -548,7 +548,8 @@ def test_module():
         result = get_ip_data("5.79.86.16")
     except Exception:
         raise Exception("Test failed: API request did not succeed, result: {}".format(result))
-    demisto.results('ok')
+    if result:
+        demisto.results('ok')
 
 
 LOG('command is %s' % (demisto.command(),))
