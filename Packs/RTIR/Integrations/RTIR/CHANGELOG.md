@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed bug in the ***fetch-incidents*** and ***search-tickets*** commands.
+Fixed an issue where the ***fetch-incidents*** and ***search-tickets*** commands did not behave as expected.
 
 
 ## [20.4.0] - 2020-04-14
