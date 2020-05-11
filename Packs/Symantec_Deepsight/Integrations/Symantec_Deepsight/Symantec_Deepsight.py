@@ -255,15 +255,15 @@ def gen_file_malicious_data(file_data_json, dbotscore):
 
 def create_deepsight_ip_entry_context(generic_entry_context, ip_data_json):
     network_data = ip_data_json.get("network", None)
-    first_seen_date = ip_data_json.get("firstSeen", "")
-    first_seen_date = convert_deepsight_date_to_demisto_format(first_seen_date)
-    last_seen_date = ip_data_json.get("lastSeen", "")
-    last_seen_date = convert_deepsight_date_to_demisto_format(last_seen_date)
+    first_seen = ip_data_json.get("firstSeen", "")
+    first_seen_date = convert_deepsight_date_to_demisto_format(first_seen)
+    last_seen = ip_data_json.get("lastSeen", "")
+    last_seen_date = convert_deepsight_date_to_demisto_format(last_seen)
 
     deepsight_ip_entry_context = {
         'Whitelisted': ip_data_json.get("whitelisted", ""),
-        'FirstSeen': ip_data_json.get("firstSeen", ""),
-        'LastSeen': ip_data_json.get("lastSeen", ""),
+        'FirstSeen': first_seen_date,
+        'LastSeen': last_seen_date,
         'ReputationValues': create_reputation_values_context(ip_data_json),
         'Report': return_mati_report_entry_context(ip_data_json),
         'ProxyType': "",
