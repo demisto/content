@@ -4,12 +4,13 @@ This playbook uses several sub playbooks to process and tag indicators, which is
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* TIM - Process Indicators Against Business Partners Domains List
+* TIM - Process Indicators Against Approved Hash List
+* TIM - Process Indicators Against Business Partners IP List
+* TIM - Process CIDR Indicators By Size
 * TIM - Process Indicators Against Business Partners URL List
 * TIM - Process File Indicators With File Hash Type
-* TIM - Process Indicators Against Business Partners IP List
-* TIM - Process Indicators Against Approved Hash List
 * TIM - Process Indicators Against Organizations External IP List
-* TIM - Process Indicators Against Business Partners Domains List
 
 ### Integrations
 This playbook does not use any integrations.

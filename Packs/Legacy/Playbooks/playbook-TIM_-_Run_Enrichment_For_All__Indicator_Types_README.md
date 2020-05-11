@@ -9,8 +9,8 @@ This playbook performs enrichment on indicators
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* TIM - Run Enrichment For Domain Indicators
 * TIM - Run Enrichment For Hash Indicators
+* TIM - Run Enrichment For Domain Indicators
 * TIM - Run Enrichment For IP Indicators
 * TIM - Run Enrichment For Url Indicators
 
@@ -26,9 +26,9 @@ This playbook does not use any commands.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 
 ## Playbook Outputs
 ---
