@@ -646,13 +646,13 @@
             "playbookID": "Google-Vault-Generic-Test",
             "nightly": true,
             "timeout": 3600,
-            "memory_threshold": 80
+            "memory_threshold": 120
         },
         {
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
-            "memory_threshold": 80,
+            "memory_threshold": 120,
             "timeout": 3600
         },
         {
@@ -2899,10 +2899,12 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
+
         "_comment": "~~~ OTHER ~~~",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
