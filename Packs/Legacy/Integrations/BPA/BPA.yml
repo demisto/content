@@ -41,6 +41,14 @@ script:
     description: Submits a job to the BPA job queue.
     execution: false
     name: pan-os-bpa-submit-job
+    arguments:
+      - name: generate_zip_bundle
+        auto: PREDEFINED
+        predefined:
+          - "false"
+          - "true"
+        description: Whether to download the Panorama report. Can be "true" or "false". Default is "false".
+        defaultValue: "false"
     outputs:
     - contextPath: PAN-OS-BPA.SubmittedJob.JobID
       description: Submitted Job ID, used to query results when job is done.
@@ -66,7 +74,25 @@ script:
     - contextPath: PAN-OS-BPA.JobResults.Checks
       description: The list of checks.
       type: Unknown
-  dockerimage: demisto/python3:3.7.5.4583
+    - contextPath: InfoFile.Name
+      description: File name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: File entry ID
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
+  dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false
   longRunning: false
