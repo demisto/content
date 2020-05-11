@@ -164,7 +164,28 @@ There are no input arguments for this command.
     <li>permission 2</li>
 </ul>
 <h5>Input</h5>
-There are no input arguments for this command.
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>generate_zip_bundle</td>
+      <td>Whether to download the Panorama report. Can be "true" or "false". Default is "false".</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
 <p>&nbsp;</p>
 <h5>Context Output</h5>
 <table style="width:750px" border="2" cellpadding="6">
