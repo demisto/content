@@ -1,0 +1,100 @@
+commonfields:
+  id: MimecastQuery
+  version: -1
+name: MimecastQuery
+script: |2
+
+  resp = demisto.executeCommand("mimecast-query", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Mimecast
+comment: query mimecast emails
+system: true
+args:
+- default: true
+  description: The query string xml for the search using Mimecast Unified Search Experience
+    (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262, using this
+    will override other query arguments
+  name: queryXml
+- auto: PREDEFINED
+  description: search for this text in api messages
+  name: text
+- auto: PREDEFINED
+  description: Will no execute the query, but just return the query string builded
+  name: dryRun
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  description: Search in specific dates only
+  name: date
+  predefined:
+  - today
+  - yesterday
+  - last_week
+  - last_month
+  - last_year
+- description: search emails from date, format 2015-09-21T23:00:00Z
+  name: dateFrom
+- description: search emails to date, format 2015-09-21T23:00:00Z
+  name: dateTo
+- description: filter on messages to a specific address
+  name: sentTo
+- description: filter on messages from a specific address
+  name: sentFrom
+- description: search email by subject, will override the text argument
+  name: subject
+- auto: PREDEFINED
+  description: optional - messages with and without attachments any - messages with
+    any attachment documents - messages with doc, dot, docx, docm, dotx, dotm, pdf,
+    rtf, html attachments spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx,
+    xltm, xlsb, xlam, csv attachments presentations - messages with ppt, pptx, pptm,
+    potx, potm, ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages
+    with txt, text, html, log attachments images - messages with jpg, jpeg, png, bmp,
+    gif, psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg,
+    avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz, gzip,
+    7z attachments none - No attachments are to be present in the results
+  name: attachmentType
+  predefined:
+  - optional
+  - any
+  - documents
+  - spreadsheets
+  - presentations
+  - text
+  - images
+  - media
+  - zips
+  - none
+- description: search for text in attachments
+  name: attachmentText
+- description: search email by text in body, will override the text and subject arguments
+  name: body
+- description: Sets the number of results to return per page (default 25)
+  name: pageSize
+- description: Sets the result to start returning results (default 0)
+  name: startRow
+- auto: PREDEFINED
+  description: Defines if the search should query recently received messages that
+    are not fully indexed yet (default false). You can search by mailbox and date
+    time across active messages
+  name: active
+  predefined:
+  - 'true'
+  - 'false'
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - mimecast-query
