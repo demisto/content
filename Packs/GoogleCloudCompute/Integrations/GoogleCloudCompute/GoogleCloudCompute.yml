@@ -12790,11 +12790,59 @@ script:
     - contextPath: GoogleCloudCompute.Operations.kind
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
-  dockerimage: demisto/google-api:1.0.0.235 # disable-secrets-detection
+  - arguments:
+    - default: false
+      description: 'Metadata to be made available to the guest operating system running
+        on the instances. Each entry is a key/value pair separated by '';'' like so:
+        key=abc,value=123;key=abc,value=123'
+      isArray: false
+      name: metadata
+      required: true
+      secret: false
+    deprecated: false
+    description: Add or update project wide metadata.
+    execution: false
+    name: gcp-compute-project-info-add-metadata
+    outputs:
+    - contextPath: GoogleCloudCompute.ProjectMetadata.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GoogleCloudCompute.ProjectMetadata.insertTime
+      description: The time that this operation was started by the server.
+      type: Date
+    - contextPath: GoogleCloudCompute.ProjectMetadata.selfLink
+      description: Server-defined URL for the project.
+      type: String
+    - contextPath: GoogleCloudCompute.ProjectMetadata.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GoogleCloudCompute.ProjectMetadata.name
+      description: Name of the operation.
+      type: String
+    - contextPath: GoogleCloudCompute.ProjectMetada.progress
+      description: Progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GoogleCloudCompute.ProjectMetadata.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GoogleCloudCompute.ProjectMetadata.startTime
+      description: The time that this operation was started by the server.
+      type: String
+    - contextPath: GoogleCloudCompute.ProjectMetadata.status
+      description: The status of the operation, which can be one of the following PENDING, RUNNING, or DONE
+      type: String
+    - contextPath: GoogleCloudCompute.ProjectMetadata.kind
+      description: Type of the resource. Always compute#operation.
+      type: String
+  dockerimage45: demisto/google-api:1.0.0.235
+  dockerimage: demisto/google-api:1.0.0.7874
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python2
   type: python
-  subtype: python3
 tests:
 - No tests

@@ -3,6 +3,7 @@ New changes to HelloWorld:
  - Improved Test Playbook reliability
  - Added Standard Context data for domain output
  - Converted output timestamps in ISO8601
+ - Support for Common functions and CommandResults
  - Minor bug fixes
 
 ## [20.4.1] - 2020-04-29

@@ -132,19 +132,18 @@ class Client:
         :param last_run: Integration's last run
         """
         last_timestamp: str = last_run.get('last_timestamp', self.first_fetch)  # type: ignore
-
         query_string = f'detection.threat:>={self.t_score_gte}'
         query_string += f' and detection.certainty:>={self.c_score_gte}'
-        query_string += f' and detection.last_timestamp:>{last_timestamp}'
+        query_string += f' and detection.last_timestamp:>{last_timestamp}'  # format: "%Y-%m-%dT%H%M"
         query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
+        demisto.info(f'\n\nQuery String:\n{query_string}\n\n')
         params = {
             'query_string': query_string,
             'page_size': self.fetch_size,
             'page': 1,
         }
-
         raw_response = self.http_request(params=params, url_suffix='search/detections')  # type: ignore
-
+        demisto.info("\n\n Queried Successfully\n\n")
         # Detections -> Incidents, if exists
         incidents = []
         if 'results' in raw_response:
@@ -154,14 +153,17 @@ class Client:
             try:
                 for detection in detections:
                     incidents.append(create_incident_from_detection(detection))  # type: ignore
-                    last_timestamp = max_timestamp(last_timestamp, detection.get('last_timestamp'))  # type: ignore
+                    # format from response: %Y-%m-%dT%H:%M:%SZ
+                    response_last_timestamp = datetime.strptime(detection.get('last_timestamp'),    # type: ignore
+                                                                "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H%M")
+                    last_timestamp = max_timestamp(last_timestamp, response_last_timestamp)  # type: ignore
 
                 if incidents:
                     last_run = {'last_timestamp': last_timestamp}
 
             except ValueError:
                 raise
-
+        demisto.info(f"Last run is:\n {last_run}")
         return last_run, incidents
 
 
