@@ -4,7 +4,7 @@ import ast
 import json
 import demisto_client
 from threading import Thread, Lock
-from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS, run_threads_list
+from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list
 
 
 def get_pack_display_name(pack_id):
@@ -140,11 +140,13 @@ def search_pack(client, prints_manager, pack_display_name):
         raise Exception(err_msg)
 
 
-def install_packs(client, packs_to_install):
+def install_packs(client, host, prints_manager, packs_to_install):
     """ Make a packs installation request.
 
     Args:
         client (demisto_client): The configured client to use.
+        host (str): The server URL.
+        prints_manager (ParallelPrintsManager): Print manager object.
         packs_to_install (list): A list of the packs to install.
     """
 
@@ -161,7 +163,12 @@ def install_packs(client, packs_to_install):
                                                                             body=request_data,
                                                                             accept='application/json')
 
-        if not 200 <= status_code < 300:
+        if 200 <= status_code < 300:
+            packs_str = '\n'.join(packs_to_install)
+            message = 'Successully installed the following packs in server {}:\n{}'.format(host, packs_str)
+            prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
+            prints_manager.execute_thread_prints(0)
+        else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
             err_msg = 'Failed to install packs - with status code {}\n{}'.format(status_code, message)
@@ -232,12 +239,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         threads_list.append(thread)
     run_threads_list(threads_list)
 
-    install_packs(client, installation_request_body)
-
-    packs_str = '\n'.join(packs_to_install)
-    message = 'Successully installed the following packs in server {}:\n{}'.format(host, packs_str)
-    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
-    prints_manager.execute_thread_prints(0)
+    install_packs(client, host, prints_manager, installation_request_body)
 
     return packs_to_install
-
