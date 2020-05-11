@@ -14,6 +14,7 @@ script: |-
       raise Exception('Score not equal 2: {} for response: {}'.format(score, res[0]))
   demisto.results("finished verifying result: " + json.dumps(res, indent=2))
 type: python
+subtype: python2
 tags: []
 comment: Script to test RegPathReputationBasicList and see the proper Contents output
   is returned

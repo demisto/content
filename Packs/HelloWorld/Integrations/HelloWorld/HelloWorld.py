@@ -117,7 +117,8 @@ and exception handling for HTTP errors.
 
 Note that the Client class should NOT contain any Cortex XSOAR specific code,
 i.e. it shouldn't use anything in the ``demisto`` class (functions such as
-``demisto.args()`` or ``demisto.results()`` or even ``return_outputs``.
+``demisto.args()`` or ``demisto.results()`` or even ``return_results`` and
+``return_error``.
 You will use the Command Functions to handle XSOAR inputs and outputs.
 
 When calling an API, you should use the ``_http.request()`` method and you
@@ -144,10 +145,12 @@ Command Functions
 
 Command functions perform the mapping between XSOAR inputs and outputs to the
 Client class functions inputs and outputs. As a best practice, they shouldn't
-contain calls to ``demisto.args()``, ``demisto.results()``, ``return_outputs``,
-``return_error`` and ``demisto.command()`` as they should be handled through
-the ``main()`` function.
-However it's possible to use some ``demisto`` or ``CommonServerPython.py``.
+contain calls to ``demisto.args()``, ``demisto.results()``, ``return_error``
+and ``demisto.command()`` as those should be handled through the ``main()``
+function.
+However, in command functions, use ``demisto`` or ``CommonServerPython.py``
+artifacts, such as ``demisto.debug()`` or the ``CommandResults`` class and the
+``Common.*`` classes.
 Usually you will have one command function for every specific XSOAR command
 you want to implement in your integration, plus ``test-module``,
 ``fetch-incidents`` and ``fetch-indicators``(if the latter two are supported
@@ -155,25 +158,40 @@ by your integration). Each command function should invoke one specific function
 of the Client class.
 
 Command functions, when invoked through an XSOAR command usually return data
-that is then passed to ``return_outputs()`` in the ``main()`` function.
-``return_outputs()`` is defined in ``CommonServerPython.py``) to return
-the data to XSOAR. ``return_outputs()`` actually wraps ``demisto.results()``.
-You will use ``demisto.results()`` only in specific conditions (i.e. check the
-``scan_results_command`` function here that has the option to return a file).
+using the ``CommandResults`` class, that is then passed to ``return_results()``
+in the ``main()`` function.
+``return_results()`` is defined in ``CommonServerPython.py`` to return
+the data to XSOAR. ``return_results()`` actually wraps ``demisto.results()``.
+You should never use ``demisto.results()`` directly.
 
-When you use return in command functions, you usually return up to 3 types of
-data:
+Sometimes you will need to return values in a format that is not compatible
+with ``CommandResults`` (for example files): in that case you must return a
+data structure that is then pass passed to ``return.results()``. (i.e.
+check the ``scan_results_command`` function in this file that has the option
+to return a file to Cortex XSOAR).
+
+In any case you should never call ``return_results()`` directly from the
+command functions.
+
+When you use create the CommandResults object in command functions, you
+usually pass some types of data:
 
 - Human Readable: usually in Markdown format. This is what is presented to the
 analyst in the War Room. You can use ``tableToMarkdown()``, defined in
-``CommonServerPython.py`` to convert lists and dicts in Markdown.
+``CommonServerPython.py``, to convert lists and dicts in Markdown and pass it
+to ``return_results()`` using the ``readable_output`` argument, or the
+``return_results()`` function will call ``tableToMarkdown()`` automatically for
+you.
 
 - Context Output: this is the machine readable data, JSON based, that XSOAR can
 parse and manage in the Playbooks or Incident's War Room. The Context Output
 fields should be defined in your integration YML file and is important during
 the design phase. Make sure you define the format and follow best practices.
 You can use ``demisto-sdk json-to-outputs`` to autogenerate the YML file
-outputs section.
+outputs section. Context output is passed as the ``outputs`` argument in ``demisto_results()``,
+and the prefix (i.e. ``HelloWorld.Alert``) is passed via the ``outputs_prefix``
+argument.
+
 More information on Context Outputs, Standards, DBotScore and demisto-sdk:
 https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
 https://xsoar.pan.dev/docs/integrations/context-and-outputs
@@ -186,17 +204,19 @@ return updated information for an entity, to update it and not append to
 the list of entities (i.e. in HelloWorld you want to update the status of an
 existing ``HelloWorld.Alert`` in the context when you retrieve it, rather than
 adding a new one if you already retrieved it). To update data in the Context,
-you can use a DT transform that uses the following format (using the example):
-``HelloWorld.Alert(val.alert_id == obj.alert_id): alert_data``. This makes sure
-that you are using the ``alert_id`` key to determine whether adding a new entry
-in the context or updating an existing one that has the same ID. You can look
-at the examples to understand how it works.
+you can define which is the key attribute to use, such as (using the example):
+``outputs_key_field='alert_id'``. This means that you are using the ``alert_id``
+key to determine whether adding a new entry in the context or updating an
+existing one that has the same ID. You can look at the examples to understand
+how it works.
 More information here:
+https://xsoar.pan.dev/docs/integrations/context-and-outputs
 https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
 https://xsoar.pan.dev/docs/integrations/dt
 
 - Raw Output: this is usually the raw result from your API and is used for
 troubleshooting purposes or for invoking your command from Automation Scripts.
+If not specified, ``return_results()`` will use the same data as ``outputs``.
 
 
 Main Function
@@ -206,7 +226,7 @@ The ``main()`` function takes care of reading the integration parameters via
 the ``demisto.params()`` function, initializes the Client class and checks the
 different options provided to ``demisto.commands()``, to invoke the correct
 command function passing to it ``demisto.args()`` and returning the data to
-``return_outputs()``. If implemented, ``main()`` also invokes the function
+``return_results()``. If implemented, ``main()`` also invokes the function
 ``fetch_incidents()``with the right parameters and passes the outputs to the
 ``demisto.incidents()`` function. ``main()`` also catches exceptions and
 returns an error message via ``return_error()``.
@@ -216,7 +236,7 @@ Entry Point
 -----------
 
 This is the integration code entry point. It checks whether the ``__name__``
-variable is `__main__` , `__builtin__` (for Python 2) or `builtins` (for
+variable is ``__main__`` , ``__builtin__`` (for Python 2) or ``builtins`` (for
 Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
@@ -229,7 +249,7 @@ import json
 import requests
 import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, cast
+from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -452,6 +472,31 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
+    """Converts whois date format to an ISO8601 string
+
+    Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
+    in a datetime. If a list is returned with multiple elements, takes only
+    the first one.
+
+    :type domain_date: ``Union[List[str],str]``
+    :param severity:
+        a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
+
+    :return: Parsed time in ISO8601 format
+    :rtype: ``Optional[str]``
+    """
+
+    if isinstance(domain_date, str):
+        # if str parse the value
+        return dateparser.parse(domain_date).strftime(date_format)
+    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
+        # if list with at least one element, parse the first element
+        return dateparser.parse(domain_date[0]).strftime(date_format)
+    # in any other case return nothing
+    return None
+
+
 def convert_to_demisto_severity(severity: str) -> int:
     """Maps HelloWorld severity to Cortex XSOAR severity
 
@@ -604,7 +649,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     return 'ok'
 
 
-def say_hello_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, str]:
+def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """helloworld-say-hello command: Returns Hello {somename}
 
     :type client: ``Client``
@@ -616,15 +661,10 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, 
         ``args['name']`` is used as input name
 
     :return:
-        A tuple containing three elements that is then passed to ``return_outputs``:
-            readable_output (``str``): This will be presented in the war room
-                    should be in markdown syntax - human readable
-            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
-                    to be used as inputs for other tasks in the playbook
-            raw_response (``str``): Used for debugging/troubleshooting purposes
-                    will be shown only if the command executed with ``raw-response=true``
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains the hello world message
 
-    :rtype: ``Tuple[str, dict, str]``
+    :rtype: ``CommandResults``
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -642,21 +682,20 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, 
     # Create the human readable output.
     # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
     # More complex output can be formatted using ``tableToMarkDown()`` defined
-    # in ``CommonServerPython.py```
+    # in ``CommonServerPython.py``
     readable_output = f'## {result}'
 
-    # Create the Context Output.
     # More information about Context:
     # https://xsoar.pan.dev/docs/integrations/context-and-outputs
-    outputs = {
-        'hello': result
-    }
-
-    # Return the tuple with 3 elements
-    return (
-        readable_output,   # human readable format - markdown
-        outputs,   # XSOAR context format
-        result  # raw response - the original response from Client
+    # We return a ``CommandResults`` object, and we want to pass a custom
+    # markdown here, so the argument ``readable_output`` is explicit. If not
+    # passed, ``CommandResults``` will do a ``tableToMarkdown()`` do the data
+    # to generate the readable output.
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='hello',
+        outputs_key_field='',
+        outputs=result
     )
 
 
@@ -744,7 +783,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the HelloWorld API response
-        incident_created_time = int(alert.get('created', 0))
+        incident_created_time = int(alert.get('created', '0'))
         incident_created_time_ms = incident_created_time * 1000
 
         # If no name is present it will throw an exception
@@ -772,9 +811,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
             # 'details': alert['name'],
             'occurred': timestamp_to_datestring(incident_created_time_ms),
             'rawJSON': json.dumps(alert),
-            # 'type': 'Hello World Alert',
+            # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
             'severity': convert_to_demisto_severity(alert.get('severity', 'Low')),
-            # 'CustomFields': {
+            # 'CustomFields': {  # Map specific XSOAR Custom Fields
             #     'helloworldid': alert.get('alert_id'),
             #     'helloworldstatus': alert.get('alert_status'),
             #     'helloworldtype': alert.get('alert_type')
@@ -792,7 +831,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> Tuple[str, dict, Any]:
+def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> CommandResults:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
@@ -810,15 +849,10 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         if threshold is not specified in the XSOAR arguments
 
     :return:
-        A tuple containing three elements that is then passed to ``return_outputs``:
-            readable_output (``str``): This will be presented in the war room
-                    should be in markdown syntax - human readable
-            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
-                    to be used as inputs for other tasks in the playbook
-            raw_response (``Any``): Used for debugging/troubleshooting purposes
-                    will be shown only if the command executed with ``raw-response=true``
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains IPs
 
-    :rtype: ``Tuple[str, dict, Any]``
+    :rtype: ``CommandResults``
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -838,8 +872,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     # where threshold is an actual argument of the command.
     threshold = int(args.get('threshold', default_threshold))
 
-    dbot_score_list: List[Dict[str, Any]] = []
-    ip_standard_list: List[Dict[str, Any]] = []
+    # Context standard for IP class
+    ip_standard_list: List[Common.IP] = []
     ip_data_list: List[Dict[str, Any]] = []
 
     for ip in ips:
@@ -848,17 +882,19 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
         # HelloWorld score to XSOAR reputation mapping
         # See: https://xsoar.pan.dev/docs/integrations/dbot
+        # We are using Common.DBotScore as macros to simplify
+        # the mapping.
 
         score = 0
         reputation = int(ip_data.get('score', 0))
         if reputation == 0:
-            score = 0  # unknown
-        if reputation >= threshold:
-            score = 3  # bad
+            score = Common.DBotScore.NONE  # unknown
+        elif reputation >= threshold:
+            score = Common.DBotScore.BAD  # bad
         elif reputation >= threshold / 2:
-            score = 2  # suspicious
+            score = Common.DBotScore.SUSPICIOUS  # suspicious
         else:
-            score = 1  # good
+            score = Common.DBotScore.GOOD  # good
 
         # The context is bigger here than other commands, as it consists in 3
         # parts: the vendor-specific context (HelloWorld), the standard-context
@@ -867,28 +903,26 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # https://xsoar.pan.dev/docs/integrations/context-and-outputs
         # https://xsoar.pan.dev/docs/integrations/context-standards
         # https://xsoar.pan.dev/docs/integrations/dbot
-        # Also check the sample Design Document
+        # Also check the HelloWorld Design Document
 
-        dbot_score = {
-            'Indicator': ip,
-            'Vendor': 'HelloWorld',
-            'Type': 'ip',
-            'Score': score
-        }
-        ip_standard_context = {
-            'Address': ip,
-            'ASN': ip_data.get('asn')
-        }
+        # Create the DBotScore structure first using the Common.DBotScore class.
+        dbot_score = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name='HelloWorld',
+            score=score,
+            malicious_description=f'Hello World returned reputation {reputation}'
+        )
 
-        if score == 3:
-            # if score is bad must add DBotScore Vendor and Description
-            ip_standard_context['Malicious'] = {
-                'Vendor': 'HelloWorld',
-                'Description': f'Hello World returned reputation {reputation}'
-            }
+        # Create the IP Standard Context structure using Common.IP and add
+        # dbot_score to it.
+        ip_standard_context = Common.IP(
+            ip=ip,
+            asn=ip_data.get('asn'),
+            dbot_score=dbot_score
+        )
 
         ip_standard_list.append(ip_standard_context)
-        dbot_score_list.append(dbot_score)
 
         # INTEGRATION DEVELOPER TIP
         # In the integration specific Context output (HelloWorld.IP) in this
@@ -903,33 +937,29 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # To generate the Context Outputs on the YML use ``demisto-sdk``'s
         # ``json-to-outputs`` option.
 
-        # define which fields we want to exclude from the context output as
+        # Define which fields we want to exclude from the context output as
         # they are too verbose.
         ip_context_excluded_fields = ['objects', 'nir']
         ip_data_list.append({k: ip_data[k] for k in ip_data if k not in ip_context_excluded_fields})
 
+    # In this case we want to use an custom markdown to specify the table title,
+    # but otherwise ``CommandResults()`` will call ``tableToMarkdown()``
+    #  automatically
+    readable_output = tableToMarkdown('IP List', ip_data_list)
+
     # INTEGRATION DEVELOPER TIP
-    # The ``val.Vandor == obj.Vendor && val.Indicator == obj.Indicator`` syntax
-    # is a DT transform that is used to update entities in the context rather
-    # than appending it every time. It's very important to use it every time you
-    # output data in the context that can be updated.
-    # More information: https://xsoar.pan.dev/docs/integrations/dt
-    outputs = {
-        'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score_list,
-        outputPaths['ip']: ip_standard_list,
-        'HelloWorld.IP(val.ip == obj.ip)': ip_data_list
-    }
-
-    readable_output = tableToMarkdown('IP List', ip_standard_list)
-
-    return (
-        readable_output,
-        outputs,
-        ip_data_list
+    # The output key will be ``HelloWorld.IP``, using ``ip`` as the key field.
+    # ``indicators`` is used to provide the context standard (IP)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='HelloWorld.IP',
+        outputs_key_field='ip',
+        outputs=ip_data_list,
+        indicators=ip_standard_list
     )
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> Tuple[str, dict, Any]:
+def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> CommandResults:
     """domain command: Returns domain reputation for a list of domains
 
     :type client: ``Client``
@@ -947,15 +977,10 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
         if threshold is not specified in the XSOAR arguments
 
     :return:
-        A tuple containing three elements that is then passed to ``return_outputs``:
-            readable_output (``str``): This will be presented in the war room
-                    should be in markdown syntax - human readable
-            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
-                    to be used as inputs for other tasks in the playbook
-            raw_response (``Any``): Used for debugging/troubleshooting purposes
-                    will be shown only if the command executed with ``raw-response=true``
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains Domains
 
-    :rtype: ``Tuple[str, dict, Any]``
+    :rtype: ``CommandResults``
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -971,28 +996,42 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
 
     threshold = int(args.get('threshold', default_threshold))
 
-    dbot_score_list: List[Dict[str, Any]] = []
-    domain_standard_list: List[Dict[str, Any]] = []
+    # Context standard for Domain class
+    domain_standard_list: List[Common.Domain] = []
+
     domain_data_list: List[Dict[str, Any]] = []
 
     for domain in domains:
         domain_data = client.get_domain_reputation(domain)
         domain_data['domain'] = domain
 
+        # INTEGRATION DEVELOPER TIP
+        # We want to convert the dates to ISO8601 as
+        # Cortex XSOAR customers and integrations use this format by default
+        if 'creation_date' in domain_data:
+            domain_data['creation_date'] = parse_domain_date(domain_data['creation_date'])
+        if 'expiration_date' in domain_data:
+            domain_data['expiration_date'] = parse_domain_date(domain_data['expiration_date'])
+        if 'updated_date' in domain_data:
+            domain_data['updated_date'] = parse_domain_date(domain_data['updated_date'])
+
         # HelloWorld score to XSOAR reputation mapping
         # See: https://xsoar.pan.dev/docs/integrations/dbot
+        # We are using Common.DBotScore as macros to simplify
+        # the mapping.
 
         score = 0
         reputation = int(domain_data.get('score', 0))
         if reputation == 0:
-            score = 0  # unknown
-        if reputation >= threshold:
-            score = 3  # bad
+            score = Common.DBotScore.NONE  # unknown
+        elif reputation >= threshold:
+            score = Common.DBotScore.BAD  # bad
         elif reputation >= threshold / 2:
-            score = 2  # suspicious
+            score = Common.DBotScore.SUSPICIOUS  # suspicious
         else:
-            score = 1  # good
+            score = Common.DBotScore.GOOD  # good
 
+        # INTEGRATION DEVELOPER TIP
         # The context is bigger here than other commands, as it consists in 3
         # parts: the vendor-specific context (HelloWorld), the standard-context
         # (Domain) and the DBotScore.
@@ -1002,49 +1041,51 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
         # https://xsoar.pan.dev/docs/integrations/dbot
         # Also check the sample Design Document
 
-        dbot_score = {
-            'Indicator': domain,
-            'Vendor': 'HelloWorld',
-            'Type': 'domain',
-            'Score': score
-        }
-        domain_standard_context = {
-            'Name': domain,
-        }
+        dbot_score = Common.DBotScore(
+            indicator=domain,
+            integration_name='HelloWorld',
+            indicator_type=DBotScoreType.DOMAIN,
+            score=score,
+            malicious_description=f'Hello World returned reputation {reputation}'
+        )
 
-        if score == 3:
-            # if score is bad must add DBotScore Vendor and Description
-            domain_standard_context['Malicious'] = {
-                'Vendor': 'HelloWorld',
-                'Description': f'Hello World returned reputation {reputation}'
-            }
+        # Create the Domain Standard Context structure using Common.Domain and
+        # add dbot_score to it.
+        domain_standard_context = Common.Domain(
+            domain=domain,
+            creation_date=domain_data.get('creation_date', None),
+            expiration_date=domain_data.get('expiration_date', None),
+            updated_date=domain_data.get('updated_date', None),
+            organization=domain_data.get('org', None),
+            name_servers=domain_data.get('name_servers', None),
+            registrant_name=domain_data.get('name', None),
+            registrant_country=domain_data.get('country', None),
+            registrar_name=domain_data.get('registrar', None),
+            dbot_score=dbot_score
+        )
 
         domain_standard_list.append(domain_standard_context)
-        dbot_score_list.append(dbot_score)
         domain_data_list.append(domain_data)
 
+    # In this case we want to use an custom markdown to specify the table title,
+    # but otherwise ``CommandResults()`` will call ``tableToMarkdown()``
+    #  automatically
+    readable_output = tableToMarkdown('Domain List', domain_data_list)
+
     # INTEGRATION DEVELOPER TIP
-    # The ``val.Vandor == obj.Vendor && val.Indicator == obj.Indicator`` syntax
-    # is a DT transform that is used to update entities in the context rather
-    # than appending it every time. It's very important to use it every time you
-    # output data in the context that can be updated.
-    # More information: https://xsoar.pan.dev/docs/integrations/dt
-    outputs = {
-        'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score_list,
-        outputPaths['domain']: domain_standard_list,
-        'HelloWorld.Domain(val.domain == obj.domain)': domain_data_list
-    }
-
-    readable_output = tableToMarkdown('Domain List', domain_standard_list)
-
-    return (
-        readable_output,
-        outputs,
-        domain_data_list
+    # The output key will be ``HelloWorld.Domain``, using ``domain`` as the key
+    # field.
+    # ``indicators`` is used to provide the context standard (Domain)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='HelloWorld.Domain',
+        outputs_key_field='domain',
+        outputs=domain_data_list,
+        indicators=domain_standard_list
     )
 
 
-def search_alerts_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, Any]:
+def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """helloworld-search-alerts command: Search alerts in HelloWorld
 
     :type client: ``Client``
@@ -1060,15 +1101,10 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> Tuple[str, di
         ``args['max_results']`` maximum number of results to return
 
     :return:
-        A tuple containing three elements that is then passed to ``return_outputs``:
-            readable_output (``str``): This will be presented in the war room
-                    should be in markdown syntax - human readable
-            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
-                    to be used as inputs for other tasks in the playbook
-            raw_response (``Any``): Used for debugging/troubleshooting purposes
-                    will be shown only if the command executed with ``raw-response=true``
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains alerts
 
-    :rtype: ``Tuple[str, dict, Any]``
+    :rtype: ``CommandResults``
     """
 
     status = args.get('status')
@@ -1108,19 +1144,25 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> Tuple[str, di
         max_results=max_results
     )
 
-    readable_output = tableToMarkdown('HelloWorld Alerts', alerts)
-    outputs = {
-        'HelloWorld.Alert(val.alert_id == obj.alert_id)': alerts
-    }
+    # INTEGRATION DEVELOPER TIP
+    # We want to convert the "created" time from timestamp(s) to ISO8601 as
+    # Cortex XSOAR customers and integrations use this format by default
+    for alert in alerts:
+        if 'created' not in alert:
+            continue
+        created_time_ms = int(alert.get('created', '0')) * 1000
+        alert['created'] = timestamp_to_datestring(created_time_ms)
 
-    return (
-        readable_output,
-        outputs,
-        alerts
+    # in this example we are not providing a custom markdown, we will
+    # let ``CommandResults`` generate it by default.
+    return CommandResults(
+        outputs_prefix='HelloWorld.Alert',
+        outputs_key_field='alert_id',
+        outputs=alerts
     )
 
 
-def get_alert_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """helloworld-get-alert command: Returns a HelloWorld alert
 
     :type client: ``Client``
@@ -1132,15 +1174,10 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, 
         ``args['alert_id']`` alert ID to return
 
     :return:
-        A tuple containing three elements that is then passed to ``return_outputs``:
-            readable_output (``str``): This will be presented in the war room
-                    should be in markdown syntax - human readable
-            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
-                    to be used as inputs for other tasks in the playbook
-            raw_response (``dict``): Used for debugging/troubleshooting purposes
-                    will be shown only if the command executed with ``raw-response=true``
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains an alert
 
-    :rtype: ``Tuple[str, dict, dict]``
+    :rtype: ``CommandResults``
     """
 
     alert_id = args.get('alert_id', None)
@@ -1149,21 +1186,26 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, 
 
     alert = client.get_alert(alert_id=alert_id)
 
-    # tabletoMarkdown() is defined is CommonServerPython.py and is used very
+    # INTEGRATION DEVELOPER TIP
+    # We want to convert the "created" time from timestamp(s) to ISO8601 as
+    # Cortex XSOAR customers and integrations use this format by default
+    if 'created' in alert:
+        created_time_ms = int(alert.get('created', '0')) * 1000
+        alert['created'] = timestamp_to_datestring(created_time_ms)
+
+    # tableToMarkdown() is defined is CommonServerPython.py and is used very
     # often to convert lists and dicts into a human readable format in markdown
     readable_output = tableToMarkdown(f'HelloWorld Alert {alert_id}', alert)
-    outputs = {
-        'HelloWorld.Alert(val.alert_id == obj.alert_id)': alert
-    }
 
-    return (
-        readable_output,
-        outputs,
-        alert
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='HelloWorld.Alert',
+        outputs_key_field='alert_id',
+        outputs=alert
     )
 
 
-def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+def update_alert_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """helloworld-update-alert-status command: Changes the status of an alert
 
     Changes the status of a HelloWorld alert and returns the updated alert info
@@ -1178,15 +1220,10 @@ def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Tuple[s
         ``args['status']`` new status, either ACTIVE or CLOSED
 
     :return:
-        A tuple containing three elements that is then passed to ``return_outputs``:
-            readable_output (``str``): This will be presented in the war room
-                    should be in markdown syntax - human readable
-            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
-                    to be used as inputs for other tasks in the playbook
-            raw_response (``dict``): Used for debugging/troubleshooting purposes
-                    will be shown only if the command executed with ``raw-response=true``
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains an updated alert
 
-    :rtype: ``Tuple[str, dict, dict]``
+    :rtype: ``CommandResults``
     """
 
     alert_id = args.get('alert_id', None)
@@ -1199,21 +1236,26 @@ def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Tuple[s
 
     alert = client.update_alert_status(alert_id, status)
 
-    # tabletoMarkdown() is defined is CommonServerPython.py and is used very
+    # INTEGRATION DEVELOPER TIP
+    # We want to convert the "updated" time from timestamp(s) to ISO8601 as
+    # Cortex XSOAR customers and integrations use this format by default
+    if 'updated' in alert:
+        updated_time_ms = int(alert.get('updated', '0')) * 1000
+        alert['updated'] = timestamp_to_datestring(updated_time_ms)
+
+    # tableToMarkdown() is defined is CommonServerPython.py and is used very
     # often to convert lists and dicts into a human readable format in markdown
     readable_output = tableToMarkdown(f'HelloWorld Alert {alert_id}', alert)
-    outputs = {
-        'HelloWorld.Alert(val.alert_id == obj.alert_id)': alert
-    }
 
-    return (
-        readable_output,
-        outputs,
-        alert
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='HelloWorld.Alert',
+        outputs_key_field='alert_id',
+        outputs=alert
     )
 
 
-def scan_start_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+def scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """helloworld-start-scan command: Starts a HelloWorld scan
 
     :type client: ``Client``
@@ -1225,15 +1267,10 @@ def scan_start_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
         ``args['hostname']`` hostname to run the scan on
 
     :return:
-        A tuple containing three elements that is then passed to ``return_outputs``:
-            readable_output (``str``): This will be presented in the war room
-                    should be in markdown syntax - human readable
-            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
-                    to be used as inputs for other tasks in the playbook
-            raw_response (``dict``): Used for debugging/troubleshooting purposes
-                    will be shown only if the command executed with ``raw-response=true``
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a scan job
 
-    :rtype: ``Tuple[str, dict, dict]``
+    :rtype: ``CommandResults``
     """
 
     hostname = args.get('hostname', None)
@@ -1252,17 +1289,16 @@ def scan_start_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict,
     scan_id = scan.get('scan_id')
 
     readable_output = f'Started scan {scan_id}'
-    outputs = {
-        'HelloWorld.Scan(val.scan_id == obj.scan_id)': scan
-    }
-    return (
-        readable_output,
-        outputs,
-        scan
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='HelloWorld.Scan',
+        outputs_key_field='scan_id',
+        outputs=scan
     )
 
 
-def scan_status_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict, Any]:
+def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """helloworld-scan-status command: Returns status for HelloWorld scans
 
     :type client: ``Client``
@@ -1274,15 +1310,10 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
         ``args['scan_id']`` list of scan IDs or single scan ID
 
     :return:
-        A tuple containing three elements that is then passed to ``return_outputs``:
-            readable_output (``str``): This will be presented in the war room
-                    should be in markdown syntax - human readable
-            outputs (``dict``): Dictionary/JSON - saved in the incident context in order
-                    to be used as inputs for other tasks in the playbook
-            raw_response (``Any``): Used for debugging/troubleshooting purposes
-                    will be shown only if the command executed with ``raw-response=true``
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a scan status
 
-    :rtype: ``Tuple[str, dict, Any]``
+    :rtype: ``CommandResults``
     """
 
     scan_id_list = argToList(args.get('scan_id', []))
@@ -1295,18 +1326,16 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> Tuple[str, dict
         scan_list.append(scan)
 
     readable_output = tableToMarkdown('Scan status', scan_list)
-    outputs = {
-        'HelloWorld.Scan(val.scan_id == obj.scan_id)': scan_list
-    }
 
-    return (
-        readable_output,
-        outputs,
-        scan_list
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='HelloWorld.Scan',
+        outputs_key_field='scan_id',
+        outputs=scan_list
     )
 
 
-def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
+def scan_results_command(client: Client, args: Dict[str, Any]) -> Union[Dict[str, Any], CommandResults]:
     """helloworld-scan-results command: Returns results for a HelloWorld scan
 
     :type client: ``Client``
@@ -1318,8 +1347,13 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
         ``args['scan_id']`` scan ID to retrieve results
         ``args['format']`` format of the results. Options are 'file' or 'json'
 
-    :return: ``None``, as it calls ``return_outputs()`` or `demisto.results()`` directly
-    :rtype:
+    :return:
+        A ``CommandResults`` compatible to return ``return_results()``,
+        that contains a scan result when json format is selected, or
+        A Dict of entries also compatible to ``return_results()`` that
+        contains the output file when file format is selected.
+
+    :rtype: ``Union[Dict[str, Any],CommandResults]``
     """
 
     scan_id = args.get('scan_id', None)
@@ -1332,14 +1366,15 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
     # This function supports returning data in multiple formats, either in a json
     # format that is then mapped to a table, or as a file attachment.
     # In this case, if the format is "file", the return value is different and
-    # uses ``demisto.results()`` and ``fileResult()`` instead of
-    # ``return_outputs()``. Always use ``return_outputs()`` when possible but,
-    # if you need to return anything special like a file, you can use this
-    # format.
+    # uses a raw format  and ``fileResult()`` directly instead of
+    # ``CommandResults``. In either case you should return data to main and
+    # call ``return_results()`` from there.
+    # Always use ``CommandResults`` when possible but, if you need to return
+    # anything special like a file, you can use this raw format.
 
     results = client.scan_results(scan_id=scan_id)
     if scan_format == 'file':
-        demisto.results(
+        return (
             fileResult(
                 filename=f'{scan_id}.json',
                 data=json.dumps(results, indent=4),
@@ -1350,21 +1385,22 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> None:
         # This scan returns CVE information. CVE is also part of the XSOAR
         # context standard, so we must extract CVE IDs and return them also.
         # See: https://xsoar.pan.dev/docs/integrations/context-standards#cve
-        cves: List[str] = []
+        cves: List[Common.CVE] = []
         entities = results.get('entities', [])
         for e in entities:
             if 'vulns' in e.keys() and isinstance(e['vulns'], list):
-                cves.extend(e['vulns'])
+                cves.extend([Common.CVE(id=c, cvss=None, published=None, modified=None, description=None) for c in e['vulns']])
 
-        markdown = tableToMarkdown(f'Scan {scan_id} results', entities)
-        return_outputs(
-            readable_output=markdown,
-            outputs={
-                'HelloWorld.Scan(val.scan_id == obj.scan_id)': results,
-                'CVE(val.ID == obj.ID).ID': list(set(cves))  # make the output unique
-            },
-            raw_response=results
+        readable_output = tableToMarkdown(f'Scan {scan_id} results', entities)
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='HelloWorld.Scan',
+            outputs_key_field='scan_id',
+            outputs=results,
+            indicators=list(set(cves))  # make the indicator list unique
         )
+    else:
+        raise ValueError('Incorrect format, must be "json" or "file"')
 
 
 ''' MAIN FUNCTION '''
@@ -1420,7 +1456,7 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, first_fetch_time)
-            demisto.results(result)
+            return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
@@ -1455,32 +1491,32 @@ def main() -> None:
 
         elif demisto.command() == 'ip':
             default_threshold_ip = int(demisto.params().get('threshold_ip', '65'))
-            return_outputs(*ip_reputation_command(client, demisto.args(), default_threshold_ip))
+            return_results(ip_reputation_command(client, demisto.args(), default_threshold_ip))
 
         elif demisto.command() == 'domain':
             default_threshold_domain = int(demisto.params().get('threshold_domain', '65'))
-            return_outputs(*domain_reputation_command(client, demisto.args(), default_threshold_domain))
+            return_results(domain_reputation_command(client, demisto.args(), default_threshold_domain))
 
         elif demisto.command() == 'helloworld-say-hello':
-            return_outputs(*say_hello_command(client, demisto.args()))
+            return_results(say_hello_command(client, demisto.args()))
 
         elif demisto.command() == 'helloworld-search-alerts':
-            return_outputs(*search_alerts_command(client, demisto.args()))
+            return_results(search_alerts_command(client, demisto.args()))
 
         elif demisto.command() == 'helloworld-get-alert':
-            return_outputs(*get_alert_command(client, demisto.args()))
+            return_results(get_alert_command(client, demisto.args()))
 
         elif demisto.command() == 'helloworld-update-alert-status':
-            return_outputs(*update_alert_status_command(client, demisto.args()))
+            return_results(update_alert_status_command(client, demisto.args()))
 
         elif demisto.command() == 'helloworld-scan-start':
-            return_outputs(*scan_start_command(client, demisto.args()))
+            return_results(scan_start_command(client, demisto.args()))
 
         elif demisto.command() == 'helloworld-scan-status':
-            return_outputs(*scan_status_command(client, demisto.args()))
+            return_results(scan_status_command(client, demisto.args()))
 
         elif demisto.command() == 'helloworld-scan-results':
-            scan_results_command(client, demisto.args())
+            return_results(scan_results_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

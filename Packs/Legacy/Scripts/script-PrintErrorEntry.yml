@@ -10,6 +10,7 @@ script: |-
     "Contents" : demisto.getArg("message")
   })
 type: python
+subtype: python2
 tags: []
 comment: Prints an error entry with a given message
 enabled: true

@@ -23,7 +23,6 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: 'IP threshold. Minimum maliciousness confidence level to consider the IP

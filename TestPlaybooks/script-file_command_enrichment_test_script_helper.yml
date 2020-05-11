@@ -23,6 +23,7 @@ script: |
 
   demisto.results(result)
 type: python
+subtype: python2
 tags: []
 enabled: true
 scripttarget: 0

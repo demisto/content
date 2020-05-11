@@ -503,6 +503,7 @@ script: |
   else:
       demisto.results('Did not find any duplicate incidents candidates')
 type: python
+subtype: python2
 tags:
 - dedup
 - incidents
