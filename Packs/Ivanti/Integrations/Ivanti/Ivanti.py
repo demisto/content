@@ -13,8 +13,8 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 TOKEN = demisto.params().get('token')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-TICKET_HEADERS = ['RecId', 'Subject','CreatedDateTime','Status','Symptom','Urgency','OwnerTeam',
-                  'Priority', 'Email', 'TypeOfIncident', 'ClosedDateTime','ActualCategory']
+TICKET_HEADERS = ['RecId', 'Subject','CreatedDateTime','Status','Symptom','Urgency','OwnerTeam','IncidentNumber'
+                  'Priority', 'Email', 'TypeOfIncident', 'ClosedDateTime','ActualCategory','SocialTextHeader']
 
 
 class Client(BaseClient):
@@ -160,12 +160,13 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     params = {'$orderby': 'CreatedDateTime asc'}
     params['$filter'] = f'CreatedDateTime gt {last_fetch.strftime(DATE_FORMAT)}'
-    raw_res = client.do_request('GET', 'incidents', params=params)
+    raw_res = client.do_request('GET', 'odata/businessobject/incidents', params=params)
     if raw_res.get('value'):
         for item in raw_res['value']:
             incident_created_time = dateparser.parse(item.get('CreatedDateTime'))
             incident = {
                 'name': item.get('Subject'),
+                'details': json.dumps(item),
                 'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 'rawJSON': json.dumps(item)
             }
