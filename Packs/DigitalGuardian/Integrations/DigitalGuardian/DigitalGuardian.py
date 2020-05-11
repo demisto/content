@@ -317,7 +317,7 @@ def get_items_request():
     if export_profile is None:
         return_error('Export Profile parameter is required')
 
-    full_url = ARC_URL + '/export_profiles/' + export_profile + '/export'  # Not ack for now, was export_and_ack
+    full_url = ARC_URL + '/export_profiles/' + export_profile + '/export_and_ack'
     r = requests.post(url=full_url, headers=CLIENT_HEADERS, verify=VERIFY_CERT)
     json_text = json.loads(r.text)
 
