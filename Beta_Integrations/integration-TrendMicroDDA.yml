@@ -406,9 +406,25 @@ script:
         #true if list, false if dict
         reports_type_is_list = isinstance(reports['FILE_ANALYZE_REPORT'], list)
         hr = {}
+
+        if isinstance(reports, dict):
+            image_type_dict = reports.get('IMAGE_TYPE', {})
+            if isinstance(image_type_dict, dict):
+                image_type_dict = image_type_dict.get('TYPE', {})
+
+                if isinstance(image_type_dict, dict):
+                    image_type = image_type_dict.get('#text', 'Unknown')
+                else:
+                    image_type = 'Unknown'
+
+            else:
+                image_type = 'Unknown'
+        else:
+            image_type = 'Unknown'
+
         hr_headers = {
             'Risk Level': reports['OVERALL_RISK_LEVEL'],
-            'Image Type': reports.get('IMAGE_TYPE', {}).get('TYPE', {}).get('#text', 'Unknown'),
+            'Image Type': image_type,
             'Sum of Files Analyzed': (len(reports['FILE_ANALYZE_REPORT'])) if reports_type_is_list  else '1',
         }
 
