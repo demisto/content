@@ -1,13 +1,15 @@
 id: Impossible Traveler
 version: -1
-fromversion: 5.0.0
 name: Impossible Traveler
-description: |-
-  This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler). The playbook gathers user, timestamp and IP information
-  associated with the multiple application login attempts.
-
-  The playbook then measures the time difference between the multiple login attempts and computes the distance between the two locations to verify whether it is possible the user could traverse the distance
-  in the amount of time determined. Also, it takes steps to remediate the incident by blocking the offending IPs and disabling the user account, if chosen to do so.
+description: "This playbook investigates an event whereby a user has multiple application\
+  \ login attempts from various locations in a short time period (impossible traveler).\
+  \ The playbook gathers user, timestamp and IP information\nassociated with the multiple\
+  \ application login attempts.\n\nThe playbook then measures the time difference\
+  \ between the multiple login attempts and computes the distance between the two\
+  \ locations to verify whether it is possible the user could traverse the distance\n\
+  in the amount of time determined. Also, it takes steps to remediate the incident\
+  \ by blocking the offending IPs and disabling the user account, if chosen to do\
+  \ so."
 starttaskid: '0'
 tasks:
   '0':
@@ -26,13 +28,7 @@ tasks:
       - '62'
       - '61'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 520,
-          "y": -560
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": -560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -67,13 +63,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -740,
-          "y": 1490
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -740,\n    \"y\": 1490\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -110,13 +100,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 200,
-          "y": 1490
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 200,\n    \"y\": 1490\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -136,13 +120,7 @@ tasks:
       '#none#':
       - '36'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 3065
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3065\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -170,13 +148,7 @@ tasks:
           accessor: username
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 3745
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3950\n  }\n}"
     note: true
     timertriggers:
     - fieldname: remediationsla
@@ -430,13 +402,7 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 3210
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3210\n  }\n}"
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -474,13 +440,7 @@ tasks:
             value:
               simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 4040
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 4130\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -515,13 +475,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 1680,
-          "y": -90
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1680,\n    \"y\": -90\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -544,13 +498,7 @@ tasks:
       - '91'
       - '90'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": -230
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 510,\n    \"y\": -230\n  }\n}"
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -572,13 +520,7 @@ tasks:
       '#none#':
       - '52'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 805
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 805\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -653,13 +595,7 @@ tasks:
                       value:
                         simple: Location
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 500,
-          "y": 945
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 945\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -681,13 +617,7 @@ tasks:
       '#none#':
       - '70'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 1130
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1380,\n    \"y\": 1130\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -745,13 +675,7 @@ tasks:
                   simple: '0'
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 1130
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -40,\n    \"y\": 1130\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -810,13 +734,7 @@ tasks:
                   simple: '0'
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -510,
-          "y": 1130
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -510,\n    \"y\": 1130\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -855,13 +773,7 @@ tasks:
       wait: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 740,
-          "y": -400
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": -400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -900,13 +812,7 @@ tasks:
       wait: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 290,
-          "y": -400
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 290,\n    \"y\": -400\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -955,13 +861,7 @@ tasks:
             value:
               simple: inputs.MaxMilesPerHourAllowed
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -270,
-          "y": 1780
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -270,\n    \"y\": 1780\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1212,13 +1112,7 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -940,
-          "y": 3065
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -940,\n    \"y\": 3065\n  }\n}"
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -1286,13 +1180,7 @@ tasks:
                       value:
                         simple: ','
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 10,
-          "y": 2810
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 10,\n    \"y\": 2810\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1322,13 +1210,7 @@ tasks:
             value:
               simple: inputs.WhitelistedIPs
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 2600
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 2600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1581,13 +1463,7 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -430,
-          "y": 3065
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -430,\n    \"y\": 3065\n  }\n}"
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -1618,13 +1494,7 @@ tasks:
       timefield1: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 550,
-          "y": 4620
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 550,\n    \"y\": 4620\n  }\n}"
     note: false
     timertriggers:
     - fieldname: remediationsla
@@ -1676,13 +1546,7 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 10,
-          "y": 4290
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 10,\n    \"y\": 4320\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1741,13 +1605,7 @@ tasks:
                   simple: ','
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -270,
-          "y": 1470
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -270,\n    \"y\": 1470\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1769,13 +1627,7 @@ tasks:
       - '72'
       - '29'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -270,
-          "y": 1300
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -270,\n    \"y\": 1300\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1796,7 +1648,7 @@ tasks:
       '#default#':
       - '75'
       'yes':
-      - '34'
+      - '95'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -1811,13 +1663,7 @@ tasks:
             value:
               simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 3380
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3380\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1835,18 +1681,12 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      Approval Granted:
-      - '34'
+      Approved:
+      - '95'
       Unapproved:
       - '76'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 3570
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 3560\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1867,13 +1707,7 @@ tasks:
       '#none#':
       - '38'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 3870
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 3950\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1893,13 +1727,7 @@ tasks:
       '#none#':
       - '70'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 550,
-          "y": 4290
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 550,\n    \"y\": 4320\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1953,13 +1781,7 @@ tasks:
             value:
               simple: incident.username
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": -90
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": -90\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1980,7 +1802,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '82'
+      - '94'
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -1998,100 +1820,16 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 80
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '82':
-    id: '82'
-    taskid: 64637398-912d-40de-8602-718b1faf4649
-    type: condition
-    task:
-      id: 64637398-912d-40de-8602-718b1faf4649
-      version: -1
-      name: is there a manager configured for the user?
-      description: Checks if a manager was configured for the offending user in Active
-        Directory.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '51'
-      'yes':
-      - '83'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Account
-                accessor: Manager
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '83':
-    id: '83'
-    taskid: 2579dc9a-28f1-4bde-88f3-02d5016d07d4
-    type: regular
-    task:
-      id: 2579dc9a-28f1-4bde-88f3-02d5016d07d4
-      version: -1
-      name: Enrich user account's manager
-      description: Gets information about the manager of the offending user account,
-        using Active Directory.
-      script: '|||ad-get-user'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '85'
-    scriptarguments:
-      attributes: {}
-      custom-field-data: {}
-      custom-field-type: {}
-      dn: {}
-      email: {}
-      limit: {}
-      name: {}
-      user-account-control-out: {}
-      username: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -240,
-          "y": 410
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 80\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
   '84':
     id: '84'
-    taskid: bff6005c-5565-47cf-8b4a-1aed57cf3e5d
+    taskid: 4499d74d-a473-4710-8b2e-6c1422bde45d
     type: condition
     task:
-      id: bff6005c-5565-47cf-8b4a-1aed57cf3e5d
+      id: 4499d74d-a473-4710-8b2e-6c1422bde45d
       version: -1
       name: Can the manager be contacted for travel approval?
       description: Checks whether an email address was retrieved for the manger of
@@ -2108,22 +1846,11 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: Account
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Account.DisplayName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: UserManager
-                      iscontext: true
-                accessor: Email
+                root: UserManagerEmail
             iscontext: true
       - - operator: isEqualString
           left:
@@ -2135,60 +1862,16 @@ tasks:
             value:
               simple: 'True'
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 1950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '85':
-    id: '85'
-    taskid: d87a3a95-1d54-4821-84fb-701fdfeab270
-    type: regular
-    task:
-      id: d87a3a95-1d54-4821-84fb-701fdfeab270
-      version: -1
-      name: Save user manager name
-      description: Saves the manager of the offending user in context.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '51'
-    scriptarguments:
-      append: {}
-      key:
-        simple: UserManager
-      value:
-        complex:
-          root: Account
-          accessor: Manager
-          transformers:
-          - operator: uniq
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -240,
-          "y": 590
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 1950\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
   '86':
     id: '86'
-    taskid: 83895ed8-75d5-4c11-844a-2ed42cfe7943
+    taskid: 74a40dfa-bb9c-430e-8d0f-6eabd22915c9
     type: regular
     task:
-      id: 83895ed8-75d5-4c11-844a-2ed42cfe7943
+      id: 74a40dfa-bb9c-430e-8d0f-6eabd22915c9
       version: -1
       name: Ask manager if travel was expected
       description: Ask a user a question via email and process the reply directly
@@ -2208,18 +1891,9 @@ tasks:
       cc: {}
       email:
         complex:
-          root: Email
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Account.DisplayName
-                iscontext: true
-              right:
-                value:
-                  simple: UserManager
-                iscontext: true
-          accessor: Address
+          root: UserManagerEmail
+          transformers:
+          - operator: uniq
       message:
         simple: User ${incident.username} traveled ${Geo.Distance} miles in ${Time.Difference}
           minutes. Was this an expected event?
@@ -2237,13 +1911,7 @@ tasks:
         simple: TravelQuestion
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 590,
-          "y": 2140
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 590,\n    \"y\": 2140\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2266,16 +1934,10 @@ tasks:
     nexttasks:
       'No':
       - '68'
-      'Yes':
+      'yes':
       - '88'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 590,
-          "y": 2320
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 590,\n    \"y\": 2320\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2526,13 +2188,7 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 850,
-          "y": 2600
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 2600\n  }\n}"
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -2566,13 +2222,7 @@ tasks:
         simple: '15'
       width: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -270,
-          "y": 1610
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": -270,\n    \"y\": 1610\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2633,13 +2283,7 @@ tasks:
                       value:
                         simple: '0'
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1200,
-          "y": -90
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": -90\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2701,13 +2345,7 @@ tasks:
                       value:
                         simple: '0'
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": -90
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": -90\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -2959,13 +2597,7 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1200,
-          "y": 145
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": 145\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -3218,52 +2850,99 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 145
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 145\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "38_71_yes": 0.35,
-      "52_54_#default#": 0.43,
-      "52_58_yes": 0.84,
-      "52_59_yes": 0.9,
-      "63_66_#default#": 0.18,
-      "67_32_#default#": 0.44,
-      "67_69_yes": 0.28,
-      "68_32_#default#": 0.25,
-      "68_67_yes": 0.42,
-      "74_34_yes": 0.35,
-      "74_75_#default#": 0.33,
-      "75_34_Approval Granted": 0.63,
-      "75_76_Unapproved": 0.42,
-      "80_51_#default#": 0.33,
-      "80_81_yes": 0.56,
-      "82_51_#default#": 0.16,
-      "84_86_yes": 0.44,
-      "87_68_No": 0.29,
-      "87_88_Yes": 0.34,
-      "90_51_#default#": 0.21,
-      "90_92_yes": 0.46,
-      "91_51_#default#": 0.1,
-      "91_93_yes": 0.51
-    },
-    "paper": {
-      "dimensions": {
-        "height": 5275,
-        "width": 3000,
-        "x": -940,
-        "y": -560
-      }
-    }
-  }
+  '94':
+    id: '94'
+    taskid: d8d048c4-518c-40d1-85b8-2c451aeb5b84
+    type: playbook
+    task:
+      id: d8d048c4-518c-40d1-85b8-2c451aeb5b84
+      version: -1
+      name: Active Directory - Get User Manager Details
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '51'
+    scriptarguments:
+      UserEmail: {}
+      Username:
+        complex:
+          root: incident
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: "{\n  \"position\": {\n    \"x\": 70,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '95':
+    id: '95'
+    taskid: 4fe95b3d-df2d-40d0-885d-8575dbab981c
+    type: condition
+    task:
+      id: 4fe95b3d-df2d-40d0-885d-8575dbab981c
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory Query v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '76'
+      'yes':
+      - '34'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 3745\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"38_71_yes\": 0.35,\n    \"52_54_#default#\"\
+  : 0.43,\n    \"52_58_yes\": 0.84,\n    \"52_59_yes\": 0.9,\n    \"63_66_#default#\"\
+  : 0.18,\n    \"67_32_#default#\": 0.44,\n    \"67_69_yes\": 0.76,\n    \"68_32_#default#\"\
+  : 0.25,\n    \"68_67_yes\": 0.42,\n    \"74_75_#default#\": 0.33,\n    \"74_95_yes\"\
+  : 0.48,\n    \"75_76_Unapproved\": 0.42,\n    \"80_51_#default#\": 0.33,\n    \"\
+  80_81_yes\": 0.56,\n    \"84_86_yes\": 0.44,\n    \"87_68_No\": 0.29,\n    \"87_88_Yes\"\
+  : 0.24,\n    \"90_51_#default#\": 0.21,\n    \"90_92_yes\": 0.46,\n    \"91_51_#default#\"\
+  : 0.1,\n    \"91_93_yes\": 0.51,\n    \"95_34_yes\": 0.46\n  },\n  \"paper\": {\n\
+  \    \"dimensions\": {\n      \"height\": 5275,\n      \"width\": 3000,\n      \"\
+  x\": -940,\n      \"y\": -560\n    }\n  }\n}"
 inputs:
 - key: MaxMilesPerHourAllowed
   value:
@@ -3361,5 +3040,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+fromversion: 5.0.0
 tests:
-  - Impossible Traveler - Test
+- Impossible Traveler - Test

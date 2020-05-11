@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Removed default list names and updated playbook logic.
 
 ## [20.4.1] - 2020-04-29
 Added new subplaybook, TIM - Process CIDR Indicators By Size.
