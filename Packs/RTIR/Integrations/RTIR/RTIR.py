@@ -345,11 +345,16 @@ def search_ticket():
     data = data[2:]
     for line in data:
         split_line = line.split(': ')
-        search_ticket = get_ticket_request(split_line[0]).content
-        search_ticket = search_ticket.split('\n')
-        search_ticket = search_ticket[2:]
-        id_ticket = search_ticket[0].upper()
-        search_ticket[0] = id_ticket
+        empty_line_response = ['NO OBJECTS SPECIFIED.', '']
+        is_line_non_empty = split_line[0] != ''
+        if is_line_non_empty:
+            search_ticket = get_ticket_request(split_line[0]).content
+            search_ticket = search_ticket.split('\n')
+            search_ticket = search_ticket[2:]
+            id_ticket = search_ticket[0].upper()
+            search_ticket[0] = id_ticket
+        else:
+            search_ticket = empty_line_response
 
         current_ticket_search = {}
         for entity in search_ticket:
@@ -774,6 +779,10 @@ def add_reply():
         return_error('Failed to reply')
 
 
+def get_ticket_id(ticket):
+    return ticket['ID']
+
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_ticket_id = last_run['ticket_id'] if (last_run and last_run['ticket_id']) else 0
@@ -787,6 +796,9 @@ def fetch_incidents():
         status_query = fix_query_suffix(status_query)
         raw_query += status_query + ')'
     tickets = parse_ticket_data(raw_query)
+    tickets = tickets.sort(key=get_ticket_id)
+    fetch_batch_limit = int(demisto.params().get('fetch_limit', 0))
+    tickets = tickets if (fetch_batch_limit == 0) else tickets[:fetch_batch_limit]
     incidents = []
     max_ticket_id = last_ticket_id
     for ticket in tickets:
