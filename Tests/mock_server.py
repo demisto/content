@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import json
 import signal
 import string
 import time
@@ -195,7 +196,9 @@ class MITMProxy:
             self=client,
             path='/system/config',
             method='GET'
-        )[0].get('sysConf', {})
+        )
+
+        system_conf = json.loads(system_conf_response[0]).get('sysConf', {})
 
         http_proxy = https_proxy = proxy
         if proxy:
@@ -206,7 +209,7 @@ class MITMProxy:
             'https_proxy': https_proxy
         })
         data = {
-            'data': system_conf_response,
+            'data': system_conf,
             'version': -1
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
