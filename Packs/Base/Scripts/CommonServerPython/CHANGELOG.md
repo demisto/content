@@ -1,6 +1,6 @@
 ## [Unreleased]
   - Added retry mechanism to the BaseClient.
-  - Fixed an issue with the **appendContext** method.
+  - Fixed an issue where the **appendContext** function did not behhave as expected.
 
 ## [20.4.1] - 2020-04-29
   - Deprecated the following enums: 
