@@ -46,8 +46,14 @@ def raw_response_to_json(raw_json):
         for cell in row_dict[row_key]:
             column_name = cell.get('column.display_name')
             cell_value = cell.get('column.values')
-            if len(cell_value) > 0 and cell_value[0] is not None:
-                cell_value = '\n'.join(cell.get('column.values'))
+            cell_value_without_none = []
+
+            for value in cell_value:
+                if value is not None:
+                    cell_value_without_none.append(value)
+
+            if len(cell_value_without_none) > 0:
+                cell_value = '\n'.join(cell_value_without_none)
 
             else:
                 cell_value = None
