@@ -268,16 +268,8 @@
             "playbookID": "Alienvault_OTX_v2 - Test"
         },
         {
-            "integrations": "AWS - SQS",
-            "playbookID": "AWS - SQS Test Playbook"
-        },
-        {
             "integrations": "AWS - CloudWatchLogs",
             "playbookID": "AWS - CloudWatchLogs Test Playbook"
-        },
-        {
-            "integrations": "AWS - Route53",
-            "playbookID": "AWS - Route53 Test Playbook"
         },
         {
             "integrations": "SlackV2",
@@ -338,7 +330,7 @@
         },
         {
             "integrations": "Tufin",
-            "playbookID": "Tufin Test"
+            "playbookID": "Tufin-Test"
         },
         {
             "integrations": "Looker",
@@ -395,18 +387,10 @@
         },
         {
             "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
+            "playbookID": "Pentera Run Scan and Create Incidents - Test"
         },
         {
             "playbookID": "StringContainsArray_test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pcysys-Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
         },
         {
             "integrations": "Fidelis Elevate Network",
@@ -662,7 +646,7 @@
             "playbookID": "Google-Vault-Generic-Test",
             "nightly": true,
             "timeout": 3600,
-            "memory_threshold": 65
+            "memory_threshold": 80
         },
         {
             "integrations": "google-vault",
@@ -695,11 +679,6 @@
         },
         {
             "playbookID": "ParseEmailFiles-test"
-        },
-        {
-            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
-            "integrations": "palo_alto_networks_pan_os_edl_management",
-            "fromversion": "4.0.0"
         },
         {
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
@@ -826,7 +805,7 @@
         },
         {
             "integrations": "Devo",
-            "playbookID": "devo_test_playbook",
+            "playbookID": "Devo test",
             "timeout": 500
         },
         {
@@ -1186,7 +1165,7 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "crowdstrike_falconhost_test"
+            "playbookID": "FalconHost Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -2100,15 +2079,6 @@
             "timeout": 1000
         },
         {
-            "playbookID": "PAN-OS EDL Setup V2 Test",
-            "integrations": [
-                "Panorama",
-                "palo_alto_networks_pan_os_edl_management"
-            ],
-            "instance_names": "palo_alto_panorama",
-            "timeout": 1000
-        },
-        {
             "playbookID": "PAN-OS EDL Setup v3 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
@@ -2200,10 +2170,6 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
-            "integrations": "AWS - CloudWatchLogs",
-            "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
-        },
-        {
             "integrations": "AWS - CloudTrail",
             "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
         },
@@ -2226,7 +2192,7 @@
         },
         {
             "integrations": "Cisco Spark",
-            "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
+            "playbookID": "Cisco Spark Test"
         },
         {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
@@ -2775,6 +2741,11 @@
             "integrations": "GCP Whitelist Feed",
             "playbookID": "GCPWhitelist_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Endace",
+            "playbookID": "Endace-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -2785,7 +2756,6 @@
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "PhishLabsIOC TestPlaybook": "integration bug (23926)",
-        "Test_URLhaus": "Issue 23857",
         "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
@@ -2934,6 +2904,7 @@
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
         "_comment": "~~~ OTHER ~~~",
+        "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
@@ -2967,6 +2938,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",

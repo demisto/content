@@ -8,6 +8,7 @@ from enum import Enum
 import requests
 import csv
 import io
+import json
 from typing import List
 
 # Disable insecure warnings
@@ -23,6 +24,7 @@ GET_TASK_STATS_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}'
 RUN_BULK_URL_SUFFIX = '/api/v1/template/runBulk'
 EXPORT_CSV_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}/fullActionReportCSV'
 FULL_ACTION_REPORT_FIELDNAMES = ['Severity', 'Time', 'Duration', 'Operation Type', 'Techniques', 'Parameters', 'Status']
+RAW_NTLM_HASH_LENGTH = 32
 
 
 class Request(Enum):
@@ -169,11 +171,53 @@ def pentera_authentication(client: Client):
 
 def pentera_get_task_run_full_action_report_command(client: Client, args, access_token: str):
     def _convert_csv_file_to_dict(csv_file):
+        def _handle_hash_parameter(hash_param: str):
+            def _is_raw_ntlm_hash(hash_str: str):
+                return len(hash_str) == RAW_NTLM_HASH_LENGTH
+
+            def _extract_user_name_and_host_name_from_ntlm_v1_2(hash_str: str):
+                try:
+                    hash_list_split_by_two_colons = hash_str.split('::')
+                    hash_list_split_by_one_colon = hash_list_split_by_two_colons[1].split(':')
+                    user_name = hash_list_split_by_two_colons[0]
+                    domain_or_host_name = hash_list_split_by_one_colon[0]
+                    return user_name, domain_or_host_name
+                except IndexError:
+                    return None
+
+            if not isinstance(hash_param, str):
+                return None
+
+            if _is_raw_ntlm_hash(hash_param):
+                return {'hash': f'Raw NTLM Hash: {hash_param[0]}{hash_param[1]}****'}
+
+            username, domain_or_hostname = _extract_user_name_and_host_name_from_ntlm_v1_2(hash_param)
+            return {'username': username,
+                    'domainOrHostname': domain_or_hostname,
+                    'hash': f'{hash_param[0]}{hash_param[1]}****'}
+
+        def _map_parameters_string_to_object(str_parameters: str = None):
+            if str_parameters:
+                return json.loads(str_parameters)
+            return None
+
         csv_reader = csv.DictReader(io.StringIO(csv_file), fieldnames=FULL_ACTION_REPORT_FIELDNAMES)
-        data = [row for row in csv_reader]
-        if data and len(data) > 0:
-            return data[1:]
-        return []
+        data = []
+        for row in csv_reader:
+            # Skipping first line
+            if list(row.values()) != FULL_ACTION_REPORT_FIELDNAMES:
+                row_copy = row.copy()
+                converted_params = _map_parameters_string_to_object(row_copy.get('Parameters'))
+                if converted_params:
+                    if 'hash' in converted_params:
+                        hash_parameter = converted_params['hash']
+                        parsed_hash_parameters = _handle_hash_parameter(hash_parameter)
+                        if parsed_hash_parameters:
+                            converted_params = parsed_hash_parameters
+                    row_copy['Parameters'] = converted_params
+                data.append(row_copy)
+
+        return data
 
     def _convert_full_action_report_time(full_action_report_list: List[dict]):
         def _parse_date(full_date, separator):

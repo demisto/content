@@ -56,6 +56,10 @@ def int_to_ip(num):
 @logger
 def decode_ip(address_by_bytes):
     """ Decodes the enigmatic ways IPs are stored in ArcSight DB into IPv4/6 format """
+    str_address_by_bytes = str(address_by_bytes)
+    if is_ip_valid(str_address_by_bytes) or is_ipv6_valid(str_address_by_bytes):
+        return address_by_bytes
+
     if isinstance(address_by_bytes, int):
         return int_to_ip(address_by_bytes)
 
@@ -491,9 +495,9 @@ def get_security_events_command():
 
         human_readable = tableToMarkdown('Security Event: {}'.format(','.join(map(str, ids))), events, removeNull=True)
         outputs = {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': contents}
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+        return human_readable, outputs, contents
     else:
-        demisto.results('No events were found')
+        return 'No events were found', {}, {}
 
 
 @logger
@@ -828,15 +832,15 @@ try:
         delete_case_command()
 
     elif demisto.command() == 'as-get-security-events':
-        get_security_events_command()
+        return_outputs(get_security_events_command())
 
     elif demisto.command() == 'as-get-entries':
         get_entries_command()
 
-    elif demisto.command() in 'as-add-entries':
+    elif demisto.command() == 'as-add-entries':
         entries_command(func='addEntries')
 
-    elif demisto.command() in 'as-delete-entries':
+    elif demisto.command() == 'as-delete-entries':
         entries_command(func='deleteEntries')
 
     elif demisto.command() == 'as-clear-entries':
@@ -850,4 +854,4 @@ try:
 
 
 except Exception as e:
-    return_error(str(e))
+    return_error('Unexpected error:' + str(e), error=traceback.format_exc())
