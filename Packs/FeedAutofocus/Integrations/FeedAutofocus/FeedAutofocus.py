@@ -291,7 +291,8 @@ class Client(BaseClient):
             'type': raw_json_data['type'],
             'rawJSON': raw_json_data,
             'fields': fields_mapping,
-            'score': CONFIDENCE_TO_DBOTSCORE.get(artifact.get('confidence'), 0)  # type: ignore
+            'score': CONFIDENCE_TO_DBOTSCORE.get(artifact.get('confidence'), 0),  # type: ignore
+            'service': 'AutoFocus Samples Feed'
         }
 
     @staticmethod
@@ -368,27 +369,10 @@ class Client(BaseClient):
         else:
             return FeedIndicatorType.Domain
 
-    def build_iterator(self, limit=None, offset=None):
-        """Builds a list of indicators.
-
-        Returns:
-            list. A list of JSON objects representing indicators fetched from a feed.
-        """
-        indicators = []  # type:List
-
-        if "Daily Threat Feed" in self.indicator_feeds:
-            indicators.extend(self.daily_custom_http_request(feed_type="Daily Threat Feed"))
-
-        if "Custom Feed" in self.indicator_feeds:
-            indicators.extend(self.daily_custom_http_request(feed_type="Custom Feed"))
-
-        # for get_indicator_command only
-        if limit:
-            indicators = indicators[int(offset): int(offset) + int(limit)]
-
+    def create_indicators_from_response(self, feed_type, response):
         parsed_indicators = []  # type:List
 
-        for indicator in indicators:
+        for indicator in response:
             if indicator:
                 indicator_type = self.find_indicator_type(indicator)
 
@@ -402,9 +386,28 @@ class Client(BaseClient):
                     "value": indicator,
                     "rawJSON": {
                         'value': indicator,
-                        'type': indicator_type
+                        'type': indicator_type,
+                        'service': feed_type
                     }
                 })
+
+        return parsed_indicators
+
+    def build_iterator(self, limit=None, offset=None):
+        """Builds a list of indicators.
+
+        Returns:
+            list. A list of JSON objects representing indicators fetched from a feed.
+        """
+        parsed_indicators = []  # type:List
+
+        for service in ["Daily Threat Feed", "Custom Feed"]:
+            response = self.daily_custom_http_request(feed_type=service)
+            parsed_indicators.extend(self.create_indicators_from_response(service, response))
+
+        # for get_indicator_command only
+        if limit:
+            parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
 
         if "Samples Feed" in self.indicator_feeds:
             parsed_indicators.extend(self.sample_http_request())
