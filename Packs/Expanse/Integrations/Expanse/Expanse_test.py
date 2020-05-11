@@ -1,4 +1,4 @@
-from Expanse import main, parse_events
+from Expanse import main
 import demistomock as demisto
 import json
 
