@@ -685,7 +685,7 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     # make request to update server configs
     data = {
         'data': {
-            'marketplace.gcp.bucket': 'marketplace-dist-dev',
+            'marketplace.gcp.bucket': 'marketplace-ci-build',
             'marketplace.gcp.path': 'content/builds/{}/{}'.format(branch_name, ci_build_number)
         },
         'version': -1
