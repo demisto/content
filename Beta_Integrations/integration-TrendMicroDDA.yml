@@ -452,6 +452,8 @@ script:
                 hr['Detection Name'] = file_analyze_report['VirusName']['#text']
             #set the filename
             filename = hr['Detection Name'] if ('Detection Name' in hr) else file_analyze_report['FileSHA1']
+            if '.' not in filename:
+                filename = filename + ".txt"
 
             #add data regarding the submission to the context
             context['TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)'] = {
@@ -528,6 +530,8 @@ script:
 
             #set the filename
             filename = main_file_analyze_report['OrigFileName']
+            if '.' not in filename:
+                filename = filename + ".txt"
 
             if verbose == 'true':
                 hr['Download URL'] = download_url_list
@@ -659,12 +663,15 @@ script:
                 markdown_table_headers.append('Download URL')
             markdown_table_headers.extend(('Deny List', 'White List'))
 
+            tmp_file = fileResult(filename, res.text)
+
+            temp = demisto.uniqueFile()
             demisto.results({ #add context and the Report File to the war room
-                'Type': 9,
-                'FileID': res.text,
+                'Type': entryTypes['file'],
+                'FileID': tmp_file.get('FileID'),
                 'Contents': '',
                 'ContentsFormat': formats['text'],
-                'File': filename,
+                'File': tmp_file.get('File'),
                 'EntryContext': context,
             })
             demisto.results({ #add table to the war room
