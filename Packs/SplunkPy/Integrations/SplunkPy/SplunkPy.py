@@ -13,6 +13,7 @@ import requests
 import urllib3
 import io
 import re
+import time
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -529,15 +530,18 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
-    args = assign_params(
-        event=event,
-        host=host,
-        fields={'fields': fields} if fields else None,
-        index=index,
-        sourcetype=source_type,
-        source=source,
-        time=time_
-    )
+    args = {}
+    args["event"] = event
+    args["host"] = host
+    if fields:
+        args["fields"] = json.loads(fields)
+    args["index"] = index
+    args["sourcetype"] = source_type
+    args["source"] = source
+    if time_:
+        args["time"] = time_
+    else:
+        args["time"] = round(time.time())
 
     headers = {
         'Authorization': 'Splunk {}'.format(hec_token),
@@ -549,8 +553,12 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     return response
 
 
-def splunk_submit_event_hec_command():
-
+def splunk_submit_event_hec_command(proxy):
+    if not proxy:
+        os.environ["HTTPS_PROXY"] = ""
+        os.environ["HTTP_PROXY"] = ""
+        os.environ["https_proxy"] = ""
+        os.environ["http_proxy"] = ""
     hec_token = demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
@@ -714,7 +722,7 @@ def main():
     if demisto.command() == 'splunk-parse-raw':
         splunk_parse_raw_command()
     if demisto.command() == 'splunk-submit-event-hec':
-        splunk_submit_event_hec_command()
+        splunk_submit_event_hec_command(proxy)
     if demisto.command() == 'splunk-job-status':
         splunk_job_status(service)
 
