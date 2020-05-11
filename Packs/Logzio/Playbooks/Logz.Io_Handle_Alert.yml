@@ -2,34 +2,29 @@ id: Logz.Io Handle Alert
 version: -1
 name: Logz.Io Handle Alert
 description: Handles a Logz.io Alert by retrieving the events that generated it.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 5f47e87e-3541-417a-8e87-d43578a1b7e9
     type: start
     task:
       id: 5f47e87e-3541-417a-8e87-d43578a1b7e9
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 130
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 130\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: deac1c83-3d9c-4bbb-870e-33eb475ed5a6
     type: regular
     task:
@@ -40,35 +35,20 @@ tasks:
       script: '|||logzio-get-logs-by-rule-id'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     scriptarguments:
       id:
         complex:
           root: inputs.AlertEventID
       size: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 280
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 280\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 245,
-        "width": 380,
-        "x": 450,
-        "y": 130
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 245,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 130\n\
+  \    }\n  }\n}"
 inputs:
 - key: AlertEventID
   value:
@@ -78,3 +58,4 @@ inputs:
   required: true
   description: Logz.Io Alert Event ID
 outputs: []
+fromversion: 5.0.0

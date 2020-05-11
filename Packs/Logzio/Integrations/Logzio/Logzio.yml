@@ -88,7 +88,7 @@ script:
         the query.
     - name: timeout
       description: Timeout in seconds
-      defaultValue: "2"
+      defaultValue: '2'
     outputs:
     - contextPath: Logzio.Result
       description: An array of search results
@@ -111,7 +111,7 @@ script:
       defaultValue: '100'
     - name: timeout
       description: Timeout in seconds
-      defaultValue: "2"
+      defaultValue: '2'
     outputs:
     - contextPath: Logzio.Result
       description: An array of search results
