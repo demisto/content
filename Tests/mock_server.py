@@ -195,7 +195,11 @@ class MITMProxy:
             self=client,
             path='/system/config',
             method='GET'
-        ).json().get("sysConf", {})
+        )
+        print(system_conf_response)
+        print(dir(system_conf_response))
+
+        system_conf_response = system_conf_response.json().get("sysConf", {})
 
         http_proxy = https_proxy = proxy
         if proxy:
