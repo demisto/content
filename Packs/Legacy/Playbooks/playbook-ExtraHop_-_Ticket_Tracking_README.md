@@ -12,7 +12,7 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 * AssignAnalystToIncident
 * Exists
-* SearchIncidents
+* SearchIncidentsV2
 
 ### Commands
 * extrahop-track-ticket
