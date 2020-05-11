@@ -57,7 +57,7 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
     if to_date:
         to_part = '%s:<"%s"' % (time_field, parse_datetime(to_date))
         query_parts.append(to_part)
-    if non_empty_fields:
+    if len(non_empty_fields) > 0:
         non_empty_fields_part = " and ".join(map(lambda x: "%s:*" % x, non_empty_fields))
         query_parts.append(non_empty_fields_part)
     if len(query_parts) == 0:
