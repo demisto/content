@@ -101,7 +101,7 @@ This check is done through the 'Successful Login' incident field which is associ
 
 ## Playbook Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content/raw/9f58da72cadfcf64bedf79db1ae05940694c75db/Packs/SANS/doc_files/SANS-Demo.mp4"
+    <source src="https://github.com/demisto/content/raw/36a366318401f98b839d1c62ac90110d3e2f02ec/Packs/SANS/doc_files/SANS-Demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/9f58da72cadfcf64bedf79db1ae05940694c75db/Packs/SANS/doc_files/SANS-Demo.mp4
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/36a366318401f98b839d1c62ac90110d3e2f02ec/Packs/SANS/doc_files/SANS-Demo.mp4
 </video>

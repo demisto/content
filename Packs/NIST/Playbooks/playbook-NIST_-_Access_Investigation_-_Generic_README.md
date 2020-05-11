@@ -76,7 +76,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content/raw/6184bdcf6e2f5ed3429dc07ddf7fe6d67a5565f7/Packs/NIST/doc_files/NIST-Demo.mp4"
+    <source src="https://github.com/demisto/content/raw/36a366318401f98b839d1c62ac90110d3e2f02ec/Packs/NIST/doc_files/NIST-Demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/6184bdcf6e2f5ed3429dc07ddf7fe6d67a5565f7/Packs/NIST/doc_files/NIST-Demo.mp4
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/36a366318401f98b839d1c62ac90110d3e2f02ec/Packs/NIST/doc_files/NIST-Demo.mp4
 </video>
