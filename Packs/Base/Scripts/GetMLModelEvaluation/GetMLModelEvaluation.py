@@ -177,7 +177,7 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
         y_pred_per_class[predicted_class][i] = y[predicted_class]
         y_pred.append(predicted_class)
 
-    class_to_arrs = {class_: {} for class_ in labels}
+    class_to_arrs = {class_: {} for class_ in labels}  # type: Dict[str, Dict[str, Any]]
     for class_ in labels:
         precision_arr, recall_arr, thresholds_arr = precision_recall_curve(y_true_per_class[class_], y_pred_per_class[class_])
         class_to_arrs[class_]['precisions'] = precision_arr
@@ -241,7 +241,6 @@ def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_
     per_class_hr = ['## Per-Class Report']
     per_class_hr += [
         'The following tables present evlauation of the model per class at different confidence thresholds:']
-    class_to_thresholds = {class_: {} for class_ in labels}
     for class_ in labels:
         class_to_thresholds[class_] = set([0.001])  # using no threshold
         for target_precision in np.arange(0.95, 0.5, -0.05):
