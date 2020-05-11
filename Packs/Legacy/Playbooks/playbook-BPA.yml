@@ -47,6 +47,9 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      generate_zip_bundle:
+        simple: ${inputs.generate_zip_bundle}
     separatecontext: false
     view: |-
       {
@@ -150,7 +153,13 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: generate_zip_bundle
+  value:
+    simple: "false"
+  required: false
+  description: whether or not to download the panorama report
+  playbookInputQuery: null
 outputs: []
 tests:
   - Test-BPA_Integration
