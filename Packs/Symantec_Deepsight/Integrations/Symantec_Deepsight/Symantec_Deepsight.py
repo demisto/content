@@ -1,12 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import requests
 import json
+
+import requests
+
+from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 ''' Global Variables '''
 APIKEY = demisto.params()['apikey']
@@ -19,8 +18,7 @@ FILE_ACCESS_SUFFIX = 'files/{0}'
 USAGE_LIMIT_STATUS_SUFFIX = 'application/usage_limit_status'
 HEADERS = {'API-KEY': APIKEY, 'Accept': 'application/json'}
 
-
-#dict used to switch names of fields from returned value name to demisto context standards name
+# dict used to switch names of fields from returned value name to demisto context standards name
 
 
 if not demisto.getParam('proxy'):
@@ -28,7 +26,6 @@ if not demisto.getParam('proxy'):
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
     del os.environ['https_proxy']
-
 
 ''' Helper Functions'''
 
@@ -70,9 +67,9 @@ def calc_dbot_score(url_data_json):
 
 def create_behaviour_context(behaviour_data_json):
     behavior_context = {
-        "Type" : behaviour_data_json.get("type", ""),
-        "Behaviour" : behaviour_data_json.get("behaviour", ""),
-        "Description" : behaviour_data_json.get("description", ""),
+        "Type": behaviour_data_json.get("type", ""),
+        "Behaviour": behaviour_data_json.get("behaviour", ""),
+        "Description": behaviour_data_json.get("description", ""),
     }
     return behavior_context
 
@@ -90,7 +87,8 @@ def create_behaviours_context(data_json):
 def create_malicious_data(data_from_api_json):
     malicious_description = ""
     if 'reputationValues' in data_from_api_json:
-         malicious_description = 'Reputation: {}'.format(data_from_api_json['reputationValues'].get("reputation", "Unknown")),
+        malicious_description = 'Reputation: {}'.format(
+            data_from_api_json['reputationValues'].get("reputation", "Unknown")),
     malicious_data = {
         'Description': malicious_description,
         'Vendor': 'Symantec Deepsight Intelligence'
@@ -115,7 +113,6 @@ def create_reputation_values_context(data_from_api_json):
 
 
 def return_mati_report_entry_context(data_from_api_json):
-    mati_entry_context = {}
     mati_reports = data_from_api_json.get('matiReports', [])
     all_mati_reports_contexts = []
 
@@ -154,11 +151,10 @@ def create_deepsight_domain_entry_context(generic_domain_entry_context, domain_d
     }
 
     if network_data:
-        deepsight_ip_entry_context['ProxyType'] = network_data.get("proxyType", "")
+        deepsight_domain_entry_context['ProxyType'] = network_data.get("proxyType", "")
 
     deepsight_domain_entry_context = merge_two_dicts(deepsight_domain_entry_context, generic_domain_entry_context)
     return deepsight_domain_entry_context
-
 
 
 def create_registrant_context(whois_data_from_api):
@@ -168,6 +164,7 @@ def create_registrant_context(whois_data_from_api):
     }
     return registrant_data_dict
 
+
 def create_registrar_context(whois_data_from_api):
     registrar_data_dict = {
         'Name': whois_data_from_api.get('registrar', ""),
@@ -176,7 +173,6 @@ def create_registrar_context(whois_data_from_api):
 
 
 def get_nameservers_data(whois_data_from_api):
-
     string_of_name_servers = ""
     array_of_name_servers = whois_data_from_api.get('nameServers', None)
     if array_of_name_servers:
@@ -184,7 +180,7 @@ def get_nameservers_data(whois_data_from_api):
     return string_of_name_servers
 
 
-#generate whois data dict
+# generate whois data dict
 def gen_whois_data_dict(domain_data_json):
     whois_data_for_entry_context = {}
     whois_data_from_api = domain_data_json.get("whois", None)
@@ -208,7 +204,7 @@ def gen_whois_data_dict(domain_data_json):
     return whois_data_for_entry_context
 
 
-#generate domain data dict for context in Demisto standard
+# generate domain data dict for context in Demisto standard
 def create_generic_domain_entry_context(domain_data_json):
     domain_entry_context = {
         'WHOIS': gen_whois_data_dict(domain_data_json),
@@ -221,11 +217,11 @@ def calc_file_dbot_score(file_data_json):
     dbotscore = 0
     if 'reputation' in file_data_json:
         file_rep = file_data_json['reputation']
-        if file_rep  == "Clean" or file_rep  == "Trending Clean":
+        if file_rep == "Clean" or file_rep == "Trending Clean":
             dbotscore = 1
-        elif file_rep  == "Trending Bad":
+        elif file_rep == "Trending Bad":
             dbotscore = 2
-        elif file_rep  == "Malicious":
+        elif file_rep == "Malicious":
             dbotscore = 3
     return dbotscore
 
@@ -293,7 +289,8 @@ def gen_geo_data_dict(data_from_api):
             'City': geo_data_from_api.get("city", "")
         }
         if 'latitude' in keys and 'longtitude' in keys:
-            geo_data_dict['Location'] = "{0}, {1}".format(geo_data_from_api['latitude'], geo_data_from_api['longtitude'])
+            geo_data_dict['Location'] = "{0}, {1}".format(geo_data_from_api['latitude'],
+                                                          geo_data_from_api['longtitude'])
     return geo_data_dict
 
 
@@ -320,7 +317,7 @@ def create_generic_ip_entry_context(ip_data_json, ip):
 def build_md(jsondata, searchItem):
     mdOutput = "## Symantec Deepsight Intelligence: " + str(searchItem).upper()
     for key in jsondata.keys():
-        if isinstance(jsondata[key],dict):
+        if isinstance(jsondata[key], dict):
             mdOutput += "\n\n__" + key.upper() + "__"
             for k in jsondata[key]:
                 if str(k) != 'uri':
@@ -352,30 +349,31 @@ def get_domain_data_command():
 
     dbotscore = calc_dbot_score(domain_data_json)
     dbotscore_context = {
-        'Indicator' : domain,
-        'Score' : dbotscore,
-        'Type' : 'domain',
-        'Vendor' : 'Symantec Deepsight Intelligence'
+        'Indicator': domain,
+        'Score': dbotscore,
+        'Type': 'domain',
+        'Vendor': 'Symantec Deepsight Intelligence'
     }
 
     generic_domain_entry_context = create_generic_domain_entry_context(domain_data_json)
     if dbotscore == 3:
         generic_domain_entry_context["Malicious"] = create_malicious_data(domain_data_json)
 
-    deepsight_domain_entry_context = create_deepsight_domain_entry_context(generic_domain_entry_context, domain_data_json)
+    deepsight_domain_entry_context = create_deepsight_domain_entry_context(generic_domain_entry_context,
+                                                                           domain_data_json)
     md = build_md(domain_data_json, domain)
     entry_context = {
         'DBotScore': dbotscore_context,
-        'Domain(val.Domain && val.Domain == obj.Domain)':generic_domain_entry_context,
-        'Deepsight.Domain(val.Domain && val.Domain == obj.Domain)':deepsight_domain_entry_context
+        'Domain(val.Domain && val.Domain == obj.Domain)': generic_domain_entry_context,
+        'Deepsight.Domain(val.Domain && val.Domain == obj.Domain)': deepsight_domain_entry_context
     }
     demisto.results({
-        'Type' : entryTypes['note'],
-        'Contents' : domain_data_json,
-        'ContentsFormat' : formats['json'],
-        'HumanReadable' : md, # not sure if need to build the md first?
-        'ReadableContentsFormat' : formats['markdown'],
-        'EntryContext' : entry_context
+        'Type': entryTypes['note'],
+        'Contents': domain_data_json,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': md,  # not sure if need to build the md first?
+        'ReadableContentsFormat': formats['markdown'],
+        'EntryContext': entry_context
     })
 
 
@@ -392,10 +390,10 @@ def get_ip_data_command():
 
     dbotscore = calc_dbot_score(ip_data_json)
     dbotscore_context = {
-        'Indicator' : ip,
-        'Score' : dbotscore,
-        'Type' : 'ip',
-        'Vendor' : 'Symantec Deepsight Intelligence'
+        'Indicator': ip,
+        'Score': dbotscore,
+        'Type': 'ip',
+        'Vendor': 'Symantec Deepsight Intelligence'
     }
     generic_ip_entry_context = create_generic_ip_entry_context(ip_data_json, ip)
 
@@ -412,12 +410,12 @@ def get_ip_data_command():
     }
 
     demisto.results({
-        'Type' : entryTypes['note'],
-        'Contents' : ip_data_json,
-        'ContentsFormat' : formats['json'],
-        'HumanReadable' : md, # not sure if need to build the md first?
-        'ReadableContentsFormat' : formats['markdown'],
-        'EntryContext' : entry_context
+        'Type': entryTypes['note'],
+        'Contents': ip_data_json,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': md,  # not sure if need to build the md first?
+        'ReadableContentsFormat': formats['markdown'],
+        'EntryContext': entry_context
     })
 
 
@@ -435,18 +433,18 @@ def get_file_data_command():
 
     dbotscore = calc_file_dbot_score(file_data_json)
     dbotscore_context = [{
-        'Indicator' : filehash,
-        'Type' : 'hash',
-        'Vendor' : 'Symantec Deepsight Intelligence',
-        'Score' : dbotscore
+        'Indicator': filehash,
+        'Type': 'hash',
+        'Vendor': 'Symantec Deepsight Intelligence',
+        'Score': dbotscore
     },
-    {
-        'Indicator' : filehash,
-        'Type' : 'file',
-        'Vendor' : 'Symantec Deepsight Intelligence',
-        'Score' : dbotscore
-    }
-]
+        {
+            'Indicator': filehash,
+            'Type': 'file',
+            'Vendor': 'Symantec Deepsight Intelligence',
+            'Score': dbotscore
+        }
+    ]
 
     generic_file_entry_context = get_generic_file_entry_context(file_data_json)
 
@@ -462,12 +460,12 @@ def get_file_data_command():
         'Deepsight.File(val.File && val.File == obj.File)': deepsight_file_entry_context
     }
     demisto.results({
-        'Type' : entryTypes['note'],
-        'Contents' : file_data_json,
-        'ContentsFormat' : formats['json'],
-        'HumanReadable' : md, # not sure if need to build the md first?
-        'ReadableContentsFormat' : formats['markdown'],
-        'EntryContext' : entry_context
+        'Type': entryTypes['note'],
+        'Contents': file_data_json,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': md,  # not sure if need to build the md first?
+        'ReadableContentsFormat': formats['markdown'],
+        'EntryContext': entry_context
     })
 
 
@@ -493,14 +491,11 @@ def get_url_data_command():
         'Data': url
     }
 
-    if dbotscore == 3:
-        generic_url_entry_context["Malicious"] = create_malicious_data(data_from_api_json)
-
     dbotscore_context = {
-        'Indicator' : url,
-        'Score' : dbotscore,
-        'Type' : 'url',
-        'Vendor' : 'Symantec Deepsight Intelligence'
+        'Indicator': url,
+        'Score': dbotscore,
+        'Type': 'url',
+        'Vendor': 'Symantec Deepsight Intelligence'
     }
 
     entry_context = {
@@ -510,12 +505,12 @@ def get_url_data_command():
     }
 
     demisto.results({
-        'Type' : entryTypes['note'],
-        'Contents' : url_data_json,
-        'ContentsFormat' : formats['json'],
-        'HumanReadable' : md, # not sure if need to build the md first?
-        'ReadableContentsFormat' : formats['markdown'],
-        'EntryContext' : entry_context
+        'Type': entryTypes['note'],
+        'Contents': url_data_json,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': md,  # not sure if need to build the md first?
+        'ReadableContentsFormat': formats['markdown'],
+        'EntryContext': entry_context
     })
 
 
@@ -525,8 +520,9 @@ def get_request_status():
     status_data_json = json.loads(status_data.content)
     return status_data_json
 
+
 # get results of request status - determine current limit usage of the api license
-def get_request_status_command():
+def request_status_command():
     status_data_json = get_request_status()
     md = build_md(status_data_json, "Requests Limit Status")
 
@@ -537,12 +533,12 @@ def get_request_status_command():
     }
 
     demisto.results({
-        'Type' : entryTypes['note'],
-        'Contents' : status_data_json,
-        'ContentsFormat' : formats['json'],
-        'ReadableContentsFormat' : formats['markdown'],
-        'HumanReadable' : md,
-        'EntryContext' : entry_context
+        'Type': entryTypes['note'],
+        'Contents': status_data_json,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': md,
+        'EntryContext': entry_context
     })
 
 
@@ -554,7 +550,8 @@ def test_module():
         raise Exception("Test failed: API request did not succeed, result: {}".format(result))
     demisto.results('ok')
 
-LOG('command is %s' % (demisto.command(), ))
+
+LOG('command is %s' % (demisto.command(),))
 try:
     if demisto.command() == 'test-module':
         test_module()
