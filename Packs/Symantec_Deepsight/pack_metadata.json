@@ -1,6 +1,6 @@
 {
     "name": "Symantec Deepsight Intelligence (Beta)",
-    "description": "Leverage Symantec Deepsight Intelligence.",
+    "description": "Leverage Symantec Deepsight Intelligence",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
