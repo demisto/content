@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed several bugs regarding  app ID 411
+Fixed an issue where several commands would not work as expected in case they were performed on app ID 411.
 
 
 ## [20.3.3] - 2020-03-18
