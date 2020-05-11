@@ -1,6 +1,12 @@
 import requests
 import demistomock as demisto
 
+class dotdict(dict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
 
 def test_query_formatting(mocker):
     args = {
@@ -18,7 +24,7 @@ def test_query_formatting(mocker):
         'proxy': True
     }
 
-    mocker.patch.object(requests, 'session', return_value={})
+    mocker.patch.object(requests, 'session', return_value=dotdict({}))
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'params', return_value=params)
 
