@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#none#':
       - "39"
@@ -41,6 +42,7 @@ tasks:
       script: 'tc-add-indicator'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "2"
@@ -116,6 +118,7 @@ tasks:
       script: 'tc-tag-indicator'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "4"
@@ -150,6 +153,7 @@ tasks:
       script: 'tc-update-indicator'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "5"
@@ -194,6 +198,7 @@ tasks:
       script: 'tc-get-indicators-by-tag'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "6"
@@ -226,6 +231,7 @@ tasks:
       script: 'tc-get-indicator-owners'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "12"
@@ -257,6 +263,7 @@ tasks:
       script: 'tc-delete-indicator-tag'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "22"
@@ -290,6 +297,7 @@ tasks:
       script: 'tc-owners'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "45"
@@ -318,6 +326,7 @@ tasks:
       script: 'tc-indicators'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "45"
@@ -349,6 +358,7 @@ tasks:
       script: 'tc-get-tags'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "45"
@@ -377,6 +387,7 @@ tasks:
       script: 'tc-get-indicator-types'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "45"
@@ -405,6 +416,7 @@ tasks:
       script: 'tc-get-indicator'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "7"
@@ -447,6 +459,7 @@ tasks:
       script: 'tc-create-campaign'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "14"
@@ -483,6 +496,7 @@ tasks:
       script: 'tc-add-group-attribute'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "15"
@@ -520,6 +534,7 @@ tasks:
       script: 'tc-add-group-security-label'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "16"
@@ -555,6 +570,7 @@ tasks:
       script: 'tc-add-group-tag'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "18"
@@ -590,6 +606,7 @@ tasks:
       script: 'tc-create-event'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "18"
@@ -627,6 +644,7 @@ tasks:
       script: 'tc-associate-group-to-group'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "19"
@@ -664,6 +682,7 @@ tasks:
       script: 'tc-get-group-tags'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "20"
@@ -697,6 +716,7 @@ tasks:
       script: 'tc-get-group-security-labels'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "23"
@@ -730,6 +750,7 @@ tasks:
       script: 'tc-create-incident'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "22"
@@ -769,6 +790,7 @@ tasks:
       script: 'tc-incident-associate-indicator'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "27"
@@ -805,6 +827,7 @@ tasks:
       script: 'tc-group-associate-indicator'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "24"
@@ -842,6 +865,7 @@ tasks:
       script: 'tc-get-associated-groups'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "25"
@@ -875,6 +899,7 @@ tasks:
       script: 'tc-get-group-indicators'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "40"
@@ -908,6 +933,7 @@ tasks:
       script: 'tc-get-groups'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "45"
@@ -939,6 +965,7 @@ tasks:
       script: 'tc-get-incident-associate-indicators'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "33"
@@ -971,6 +998,7 @@ tasks:
       script: 'tc-delete-indicator'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1002,6 +1030,7 @@ tasks:
       script: 'tc-delete-group'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1145,6 +1174,7 @@ tasks:
       script: 'tc-fetch-incidents'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "40"
@@ -1178,6 +1208,7 @@ tasks:
       script: 'tc-create-threat'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "37"
@@ -1209,6 +1240,7 @@ tasks:
       script: 'tc-delete-group'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1242,6 +1274,7 @@ tasks:
       script: 'tc-get-events'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "45"
@@ -1270,6 +1303,7 @@ tasks:
       script: 'tc-get-group'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "35"
@@ -1302,6 +1336,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     separatecontext: false
     view: |-
       {
@@ -1327,6 +1362,7 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
+      brand: ''
     nexttasks:
       '#none#':
       - "46"
@@ -1364,6 +1400,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#none#':
       - "28"
@@ -1395,6 +1432,7 @@ tasks:
       script: 'tc-delete-group'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1428,6 +1466,7 @@ tasks:
       script: 'tc-delete-group'
       type: regular
       iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1460,6 +1499,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#none#':
       - "34"
@@ -1490,6 +1530,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#none#':
       - "8"
@@ -1522,6 +1563,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#none#':
       - "51"
@@ -1549,6 +1591,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1579,6 +1622,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#none#':
       - "49"
@@ -1606,6 +1650,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#none#':
       - "1"
@@ -1633,6 +1678,7 @@ tasks:
       type: condition
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#default#':
       - "50"
@@ -1686,6 +1732,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
+      brand: ''
     nexttasks:
       '#none#':
       - "53"
@@ -1716,6 +1763,7 @@ tasks:
       type: condition
       iscommand: false
       description: ''
+      brand: ''
     nexttasks:
       '#default#':
       - "52"
@@ -1778,6 +1826,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
+      brand: ''
     nexttasks:
       '#none#':
       - "53"
@@ -1808,6 +1857,7 @@ tasks:
       type: title
       iscommand: false
       description: ''
+      brand: ''
     separatecontext: false
     view: |-
       {
