@@ -2749,6 +2749,12 @@
         }
     ],
     "skipped_tests": {
+        "Maltiverse Test": "Issue 24335",
+        "Cisco Umbrella Test": "Issue 24338",
+        "TestDedupIncidentsPlaybook": "Issue 24344",
+        "CreateIndicatorFromSTIXTest": "Issue 24345",
+        "SNDBOX_Test": "Issue 24349",
+        "Endpoint Enrichment - Generic v2.1 - Test": "Issue 24350",
         "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
@@ -2940,6 +2946,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
