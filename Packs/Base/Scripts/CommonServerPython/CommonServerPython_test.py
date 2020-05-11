@@ -14,7 +14,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
-    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge
+    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
+    appendContext
 
 try:
     from StringIO import StringIO
@@ -1688,3 +1689,82 @@ def test_traceback_in_return_error_debug_mode_off(mocker):
     assert "This is a test string" not in str(demisto.results.call_args)
     assert "Traceback" not in str(demisto.results.call_args)
     assert "some text" in str(demisto.results.call_args)
+
+
+# append_context unit test
+CONTEXT_MOCK = {
+    'str_key': 'str_value',
+    'dict_key': {
+        'key1': 'val1',
+        'key2': 'val2'
+    },
+    'int_key': 1,
+    'list_key_str': ['val1', 'val2'],
+    'list_key_list': ['val1', 'val2'],
+    'list_key_dict': ['val1', 'val2']
+}
+
+UPDATED_CONTEXT = {
+    'str_key': 'str_data,str_value',
+    'dict_key': {
+        'key1': 'val1',
+        'key2': 'val2',
+        'data_key': 'data_val'
+    },
+    'int_key': [1, 2],
+    'list_key_str': ['val1', 'val2', 'str_data'],
+    'list_key_list': ['val1', 'val2', 'val1', 'val2'],
+    'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
+}
+
+DATA_MOCK_STRING = "str_data"
+DATA_MOCK_LIST = ['val1', 'val2']
+DATA_MOCK_DICT = {
+    'data_key': 'data_val'
+}
+DATA_MOCK_INT = 2
+
+STR_KEY = "str_key"
+DICT_KEY = "dict_key"
+
+APPEND_CONTEXT_INPUT = [
+    (CONTEXT_MOCK, DATA_MOCK_STRING, STR_KEY, "key = {}, val = {}".format(STR_KEY, UPDATED_CONTEXT[STR_KEY])),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, STR_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_DICT, STR_KEY, "TypeError"),
+
+    (CONTEXT_MOCK, DATA_MOCK_STRING, DICT_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, DICT_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT[DICT_KEY])),
+
+    (CONTEXT_MOCK, DATA_MOCK_STRING, 'list_key_str',
+     "key = {}, val = {}".format('list_key_str', UPDATED_CONTEXT['list_key_str'])),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, 'list_key_list',
+     "key = {}, val = {}".format('list_key_list', UPDATED_CONTEXT['list_key_list'])),
+    (CONTEXT_MOCK, DATA_MOCK_DICT, 'list_key_dict',
+     "key = {}, val = {}".format('list_key_dict', UPDATED_CONTEXT['list_key_dict'])),
+
+    (CONTEXT_MOCK, DATA_MOCK_INT, 'int_key', "key = {}, val = {}".format('int_key', UPDATED_CONTEXT['int_key'])),
+]
+
+
+def get_set_context(key, val):
+    from CommonServerPython import return_error
+    return_error("key = {}, val = {}".format(key, val))
+
+
+@pytest.mark.parametrize('context_mock, data_mock, key, expected_answer', APPEND_CONTEXT_INPUT)
+def test_append_context(mocker, context_mock, data_mock, key, expected_answer):
+    from CommonServerPython import demisto
+    mocker.patch.object(demisto, 'get', return_value=context_mock.get(key))
+    mocker.patch.object(demisto, 'setContext', side_effect=get_set_context)
+    mocker.patch.object(demisto, 'results')
+
+    if "TypeError" not in expected_answer:
+        with raises(SystemExit, match='0'):
+            appendContext(key, data_mock)
+            assert expected_answer in demisto.results.call_args[0][0]['Contents']
+
+    else:
+        with raises(TypeError) as e:
+            appendContext(key, data_mock)
+            assert expected_answer in e.value
