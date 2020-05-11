@@ -1,4 +1,4 @@
-from Expanse import main
+from Expanse import main, parse_events
 import demistomock as demisto
 import json
 
@@ -52,7 +52,7 @@ def test_fetch_incidents(mocker):
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
-    assert r[0]['severity'] == 1
+    assert r[0]['severity'] == 2
 
 
 def test_fetch_incidents_severity(mocker):
@@ -61,13 +61,7 @@ def test_fetch_incidents_severity(mocker):
         'first_run': '7',
         'minimum_severity': 'CRITICAL'
     })
-    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
-    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-    mocker.patch.object(demisto, 'results')
-    main()
-    results = demisto.results.call_args[0]
-    r = json.loads(results[0]['Contents'])
-    assert len(r) == 0, 'Should not return any incidents'
+    assert len(parse_events(MOCK_EVENTS)) == 0
 
 
 def test_fetch_incidents_with_behavior(mocker):
@@ -83,7 +77,7 @@ def test_fetch_incidents_with_behavior(mocker):
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
-    assert r[0]['severity'] == 1
+    assert r[0]['severity'] == 2
 
 
 def test_ip(mocker):
