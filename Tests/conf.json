@@ -2938,6 +2938,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
