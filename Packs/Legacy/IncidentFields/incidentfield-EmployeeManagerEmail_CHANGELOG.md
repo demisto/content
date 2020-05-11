@@ -1,5 +1,6 @@
 ## [Unreleased]
-Associated the field with the Port Scan incident type.
+- Associated the field with the Port Scan incident type.
+- Associated the field with the Employee Health Check incident type.
 
 
 ## [20.2.0] - 2020-02-04
