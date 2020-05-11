@@ -3,7 +3,7 @@ ArcSight ESM is a security information and event management (SIEM) product.
 It collects security log data from an enterprise’s security technologies, operating systems, applications and other log sources, and analyzes that data for signs of compromise, attacks or other malicious activity.
 The product generates cases to security administrators and analysts.
 
-#### NOTE: 
+##### NOTE: 
 ArcSight XML is no longer supported. Use the ArcSight ESM integration instead.
 
 ## Use Cases
@@ -327,400 +327,69 @@ There is no context output for this command.
 
 #### Context Example
 ```
-{}
+{
+  "ArcSightESM.QueryViewerResults": [
+    {
+      "Alias": null,
+      "Create Time": "1582763229550",
+      "Display ID": "30001",
+      "Event-Name": null,
+      "ID": "123nu5XEBABCJHuGRQA-nwg==",
+      "Name": "test1",
+      "Originator": null
+    },
+    {
+      "Alias": null,
+      "Create Time": "1589103446811",
+      "Display ID": "30003",
+      "Event-Name": null,
+      "ID": "123gfy-XEBABCAD7Y9AVwrTA==",
+      "Name": "test2",
+      "Originator": null
+    },
+    {
+      "Alias": null,
+      "Create Time": "1588004035004",
+      "Display ID": "30002",
+      "Event-Name": "Login succeeded for user name 'admin'",
+      "ID": "123lqvHEBABDmMHb-MM+jnA==",
+      "Name": "test3",
+      "Originator": null
+    },
+    {
+      "Alias": null,
+      "Create Time": "1588004035004",
+      "Display ID": "30002",
+      "Event-Name": "ArcSight User Login",
+      "ID": "123lqvHEBABDmMHb-MM+jnA==",
+      "Name": "test4",
+      "Originator": null
+    }
+  ]
+}
 ```
 
 #### Human Readable Output
 
->|Column Headers|
->|---|
->| Alias |
->| Create Time |
->| Creator |
->| Description |
->| Display ID |
->| External ID |
->| Group ID |
->| ID |
->| Modification Time |
->| Name |
->| Owner Groups |
->| Owner |
->| ServiceNow® ITSM ID |
->| Category of Situation |
->| Consequence Severity |
->| Operational Impact |
->| Frequency |
->| Reason for Closure |
->| Reporting Level |
->| Security Classification |
->| Stage |
->| Ticket Type |
->| Detection Time |
->| Estimated Restore Time |
->| Estimated Start Time |
->| Incident Source 1 |
->| Incident Source 2 |
->| Incident Source Address |
->| Originator |
->| Affected Elements |
->| Affected Services |
->| Affected Sites |
->| Estimated Impact |
->| Action |
->| Associated Impact |
->| Attack Agent |
->| Attack Mechanism |
->| Security Classification Code |
->| Sensitivity |
->| Vulnerability |
->| Actions Taken |
->| Followup Contact |
->| Planned Actions |
->| Recommended Actions |
->| Attack Impact |
->| Attack OS |
->| Attack Program |
->| Attack Protocol |
->| Attack Service |
->| Attack Target |
->| Attack Time |
->| Final Report Action |
->| Resistance |
->| Attack Address |
->| Attack Location ID |
->| Attack Node |
->| Vulnerability Data |
->| Vulnerability Evidence |
->| Vulnerability Source |
->| Vulnerability Type 1 |
->| Vulnerability Type 2 |
->| History |
->| Last Occurrence Time |
->| No. of Occurrences |
->| Conclusions |
->| Inspection Results |
->| Recorded Data |
->| Event-Aggregated Event Count |
->| Event-Application Protocol |
->| Event-Bytes In |
->| Event-Bytes Out |
->| Event-Concentrator Agents |
->| Event-Concentrator Devices |
->| Event-Correlated Event Count |
->| Event-Crypto Signature |
->| Event-Customer |
->| Event-Customer External ID |
->| Event-Customer ID |
->| Event-Customer Reference ID |
->| Event-Customer Name |
->| Event-Customer URI |
->| Event-Domain |
->| Event-Domain External ID |
->| Event-Domain ID |
->| Event-Domain Name |
->| Event-Domain Reference ID |
->| Event-Domain URI |
->| Event-End Time |
->| Event-Event ID |
->| Event-Event Outcome |
->| Event-External ID |
->| Event-Category Behavior |
->| Event-Category Custom Format Field |
->| Event-Category Descriptor ID |
->| Event-Category Device Group |
->| Event-Category Device Type |
->| Event-Category Outcome |
->| Event-Category Significance |
->| Event-Category Object |
->| Event-Category Technique |
->| Event-Category Tuple Description |
->| Event-Asset Criticality |
->| Event-Model Confidence |
->| Event-Priority |
->| Event-Severity |
->| Event-Relevance |
->| Event-Agent Address |
->| Event-Agent Asset ID |
->| Event-Agent Asset Local ID |
->| Event-Agent Asset Name |
->| Event-Agent Descriptor ID |
->| Event-Agent Dns Domain |
->| Event-Agent Host Name |
->| Event-Agent ID |
->| Event-Agent Mac Address |
->| Event-Generator |
->| Event-Generator External ID |
->| Event-Generator Reference ID |
->| Event-Generator Name |
->| Event-Generator ID |
->| Event-Generator URI |
->| Event-Locality |
->| Event-Manager Receipt Time |
->| Event-Message |
->| Event-Raw Event |
->| Event-Persistence |
->| Event-Rule Thread ID |
->| Event-Originator |
->| Event-Name |
->| Event-Reason |
->| Event-Session ID |
->| Event-Start Time |
->| Event-Transport Protocol |
->| Event-Type |
->| Event-Vulnerability |
->| Event-Vulnerability External ID |
->| Event-Vulnerability ID |
->| Event-Vulnerability Name |
->| Event-Vulnerability Reference ID |
->| Event-Vulnerability URI |
->| Event-Agent Name |
->| Event-Agent Nt Domain |
->| Event-Agent Receipt Time |
->| Event-Agent Time Zone |
->| Event-Agent Severity |
->| Event-Agent Time Zone Offset |
->| Event-Agent Translated Address |
->| Event-Agent Translated Zone |
->| Event-Agent Translated Zone External ID |
->| Event-Agent Translated Zone ID |
->| Event-Agent Translated Zone Name |
->| Event-Agent Translated Zone URI |
->| Event-Agent Type |
->| Event-Agent Version |
->| Event-Agent Zone |
->| Event-Agent Zone External ID |
->| Event-Agent Zone ID |
->| Event-Agent Zone Name |
->| Event-Agent Zone Reference ID |
->| Event-Agent Zone URI |
->| Event-Device Action |
->| Event-Device Address |
->| Event-Device Asset ID |
->| Event-Device Descriptor ID |
->| Event-Device Asset Local ID |
->| Event-Device Asset Name |
->| Event-Device Direction |
->| Event-Device Dns Domain |
->| Event-Device Domain |
->| Event-Device Event Category |
->| Event-Device Event Class ID |
->| Event-Device Facility |
->| Event-Device External ID |
->| Event-Device Host Name |
->| Event-Device Inbound Interface |
->| Event-Device Mac Address |
->| Event-Device Nt Domain |
->| Event-Device Outbound Interface |
->| Event-Device Payload ID |
->| Event-Device Process ID |
->| Event-Device Process Name |
->| Event-Device Product |
->| Event-Device Receipt Time |
->| Event-Device Severity |
->| Event-Device Time Zone |
->| Event-Device Time Zone Offset |
->| Event-Device Translated Address |
->| Event-Device Translated Zone |
->| Event-Device Translated Zone External ID |
->| Event-Device Translated Zone ID |
->| Event-Device Translated Zone Name |
->| Event-Device Translated Zone Reference ID |
->| Event-Device Translated Zone URI |
->| Event-Device Vendor |
->| Event-Device Version |
->| Event-Device Zone |
->| Event-Device Zone External ID |
->| Event-Device Zone ID |
->| Event-Device Zone Name |
->| Event-Device Zone Reference ID |
->| Event-Device Zone URI |
->| Event-Source Address |
->| Event-Source Asset ID |
->| Event-Source Asset Local ID |
->| Event-Source Asset Name |
->| Event-Source Dns Domain |
->| Event-Source Fqdn |
->| Event-Source Geo Country Code |
->| Event-Source Geo Country Flag Url |
->| Event-Source Geo Country Name |
->| Event-Source Geo Descriptor ID |
->| Event-Source Geo Latitude |
->| Event-Source Geo Location Info |
->| Event-Source Geo Postal Code |
->| Event-Source Geo Longitude |
->| Event-Source Geo Region Code |
->| Event-Source Host Name |
->| Event-Source Mac Address |
->| Event-Source Nt Domain |
->| Event-Source Port |
->| Event-Source Process ID |
->| Event-Source Process Name |
->| Event-Source Service Name |
->| Event-Source Translated Address |
->| Event-Source Translated Port |
->| Event-Source Translated Zone |
->| Event-Source Translated Zone ID |
->| Event-Source Translated Zone External ID |
->| Event-Source Translated Zone Name |
->| Event-Source Translated Zone Reference ID |
->| Event-Source Translated Zone URI |
->| Event-Source User ID |
->| Event-Source User Name |
->| Event-Source User Privileges |
->| Event-Source Zone |
->| Event-Source Zone External ID |
->| Event-Source Zone ID |
->| Event-Source Zone Name |
->| Event-Source Zone Reference ID |
->| Event-Source Zone URI |
->| Event-Destination Address |
->| Event-Destination Asset ID |
->| Event-Destination Asset Local ID |
->| Event-Destination Asset Name |
->| Event-Destination Dns Domain |
->| Event-Destination Fqdn |
->| Event-Destination Geo Country Code |
->| Event-Destination Geo Descriptor ID |
->| Event-Destination Geo Country Flag Url |
->| Event-Destination Geo Country Name |
->| Event-Destination Geo Latitude |
->| Event-Destination Geo Location Info |
->| Event-Destination Geo Longitude |
->| Event-Destination Geo Postal Code |
->| Event-Destination Geo Region Code |
->| Event-Destination Host Name |
->| Event-Destination Mac Address |
->| Event-Destination Nt Domain |
->| Event-Destination Port |
->| Event-Destination Process ID |
->| Event-Destination Process Name |
->| Event-Destination Service Name |
->| Event-Destination Translated Address |
->| Event-Destination Translated Port |
->| Event-Destination Translated Zone |
->| Event-Destination Translated Zone External ID |
->| Event-Destination Translated Zone ID |
->| Event-Destination Translated Zone Name |
->| Event-Destination Translated Zone Reference ID |
->| Event-Destination Translated Zone URI |
->| Event-Destination User ID |
->| Event-Destination User Name |
->| Event-Destination User Privileges |
->| Event-Destination Zone |
->| Event-Destination Zone External ID |
->| Event-Destination Zone ID |
->| Event-Destination Zone Name |
->| Event-Destination Zone Reference ID |
->| Event-Destination Zone URI |
->| Event-Attacker Address |
->| Event-Attacker Asset ID |
->| Event-Attacker Asset Local ID |
->| Event-Attacker Asset Name |
->| Event-Attacker Dns Domain |
->| Event-Attacker Fqdn |
->| Event-Attacker Geo Country Code |
->| Event-Attacker Geo Country Flag Url |
->| Event-Attacker Geo Country Name |
->| Event-Attacker Geo Descriptor ID |
->| Event-Attacker Geo Latitude |
->| Event-Attacker Geo Location Info |
->| Event-Attacker Geo Longitude |
->| Event-Attacker Geo Postal Code |
->| Event-Attacker Geo Region Code |
->| Event-Attacker Host Name |
->| Event-Attacker Nt Domain |
->| Event-Attacker Mac Address |
->| Event-Attacker Port |
->| Event-Attacker Process ID |
->| Event-Attacker Service Name |
->| Event-Attacker Translated Address |
->| Event-Attacker Process Name |
->| Event-Attacker Translated Port |
->| Event-Attacker Translated Zone ID |
->| Event-Attacker Translated Zone |
->| Event-Attacker Translated Zone External ID |
->| Event-Attacker Translated Zone Name |
->| Event-Attacker Translated Zone Reference ID |
->| Event-Attacker Translated Zone URI |
->| Event-Attacker User ID |
->| Event-Attacker User Name |
->| Event-Attacker User Privileges |
->| Event-Attacker Zone |
->| Event-Attacker Zone External ID |
->| Event-Attacker Zone ID |
->| Event-Attacker Zone Name |
->| Event-Attacker Zone Reference ID |
->| Event-Attacker Zone URI |
->| Event-Target Address |
->| Event-Target Asset ID |
->| Event-Target Asset Local ID |
->| Event-Target Asset Name |
->| Event-Target Dns Domain |
->| Event-Target Fqdn |
->| Event-Target Geo Country Code |
->| Event-Target Geo Country Flag Url |
->| Event-Target Geo Descriptor ID |
->| Event-Target Geo Country Name |
->| Event-Target Geo Latitude |
->| Event-Target Geo Postal Code |
->| Event-Target Geo Location Info |
->| Event-Target Geo Longitude |
->| Event-Target Geo Region Code |
->| Event-Target Host Name |
->| Event-Target Mac Address |
->| Event-Target Nt Domain |
->| Event-Target Port |
->| Event-Target Process ID |
->| Event-Target Process Name |
->| Event-Target Service Name |
->| Event-Target Translated Address |
->| Event-Target Translated Port |
->| Event-Target Translated Zone |
->| Event-Target Translated Zone External ID |
->| Event-Target Translated Zone ID |
->| Event-Target Translated Zone Name |
->| Event-Target Translated Zone Reference ID |
->| Event-Target Translated Zone URI |
->| Event-Target User ID |
->| Event-Target User Name |
->| Event-Target User Privileges |
->| Event-Target Zone |
->| Event-Target Zone External ID |
->| Event-Target Zone ID |
->| Event-Target Zone Name |
->| Event-Target Zone Reference ID |
->| Event-Target Zone URI |
->| Event-File Create Time |
->| Event-File Hash |
->| Event-File ID |
->| Event-File Modification Time |
->| Event-File Name |
->| Event-File Path |
->| Event-File Permission |
->| Event-File Size |
->| Event-File Type |
->| Event-Old File Create Time |
->| Event-Old File Hash |
->| Event-Old File ID |
->| Event-Old File Modification Time |
->| Event-Old File Name |
->| Event-Old File Path |
->| Event-Old File Permission |
->| Event-Old File Size |
->| Event-Old File Type |
->| Event-Request Client Application |
->| Event-Request Cookies |
->| Event-Request Context |
->| Event-Request Method |
->| Event-Request Protocol |
->| Event-Request Url |
->| Event-Request Url Authority |
->| Event-Request Url File Name |
->| Event-Request Url Host |
->| Event-Request Url Port |
->| Event-Request Url Query |
 
+|Column Headers|
+|---|
+| Name |
+| ID |
+| Create Time |
+| Event-Name |
+| Originator |
+| Alias |
+| Display ID |
+
+### Query Viewer Results: aBBnu5XEBABCJHuGRQA-nwg==
+
+|**Create Time** | **Display ID** | **Event-Name** | **ID** | **Name** |
+|---|---|---|---|---|
+| 1582763229550 | 30001 |  | 123nu5XEBABCJHuGRQA-nwg== | test1 |
+| 1589103446811 | 30003 |  | 123gfy-XEBABCAD7Y9AVwrTA== | test2 |
+| 1588004035004 | 30002 | Login succeeded for user name 'admin' | 123lqvHEBABDmMHb-MM+jnA== | test3 |
+| 1588004035004 | 30002 | ArcSight User Login | 123lqvHEBABDmMHb-MM+jnA== | test4 |
 
 ### as-add-entries
 ***
