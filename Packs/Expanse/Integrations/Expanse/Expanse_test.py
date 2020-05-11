@@ -55,15 +55,6 @@ def test_fetch_incidents(mocker):
     assert r[0]['severity'] == 2
 
 
-def test_fetch_incidents_severity(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'api_key': TEST_API_KEY,
-        'first_run': '7',
-        'minimum_severity': 'CRITICAL'
-    })
-    assert len(parse_events(MOCK_EVENTS)) == 0
-
-
 def test_fetch_incidents_with_behavior(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'api_key': TEST_API_KEY,

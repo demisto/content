@@ -167,7 +167,6 @@ def parse_events(events):
     """
     incidents = []
     for event in events['data']:
-        print(EXPOSURE_SEVERITY_MAPPING[event['payload']['severity']], EXPOSURE_SEVERITY_MAPPING[MINIMUM_SEVERITY])
         if EXPOSURE_SEVERITY_MAPPING[event['payload']['severity']] >= EXPOSURE_SEVERITY_MAPPING[MINIMUM_SEVERITY]:
             incident = {
                 'name': "{type} on {ip}:{port}/{protocol}".format(
