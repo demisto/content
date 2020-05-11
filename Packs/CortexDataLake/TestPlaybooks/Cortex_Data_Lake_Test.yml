@@ -174,7 +174,8 @@ tasks:
       add_to_context: {}
       brand_name:
         simple: Cortex Data Lake
-      error_msg_in_incident: {}
+      error_msg_in_incident:
+        simple: 'Error:'
       expect_data: {}
       instance_name: {}
     separatecontext: false
