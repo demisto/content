@@ -32,5 +32,6 @@
 	"caseInsensitive": true,
 	"sla": 4500,
 	"threshold": 72,
-	"breachScript": ""
+	"breachScript": "",
+	"fromVersion": "5.0.0"
 }
