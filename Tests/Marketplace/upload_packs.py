@@ -96,7 +96,7 @@ def init_storage_client(service_account=None):
         return storage_client
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path, storage_base_path=GCPConfig.STORAGE_BASE_PATH):
+def download_and_extract_index(storage_bucket, extract_destination_path):
     """Downloads and extracts index zip from cloud storage.
 
     Args:
@@ -108,7 +108,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path, storage
         Blob: google cloud storage object that represents index.zip blob.
 
     """
-    index_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.zip")
+    index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -464,9 +464,12 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
+    if storage_bash_path:
+        GCPConfig.STORAGE_BASE_PATH = storage_bash_path
+
     # download and extract index from public bucket
     index_folder_path, index_blob = download_and_extract_index(
-        storage_bucket, extract_destination_path, storage_bash_path
+        storage_bucket, extract_destination_path
     )
 
     # detect new or modified packs
