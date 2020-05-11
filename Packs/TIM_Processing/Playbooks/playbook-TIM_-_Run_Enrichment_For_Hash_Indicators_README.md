@@ -11,28 +11,28 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* integration-Wildfire
+* Wildfire
 * PaloAltoNetworksCortex
-* integration-DemistoRESTAPI
-* integration-opswat-metadefender
+* DemistoRESTAPI
+* opswat-metadefender
 * Panorama
 * PaloAltoNetworks_PAN_OS_EDL_Management
-* integration-Kenna
+* Kenna
 * PaloAlto_MineMeld
 * PaloAltoNetworks_Traps
-* integration-Intezer
-* integration-jira
-* integration-secdo
-* integration-PhishMe
-* integration-aws
+* Intezer
+* jira
+* secdo
+* PhishMe
+* aws
 * Flashpoint
-* integration-Lastline
-* integration-Cylance_Protect
-* integration-Malwr
+* Lastline
+* Cylance_Protect
+* Malwr
 * cisco-ise
-* integration-AlienVaultOTX
-* integration-KeyLight
-* integration-MISP
+* AlienVaultOTX
+* KeyLight
+* MISP
 
 ### Scripts
 This playbook does not use any scripts.

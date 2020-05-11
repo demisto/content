@@ -8,15 +8,15 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 * Panorama
-* integration-Mimecast-Auth
+* Mimecast-Auth
 * PaloAltoNetworksCortex
-* integration-AlienVaultOTX
-* integration-SymantecEndpointProtectionDeprecated
-* integration-LightCyberMagna
-* integration-Lastline
+* AlienVaultOTX
+* SymantecEndpointProtectionDeprecated
+* LightCyberMagna
+* Lastline
 * Flashpoint
 * SlashNextPhishingIncidentResponse
-* integration-Pwned
+* Pwned
 * Cymon
 * PaloAltoNetworks_Traps
 * PaloAlto_MineMeld
