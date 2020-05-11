@@ -1,5 +1,4 @@
-import json
-from typing import Optional, Union
+from typing import Union
 
 import dateparser
 import demistomock as demisto
@@ -13,9 +12,6 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# CONSTANTS
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
 
 class Client(BaseClient):
     """
@@ -25,7 +21,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool, token=None):
         self.token = token
         super().__init__(base_url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json',
-                                                                             'Content-Type':'application/json'})
+                                                                             'Content-Type': 'application/json'})
         if self.token:
             self._headers.update({'X-Auth-Token': self.token})
 
@@ -117,7 +113,7 @@ class Client(BaseClient):
             }
         }
 
-        return self._http_request('POST', suffix_url, data=body)
+        return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
     def device_unquarantine_request(self, device_id: Union[list, str]):
         suffix_url = '/device_actions'
@@ -130,7 +126,7 @@ class Client(BaseClient):
             }
         }
 
-        return self._http_request('POST', suffix_url, json_data=body)
+        return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
     def device_bypass_request(self, device_id: Union[list, str]):
         suffix_url = '/device_actions'
@@ -143,7 +139,7 @@ class Client(BaseClient):
             }
         }
 
-        return self._http_request('POST', suffix_url, json_data=body)
+        return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
     def device_unbypass_request(self, device_id: Union[list, str]):
         suffix_url = '/device_actions'
@@ -156,7 +152,7 @@ class Client(BaseClient):
             }
         }
 
-        return self._http_request('POST', suffix_url, json_data=body)
+        return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
     def device_background_scan_request(self, device_id: Union[list, str]):
         suffix_url = '/device_actions'
@@ -169,7 +165,7 @@ class Client(BaseClient):
             }
         }
 
-        return self._http_request('POST', suffix_url, json_data=body)
+        return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
     def device_background_scan_request_stop(self, device_id: Union[list, str]):
         suffix_url = '/device_actions'
@@ -182,7 +178,7 @@ class Client(BaseClient):
             }
         }
 
-        return self._http_request('POST', suffix_url, json_data=body)
+        return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
     def device_policy_update(self, device_id: Union[list, str], policy_id: str):
         suffix_url = '/device_actions'
@@ -195,7 +191,7 @@ class Client(BaseClient):
             }
         }
 
-        return self._http_request('POST', suffix_url, json_data=body)
+        return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
 
 def test_module(client):
@@ -209,8 +205,7 @@ def test_module(client):
         'ok' if test passed, anything else will fail the test.
     """
     client.test_module_request()
-    demisto.results('ok')
-    return '', None, None
+    return 'ok'
 
 
 def alert_workflow_update_command(client: Client, args: dict):
@@ -232,15 +227,15 @@ def alert_workflow_update_command(client: Client, args: dict):
         'ChangedBy': result.get('changed_by')
     }
 
-    context = {
-        'CarbonBlackEEDR.Alert(val.AlertID && val.AlertID === obj.AlertID)': outputs
-    }
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Alert',
+        outputs_key_field='AlertID',
+        outputs=outputs,
 
-    return (
-        readable_output,
-        context,
-        result
+        readable_output=readable_output,
+        raw_response=result
     )
+    return results
 
 
 def list_devices_command(client: Client, args: dict):
@@ -270,7 +265,6 @@ def device_quarantine_command(client: Client, args: dict):
 def device_unquarantine_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
     result = client.device_quarantine_request(device_id)
-    print(result)
 
     return 'The device has been unquarantine', {}, result
 
@@ -346,7 +340,7 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
 
         # elif demisto.command() == 'fetch-incidents':
         #     # Set and define the fetch incidents command to run after activated via integration settings.
@@ -359,7 +353,7 @@ def main():
         #     demisto.incidents(incidents)
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
-            return_outputs(*alert_workflow_update_command(client, demisto.args()))
+            return_results(alert_workflow_update_command(client, demisto.args()))
         # elif demisto.command() == 'cb-eedr-devices-list':
         #     return_outputs(*list_devices_command(client, demisto.args()))
         elif demisto.command() == 'cb-eedr-device-quarantine':
