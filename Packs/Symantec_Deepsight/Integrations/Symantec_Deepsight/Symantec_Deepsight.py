@@ -87,8 +87,8 @@ def create_behaviours_context(data_json):
 def create_malicious_data(data_from_api_json):
     malicious_description = ""
     if 'reputationValues' in data_from_api_json:
-        malicious_description = 'Reputation: {}'.format(
-            data_from_api_json['reputationValues'].get("reputation", "Unknown")),
+        reputation = data_from_api_json['reputationValues'].get("reputation", "Unknown")
+        malicious_description = 'Reputation: {}'.format(reputation)
     malicious_data = {
         'Description': malicious_description,
         'Vendor': 'Symantec Deepsight Intelligence'
@@ -432,12 +432,13 @@ def get_file_data_command():
     file_data_json = get_file_data(filehash)
 
     dbotscore = calc_file_dbot_score(file_data_json)
-    dbotscore_context = [{
-        'Indicator': filehash,
-        'Type': 'hash',
-        'Vendor': 'Symantec Deepsight Intelligence',
-        'Score': dbotscore
-    },
+    dbotscore_context = [
+        {
+            'Indicator': filehash,
+            'Type': 'hash',
+            'Vendor': 'Symantec Deepsight Intelligence',
+            'Score': dbotscore
+        },
         {
             'Indicator': filehash,
             'Type': 'file',
@@ -545,8 +546,7 @@ def request_status_command():
 def test_module():
     try:
         result = get_ip_data("5.79.86.16")
-        ip = result["ip"]
-    except Exception, e:
+    except Exception:
         raise Exception("Test failed: API request did not succeed, result: {}".format(result))
     demisto.results('ok')
 
