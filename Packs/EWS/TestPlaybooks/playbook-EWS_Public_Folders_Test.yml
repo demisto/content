@@ -2,12 +2,14 @@ id: EWS Public Folders Test
 version: -1
 name: EWS Public Folders Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
     taskid: 3ae4ee2b-2135-4207-8917-f0bed3a119d9
     type: start
     task:
+      description: ""
       id: 3ae4ee2b-2135-4207-8917-f0bed3a119d9
       version: -1
       name: ""
