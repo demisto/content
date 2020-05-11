@@ -2623,9 +2623,9 @@
         },
         {
             "integrations": "Logzio",
-            "playbookID": "Logzio-Test",
+            "playbookID": "Logzio - Test",
             "fromversion": "5.0.0"
-        },
+        }
     ],
     "skipped_tests": {
         "Test-Shodan_v2": "Issue 23370",
