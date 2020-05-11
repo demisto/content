@@ -616,6 +616,8 @@ class Pack(object):
                             changelog = json.load(changelog_file)
 
                             if latest_release_notes in changelog:
+                                shutil.copyfile(changelog_index_path,
+                                                os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
                                 print_warning(f"Found existing release notes for version: {latest_release_notes} "
                                               f"in the {self._pack_name} pack.")
                                 task_status = True

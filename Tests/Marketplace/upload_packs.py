@@ -555,7 +555,6 @@ def main():
             continue
 
         pack.status = PackStatus.SUCCESS.name
-        pack.cleanup()
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
