@@ -3,11 +3,21 @@ import copy
 
 from CommonServerPython import *
 
+PREFIXES_TO_REMOVE = ['incident.']
+
+
+def preprocess_incidents_field(incidents_field):
+    incidents_field = incidents_field.strip()
+    for prefix in PREFIXES_TO_REMOVE:
+        if incidents_field.startswith(prefix):
+            incidents_field = incidents_field[len(prefix):]
+    return incidents_field
+
 
 def main():
     d_args = dict(demisto.args())
     for arg in ['tagField', 'emailbody', 'emailbodyhtml', 'emailsubject', 'timeField']:
-        d_args[arg] = d_args[arg].replace('incident.', '')
+        d_args[arg] = preprocess_incidents_field(d_args.get(arg, ''))
     get_incidents_by_query_args = copy.deepcopy(d_args)
     get_incidents_by_query_args['NonEmptyFields'] = d_args['tagField']
     res = demisto.executeCommand("GetIncidentsByQuery", get_incidents_by_query_args)
