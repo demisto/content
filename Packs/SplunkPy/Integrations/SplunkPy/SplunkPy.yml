@@ -334,10 +334,7 @@ script:
           required: true
           secret: false
         - default: false
-          description:
-            Fields for indexing that do not occur in the event payload itself.
-            Accepts a simple key value json string payload.
-            Example: {"key":"value"}
+          description: Fields for indexing that do not occur in the event payload itself. Accepts a simple key value json string payload.
           isArray: false
           name: fields
           required: false
