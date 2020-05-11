@@ -18,16 +18,12 @@ tasks:
       '#none#':
       - '3'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '1':
     id: '1'
     taskid: 3a4bdbe3-2e52-4694-847c-a75c713304a0
@@ -48,16 +44,12 @@ tasks:
       template_name:
         simple: ${inputs.PenteraTaskName}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 340
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 340\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '2':
     id: '2'
     taskid: c39055fd-077a-4425-8d66-f67a1115faca
@@ -66,11 +58,11 @@ tasks:
       id: c39055fd-077a-4425-8d66-f67a1115faca
       version: -1
       name: GenericPolling
-      description: ''
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '7'
@@ -95,16 +87,13 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 660
-        }
-      }
+      max: 0
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 660\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '3':
     id: '3'
     taskid: 42db38b6-8f8b-4596-859a-bcc95f2cb854
@@ -121,16 +110,12 @@ tasks:
       '#none#':
       - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '4':
     id: '4'
     taskid: e219e85f-a56a-4e27-8168-f6d1452e7db0
@@ -147,16 +132,12 @@ tasks:
       '#none#':
       - '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 515
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 515\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '5':
     id: '5'
     taskid: 9edbe478-90d3-4e33-8804-d3ea6679f63f
@@ -173,16 +154,12 @@ tasks:
       '#none#':
       - '6'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1155
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1155\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '6':
     id: '6'
     taskid: 9dfd1648-57d8-408d-8b83-2df67ab2f8b7
@@ -200,16 +177,12 @@ tasks:
       task_run_id:
         simple: ${Pentera.TaskRun.ID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1300
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1300\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '7':
     id: '7'
     taskid: e55b1bd2-c601-4388-8d78-1dc24bae2ef0
@@ -226,16 +199,12 @@ tasks:
       '#none#':
       - '8'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 835
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 835\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   '8':
     id: '8'
     taskid: fb9b4b42-aaa1-473d-853b-f35aa18463a8
@@ -244,11 +213,11 @@ tasks:
       id: fb9b4b42-aaa1-473d-853b-f35aa18463a8
       version: -1
       name: Get Template Status
-      description: ''
       script: '|||pentera-get-task-run-status'
       type: regular
       iscommand: true
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '5'
@@ -256,33 +225,29 @@ tasks:
       task_run_id:
         simple: ${Pentera.TaskRun.ID}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 980
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 980\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1345,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1345,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
 inputs:
 - key: PenteraTaskName
   value: {}
   required: true
   description: The name of the Pentera task to run
-outputs: []
-description: ''
+  playbookInputQuery:
+outputs:
+- contextPath: Pentera.TaskRun.FullActionReport
+  description: Pentera Full Action Report is the summary of the given TaskName in
+    a CSV format, that contains all the actions that Pentera performed during the
+    task run.
+  type: unknown
 fromversion: 5.0.0
+description: ''
+tests:
+- No tests (auto formatted)

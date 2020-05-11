@@ -804,4 +804,4 @@ outputs:
   description: The domain names of the endpoints that were enriched.
   type: string
 tests:
-  - Endpoint Enrichment - Generic v2 - Test
+  - No Tests

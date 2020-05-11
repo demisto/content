@@ -391,7 +391,7 @@ tasks:
     task:
       id: de946532-00b9-4ff6-8dc5-369d44aeee25
       version: -1
-      name: Are there good indicators?
+      name: Are there suspicious indicators?
       type: condition
       iscommand: false
       brand: ""
@@ -418,7 +418,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: "1"
+                        simple: "2"
                 accessor: value
             iscontext: true
     view: |-

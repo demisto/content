@@ -16,6 +16,7 @@ script: |
               demisto.log('Copying file ' + s2f[k] + ' from device ' + k)
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Take a list of devices and pull a specific file (given by path) from each

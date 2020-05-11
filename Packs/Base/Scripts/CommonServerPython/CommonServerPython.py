@@ -24,6 +24,8 @@ import demistomock as demisto
 # imports something that can be missed from docker image
 try:
     import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util import Retry
 except Exception:
     pass
 
@@ -1154,17 +1156,34 @@ def appendContext(key, data, dedup=False):
     if data is None:
         return
     existing = demisto.get(demisto.context(), key)
+
     if existing:
-        strBased = isinstance(data, STRING_TYPES) and isinstance(existing, STRING_TYPES)
-        if strBased:
-            data = data.split(',')
-            existing = existing.split(',')
-        newVal = data + existing
-        if dedup:
-            newVal = list(set(newVal))
-        if strBased:
-            newVal = ','.join(newVal)
-        demisto.setContext(key, newVal)
+        if isinstance(existing, STRING_TYPES):
+            if isinstance(data, STRING_TYPES):
+                new_val = data + ',' + existing
+            else:
+                new_val = data + existing  # will raise a self explanatory TypeError
+
+        elif isinstance(existing, dict):
+            if isinstance(data, dict):
+                new_val = [existing, data]
+            else:
+                new_val = data + existing  # will raise a self explanatory TypeError
+
+        elif isinstance(existing, list):
+            if isinstance(data, list):
+                existing.extend(data)
+            else:
+                existing.append(data)
+            new_val = existing
+
+        else:
+            new_val = [existing, data]
+
+        if dedup and isinstance(new_val, list):
+            new_val = list(set(new_val))
+
+        demisto.setContext(key, new_val)
     else:
         demisto.setContext(key, data)
 
@@ -1770,19 +1789,25 @@ class Common(object):
         def to_context(self):
             pass
 
-    class DBotScore(Indicator):
+    class DBotScore(object):
         """
         DBotScore class
+
         :type indicator: ``str``
         :param indicator: indicator value, ip, hash, domain, url, etc
+
         :type indicator_type: ``DBotScoreType``
         :param indicator_type: use DBotScoreType class
+
         :type integration_name: ``str``
         :param integration_name: integration name
+
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
+
         :type malicious_description: ``str``
         :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
+
         :return: None
         :rtype: ``None``
         """
@@ -1839,34 +1864,44 @@ class Common(object):
     class IP(Indicator):
         """
         IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
+
         :type ip: ``str``
         :param ip: IP address
+
         :type asn: ``str``
         :param asn: The autonomous system name for the IP address, for example: "AS8948".
+
         :type hostname: ``str``
         :param hostname: The hostname that is mapped to this IP address.
+
         :type geo_latitude: ``str``
         :param geo_latitude: The geolocation where the IP address is located, in the format: latitude
+
         :type geo_longitude: ``str``
         :param geo_longitude: The geolocation where the IP address is located, in the format: longitude.
+
         :type geo_country: ``str``
         :param geo_country: The country in which the IP address is located.
+
         :type geo_description: ``str``
         :param geo_description: Additional information about the location.
+
         :type detection_engines: ``int``
         :param detection_engines: The total number of engines that checked the indicator.
+
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score:
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, ip, asn=None, hostname=None, geo_latitude=None, geo_longitude=None, geo_country=None,
-                     geo_description=None, detection_engines=None, positive_engines=None, dbot_score=None):
-
+        def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -1877,15 +1912,8 @@ class Common(object):
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
 
-            self.dbot_score = None
-            if dbot_score:
-                if not isinstance(dbot_score, Common.DBotScore):
-                    raise ValueError('dbot_score must be of type DBotScore')
-
-                self.dbot_score = dbot_score
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
 
             self.dbot_score = dbot_score
 
@@ -1975,42 +2003,61 @@ class Common(object):
         File indicator class - https://xsoar.pan.dev/docs/context-standards#file
         :type name: ``str``
         :param name: The full file name (including file extension).
+
         :type entry_id: ``str``
         :param entry_id: The ID for locating the file in the War Room.
+
         :type size: ``int``
         :param size: The size of the file in bytes.
+
         :type md5: ``str``
         :param md5: The MD5 hash of the file.
+
         :type sha1: ``str``
         :param sha1: The SHA1 hash of the file.
+
         :type sha256: ``str``
         :param sha256: The SHA256 hash of the file.
+
         :type sha512: ``str``
         :param sha512: The SHA512 hash of the file.
+
         :type ssdeep: ``str``
         :param ssdeep: The ssdeep hash of the file (same as displayed in file entries).
+
         :type extension: ``str``
         :param extension: The file extension, for example: "xls".
+
         :type file_type: ``str``
         :param file_type: The file type, as determined by libmagic (same as displayed in file entries).
+
         :type hostname: ``str``
         :param hostname: The name of the host where the file was found. Should match Path.
+
         :type path: ``str``
         :param path: The path where the file is located.
+
         :type company: ``str``
         :param company: The name of the company that released a binary.
+
         :type product_name: ``str``
         :param product_name: The name of the product to which this file belongs.
+
         :type digital_signature__publisher: ``str``
         :param digital_signature__publisher: The publisher of the digital signature for the file.
+
         :type signature: ``FileSignature``
         :param signature: File signature class
+
         :type actor: ``str``
         :param actor: The actor reference.
+
         :type tags: ``str``
         :param tags: Tags of the file.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
+
         :rtype: ``None``
         :return: None
         """
@@ -2019,10 +2066,9 @@ class Common(object):
                        'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
                        'val.SSDeep && val.SSDeep == obj.SSDeep)'
 
-        def __init__(self, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None, sha512=None,
-                     ssdeep=None,
-                     extension=None, file_type=None, hostname=None, path=None, company=None, product_name=None,
-                     digital_signature__publisher=None, signature=None, actor=None, tags=None, dbot_score=None):
+        def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
+                     sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
+                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2042,11 +2088,6 @@ class Common(object):
             self.signature = signature
             self.actor = actor
             self.tags = tags
-
-            self.dbot_score = dbot_score
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
 
             self.dbot_score = dbot_score
 
@@ -2123,7 +2164,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
+        CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
         def __init__(self, id, cvss, published, modified, description):
             # type (str, str, str, str, str) -> None
@@ -2133,13 +2174,6 @@ class Common(object):
             self.published = published
             self.modified = modified
             self.description = description
-
-            self.dbot_score = None
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
-
-            self.dbot_score = dbot_score
 
         def to_context(self):
             cve_context = {
@@ -2159,11 +2193,8 @@ class Common(object):
                 cve_context['Description'] = self.description
 
             ret_value = {
-                Common.URL.CONTEXT_PATH: cve_context
+                Common.CVE.CONTEXT_PATH: cve_context
             }
-
-            if self.dbot_score:
-                ret_value.update(self.dbot_score.to_context())
 
             return ret_value
 
@@ -2172,26 +2203,25 @@ class Common(object):
         URL indicator - https://xsoar.pan.dev/docs/context-standards#url
         :type url: ``str``
         :param url: The URL
+
         :type detection_engines: ``int``
         :param detection_engines: The total number of engines that checked the indicator.
+
         :type positive_detections: ``int``
         :param positive_detections: The number of engines that positively detected the indicator as malicious.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, detection_engines=None, positive_detections=None, dbot_score=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
-
-            self.dbot_score = dbot_score
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
 
             self.dbot_score = dbot_score
 
@@ -2221,73 +2251,6 @@ class Common(object):
 
             return ret_value
 
-    class WHOIS(object):
-        """ ignore docstring
-        WHOIS is a class that used with Domain class
-        """
-
-        def __init__(self, domain_status=None, name_servers=None, creation_date=None, update_date=None,
-                     expiration_date=None, registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
-                     registrant_name=None, registrant_email=None, registrant_phone=None,
-                     admin_name=None, admin_email=None, admin_phone=None):
-
-            self.domain_status = domain_status
-            self.name_servers = name_servers
-            self.creation_date = creation_date
-            self.update_date = update_date
-            self.expiration_date = expiration_date
-            self.registrar_name = registrar_name
-            self.registrar_abuse_email = registrar_abuse_email
-            self.registrar_abuse_phone = registrar_abuse_phone
-
-            self.registrant_name = registrant_name
-            self.registrant_email = registrant_email
-            self.registrant_phone = registrant_phone
-
-            self.admin_name = admin_name
-            self.admin_email = admin_email
-            self.admin_phone = admin_phone
-
-        def to_context(self):
-            whois_context = {}
-
-            if self.domain_status:
-                whois_context['DomainStatus'] = self.domain_status
-
-            if self.name_servers:
-                whois_context['NameServers'] = self.name_servers
-
-            if self.creation_date:
-                whois_context['CreationDate'] = self.creation_date
-
-            if self.update_date:
-                whois_context['UpdateDate'] = self.update_date
-
-            if self.expiration_date:
-                whois_context['ExpirationDate'] = self.expiration_date
-
-            if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
-                whois_context['Registrar'] = {
-                    'Name': self.registrar_name,
-                    'AbuseEmail': self.registrar_abuse_email,
-                    'AbusePhone': self.registrar_abuse_phone
-                }
-
-            if self.registrant_name or self.registrant_phone or self.registrant_email:
-                whois_context['Registrant'] = {
-                    'Name': self.registrant_name,
-                    'Email': self.registrant_email,
-                    'Phone': self.registrant_phone
-                }
-
-            if self.admin_name or self.admin_email or self.admin_phone:
-                whois_context['Admin'] = {
-                    'Name': self.admin_name,
-                    'Email': self.admin_email,
-                    'Phone': self.admin_phone
-                }
-
-            return whois_context
 
     class Domain(Indicator):
         """ ignore docstring
@@ -2295,28 +2258,39 @@ class Common(object):
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
-        def __init__(self, domain, dns=None, detection_engines=None, positive_detections=None, whois=None,
-                     organization=None, sub_domains=None, creation_date=None, update_date=None, expiration_date=None,
-                     domain_status=None, name_servers=None, dbot_score=None):
+        def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None,
+                     organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
+                     domain_status=None, name_servers=None,
+                     registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
+                     registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
-            self.whois = whois
             self.organization = organization
             self.sub_domains = sub_domains
             self.creation_date = creation_date
-            self.update_date = update_date
+            self.updated_date = updated_date
             self.expiration_date = expiration_date
+
+            self.registrar_name = registrar_name
+            self.registrar_abuse_email = registrar_abuse_email
+            self.registrar_abuse_phone = registrar_abuse_phone
+
+            self.registrant_name = registrant_name
+            self.registrant_email = registrant_email
+            self.registrant_phone = registrant_phone
+            self.registrant_country = registrant_country
+
+            self.admin_name = admin_name
+            self.admin_email = admin_email
+            self.admin_phone = admin_phone
+            self.admin_country = admin_country
+
 
             self.domain_status = domain_status
             self.name_servers = name_servers
-
-            # DBotScore fields
-            self.dbot_score = dbot_score
-
-        def set_dbot_score(self, dbot_score):
-            # type: (Common.DBotScore) -> None
 
             self.dbot_score = dbot_score
 
@@ -2324,6 +2298,7 @@ class Common(object):
             domain_context = {
                 'Name': self.domain
             }
+            whois_context = {}
 
             if self.dns:
                 domain_context['DNS'] = self.dns
@@ -2334,14 +2309,31 @@ class Common(object):
             if self.positive_detections:
                 domain_context['PositiveDetections'] = self.positive_detections
 
-            if self.whois:
-                domain_context['WHOIS'] = self.whois.to_context()
+            if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
+                domain_context['Registrar'] = {
+                    'Name': self.registrar_name,
+                    'AbuseEmail': self.registrar_abuse_email,
+                    'AbusePhone': self.registrar_abuse_phone
+                }
+                whois_context['Registrar'] = domain_context['Registrar']
 
-                if 'Admin' in domain_context['WHOIS']:
-                    domain_context['Admin'] = domain_context['WHOIS']['Admin']
+            if self.registrant_name or self.registrant_phone or self.registrant_email or self.registrant_country:
+                domain_context['Registrant'] = {
+                    'Name': self.registrant_name,
+                    'Email': self.registrant_email,
+                    'Phone': self.registrant_phone,
+                    'Country': self.registrant_country
+                }
+                whois_context['Registrant'] = domain_context['Registrant']
 
-                if 'Registrant' in domain_context['WHOIS']:
-                    domain_context['Registrant'] = domain_context['WHOIS']['Registrant']
+            if self.admin_name or self.admin_email or self.admin_phone or self.admin_country:
+                domain_context['Admin'] = {
+                    'Name': self.admin_name,
+                    'Email': self.admin_email,
+                    'Phone': self.admin_phone,
+                    'Country': self.admin_country
+                }
+                whois_context['Admin'] = domain_context['Admin']
 
             if self.organization:
                 domain_context['Organization'] = self.organization
@@ -2351,24 +2343,32 @@ class Common(object):
 
             if self.domain_status:
                 domain_context['DomainStatus'] = self.domain_status
+                whois_context['DomainStatus'] = domain_context['DomainStatus']
 
             if self.creation_date:
                 domain_context['CreationDate'] = self.creation_date
+                whois_context['CreationDate'] = domain_context['CreationDate']
 
-            if self.update_date:
-                domain_context['UpdateDate'] = self.update_date
+            if self.updated_date:
+                domain_context['UpdatedDate'] = self.updated_date
+                whois_context['UpdatedDate'] = domain_context['UpdatedDate']
 
             if self.expiration_date:
                 domain_context['ExpirationDate'] = self.expiration_date
+                whois_context['ExpirationDate'] = domain_context['ExpirationDate']
 
             if self.name_servers:
                 domain_context['NameServers'] = self.name_servers
+                whois_context['NameServers'] = domain_context['NameServers']
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if whois_context:
+                domain_context['WHOIS'] = whois_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -2378,6 +2378,7 @@ class Common(object):
                 ret_value.update(self.dbot_score.to_context())
 
             return ret_value
+
 
 class CommandResults:
     """
@@ -2428,13 +2429,20 @@ class CommandResults:
 
         if self.indicators:
             for indicator in self.indicators:
-                outputs.update(indicator.to_context())
+                context_outputs = indicator.to_context()
+
+                for key, value in context_outputs.items():
+                    if key not in outputs:
+                        outputs[key] = []
+
+                    outputs[key].append(value)
 
         if self.raw_response:
             raw_response = self.raw_response
 
         if self.outputs:
             if not self.readable_output:
+                # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
             else:
                 human_readable = self.readable_output
@@ -2442,10 +2450,16 @@ class CommandResults:
             if not self.raw_response:
                 raw_response = self.outputs
 
-            outputs_key = '{}(val.{} == obj.{})'.format(self.outputs_prefix, self.outputs_key_field, self.outputs_key_field)
-            outputs.update({
-                outputs_key: self.outputs
-            })
+            if self.outputs_prefix and self.outputs_key_field:
+                # if both prefix and key field provided then create DT key
+                outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
+                outputs[outputs_key] = self.outputs
+            elif self.outputs_prefix:
+                outputs_key = '{}'.format(self.outputs_prefix)
+                outputs[outputs_key] = self.outputs
+            else:
+                outputs = self.outputs
+                human_readable = self.readable_output  # prefix and key field not provided, human readable should
 
         return_entry = {
             'Type': EntryType.NOTE,
@@ -3306,9 +3320,70 @@ if 'requests' in sys.modules:
             if not proxy:
                 self._session.trust_env = False
 
-        def _http_request(self, method, url_suffix, full_url=None, headers=None,
-                          auth=None, json_data=None, params=None, data=None, files=None,
-                          timeout=10, resp_type='json', ok_codes=None, return_empty_response = False, **kwargs):
+        def _implement_retry(self, retries=0,
+                             status_list_to_retry=None,
+                             backoff_factor=5,
+                             raise_on_redirect=False,
+                             raise_on_status=False):
+            """
+            Implements the retry mechanism.
+            In the default case where retries = 0 the request will fail on the first time
+
+            :type retries: ``int``
+            :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
+
+            :type status_list_to_retry: ``iterable``
+            :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+
+            :type backoff_factor ``float``
+            :param backoff_factor:
+                A backoff factor to apply between attempts after the second try
+                (most errors are resolved immediately by a second try without a
+                delay). urllib3 will sleep for::
+
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+                for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+                than :attr:`Retry.BACKOFF_MAX`.
+
+                By default, backoff_factor set to 5
+
+            :type raise_on_redirect ``bool``
+            :param raise_on_redirect: Whether, if the number of redirects is
+                exhausted, to raise a MaxRetryError, or to return a response with a
+                response code in the 3xx range.
+
+            :type raise_on_status ``bool``
+            :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                whether we should raise an exception, or return a response,
+                if status falls in ``status_forcelist`` range and retries have
+                been exhausted.
+            """
+            try:
+                retry = Retry(
+                    total=retries,
+                    read=retries,
+                    connect=retries,
+                    backoff_factor=backoff_factor,
+                    status=retries,
+                    status_forcelist=status_list_to_retry,
+                    method_whitelist=frozenset(['GET', 'POST', 'PUT']),
+                    raise_on_status=raise_on_status,
+                    raise_on_redirect=raise_on_redirect
+                )
+                adapter = HTTPAdapter(max_retries=retry)
+                self._session.mount('http://', adapter)
+                self._session.mount('https://', adapter)
+            except NameError:
+                pass
+
+        def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
+                          params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
+                          return_empty_response = False, retries=0, status_list_to_retry=None,
+                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3362,12 +3437,46 @@ if 'requests' in sys.modules:
 
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
+
+            :type retries: ``int``
+            :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
+
+            :type status_list_to_retry: ``iterable``
+            :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+
+            :type backoff_factor ``float``
+            :param backoff_factor:
+                A backoff factor to apply between attempts after the second try
+                (most errors are resolved immediately by a second try without a
+                delay). urllib3 will sleep for::
+
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+                for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+                than :attr:`Retry.BACKOFF_MAX`.
+
+                By default, backoff_factor set to 5
+
+            :type raise_on_redirect ``bool``
+            :param raise_on_redirect: Whether, if the number of redirects is
+                exhausted, to raise a MaxRetryError, or to return a response with a
+                response code in the 3xx range.
+
+            :type raise_on_status ``bool``
+            :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                whether we should raise an exception, or return a response,
+                if status falls in ``status_forcelist`` range and retries have
+                been exhausted.
             """
             try:
                 # Replace params if supplied
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
+                self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 # Execute
                 res = self._session.request(
                     method,
@@ -3434,6 +3543,14 @@ if 'requests' in sys.modules:
                           ' is correct and that you have access to the server from your host.' \
                     .format(err_type, exception.errno, exception.strerror)
                 raise DemistoException(err_msg, exception)
+            except requests.exceptions.RetryError as exception:
+                try:
+                    reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
+                except:
+                    reason = ''
+                err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
+                raise DemistoException(err_msg, exception)
+
 
         def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.

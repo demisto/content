@@ -50,6 +50,7 @@ script: |-
       "EntryContext": {"EWS":{"Query": query or ' '}}
   });
 type: python
+subtype: python2
 tags:
 - ews
 comment: Returns an EWS query according to the automation's arguments.

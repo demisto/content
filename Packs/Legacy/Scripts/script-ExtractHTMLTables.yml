@@ -50,6 +50,7 @@ script: |-
   else:
       demisto.results('Did not find tables in HTML.')
 type: python
+subtype: python2
 tags:
 - Utility
 comment: |-

@@ -61,6 +61,7 @@ script: |-
   if email_to:
       send_email(email_to, email_subject, email_body)
 type: python
+subtype: python2
 tags:
 - sla
 - example
