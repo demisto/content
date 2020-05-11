@@ -26,7 +26,7 @@ def options_handler():
 
 def install_new_content(client, server):
     prints_manager = ParallelPrintsManager(1)
-    update_content_on_demisto_instance(client, server, prints_manager, 0)
+    update_content_on_demisto_instance(client, server, 'Demisto PreGA', prints_manager, 0)
     prints_manager.execute_thread_prints(0)
 
 
