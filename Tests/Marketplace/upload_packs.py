@@ -102,7 +102,6 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
-        storage_base_path (str): The storage base path to upload to.
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
@@ -242,13 +241,12 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
-def upload_core_packs_config(storage_bucket, packs_list, storage_base_path=GCPConfig.STORAGE_BASE_PATH):
+def upload_core_packs_config(storage_bucket, packs_list):
     """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         packs_list (list): list of initialized packs.
-        storage_base_path (str): The storage base path to upload to.
 
     """
     # todo later check if it is not pre release and only then upload corepacks.json
@@ -269,7 +267,7 @@ def upload_core_packs_config(storage_bucket, packs_list, storage_base_path=GCPCo
         'corePacks': core_packs_public_urls
     }
 
-    core_packs_config_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
+    core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
     blob = storage_bucket.blob(core_packs_config_path)
     blob.upload_from_string(json.dumps(core_packs_data, indent=4))
 
