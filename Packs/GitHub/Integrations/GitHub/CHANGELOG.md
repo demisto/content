@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 - Added handling for deleted forked repositories in the ***GitHub-get-pull-request*** command.
 
 

@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 Fixed an issue where *IsClosed* flag was not fetched properly in ***intsights-get-alert-by-id*** and ***intsights-get-alerts*** commands.
 
 

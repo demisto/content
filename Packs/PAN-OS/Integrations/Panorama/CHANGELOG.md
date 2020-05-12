@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 - Fixed an issue where commands resulting with an empty list would raise an error instead of a warning.
 
 ## [20.4.1] - 2020-04-29
