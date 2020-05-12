@@ -2228,14 +2228,24 @@ def panorama_get_url_category_command(url_cmd: str):
     urls = argToList(demisto.args()['url'])
 
     categories_dict: Dict[str, list] = {}
+    categories_dict_hr: Dict[str, list] = {}
     for url in urls:
         category = panorama_get_url_category(url_cmd, url)
         if category in categories_dict:
             categories_dict[category].append(url)
+            categories_dict_hr[category].append(url)
         else:
             categories_dict[category] = [url]
+            categories_dict_hr[category] = [url]
         context_urls = populate_url_filter_category_from_context(category)
         categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
+
+    url_category_output_hr = []
+    for key, value in categories_dict_hr.items():
+        url_category_output_hr.append({
+            'Category': key,
+            'URL': value
+        })
 
     url_category_output = []
     for key, value in categories_dict.items():
@@ -2243,12 +2253,13 @@ def panorama_get_url_category_command(url_cmd: str):
             'Category': key,
             'URL': value
         })
+
     title = 'URL Filtering'
     if url_cmd == 'url-info-cloud':
         title += f' from cloud'
     elif url_cmd == 'url-info-host':
         title += f' from host'
-    human_readable = tableToMarkdown(f'{title}:', url_category_output, ['URL', 'Category'], removeNull=True)
+    human_readable = tableToMarkdown(f'{title}:', url_category_output_hr, ['URL', 'Category'], removeNull=True)
 
     demisto.results({
         'Type': entryTypes['note'],

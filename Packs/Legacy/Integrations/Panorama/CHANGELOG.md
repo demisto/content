@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Fixed an issue where running ***panorama-get-url-category*** multiple times presented in the war room data from the context.
 - Fixed an issue where commands resulting with an empty list would raise an error instead of a warning.
 
 ## [20.4.1] - 2020-04-29
