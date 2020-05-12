@@ -363,7 +363,12 @@ class MicrosoftClient(BaseClient):
                 bytes: Encrypted value
             """
             # String to bytes
-            enc_key = base64.b64decode(enc_key)
+            try:
+                enc_key = base64.b64decode(enc_key)
+            except Exception as err:
+                return_error(f'Error in Microsoft authorization: {err.value}'
+                             f' Please check authentication related parameters.')
+
             # Create key
             aes_gcm = AESGCM(enc_key)
             # Create nonce
