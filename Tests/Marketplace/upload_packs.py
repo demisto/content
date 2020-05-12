@@ -437,8 +437,8 @@ def option_handler():
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.",
                         required=False)
-    parser.add_argument('-sn', '--should_sign_pack', type=str2bool,
-                        help='Should sign content packs or not.', default=True)
+    # parser.add_argument('-sn', '--should_sign_pack', type=str2bool,
+    #                     help='Should sign content packs or not.', default=True)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
     # disable-secrets-detection-end
@@ -457,7 +457,7 @@ def main():
     override_pack = option.override_pack
     signature_key = option.key_string
     storage_bash_path = option.storage_bash_path
-    should_sign_pack = option.should_sign_pack
+    # should_sign_pack = option.should_sign_pack
     remove_test_playbooks = option.remove_test_playbooks
 
     # google cloud storage client initialized
@@ -532,12 +532,12 @@ def main():
             pack.cleanup()
             continue
 
-        if should_sign_pack:
-            task_status = pack.sign_pack(signature_key)
-            if not task_status:
-                pack.status = PackStatus.FAILED_SIGNING_PACKS.name
-                pack.cleanup()
-                continue
+        # if should_sign_pack:
+        task_status = pack.sign_pack(signature_key)
+        if not task_status:
+            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+            pack.cleanup()
+            continue
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:

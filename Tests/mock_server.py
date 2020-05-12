@@ -1,6 +1,7 @@
 from __future__ import print_function
+
+import ast
 import os
-import json
 import signal
 import string
 import time
@@ -198,7 +199,7 @@ class MITMProxy:
             method='GET'
         )
 
-        system_conf = json.loads(system_conf_response[0]).get('sysConf', {})
+        system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
 
         http_proxy = https_proxy = proxy
         if proxy:
