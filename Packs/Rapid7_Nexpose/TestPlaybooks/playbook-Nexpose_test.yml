@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e6ba65d5-7562-4f51-8ff1-f0a5468b8880
+    taskid: a4e7d052-b186-493b-89a0-b28f8a40597d
     type: start
     task:
-      id: e6ba65d5-7562-4f51-8ff1-f0a5468b8880
+      id: a4e7d052-b186-493b-89a0-b28f8a40597d
       version: -1
       name: ""
       iscommand: false
@@ -26,12 +26,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 3276e90e-6b08-426b-8306-0888e411b68a
+    taskid: 370ccd5b-14b6-4a0f-80d7-90eda29c5386
     type: regular
     task:
-      id: 3276e90e-6b08-426b-8306-0888e411b68a
+      id: 370ccd5b-14b6-4a0f-80d7-90eda29c5386
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -55,12 +59,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 4f227b1f-b06a-4698-8aa8-84c7b3579703
+    taskid: 442f48a4-64e2-4afc-818e-b5f17c26cfc1
     type: regular
     task:
-      id: 4f227b1f-b06a-4698-8aa8-84c7b3579703
+      id: 442f48a4-64e2-4afc-818e-b5f17c26cfc1
       version: -1
       name: nexpose-get-assets
       description: Returns all assets for which you have access.
@@ -84,12 +92,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 7875fb8d-93eb-420f-8382-daca5ba70fcd
+    taskid: d71096c8-435a-45f7-8a93-4aa403b806e9
     type: regular
     task:
-      id: 7875fb8d-93eb-420f-8382-daca5ba70fcd
+      id: d71096c8-435a-45f7-8a93-4aa403b806e9
       version: -1
       name: nexpose-search-assets
       description: Returns all assets for which you have access that match the given
@@ -100,11 +112,13 @@ tasks:
       brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
-      - "10"
+      - "4"
     scriptarguments:
-      hostNameIs:
-        simple: ${Nexpose.Asset.Name}
-      ipAddressIs: {}
+      hostNameIs: {}
+      ipAddressIs:
+        complex:
+          root: Nexpose
+          accessor: Asset.Address
       limit: {}
       match: {}
       query: {}
@@ -121,12 +135,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: b1cccb5e-648f-463d-8997-e9a759191bc9
+    taskid: 75ffbcc2-22aa-411f-8bc0-8e013a210c96
     type: regular
     task:
-      id: b1cccb5e-648f-463d-8997-e9a759191bc9
+      id: 75ffbcc2-22aa-411f-8bc0-8e013a210c96
       version: -1
       name: nexpose-get-asset
       description: Returns the specified asset.
@@ -145,16 +163,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 895
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: b399ec6f-bc69-4634-8f3a-b94c8bb30373
+    taskid: daa223de-4758-4cb5-87c4-0d04617c2925
     type: regular
     task:
-      id: b399ec6f-bc69-4634-8f3a-b94c8bb30373
+      id: daa223de-4758-4cb5-87c4-0d04617c2925
       version: -1
       name: VerifyContext
       description: |-
@@ -169,11 +191,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: IP, OS, HostName
+        simple: IP, OS
       path:
         simple: Endpoint
     separatecontext: false
@@ -181,16 +203,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 43fb4d54-d21a-4fe5-8d52-71c8a6618232
+    taskid: d2a06eee-9c71-49cd-8b05-9086b86304e7
     type: regular
     task:
-      id: 43fb4d54-d21a-4fe5-8d52-71c8a6618232
+      id: d2a06eee-9c71-49cd-8b05-9086b86304e7
       version: -1
       name: nexpose-create-assets-report
       description: Generates a new report on given assets according to a template
@@ -212,121 +238,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: 1e3628ec-9bb6-4aad-81a8-324be4837bd2
-    type: regular
-    task:
-      id: 1e3628ec-9bb6-4aad-81a8-324be4837bd2
-      version: -1
-      name: nexpose-get-asset-vulnerability
-      description: Returns the details and possible remediations for an asset's given
-        vulnerability.
-      script: Rapid7 Nexpose|||nexpose-get-asset-vulnerability
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      id:
-        simple: ${Nexpose.Asset.AssetId}
-      vulnerabilityId:
-        simple: ${Nexpose.Asset.Vulnerability.Id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
           "x": 162.5,
-          "y": 1245
+          "y": 2295
         }
       }
     note: false
-  "9":
-    id: "9"
-    taskid: 59aa508c-d39e-4712-8bba-46bcb2631e26
-    type: regular
-    task:
-      id: 59aa508c-d39e-4712-8bba-46bcb2631e26
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Type
-      path:
-        simple: Nexpose.Asset.Vulnerability.Solution
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1420
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: aaa4583c-6a83-4c65-85be-b5f8b49b59cd
-    type: regular
-    task:
-      id: aaa4583c-6a83-4c65-85be-b5f8b49b59cd
-      version: -1
-      name: nexpose-search-assets
-      description: Returns all assets for which you have access that match the given
-        search criteria.
-      script: Rapid7 Nexpose|||nexpose-search-assets
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      hostNameIs: {}
-      ipAddressIs: {}
-      limit: {}
-      match: {}
-      query:
-        simple: host-name is ${Nexpose.Asset.Name}
-      riskScoreHigherThan: {}
-      siteIdIn: {}
-      sort: {}
-      vulnerabilityTitleContains: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 4f610fa2-972d-4672-848f-f63b9d89d4f5
+    taskid: 7e3979ea-3c52-458b-86bf-e16da6696594
     type: regular
     task:
-      id: 4f610fa2-972d-4672-848f-f63b9d89d4f5
+      id: 7e3979ea-3c52-458b-86bf-e16da6696594
       version: -1
       name: nexpose-create-assets-report-xml
       description: Generates a new report on given assets according to a template
@@ -349,17 +275,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2995
+          "x": 162.5,
+          "y": 2470
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: e19bf458-a1f3-4423-89ed-56594bcb529b
+    taskid: 63bc30cb-d217-4b3b-8b2e-50cb2ea52e88
     type: regular
     task:
-      id: e19bf458-a1f3-4423-89ed-56594bcb529b
+      id: 63bc30cb-d217-4b3b-8b2e-50cb2ea52e88
       version: -1
       name: VerifyContext
       description: |-
@@ -385,17 +315,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3170
+          "x": 162.5,
+          "y": 2645
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: de899a8a-f7ef-4d4a-8641-274c7d27c9a7
+    taskid: 40215e42-756e-478d-8bf0-39891eff759f
     type: regular
     task:
-      id: de899a8a-f7ef-4d4a-8641-274c7d27c9a7
+      id: 40215e42-756e-478d-8bf0-39891eff759f
       version: -1
       name: nexpose-create-site
       description: Creates a new site with the specified configuration.
@@ -427,16 +361,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1770
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: f25639de-afea-4d52-8bfb-0e39acb27fc6
+    taskid: 48fb51eb-15ba-499f-8abf-e731e1c0e158
     type: regular
     task:
-      id: f25639de-afea-4d52-8bfb-0e39acb27fc6
+      id: 48fb51eb-15ba-499f-8abf-e731e1c0e158
       version: -1
       name: nexpose-delete-site
       description: Delete a site
@@ -455,16 +393,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1945
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: e0082171-e1c6-453a-84f9-c9ab16607e09
+    taskid: f6c19b68-41d6-49bb-8dc3-616d98dfe748
     type: regular
     task:
-      id: e0082171-e1c6-453a-84f9-c9ab16607e09
+      id: f6c19b68-41d6-49bb-8dc3-616d98dfe748
       version: -1
       name: GenerateUUID
       description: Generates random UUID
@@ -480,16 +422,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1595
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: 2563dd4c-0769-4c53-8aba-aba25f366536
+    taskid: d6c2d6ec-45f2-4b6c-8af0-1c82c1c3fb2e
     type: regular
     task:
-      id: 2563dd4c-0769-4c53-8aba-aba25f366536
+      id: d6c2d6ec-45f2-4b6c-8af0-1c82c1c3fb2e
       version: -1
       name: nexpose-pause-scan
       description: Pause the specified scan
@@ -508,16 +454,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: a762ae65-c8e6-4b71-8b29-5914debaab83
+    taskid: a0d0108a-6967-4cae-8f4b-6023359bdfd9
     type: regular
     task:
-      id: a762ae65-c8e6-4b71-8b29-5914debaab83
+      id: a0d0108a-6967-4cae-8f4b-6023359bdfd9
       version: -1
       name: nexpose-resume-scan
       description: Resume the specified scan
@@ -536,16 +486,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 3170
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: b3193656-0bab-4218-8091-140a2f12a23b
+    taskid: 751fd8cb-62f7-459f-803e-208abc9569b1
     type: regular
     task:
-      id: b3193656-0bab-4218-8091-140a2f12a23b
+      id: 751fd8cb-62f7-459f-803e-208abc9569b1
       version: -1
       name: nexpose-stop-scan
       description: Stop the specified scan
@@ -561,16 +515,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3870
+          "y": 3345
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 87b52f76-ede9-4640-885a-b42d97efe4d0
+    taskid: 54643013-e868-4d89-8d6c-ac151ea88dd7
     type: regular
     task:
-      id: 87b52f76-ede9-4640-885a-b42d97efe4d0
+      id: 54643013-e868-4d89-8d6c-ac151ea88dd7
       version: -1
       name: nexpose-start-site-scan
       description: Starts a scan for the specified site.
@@ -583,25 +541,29 @@ tasks:
       - "20"
     scriptarguments:
       hosts:
-        simple: 127.0.0.1
+        simple: 192.168.1.144
       name: {}
       site:
-        simple: "2"
+        simple: "1"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 285f7696-6dcb-46b1-891b-0b1eb4f4f9ba
+    taskid: c40cde1e-481d-4a35-8279-4750388bdc59
     type: condition
     task:
-      id: 285f7696-6dcb-46b1-891b-0b1eb4f4f9ba
+      id: c40cde1e-481d-4a35-8279-4750388bdc59
       version: -1
       name: is-paused
       type: condition
@@ -628,16 +590,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3520
+          "y": 2995
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 820f5d4d-148f-4fda-87ff-147454ba5a34
+    taskid: 29847922-a3cd-459c-8f00-8228495039e9
     type: regular
     task:
-      id: 820f5d4d-148f-4fda-87ff-147454ba5a34
+      id: 29847922-a3cd-459c-8f00-8228495039e9
       version: -1
       name: nexpose-get-scans
       description: Returns a list of scans.
@@ -656,17 +622,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3345
+          "x": 162.5,
+          "y": 2820
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 37f5fac0-fd86-4a23-8c4d-fcf76754d048
+    taskid: c897e1f2-5249-4345-8639-f7369c1aab40
     type: regular
     task:
-      id: 37f5fac0-fd86-4a23-8c4d-fcf76754d048
+      id: c897e1f2-5249-4345-8639-f7369c1aab40
       version: -1
       name: check for active scans
       description: Returns a list of scans.
@@ -686,16 +656,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2120
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 73a28940-e5c9-404b-8d7d-278d53b8240e
+    taskid: 012008d6-cf6d-4e1a-8e06-e98215555ae0
     type: condition
     task:
-      id: 73a28940-e5c9-404b-8d7d-278d53b8240e
+      id: 012008d6-cf6d-4e1a-8e06-e98215555ae0
       version: -1
       name: scan-running
       type: condition
@@ -719,16 +693,20 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2295
+          "y": 1770
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3915,
+        "height": 3390,
         "width": 492.5,
         "x": 50,
         "y": 50

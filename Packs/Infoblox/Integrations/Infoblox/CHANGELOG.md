@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue where arguments for create_rpz_rule function were switched.
 
 
 ## [20.4.0] - 2020-04-14

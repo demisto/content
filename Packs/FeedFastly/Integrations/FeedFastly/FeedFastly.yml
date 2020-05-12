@@ -60,6 +60,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+  defaultvalue: "true"
 - display: Tags
   name: feedTags
   required: false

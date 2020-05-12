@@ -32,9 +32,8 @@
       <li><strong>Allow external users to create incidents via DM</strong></li>
       <li><strong>Use system proxy settings</strong></li>
       <li><strong>Trust any certificate (not secure)</strong></li>
-      <li><strong>Long running instance. Required for investigation mirroring and direct messages.</strong></li>
-      <li><strong>Bot display name in Slack (Cortex XSOAR Integration by default)</strong></li>
-      <li><strong>Bot icon in Slack - Image URL (Cortex XSOAR icon by default)</strong></li>
+      <li><strong>Bot display name in Slack (Demisto Integration by default)</strong></li>
+      <li><strong>Bot icon in Slack - Image URL (Demisto icon by default)</strong></li>
       <li><strong>Maximum time to wait for a rate limited call in seconds - 60 by default</strong></li>
       <li><strong>Number of objects to return in each paginated call - 200 by default</strong></li>
       <li><strong>Proxy URL to use in Slack API calls</strong></li>
@@ -744,7 +743,16 @@ new incident [details]
 mirror incident-id
 </pre>
 <h3>Notifications</h3>
-<p>The integration sends notifications according to the configured notification settings found in the user preferences page in Cortex XSOAR, and additionally to the pre determined channel dedicated for incident notifications (according to the integration configuration).</p>
+<p>The integration sends notifications as they are configured in the notification settings (User Preferences in Cortex XSOAR), and to the dedicated channel configured for incident notifications (according to the integration configuration).
+If a dedicated channel for incident notifications is configured, the following notifications will be sent there:</p>
+<ul>
+<li>Incident opened</li>
+<li>Incident updated</li>
+<li>Investigation closed</li>
+<li>Investigation deleted</li>
+<li>Incident SLA changed</li>
+<li>Task completed</li>
+</ul>
 <h3>Blocks and interactve components</h3>
 <span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More infortmation about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
 The integration also allows some level of interactivity. When a user interacts with an element in a Slack message, Slack sends a request with the relevant information. 

@@ -34,6 +34,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
+  hidden: true
 - additionalinfo: Will run the EDL service on this port from within Demisto.
     Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
@@ -101,7 +102,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Boolean
+      description: Whether to print stored indicators or not.
       isArray: false
       name: print_indicators
       predefined:
@@ -125,7 +126,7 @@ script:
     description: Updates values stored in the EDL (only available On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.7727
+  dockerimage: demisto/teams:1.0.0.7832
   feed: false
   isfetch: false
   longRunning: true

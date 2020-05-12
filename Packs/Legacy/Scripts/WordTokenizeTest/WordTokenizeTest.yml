@@ -47,7 +47,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: true
-dockerimage: demisto/nltk:2.0.0.1671
+dockerimage: demisto/nltk:2.0.0.4919
 fromversion: 5.0.0
 tests:
 - WordTokenizeTest

@@ -8,6 +8,7 @@ script: |
   res = demisto.executeCommand("linkIncidents", {"incidentId":duplicate_id, "linkedIncidentIDs": current_incident_id, "action":"duplicate"})
   demisto.results(res)
 type: python
+subtype: python2
 tags:
 - dedup
 comment: Close the current investigation as duplicate to other investigation.
