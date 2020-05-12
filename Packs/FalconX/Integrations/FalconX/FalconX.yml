@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: FalconX
+  id: CrowdStrike FalconX
   version: -1
 configuration:
 - display: Username

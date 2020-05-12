@@ -86,19 +86,12 @@ class Client(BaseClient):
             'client_secret': self._password
         }
 
-        BYTE_CREDS = f'{self._username}:{self._password}'.encode('utf-8')
-
-        HEADERS = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': f'Basic {base64.b64encode(BYTE_CREDS).decode()}'
-        }
+        byte_creds = f'{self._username}:{self._password}'.encode('utf-8')
 
         headers = {
-            'Authorization': HEADERS['Authorization']
+            'Authorization': f'Basic {base64.b64encode(byte_creds).decode()}'
         }
         token_res = self.http_request('POST', '/oauth2/token', data=body, headers=headers)
-        # print(token_res.text)
         return token_res.get('access_token')
 
 
@@ -145,7 +138,6 @@ def test_module(client):
     If a client was made then an accesses token was successfully reached,
     therefor the username and password are valid and a connection was made
     """
-    demisto.log("OK!!!!")
     return 'ok'
 
 
