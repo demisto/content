@@ -106,8 +106,9 @@ def main():
     # fetch query
     d_args = dict(demisto.args())
     for arg_name in ['NonEmptyFields', 'populateFields']:
-        d_args[arg_name] = get_comma_sep_list(d_args.get(arg_name, ''))
-        d_args[arg_name] = preprocess_incidents_fields_list(d_args[arg_name])
+        split_argument_list = get_comma_sep_list(d_args.get(arg_name, ''))
+        split_argument_list = [x for x in split_argument_list if len(x) > 0]
+        d_args[arg_name] = preprocess_incidents_fields_list(split_argument_list)
     query = build_incidents_query(d_args.get('query'),
                                   d_args.get('incidentTypes'),
                                   d_args['timeField'],
