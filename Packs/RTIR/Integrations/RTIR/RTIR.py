@@ -782,7 +782,7 @@ def add_reply():
 
 
 def get_ticket_id(ticket):
-    return ticket['ID']
+    return int(ticket['ID'])
 
 
 def fetch_incidents():
