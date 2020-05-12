@@ -1,7 +1,8 @@
 commonfields:
-  id: eb769ccc-ca00-4150-85e5-436c0cbe41f9
-  version: 3
+  id: BetweenDates
+  version: -1
 name: BetweenDates
+comment: Whether value is within a date range.
 script: ''
 type: python
 tags:
@@ -12,13 +13,16 @@ args:
 - name: value
   required: true
   description: Value to check
-- name: beginDate
+- name: begin_date
   required: true
-- name: endDate
+  description: Lower date range
+- name: end_date
   required: true
+  description: Upper date range
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
+tests:
+  - No test

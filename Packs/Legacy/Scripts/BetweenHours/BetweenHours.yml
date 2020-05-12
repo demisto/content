@@ -1,7 +1,8 @@
 commonfields:
-  id: c2974e95-7c57-42fd-80e6-618a89155735
-  version: 33
+  id: BetweenHours
+  version: -1
 name: BetweenHours
+comment: Whether value is within an hour range.
 script: ''
 type: python
 tags:
@@ -12,15 +13,16 @@ args:
 - name: value
   required: true
   description: Value to check
-- name: beginTime
+- name: begin_time
   required: true
   description: Format is HH:MM:SS
-- name: endTime
+- name: end_time
   required: true
   description: Format is HH:MM:SS
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.2.6981
 runas: DBotWeakRole
+tests:
+  - No test
