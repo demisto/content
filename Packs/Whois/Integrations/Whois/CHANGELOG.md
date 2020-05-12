@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.4.1] - 2020-04-29
  - Fixed an issue where duplicate fields were created by the ***domain*** and ***whois*** commands outputs.
