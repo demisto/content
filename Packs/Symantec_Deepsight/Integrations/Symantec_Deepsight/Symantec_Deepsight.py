@@ -551,6 +551,7 @@ def test_module():
     if result:
         demisto.results('ok')
 
+
 LOG('command is %s' % (demisto.command(),))
 try:
     if demisto.command() == 'test-module':
