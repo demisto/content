@@ -80,17 +80,17 @@ def get_pack_dependencies(client, prints_manager, pack_data):
             dependencies_data, dependencies_str = create_dependencies_data_structure(ast.literal_eval(response_data),
                                                                                      pack_id)
             if dependencies_data:
-                message = 'Found the following dependencies for pack {}:\n{}'.format(pack_id, dependencies_str)
+                message = 'Found the following dependencies for pack {}:\n{}\n'.format(pack_id, dependencies_str)
                 prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
                 prints_manager.execute_thread_prints(0)
             return dependencies_data
         else:
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
-            err_msg = 'Failed to get pack {} dependencies - with status code {}\n{}'.format(pack_id, status_code, msg)
+            err_msg = 'Failed to get pack {} dependencies - with status code {}\n{}\n'.format(pack_id, status_code, msg)
             raise Exception(err_msg)
     except Exception as e:
-        err_msg = 'The request to get pack {} dependencies has failed. Reason:\n{}'.format(pack_id, str(e))
+        err_msg = 'The request to get pack {} dependencies has failed. Reason:\n{}\n'.format(pack_id, str(e))
         raise Exception(err_msg)
 
 
@@ -165,16 +165,16 @@ def install_packs(client, host, prints_manager, packs_to_install):
 
         if 200 <= status_code < 300:
             packs_str = '\n'.join([pack['id'] for pack in packs_to_install])
-            message = 'Successully installed the following packs in server {}:\n{}'.format(host, packs_str)
+            message = 'Successully installed the following packs in server {}:\n{}\n'.format(host, packs_str)
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
-            err_msg = 'Failed to install packs - with status code {}\n{}'.format(status_code, message)
+            err_msg = 'Failed to install packs - with status code {}\n{}\n'.format(status_code, message)
             raise Exception(err_msg)
     except Exception as e:
-        err_msg = 'The request to install packs has failed. Reason:\n{}'.format(str(e))
+        err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e))
         raise Exception(err_msg)
 
 
