@@ -1,6 +1,6 @@
 commonfields:
   id: PrintContext
-  version: 1
+  version: -1
 name: PrintContext
 script: |-
   fmt = demisto.get(demisto.args(), 'outputformat')
@@ -16,6 +16,7 @@ script: |-
   else:
       demisto.results('Context empty.')
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Pretty-print the contents of the playbook context

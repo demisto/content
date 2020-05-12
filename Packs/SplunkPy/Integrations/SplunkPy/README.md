@@ -1,532 +1,355 @@
-<!-- HTML_DOC -->
-<p>Use the SplunkPy integration to fetch events (logs) from within Demisto, push events from Demisto to SplunkPy, and fetch SplunkPy ES notable events as Demisto incidents.</p>
-<p>This integration was integrated and tested with Splunk v6.5.</p>
-<h2>Use Cases</h2>
-<ul>
-<li>Query Splunk for events</li>
-<li>Create a new event in Splunk</li>
-<li>Get results of a search that was executed in Splunk</li>
-</ul>
-<h2>Prerequisites</h2>
-<p>Make sure you satisfy the following requirements on SplunkPy before you configure SplunkPy on Demisto.</p>
-<ul>
-<li>Splunk username and password.</li>
-<li>To use a Splunk Cloud instance, contact Splunk support to request API access. Use the non-SAML authentication. Use the following host: input-${deployment-name}.cloud.splunk.com.</li>
-<li>If you encounter certificate validation problems, open a configuration file: /etc/python/cert-verification.cfg, find "verify=enable" and change it to disable.</li>
-</ul>
-<h2>Configure SplunkPy on Demisto</h2>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for SplunkPy.</li>
-<li>Click ‘Add instance’ to create and configure a new integration instance.
-<ul>
-<li>
-<strong>Name</strong>: A textual name for the integration instance.</li>
-<li>
-<strong>Host IP</strong>: The hostname or IP address of your Splunk instance.</li>
-<li><strong>Username and Password</strong></li>
-<li>
-<strong>Port</strong>: The appliance port, usually 8089. This is not the same as the web user interface port.</li>
-<li>
-<strong>Fetch notable events ES query</strong>: This query is used to fetch notable events, relevant only to Splunk Enterprise Security.</li>
-<li>
-<strong>Fetch incidents</strong>: Select if to automatically create Demisto incidents from this integration instance.</li>
-<li>
-<strong>Fetch limit</strong>: The maximum number of results to return (max. 50).</li>
-<li>
-<strong>Incident type</strong>: Select the incident type to trigger.</li>
-<li>
-<strong>Proxy:</strong> in format: 127.0.0.1:8080. If you use a proxy to reach SplunkPy from your environment, add it here. The proxy IP and port format:127.0.0.1:8080.</li>
-<li>
-<strong>Timezone of Splunk server:</strong> If the Demisto server and SplunkPy server are on different time zones, and you want to fetch notable events in real time (Splunk ES only), specify the time gap in minutes (for example, for gmt +3 set +180).</li>
-<li><strong>Parse Raw part of notable events</strong></li>
-<li>
-<strong>Extract Fields:</strong> A comma-separated list of fields that will be parsed out of raw notable events.</li>
-<li><strong>Use Splunk Clock Time for Fetch</strong></li>
-<li>
-<strong>Earliest time to fetch</strong>: T<span>he name of the Splunk field whose value defines the query's earliest time to fetch</span>
-</li>
-<li>
-<strong>Latest time to fetch</strong>: T<span>he name of the Splunk field whose value defines the query's latest time to fetch.</span>
-</li>
-<li><span><strong>App</strong>: The app context of the namespace.</span></li>
-<li>
-<strong>Demisto engine</strong>: If relevant, select the engine that acts as a proxy to the server.<br> Demisto uses engines to access remote segments, when network devices (like proxies and firewalls) prevent the Demisto server from accessing these remote networks.<br> For more information on Demisto engines see:<br> <a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a>
-</li>
-<li>
-<strong>Require users to enter an additional password</strong>: Select if you want to require users to authenticate themselves with a password as an additional step.</li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate URLs and connection.</li>
-</ol>
-<h2>Configure Splunk to Produce Alerts for SplunkPy</h2>
-<p>We recommend that you configure Splunk to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. We do not recommend using the Demisto App for Splunk for routine event consumption because this method is not monitorable nor scalable.</p>
-<ol>
-<li>Create a summary index in Splunk. For more information, see the <a href="https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2" target="_blank" rel="noopener">Splunk documentation</a>.</li>
-<li>Build a query to return relevant alerts.<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Query_Example.png" alt="SplunkPy_-_Query_Example.png">
-</li>
-<li>Identify the Fields list from the Splunk query and save it to a local file.<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Fields_List.png" alt="SplunkPy_-_Fields_List.png">
-</li>
-<li>Define a search macro to capture the Fields list that you saved locally. For more information, see the <a href="https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros" target="_blank" rel="noopener">Splunk documentation</a>.<br>Use the following naming convention: (demisto_fields_{type}).<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Macro.png" alt="SplunkPy_-_Macro.png"><br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Macros2.png" alt="SplunkPy_-_Macros2.png">
-</li>
-<li>Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, see the <a href="https://docs.splunk.com/Documentation/Splunk/7.3.0/Alert/Definescheduledalerts" target="_blank" rel="noopener">Splunk documentation</a>.<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Scheduled_Search_1.png" alt="SplunkPy_-_Scheduled_Search_1.png">
-</li>
-<li>In the Summary indexing section, select the summary index, and enter the {key:value} pair for Demisto classification.<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Scheduled_Search_2.png" alt="SplunkPy_-_Scheduled_Search_2.png">
-</li>
-<li>Configure the incident type in Demisto by navigating to <strong>Settings &gt; Advanced &gt; Incident Types</strong>.<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Define_Incident_Type.png" alt="SplunkPy_-_Define_Incident_Type.png">
-</li>
-<li>Navigate to <strong>Settings &gt; Integrations &gt; Classification &amp; Mapping</strong>, and drag the value to the appropriate incident type.<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Mapping_and_Classification.png" alt="SplunkPy_-_Mapping_and_Classification.png">
-</li>
-<li>Click the <strong>Edit mapping</strong> link to map the Splunk fields to Demisto.<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/SplunkPy_SplunkPy_-_Mapping_and_Classification_2.png" alt="SplunkPy_-_Mapping_and_Classification_2.png">
-</li>
-<li>(optional) Create custom fields.</li>
-<li>Build a playbook and assign it as the default for this incident type.</li>
-</ol>
-<p> </p>
-<h2>Commands</h2>
-<ol>
-<li><a href="#h_38658307461530020654003">Search SplunkPy: splunk-search</a></li>
-<li><a href="#h_578742137491530020662320">Create a job: splunk-job-create</a></li>
-<li><a href="#h_369548850901530020680044">Get the results of a previous search: splunk-results</a></li>
-<li><a href="#h_4126493431301530020689487">Create a new event: splunk-submit-event</a></li>
-<li><a href="#h_1819590401711530020699266">Get index: splunk-get-indexes</a></li>
-<li><a href="#h_3454070742101530020710886">Edit a notable event: splunk-notable-event-edit</a></li>
-</ol>
-<h3 id="h_38658307461530020654003">1. Search SplunkPy</h3>
-<hr>
-<p>Search SplunkPy for a specific text.</p>
-<p>You can search for notable events using the <em><strong>notable</strong></em> macro. For example: <code>query="`notable` | head 3</code>.</p>
-<h5>Base Command</h5>
-<p><code>splunk-search</code></p>
-<h5>Input:</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<td style="width: 158px;"><strong>Argument Name</strong></td>
-<td style="width: 571px;"><strong>Description</strong></td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 158px;">Query</td>
-<td style="width: 571px;">String. Required. Text to search for.</td>
-</tr>
-<tr>
-<td style="width: 158px;">Earliest_time</td>
-<td style="width: 571px;">
-<p>Specifies start time for search range.</p>
-<p>The time string can be a UTC time (with fractional seconds), a relative time specifier (relative to now), or a formatted time string.</p>
-<p>It is also possible to use this time format: 2014-06-19T12:00:00.000-07:00.</p>
-<p>Default is 1 week ago, in this format "-7d".</p>
-</td>
-</tr>
-<tr>
-<td style="width: 158px;">event_limit</td>
-<td style="width: 571px;">
-<p>Limits the amount of events to return.</p>
-<p>Zero equals unlimited. </p>
-<p>Default is 100.</p>
-</td>
-</tr>
-<tr>
-<td style="width: 158px;">Latest_time</td>
-<td style="width: 571px;">
-<p>Specifies end time for search range.</p>
-<p>The time string can be a UTC time (with fractional seconds), a relative time specifier (relative to now), or a formatted time string, for example "2014-06-19T12:00:00.000-07:00" or "-3d" (for time 3 days before now).</p>
-<p>Default is one week from start time.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!splunk-search query="* | head 3"</code></p>
-<h5>Context Output</h5>
-<pre>[  
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:337",
-      "_indextime":"1511162543",
-      "_raw":"test",
-      "_serial":"0",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T07:22:23.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   },
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:336",
-      "_indextime":"1511141352",
-      "_raw":"test",
-      "_serial":"1",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T01:29:12.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   },
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:335",
-      "_indextime":"1511141044",
-      "_raw":"test",
-      "_serial":"2",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T01:24:04.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   }
-]
-</pre>
-<p> </p>
-<h5>War Room Output</h5>
-<p>The War Room output is raw JSON, because the data from SplunkPy logs can differ across datasets.</p>
-<pre>[  
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:337",
-      "_indextime":"1511162543",
-      "_raw":"test",
-      "_serial":"0",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T07:22:23.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   },
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:336",
-      "_indextime":"1511141352",
-      "_raw":"test",
-      "_serial":"1",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T01:29:12.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   },
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:335",
-      "_indextime":"1511141044",
-      "_raw":"test",
-      "_serial":"2",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T01:24:04.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   }
-]
-</pre>
-<p> </p>
-<h3 id="h_578742137491530020662320">2. Create a Job</h3>
-<hr>
-<p>Creates a job.</p>
-<h5>Basic Command</h5>
-<p><code>splunk-job-create</code></p>
-<h5>Input</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<td><strong>Argument Name</strong></td>
-<td><strong>Description</strong></td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Query</td>
-<td>String. Required. Text to search for</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Raw Output</h5>
-<p><code>Splunk.Job=1511167689.39984</code></p>
-<h5>War Room Output</h5>
-<p><code>Splunk Job created with SID: 1511167689.39984 </code></p>
-<h3 id="h_369548850901530020680044">3. Get the results of a previous search</h3>
-<hr>
-<p>Gets the results of a search previously executed in SplunkPy.</p>
-<h5>Base Command</h5>
-<p><code>splunk-results</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<td style="width: 348px;"><strong>Argument Name</strong></td>
-<td style="width: 381px;"><strong>Description</strong></td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 348px;">SID</td>
-<td style="width: 381px;">Search ID</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example:</h5>
-<p><code>!splunk-results sid=1506542235.419700</code></p>
-<h5>War Room Output</h5>
-<pre>[  
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:337",
-      "_indextime":"1511162543",
-      "_raw":"test",
-      "_serial":"0",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T07:22:23.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   },
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:336",
-      "_indextime":"1511141352",
-      "_raw":"test",
-      "_serial":"1",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T01:29:12.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   },
-   {  
-      "_bkt":"main~6~20D04CCE-0394-423E-984A-7CD0719C07C1",
-      "_cd":"6:335",
-      "_indextime":"1511141044",
-      "_raw":"test",
-      "_serial":"2",
-      "_si":[  
-         "ip-172-31-16-62",
-         "main"
-      ],
-      "_sourcetype":"demisto-ci",
-      "_time":"2017-11-20T01:24:04.000+00:00",
-      "host":"localhost",
-      "index":"main",
-      "linecount":"1",
-      "source":"http-simple",
-      "sourcetype":"demisto-ci",
-      "splunk_server":"ip-172-31-16-62"
-   }
-]
-</pre>
-<h3 id="h_4126493431301530020689487">4. Create a new event</h3>
-<hr>
-<p>Creates a new event in Splunk.</p>
-<h5>Base Command</h5>
-<p><code>splunk-submit-event</code></p>
-<h5>Input</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<td><strong>Argument Name</strong></td>
-<td><strong>Description</strong></td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>index</td>
-<td>
-<p>Required. The SplunkPy index to push data to.</p>
-<p>Run <code>splunk-get-indexes</code> to get all indexes.</p>
-</td>
-</tr>
-<tr>
-<td>Data</td>
-<td>
-<p>Required. The new event data to push.</p>
-<p>Can be any string.</p>
-</td>
-</tr>
-<tr>
-<td>Sourcetype</td>
-<td>Required. The Event source-type.</td>
-</tr>
-<tr>
-<td>Host</td>
-<td>
-<p>Required. The Event host.</p>
-<p>Can be local or '120.0.0.1'.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<h5> </h5>
-<h5>Command Example:</h5>
-<p><code>!splunk-submit-event data="event data" host=127.0.0.1 index=main sourcetype=src</code></p>
-<h5>Context Output</h5>
-<p>There is no context output.</p>
-<h5>War Room Output</h5>
-<p><code>Event was created in Splunk index: main</code></p>
-<h3 id="h_1819590401711530020699266">5. Get Indexes</h3>
-<hr>
-<p>Returns all indexes.</p>
-<h5>Base Command</h5>
-<p><code>splunk-get-indexes</code></p>
-<h5>Input</h5>
-<p>This command does not require any parameters.</p>
-<h5>Context Output</h5>
-<p>There is no context output.</p>
-<h5>Raw Output</h5>
-<pre>[  
-   {  
-      "count":"764852",
-      "name":"_audit"
-   },
-   {  
-      "count":"5278037",
-      "name":"_internal"
-   },
-   {  
-      "count":"5210675",
-      "name":"_introspection"
-   },
-   {  
-      "count":"0",
-      "name":"_thefishbucket"
-   },
-   {  
-      "count":"0",
-      "name":"history"
-   },
-   {  
-      "count":"17543",
-      "name":"main"
-   },
-   {  
-      "count":"0",
-      "name":"splunklogger"
-   },
-   {  
-      "count":"0",
-      "name":"summary"
-   }
-]
-</pre>
-<p> </p>
-<h5>War Room Output</h5>
-<pre>count | name
--- | --
-764852 | _audit
-5277911 | _internal
-5210660 | _introspection
-0 | _thefishbucket
-0 | history
-17543 | main
-0 | splunklogger
-0 | summary
-</pre>
-<h3 id="h_3454070742101530020710886">6. Edit a notable event</h3>
-<hr>
-<p>Modifies a notable event.</p>
-<h5>Base Command</h5>
-<p><code>splunk-notable-event-edit</code></p>
-<h5>Input</h5>
-<table style="width: 750px;">
-<thead>
-<tr>
-<td><strong>Argument Name</strong></td>
-<td><strong>Description</strong></td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>EventIDs</td>
-<td>Required. Comma-sepperated list of event-IDs, pertaining to notable events.</td>
-</tr>
-<tr>
-<td>Comment</td>
-<td>Required. Comment to add to the notable event</td>
-</tr>
-<tr>
-<td>Owner</td>
-<td>Splunk-user to assign to the notable event</td>
-</tr>
-<tr>
-<td>Urgency</td>
-<td>Notable event urgency</td>
-</tr>
-<tr>
-<td>Status</td>
-<td>
-<p>Notable event status:</p>
-<ul>
-<li>0 for Unassigned</li>
-<li>1 for Assigned</li>
-<li>2 for In Progress</li>
-<li>3 for pending</li>
-<li>4 for Resolved</li>
-<li>5 for Closed</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<p>There is no context output.</p>
+Use the SplunkPy integration to fetch events (logs) from within Cortex XSOAR, push events from Cortex XSOAR to SplunkPy, and fetch SplunkPy ES notable events as Cortex XSOAR incidents.
+
+This integration was integrated and tested with Splunk v6.5.
+
+## Use Cases
+---
+* Query Splunk for events.
+* Create a new event in Splunk.
+* Get results of a search that was executed in Splunk.
+
+## Configure SplunkPy on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for SplunkPy.
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| host | The host name to the server, including the scheme (x.x.x.x). | True |
+| authentication | The username used for authentication. | True |
+| port | The port affiliated with the server. | True |
+| fetchQuery | The notable events ES query to be fetched. | False |
+| fetch_limit | The limit of incidents to fetch. The maximum is 200 (It is recommended to fetch less than 50). | False |
+| isFetch | The incidents fetched. | False |
+| incidentType | The incident type. | False |
+| proxy | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
+| timezone | The timezone of the Splunk server (in minutes). For example, GMT is gmt +3, set +180 (set this only if it is different than the Cortex XSOAR server). This is relevant only for fetching notable events. | False |
+| parseNotableEventsRaw | Parses the raw part of notable events. | False |
+| replaceKeys | Replace with Underscore in Incident Fields | False |
+| extractFields | The CSV fields that will be parsed out of _raw notable events. | False |
+| useSplunkTime | Uses the Splunk clock time for the fetch. | False |
+| unsecure |  When selected, certificates are not checked. (not secure) | False |
+| earliest_fetch_time_fieldname | The earliest time to fetch (the name of the Splunk field whose value defines the query's earliest time to fetch). | False |
+| latest_fetch_time_fieldname | The latest time to fetch (the name of the Splunk field whose value defines the query's latest time to fetch). | False |
+| app | The context of the application's namespace. | False |
+| hec_token | The HEC token (HTTP Event Collector). | False |
+| hec_url | The HEC URL. For example, https://localhost:8088. | False |
+| fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
+
+The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+### Configure Splunk to Produce Alerts for SplunkPy
+It is recommended that Splunk is configured to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
+
+1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
+2. Build a query to return relevant alerts.
+![image](https://user-images.githubusercontent.com/50324325/63265602-ae7fba00-c296-11e9-898c-afc98c56a1cb.png)
+3. Identify the fields list from the Splunk query and save it to a local file.
+![image](https://user-images.githubusercontent.com/50324325/63265613-b6d7f500-c296-11e9-81d7-854ee4ee9685.png)
+4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
+Use the following naming convention: (demisto_fields_{type}).
+![image](https://user-images.githubusercontent.com/50324325/63265773-08807f80-c297-11e9-86a1-355a261c356b.png)
+![image](https://user-images.githubusercontent.com/50324325/63265623-bccdd600-c296-11e9-9303-47b9791b0205.png)
+5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros). 
+![image](https://user-images.githubusercontent.com/50324325/63265640-c5261100-c296-11e9-9bd6-426fb328c09c.png)
+6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
+![image](https://user-images.githubusercontent.com/50324325/63265665-d0793c80-c296-11e9-9919-cf6c6af33294.png)
+7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__
+![image](https://user-images.githubusercontent.com/50324325/63265677-d66f1d80-c296-11e9-95df-190ab18ae484.png)
+8. Navigate to __Settings > Integrations > Classification & Mapping__, and drag the value to the appropriate incident type.
+![image](https://user-images.githubusercontent.com/50324325/63265720-ea1a8400-c296-11e9-8062-dd40606c5a42.png)
+9. Click the __Edit mapping__ link to map the Splunk fields to Cortex XSOAR.
+![image](https://user-images.githubusercontent.com/50324325/63265811-1d5d1300-c297-11e9-8026-52ff1cf30cbf.png)
+10. (Optional) Create custom fields.
+11. Build a playbook and assign it as the default for this incident type.
+
+
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### Get results
+***
+Returns the results of a previous Splunk search. This command can be used in conjunction with the `splunk-job-create` command.
+
+##### Base Command
+
+`splunk-results`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sid | The ID of the search for which to return results. | Required | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+``` !splunk-results sid="1566221331.1186" ```
+
+### Search for events
+***
+Searches Splunk for events.
+
+
+##### Base Command
+
+`splunk-search`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The Splunk search language string to execute. For example, "index=* \| head 3". | Required | 
+| earliest_time | Specifies the earliest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. The default is 1 week ago, in the format "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00". | Optional | 
+| latest_time |  Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for time 3 days before now). | Optional | 
+| event_limit | The maximum number of events to return. The default is 100. If "0" is selected, all results are returned. | Optional | 
+| app | The string that contains the application namespace in which to restrict searches. | Optional|
+| batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional |	
+| update_context | Determines whether the results will be entered into the context. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Result | Unknown | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | 
+
+
+##### Command Example
+```!splunk-search query="* | head 3" earliest_time="-1000d"```
+
+##### Human Readable Output
+### Splunk Search results for query: * | head 3
+|_bkt|_cd|_indextime|_kv|_raw|_serial|_si|_sourcetype|_time|host|index|linecount|source|sourcetype|splunk_server|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| main~445~66D21DF4-F4FD-4886-A986-82E72ADCBFE9 | 445:897774 | 1585462906 | 1 | InsertedAt="2020-03-29 06:21:43"; EventID="837005"; EventType="Application control"; Action="None"; ComputerName="ACME-code-007"; ComputerDomain="DOMAIN"; ComputerIPAddress="127.0.0.1"; EventTime="2020-03-29 06:21:43"; EventTypeID="5"; Name="LogMeIn"; EventName="LogMeIn"; UserName=""; ActionID="6"; ScanTypeID="200"; ScanType="Unknown"; SubTypeID="23"; SubType="Remote management tool"; GroupName="";\u003cbr\u003e | 2 | ip-172-31-44-193, main | sophos:appcontrol | 2020-03-28T23:21:43.000-07:00 | 127.0.0.1 | main | 2 | eventgen | sophos:appcontrol | ip-172-31-44-193 |
+
+### Create event
+***
+Creates a new event in Splunk.
+
+
+##### Base Command
+
+`splunk-submit-event`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index | The Splunk index to which to push the data. Run the `splunk-get-indexes` command to get all of the indexes. | Required | 
+| data | The new event data to push. Can be, any string. | Required | 
+| sourcetype | The event source type. | Required | 
+| host | The event host. Can be, "Local" or "120.0.0.1". | Required | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+``` !splunk-submit-event index="main" data="test" sourcetype="demisto-ci" host="localhost" ```
+
+##### Human Readable Output
+
+![image](https://user-images.githubusercontent.com/50324325/63268589-2fda4b00-c29d-11e9-95b5-4b9fcf6c08ee.png)
+
+
+### Print all index names
+***
+Prints all Splunk index names.
+##### Base Command
+
+`splunk-get-indexes`
+
+##### Input
+
+There are no input arguments for this command.
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+``` !splunk-get-indexes extend-context="indexes="```
+
+##### Human Readable Output
+
+![image](https://user-images.githubusercontent.com/50324325/63268447-d8d47600-c29c-11e9-88a4-5003971a492e.png)
+
+
+### Update notable events
+***
+Update an existing notable event in Splunk ES
+
+##### Base Command
+
+`splunk-notable-event-edit`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| eventIDs | The comma-separated list of event IDs of notable events. | Required | 
+| owner | The Splunk user to assign to the notable event. | Optional | 
+| comment | The comment to add to the notable event. | Required | 
+| urgency | The urgency of the notable event. | Optional | 
+| status | The notable event status. Can be 0 - 5, where 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed. | Optional | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+``` !splunk-notable-event-edit eventIDs=66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@a045b8acc3ec93c2c74a2b18c2caabf4 comment="Demisto"```
+
+##### Human Readable Output
+![image](https://user-images.githubusercontent.com/50324325/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
+
+
+### Create a new job
+***
+Creates a new search job in Splunk.
+
+
+##### Base Command
+
+`splunk-job-create`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The Splunk search language string to execute. For example,  "index=* \| head 3". | Required | 
+| app | The string that contains the application namespace in which to restrict searches. | Optional|
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Job | Unknown | The SID of the created job. | 
+
+
+##### Command Example
+```!splunk-job-create query="index=* | head 3"```
+
+##### Context Example	
+```	
+{
+    "Splunk.Job": "1566221733.1628"
+}
+```
+##### Human Readable Output
+![image](https://user-images.githubusercontent.com/50324325/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
+
+
+### Parse an event
+***
+Parses the raw part of the event.
+
+
+##### Base Command
+
+`splunk-parse-raw`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| raw | The raw data of the Splunk event (string). | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Raw.Parsed | unknown | The raw event data (parsed). | 
+
+
+##### Command Example
+``` !splunk-parse-raw ```
+
+
+### Submit an event 
+***
+Sends events to an HTTP event collector using the Splunk platform JSON event protocol.
+##### Base Command
+
+`splunk-submit-event-hec`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event | The event payload key-value. An example string: "event": "Access log test message.". | Required |
+| fields | The fields for indexing that do not occur in the event payload itself. This accepts multiple comma separated fields. | Optional |
+| index | The index name. | Optional |
+| host | The hostname. | Optional |
+| source_type | The user-defined event source type. | Optional |
+| source | The user-defined event source. | Optional | 
+| time | The epoch-formatted time. | Optional | 
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!splunk-submit-event-hec event="something happened" fields="severity: INFO, category: test, test1" source_type=access source="/var/log/access.log"```
+
+##### Human Readable Output
+The event was sent successfully to Splunk.
+
+### Get job status
+***
+Returns the status of a job.
+
+##### Base Command
+`splunk-job-status`
+
+##### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sid | The ID of the job for which to get the status. | Required |
+
+##### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.JobStatus.CID | Unknown | The ID of the job. |
+| Splunk.JobStatus.Status | Unknown | The status of the job. |
+
+##### Command Example
+```!splunk-job-status sid=1234.5667```
+
+##### Context Example
+```
+Splank.JobStatus = {
+    'SID': 1234.5667,
+    'Status': DONE
+}
+```
+
+##### Human Readable Output
+![image](https://user-images.githubusercontent.com/50324325/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
+
+## Aditional Information
+To get the HEC Token
+1. Go to the Splunk UI.
+2. Under "Settings" -> "Data" -> "Data inputs".
+![Screen Shot 2020-01-20 at 10 22 50](https://user-images.githubusercontent.com/45915502/72710123-0f296080-3b6f-11ea-9eb4-a3cebb1e8700.png)
+3. Then click on "HTTP Event Collector".
+4. Click on "New Token".
+5. Add all the relevant details until done.
+
+
+_For the HTTP Port number:_
+Click on Global settings (in the http event collector page)
+![Screen Shot 2020-01-20 at 10 27 25](https://user-images.githubusercontent.com/45915502/72710342-8d860280-3b6f-11ea-8d66-4d60303aba48.png)
+
+The default port is 8088.

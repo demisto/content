@@ -1,4 +1,3 @@
-elasticcommonfields: {}
 id: Mail Sender (New) Test
 version: -1
 name: Mail Sender (New) Test
@@ -10,11 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5c56b3de-66e8-4647-8d54-b8583e01c22c
+    taskid: c039607f-bc62-4387-889a-94c98bc25bd7
     type: start
     task:
-      elasticcommonfields: {}
-      id: 5c56b3de-66e8-4647-8d54-b8583e01c22c
+      id: c039607f-bc62-4387-889a-94c98bc25bd7
       version: -1
       name: ""
       iscommand: false
@@ -37,11 +35,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: fb37ab5e-fd08-474f-8f58-07c73c78bbfe
+    taskid: f1328f1d-6264-47f0-8e9b-2a4402aceb7d
     type: regular
     task:
-      elasticcommonfields: {}
-      id: fb37ab5e-fd08-474f-8f58-07c73c78bbfe
+      id: f1328f1d-6264-47f0-8e9b-2a4402aceb7d
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -70,11 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: a417aeff-baa6-4ff8-873a-230c8d98ac94
+    taskid: 7837c901-1148-4c8b-8492-20b3643c1579
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a417aeff-baa6-4ff8-873a-230c8d98ac94
+      id: 7837c901-1148-4c8b-8492-20b3643c1579
       version: -1
       name: Send mail using python
       script: Mail Sender (New)|||send-mail
@@ -119,11 +115,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 11f35515-9f91-4e83-8c70-40d47ced7e7b
+    taskid: 63088bd8-6c01-4ec0-883f-15386f712440
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 11f35515-9f91-4e83-8c70-40d47ced7e7b
+      id: 63088bd8-6c01-4ec0-883f-15386f712440
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -151,11 +146,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 255a48fb-ebc3-4d1a-89b8-d0fb2216f095
+    taskid: 0872fa13-5569-4e94-899c-322cf597ef7e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 255a48fb-ebc3-4d1a-89b8-d0fb2216f095
+      id: 0872fa13-5569-4e94-899c-322cf597ef7e
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -215,11 +209,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 691a134f-0053-4842-8235-2e9e98b57772
+    taskid: 07a74cd4-d19b-4abc-87cc-fa50dad85b1e
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 691a134f-0053-4842-8235-2e9e98b57772
+      id: 07a74cd4-d19b-4abc-87cc-fa50dad85b1e
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -253,11 +246,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: a000128a-6995-4004-8133-bbd9b9c95432
+    taskid: 5d18e77f-c6bc-4172-86da-f7ae813360f1
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a000128a-6995-4004-8133-bbd9b9c95432
+      id: 5d18e77f-c6bc-4172-86da-f7ae813360f1
       version: -1
       name: Delete email list from context
       description: |-
@@ -293,11 +285,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 3b67355e-23b0-4f55-873a-8610c6dcac32
+    taskid: 832fe995-8180-4257-8feb-b99eaecb55dc
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 3b67355e-23b0-4f55-873a-8610c6dcac32
+      id: 832fe995-8180-4257-8feb-b99eaecb55dc
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -329,11 +320,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 24c91340-d8d4-45e9-8954-3433f72eb0f9
+    taskid: 2d17be52-9418-4527-8336-d1d5864a8ebf
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 24c91340-d8d4-45e9-8954-3433f72eb0f9
+      id: 2d17be52-9418-4527-8336-d1d5864a8ebf
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -361,11 +351,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 515ecea7-c29d-4e6a-8d47-0c021ceae141
+    taskid: a2509cf0-bc77-467b-8b47-72385f5cecda
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 515ecea7-c29d-4e6a-8d47-0c021ceae141
+      id: a2509cf0-bc77-467b-8b47-72385f5cecda
       version: -1
       name: Check if email was found
       type: condition
@@ -399,11 +388,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 605ba140-4d63-4b87-8c2a-9f2ec6da4657
+    taskid: aa89c1d1-00e5-4c96-8a55-35e487bd2b4e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 605ba140-4d63-4b87-8c2a-9f2ec6da4657
+      id: aa89c1d1-00e5-4c96-8a55-35e487bd2b4e
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
@@ -435,11 +423,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 84aacec3-8bf4-4584-833e-3a4c218df551
+    taskid: 49200cf0-da80-45ec-829e-9685467b041c
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 84aacec3-8bf4-4584-833e-3a4c218df551
+      id: 49200cf0-da80-45ec-829e-9685467b041c
       version: -1
       name: Check for attachments
       type: condition
@@ -459,15 +446,6 @@ tasks:
             value:
               simple: Gmail.Attachments
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Gmail.ID
-            iscontext: true
-          right:
-            value:
-              simple: Testmail.ID
-            iscontext: true
     view: |-
       {
         "position": {
@@ -482,11 +460,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 97ed74e5-c972-40c6-89c4-fd437f755d5d
+    taskid: 3f9c3a12-1b51-4568-84c1-09c73814ef75
     type: title
     task:
-      elasticcommonfields: {}
-      id: 97ed74e5-c972-40c6-89c4-fd437f755d5d
+      id: 3f9c3a12-1b51-4568-84c1-09c73814ef75
       version: -1
       name: Test email was found with the attachment!
       type: title
@@ -510,11 +487,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 9b2c91fc-c5a6-45c6-82e2-c3bbe5f90f89
+    taskid: b8a35408-9973-4275-819a-0948bddf0a3f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 9b2c91fc-c5a6-45c6-82e2-c3bbe5f90f89
+      id: b8a35408-9973-4275-819a-0948bddf0a3f
       version: -1
       name: Email found without attachment
       script: RaiseError
@@ -539,11 +515,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: b164952d-d965-4ce6-80ec-e93b19a206b2
+    taskid: 032246da-2987-4a48-877d-062017d41cd9
     type: regular
     task:
-      elasticcommonfields: {}
-      id: b164952d-d965-4ce6-80ec-e93b19a206b2
+      id: 032246da-2987-4a48-877d-062017d41cd9
       version: -1
       name: Test failed
       script: RaiseError
@@ -571,11 +546,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 998a9c40-7570-41f4-8417-8853ae34742d
+    taskid: b1a109ac-0c72-4e88-8f2b-0379235f2512
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 998a9c40-7570-41f4-8417-8853ae34742d
+      id: b1a109ac-0c72-4e88-8f2b-0379235f2512
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -603,11 +577,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: f99bc32d-c0cd-4fc9-8b51-2f1e7b8fcbd4
+    taskid: 23c567e2-d0ff-4306-8251-75d34d7f8b0b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f99bc32d-c0cd-4fc9-8b51-2f1e7b8fcbd4
+      id: 23c567e2-d0ff-4306-8251-75d34d7f8b0b
       version: -1
       name: Search for email sent (ID)
       description: Searches for Gmail records of a specified Google user.
@@ -645,8 +618,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
-                    test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -667,11 +640,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: e2f3828c-5de6-491d-863d-c59cfbe1ce7c
+    taskid: 5eb2c56f-c0bf-4667-8d2e-6fecdf078777
     type: condition
     task:
-      elasticcommonfields: {}
-      id: e2f3828c-5de6-491d-863d-c59cfbe1ce7c
+      id: 5eb2c56f-c0bf-4667-8d2e-6fecdf078777
       version: -1
       name: Check if email was found
       type: condition
@@ -705,11 +677,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 051ed3ef-03a9-4fd1-8efd-ed04fd17df7d
+    taskid: 9d288529-b919-4544-84f1-47c73152ed04
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 051ed3ef-03a9-4fd1-8efd-ed04fd17df7d
+      id: 9d288529-b919-4544-84f1-47c73152ed04
       version: -1
       name: Start Over - Send several files
       scriptName: DeleteContext
@@ -741,11 +712,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: bfdf880e-a29c-40af-8d56-643fba9869bb
+    taskid: 1342069a-edf9-4c67-8376-0cb349064271
     type: regular
     task:
-      elasticcommonfields: {}
-      id: bfdf880e-a29c-40af-8d56-643fba9869bb
+      id: 1342069a-edf9-4c67-8376-0cb349064271
       version: -1
       name: Send mail using python
       script: Mail Sender (New)|||send-mail
@@ -792,11 +762,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: cc5cdfd5-0f4f-4c57-8359-44fe9585c75e
+    taskid: 71005cf6-3723-4b2f-84b3-47fa475d1b9b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: cc5cdfd5-0f4f-4c57-8359-44fe9585c75e
+      id: 71005cf6-3723-4b2f-84b3-47fa475d1b9b
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -824,11 +793,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: b1ecba8c-589f-458b-85e5-aae41b2ba13d
+    taskid: b6db2e2d-e708-4908-841a-036e9465a355
     type: condition
     task:
-      elasticcommonfields: {}
-      id: b1ecba8c-589f-458b-85e5-aae41b2ba13d
+      id: b6db2e2d-e708-4908-841a-036e9465a355
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -862,11 +830,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: f4aabdcd-bafb-4ec7-8537-e82785a0448d
+    taskid: bef22571-dca1-4a2c-8de3-f0acdbf1e150
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f4aabdcd-bafb-4ec7-8537-e82785a0448d
+      id: bef22571-dca1-4a2c-8de3-f0acdbf1e150
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -894,11 +861,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: b1aeb046-6820-4e3f-8ea8-10d6d242ca9d
+    taskid: d4384905-f8c5-4461-8fbc-661a7019a1b7
     type: condition
     task:
-      elasticcommonfields: {}
-      id: b1aeb046-6820-4e3f-8ea8-10d6d242ca9d
+      id: d4384905-f8c5-4461-8fbc-661a7019a1b7
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -932,11 +898,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 9d80f631-82ac-4a16-8716-84fcc35bce86
+    taskid: b8d20cc9-b523-4dee-8715-abf9876445aa
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 9d80f631-82ac-4a16-8716-84fcc35bce86
+      id: b8d20cc9-b523-4dee-8715-abf9876445aa
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -970,11 +935,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 360b4950-6c8a-47d3-8dcf-cd55fbef899e
+    taskid: 0206825f-fb08-46d4-86a4-ad32a41811f3
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 360b4950-6c8a-47d3-8dcf-cd55fbef899e
+      id: 0206825f-fb08-46d4-86a4-ad32a41811f3
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -1002,11 +966,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: ed8ec23c-3419-4d27-8fab-bea26678c10d
+    taskid: bb7aab29-94d4-488a-8f69-9c003f9f34c0
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ed8ec23c-3419-4d27-8fab-bea26678c10d
+      id: bb7aab29-94d4-488a-8f69-9c003f9f34c0
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -1038,11 +1001,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 0d9d5a42-f7fc-417c-81f9-b100be2d5d90
+    taskid: 52c01191-e0d7-4830-81e0-1dbcc0d22b98
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 0d9d5a42-f7fc-417c-81f9-b100be2d5d90
+      id: 52c01191-e0d7-4830-81e0-1dbcc0d22b98
       version: -1
       name: Delete email list from context
       description: |-
@@ -1075,11 +1037,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 1eebeb5a-2522-45c5-8b7c-47a1d090a1a4
+    taskid: 6fdd80e3-1a3f-4b8d-866e-6226a786ea8b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 1eebeb5a-2522-45c5-8b7c-47a1d090a1a4
+      id: 6fdd80e3-1a3f-4b8d-866e-6226a786ea8b
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
@@ -1111,11 +1072,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: a9255df5-6ea0-4161-87a1-209833de4800
+    taskid: ae889d06-1ec9-45e0-8531-324eacac0901
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a9255df5-6ea0-4161-87a1-209833de4800
+      id: ae889d06-1ec9-45e0-8531-324eacac0901
       version: -1
       name: Create a new File
       scriptName: FileCreateAndUpload
@@ -1146,11 +1106,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: ba397166-fa82-4327-81cf-28d5b4a5038c
+    taskid: 0ad8eb45-31db-4be3-8e7a-c7ca178dea1b
     type: condition
     task:
-      elasticcommonfields: {}
-      id: ba397166-fa82-4327-81cf-28d5b4a5038c
+      id: 0ad8eb45-31db-4be3-8e7a-c7ca178dea1b
       version: -1
       name: Check for attachments
       type: condition
@@ -1170,15 +1129,6 @@ tasks:
             value:
               simple: Gmail.Attachments
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Gmail.[0].ID
-            iscontext: true
-          right:
-            value:
-              simple: Testmail.ID
-            iscontext: true
     view: |-
       {
         "position": {
@@ -1193,11 +1143,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 87c8d93a-c024-4717-8754-986e245bcdb1
+    taskid: d74d1676-2c9d-4a2c-8051-48eebb8b06fc
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 87c8d93a-c024-4717-8754-986e245bcdb1
+      id: d74d1676-2c9d-4a2c-8051-48eebb8b06fc
       version: -1
       name: Email found without attachment
       script: RaiseError
@@ -1236,11 +1185,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: cccc5e70-d26c-4cdd-8921-66918a14c9e7
+    taskid: cd05ea79-7898-4998-8aaf-ccdb761954eb
     type: title
     task:
-      elasticcommonfields: {}
-      id: cccc5e70-d26c-4cdd-8921-66918a14c9e7
+      id: cd05ea79-7898-4998-8aaf-ccdb761954eb
       version: -1
       name: Finished Successfully
       type: title
@@ -1261,11 +1209,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 885b8c9e-c122-4a77-895e-7c957e7ecb06
+    taskid: 95b9ba66-d735-4893-8953-0b8b704527b2
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 885b8c9e-c122-4a77-895e-7c957e7ecb06
+      id: 95b9ba66-d735-4893-8953-0b8b704527b2
       version: -1
       name: Check for attachments
       type: condition
@@ -1311,11 +1258,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: aa0af7d5-2538-4e3d-8d6e-0720b18d9f14
+    taskid: 64a53e44-77d3-48c4-841c-53abb9c36d00
     type: regular
     task:
-      elasticcommonfields: {}
-      id: aa0af7d5-2538-4e3d-8d6e-0720b18d9f14
+      id: 64a53e44-77d3-48c4-841c-53abb9c36d00
       version: -1
       name: Get Time Now
       description: |
@@ -1350,11 +1296,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 1d202fbd-9212-43cd-828a-839e0a6f8e1d
+    taskid: f4de843a-a45e-4541-89c6-69e737f4c3c0
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 1d202fbd-9212-43cd-828a-839e0a6f8e1d
+      id: f4de843a-a45e-4541-89c6-69e737f4c3c0
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1392,8 +1337,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
-                    test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -1414,11 +1359,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: fafc0856-c9d1-419a-88ba-7b32446f3465
+    taskid: 526e4a7f-7800-4a34-8caa-a39c2ff86d43
     type: regular
     task:
-      elasticcommonfields: {}
-      id: fafc0856-c9d1-419a-88ba-7b32446f3465
+      id: 526e4a7f-7800-4a34-8caa-a39c2ff86d43
       version: -1
       name: Get Time Now
       description: |
@@ -1454,11 +1398,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 4ebd7ffb-d5c0-4696-836d-e42db7e2050e
+    taskid: 2903dbc1-fe6d-4b8e-84f8-5c86f7121d85
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 4ebd7ffb-d5c0-4696-836d-e42db7e2050e
+      id: 2903dbc1-fe6d-4b8e-84f8-5c86f7121d85
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1496,8 +1439,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
-                    test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -1518,11 +1461,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: dff1b46b-1e87-4952-84c2-599d0997700f
+    taskid: 059d2bc7-cc19-4d6d-8299-ff4c1ece1159
     type: regular
     task:
-      elasticcommonfields: {}
-      id: dff1b46b-1e87-4952-84c2-599d0997700f
+      id: 059d2bc7-cc19-4d6d-8299-ff4c1ece1159
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1560,8 +1502,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
-                    test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -1582,11 +1524,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: f9d49068-d8a5-43b2-8abe-a7f48fb7b55d
+    taskid: 75495819-dc02-4101-8d20-ad7d3c3e5351
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f9d49068-d8a5-43b2-8abe-a7f48fb7b55d
+      id: 75495819-dc02-4101-8d20-ad7d3c3e5351
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1624,8 +1565,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special
-                    test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -1646,11 +1587,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 0338cd34-59b3-4bc5-826e-55ed8cdba492
+    taskid: 12633f68-24dd-4bc2-858f-7a70c7108c14
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 0338cd34-59b3-4bc5-826e-55ed8cdba492
+      id: 12633f68-24dd-4bc2-858f-7a70c7108c14
       version: -1
       name: Check for attachments
       type: condition

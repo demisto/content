@@ -495,7 +495,9 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
             )
             account.root.effective_rights.read  # pylint: disable=E1101
             return account
-        except Exception, original_exc:
+        except Exception as original_exc:
+            # fixing flake8 correction where original_exc is assigned but unused
+            original_exc = original_exc
             pass
 
     try:
@@ -881,7 +883,7 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
     try:
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
         search_results = search_results[:limit]
-    except TransportError, e:
+    except TransportError as e:
         if "ItemCount>0<" in str(e):
             return "No results for search query: " + filter
         else:
@@ -944,6 +946,19 @@ def keys_to_camel_case(value):
                     for (k, v) in value.items())
 
     return str_to_camel_case(value)
+
+
+def email_ec(item):
+    return {
+        'CC': None if not item.cc_recipients else [mailbox.email_address for mailbox in item.cc_recipients],
+        'BCC': None if not item.bcc_recipients else [mailbox.email_address for mailbox in item.bcc_recipients],
+        'To': None if not item.to_recipients else [mailbox.email_address for mailbox in item.to_recipients],
+        'From': item.author.email_address,
+        'Subject': item.subject,
+        'Text': item.text_body,
+        'HTML': item.body,
+        'HeadersMap': {header.name: header.value for header in item.headers},
+    }
 
 
 def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):
@@ -1089,20 +1104,55 @@ def parse_incident_from_item(item, is_fetch):
     if item.attachments:
         incident['attachment'] = []
         for attachment in item.attachments:
-            file_result = None
-            label_attachment_type = None
-            label_attachment_id_type = None
-            if isinstance(attachment, FileAttachment):
-                try:
-                    if attachment.content:
-                        # file attachment
-                        label_attachment_type = 'attachments'
-                        label_attachment_id_type = 'attachmentId'
+            if attachment is not None:
+                attachment.parent_item = item
+                file_result = None
+                label_attachment_type = None
+                label_attachment_id_type = None
+                if isinstance(attachment, FileAttachment):
+                    try:
+                        if attachment.content:
+                            # file attachment
+                            label_attachment_type = 'attachments'
+                            label_attachment_id_type = 'attachmentId'
 
-                        # save the attachment
-                        file_name = get_attachment_name(attachment.name)
-                        file_result = fileResult(file_name, attachment.content)
+                            # save the attachment
+                            file_name = get_attachment_name(attachment.name)
+                            file_result = fileResult(file_name, attachment.content)
 
+                            # check for error
+                            if file_result['Type'] == entryTypes['error']:
+                                demisto.error(file_result['Contents'])
+                                raise Exception(file_result['Contents'])
+
+                            # save attachment to incident
+                            incident['attachment'].append({
+                                'path': file_result['FileID'],
+                                'name': get_attachment_name(attachment.name)
+                            })
+                    except TypeError as e:
+                        if e.message != "must be string or buffer, not None":
+                            raise
+                        continue
+                else:
+                    # other item attachment
+                    label_attachment_type = 'attachmentItems'
+                    label_attachment_id_type = 'attachmentItemsId'
+
+                    # save the attachment
+                    if hasattr(attachment, 'item') and attachment.item.mime_content:
+                        attached_email = email.message_from_string(attachment.item.mime_content)
+                        if attachment.item.headers:
+                            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                                      attached_email.items()]
+                            for header in attachment.item.headers:
+                                if (header.name, header.value) not in attached_email_headers \
+                                        and header.name != 'Content-Type':
+                                    attached_email.add_header(header.name, header.value)
+
+                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
+
+                    if file_result:
                         # check for error
                         if file_result['Type'] == entryTypes['error']:
                             demisto.error(file_result['Contents'])
@@ -1111,44 +1161,16 @@ def parse_incident_from_item(item, is_fetch):
                         # save attachment to incident
                         incident['attachment'].append({
                             'path': file_result['FileID'],
-                            'name': get_attachment_name(attachment.name)
+                            'name': get_attachment_name(attachment.name) + ".eml"
                         })
-                except TypeError, e:
-                    if e.message != "must be string or buffer, not None":
-                        raise
-                    continue
-            else:
-                # other item attachment
-                label_attachment_type = 'attachmentItems'
-                label_attachment_id_type = 'attachmentItemsId'
 
-                # save the attachment
-                if attachment.item.mime_content:
-                    attached_email = email.message_from_string(attachment.item.mime_content)
-                    if attachment.item.headers:
-                        attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                                  attached_email.items()]
-                        for header in attachment.item.headers:
-                            if (header.name, header.value) not in attached_email_headers \
-                                    and header.name != 'Content-Type':
-                                attached_email.add_header(header.name, header.value)
+                    else:
+                        incident['attachment'].append({
+                            'name': get_attachment_name(attachment.name) + ".eml"
+                        })
 
-                    file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
-
-                if file_result:
-                    # check for error
-                    if file_result['Type'] == entryTypes['error']:
-                        demisto.error(file_result['Contents'])
-                        raise Exception(file_result['Contents'])
-
-                    # save attachment to incident
-                    incident['attachment'].append({
-                        'path': file_result['FileID'],
-                        'name': get_attachment_name(attachment.name) + ".eml"
-                    })
-
-            labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
-            labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
+                labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
+                labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
     # handle headers
     if item.headers:
@@ -1241,22 +1263,40 @@ def get_entry_for_file_attachment(item_id, attachment):
 
 def parse_attachment_as_dict(item_id, attachment):
     try:
-        attachment_content = attachment.content if isinstance(attachment,
-                                                              FileAttachment) else attachment.item.mime_content
-        return {
-            ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
-            ATTACHMENT_ID: attachment.attachment_id.id,
-            'attachmentName': get_attachment_name(attachment.name),
-            'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
-            'attachmentContentType': attachment.content_type,
-            'attachmentContentId': attachment.content_id,
-            'attachmentContentLocation': attachment.content_location,
-            'attachmentSize': attachment.size,
-            'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
-            'attachmentIsInline': attachment.is_inline,
-            ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
-        }
-    except TypeError, e:
+        # if this is a file attachment or a non-empty email attachment
+        if isinstance(attachment, FileAttachment) or hasattr(attachment, 'item'):
+            attachment_content = attachment.content if isinstance(attachment, FileAttachment) \
+                else attachment.item.mime_content
+
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': get_attachment_name(attachment.name),
+                'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
+                'attachmentContentType': attachment.content_type,
+                'attachmentContentId': attachment.content_id,
+                'attachmentContentLocation': attachment.content_location,
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment)
+                else ITEM_ATTACHMENT_TYPE
+            }
+
+        # If this is an empty email attachment
+        else:
+            return {
+                ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
+                ATTACHMENT_ID: attachment.attachment_id.id,
+                'attachmentName': get_attachment_name(attachment.name),
+                'attachmentSize': attachment.size,
+                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
+                'attachmentIsInline': attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment)
+                else ITEM_ATTACHMENT_TYPE
+            }
+
+    except TypeError as e:
         if e.message != "must be string or buffer, not None":
             raise
         return {
@@ -1292,9 +1332,11 @@ def get_attachments_for_item(item_id, account, attachment_ids=None):
     if item:
         if item.attachments:
             for attachment in item.attachments:
-                if attachment_ids and attachment.attachment_id.id not in attachment_ids:
-                    continue
-                attachments.append(attachment)
+                if attachment is not None:
+                    attachment.parent_item = item
+                    if attachment_ids and attachment.attachment_id.id not in attachment_ids:
+                        continue
+                    attachments.append(attachment)
 
     else:
         raise Exception('Message item not found: ' + item_id)
@@ -1345,7 +1387,7 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
             try:
                 if attachment.content:
                     entries.append(get_entry_for_file_attachment(item_id, attachment))
-            except TypeError, e:
+            except TypeError as e:
                 if e.message != "must be string or buffer, not None":
                     raise
         else:
@@ -1660,12 +1702,14 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
         item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
                                              compact_fields=True)
         for attachment in item.attachments:
-            if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item,
-                                                                                           Message):
-                # if found item attachment - switch item to the attchment
-                item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True,
-                                                     compact_fields=True)
-                break
+            if attachment is not None:
+                attachment.parent_item = item
+                if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item,
+                                                                                               Message):
+                    # if found item attachment - switch item to the attchment
+                    item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True,
+                                                         compact_fields=True)
+                    break
         items_result.append(item_attachment)
 
     hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
@@ -1695,7 +1739,8 @@ def get_items(item_ids, target_mailbox=None):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Get items', items_to_context, ITEMS_RESULTS_HEADERS),
         ENTRY_CONTEXT: {
-            CONTEXT_UPDATE_EWS_ITEM: items_to_context
+            CONTEXT_UPDATE_EWS_ITEM: items_to_context,
+            'Email': [email_ec(item) for item in items],
         }
     }
 
@@ -1943,7 +1988,7 @@ def test_module():
                             "Need to delegate the user permissions to the mailbox - "
                             "please read integration documentation and follow the instructions")
         get_folder_by_path(account, FOLDER_NAME, IS_PUBLIC_FOLDER).test_access()
-    except ErrorFolderNotFound, e:
+    except ErrorFolderNotFound as e:
         if "Top of Information Store" in e.message:
             raise Exception(
                 "Success to authenticate, but user probably has no permissions to read from the specific folder."
@@ -2035,7 +2080,7 @@ def sub_main():
         elif demisto.command() == 'ews-get-items-as-eml':
             encode_and_submit_results(get_item_as_eml(**args))
 
-    except Exception, e:
+    except Exception as e:
         import time
 
         time.sleep(2)

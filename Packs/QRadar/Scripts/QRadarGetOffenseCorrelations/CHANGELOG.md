@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Use the **QRadar - Get offense correlations v2** playbook instead.
 
 ## [20.4.1] - 2020-04-29
 -

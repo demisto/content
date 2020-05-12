@@ -224,7 +224,7 @@ def get_alerts():
     """
     alerts_human_readable, alerts_context = get_alerts_helper(handle_filters())
     headers = ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
-               'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags',
+               'SourceEmail', 'SourceNetworkType', 'IsClosed', 'Closed', 'IsFlagged', 'Images', 'Tags',
                'Description', 'Title', 'TakedownStatus', 'SubType']
     demisto.results({
         'Type': entryTypes['note'],
@@ -240,6 +240,10 @@ def alert_to_readable(alert, parse_tags):
     Convert alert to readable format
     """
 
+    is_closed = demisto.get(alert, 'IsClosed')
+    if is_closed is None:
+        is_closed = demisto.get(alert, 'Closed.IsClosed')
+
     readable = {
         'ID': demisto.get(alert, '_id'),
         'Severity': demisto.get(alert, 'Details.Severity'),
@@ -249,14 +253,14 @@ def alert_to_readable(alert, parse_tags):
         'SourceURL': demisto.get(alert, 'Details.Source.URL'),
         'SourceEmail': demisto.get(alert, 'Details.Source.Email'),
         'SourceNetworkType': demisto.get(alert, 'Details.Source.NetworkType'),
-        'IsClosed': demisto.get(alert, 'IsClosed'),
+        'IsClosed': is_closed,
         'IsFlagged': demisto.get(alert, 'IsFlagged'),
         'Assets': demisto.get(alert, 'Assets'),
         'Images': demisto.get(alert, 'Details.Images'),
         'Description': demisto.get(alert, 'Details.Description'),
         'Title': demisto.get(alert, 'Details.Title'),
         'TakedownStatus': demisto.get(alert, 'TakedownStatus'),
-        'SubType': demisto.get(alert, 'Details.SubType')
+        'SubType': demisto.get(alert, 'Details.SubType'),
     }
 
     tags = demisto.get(alert, 'Details.Tags')
@@ -290,8 +294,8 @@ def get_alert_by_id():
         'Contents': activity_hr,
         'HumanReadable': tableToMarkdown('IntSights Alert Details', [activity_hr],
                                          ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
-                                          'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags',
-                                          'Description', 'Title', 'TakedownStatus', 'SubType']),
+                                          'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged',
+                                          'Images', 'Tags', 'Description', 'Title', 'TakedownStatus', 'SubType']),
         'ContentsFormat': formats['json']
     })
 

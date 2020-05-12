@@ -1,0 +1,222 @@
+id: MSGraph_DeviceManagement_Test
+version: -1
+name: MSGraph_DeviceManagement_Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: b68dbaed-dd68-439c-8b3a-f947ef7610a7
+    type: start
+    task:
+      id: b68dbaed-dd68-439c-8b3a-f947ef7610a7
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 05d8abe1-0907-467a-8f20-6f7918c434a1
+    type: regular
+    task:
+      id: 05d8abe1-0907-467a-8f20-6f7918c434a1
+      version: -1
+      name: msgraph-list-managed-devices
+      description: List of managed devices
+      script: Microsoft Graph Device Management|||msgraph-list-managed-devices
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Device Management
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 71b2efaa-256c-48bd-88d5-f4c9e1e69ace
+    type: regular
+    task:
+      id: 71b2efaa-256c-48bd-88d5-f4c9e1e69ace
+      version: -1
+      name: msgraph-get-managed-device-by-id
+      description: Get managed devices
+      script: Microsoft Graph Device Management|||msgraph-get-managed-device-by-id
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Device Management
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      device-id:
+        simple: ${MSGraphDeviceManagement.Device.ID}
+      device_id:
+        simple: ${MSGraphDeviceManagement.Device.ID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 8be6c4eb-0057-4623-8e00-712b6dc2c51e
+    type: regular
+    task:
+      id: 8be6c4eb-0057-4623-8e00-712b6dc2c51e
+      version: -1
+      name: msgraph-windows-device-defender-scan
+      description: Scans the device with windows defender (windows devices only)
+      script: '|||msgraph-windows-device-defender-scan'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      device_id:
+        simple: ${MSGraphDeviceManagement.Device.ID}
+      quick_scan: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 99370a24-51e4-4e2c-8124-49d6015c3066
+    type: title
+    task:
+      id: 99370a24-51e4-4e2c-8124-49d6015c3066
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: e1d3135e-a792-4790-84fb-0b04e6efc2c1
+    type: regular
+    task:
+      id: e1d3135e-a792-4790-84fb-0b04e6efc2c1
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: a989651a-fd9e-479a-8fa0-4380cd1eab08
+    type: condition
+    task:
+      id: a989651a-fd9e-479a-8fa0-4380cd1eab08
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.UserID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.OperatingSystem
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.OSVersion
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.Model
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.Manufacturer
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1085,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''
