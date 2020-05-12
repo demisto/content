@@ -1,0 +1,21 @@
+{
+    "name": "Sepio",
+    "description": "Sepio Prime integration pack",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Antony",
+    "url": "https://github.com/SepioSystems",
+    "email": "antonyg@sepio.systems",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [
+    ],
+    "created": "2020-05-12T14:53:31Z",
+    "updated": "2020-05-12T14:53:31Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
+}
