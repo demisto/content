@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Any, List, Dict
+from typing import List, Dict
 from io import BytesIO
 from PIL import Image
 from datetime import datetime
@@ -123,7 +123,7 @@ class TriageReport:
     def report_body(self):
         return self.attrs.get("report_body")
 
-    @property
+    @property  # type: ignore
     @functools.lru_cache()
     def reporter(self):
         return TriageReporter(self.attrs["reporter_id"])
@@ -137,11 +137,11 @@ class TriageReport:
         return json.dumps(
             {
                 **self.attrs,
-                **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},
+                **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},  # type: ignore
             }
         )
 
-    @property
+    @property  # type: ignore
     @functools.lru_cache()
     def attachment(self):
         # TODO case-insensitive?
