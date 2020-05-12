@@ -154,7 +154,7 @@ script:
     description: Remove Componentlist Entry
     execution: false
     name: digitalguardian-remove-componentlist-entry
-  dockerimage: demisto/python3:3.8.1.6442
+  dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: true
   longRunning: false
