@@ -43,12 +43,12 @@ def build_filtered_data(lst, items, ignore_case, match_exact, regex_ignore_case_
     return white_listed, not_white_listed, human_readable
 
 
-def filter_list(lst, items, ignore_case, match_exact, list_name):
+def filter_list(lst, items, ignore_case, match_exact, list_name, delimiter):
     # If the list is empty
     if not lst[0]['Contents']:
         return empty_list_context(items, list_name)
 
-    lst = lst[0]['Contents'].split(',')
+    lst = lst[0]['Contents'].split(delimiter)
     regex_ignore_case_flag = re.IGNORECASE if ignore_case else 0
 
     white_listed, not_white_listed, human_readable = build_filtered_data(lst, items, ignore_case, match_exact,
@@ -66,17 +66,19 @@ def filter_list(lst, items, ignore_case, match_exact, list_name):
 
 
 def main():
-    list_name = demisto.args()['listname']
-    ignore_case = demisto.args().get('ignorecase', '').lower() == 'yes'
-    match_exact = demisto.args().get('matchexact', '').lower() == 'yes'
-    items = argToList(demisto.args().get('values'))
+    args = demisto.args()
+    list_name = args['listname']
+    ignore_case = args.get('ignorecase', '').lower() == 'yes'
+    match_exact = args.get('matchexact', '').lower() == 'yes'
+    items = argToList(args.get('values'))
+    delimiter = args.get('delimiter', ',')
 
     lst = demisto.executeCommand('getList', {'listName': list_name})
 
     if isError(lst[0]):
         return_error('List not found')
 
-    human_readable, ec = filter_list(lst, items, ignore_case, match_exact, list_name)
+    human_readable, ec = filter_list(lst, items, ignore_case, match_exact, list_name, delimiter)
     return_outputs(human_readable, ec, None)
 
 

@@ -1,6 +1,6 @@
 commonfields:
   id: CSIndicators
-  version: 1
+  version: -1
 name: CSIndicators
 script: |-
   import time
@@ -36,6 +36,7 @@ script: |-
   else:
       demisto.results(entry)
 type: python
+subtype: python2
 tags:
 - server
 - threat-intel

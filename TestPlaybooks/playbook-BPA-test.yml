@@ -81,6 +81,9 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      generate_zip_bundle:
+        simple: "true"
     separatecontext: false
     view: |-
       {
@@ -173,6 +176,14 @@ tasks:
             value:
               simple: ${PAN-OS-BPA.JobResults(val.Status==='complete').Checks}
             iscontext: true
+      - - operator: containsString
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value:
+              simple: report
     view: |-
       {
         "position": {

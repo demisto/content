@@ -1,7 +1,7 @@
 id: access_investigation_-_qradar
 version: -1
 name: Access Investigation - QRadar
-fromversion: 3.6.0
+fromversion: 5.0.0
 description: |-
   This playbook uses the QRadar integration to investigate an access incident by gathering user and IP information.
 
@@ -62,9 +62,9 @@ tasks:
     task:
       id: 6f12a822-db6c-40b7-813d-714a77e77f1f
       version: -1
-      name: QRadar - Get offense correlations
+      name: QRadar - Get offense correlations v2
       description: ""
-      playbookName: QRadar - Get offense correlations
+      playbookName: QRadar - Get offense correlations v2
       type: playbook
       iscommand: false
       brand: ""

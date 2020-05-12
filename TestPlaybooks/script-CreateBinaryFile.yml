@@ -17,6 +17,7 @@ script: |+
   demisto.results(fileResult( 'test-file.bin',arr))
 
 type: python
+subtype: python2
 tags: []
 enabled: true
 scripttarget: 0

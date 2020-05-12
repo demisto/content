@@ -504,8 +504,11 @@ def main():
             pack.cleanup()
             continue
 
-        # todo finish implementation of release notes
-        # pack.parse_release_notes()
+        task_status = pack.prepare_release_notes(index_folder_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.cleanup()
+            continue
 
         task_status = pack.remove_unwanted_files()
         if not task_status:
@@ -552,7 +555,6 @@ def main():
             continue
 
         pack.status = PackStatus.SUCCESS.name
-        pack.cleanup()
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)

@@ -37,6 +37,7 @@ script: |-
           }
           demisto.results(entry_result)
 type: python
+subtype: python2
 tags: []
 enabled: true
 args:

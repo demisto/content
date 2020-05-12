@@ -70,7 +70,7 @@ configuration:
   type: 0
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from

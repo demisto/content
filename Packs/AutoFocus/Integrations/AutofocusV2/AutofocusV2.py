@@ -289,13 +289,18 @@ def parse_response(resp, err_operation):
 def http_request(url_suffix, method='POST', data={}, err_operation=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     data.update({'apiKey': API_KEY})
-    res = requests.request(
-        method=method,
-        url=BASE_URL + url_suffix,
-        verify=USE_SSL,
-        data=json.dumps(data),
-        headers=HEADERS
-    )
+    try:
+        res = requests.request(
+            method=method,
+            url=BASE_URL + url_suffix,
+            verify=USE_SSL,
+            data=json.dumps(data),
+            headers=HEADERS
+        )
+    # Handle with connection error
+    except requests.exceptions.ConnectionError as err:
+        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
+        return_error(err_message)
     return parse_response(res, err_operation)
 
 
@@ -881,9 +886,16 @@ def search_indicator(indicator_type, indicator_value):
             headers=headers,
             params=params
         )
+
         # Handle error responses gracefully
         result.raise_for_status()
         result_json = result.json()
+
+    # Handle with connection error
+    except requests.exceptions.ConnectionError as err:
+        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
+        return_error(err_message)
+
     # Unexpected errors (where no json object was received)
     except Exception as err:
         try:
@@ -899,7 +911,7 @@ def search_indicator(indicator_type, indicator_value):
                          f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
         else:
             err_msg = f'Request Failed with message: {err}.'
-        return return_error(err_msg)
+        return_error(err_msg)
 
     return result_json
 
@@ -1376,23 +1388,20 @@ def search_domain_command(args):
             integration_name=VENDOR_NAME,
             score=score
         )
-        demisto.log(json.dumps(raw_res, indent=4))
 
         domain = Common.Domain(
             domain=domain_name,
             dbot_score=dbot_score,
-            whois=Common.WHOIS(
-                creation_date=indicator.get('whoisDomainCreationDate'),
-                expiration_date=indicator.get('whoisDomainExpireDate'),
-                update_date=indicator.get('whoisDomainUpdateDate'),
+            creation_date=indicator.get('whoisDomainCreationDate'),
+            expiration_date=indicator.get('whoisDomainExpireDate'),
+            updated_date=indicator.get('whoisDomainUpdateDate'),
 
-                admin_email=indicator.get('whoisAdminEmail'),
-                admin_name=indicator.get('whoisAdminName'),
+            admin_email=indicator.get('whoisAdminEmail'),
+            admin_name=indicator.get('whoisAdminName'),
 
-                registrar_name=indicator.get('whoisRegistrar'),
+            registrar_name=indicator.get('whoisRegistrar'),
 
-                registrant_name=indicator.get('whoisRegistrant')
-            )
+            registrant_name=indicator.get('whoisRegistrant')
         )
 
         autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)

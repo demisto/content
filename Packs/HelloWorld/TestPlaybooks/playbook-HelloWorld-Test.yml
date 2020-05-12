@@ -7,10 +7,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 97d83639-06d4-40d2-890c-2c8bfb49ffcd
+    taskid: dbc2c45c-775e-44e5-8897-b2f44d2a6050
     type: start
     task:
-      id: 97d83639-06d4-40d2-890c-2c8bfb49ffcd
+      id: dbc2c45c-775e-44e5-8897-b2f44d2a6050
       version: -1
       name: ''
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     quietmode: 0
   '1':
     id: '1'
-    taskid: de2972fd-7a03-4ae6-8590-ceb0526c301b
+    taskid: b34a59a5-58c9-48f1-8584-56eb3b57cbcb
     type: regular
     task:
-      id: de2972fd-7a03-4ae6-8590-ceb0526c301b
+      id: b34a59a5-58c9-48f1-8584-56eb3b57cbcb
       version: -1
       name: DeleteContext
       description: Delete All the Context
@@ -58,10 +58,10 @@ tasks:
     quietmode: 0
   '2':
     id: '2'
-    taskid: bc13caa0-7fe3-496e-8a9e-9be26513a975
+    taskid: d6b71f5e-face-4121-827a-19ef7b93988a
     type: regular
     task:
-      id: bc13caa0-7fe3-496e-8a9e-9be26513a975
+      id: d6b71f5e-face-4121-827a-19ef7b93988a
       version: -1
       name: helloworld-say-hello
       description: Run the helloworld-say-hello-command with argument name set to
@@ -85,10 +85,10 @@ tasks:
     quietmode: 0
   '3':
     id: '3'
-    taskid: 9e100376-2618-45e1-8c94-b8119af4fcb5
+    taskid: 67e09be1-fbf9-4e5a-887c-1d7c6cea9e32
     type: condition
     task:
-      id: 9e100376-2618-45e1-8c94-b8119af4fcb5
+      id: 67e09be1-fbf9-4e5a-887c-1d7c6cea9e32
       version: -1
       name: Verify Outputs
       description: Verify the outputs.
@@ -118,10 +118,10 @@ tasks:
     quietmode: 0
   '4':
     id: '4'
-    taskid: 9229aa80-1e2f-4e44-8410-46b89a374614
+    taskid: 7295fed6-0f14-4e7a-849e-fe7dcb1f2865
     type: regular
     task:
-      id: 9229aa80-1e2f-4e44-8410-46b89a374614
+      id: 7295fed6-0f14-4e7a-849e-fe7dcb1f2865
       version: -1
       name: helloworld-search-alerts
       description: Run the helloworld-search-alerts command to find an alert
@@ -152,10 +152,10 @@ tasks:
     quietmode: 0
   '5':
     id: '5'
-    taskid: dd33e71f-369c-4dad-8841-8213d2409ded
+    taskid: dc2cf36f-5280-4434-8d28-4e640620796e
     type: condition
     task:
-      id: dd33e71f-369c-4dad-8841-8213d2409ded
+      id: dc2cf36f-5280-4434-8d28-4e640620796e
       version: -1
       name: Verify Outputs
       description: Check if an alert of type Bug and severity 4 (Critical) is found
@@ -216,10 +216,10 @@ tasks:
     quietmode: 0
   '6':
     id: '6'
-    taskid: cf54e733-1131-41b7-8b7c-8b07a6270a86
+    taskid: f4d2d479-cd8f-4b23-8cf8-536fe941f534
     type: regular
     task:
-      id: cf54e733-1131-41b7-8b7c-8b07a6270a86
+      id: f4d2d479-cd8f-4b23-8cf8-536fe941f534
       version: -1
       name: helloworld-get-alert
       description: Get the alert details for the alert retrieved in the previous task
@@ -244,10 +244,10 @@ tasks:
     quietmode: 0
   '7':
     id: '7'
-    taskid: ad59e196-cf1d-43bc-8502-2be5fdd7f432
+    taskid: 589584a9-a37b-4d26-8a09-097db10dbabd
     type: condition
     task:
-      id: ad59e196-cf1d-43bc-8502-2be5fdd7f432
+      id: 589584a9-a37b-4d26-8a09-097db10dbabd
       version: -1
       name: Verify Outputs
       description: Check if all the alert detail fields are present
@@ -304,10 +304,10 @@ tasks:
     quietmode: 0
   '8':
     id: '8'
-    taskid: e745ed55-30a9-4b55-83e2-c2b9138f09d1
+    taskid: f3165fc4-5a55-4ba9-8855-2a8c5b4308bc
     type: regular
     task:
-      id: e745ed55-30a9-4b55-83e2-c2b9138f09d1
+      id: f3165fc4-5a55-4ba9-8855-2a8c5b4308bc
       version: -1
       name: helloworld-update-alert-status
       description: Change the previous alert status to CLOSED using helloworld-update-alert-status
@@ -334,10 +334,10 @@ tasks:
     quietmode: 0
   '9':
     id: '9'
-    taskid: 4aab3a0b-ecf0-438d-843b-4c6e9b01d236
+    taskid: c87b60c1-56ca-4a09-8a31-2fd419ea65e0
     type: condition
     task:
-      id: 4aab3a0b-ecf0-438d-843b-4c6e9b01d236
+      id: c87b60c1-56ca-4a09-8a31-2fd419ea65e0
       version: -1
       name: Verify Outputs
       description: Check if the alert has been closed correctly
@@ -377,10 +377,10 @@ tasks:
     quietmode: 0
   '10':
     id: '10'
-    taskid: 6e80a939-5d8a-455b-8e00-fae04f6d493f
+    taskid: 3c54dcc4-8159-46e9-8465-bcc902e475e0
     type: regular
     task:
-      id: 6e80a939-5d8a-455b-8e00-fae04f6d493f
+      id: 3c54dcc4-8159-46e9-8465-bcc902e475e0
       version: -1
       name: ip
       description: Get ip reputation for ip '8.8.8.8'
@@ -404,10 +404,10 @@ tasks:
     quietmode: 0
   '11':
     id: '11'
-    taskid: abc6ccc7-ad70-4c07-854e-acc74523483c
+    taskid: e538c67c-ac6f-49c4-8272-1ddc3ad4b390
     type: condition
     task:
-      id: abc6ccc7-ad70-4c07-854e-acc74523483c
+      id: e538c67c-ac6f-49c4-8272-1ddc3ad4b390
       version: -1
       name: Verify Outputs
       description: Check if the ip command returns accurate data
@@ -513,10 +513,10 @@ tasks:
     quietmode: 0
   '12':
     id: '12'
-    taskid: 7c2f9fc9-37b8-4695-8292-551eecb114da
+    taskid: 525a0a92-d574-4102-8e69-127d5c865d8f
     type: regular
     task:
-      id: 7c2f9fc9-37b8-4695-8292-551eecb114da
+      id: 525a0a92-d574-4102-8e69-127d5c865d8f
       version: -1
       name: domain
       description: Run the domain command for domain 'google.com'
@@ -540,10 +540,10 @@ tasks:
     quietmode: 0
   '13':
     id: '13'
-    taskid: a995b15a-d429-4fa6-8480-c9ab42fa7ac1
+    taskid: 81a21c35-f705-49e6-8a3d-2dbdc2ba70dc
     type: condition
     task:
-      id: a995b15a-d429-4fa6-8480-c9ab42fa7ac1
+      id: 81a21c35-f705-49e6-8a3d-2dbdc2ba70dc
       version: -1
       name: Verify Outputs
       type: condition
@@ -638,6 +638,41 @@ tasks:
             value:
               simple: HelloWorld.Domain.updated_date
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.NameServers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.CreationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.ExpirationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.UpdatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Organization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Registrar.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Registrant.Country
+            iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2760\n  }\n}"
     note: false
     timertriggers: []
@@ -646,10 +681,10 @@ tasks:
     quietmode: 0
   '14':
     id: '14'
-    taskid: eb8a6fad-c969-46fe-847d-1de9ab538222
+    taskid: 5dfe5e6f-cc7c-4332-828d-4d37c65172d5
     type: regular
     task:
-      id: eb8a6fad-c969-46fe-847d-1de9ab538222
+      id: 5dfe5e6f-cc7c-4332-828d-4d37c65172d5
       version: -1
       name: helloworld-scan-start
       description: Run scan on hostname 'testhost123.local'
@@ -672,10 +707,10 @@ tasks:
     quietmode: 0
   '15':
     id: '15'
-    taskid: abff6ff1-0214-423e-85e3-67f55a4463ac
+    taskid: 054a8d86-7547-4ff6-8f0e-5bf742fd15fb
     type: condition
     task:
-      id: abff6ff1-0214-423e-85e3-67f55a4463ac
+      id: 054a8d86-7547-4ff6-8f0e-5bf742fd15fb
       version: -1
       name: Verify Outputs
       description: Verify details of the domain
@@ -718,10 +753,10 @@ tasks:
     quietmode: 0
   '16':
     id: '16'
-    taskid: 9029f9f8-e872-4137-833c-92b015c5bb80
+    taskid: 5b32f105-df4d-4a9c-85d0-2614ccd8ca42
     type: regular
     task:
-      id: 9029f9f8-e872-4137-833c-92b015c5bb80
+      id: 5b32f105-df4d-4a9c-85d0-2614ccd8ca42
       version: -1
       name: helloworld-scan-status
       description: Test the scan status
@@ -746,10 +781,10 @@ tasks:
     quietmode: 0
   '17':
     id: '17'
-    taskid: 9276dd0e-7791-4674-8342-7bddc21e0779
+    taskid: f9302457-2994-4212-8648-3c852e9c6ddb
     type: condition
     task:
-      id: 9276dd0e-7791-4674-8342-7bddc21e0779
+      id: f9302457-2994-4212-8648-3c852e9c6ddb
       version: -1
       name: Verify Outputs
       description: Check if the scan is either running or complete
@@ -784,10 +819,10 @@ tasks:
     quietmode: 0
   '18':
     id: '18'
-    taskid: d3eac079-1969-463d-8da1-cee4b48e8f76
+    taskid: 8f3bddfa-41fb-4c2b-8fae-0b138e96a528
     type: regular
     task:
-      id: d3eac079-1969-463d-8da1-cee4b48e8f76
+      id: 8f3bddfa-41fb-4c2b-8fae-0b138e96a528
       version: -1
       name: helloworld-scan-results
       description: Retrieve the scan results in json format
@@ -814,10 +849,10 @@ tasks:
     quietmode: 0
   '19':
     id: '19'
-    taskid: 77baee90-68d8-4a98-8325-714ea1c1008d
+    taskid: 8a327593-301f-4c00-81e6-971d391c480e
     type: condition
     task:
-      id: 77baee90-68d8-4a98-8325-714ea1c1008d
+      id: 8a327593-301f-4c00-81e6-971d391c480e
       version: -1
       name: Verify Outputs
       type: condition
@@ -882,10 +917,10 @@ tasks:
     quietmode: 0
   '20':
     id: '20'
-    taskid: 4423132c-0c35-496e-807c-ec0006bc2aa3
+    taskid: f9f6da2b-a8bc-413e-894f-2a871980b69b
     type: title
     task:
-      id: 4423132c-0c35-496e-807c-ec0006bc2aa3
+      id: f9f6da2b-a8bc-413e-894f-2a871980b69b
       version: -1
       name: Test Done
       type: title
@@ -901,10 +936,10 @@ tasks:
     quietmode: 0
   '21':
     id: '21'
-    taskid: 75114d58-44ea-44c6-8da2-1ea52ce7439f
+    taskid: d13cda5f-dc63-4d0e-8fe4-29fba01be349
     type: regular
     task:
-      id: 75114d58-44ea-44c6-8da2-1ea52ce7439f
+      id: d13cda5f-dc63-4d0e-8fe4-29fba01be349
       version: -1
       name: Test Fetch Incidents
       description: Execute FetchIncident for a given instance. We get the instance
@@ -932,10 +967,10 @@ tasks:
     quietmode: 0
   '22':
     id: '22'
-    taskid: bf7457cf-fd66-4068-8238-92a7dfecda95
+    taskid: a4189d6f-9d63-462d-8dbb-d89167f1674e
     type: regular
     task:
-      id: bf7457cf-fd66-4068-8238-92a7dfecda95
+      id: a4189d6f-9d63-462d-8dbb-d89167f1674e
       version: -1
       name: DeleteContext
       description: Delete Context to make sure the DBotScore is not tainted from the
@@ -963,10 +998,10 @@ tasks:
     quietmode: 0
   '23':
     id: '23'
-    taskid: 9b093ceb-31f8-4b38-8acb-86c61c73c6f5
+    taskid: cfc6b8da-4112-4bf8-88be-7fd8256c2d2c
     type: regular
     task:
-      id: 9b093ceb-31f8-4b38-8acb-86c61c73c6f5
+      id: cfc6b8da-4112-4bf8-88be-7fd8256c2d2c
       version: -1
       name: DeleteContext
       description: Clean up the Context
@@ -993,10 +1028,10 @@ tasks:
     quietmode: 0
   '24':
     id: '24'
-    taskid: 577e34f8-aab0-4173-83e5-742d4a96c390
+    taskid: c994f1eb-924e-47ee-855c-0296feb00c7a
     type: regular
     task:
-      id: 577e34f8-aab0-4173-83e5-742d4a96c390
+      id: c994f1eb-924e-47ee-855c-0296feb00c7a
       version: -1
       name: DeleteContext
       description: Clean up the Context
@@ -1023,10 +1058,10 @@ tasks:
     quietmode: 0
   '25':
     id: '25'
-    taskid: ae15c878-7d38-4035-8936-975860e44dca
+    taskid: 4067ad88-8785-4086-8d52-e8bf11bb4e2e
     type: title
     task:
-      id: ae15c878-7d38-4035-8936-975860e44dca
+      id: 4067ad88-8785-4086-8d52-e8bf11bb4e2e
       version: -1
       name: Test Fetch Incidents
       type: title
@@ -1045,10 +1080,10 @@ tasks:
     quietmode: 0
   '26':
     id: '26'
-    taskid: b3b1604d-6e17-402e-8a14-555cbc080a4b
+    taskid: 8602c926-bf4a-40e4-8768-89ebc295debf
     type: title
     task:
-      id: b3b1604d-6e17-402e-8a14-555cbc080a4b
+      id: 8602c926-bf4a-40e4-8768-89ebc295debf
       version: -1
       name: Test Automation Script
       type: title
@@ -1067,10 +1102,10 @@ tasks:
     quietmode: 0
   '27':
     id: '27'
-    taskid: a14452dd-4ec8-4ca6-8c25-6dbff3813539
+    taskid: 30ed9a4b-3dea-4205-8f0f-3425ada73ee0
     type: regular
     task:
-      id: a14452dd-4ec8-4ca6-8c25-6dbff3813539
+      id: 30ed9a4b-3dea-4205-8f0f-3425ada73ee0
       version: -1
       name: HelloWorldScript
       description: Run HelloWorldScript with "Dbot" as argument
@@ -1093,10 +1128,10 @@ tasks:
     quietmode: 0
   '28':
     id: '28'
-    taskid: 5118c2e1-e78a-4dc2-8bb4-eefaa9a228bb
+    taskid: a878966e-5471-45d7-8edb-ed0d907f7cdf
     type: condition
     task:
-      id: 5118c2e1-e78a-4dc2-8bb4-eefaa9a228bb
+      id: a878966e-5471-45d7-8edb-ed0d907f7cdf
       version: -1
       name: Verify Outputs
       description: Verify output from script
@@ -1126,10 +1161,10 @@ tasks:
     quietmode: 0
   '29':
     id: '29'
-    taskid: 5d7435e8-de12-4465-80fc-7cc2ccf8b2d3
+    taskid: 99e3e0d6-acd3-428e-8521-2ccbff1b635c
     type: title
     task:
-      id: 5d7435e8-de12-4465-80fc-7cc2ccf8b2d3
+      id: 99e3e0d6-acd3-428e-8521-2ccbff1b635c
       version: -1
       name: Test Scan Commands
       type: title
@@ -1148,10 +1183,10 @@ tasks:
     quietmode: 0
   '30':
     id: '30'
-    taskid: b8426dfc-7769-48d2-8f5a-2b5704c09253
+    taskid: 09cfb854-2da7-4a8f-85b6-814b8d5fa170
     type: title
     task:
-      id: b8426dfc-7769-48d2-8f5a-2b5704c09253
+      id: 09cfb854-2da7-4a8f-85b6-814b8d5fa170
       version: -1
       name: Test Reputation Commands
       type: title
@@ -1170,10 +1205,10 @@ tasks:
     quietmode: 0
   '31':
     id: '31'
-    taskid: 152b16c0-7513-4063-82f3-2ede3588600a
+    taskid: 7a13fcb9-8dfc-47e6-85d2-1b4b6de7f90d
     type: title
     task:
-      id: 152b16c0-7513-4063-82f3-2ede3588600a
+      id: 7a13fcb9-8dfc-47e6-85d2-1b4b6de7f90d
       version: -1
       name: Test Alert Commands
       type: title
