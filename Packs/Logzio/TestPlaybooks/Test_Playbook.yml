@@ -60,9 +60,9 @@ tasks:
     task:
       id: 1a9d4993-d4fa-4e5c-86bf-77390472c150
       version: -1
-      name: logzio-get-logs-by-rule-id
+      name: logzio-get-logs-by-event-id
       description: Returns the raw logs that triggered the security rule in Logz.io.
-      script: Logz.io|||logzio-get-logs-by-rule-id
+      script: Logz.io|||logzio-get-logs-by-event-id
       type: regular
       iscommand: true
       brand: Logz.io

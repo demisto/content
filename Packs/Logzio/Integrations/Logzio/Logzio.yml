@@ -100,7 +100,7 @@ script:
       description: The log's timestamp
       type: date
     description: Runs an Apache Lucene query on your Logz.io Operations account
-  - name: logzio-get-logs-by-rule-id
+  - name: logzio-get-logs-by-event-id
     arguments:
     - name: id
       required: true

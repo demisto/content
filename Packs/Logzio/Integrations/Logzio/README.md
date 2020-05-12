@@ -5,7 +5,7 @@ Fetch & remediate security incidents identified by Logz.io Cloud SIEM
 This integration was integrated and tested with Logz.io platform.
 ## Logz.io Playbook
 ---
-Logz.Io Handle Alert: used to handle alerts retrieved from Logz.io. The playbook will retrieve the related events that generated the alert using the logzio-get-logs-by-rule-id command
+Logz.Io Handle Alert: used to handle alerts retrieved from Logz.io. The playbook will retrieve the related events that generated the alert using the logzio-get-logs-by-event-id command
 
 ## Use Cases
 ---
@@ -39,7 +39,7 @@ In addition, users can query Logz.io directly from Cortex XSOAR to investigate o
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. logzio-search-logs
-2. logzio-get-logs-by-rule-id
+2. logzio-get-logs-by-event-id
 
 ### 1. logzio-search-logs
 ---
@@ -1566,14 +1566,14 @@ Your Logz.io account type should be PRO or above.
 | beat: filebeat  version: 7.5.0 type: _doc | 2020-05-06T01:46:12.663+0000 | 3990.0, 3990.0 | ,  | ENDP_AM_1060, ENDP_AM_1060 | 2020-02-22T08:24:00Z, 2020-02-22T08:24:00Z | 3990.0, 3990.0 | On-Access Scan, On-Access Scan | 6010.8670, 6010.8670 | True, True | WinSec3, WinSec3 | McAfee Endpoint Security, McAfee Endpoint Security | 10.6.1, 10.6.1 | 4, 4 | IDS_BLADE_NAME_SPB, IDS_BLADE_NAME_SPB | True, True | 2020-02-23T15:43:40Z, 2020-02-23T15:43:40Z | IDS_OAS_DEFAULT_THREAT_MESSAGE, IDS_OAS_DEFAULT_THREAT_MESSAGE | 18, 18 | EventFwd | SoftwareInfo: {"CommonFields": {"AnalyzerDATVersion": "3990.0", "Analyzer": "ENDP_AM_1060", "AnalyzerDetectionMethod": "On-Access Scan", "AnalyzerVersion": "10.6.1", "AnalyzerEngineVersion": "6010.8670", "AnalyzerHostName": "WinSec3", "AnalyzerName": "McAfee Endpoint Security"}, "Event": {"EventID": "1027", "GMTTime": "2020-02-23T15:43:40", "CustomFields": {"DetectionMessage": "IDS_OAS_DEFAULT_THREAT_MESSAGE", "TargetFileSize": "249952", "TargetModifyTime": "2020-02-23T15:43:22Z", "DurationBeforeDetection": "18", "Cleanable": "true", "FirstAttemptedAction": "IDS_ALERT_THACT_ATT_CLE", "AnalyzerContentCreationDate": "2020-02-22T08:24:00Z", "TargetAccessTime": "2020-02-23T15:43:22Z", "AttackVectorType": "4", "ThreatDetectedOnCreation": "true", "FirstActionStatus": "true", "TargetName": "test.exe", "AMCoreContentVersion": "3990.0", "NaturalLangDescription": "IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\\Windows\\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\\Logzio", "TaskName": "IDS_OAS_TASK_NAME", "TargetHash": "81da244a770c46ace2cf112214f8e75e", "SecondAttemptedAction": "IDS_ALERT_THACT_ATT_DEL", "TargetCreateTime": "2020-02-23T15:43:21Z", "SecondActionStatus": "false", "BladeName": "IDS_BLADE_NAME_SPB", "AnalyzerGTIQuery": "true", "AccessRequested_obj": {}, "TargetPath": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth"}, "CommonFields": {"ThreatType": "trojan", "TargetHostName": "WinSec3", "DetectedUTC": "2020-02-23T15:43:40Z", "TargetFileName": "C:\\Users\\Logzio\\Downloads\\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\\taskhealth\\test.exe", "SourceHostName": "WinSec3", "ThreatSeverity": "2", "ThreatCategory": "av.detect", "TargetUserName": "WinSec3\\Logzio", "SourceProcessName": "C:\\Windows\\explorer.exe", "ThreatName": "Trojan-FRTB!81DA244A770C", "ThreatEventID": "1027", "ThreatActionTaken": "IDS_ALERT_ACT_TAK_DEL", "ThreatHandled": "true"}, "Severity": "3"}} MachineInfo: {"RawMACAddress": "000d3a373482", "UserName": "SYSTEM", "MachineName": "WinSec3", "OSName": "Windows 10 Workstation", "TimeZoneBias": "0", "AgentGUID": "{d140d3c9-53ed-4367-857d-a5a396a97775}", "IPAddress": "10.0.1.10"} | 1027, 1027 | True, True | IDS_ALERT_THACT_ATT_CLE, IDS_ALERT_THACT_ATT_CLE | 2020-02-23T15:43:40, 2020-02-23T15:43:40 | IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetName=test.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio, IDS_NATURAL_LANG_OAS_DETECTION_DEL\|TargetNametest.exe\|TargetPath=C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\|ThreatName=Trojan-FRTB!81DA244A770C\|SourceProcessName=C:\Windows\explorer.exe\|ThreatType=trojan\|TargetUserName=WinSec3\Logzio | False, False | IDS_ALERT_THACT_ATT_DEL, IDS_ALERT_THACT_ATT_DEL | 3, 3 | WinSec3, WinSec3 | C:\Windows\explorer.exe, C:\Windows\explorer.exe | 2020-02-23T15:43:22Z, 2020-02-23T15:43:22Z | 2020-02-23T15:43:21Z, 2020-02-23T15:43:21Z | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe, C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth\test.exe | 249952, 249952 | 81da244a770c46ace2cf112214f8e75e, 81da244a770c46ace2cf112214f8e75e | WinSec3, WinSec3 | 2020-02-23T15:43:22Z, 2020-02-23T15:43:22Z | test.exe, test.exe | C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth, C:\Users\Logzio\Downloads\2019-12-20-Emotet-and-Trickbot-malware-and-artifacts\taskhealth | WinSec3\Logzio, WinSec3\Logzio | IDS_OAS_TASK_NAME, IDS_OAS_TASK_NAME | IDS_ALERT_ACT_TAK_DEL, IDS_ALERT_ACT_TAK_DEL | av.detect, av.detect | True, True | 1027, 1027 | True, True | Trojan-FRTB!81DA244A770C, Trojan-FRTB!81DA244A770C | 2, 2 | trojan, trojan | ephemeral_id: 8d15318f-3a3e-436c-a93e-1b6e8fec0cfb type: filebeat hostname: SecLinux version: 7.5.0 id: 348cbd8b-b4ce-4531-b6d1-ab6beb37d65f | 1 | Win-Sec-2, Win-Sec-2 | version: 1.1.0 | type: tcp | source: {"address": "10.0.1.9:49874"} | plain | beats-5015, _grokparsefailure, _grokparsefailure, _logz_http_bulk_json_8070 | {00000000-0000-0000-0000-000000000000} | 1 | 1\2 | 2020-05-06T01:46:12.663+0000 | mcafee_epo |
 
 
-### 2. logzio-get-logs-by-rule-id
+### 2. logzio-get-logs-by-event-id
 ---
 Fetches the logs that triggered a security event in Logz.io Cloud SIEM
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
-`logzio-get-logs-by-rule-id`
+`logzio-get-logs-by-event-id`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1593,7 +1593,7 @@ Fetches the logs that triggered a security event in Logz.io Cloud SIEM
 
 
 ##### Command Example
-```!logzio-get-logs-by-rule-id id=9fb0e6a9-90c0-43ac-8e50-23028d8ea76c size=10```
+```!logzio-get-logs-by-event-id id=9fb0e6a9-90c0-43ac-8e50-23028d8ea76c size=10```
 
 ##### Context Example
 ```

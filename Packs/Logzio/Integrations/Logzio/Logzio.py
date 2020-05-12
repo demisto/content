@@ -252,7 +252,7 @@ def main():
         # Run the commands
         if command == 'logzio-search-logs':
             search_logs_command(client, demisto.args())
-        elif command == 'logzio-get-logs-by-rule-id':
+        elif command == 'logzio-get-logs-by-event-id':
             get_rule_logs_by_id_command(client, demisto.args())
         elif demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

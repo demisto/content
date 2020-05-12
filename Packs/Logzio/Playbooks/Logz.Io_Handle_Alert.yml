@@ -32,7 +32,7 @@ tasks:
       version: -1
       name: Retrieve Logz.io events that triggered the alert
       description: Returns the raw logs that triggered the security rule in Logz.io.
-      script: '|||logzio-get-logs-by-rule-id'
+      script: '|||logzio-get-logs-by-event-id'
       type: regular
       iscommand: true
       brand: ''
