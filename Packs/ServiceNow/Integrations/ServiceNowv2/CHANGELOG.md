@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
   - Added 5 commands:
     - ***servicenow-query-items***
     - ***servicenow-get-item-details***
