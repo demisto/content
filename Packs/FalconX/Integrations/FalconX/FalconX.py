@@ -107,6 +107,31 @@ def _create_short_context_falconx(resources: dict):
     return {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
 
 
+def parse_outputs(groups_data: Dict[str, str], fields_to_drop) -> Tuple[dict, dict]:
+    """Parse group data as received from Microsoft Graph API into Demisto's conventions
+    Args:
+        groups_data: a dictionary containing the group data
+    Returns:
+        A Camel Cased dictionary with the relevant fields.
+        groups_readable: for the human readable
+        groups_outputs: for the entry context
+    """
+    if isinstance(groups_data, list):
+        groups_readable, groups_outputs = [], []
+        for group_data in groups_data:
+            group_readable = {camel_case_to_readable(i): j for i, j in group_data.items() if i not in fields_to_drop}
+            if '@removed' in group_data:
+                group_readable['Status'] = 'deleted'
+            groups_readable.append(group_readable)
+            groups_outputs.append({k.replace(' ', ''): v for k, v in group_readable.copy().items()})
+        return groups_readable, groups_outputs
+    group_readable = {camel_case_to_readable(i): j for i, j in groups_data.items() if i not in fields_to_drop}
+    if '@removed' in groups_data:
+        group_readable['Status'] = 'deleted'
+    group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
+    return group_readable, group_outputs
+
+
 def _create_full_context_falconx(resources: dict):
     sandbox = resources.get("sandbox")[0]
     resource_output = {
@@ -152,13 +177,11 @@ def upload_file_command(
     url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
     data = open(file, 'rb').read()
     response = client.post_http_req_falconx_octet_stream(url_suffix, data)
-
     resource_output = {
         'sha256': response.get("resources")[0].get("sha256"),
         'file_name': file_name,
     }
     entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
-
     return response, entry_context, response
 
 
@@ -193,6 +216,7 @@ def send_uploaded_file_to_sendbox_analysis_command(
     }
 
     response = client.post_http_req_falconx_json(url_suffix, body)
+
     resources = response.get("resources")[0]
     resource_output = {
         'id': resources.get("id"),
@@ -202,7 +226,6 @@ def send_uploaded_file_to_sendbox_analysis_command(
         'environment_id': environment_id
     }
     entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
-
     return response, entry_context, response
 
 
@@ -237,7 +260,6 @@ def send_url_to_sandbox_analysis_command(
     response = client.post_http_req_falconx_json(url_suffix, body)
     resources = response.get("resources")[0]
     entry_context = _create_short_context_falconx(resources)
-
     return response, entry_context, response
 
 
@@ -254,7 +276,8 @@ def get_full_report_command(
     resources = response.get("resources")[0]
 
     entry_context = _create_full_context_falconx(resources)
-
+    print(response)
+    print(entry_context)
     return response, entry_context, response
 
 
@@ -347,6 +370,7 @@ def find_sandbox_reports_command(
         'id': response.get("resources")[0],
     }
     entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
+
     return response, entry_context, response
 
 
@@ -371,6 +395,8 @@ def find_submission_id_command(
         'id': response.get("resources")[0],
     }
     entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
+    print(response)
+    print(entry_context)
     return response, entry_context, response
 
 
