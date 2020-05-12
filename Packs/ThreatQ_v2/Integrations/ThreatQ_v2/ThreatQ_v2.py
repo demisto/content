@@ -46,93 +46,6 @@ TQ_TO_DEMISTO_INDICATOR_TYPES = {
     'FQDN': 'domain'
 }
 
-STATUS_ID_TO_STATUS = {
-    1: 'Active',
-    2: 'Expired',
-    3: 'Indirect',
-    4: 'Review',
-    5: 'Whitelisted',
-    6: "Custom Status"
-}
-
-TYPE_ID_TO_INDICATOR_TYPE = {
-    1: 'Binary String',
-    2: 'CIDR Block',
-    3: 'CVE',
-    4: 'Email Address',
-    5: 'Email Attachment',
-    6: 'Email Subject',
-    7: 'File Mapping',
-    8: 'File Path',
-    9: 'Filename',
-    10: 'FQDN',
-    11: 'Fuzzy Hash',
-    12: 'GOST Hash',
-    13: 'Hash ION',
-    14: 'IP Address',
-    15: 'IPv6 Address',
-    16: 'MD5',
-    17: 'Mutex',
-    18: 'Password',
-    19: 'Registry Key',
-    20: 'Service Name',
-    21: 'SHA-1',
-    22: 'SHA-256',
-    23: 'SHA-384',
-    24: 'SHA-512',
-    25: 'String',
-    26: 'x509 Serial',
-    27: 'x509 Subject',
-    28: 'URL',
-    29: 'URL Path',
-    30: 'User-agent',
-    31: 'Username',
-    32: 'X-Mailer'
-}
-
-TYPE_ID_TO_EVENT_TYPE = {
-    1: 'Spearphish',
-    2: 'Watering Hole',
-    3: 'SQL Injection Attack',
-    4: 'DoS Attack',
-    5: 'Malware',
-    6: 'Watchlist',
-    7: 'Command and Control',
-    8: 'Anonymization',
-    9: 'Exfiltration',
-    10: 'Host Characteristics',
-    11: 'Compromised PKI Certificate',
-    12: 'Login Compromise',
-    13: 'Incident'
-}
-
-TYPE_ID_TO_FILE_TYPE = {
-    1: 'Cuckoo',
-    2: 'CrowdStrike Intelligence',
-    3: 'Early Warning and Indicator Notice (EWIN)',
-    4: 'FireEye Analysis',
-    5: 'FBI FLASH',
-    6: 'Generic Text',
-    7: 'Intelligence Whitepaper',
-    8: 'iSight Report',
-    9: 'iSight ThreatScape Intelligence Report',
-    10: 'IB',
-    11: 'AEC',
-    12: 'Malware Analysis Report',
-    13: 'Malware Initial Findings Report (MFIR)',
-    14: 'Malware Sample',
-    15: 'Packet Capture',
-    16: 'Palo Alto Networks WildFire XML',
-    17: 'PCAP',
-    18: 'PDF',
-    19: 'Private Industry Notification (PIN)',
-    20: 'Spearphish Attachment',
-    21: 'STIX',
-    22: 'ThreatAnalyzer Analysis',
-    23: 'ThreatQ CSV File',
-    24: 'Whitepaper'
-}
-
 INDICATOR_TYPES = {
     'File Path': 'file',
     'File': 'file',
@@ -181,6 +94,26 @@ CONTEXT_PATH = {
 }
 
 ''' HELPER FUNCTIONS '''
+
+
+def status_id_to_status(status_id):
+    res = tq_request('GET', f'/indicator/statuses/{status_id}')
+    return res.get('data').get('name')
+
+
+def type_id_to_indicator_type(type_id):
+    res = tq_request('GET', f'/indicator/types/{type_id}')
+    return res.get('data').get('name')
+
+
+def type_id_to_event_type(type_id):
+    res = tq_request('GET', f'/event/types/{type_id}')
+    return res.get('data').get('name')
+
+
+def type_id_to_file_type(type_id):
+    res = tq_request('GET', f'/attachments/types/{type_id}')
+    return res.get('data').get('name')
 
 
 def get_errors_string_from_bad_request(bad_request_results, status_code):
@@ -501,8 +434,8 @@ def indicator_data_to_demisto_format(data):
         'UpdatedAt': data.get('updated_at'),
         'CreatedAt': data.get('created_at'),
         'Value': data.get('value'),
-        'Status': STATUS_ID_TO_STATUS[data.get('status_id')],
-        'Type': TYPE_ID_TO_INDICATOR_TYPE[data.get('type_id')],
+        'Status': status_id_to_status(data.get('status_id')),
+        'Type': type_id_to_indicator_type(data.get('type_id')),
         'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
         'TQScore': get_tq_score_from_response(data.get('score')),
         'Description': clean_html_from_string(data.get('description')),
@@ -532,7 +465,7 @@ def event_data_to_demisto_format(data):
         'CreatedAt': data.get('created_at'),
         'Title': data.get('title'),
         'Occurred': data.get('happened_at'),
-        'Type': TYPE_ID_TO_EVENT_TYPE[data.get('type_id')],
+        'Type': type_id_to_event_type(data.get('type_id')),
         'URL': '{0}/events/{1}/details'.format(SERVER_URL, data.get('id')),
         'Description': clean_html_from_string(data.get('description')),
         'Source': sources_to_demisto_format(data.get('sources')),
@@ -548,7 +481,7 @@ def file_data_to_demisto_format(data):
         'UpdatedAt': data.get('updated_at'),
         'Size': data.get('file_size'),
         'MD5': data.get('hash'),
-        'Type': TYPE_ID_TO_FILE_TYPE[data.get('type_id')],
+        'Type': type_id_to_file_type(data.get('type_id')),
         'URL': '{0}/files/{1}/details'.format(SERVER_URL, data.get('id')),
         'Name': data.get('name'),
         'Title': data.get('title'),
@@ -1177,7 +1110,7 @@ def update_status_command():
 
     data = {
         'ID': int(indicator_id),
-        'Status': STATUS_ID_TO_STATUS[res['data'].get('status_id')],
+        'Status': status_id_to_status(res['data'].get('status_id')),
     }
 
     ec = {CONTEXT_PATH['indicator']: data}

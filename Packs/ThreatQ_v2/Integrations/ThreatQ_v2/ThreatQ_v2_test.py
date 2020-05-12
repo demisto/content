@@ -109,8 +109,8 @@ MOCK_GET_EVENT_RESPONSE = {
 MOCK_INDICATOR_LIST_RESPONSE = {
     'data': [
         {'id': 10, 'value': 'foo@demisto.com', 'type_id': 4, 'status_id': 2},
-        {'id': 11, 'value': '8.8.8.8', 'type_id': 14, 'status_id': 3},
-        {'id': 12, 'value': '1.2.3.4', 'type_id': 14, 'status_id': 6}
+        {'id': 11, 'value': '8.8.8.8', 'type_id': 14, 'status_id': 1},
+        {'id': 12, 'value': '1.2.3.4', 'type_id': 14, 'status_id': 2}
     ]
 }
 
@@ -142,6 +142,79 @@ EXPECTED_ERROR_STRINGS = [
     "Error #2.1: Second error - part 2\n"
 ]
 
+MOCK_GET_INDICATOR_STATUS_RESPONSE_1 = {
+    "data": {
+        "id": 1,
+        "name": "Active",
+        "description": "Poses a threat and is being exported to detection tools.",
+        "user_editable": "N",
+        "visible": "Y",
+        "include_in_export": "Y",
+        "protected": "Y",
+        "created_at": "2017-04-17 04:35:21",
+        "updated_at": "2017-04-17 04:35:21"
+    }
+}
+
+MOCK_GET_INDICATOR_STATUS_RESPONSE_2 = {
+    "data": {
+        "id": 2,
+        "name": "Expired",
+        "description": "No longer poses a serious threat.",
+        "user_editable": "N",
+        "visible": "Y",
+        "include_in_export": "Y",
+        "protected": "Y",
+        "created_at": "2017-04-17 04:35:21",
+        "updated_at": "2017-04-17 04:35:21"
+    }
+}
+
+MOCK_GET_INDICATOR_TYPE_RESPONSE_1 = {
+    "data": {
+        "id": 4,
+        "name": "Email Address",
+        "class": "network",
+        "score": None,
+        "wildcard_matching": "Y",
+        "created_at": "2017-04-17 04:34:56",
+        "updated_at": "2017-04-17 04:34:56"
+    }
+}
+
+MOCK_GET_INDICATOR_TYPE_RESPONSE_2 = {
+    "data": {
+        "id": 14,
+        "name": "IP Address",
+        "class": "network",
+        "score": None,
+        "wildcard_matching": "Y",
+        "created_at": "2017-04-17 04:34:56",
+        "updated_at": "2017-04-17 04:34:56"
+    }
+}
+
+MOCK_GET_EVENT_TYPE_RESPONSE = {
+    "data": {
+        "id": 1,
+        "name": "Spearphish",
+        "user_editable": "N",
+        "created_at": "2017-03-20 13:28:23",
+        "updated_at": "2017-03-20 13:28:23"
+    }
+}
+
+MOCK_GET_FILE_TYPE_RESPONSE = {
+    "data": {
+        "id": 1,
+        "name": "Cuckoo",
+        "is_parsable": "Y",
+        "parser_class": "Cuckoo",
+        "created_at": "2017-03-16 13:03:46",
+        "updated_at": "2017-03-16 13:03:46"
+    }
+}
+
 
 def mock_demisto(mocker, mock_args):
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
@@ -153,6 +226,8 @@ def test_create_indicator_command(mocker, requests_mock):
     mock_demisto(mocker, MOCK_CREATE_INDICATOR_ARGUMENTS)
     requests_mock.post(MOCK_API_URL + '/indicators', json=MOCK_INDICATOR_CREATION_RESPONSE)
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+    requests_mock.get(MOCK_API_URL + '/indicator/statuses/1', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_1)
+    requests_mock.get(MOCK_API_URL + '/indicator/types/4', json=MOCK_GET_INDICATOR_TYPE_RESPONSE_1)
 
     from ThreatQ_v2 import create_indicator_command
     create_indicator_command()
@@ -174,6 +249,7 @@ def test_edit_event_command(mocker, requests_mock):
     mock_demisto(mocker, MOCK_EDIT_EVENT_ARGUMENTS)
     requests_mock.put(MOCK_API_URL + '/events/2019', json=MOCK_GET_EVENT_RESPONSE)
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+    requests_mock.get(MOCK_API_URL + '/event/types/1', json=MOCK_GET_EVENT_TYPE_RESPONSE)
 
     from ThreatQ_v2 import edit_event_command
     edit_event_command()
@@ -184,6 +260,7 @@ def test_edit_event_command(mocker, requests_mock):
     assert 'Successfully edited event with ID 2019' in results[0]['HumanReadable']
     assert entry_context['Occurred'] == '2019-03-01 00:00:00'  # date format should be changed
     assert entry_context['Description'] == 'test'  # html markups should be cleaned
+    assert entry_context['Type'] == 'Spearphish'
 
 
 def test_upload_file_command(mocker, requests_mock):
@@ -191,6 +268,7 @@ def test_upload_file_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'getFilePath', return_value=MOCK_FILE_INFO)
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
     requests_mock.post(MOCK_API_URL + '/attachments', json=MOCK_FILE_UPLOAD_RESPONSE)
+    requests_mock.get(MOCK_API_URL + '/attachments/types/1', json=MOCK_GET_FILE_TYPE_RESPONSE)
 
     from ThreatQ_v2 import upload_file_command
     upload_file_command()
@@ -213,6 +291,8 @@ def test_get_email_reputation(mocker, requests_mock):
                       json=MOCK_SEARCH_BY_NAME_RESPONSE)
     requests_mock.get(MOCK_API_URL + '/indicators/2019?with=attributes,sources,score,type',
                       json=MOCK_GET_INDICATOR_RESPONSE)
+    requests_mock.get(MOCK_API_URL + '/indicator/statuses/1', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_1)
+    requests_mock.get(MOCK_API_URL + '/indicator/types/4', json=MOCK_GET_INDICATOR_TYPE_RESPONSE_1)
 
     from ThreatQ_v2 import get_email_reputation
     get_email_reputation()
@@ -232,6 +312,10 @@ def test_get_related_objs_command(mocker, requests_mock):
     mock_demisto(mocker, MOCK_RELATED_OBJS_ARGUMENTS)
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
     requests_mock.get(MOCK_API_URL + '/adversaries/1/indicators?with=sources,score', json=MOCK_INDICATOR_LIST_RESPONSE)
+    requests_mock.get(MOCK_API_URL + '/indicator/statuses/2', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_2)
+    requests_mock.get(MOCK_API_URL + '/indicator/statuses/1', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_1)
+    requests_mock.get(MOCK_API_URL + '/indicator/types/4', json=MOCK_GET_INDICATOR_TYPE_RESPONSE_1)
+    requests_mock.get(MOCK_API_URL + '/indicator/types/14', json=MOCK_GET_INDICATOR_TYPE_RESPONSE_2)
 
     from ThreatQ_v2 import get_related_objs_command
     get_related_objs_command('indicator')
@@ -244,13 +328,17 @@ def test_get_related_objs_command(mocker, requests_mock):
     assert len(entry_context['RelatedIndicator']) == 3
     assert entry_context['RelatedIndicator'][0]['Type'] == 'Email Address'
     assert entry_context['RelatedIndicator'][1]['Type'] == 'IP Address'
-    assert entry_context['RelatedIndicator'][2]['Status'] == 'Custom Status'
+    assert entry_context['RelatedIndicator'][2]['Status'] == 'Expired'
 
 
 def test_get_all_objs_command(mocker, requests_mock):
     mock_demisto(mocker, MOCK_GET_ALL_OBJS_ARGUMENTS)
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
     requests_mock.get(MOCK_API_URL + '/indicators?with=attributes,sources,score', json=MOCK_INDICATOR_LIST_RESPONSE)
+    requests_mock.get(MOCK_API_URL + '/indicator/statuses/2', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_2)
+    requests_mock.get(MOCK_API_URL + '/indicator/statuses/1', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_1)
+    requests_mock.get(MOCK_API_URL + '/indicator/types/4', json=MOCK_GET_INDICATOR_TYPE_RESPONSE_1)
+    requests_mock.get(MOCK_API_URL + '/indicator/types/14', json=MOCK_GET_INDICATOR_TYPE_RESPONSE_2)
 
     from ThreatQ_v2 import get_all_objs_command
     get_all_objs_command('indicator')
@@ -260,7 +348,9 @@ def test_get_all_objs_command(mocker, requests_mock):
     assert 'List of all objects of type indicator - 0-1' in results[0]['HumanReadable']
     assert len(entry_context) == 2
     assert entry_context[0]['Type'] == 'Email Address'
+    assert entry_context[0]['Status'] == 'Expired'
     assert entry_context[1]['Type'] == 'IP Address'
+    assert entry_context[1]['Status'] == 'Active'
 
 
 def test_search_by_name_command(mocker, requests_mock):
@@ -284,6 +374,7 @@ def test_search_by_id_command(mocker, requests_mock):
     mock_demisto(mocker, MOCK_SEARCH_BY_ID_ARGUMENTS)
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
     requests_mock.get(MOCK_API_URL + '/events/2019?with=attributes,sources', json=MOCK_GET_EVENT_RESPONSE)
+    requests_mock.get(MOCK_API_URL + '/event/types/1', json=MOCK_GET_EVENT_TYPE_RESPONSE)
 
     from ThreatQ_v2 import search_by_id_command
     search_by_id_command()
@@ -294,6 +385,7 @@ def test_search_by_id_command(mocker, requests_mock):
     assert 'Search results for event with ID 2019' in results[0]['HumanReadable']
     assert entry_context['Description'] == 'test'
     assert entry_context['Occurred'] == '2019-03-01 00:00:00'
+    assert entry_context['Type'] == 'Spearphish'
 
 
 def test_get_errors_string_from_bad_request():
