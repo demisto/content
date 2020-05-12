@@ -18,6 +18,12 @@ def main():
     d_args = dict(demisto.args())
     for arg in ['tagField', 'emailbody', 'emailbodyhtml', 'emailsubject', 'timeField']:
         d_args[arg] = preprocess_incidents_field(d_args.get(arg, ''))
+    get_incidents_by_query_args['NonEmptyFields'] = demisto.args()['tagField']
+    fields_names_to_populate = ['tagField', 'emailsubject', 'emailbody', "emailbodyhtml"]
+    fields_to_populate = [get_incidents_by_query_args.get(x, None) for x in fields_names_to_populate]
+    fields_to_populate = [x for x in fields_to_populate if x is not None]
+    get_incidents_by_query_args['populateFileds'] = ','.join(fields_to_populate)
+
     get_incidents_by_query_args = copy.deepcopy(d_args)
     get_incidents_by_query_args['NonEmptyFields'] = d_args['tagField']
     res = demisto.executeCommand("GetIncidentsByQuery", get_incidents_by_query_args)
