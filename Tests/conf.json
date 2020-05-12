@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MITRE ATT&CK",
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+        },
+        {
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
@@ -264,16 +268,8 @@
             "playbookID": "Alienvault_OTX_v2 - Test"
         },
         {
-            "integrations": "AWS - SQS",
-            "playbookID": "AWS - SQS Test Playbook"
-        },
-        {
             "integrations": "AWS - CloudWatchLogs",
             "playbookID": "AWS - CloudWatchLogs Test Playbook"
-        },
-        {
-            "integrations": "AWS - Route53",
-            "playbookID": "AWS - Route53 Test Playbook"
         },
         {
             "integrations": "SlackV2",
@@ -334,7 +330,7 @@
         },
         {
             "integrations": "Tufin",
-            "playbookID": "Tufin Test"
+            "playbookID": "Tufin-Test"
         },
         {
             "integrations": "Looker",
@@ -391,18 +387,10 @@
         },
         {
             "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
+            "playbookID": "Pentera Run Scan and Create Incidents - Test"
         },
         {
             "playbookID": "StringContainsArray_test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pcysys-Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
         },
         {
             "integrations": "Fidelis Elevate Network",
@@ -543,6 +531,11 @@
             "playbookID": "WordTokenizeTest"
         },
         {
+            "integrations": "QRadar",
+            "playbookID" :  "test playbook - QRadarCorreltaions",
+            "timeout": 600
+        },
+        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
@@ -653,13 +646,13 @@
             "playbookID": "Google-Vault-Generic-Test",
             "nightly": true,
             "timeout": 3600,
-            "memory_threshold": 65
+            "memory_threshold": 120
         },
         {
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
-            "memory_threshold": 80,
+            "memory_threshold": 120,
             "timeout": 3600
         },
         {
@@ -686,11 +679,6 @@
         },
         {
             "playbookID": "ParseEmailFiles-test"
-        },
-        {
-            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
-            "integrations": "palo_alto_networks_pan_os_edl_management",
-            "fromversion": "4.0.0"
         },
         {
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
@@ -817,7 +805,7 @@
         },
         {
             "integrations": "Devo",
-            "playbookID": "devo_test_playbook",
+            "playbookID": "Devo test",
             "timeout": 500
         },
         {
@@ -1177,7 +1165,7 @@
         },
         {
             "integrations": "FalconHost",
-            "playbookID": "crowdstrike_falconhost_test"
+            "playbookID": "FalconHost Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -2091,15 +2079,6 @@
             "timeout": 1000
         },
         {
-            "playbookID": "PAN-OS EDL Setup V2 Test",
-            "integrations": [
-                "Panorama",
-                "palo_alto_networks_pan_os_edl_management"
-            ],
-            "instance_names": "palo_alto_panorama",
-            "timeout": 1000
-        },
-        {
             "playbookID": "PAN-OS EDL Setup v3 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
@@ -2191,10 +2170,6 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
-            "integrations": "AWS - CloudWatchLogs",
-            "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
-        },
-        {
             "integrations": "AWS - CloudTrail",
             "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
         },
@@ -2217,7 +2192,7 @@
         },
         {
             "integrations": "Cisco Spark",
-            "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
+            "playbookID": "Cisco Spark Test"
         },
         {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
@@ -2324,7 +2299,7 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0"
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2766,10 +2741,20 @@
             "integrations": "GCP Whitelist Feed",
             "playbookID": "GCPWhitelist_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Endace",
+            "playbookID": "Endace-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
-        "Send Investigation Summary Reports - Test": "Issue 24133",
+        "Maltiverse Test": "Issue 24335",
+        "Cisco Umbrella Test": "Issue 24338",
+        "TestDedupIncidentsPlaybook": "Issue 24344",
+        "CreateIndicatorFromSTIXTest": "Issue 24345",
+        "SNDBOX_Test": "Issue 24349",
+        "Endpoint Enrichment - Generic v2.1 - Test": "Issue 24350",
         "Test_URLhaus": "Issue 23857",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
@@ -2777,7 +2762,6 @@
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "PhishLabsIOC TestPlaybook": "integration bug (23926)",
-        "Test_URLhaus": "Issue 23857",
         "Symantec Deepsight Test": "Issue 22971",
         "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
@@ -2830,10 +2814,11 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "AttackIQFireDrill": "Issue 24281",
         "Nessus": "No instance",
         "MxToolBox": "No instance",
         "Traps": "Issue 24122",
-        "skyformation": "No instance, old partner",
+        "Skyformation": "No instance, old partner",
         "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "URLhaus": "No instance",
@@ -2920,11 +2905,14 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
+
         "_comment": "~~~ OTHER ~~~",
+        "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
@@ -2958,6 +2946,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Maltiverse": "issue 24335",
+        "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",

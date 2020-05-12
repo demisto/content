@@ -294,7 +294,7 @@
 						"items": [
 							{
 								"endCol": 3,
-								"fieldId": "whenwastheproblemwasfirstdetectedandbywhom",
+								"fieldId": "whenwastheproblemfirstdetectedandbywhom",
 								"height": 55,
 								"id": "2de23530-8de8-11ea-929d-c11be51ba59a",
 								"index": 0,

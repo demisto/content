@@ -1,7 +1,7 @@
 User-Agent: Microsoft-MacOutlook/10.19.0.190512
 Date: Tue, 28 May 2019 09:29:56 +0300
 Subject: Outer mail
-From: Or Lichter <someuser@contoso.com>
+From: Or Fakename <foo@test.com>
 Message-ID: <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>
 Thread-Topic: Outer mail
 Thread-Index: AQHVFR7PZBFS5SreFEmFtfWQ9/8B+Q==
@@ -875,7 +875,7 @@ Received: from mx0b-00169c01.pphosted.com (1.1.1.1) by
  15.20.1900.16 via Frontend Transport; Fri, 17 May 2019 22:49:57 +0000
 Received: from pps.filterd (m0048188.ppops.net [127.0.0.1])
 	by mx0b-00169c01.pphosted.com (5.6.7.8/5.6.7.8) with SMTP id x4HMi6JJ032265
-	for <someuser@contoso.com>; Fri, 17 May 2019 15:49:57 -0700
+	for <foo@test.com>; Fri, 17 May 2019 15:49:57 -0700
 Authentication-Results-Original: paloaltonetworks.com;	spf=pass
  smtp.mailfrom=example1@example.com;	dkim=pass
  header.d=nw027.com header.s=nw2048;	dmarc=none
@@ -883,7 +883,7 @@ Authentication-Results-Original: paloaltonetworks.com;	spf=pass
 Received: from 28.mta.nw027.com (28.mta.nw027.com [1.1.1.1])
 	by mx0b-00169c01.pphosted.com with ESMTP id 2sg05tpp8h-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <someuser@contoso.com>; Fri, 17 May 2019 15:49:57 -0700
+	for <foo@test.com>; Fri, 17 May 2019 15:49:57 -0700
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple; t=1558132666;
 	s=nw2048; d=nw027.com;
 	h=Date:Message-ID:MIME-Version:Content-Type:Feedback-ID:List-Unsubscribe:To:From:Reply-To:Subject;
@@ -898,9 +898,9 @@ Date: Fri, 17 May 2019 22:37:45 +0000 (UTC)
 Message-ID: <graph@demistodev.onmicrosoft.com>
 Feedback-ID: acct_paloaltonetworks:Newsweaver
 List-Unsubscribe: <palo/exec/subscriber/unsubscribe.html?list=true&nw_int_pfc=true&subscriberId=anzkf063yd8&mailingRecordId=201125rpdymc56mvumi09q>,<mailto:george?subject=unsubscribe&body=unsubscribe%20NewsWeaver.201125rpdymc56mvumi09q.anzkf063yd8.15581326644482821348>
-To: someuser@contoso.com
-From: Steve Januario <someuser@contoso.com>
-Reply-To: Steve Januario <someuser@contoso.com>
+To: foo@test.com
+From: John Fakename <foo@test.com>
+Reply-To: John Fakename <foo@test.com>
 X-NW-Ref: <graph@demistodev.onmicrosoft.com>
 X-NW-Mailer: domain=nw027.com;tls=no;speed=2;relay=paloaltonetworks.com;bulk=true;size=8207;shard=201;
 Subject: Here we go! Gmail and Google Calendar will be here on Monday
@@ -915,7 +915,7 @@ X-CLX-Response: 1TFkXGB4dEQpMehcaEQpZRBdsRXpOWkNkRRodQhEKWFgXaFx5SE9hXU5MWXg RCn
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-17_15:,,
  signatures=0
 X-Proofpoint-Spam-Reason: safe
-Return-Path: someuser@contoso.com
+Return-Path: foo@test.com
 X-MS-Exchange-Organization-ExpirationStartTime: 17 May 2019 22:49:57.8732
  (UTC)
 X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
@@ -987,7 +987,7 @@ nels around you: The Suite Squad, Suite Life Loop space, #suite-life Slack c=
 hannel, Tech Oasis, and the Service Desk.=20
 Thanks,
 
--Steve Januario
+-John Fakename
 =20
 
 
@@ -1281,7 +1281,7 @@ or: #009ace; font-style: normal; font-weight: normal; text-decoration: none=
 Thanks,<br>
 <br>
 </p>
-<p dir=3D"ltr">-Steve Januario<strong><br>
+<p dir=3D"ltr">-John Fakename<strong><br>
 </strong></p>
 </td>
 </tr>
