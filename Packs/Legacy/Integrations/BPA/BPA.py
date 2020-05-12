@@ -12,6 +12,7 @@ requests.packages.urllib3.disable_warnings()
 BPA_HOST = 'https://bpa.paloaltonetworks.com'
 BPA_VERSION = 'v1'
 BPA_URL = BPA_HOST + '/api/' + BPA_VERSION + '/'
+DOWNLOADED_REPORT_NAME_SUFFIX = '_BPA-report.zip'
 
 
 class LightPanoramaClient(BaseClient):
@@ -86,12 +87,13 @@ class Client(BaseClient):
         response = self._http_request('GET', 'documentation/')
         return response
 
-    def submit_task_request(self, running_config, system_info, license_info, system_time) -> Dict:
+    def submit_task_request(self, running_config, system_info, license_info, system_time, generate_zip_bundle) -> Dict:
         data = {
             'xml': running_config,
             'system_info': system_info,
             'license_info': license_info,
-            'system_time': system_time
+            'system_time': system_time,
+            'generate_zip_bundle': generate_zip_bundle
         }
 
         response = self._http_request('POST', 'create/', data=data)
@@ -99,6 +101,10 @@ class Client(BaseClient):
 
     def get_results_request(self, task_id: str):
         response = self._http_request('GET', f'results/{task_id}/')
+        return response
+
+    def get_download_results_request(self, task_id: str) -> bytes:
+        response = self._http_request('GET', f'results/{task_id}/download', resp_type='content')
         return response
 
 
@@ -121,7 +127,7 @@ def get_documentation_command(client: Client) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, raw
 
 
-def submit_task_command(client: Client, panorama: LightPanoramaClient) -> Tuple[str, Dict, Dict]:
+def submit_task_command(client: Client, panorama: LightPanoramaClient, args: Dict) -> Tuple[str, Dict, Dict]:
     try:
         running_config = panorama.get_running_config()
         system_info = panorama.get_system_info()
@@ -130,7 +136,8 @@ def submit_task_command(client: Client, panorama: LightPanoramaClient) -> Tuple[
     except Exception:
         raise Exception('Failed getting response from Panorama')
 
-    raw = client.submit_task_request(running_config, system_info, license_info, system_time)
+    generate_zip_bundle = args.get('generate_zip_bundle')
+    raw = client.submit_task_request(running_config, system_info, license_info, system_time, generate_zip_bundle)
     task_id = raw.get('task_id', '')
 
     human_readable = f'Submitted BPA job ID: {task_id}'
@@ -156,7 +163,6 @@ def get_checks_from_feature(feature, feature_name, category):
 def get_results_command(client: Client, args: Dict):
     task_id = args.get('task_id', '')
     raw: Dict = client.get_results_request(task_id)
-
     status = raw.get('status')
     results = raw.get('results', {})
 
@@ -181,6 +187,12 @@ def get_results_command(client: Client, args: Dict):
                 checks = get_checks_from_feature(feature_contents[0], feature_name, category_name)
                 job_checks.extend(checks)
 
+    download_url = results.get('download_url')
+
+    # check that a report was generated, and can be downloaded
+    if download_url:
+        download_report_handler(client, task_id)
+
     context = {'PAN-OS-BPA.JobResults(val.JobID && val.JobID === obj.JobID)': {
         'JobID': task_id,
         'Checks': job_checks,
@@ -189,6 +201,12 @@ def get_results_command(client: Client, args: Dict):
     human_readable = tableToMarkdown('BPA Results', job_checks)
 
     return human_readable, context, results
+
+
+def download_report_handler(client: Client, task_id):
+    downloaded_report = client.get_download_results_request(task_id)
+    demisto.results(
+        fileResult(task_id + DOWNLOADED_REPORT_NAME_SUFFIX, downloaded_report, entryTypes['entryInfoFile']))
 
 
 def test_module(client, panorama):
@@ -216,7 +234,7 @@ def main():
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'pan-os-bpa-submit-job':
-            return_outputs(*submit_task_command(client, panorama))
+            return_outputs(*submit_task_command(client, panorama, demisto.args()))
         elif command == 'pan-os-bpa-get-job-results':
             return_outputs(*get_results_command(client, demisto.args()))
         elif command == 'pan-os-get-documentation':
