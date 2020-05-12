@@ -164,7 +164,7 @@ def install_packs(client, host, prints_manager, packs_to_install):
                                                                             accept='application/json')
 
         if 200 <= status_code < 300:
-            packs_str = '\n'.join(packs_to_install)
+            packs_str = '\n'.join([pack['id'] for pack in packs_to_install])
             message = 'Successully installed the following packs in server {}:\n{}'.format(host, packs_str)
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
