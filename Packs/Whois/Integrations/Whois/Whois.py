@@ -7168,14 +7168,20 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
         request_domain = domain
     # The following loop handles errno 104 - "connection reset by peer" by retry whois_request with the same arguments.
     # If the request fails due to other cause - there will not be another try
-    response = ""
     for i in range(0, 3):
         try:
             response = whois_request(request_domain, target_server)
         except socket.error as err:
             if err.errno == errno.ECONNRESET:
                 continue
+            else:
+                raise
         break
+    # Executed only if the for loop ran to the full
+    # (3 tries led to errno.ECONNRESET)
+    else:
+        raise WhoisException('(104) Connection Reset By Peer')
+
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
         # this is useful for callers that are only interested in the raw data). Otherwise, if the target is
