@@ -1,10 +1,15 @@
-from CommonServerPython import *
 import base64
+
+from CommonServerPython import *
 
 
 def main():
     get_incidents_by_query_args = dict(demisto.args())
     get_incidents_by_query_args['NonEmptyFields'] = demisto.args()['tagField']
+    fields_names_to_populate = ['tagField', 'emailsubject', 'emailbody', "emailbodyhtml"]
+    fields_to_populate = [get_incidents_by_query_args.get(x, None) for x in fields_names_to_populate]
+    fields_to_populate = [x for x in fields_to_populate if x is not None]
+    get_incidents_by_query_args['populateFileds'] = ','.join(fields_to_populate)
     res = demisto.executeCommand("GetIncidentsByQuery", get_incidents_by_query_args)
     if is_error(res):
         return_error(get_error(res))

@@ -3,31 +3,34 @@ version: -1
 name: HelloWorld-Test
 description: 'HelloWorld Test Playbook - for documentation on how to write test playbooks
   please refer to: https://xsoar.pan.dev/docs/integrations/test-playbooks'
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: dbc2c45c-775e-44e5-8897-b2f44d2a6050
     type: start
     task:
       id: dbc2c45c-775e-44e5-8897-b2f44d2a6050
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: b34a59a5-58c9-48f1-8584-56eb3b57cbcb
     type: regular
     task:
@@ -38,26 +41,30 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: d6b71f5e-face-4121-827a-19ef7b93988a
     type: regular
     task:
@@ -69,22 +76,26 @@ tasks:
       script: '|||helloworld-say-hello'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       name:
         simple: Dbot
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 67e09be1-fbf9-4e5a-887c-1d7c6cea9e32
     type: condition
     task:
@@ -94,13 +105,13 @@ tasks:
       description: Verify the outputs.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '31'
+      "yes":
+      - "31"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -110,14 +121,18 @@ tasks:
           right:
             value:
               simple: Hello Dbot
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 7295fed6-0f14-4e7a-849e-fe7dcb1f2865
     type: regular
     task:
@@ -128,30 +143,34 @@ tasks:
       script: '|||helloworld-search-alerts'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       alert_type:
         simple: Bug
       max_results:
-        simple: '1'
+        simple: "1"
       severity:
         simple: Critical
       start_time:
-        simple: '1587717640'
+        simple: "1587717640"
       status:
         simple: ACTIVE
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 865\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: dc2cf36f-5280-4434-8d28-4e640620796e
     type: condition
     task:
@@ -161,13 +180,13 @@ tasks:
       description: Check if an alert of type Bug and severity 4 (Critical) is found
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '6'
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -208,14 +227,18 @@ tasks:
           right:
             value:
               simple: Critical
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1040\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: f4d2d479-cd8f-4b23-8cf8-536fe941f534
     type: regular
     task:
@@ -226,24 +249,28 @@ tasks:
       script: '|||helloworld-get-alert'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       alert_id:
         complex:
           root: HelloWorld
           accessor: Alert.alert_id
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1215\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 589584a9-a37b-4d26-8a09-097db10dbabd
     type: condition
     task:
@@ -253,13 +280,13 @@ tasks:
       description: Check if all the alert detail fields are present
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -296,14 +323,18 @@ tasks:
             value:
               simple: HelloWorld.Alert.user
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1390\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: f3165fc4-5a55-4ba9-8855-2a8c5b4308bc
     type: regular
     task:
@@ -314,10 +345,10 @@ tasks:
       script: '|||helloworld-update-alert-status'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       alert_id:
         complex:
@@ -326,14 +357,18 @@ tasks:
       status:
         simple: CLOSED
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1565\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: c87b60c1-56ca-4a09-8a31-2fd419ea65e0
     type: condition
     task:
@@ -343,13 +378,13 @@ tasks:
       description: Check if the alert has been closed correctly
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '30'
+      "yes":
+      - "30"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -369,14 +404,18 @@ tasks:
           right:
             value:
               simple: CLOSED
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1740\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: 3c54dcc4-8159-46e9-8465-bcc902e475e0
     type: regular
     task:
@@ -387,41 +426,45 @@ tasks:
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       ip:
         simple: 8.8.8.8
       threshold: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2060\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '11':
-    id: '11'
-    taskid: e538c67c-ac6f-49c4-8272-1ddc3ad4b390
+  "11":
+    id: "11"
+    taskid: f4162e68-5b2d-4556-8ed0-3e53181cfcbb
     type: condition
     task:
-      id: e538c67c-ac6f-49c4-8272-1ddc3ad4b390
+      id: f4162e68-5b2d-4556-8ed0-3e53181cfcbb
       version: -1
       name: Verify Outputs
       description: Check if the ip command returns accurate data
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '22'
+      "yes":
+      - "22"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: DBotScore.Indicator
@@ -432,12 +475,16 @@ tasks:
       - - operator: InRange
           left:
             value:
-              simple: DBotScore.Score
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: GetFirstObject
             iscontext: true
           right:
             value:
               simple: 0,3
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: DBotScore.Type
@@ -445,7 +492,7 @@ tasks:
           right:
             value:
               simple: ip
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: DBotScore.Vendor
@@ -505,14 +552,18 @@ tasks:
           right:
             value:
               simple: 8.8.8.8
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2235\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 525a0a92-d574-4102-8e69-127d5c865d8f
     type: regular
     task:
@@ -523,41 +574,44 @@ tasks:
       script: '|||domain'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       domain:
         simple: google.com
       threshold: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2585\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '13':
-    id: '13'
-    taskid: 81a21c35-f705-49e6-8a3d-2dbdc2ba70dc
+  "13":
+    id: "13"
+    taskid: a92a1539-c033-4d01-831f-8f5aa0128342
     type: condition
     task:
-      id: 81a21c35-f705-49e6-8a3d-2dbdc2ba70dc
+      id: a92a1539-c033-4d01-831f-8f5aa0128342
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '29'
+      "yes":
+      - "29"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: DBotScore.Indicator
@@ -568,12 +622,16 @@ tasks:
       - - operator: InRange
           left:
             value:
-              simple: DBotScore.Score
+              complex:
+                root: DBotScore
+                accessor: Score
+                transformers:
+                - operator: GetFirstObject
             iscontext: true
           right:
             value:
               simple: 0,3
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: DBotScore.Type
@@ -581,7 +639,7 @@ tasks:
           right:
             value:
               simple: domain
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: DBotScore.Vendor
@@ -673,14 +731,18 @@ tasks:
             value:
               simple: Domain.Registrant.Country
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2760\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: 5dfe5e6f-cc7c-4332-828d-4d37c65172d5
     type: regular
     task:
@@ -691,22 +753,26 @@ tasks:
       script: '|||helloworld-scan-start'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       hostname:
         simple: testhost123.local
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3080\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: 054a8d86-7547-4ff6-8f0e-5bf742fd15fb
     type: condition
     task:
@@ -716,13 +782,13 @@ tasks:
       description: Verify details of the domain
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '16'
+      "yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -745,14 +811,18 @@ tasks:
           right:
             value:
               simple: testhost123.local
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3255\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: 5b32f105-df4d-4a9c-85d0-2614ccd8ca42
     type: regular
     task:
@@ -763,24 +833,28 @@ tasks:
       script: '|||helloworld-scan-status'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '17'
+      - "17"
     scriptarguments:
       scan_id:
         complex:
           root: HelloWorld
           accessor: Scan.scan_id
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3430\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: f9302457-2994-4212-8648-3c852e9c6ddb
     type: condition
     task:
@@ -790,13 +864,13 @@ tasks:
       description: Check if the scan is either running or complete
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '18'
+      "yes":
+      - "18"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -811,14 +885,18 @@ tasks:
           right:
             value:
               simple: RUNNING,COMPLETE
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3605\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3605
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: 8f3bddfa-41fb-4c2b-8fae-0b138e96a528
     type: regular
     task:
@@ -829,10 +907,10 @@ tasks:
       script: '|||helloworld-scan-results'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     scriptarguments:
       format:
         simple: json
@@ -841,14 +919,18 @@ tasks:
           root: HelloWorld
           accessor: Scan.scan_id
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3780\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 8a327593-301f-4c00-81e6-971d391c480e
     type: condition
     task:
@@ -857,14 +939,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '25'
+      "yes":
+      - "25"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -909,14 +990,18 @@ tasks:
             value:
               simple: CVE.ID
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3955\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: f9f6da2b-a8bc-413e-894f-2a871980b69b
     type: title
     task:
@@ -925,17 +1010,20 @@ tasks:
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5295\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5295
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: d13cda5f-dc63-4d0e-8fe4-29fba01be349
     type: regular
     task:
@@ -947,10 +1035,10 @@ tasks:
       scriptName: FetchFromInstance
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '26'
+      - "26"
     scriptarguments:
       add_to_context: {}
       brand_name:
@@ -959,14 +1047,18 @@ tasks:
       expect_data: {}
       instance_name: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4450\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4450
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: a4189d6f-9d63-462d-8dbb-d89167f1674e
     type: regular
     task:
@@ -978,26 +1070,30 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2410\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: cfc6b8da-4112-4bf8-88be-7fd8256c2d2c
     type: regular
     task:
@@ -1008,26 +1104,30 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '27'
+      - "27"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: c994f1eb-924e-47ee-855c-0296feb00c7a
     type: regular
     task:
@@ -1038,26 +1138,30 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4275\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 4067ad88-8785-4086-8d52-e8bf11bb4e2e
     type: title
     task:
@@ -1066,20 +1170,23 @@ tasks:
       name: Test Fetch Incidents
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4130\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4130
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: 8602c926-bf4a-40e4-8768-89ebc295debf
     type: title
     task:
@@ -1088,20 +1195,23 @@ tasks:
       name: Test Automation Script
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '23'
+      - "23"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4625\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4625
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 30ed9a4b-3dea-4205-8f0f-3425ada73ee0
     type: regular
     task:
@@ -1112,22 +1222,26 @@ tasks:
       scriptName: HelloWorldScript
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '28'
+      - "28"
     scriptarguments:
       name:
         simple: Dbot
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4945\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4945
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     taskid: a878966e-5471-45d7-8edb-ed0d907f7cdf
     type: condition
     task:
@@ -1137,13 +1251,13 @@ tasks:
       description: Verify output from script
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '20'
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1153,14 +1267,18 @@ tasks:
           right:
             value:
               simple: Hello Dbot
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 5120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: 99e3e0d6-acd3-428e-8521-2ccbff1b635c
     type: title
     task:
@@ -1169,20 +1287,23 @@ tasks:
       name: Test Scan Commands
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2935\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '30':
-    id: '30'
+  "30":
+    id: "30"
     taskid: 09cfb854-2da7-4a8f-85b6-814b8d5fa170
     type: title
     task:
@@ -1191,20 +1312,23 @@ tasks:
       name: Test Reputation Commands
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1915\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '31':
-    id: '31'
+  "31":
+    id: "31"
     taskid: 7a13fcb9-8dfc-47e6-85d2-1b4b6de7f90d
     type: title
     task:
@@ -1213,21 +1337,33 @@ tasks:
       name: Test Alert Commands
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 5310,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5310,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
 fromversion: 5.0.0

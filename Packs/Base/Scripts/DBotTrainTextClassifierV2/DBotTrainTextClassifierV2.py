@@ -110,7 +110,8 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
     return new_data, dict(exist_labels_counter), dict(missing_labels_counter)
 
 
-def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix):
+def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true, y_test_pred,
+                           y_test_pred_prob):
     model = demisto_ml.train_text_classifier(X, y, True)
     model_data = demisto_ml.encode_model(model)
     model_labels = demisto_ml.get_model_labels(model)
@@ -118,7 +119,9 @@ def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix):
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelLabels': model_labels,
-                                                   'modelOverride': model_override})
+                                                   'modelOverride': model_override,
+                                                   'modelExtraInfo': {'threshold': threshold}
+                                                   })
     if is_error(res):
         return_error(get_error(res))
     confusion_matrix_no_all = {k: v for k, v in confusion_matrix.items() if k != 'All'}
@@ -126,7 +129,12 @@ def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix):
                                for k, v in confusion_matrix_no_all.items()}
     res = demisto.executeCommand('evaluateMLModel',
                                  {'modelConfusionMatrix': confusion_matrix_no_all,
-                                  'modelName': model_name})
+                                  'modelName': model_name,
+                                  'modelEvaluationVectors': {'Ypred': y_test_pred,
+                                                             'Ytrue': y_test_true,
+                                                             'YpredProb': y_test_pred_prob
+                                                             }
+                                  })
     if is_error(res):
         return_error(get_error(res))
 
@@ -364,6 +372,9 @@ def main():
     # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
     if not np.isclose(float(threshold_metrics_entry['Contents']['threshold']), 0):
         [no_threshold_metrics_entry, _] = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
+    threshold = float(res_threshold[0]['Contents']['threshold'])
+    if not np.isclose(threshold, 0):
+        res = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
         human_readable = '\n'.join(['## Results for No Threshold',
                                     'The following results were achieved by using no threshold (threshold equals 0)'])
         output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred, res=no_threshold_metrics_entry,
@@ -372,7 +383,10 @@ def main():
     confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
                                                res=threshold_metrics_entry, context_field='DBotPhishingClassifier')
     if store_model:
-        store_model_in_demisto(model_name, model_override, X, y, confusion_matrix)
+        y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
+        y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
+        store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true=y_test,
+                               y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
     else:
         demisto.results('Skip storing model')
