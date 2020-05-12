@@ -343,6 +343,8 @@ def search_ticket():
     search_context = []
     data = raw_tickets.content.split('\n')
     data = data[2:]
+    results_limit = int(demisto.args().get('results_limit', 0))
+    data = data if (results_limit == 0) else data[:results_limit]
     for line in data:
         split_line = line.split(': ')
         empty_line_response = ['NO OBJECTS SPECIFIED.', '']
@@ -796,7 +798,7 @@ def fetch_incidents():
         status_query = fix_query_suffix(status_query)
         raw_query += status_query + ')'
     tickets = parse_ticket_data(raw_query)
-    tickets = tickets.sort(key=get_ticket_id)
+    tickets.sort(key=get_ticket_id)
     fetch_batch_limit = int(demisto.params().get('fetch_limit', 0))
     tickets = tickets if (fetch_batch_limit == 0) else tickets[:fetch_batch_limit]
     incidents = []
