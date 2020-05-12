@@ -1,8 +1,14 @@
-from HTMLParser import HTMLParser
-
 import spacy
+import string
+from HTMLParser import HTMLParser
+from re import compile as _Re
 
 from CommonServerPython import *
+
+NUMBER_PATTERN = "NUMBER_PATTERN"
+URL_PATTERN = "URL_PATTERN"
+EMAIL_PATTERN = "EMAIL_PATTERN"
+reserved_tokens = set([NUMBER_PATTERN, URL_PATTERN, EMAIL_PATTERN])
 
 CLEAN_HTML = (demisto.args()['cleanHtml'] == 'yes')
 REMOVE_LINE_BREAKS = (demisto.args()['removeLineBreaks'] == 'yes')
@@ -29,7 +35,17 @@ HTML_PATTERNS = [
 
 # define global parsers
 html_parser = HTMLParser()
-nlp = spacy.load('en_core_web_sm', disable=['tagger', 'parser', 'ner', 'textcat'])
+LANGUAGES_TO_MODEL_NAMES = {'English': 'en_core_web_sm',
+                            'German': 'de_core_news_sm',
+                            'French': 'fr_core_news_sm',
+                            'Spanish': 'es_core_news_sm',
+                            'Portuguese': 'pt_core_news_sm',
+                            'Italian': 'it_core_news_sm',
+                            'Dutch': 'nl_core_news_sm'
+                            }
+
+
+_unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
 
 
 def clean_html(text):
@@ -61,6 +77,45 @@ def tokenize_text(text):
         unicode_text = unicode(text)
     except Exception:
         unicode_text = text
+    language = demisto.args()['language']
+    if language in LANGUAGES_TO_MODEL_NAMES:
+        original_words_to_tokens, tokens_list = tokenize_text_spacy(unicode_text, language)
+    else:
+        original_words_to_tokens, tokens_list = tokenize_text_other(unicode_text)
+    hashed_tokens_list = []
+    if HASH_SEED:
+        for word in tokens_list:
+            word_hashed = hash_word(word)
+            hashed_tokens_list.append(word_hashed)
+        hashed_words_to_tokens = {word: [hash_word(t) for t in tokens_list] for word, tokens_list in
+                                  original_words_to_tokens.items()}
+    else:
+        hashed_words_to_tokens = {}
+    return ' '.join(tokens_list).strip(), ' '.join(hashed_tokens_list) if len(
+        hashed_tokens_list) > 0 else None, original_words_to_tokens, hashed_words_to_tokens
+
+
+def tokenize_text_other(unicode_text):
+    tokens_list = []
+    tokenization_method = demisto.args()['tokenizationMethod']
+    if tokenization_method == 'byWords':
+        original_words_to_tokens = {}
+        for t in unicode_text.split():
+            token_without_punct = ''.join([c for c in t if c not in string.punctuation])
+            if len(token_without_punct) > 0:
+                tokens_list.append(token_without_punct)
+                original_words_to_tokens[token_without_punct] = t
+    elif tokenization_method == 'byLetters':
+        for t in unicode_text:
+            tokens_list += [chr for chr in _unicode_chr_splitter(t) if chr]
+            original_words_to_tokens = {c: t for c in tokens_list}
+    else:
+        return_error('Unsupported tokenization method: when language is "Other" ({})'.format(tokenization_method))
+    return original_words_to_tokens, tokens_list
+
+
+def tokenize_text_spacy(unicode_text, language):
+    nlp = spacy.load(LANGUAGES_TO_MODEL_NAMES[language], disable=['tagger', 'parser', 'ner', 'textcat'])
     doc = nlp(unicode(unicode_text))
     original_text_indices_to_words = map_indices_to_words(unicode_text)
     tokens_list = []
@@ -73,11 +128,11 @@ def tokenize_text(text):
         elif REMOVE_PUNCT and word.is_punct:
             continue
         elif REPLACE_EMAIL and '@' in word.text:
-            tokens_list.append("EMAIL_PATTERN")
+            tokens_list.append(EMAIL_PATTERN)
         elif REPLACE_URLS and word.like_url:
-            tokens_list.append("URL_PATTERN")
+            tokens_list.append(URL_PATTERN)
         elif REPLACE_NUMBERS and (word.like_num or word.pos_ == 'NUM'):
-            tokens_list.append("NUMBER_PATTERN")
+            tokens_list.append(NUMBER_PATTERN)
         elif REMOVE_NON_ALPHA and not word.is_alpha:
             continue
         elif FILTER_ENGLISH_WORDS and word.text not in nlp.vocab:
@@ -92,17 +147,7 @@ def tokenize_text(text):
             if original_word not in original_words_to_tokens:
                 original_words_to_tokens[original_word] = []
             original_words_to_tokens[original_word].append(token_to_add)
-    hashed_tokens_list = []
-    if HASH_SEED:
-        for word in tokens_list:
-            word_hashed = hash_word(word)
-            hashed_tokens_list.append(word_hashed)
-        hashed_words_to_tokens = {word: [hash_word(t) for t in tokens_list] for word, tokens_list in
-                                  original_words_to_tokens.items()}
-    else:
-        hashed_words_to_tokens = {}
-    return ' '.join(tokens_list).encode('utf-8').strip(), ' '.join(hashed_tokens_list) if len(
-        hashed_tokens_list) > 0 else None, original_words_to_tokens, hashed_words_to_tokens
+    return original_words_to_tokens, tokens_list
 
 
 def map_indices_to_words(unicode_text):
