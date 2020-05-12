@@ -1,4 +1,6 @@
 ## [Unreleased]
+  - Added retry mechanism to the BaseClient.
+  - Fixed an issue where the **appendContext** function did not behave as expected.
 
 
 ## [20.5.0] - 2020-05-12

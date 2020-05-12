@@ -23,6 +23,8 @@ from demisto_sdk.commands.common.tools import server_version_compare
 from Tests.update_content_data import update_content
 # from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
+MARKET_PLACE_MACHINES = ('master',)
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
@@ -270,11 +272,12 @@ def is_content_update_in_progress(client, prints_manager, thread_index):
         return response_data
 
 
-def get_content_version_details(client, prints_manager, thread_index):
+def get_content_version_details(client, ami_name, prints_manager, thread_index):
     """Make request for details about the content installed on the demisto instance.
 
     Args:
         client (demisto_client): The configured client to use.
+        ami_name (string): the role name of the machine
         prints_manager (ParallelPrintsManager): Print manager object
         thread_index (int): The thread index
 
@@ -286,7 +289,8 @@ def get_content_version_details(client, prints_manager, thread_index):
     prints_manager.add_print_job(installed_content_message, print_color, thread_index, LOG_COLORS.GREEN)
 
     # make request to installed content details
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/installed',
+    uri = '/content/installedlegacy' if ami_name in MARKET_PLACE_MACHINES else '/content/installed'
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path=uri,
                                                                         method='POST')
 
     try:
@@ -510,7 +514,7 @@ def get_integrations_for_test(test, skipped_integrations_conf):
     return integrations
 
 
-def update_content_on_demisto_instance(client, server, prints_manager, thread_index):
+def update_content_on_demisto_instance(client, server, ami_name, prints_manager, thread_index):
     """Try to update the content
 
     Args:
@@ -536,7 +540,7 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
     else:
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
-        release, asset_id = get_content_version_details(client, prints_manager, thread_index)
+        release, asset_id = get_content_version_details(client, ami_name, prints_manager, thread_index)
         with open('content-descriptor.json', 'r') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
@@ -552,7 +556,9 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
                 'Content Update to version: {} was Unsuccessful:\n{}'.format(release, err_details),
                 print_error, thread_index)
             prints_manager.execute_thread_prints(thread_index)
-            os._exit(1)
+
+            if ami_name not in MARKET_PLACE_MACHINES:
+                os._exit(1)
 
 
 def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
@@ -798,7 +804,8 @@ def main():
     for thread_index, server_url in enumerate(servers):
         client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
         t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': client, 'server': server_url, 'prints_manager': threads_prints_manager,
+                   kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
+                           'prints_manager': threads_prints_manager,
                            'thread_index': thread_index})
         threads_list.append(t)
 
