@@ -1,5 +1,6 @@
-id: 923670e7-3186-4873-80ac-a04aac50eca7
-version: 20
+id: Prisma Cloud Remediation - GCP VPC Network Misconfiguration
+version: -1
+fromversion: 5.0.0
 name: Prisma Cloud Remediation - GCP VPC Network Misconfiguration
 description: |-
   This playbook remediates Prisma Cloud GCP VPC Network alerts.  It calls sub-playbooks that perform the actual remediation steps.
@@ -33,6 +34,7 @@ tasks:
       id: 61bee172-14d4-4a48-815c-913b49bef800
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -115,6 +117,7 @@ tasks:
       id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -574,6 +577,7 @@ tasks:
       id: 44fe68a6-b793-42a1-8ba9-ae7714993c29
       version: -1
       name: Prisma Cloud Remediation - GCP VPC Network Project Misconfiguration
+      description: ""
       playbookName: Prisma Cloud Remediation - GCP VPC Network Project Misconfiguration
       type: playbook
       iscommand: false
@@ -608,6 +612,7 @@ tasks:
       id: c550ff09-7443-41a1-8806-79ddde21c484
       version: -1
       name: Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
+      description: ""
       playbookName: Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
       type: playbook
       iscommand: false
@@ -679,4 +684,5 @@ inputs:
   required: false
   description: Grab the Prima Cloud policy Id.
 outputs: []
-sourceplaybookid: f47b1a5d-a2ab-4040-8d5e-1b188458e6a2
+tests:
+- No Test

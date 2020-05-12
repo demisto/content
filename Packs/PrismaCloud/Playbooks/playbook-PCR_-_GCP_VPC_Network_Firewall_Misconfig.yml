@@ -1,5 +1,6 @@
-id: 72273363-8251-4f3d-876e-45a7b4b44c0c
-version: 55
+id: Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
+version: -1
+fromversion: 5.0.0
 name: Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
 description: |-
   This playbook remediates the following Prisma Cloud GCP VPC Network Firewall alerts.
@@ -32,6 +33,7 @@ tasks:
       id: 61bee172-14d4-4a48-815c-913b49bef800
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -105,6 +107,7 @@ tasks:
       id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -349,6 +352,7 @@ tasks:
       id: 6c2eba20-647c-4754-8c42-fddc318c20af
       version: -1
       name: Common Ports
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -501,6 +505,7 @@ tasks:
       id: fc7f12a5-57d9-41f2-86a8-a5ba6f38f965
       version: -1
       name: Default Firewall Rules
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -616,6 +621,7 @@ tasks:
       id: 33008433-91a2-405b-8701-1ffc9c605e66
       version: -1
       name: Overly Permissive
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -793,4 +799,5 @@ inputs:
   required: true
   description: Prisma Cloud policy Id.
 outputs: []
-sourceplaybookid: f47b1a5d-a2ab-4040-8d5e-1b188458e6a2
+tests:
+- No Test
