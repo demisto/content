@@ -117,6 +117,51 @@ TICKETS_LIST_COMMAND_RESPONSE = {
     ]
 }
 
+DEMISTO_DT_RESPONSE = [
+    {'id': 1,
+     'title': 'Corona Alert',
+     'summary': 'blah blah',
+     'modified': '2020-04-12 02:55:51',
+     'created': '2020-03-11 08:14:25',
+     'hd_queue_id': 1,
+     'cc_list': '',
+     'is_manual_due_date': 0,
+     'resolution': '<p>elkwenfwe</p>',
+     'submitter': {
+         'id': 10,
+         'user_name': 'admin',
+         'email': 'admin@demisto.local',
+         'full_name': 'admin'},
+     'asset': {
+         'id': 2,
+         'asset_type_id': 5,
+         'name': 'Macbook Pro',
+         'owner_id': 10,
+         'asset_class_id': 0},
+     'machine': {
+         'id': 1,
+         'name': 'Macbook Pro'},
+     'priority': {
+         'id': 2,
+         'name': 'High',
+         'ordinal': 0,
+         'color': 'red',
+         'is_sla_enabled': 0},
+     'category': {
+         'id': 3,
+         'name': 'Hardware'},
+     'impact': {
+         'id': 2,
+         'ordinal': 0,
+         'name': 'Many people cannot work'},
+     'status': {
+         'id': 5,
+         'name': 'Reopened',
+         'ordinal': 2,
+         'state': 'opened'}
+     }
+]
+
 LIST_BEFORE_PARSE = [
     {'id': 1,
      'title': 'Corona Alert',
@@ -1214,4 +1259,72 @@ SECOND_FETCH_INCIDENTS_RAW_RESPONSE = {
 
 NO_RESULTS_FETCH_INCIDENTS_RAW_RESPONSE = {
     'Tickets': []
+}
+
+FIELDS_RESPONSE = {
+    "Fields": [
+        {
+            "jsonKey": "title",
+            "label": "Title",
+            "column": "TITLE",
+            "type": "text",
+            "visible": "usercreate",
+            "required": "all"
+        },
+        {
+            "jsonKey": "related_tickets",
+            "label": "See Also",
+            "column": "RELATED_TICKET_IDS",
+            "type": "ticket_array",
+            "visible": "userhidden",
+            "required": "none"
+        },
+        {
+            "jsonKey": "summary",
+            "label": "Description",
+            "column": "SUMMARY",
+            "type": "text",
+            "visible": "usercreate",
+            "required": "none"
+        },
+        {
+            "jsonKey": "referring_tickets",
+            "label": "Referrers",
+            "type": "ticket_array",
+            "visible": "userhidden",
+            "required": "none"
+        },
+        {
+            "jsonKey": "impact",
+            "label": "Impact",
+            "column": "HD_IMPACT_ID",
+            "type": "impact",
+            "visible": "usercreate",
+            "required": "none"
+        },
+        {
+            "jsonKey": "category",
+            "label": "Category",
+            "column": "HD_CATEGORY_ID",
+            "type": "category",
+            "visible": "usercreate",
+            "required": "none"
+        },
+        {
+            "jsonKey": "status",
+            "label": "Status",
+            "column": "HD_STATUS_ID",
+            "type": "status",
+            "visible": "uservisible",
+            "required": "none"
+        },
+        {
+            "jsonKey": "priority",
+            "label": "Priority",
+            "column": "HD_PRIORITY_ID",
+            "type": "priority",
+            "visible": "uservisible",
+            "required": "none"
+        }
+    ]
 }

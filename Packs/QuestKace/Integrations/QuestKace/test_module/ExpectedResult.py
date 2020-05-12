@@ -164,3 +164,51 @@ LIST_EXPECTED_AFTER_PARSE = [
          'State': 'opened'}
      }
 ]
+
+
+DELETE_COMMAND_RESPONSE = {'QuestKace.Ticket(val.ID === obj.ID)': {
+    'id': 1,
+    'title': 'Corona Alert',
+    'summary': 'blah blah',
+    'modified': '2020-04-12 02:55:51',
+    'created': '2020-03-11 08:14:25',
+    'hd_queue_id': 1,
+    'cc_list': '',
+    'is_manual_due_date': 0,
+    'resolution': '<p>elkwenfwe</p>',
+    'submitter': {
+        'id': 10,
+        'user_name': 'admin',
+        'email': 'admin@demisto.local',
+        'full_name': 'admin'},
+    'asset': {
+        'id': 2,
+        'asset_type_id': 5,
+        'name': 'Macbook Pro',
+        'owner_id': 10,
+        'asset_class_id': 0},
+    'machine': {
+        'id': 1,
+        'name': 'Macbook Pro'},
+    'priority': {
+        'id': 2,
+        'name': 'High',
+        'ordinal': 0,
+        'color': 'red',
+        'is_sla_enabled': 0},
+    'category': {
+        'id': 3,
+        'name': 'Hardware'},
+    'impact': {
+        'id': 2,
+        'ordinal': 0,
+        'name': 'Many people cannot work'},
+    'status': {
+        'id': 5,
+        'name': 'Reopened',
+        'ordinal': 2,
+        'state': 'opened'},
+    'IsDeleted': True
+}
+}
+FIELDS_EXPECTED = ['title', 'summary', 'impact', 'category', 'status', 'priority']
