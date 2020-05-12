@@ -1,6 +1,7 @@
 id: Flashpoint_event-Test
 version: -1
 name: Flashpoint_event-Test
+description: ""
 starttaskid: "0"
 tasks:
   "0":

@@ -1,6 +1,7 @@
 id: Azure Compute - Test
 version: -1
 name: Azure Compute - Test
+description: ""
 starttaskid: "0"
 tasks:
   "0":

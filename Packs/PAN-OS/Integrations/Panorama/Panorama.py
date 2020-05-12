@@ -697,7 +697,7 @@ def panorama_push_status_command():
         push_status_output['Status'] = 'Pending'
 
     # WARNINGS - Job warnings
-    status_warnings = []
+    status_warnings = []  # type: ignore
     devices = safeget(result, ["response", "result", "job", "devices", "entry"])
     if devices:
         for device in devices:

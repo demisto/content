@@ -1,13 +1,13 @@
 {
-    "name": "Freshdesk",
-    "description": "The Freshdesk integration allows you to create, update, and delete tickets; reply to and create notes for tickets as well as view Groups, Agents and Contacts.",
+    "name": "Azure Security Center",
+    "description": "Unified security management and advanced threat protection across hybrid cloud workloads.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Case Management"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "created": "2020-04-14T00:00:00Z",
@@ -17,6 +17,5 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {},
-    "displayedImages": [],
-    "price": 0
+    "displayedImages": []
 }
