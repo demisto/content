@@ -102,7 +102,6 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
-        storage_base_path (str): The storage base path to upload to.
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
@@ -242,13 +241,12 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
-def upload_core_packs_config(storage_bucket, packs_list, storage_base_path=GCPConfig.STORAGE_BASE_PATH):
+def upload_core_packs_config(storage_bucket, packs_list):
     """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         packs_list (list): list of initialized packs.
-        storage_base_path (str): The storage base path to upload to.
 
     """
     # todo later check if it is not pre release and only then upload corepacks.json
@@ -269,7 +267,7 @@ def upload_core_packs_config(storage_bucket, packs_list, storage_base_path=GCPCo
         'corePacks': core_packs_public_urls
     }
 
-    core_packs_config_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
+    core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
     blob = storage_bucket.blob(core_packs_config_path)
     blob.upload_from_string(json.dumps(core_packs_data, indent=4))
 
@@ -437,8 +435,8 @@ def option_handler():
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.",
                         required=False)
-    parser.add_argument('-sn', '--should_sign_pack', type=str2bool,
-                        help='Should sign content packs or not.', default=True)
+    # parser.add_argument('-sn', '--should_sign_pack', type=str2bool,
+    #                     help='Should sign content packs or not.', default=True)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
     # disable-secrets-detection-end
@@ -457,7 +455,7 @@ def main():
     override_pack = option.override_pack
     signature_key = option.key_string
     storage_bash_path = option.storage_bash_path
-    should_sign_pack = option.should_sign_pack
+    # should_sign_pack = option.should_sign_pack
     remove_test_playbooks = option.remove_test_playbooks
 
     # google cloud storage client initialized
@@ -532,12 +530,12 @@ def main():
             pack.cleanup()
             continue
 
-        if should_sign_pack:
-            task_status = pack.sign_pack(signature_key)
-            if not task_status:
-                pack.status = PackStatus.FAILED_SIGNING_PACKS.name
-                pack.cleanup()
-                continue
+        # if should_sign_pack:
+        task_status = pack.sign_pack(signature_key)
+        if not task_status:
+            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+            pack.cleanup()
+            continue
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:

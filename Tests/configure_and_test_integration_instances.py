@@ -688,7 +688,7 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         'data': {
             'marketplace.gcp.bucket': 'marketplace-ci-build',
             'marketplace.gcp.path': 'content/builds/{}/{}'.format(branch_name, ci_build_number),
-            'content.pack.verify': 'true'
+            'content.pack.verify': 'false'
         },
         'version': -1
     }

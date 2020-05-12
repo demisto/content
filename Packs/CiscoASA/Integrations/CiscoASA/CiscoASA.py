@@ -15,7 +15,8 @@ urllib3.disable_warnings()
 INTEGRATION_COMMAND = "cisco-asa"
 OBJECT_TYPES_DICT = {
     'IPv4': 'IPv4Address',
-    'IP-Network': 'IPv4Network'
+    'IP-Network': 'IPv4Network',
+    'modify': 'fortest'
 }
 
 '''Client'''
