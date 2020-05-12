@@ -1,5 +1,5 @@
 ## [Unreleased]
-New output was added of model evaluation using different confidence thresholds, per class.
+Added support for model evaluation using different confidence thresholds for each class.
 
 ## [20.4.0] - 2020-04-14
 Added an option to retrieve the full model predictions on the test set.
