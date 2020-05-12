@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 - Fixed an issue where ***fetch-incidents*** did not work as expected.
 - Fixed an issue where email indicators were not classified correctly.
 
