@@ -130,10 +130,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 7f666324-7253-4f63-8b3c-e359c97c8d91
+    taskid: b07a17a8-6610-4437-8307-d9cd7197e5cd
     type: condition
     task:
-      id: 7f666324-7253-4f63-8b3c-e359c97c8d91
+      id: b07a17a8-6610-4437-8307-d9cd7197e5cd
       version: -1
       name: Did enrichment work?
       description: Checks whether the enrichment outputs that we expected are in the
@@ -164,6 +164,11 @@ tasks:
                     right:
                       value:
                         simple: DC=demisto,DC=ninja
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Endpoint.CbSensorID
             iscontext: true
     view: |-
       {
