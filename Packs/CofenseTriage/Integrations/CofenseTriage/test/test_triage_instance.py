@@ -1,6 +1,6 @@
 import pytest
 
-from ..CofenseTriage import TriageInstance
+from CofenseTriage.CofenseTriage import TriageInstance
 
 
 @pytest.fixture
