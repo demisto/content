@@ -1,6 +1,6 @@
-category: Authentication
+category: Ticketing
 commonfields:
-  id: Ivanti
+  id: Ivanti Heat
   version: -1
 configuration:
 - defaultvalue: https://example.net
@@ -34,9 +34,8 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-description: This is the Hello World integration for getting started.
-display: Ivanti
-name: Ivanti
+display: Ivanti Heat
+name: Ivanti Heat
 script:
   commands:
   - arguments:
@@ -117,7 +116,7 @@ script:
       secret: false
     deprecated: false
     execution: false
-    name: ivanti-heat-get-attachment
+    name: ivanti-heat-ticket-attachment-get
   - arguments:
     - default: false
       isArray: false

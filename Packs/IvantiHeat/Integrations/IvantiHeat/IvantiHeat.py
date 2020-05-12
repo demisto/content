@@ -24,7 +24,7 @@ class Client(BaseClient):
     """
     def do_request(self, method, url_suffix, params=None, data=None, json_data=None, resp_type='json', files=None):
 
-        res = self._http_request(method, url_suffix, params=params, json_data=json_data, files=files,data=data,
+        res = self._http_request(method, url_suffix, params=params, data=data, json_data=json_data, files=files,
                                  resp_type=resp_type, ok_codes=[200, 204], return_empty_response=True)
 
         if resp_type == 'other' or isinstance(res, dict) or isinstance(res, list):
@@ -44,9 +44,10 @@ def add_ticket_filter(curr_filter, new_filter):
 
 
 def generate_filter_param(ticket_type, rec_id, from_date, to_date):
-    filter = ''
     if rec_id:
-        return add_ticket_filter(filter, f'recId eq \'{rec_id}\'')
+        return f'recId eq \'{rec_id}\''
+
+    filter = ''
     if ticket_type:
         filter = add_ticket_filter(filter, f'TypeOfIncident eq \'{ticket_type}\'')
     if from_date:
@@ -67,9 +68,9 @@ def tickets_list_command(client, args):
     offset = args.get('offset')
     query = args.get('search-query')
     params = {'$orderby': 'CreatedDateTime desc'}
-    filter = generate_filter_param(ticket_type, rec_id, from_date, to_date)
-    if filter:
-        params['$filter'] = filter
+    filter_txt = generate_filter_param(ticket_type, rec_id, from_date, to_date)
+    if filter_txt:
+        params['$filter'] = filter_txt
     if limit:
         params['$top'] = limit
     if offset:
@@ -82,7 +83,7 @@ def tickets_list_command(client, args):
         human_readable = tableToMarkdown('Tickets results', t=raw_res.get('value'), headers=TICKET_HEADERS,
                                          removeNull=True)
 
-        entry_context = {'Ivanti.Ticket(val.RecId===obj.RecId)': raw_res.get('value')}
+        entry_context = {'ivantiHeat.Ticket(val.RecId===obj.RecId)': raw_res.get('value')}
         return human_readable, entry_context, raw_res
 
     return 'No tickets found', {}, raw_res
@@ -92,11 +93,17 @@ def tickets_list_command(client, args):
 def update_ticket_command(client, args):
     rec_id = args.get('rec-id')
     fields = args.get('fields')
-    raw_res = client.do_request('PUT', f'odata/businessobject/incidents(\'{rec_id}\')',json_data=json.loads(fields))
 
-    human_readable = tableToMarkdown('Tickets results', t=raw_res, headers=TICKET_HEADERS,
-                                     removeNull=True)
-    entry_context = {'Ivanti.Ticket(val.RecId===obj.RecId)': raw_res}
+    body = {}
+    fields = fields.split(';')
+    for field in fields:
+        field_data = field.split('=')
+        body[field_data[0]] = field_data[1]
+
+
+    raw_res = client.do_request('PUT', f'odata/businessobject/incidents(\'{rec_id}\')', json_data=body)
+    human_readable = tableToMarkdown('Tickets results', t=raw_res, headers=TICKET_HEADERS, removeNull=True)
+    entry_context = {'ivantiHeat.Ticket(val.RecId===obj.RecId)': raw_res}
     return human_readable, entry_context, raw_res
 
 
@@ -115,11 +122,10 @@ def get_attachment_command(client, args):
     filename_header = raw_res.headers.get('content-disposition')
 
     f_attr = 'filename='
-    filename = 'Attachment'
+
     if filename_header and f_attr in filename_header:
         filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
-
-    return fileResult(filename, raw_res.content)
+        return fileResult(filename, raw_res.content)
 
 
 @logger
@@ -133,7 +139,9 @@ def upload_attachment_command(client, args):
         attachment = raw_res[0]
         attachment_id = attachment.get('Message')
         file_name =attachment.get('FileName')
-        return f'{file_name} uploaded successfully, attachment ID: {attachment_id}', {}, raw_res
+        entry_context = {'ivantiHeat.TicketAttachment':
+                        {'RecId': rec_id, 'AttachmentId':attachment_id, 'FileName': file_name}}
+        return f'{file_name} uploaded successfully, attachment ID: {attachment_id}', entry_context, raw_res
 
 
 def get_file(entry_id):
@@ -211,9 +219,8 @@ def main():
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
-        elif demisto.command() == 'ivanti-heat-get-attachment':
+        elif demisto.command() == 'ivanti-heat-ticket-attachment-get':
             demisto.results(get_attachment_command(client, demisto.args()))
-
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents = fetch_incidents(
