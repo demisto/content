@@ -205,7 +205,7 @@ class MITMProxy:
         if proxy:
             http_proxy = 'http://' + proxy
             https_proxy = 'http://' + proxy
-        system_conf_response.update({
+        system_conf.update({
             'http_proxy': http_proxy,
             'https_proxy': https_proxy
         })
