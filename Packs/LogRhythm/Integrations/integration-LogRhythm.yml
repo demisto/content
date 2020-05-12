@@ -52,7 +52,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Domain of windows authentication server (used for windows authentication)
+- display: Domain of the Windows authentication server (used for Windows authentication)
   name: domain
   defaultvalue: ""
   type: 0
