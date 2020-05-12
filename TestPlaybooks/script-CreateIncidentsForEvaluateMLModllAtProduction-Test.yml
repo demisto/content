@@ -10,14 +10,14 @@ script: |+
   words_tag2 = ["ntidy","boy","substance","faulty","friction","waves","type","boat","argument","metal","legal","marked"]
 
   incident1_template = {
-      'type': 'Phishing',
+      'type': 'Simulation',
       'name': 'Tag1',
       'dbotprediction': 'ham',
       'dbotpredictionprobability': 1.0
   }
 
   incident2_template = {
-      'type': 'Phishing',
+      'type': 'Simulation',
       'name': 'Tag2',
       'dbotprediction': 'spam',
       'dbotpredictionprobability': 1.0,
@@ -44,7 +44,7 @@ script: |+
           'EmailSujbectKey': 'name',
           'EmailBodyKey': 'details',
           'EmailTagKey': 'name',
-          'IncidentsQuery': 'type:Phishing',
+          'IncidentsQuery': 'type:Simulation',
           'EmailPredictionKey': 'dbotprediction',
           'EmailPredictionProbabilityKey': 'dbotpredictionprobability'
       }
