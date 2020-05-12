@@ -1,5 +1,5 @@
 ## [Unreleased]
-Changed the default URL, due to EOL for the previous one.
+Changed the default URL, due to EOL for the previous one. If you already have an instance configured, please change the URL parameter to: *https://deepsightapi.accenture.com/v1/*
 
 ## [20.4.1] - 2020-04-29
 -

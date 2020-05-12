@@ -10,7 +10,7 @@ requests.packages.urllib3.disable_warnings()
 ''' Global Variables '''
 APIKEY = demisto.params()['apikey']
 VERIFY = not demisto.params()['unsecure']
-BASE_URL = 'https://deepsightapi.symantec.com/v1/'
+BASE_URL = 'https://deepsightapi.accenture.com/v1/'
 DOMAIN_ACCESS_SUFFIX = 'domains/{0}'
 IP_ACCESS_SUFFIX = 'ips/{0}'
 URL_ACCESS_SUFFIX = 'urls/{0}'
@@ -550,7 +550,6 @@ def test_module():
         raise Exception("Test failed: API request did not succeed, result: {}".format(result))
     if result:
         demisto.results('ok')
-
 
 LOG('command is %s' % (demisto.command(),))
 try:
