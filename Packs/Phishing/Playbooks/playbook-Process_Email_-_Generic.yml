@@ -11,7 +11,7 @@ tasks:
     taskid: 5bfb4aa2-96ee-40a9-8806-51f5317a9be3
     type: start
     task:
-      id: 5bfb4aa2-96ee-40a9-8806-51f5317a9be3
+      id: 5bfb4aa2-96ee-40a9-8806-51f5317a9b\e3
       version: -1
       name: ""
       description: ""
