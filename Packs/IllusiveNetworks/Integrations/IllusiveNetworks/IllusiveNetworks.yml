@@ -10,7 +10,7 @@ configuration:
   type: 0
 - display: API Token
   hidden: false
-  name: Authorization
+  name: api_token
   required: true
   type: 4
 - display: Fetch incidents
@@ -89,7 +89,7 @@ script:
       description: The forensics evidence description
       type: String
     - contextPath: Illusive.Forensics.IncidentId
-      description: The Incdient Id
+      description: The Incident Id
       type: String
     - contextPath: Illusive.Forensics.Status
       description: The process progress ( Done, InProgress)

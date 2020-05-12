@@ -23,12 +23,6 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, **kwargs):
-        self._credentials = kwargs.pop("credentials", None)
-        super().__init__(**kwargs)
-        self._headers = DEFAULT_HEADERS_POST_REQUEST
-        self._headers["Authorization"] = self._credentials
-
     def get_deceptive_users(self, user_type):
         url_suffix = '/api/v1/deceptive-entities/users?deceptive_user_type={}'.format(user_type)
         return self._http_request("GET", url_suffix=url_suffix)
@@ -109,25 +103,9 @@ class Client(BaseClient):
             url_suffix += "&host_names=" + '&host_names='.join(host_names)
         return self._http_request("GET", url_suffix=url_suffix)
 
-    def say_hello(self, name):
-        return f'Hello {name}'
-
-    def list_incidents(self):
-        """
-        returns dummy incident data, just for the example.
-        """
-        return [
-            {
-                'incident_id': 1,
-                'description': 'Hello incident 1',
-                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-            },
-            {
-                'incident_id': 2,
-                'description': 'Hello incident 2',
-                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-            }
-        ]
+    def test_configuration(self):
+        url_suffix = '/api/v1/incidents?limit=10&offset=0'
+        return self._http_request("GET", url_suffix=url_suffix, ok_codes=(200,))
 
 
 def test_module(client):
@@ -135,17 +113,19 @@ def test_module(client):
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
-        client: HelloWorld client
+        client: Illusive Networks client
 
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-
-    result = client.say_hello('DBot')
-    if 'Hello DBot' == result:
+    try:
+        client.test_configuration()
         return 'ok'
-    else:
-        return 'Test failed because ......'
+    except DemistoException as e:
+        if "401" in e.args[0]:
+            return "Test failed, potential reasons might be that the API KEY parameter is incorrect: {}".format(e.args[0])
+        else:
+            return "Test failed: {}".format(e.args[0])
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
@@ -576,7 +556,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API token
-    api_token = demisto.params().get('Authorization')
+    api_token = demisto.params().get('api_token')
 
     # get the service API url
     base_url = demisto.params()['url']
@@ -590,10 +570,12 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
+        headers = DEFAULT_HEADERS_POST_REQUEST
+        headers["Authorization"] = api_token
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            credentials=api_token,
+            headers=headers,
             proxy=proxy)
 
         if demisto.command() == 'test-module':
@@ -602,7 +584,6 @@ def main():
             demisto.results(result)
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),

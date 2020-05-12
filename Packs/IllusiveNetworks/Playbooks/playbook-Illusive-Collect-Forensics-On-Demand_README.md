@@ -10,9 +10,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * IllusiveNetworks
 
 ### Scripts
-* PrintErrorEntry
-* Print
 * DeleteContext
+* Print
 
 ### Commands
 * illusive-get-event-incident-id
@@ -24,7 +23,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| fqdn_or_ip  | The host fqdn or IP address on which to collect forensics |  | Optional |
+| fqdn_or_ip  | The host fqdn or IP address on which to collect forensics |  | Required |
 | start_date | The starting date of the forensics timeline.
  |  | Optional |
 | end_date | The last date of the forensics timeline.
@@ -32,6 +31,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Illusive.Forensics.Evidence.details | The forensics evidence details | unknown |
+| Illusive.Forensics.Evidence.eventId | The event ID | unknown |
+| Illusive.Forensics.Evidence.id | The forensics evidence ID | unknown |
+| Illusive.Forensics.Evidence.source | The Evidence source | unknown |
+| Illusive.Forensics.Evidence.starred | Whether the forensics evidence has been starred | unknown |
+| Illusive.Forensics.Evidence.time | Date and time of the forensics evidence  | unknown |
+| Illusive.Forensics.Evidence.title | The forensics evidence description | unknown |
+| Illusive.Forensics.IncidentId | The Incident Id | unknown |
 
 <!-- Playbook PNG image comes here -->

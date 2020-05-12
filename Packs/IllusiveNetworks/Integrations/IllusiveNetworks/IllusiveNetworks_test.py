@@ -14,7 +14,7 @@ def test_is_deceptive_user_command_returns_true(requests_mock):
     mock_response = {'result': 'true'}
     requests_mock.get('https://server/api/v1/deceptive-entities/user?userName=myUser', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'username': 'myUser'
     }
@@ -27,7 +27,7 @@ def test_is_deceptive_user_command_returns_true(requests_mock):
 def test_is_deceptive_user_command_returns_false(requests_mock):
     requests_mock.get('https://server/api/v1/deceptive-entities/user?userName=myUser', text='')
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'username': 'myUser'
     }
@@ -41,7 +41,7 @@ def test_is_deceptive_server_command_returns_true(requests_mock):
     mock_response = {'result': 'true'}
     requests_mock.get('https://server/api/v1/deceptive-entities/server?hostName=myHost', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'hostname': 'myHost'
     }
@@ -54,7 +54,7 @@ def test_is_deceptive_server_command_returns_true(requests_mock):
 def test_is_deceptive_server_command_returns_false(requests_mock):
     requests_mock.get('https://server/api/v1/deceptive-entities/server?hostName=myHost', text='')
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'hostname': 'myHost'
     }
@@ -69,7 +69,7 @@ def test_delete_deceptive_users_command(requests_mock):
     requests_mock.delete('https://server/api/v1/deceptive-entities/users?deceptive_users=user1&deceptive_users=user2',
                          json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
 
     args = {
         'deceptive_users': ['user1', 'user2']
@@ -83,7 +83,7 @@ def test_delete_deceptive_servers_command(requests_mock):
     mock_response = {'result': 'False'}
     requests_mock.delete('https://server/api/v1/deceptive-entities/servers?deceptive_hosts=server1', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
 
     args = {
         'deceptive_hosts': ['server1']
@@ -97,7 +97,7 @@ def test_run_forensics_on_demand_command(requests_mock):
     mock_response = {'EventId': '1234'}
     requests_mock.post('https://server/api/v1/event/create-external-event?hostNameOrIp=myIp', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'fqdn_or_ip': "myIp"
     }
@@ -110,7 +110,7 @@ def test_get_event_incident_id_command(requests_mock):
     mock_response = {'EventId': '1234', 'IncidentId': '1'}
     requests_mock.get('https://server/api/v1/incidents/id?event_id=1234', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
 
     args = {
         'event_id': "1234"
@@ -127,7 +127,7 @@ def test_get_asm_host_insight_command(requests_mock):
     requests_mock.get('https://server/api/v1/attack-surface/machine-insights?hostNameOrIp=myIp',
                       json=mock_response, status_code=202)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
 
     args = {
         'hostnameOrIp': "myIp"
@@ -142,7 +142,7 @@ def test_get_asm_cj_insight_command(requests_mock):
     mock_response = {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}
     requests_mock.get('https://server/api/v1/crownjewels/insights', json=mock_response, status_code=202)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
 
     args = {
     }
@@ -156,7 +156,7 @@ def test_get_deceptive_users_command(requests_mock):
     mock_response = {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}
     requests_mock.get('https://server/api/v1/deceptive-entities/users?deceptive_user_type=ALL', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
     }
     _, outputs, _ = get_deceptive_users_command(client, args)
@@ -170,7 +170,7 @@ def test_get_deceptive_servers_command(requests_mock):
     requests_mock.get('https://server/api/v1/deceptive-entities/servers?deceptive_server_type=SUGGESTED',
                       json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'type': "SUGGESTED",
     }
@@ -182,7 +182,7 @@ def test_get_deceptive_servers_command(requests_mock):
 
 def test_get_forensics_timeline_command(requests_mock):
     mock_response = {'IncidentId': "aaa", 'Status': 'Done', 'Evidence': []}
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     start_date = "1 month"
     end_date = "3 days"
     args = {
@@ -206,7 +206,7 @@ def test_remove_host_from_policy_command(requests_mock):
     mock_response = {'result': 'True'}
     requests_mock.post('https://server/api/v1/policy/domain_hosts/remove_assignment', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'hosts': ['aaa@domain.com']
     }
@@ -220,7 +220,7 @@ def test_assign_host_to_policy_command(requests_mock):
     mock_response = {'result': 'True'}
     requests_mock.post('https://server/api/v1/policy/domain_hosts/assign?policy_name=myPolicy', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'policy_name': "myPolicy",
         'hosts': ['aaa@domain.com']
@@ -236,7 +236,7 @@ def test_add_deceptive_users_command(requests_mock):
     mock_response = {'id': 'aaa'}
     requests_mock.post('https://server/api/v1/deceptive-entities/users', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     user_name = "aaa"
     domain_name = "illusive.com"
     args = {
@@ -256,7 +256,7 @@ def test_add_deceptive_servers_command(requests_mock):
     mock_response = {'id': 'aaa'}
     requests_mock.post('https://server/api/v1/deceptive-entities/servers', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     user_name = 'aaa.illusive.com'
     args = {
         'service_types': ["FTP", "SSH"],
@@ -273,7 +273,7 @@ def test_get_incident_command(requests_mock):
     mock_response = {'deceptionFamilies': [], 'incidentId': '1234', 'hasForensics': True, 'incidentTypes': 'MACHINE'}
     requests_mock.get('https://server/api/v2/incidents/incident?incident_id=13', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
         'incident_id': "13",
         'start_date': "3 days"
@@ -289,7 +289,7 @@ def test_get_incidents_command(requests_mock):
                      {'deceptionFamilies': [], 'incidentId': '4321', 'hasForensics': False, 'incidentTypes': 'MACHINE'}]
     requests_mock.get('https://server/api/v1/incidents?limit=10&offset=0', json=mock_response)
 
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     args = {
     }
     _, outputs, _ = get_incidents_command(client, args)
@@ -301,7 +301,7 @@ def test_get_incidents_command(requests_mock):
 
 
 def test_fetch_incidents(requests_mock):
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     mock_response = [{'deceptionFamilies': [], 'incidentId': '1234', 'hasForensics': True,
                       'incidentTypes': 'MACHINE', 'incidentTimeUTC': '2020-04-21T15:39:32.954Z'},
                      {'deceptionFamilies': [], 'incidentId': '4321', 'hasForensics':False,
@@ -317,7 +317,7 @@ def test_fetch_incidents(requests_mock):
 
 
 def test_fetch_incidents_first_fetch(requests_mock):
-    client = Client(base_url='https://server', verify=False, credentials='test')
+    client = Client(base_url='https://server', verify=False)
     mock_response = []
     first_fetch_time = "7 days"
     last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)

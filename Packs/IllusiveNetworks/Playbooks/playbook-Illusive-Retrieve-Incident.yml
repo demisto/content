@@ -8,10 +8,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: c418f7e8-6010-49f4-80aa-54052c8428a6
+    taskid: 3d6c1f0c-803f-461a-855e-4959014d05c1
     type: start
     task:
-      id: c418f7e8-6010-49f4-80aa-54052c8428a6
+      id: 3d6c1f0c-803f-461a-855e-4959014d05c1
       version: -1
       name: ''
       iscommand: false
@@ -19,9 +19,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '7'
+      - '1'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": -150\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 40\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -29,10 +29,10 @@ tasks:
     quietmode: 0
   '1':
     id: '1'
-    taskid: 8e998ffa-70c4-4609-8fc9-4e47ced3b3a7
+    taskid: f48425c1-1132-4c81-8f19-bcb74dddf734
     type: regular
     task:
-      id: 8e998ffa-70c4-4609-8fc9-4e47ced3b3a7
+      id: f48425c1-1132-4c81-8f19-bcb74dddf734
       version: -1
       name: illusive-get-incidents
       description: Retrieve incidents
@@ -61,10 +61,10 @@ tasks:
     quietmode: 0
   '2':
     id: '2'
-    taskid: 2b7128d2-8288-48b2-8451-85651f63989e
+    taskid: ab6c331d-ee27-4636-8f60-7d03d3810c7f
     type: condition
     task:
-      id: 2b7128d2-8288-48b2-8451-85651f63989e
+      id: ab6c331d-ee27-4636-8f60-7d03d3810c7f
       version: -1
       name: Check If Incident Has Forensics
       type: condition
@@ -98,10 +98,10 @@ tasks:
     quietmode: 0
   '3':
     id: '3'
-    taskid: c24b2463-4642-4d69-8209-66f425ede653
+    taskid: 24d89786-a8cf-45b5-8700-c54b4ae85b09
     type: regular
     task:
-      id: c24b2463-4642-4d69-8209-66f425ede653
+      id: 24d89786-a8cf-45b5-8700-c54b4ae85b09
       version: -1
       name: illusive-get-forensics-timeline
       description: Retrieve forensics timeline for a specific incident
@@ -132,12 +132,12 @@ tasks:
     quietmode: 0
   '5':
     id: '5'
-    taskid: 07ef76cf-d732-4051-8b3b-87d60059e1b7
+    taskid: 4fb8acc2-f576-4c0b-8e9e-686ada74e3ce
     type: regular
     task:
-      id: 07ef76cf-d732-4051-8b3b-87d60059e1b7
+      id: 4fb8acc2-f576-4c0b-8e9e-686ada74e3ce
       version: -1
-      name: Print No Forensics Timeline for Incdient
+      name: Print No Forensics Timeline for Incident
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -155,10 +155,10 @@ tasks:
     quietmode: 0
   '6':
     id: '6'
-    taskid: c8f99fa8-9ba3-4347-8aee-bbd05ef093d1
+    taskid: b8673e22-bfbd-4cc6-82a5-cd7ff14811dd
     type: regular
     task:
-      id: c8f99fa8-9ba3-4347-8aee-bbd05ef093d1
+      id: b8673e22-bfbd-4cc6-82a5-cd7ff14811dd
       version: -1
       name: Print Incident Forensics Timeline
       description: Prints text to war room (Markdown supported)
@@ -176,72 +176,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '7':
-    id: '7'
-    taskid: 8846a6d7-5c88-4001-8f9c-c076d8b6a31c
-    type: condition
-    task:
-      id: 8846a6d7-5c88-4001-8f9c-c076d8b6a31c
-      version: -1
-      name: Check Initial Values
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#default#':
-      - '8'
-      yes:
-      - '1'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: inputs.incident_id
-            iscontext: true
-          right:
-            value:
-              simple: '""'
-    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": -20\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  '8':
-    id: '8'
-    taskid: e61b3940-208a-4fda-8339-d2b3d40b4ec3
-    type: regular
-    task:
-      id: e61b3940-208a-4fda-8339-d2b3d40b4ec3
-      version: -1
-      name: Input Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ''
-    scriptarguments:
-      message:
-        simple: Incident Id is missing
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1030,\n    \"y\": 190\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 985,\n      \"width\": 970,\n      \"x\": 450,\n      \"y\": -150\n\
+  \     \"height\": 795,\n      \"width\": 970,\n      \"x\": 450,\n      \"y\": 40\n\
   \    }\n  }\n}"
 inputs:
 - key: incident_id
-  value: {}
-  required: false
+  value:
+    simple: '3'
+  required: true
   description: The desired incident ID to retrieve.
   playbookInputQuery:
 - key: start_date
@@ -254,7 +196,23 @@ inputs:
   required: false
   description: The last date of the forensics timeline.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: Illusive.Forensics.Evidence.details
+  description: The forensics evidence details
+- contextPath: Illusive.Forensics.Evidence.eventId
+  description: The event ID
+- contextPath: Illusive.Forensics.Evidence.id
+  description: The forensics evidence ID
+- contextPath: Illusive.Forensics.Evidence.source
+  description: The Evidence source
+- contextPath: Illusive.Forensics.Evidence.starred
+  description: Whether the forensics evidence has been starred
+- contextPath: Illusive.Forensics.Evidence.time
+  description: 'Date and time of the forensics evidence '
+- contextPath: Illusive.Forensics.Evidence.title
+  description: The forensics evidence description
+- contextPath: Illusive.Forensics.IncidentId
+  description: The Incident Id
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
