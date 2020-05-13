@@ -68,7 +68,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "3"
@@ -107,7 +106,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Awake Security
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -137,7 +135,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -169,7 +166,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "7"
@@ -262,7 +258,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "9"
@@ -330,7 +325,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "14"
@@ -430,7 +424,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "15"
@@ -539,7 +532,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "17"
@@ -614,7 +606,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "12"
@@ -653,7 +644,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     scriptarguments:
       endTime: {}
       hostA:
@@ -696,5 +686,3 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
-fromversion: 4.1.0

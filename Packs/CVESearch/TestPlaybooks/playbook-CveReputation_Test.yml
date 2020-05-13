@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -68,7 +67,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries.[0]}
@@ -98,5 +96,3 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
-fromversion: 4.1.0

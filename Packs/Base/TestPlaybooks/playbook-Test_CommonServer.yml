@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -36,7 +35,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     view: |-
       {
         "position": {
@@ -57,5 +55,3 @@ view: |-
     }
   }
 inputs: []
-description: ''
-fromversion: 4.1.0

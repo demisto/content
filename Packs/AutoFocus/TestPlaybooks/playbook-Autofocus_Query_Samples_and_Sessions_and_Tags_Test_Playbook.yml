@@ -18,7 +18,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -41,7 +40,7 @@ tasks:
     task:
       id: cb181534-f342-4c03-8cb4-566dddb9db80
       version: -1
-      name: Autofocus Query Samples, Sessions and Tags
+      name: Autofocus Query Samples and Sessions
       description: |-
         This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
 
@@ -108,7 +107,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -131,7 +129,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "2"
@@ -174,7 +171,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -196,7 +192,7 @@ tasks:
     task:
       id: e3c76b3f-6fa1-48ad-8fa1-2b33f51ca3a3
       version: -1
-      name: Autofocus Query Samples, Sessions and Tags
+      name: Autofocus Query Samples and Sessions
       description: |-
         This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
 
@@ -258,7 +254,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "2"
@@ -301,7 +296,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -348,10 +342,7 @@ inputs:
 outputs:
 - contextPath: AutoFocus.SessionsResults
   type: string
-  description: ''
 - contextPath: AutoFocus.SamplesResults
   type: string
-  description: ''
 - contextPath: AutoFocus.TopTagResults
   type: unknown
-  description: ''

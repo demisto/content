@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -133,7 +132,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "7"
@@ -168,7 +166,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -199,7 +196,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "9"
@@ -306,7 +302,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "11"
@@ -428,7 +423,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -457,7 +451,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "15"
@@ -663,7 +656,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "17"
@@ -743,7 +735,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       All Results:
       - "21"
@@ -844,7 +835,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "28"
@@ -954,7 +944,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "28"
@@ -1019,7 +1008,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "26"
@@ -1292,7 +1280,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "31"
@@ -1337,7 +1324,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "29"
@@ -1385,5 +1371,3 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
-fromversion: 4.1.0
