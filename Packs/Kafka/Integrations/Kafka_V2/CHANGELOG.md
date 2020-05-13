@@ -2,6 +2,10 @@
 Added support for lz4 compressed messages.
 
 
+## [20.5.0] - 2020-05-12
+-
+
+
 ## [20.4.0] - 2020-04-14
 -
 
