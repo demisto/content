@@ -3,15 +3,6 @@ from freezegun import freeze_time
 import datetime
 from unittest.mock import patch
 
-demisto_params = {
-    "host": "https://some-triage-host/",
-    "token": "api_token",
-    "user": "user",
-}
-with patch("demistomock.params", lambda: demisto_params):
-    from CofenseTriage import CofenseTriage
-from CofenseTriage.CofenseTriage import parse_triage_date
-
 
 def fixture_from_file(fname):
     with open(f"test/fixtures/{fname}", "r") as file:
@@ -36,6 +27,15 @@ def get_demisto_arg(name):
     raise Exception(
         f'Test setup did not specify a Demisto argument named {name}. Use `set_demisto_arg("{name}", "value")`.'
     )
+
+
+set_demisto_arg("host", "https://some-triage-host/")
+set_demisto_arg("token", "api_token")
+set_demisto_arg("user", "user")
+patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
+
+from CofenseTriage import CofenseTriage  # noqa: 402
+from CofenseTriage.CofenseTriage import parse_triage_date  # noqa: 402
 
 
 @pytest.fixture(autouse=True)
