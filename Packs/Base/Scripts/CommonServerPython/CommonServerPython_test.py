@@ -1774,7 +1774,7 @@ def test_append_context(mocker, context_mock, data_mock, key, expected_answer):
 INDICATOR_VALUE_AND_TYPE = [
     ('3fec1b14cea32bbcd97fad4507b06888', "File"),
     ('1c8893f75089a27ca6a8d49801d7aa6b64ea0c6167fe8b1becfe9bc13f47bdc1', 'File'),
-    # ('castaneda-thornton.com', 'Domain'),
+    ('castaneda-thornton.com', 'Domain'),
     ('192.0.0.1', 'IP'),
     ('test@gmail.com', 'Email'),
     ('e775eb1250137c0b83d4e7c4549c71d6f10cae4e708ebf0b5c4613cbd1e91087', 'File'),
