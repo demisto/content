@@ -3,12 +3,14 @@ version: -1
 name: Test ADGetUser Fails with no instances 'Active Directory Query' (old version)
 fromversion: "4.1.0"
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
     taskid: 0d9e5b93-cd1f-4c49-86f8-72c9fd643e97
     type: start
     task:
+      description: ""
       id: 0d9e5b93-cd1f-4c49-86f8-72c9fd643e97
       version: -1
       name: ""
@@ -81,6 +83,7 @@ tasks:
     taskid: 755f9100-27ce-40bb-815a-4bab16eaf5f8
     type: condition
     task:
+      description: ""
       id: 755f9100-27ce-40bb-815a-4bab16eaf5f8
       version: -1
       name: Verify expected err message is shown
@@ -119,6 +122,7 @@ tasks:
     taskid: d510a5b6-c8e8-44c9-8e7a-a2c442532bbd
     type: title
     task:
+      description: ""
       id: d510a5b6-c8e8-44c9-8e7a-a2c442532bbd
       version: -1
       name: Done
