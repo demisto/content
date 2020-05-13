@@ -4,28 +4,6 @@ from FalconX import Client, test_module,\
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command
 import pytest
 
-
-def test_upload_file_command(mocker):
-    mocker.patch.object(Client, '_generate_token')
-    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345")
-    upload_file_args = {
-            "file": "/Users/ohaim/dev/demisto/content/Packs/Alexa/Integrations/Alexa/Alexa.py",
-            "file_name": "Alexa.py",
-            "comment": "234",
-            "is_confidential": "true"
-        }
-    upload_file_http_response = {'meta': {'query_time': 1.88e-07, 'trace_id': '3497fd7e-5781-4348-bcd9-3370092f7072'}, 'resources': [{'sha256': '1a79e1c5286a65da9f8e5d82b17a6383f7585c6b6bf2bdaba68af9cdd51f38ac', 'file_name': 'Alexa.py'}], 'errors': []}
-    upload_file_context = {'csfalconx.resource(val.resource === obj.resource)': {'sha256': '1a79e1c5286a65da9f8e5d82b17a6383f7585c6b6bf2bdaba68af9cdd51f38ac', 'file_name': 'Alexa.py'}}
-    _, outputs, _ = upload_file_command(client, **args)
-    assert outputs == context
-
-
-
-
-
-#####################################
-check_quota_status_args = {
-}
 upload_file_args = {
     "file": "/Users/ohaim/dev/demisto/content/Packs/Alexa/Integrations/Alexa/Alexa.py",
     "file_name": "Alexa.py",
@@ -402,6 +380,9 @@ find_submission_id_context = {'csfalconx.resource(val.resource === obj.resource)
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
+    (upload_file_command, upload_file_args, upload_file_http_response, upload_file_context),
+    (send_uploaded_file_to_sendbox_analysis_command, send_uploaded_file_to_sendbox_analysis_args, send_uploaded_file_to_sendbox_analysis_http_response, send_uploaded_file_to_sendbox_analysis_context),
+    (send_url_to_sandbox_analysis_command, send_url_to_sandbox_analysis_args, send_url_to_sandbox_analysis_http_response, send_url_to_sandbox_analysis_context),
     (get_full_report_command, get_full_report_args, get_full_report_http_response, get_full_report_context),
     (get_report_summary_command, get_report_summary_args, get_report_summary_http_response, get_report_summary_context),
     (get_analysis_status_command, get_analysis_status_args, get_analysis_status_http_response, get_analysis_status_context),

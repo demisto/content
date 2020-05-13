@@ -10,12 +10,10 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-URL = "https://api.crowdstrike.com/"
-
 
 class Client(BaseClient):
     """
-    Client to use in the FalconX integration. Overrides BaseClient
+    Client to use in the CrowdStrikeFalconX integration. Overrides BaseClient
     """
 
     def __init__(self, server_url: str, username: str, password: str):
@@ -26,7 +24,7 @@ class Client(BaseClient):
 
     def http_request(self, method, url_suffix, data=None, headers=None, params=None, json=None, response_type: str = 'json'):
         """
-        Generic request to FalconX
+        Generic request to CrowdStrikeFalconX
         """
         full_url = urljoin(self._base_url, url_suffix)
 
@@ -42,7 +40,7 @@ class Client(BaseClient):
             )
             if not result.ok:
                 demisto.log(result.text)
-                raise ValueError(f'Error in API call to FalconX {result.status_code}. Reason: {result.text}')
+                raise ValueError(f'Error in API call to CrowdStrikeFalconX {result.status_code}. Reason: {result.text}')
 
             if response_type != 'json':
                 return result.text
@@ -107,7 +105,7 @@ def _create_short_context_falconx(resources: dict):
     return {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
 
 
-def parse_outputs(groups_data: Dict[str, str], fields_to_drop) -> Tuple[dict, dict]:
+def parse_outputs(groups_data: Dict[str, str], fields_to_keep) -> Dict[str, str]:
     """Parse group data as received from Microsoft Graph API into Demisto's conventions
     Args:
         groups_data: a dictionary containing the group data
@@ -116,20 +114,10 @@ def parse_outputs(groups_data: Dict[str, str], fields_to_drop) -> Tuple[dict, di
         groups_readable: for the human readable
         groups_outputs: for the entry context
     """
-    if isinstance(groups_data, list):
-        groups_readable, groups_outputs = [], []
-        for group_data in groups_data:
-            group_readable = {camel_case_to_readable(i): j for i, j in group_data.items() if i not in fields_to_drop}
-            if '@removed' in group_data:
-                group_readable['Status'] = 'deleted'
-            groups_readable.append(group_readable)
-            groups_outputs.append({k.replace(' ', ''): v for k, v in group_readable.copy().items()})
-        return groups_readable, groups_outputs
-    group_readable = {camel_case_to_readable(i): j for i, j in groups_data.items() if i not in fields_to_drop}
-    if '@removed' in groups_data:
-        group_readable['Status'] = 'deleted'
-    group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
-    return group_readable, group_outputs
+    group_outputs = {}
+    for group_data in groups_data:
+        group_outputs = {i: j for i, j in group_data.items() if i in fields_to_keep}
+    return group_outputs
 
 
 def _create_full_context_falconx(resources: dict):
@@ -404,10 +392,12 @@ def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
+    url = "https://api.crowdstrike.com/"
+
     try:
         command = demisto.command()
-        LOG(f'Command being called in FalconX Sandbox is: {command}')
-        client = Client(server_url=URL, username=username, password=password)
+        LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
+        client = Client(server_url=url, username=username, password=password)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,
@@ -424,7 +414,7 @@ def main():
         if command in commands:
             return_outputs(*commands[command](client, **demisto.args()))
         else:
-            raise NotImplementedError(f'{command} is not an existing FalconX command')
+            raise NotImplementedError(f'{command} is not an existing CrowdStrikeFalconX command')
     except Exception as err:
         return_error(str(err))
 

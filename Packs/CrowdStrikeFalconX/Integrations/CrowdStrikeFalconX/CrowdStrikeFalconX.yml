@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: CrowdStrike FalconX
+  id: CrowdStrikeFalconX
   version: -1
 configuration:
 - display: Username
@@ -16,8 +16,8 @@ configuration:
   required: false
   type: 8
 description: This is the Hello World integration for getting started.
-display: FalconX
-name: FalconX
+display: CrowdStrikeFalconX
+name: CrowdStrikeFalconX
 script:
   commands:
   - arguments:
