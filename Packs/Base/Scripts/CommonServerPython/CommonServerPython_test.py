@@ -1781,10 +1781,33 @@ INDICATOR_VALUE_AND_TYPE = [
     ('test@yahoo.com', 'Email'),
     ('http://test.com', 'URL'),
     ('11.111.11.11/11', 'CIDR'),
-    ('CVE-0000-0000', 'CVE')
+    ('CVE-0000-0000', 'CVE'),
+    ('dbot@demisto.works', 'Email'),
+    ('37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com', 'Email'),
+    ('dummy@recipient.com', 'Email'),
+    ('image003.gif@01CF4D7F.1DF62650', 'Email'),
+    ('bruce.wayne@pharmtech.zz', 'Email'),
+    ('joe@gmail.com', 'Email'),
+    ('koko@demisto.com', 'Email'),
+    ('42a5e275559a1651b3df8e15d3f5912499f0f2d3d1523959c56fc5aea6371e59', 'File'),
+    ('10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e', 'File'),
+    ('52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
+    ('c8092abd8d581750c0530fa1fc8d8318', 'File'),
+    ('fe80:0000:0000:0000:91ba:7558:26d3:acde', 'IPv6'),
+    ('fd60:e22:f1b9::2', 'IPv6'),
+    ('2001:db8:0000:0000:0000:0000:0000:0000', 'IPv6'),
+    ('112.126.94.107', 'IP')
 ]
 
 
 @pytest.mark.parametrize('indicator_value, indicatory_type', INDICATOR_VALUE_AND_TYPE)
 def test_auto_detect_indicator_type(indicator_value, indicatory_type):
+    """Unit test
+    Given
+    - Indicator value
+    - Indicator type
+    Then
+    - Run the auto_detect_indicator_type from CommonServerPython
+    validate that the indicator type the function returns is as expected.
+    """
     assert auto_detect_indicator_type(indicator_value) == indicatory_type

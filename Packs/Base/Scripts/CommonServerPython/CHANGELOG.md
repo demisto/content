@@ -1,7 +1,7 @@
 ## [Unreleased]
   - Added retry mechanism to the BaseClient.
   - Fixed an issue where the **appendContext** function did not behave as expected.
-
+  - Added a new function **auto_detect_indicator_type** which detects indicators. 
 
 ## [20.5.0] - 2020-05-12
   - Added retry mechanism to the BaseClient
