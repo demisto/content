@@ -1804,12 +1804,15 @@ INDICATOR_VALUE_AND_TYPE = [
 
 @pytest.mark.parametrize('indicator_value, indicatory_type', INDICATOR_VALUE_AND_TYPE)
 def test_auto_detect_indicator_type(indicator_value, indicatory_type):
-    """Unit test
-    Given
-    - Indicator value
-    - Indicator type
-    Then
-    - Run the auto_detect_indicator_type from CommonServerPython
-    validate that the indicator type the function returns is as expected.
+    """
+        Given
+            - Indicator value
+            - Indicator type
+
+        When
+        - Trying to detect the type of an indicator.
+
+        Then
+        -  Run the auto_detect_indicator_type and validate that the indicator type the function returns is as expected.
     """
     assert auto_detect_indicator_type(indicator_value) == indicatory_type
