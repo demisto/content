@@ -19,6 +19,12 @@ It is best practice that the email received in that inbox is an email **containi
 - Optional - Should you want to perform domain-squatting checks - configure the `InternalDomains` input of the `Email Address Enrichment - Generic v2.1` playbook. We recommend to configure this so we can provide better insight into phishing emails.
 - Optional - Configure the `InternalRange` and `ResolveIP` inputs of the `IP Enrichment - External - Generic v2` playbook.
 - Optional - Configure the `Rasterize` and `VerifyURL` inputs of the `URL Enrichment - Generic v2` playbook.
+- Optional - Personalize the user engagement messages sent throughout the investigation in the `Phishing Investigation - Generic v2` playbook. 
+These task have the following names:
+  - Acknowledge incident was received (task #13)
+  - Update the user that the reported email is safe (task #16)
+  - Update the user that the reported email is malicious (task #17
+
 ##### Source Integrations
 WOP
 
