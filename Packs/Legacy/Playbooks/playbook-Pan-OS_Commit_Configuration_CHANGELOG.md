@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 Added a better error message when commit or push fails
 Added Push/Commit warnings as a playbook output
 
