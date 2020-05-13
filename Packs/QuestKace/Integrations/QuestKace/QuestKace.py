@@ -670,7 +670,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
         new_last_run = last_run
 
     if not fetch_shaping:
-        shaping_fetch(client, fetch_queue_id)
+        fetch_shaping = shaping_fetch(client, fetch_queue_id)
 
     parsed_last_time = datetime.strptime(new_last_run.get('last_fetch', ''), time_format)
     filter_after_last_run = f'created gt {parsed_last_time}'
@@ -833,11 +833,11 @@ def parse_incidents(items: list, fetch_limit: str, time_format: str, parsed_last
 
 
 def split_fields(fields: str = '') -> dict:
-    """Split str fields of Demisto arguments to SNOW request fields by the char ';'.
+    """Split str fields of Demisto arguments to request fields by the char ';'.
     Args:
         fields: fields in a string representation.
     Returns:
-        dic_fields object for SNOW requests.
+        dic_fields object for request.
     """
     dic_fields = {}
     if fields:
