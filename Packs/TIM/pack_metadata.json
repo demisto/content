@@ -3,7 +3,7 @@
     "description": "TIM threat intel management package for processing and working with indicators.",
     "support": "demisto",
     "currentVersion": "1.0.0",
-    "author": "",
+    "author": "Cortex XSOAR",
     "url": "",
     "email": "",
     "categories": [
