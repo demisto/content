@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 Deprecated - We recommend using the 'Block Indicators - Generic v2' playbook instead.
 
 
