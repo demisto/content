@@ -1,6 +1,10 @@
 ## [Unreleased]
 - Fixed an issue where the as-get-security-events command changed some IP addresses.
 
+
+## [20.5.0] - 2020-05-12
+-
+
 ## [20.4.1] - 2020-04-29
 - Add command remove entries from active list
 
