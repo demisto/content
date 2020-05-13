@@ -25,10 +25,12 @@ configuration:
   name: fetch_shaping
   required: false
   type: 0
+  additionalinfo: Shaping parameter limits the amount of returned data. In order to get more extended data use shaping. If non is givven all the data will be returned.
 - display: Filter for the tickets
   name: fetch_filter
   required: false
   type: 0
+  additionalinfo: Adding this argument will enable you to filter the results. e.g "id eq 2" , "machine.name eq Mac".
 - defaultvalue: '50'
   display: Fetch limit per query
   name: fetch_limit
@@ -39,6 +41,7 @@ configuration:
   name: fetch_queue_id
   required: false
   type: 0
+  additionalinfo: If you wish to fetch incidents of a specific queues should add their ids with seperated comma. By default all tickets from all queues will be returned.
 - display: Incident type
   name: incidentType
   required: false
@@ -469,7 +472,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Can enter custom fields for the new ticket.
+      description: Custom (user defined) fields in the format - fieldname1=value;fieldname2=value
       isArray: false
       name: custom_fields
       required: false
@@ -561,7 +564,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: custom fields for update of ticket.
+      description: Custom (user defined) fields in the format - fieldname1=value;fieldname2=value
       isArray: false
       name: custom_fields
       required: false
