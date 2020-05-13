@@ -3,12 +3,14 @@ version: -1
 name: Carbon Black Enterprise Protection V2 Test
 fromversion: 4.1.0
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
     taskid: 510a4c38-701c-4f64-87b3-8304c6084cc7
     type: start
     task:
+      description: ""
       id: 510a4c38-701c-4f64-87b3-8304c6084cc7
       version: -1
       name: ""
@@ -84,6 +86,7 @@ tasks:
     taskid: e1e13dde-27d5-4bef-813c-45f12e7367d6
     type: title
     task:
+      description: ""
       id: e1e13dde-27d5-4bef-813c-45f12e7367d6
       version: -1
       name: Connector
@@ -144,6 +147,7 @@ tasks:
     taskid: 803e3425-e6c3-4417-8c7c-3343089e3acb
     type: title
     task:
+      description: ""
       id: 803e3425-e6c3-4417-8c7c-3343089e3acb
       version: -1
       name: Done
@@ -168,6 +172,7 @@ tasks:
     taskid: e185aab4-c670-4dcb-89d9-123aa6550168
     type: title
     task:
+      description: ""
       id: e185aab4-c670-4dcb-89d9-123aa6550168
       version: -1
       name: Computer
@@ -236,6 +241,7 @@ tasks:
     taskid: 3dcb377a-0a08-45c2-8a6c-e42d13e91f16
     type: condition
     task:
+      description: ""
       id: 3dcb377a-0a08-45c2-8a6c-e42d13e91f16
       version: -1
       name: Verify context
@@ -319,6 +325,7 @@ tasks:
     taskid: 5e8607ee-6387-4ff4-8c01-e63e6b382b61
     type: condition
     task:
+      description: ""
       id: 5e8607ee-6387-4ff4-8c01-e63e6b382b61
       version: -1
       name: Verify context
@@ -369,6 +376,7 @@ tasks:
     taskid: c81a1f2f-3113-4d2b-8cc7-ff3969f2bff2
     type: title
     task:
+      description: ""
       id: c81a1f2f-3113-4d2b-8cc7-ff3969f2bff2
       version: -1
       name: File Catalog
@@ -433,6 +441,7 @@ tasks:
     taskid: 32cc965e-dc6e-4609-843a-b5c21018f533
     type: condition
     task:
+      description: ""
       id: 32cc965e-dc6e-4609-843a-b5c21018f533
       version: -1
       name: Verify context
@@ -493,6 +502,7 @@ tasks:
     taskid: 773c7fc6-1caa-4a1b-88e3-19a5eb7ec345
     type: title
     task:
+      description: ""
       id: 773c7fc6-1caa-4a1b-88e3-19a5eb7ec345
       version: -1
       name: File Instance
@@ -558,6 +568,7 @@ tasks:
     taskid: 73be311b-86ec-4aa4-8a3f-faa3930c294e
     type: condition
     task:
+      description: ""
       id: 73be311b-86ec-4aa4-8a3f-faa3930c294e
       version: -1
       name: Verify context
@@ -638,6 +649,7 @@ tasks:
     taskid: d9a8d77f-2229-4508-8bf7-9243de22b085
     type: title
     task:
+      description: ""
       id: d9a8d77f-2229-4508-8bf7-9243de22b085
       version: -1
       name: Event
@@ -703,6 +715,7 @@ tasks:
     taskid: 611b9fa5-12b4-4105-8506-cc5edff4a651
     type: condition
     task:
+      description: ""
       id: 611b9fa5-12b4-4105-8506-cc5edff4a651
       version: -1
       name: Verify context
@@ -747,6 +760,7 @@ tasks:
     taskid: 83d121a8-372f-476a-88f4-2ef4abf6c31b
     type: title
     task:
+      description: ""
       id: 83d121a8-372f-476a-88f4-2ef4abf6c31b
       version: -1
       name: File rule
@@ -890,6 +904,7 @@ tasks:
     taskid: 0394bb25-1683-4192-8303-6341e945e0af
     type: condition
     task:
+      description: ""
       id: 0394bb25-1683-4192-8303-6341e945e0af
       version: -1
       name: Verify file was deleted
@@ -976,6 +991,7 @@ tasks:
     taskid: b1231daf-e175-46f2-83e9-60043afea590
     type: condition
     task:
+      description: ""
       id: b1231daf-e175-46f2-83e9-60043afea590
       version: -1
       name: Verify context
@@ -1016,6 +1032,7 @@ tasks:
     taskid: 2db523de-0db8-4b84-8f1c-a4883cd0ffac
     type: title
     task:
+      description: ""
       id: 2db523de-0db8-4b84-8f1c-a4883cd0ffac
       version: -1
       name: Policy
@@ -1080,6 +1097,7 @@ tasks:
     taskid: e5ba24ce-bf14-476e-8d77-384c62a0f3d7
     type: condition
     task:
+      description: ""
       id: e5ba24ce-bf14-476e-8d77-384c62a0f3d7
       version: -1
       name: Verify context
@@ -1134,6 +1152,7 @@ tasks:
     taskid: f69e6242-c5b7-4a2d-89b4-1c1d4da6dd3b
     type: title
     task:
+      description: ""
       id: f69e6242-c5b7-4a2d-89b4-1c1d4da6dd3b
       version: -1
       name: Server Config
@@ -1198,6 +1217,7 @@ tasks:
     taskid: fd6cbb72-c726-4eb6-8caf-df3686d92257
     type: condition
     task:
+      description: ""
       id: fd6cbb72-c726-4eb6-8caf-df3686d92257
       version: -1
       name: Verify context
@@ -1248,6 +1268,7 @@ tasks:
     taskid: 16f9c326-ee7b-4147-829b-3c38cd537099
     type: title
     task:
+      description: ""
       id: 16f9c326-ee7b-4147-829b-3c38cd537099
       version: -1
       name: Publisher
@@ -1275,6 +1296,7 @@ tasks:
     taskid: 5e9d73d9-71d0-4839-879b-e9c02c891f57
     type: regular
     task:
+      description: ""
       id: 5e9d73d9-71d0-4839-879b-e9c02c891f57
       version: -1
       name: Search publisher
@@ -1315,6 +1337,7 @@ tasks:
     taskid: fb330c7a-a900-4ad0-808e-388f84e8c546
     type: condition
     task:
+      description: ""
       id: fb330c7a-a900-4ad0-808e-388f84e8c546
       version: -1
       name: Verify context
@@ -1375,6 +1398,7 @@ tasks:
     taskid: b2d58d16-3cf9-4be2-80e6-1129257cf69d
     type: title
     task:
+      description: ""
       id: b2d58d16-3cf9-4be2-80e6-1129257cf69d
       version: -1
       name: File Analysis
@@ -1441,6 +1465,7 @@ tasks:
     taskid: 772b941a-6999-4492-824a-0858db8fbf27
     type: condition
     task:
+      description: ""
       id: 772b941a-6999-4492-824a-0858db8fbf27
       version: -1
       name: Verify context
@@ -1533,6 +1558,7 @@ tasks:
     taskid: 1e0eda1b-e29f-4eb1-81ab-42f88d540987
     type: condition
     task:
+      description: ""
       id: 1e0eda1b-e29f-4eb1-81ab-42f88d540987
       version: -1
       name: Verify context
@@ -1573,6 +1599,7 @@ tasks:
     taskid: e931dcff-c2e7-4b9c-8493-21fda1e437e9
     type: title
     task:
+      description: ""
       id: e931dcff-c2e7-4b9c-8493-21fda1e437e9
       version: -1
       name: File Upload
@@ -1674,6 +1701,7 @@ tasks:
     taskid: 257ca916-19c4-4b19-8927-d2f46f6cf7f4
     type: condition
     task:
+      description: ""
       id: 257ca916-19c4-4b19-8927-d2f46f6cf7f4
       version: -1
       name: Verify context
@@ -1709,6 +1737,7 @@ tasks:
     taskid: b5491893-eee3-4619-8d4a-fc79ad483ed0
     type: title
     task:
+      description: ""
       id: b5491893-eee3-4619-8d4a-fc79ad483ed0
       version: -1
       name: Connector
@@ -1806,6 +1835,7 @@ tasks:
     taskid: b205f574-cca4-4984-86e0-ad18170f0352
     type: condition
     task:
+      description: ""
       id: b205f574-cca4-4984-86e0-ad18170f0352
       version: -1
       name: Verify context
@@ -1936,6 +1966,7 @@ tasks:
     taskid: d459dc48-3a52-463c-878d-f91292c94b6d
     type: condition
     task:
+      description: ""
       id: d459dc48-3a52-463c-878d-f91292c94b6d
       version: -1
       name: Verify context
@@ -2108,6 +2139,7 @@ tasks:
     taskid: 448eb52d-f0cb-40cf-8e46-6e2dda6dd3d2
     type: condition
     task:
+      description: ""
       id: 448eb52d-f0cb-40cf-8e46-6e2dda6dd3d2
       version: -1
       name: Verify context
