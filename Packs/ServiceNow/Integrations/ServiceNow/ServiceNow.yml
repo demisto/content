@@ -66,7 +66,7 @@ configuration:
   required: false
   type: 8
 description: Deprecated - We recommend using ServiceNow v2 instead.
-display: ServiceNow
+display: ServiceNow - Deprecated
 deprecated: true
 name: ServiceNow
 script:
