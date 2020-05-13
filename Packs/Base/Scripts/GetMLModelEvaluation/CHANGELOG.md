@@ -1,6 +1,10 @@
 ## [Unreleased]
-- You can now train a model even when not reaching the minimum precision target. In case the target is not reached, the closest threshold will be returned. 
+- You can now train a model even when not reaching the minimum precision target. In case the target is not reached, the closest threshold will be returned.
 - Added support for model evaluation using different confidence thresholds for each class.
+
+
+## [20.5.0] - 2020-05-12
+-
 
 
 ## [20.4.0] - 2020-04-14
