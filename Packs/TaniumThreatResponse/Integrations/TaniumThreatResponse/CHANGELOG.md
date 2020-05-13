@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where ***tanium-tr-get-downloaded-file*** retrieved a malformed file. 
 
 ## [20.4.1] - 2020-04-29
 -

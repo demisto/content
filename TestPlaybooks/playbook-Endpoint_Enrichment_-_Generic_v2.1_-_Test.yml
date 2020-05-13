@@ -1,6 +1,5 @@
 id: Endpoint Enrichment - Generic v2.1 - Test
 version: -1
-fromversion: 4.1.0
 name: Endpoint Enrichment - Generic v2.1 - Test
 description: |-
   A test for the Endpoint Enrichment - Generic playbook.
@@ -16,15 +15,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f8d5225f-3f65-42e5-8736-3d3a8cc3cb5e
+    taskid: 51d76c40-db3f-4bfb-81b7-700c0be7d9c4
     type: start
     task:
-      id: f8d5225f-3f65-42e5-8736-3d3a8cc3cb5e
+      id: 51d76c40-db3f-4bfb-81b7-700c0be7d9c4
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -41,10 +40,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 096c1417-0941-48ef-8875-d0e0b166fd5b
+    taskid: 8c86995c-33dd-43ca-80f9-9850be9ae82c
     type: regular
     task:
-      id: 096c1417-0941-48ef-8875-d0e0b166fd5b
+      id: 8c86995c-33dd-43ca-80f9-9850be9ae82c
       version: -1
       name: Delete Context
       description: Clear context for a fresh start of the test.
@@ -75,10 +74,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 08592196-e4d8-48e5-8023-17bb56751b1a
+    taskid: ba25bb46-15fd-4d06-8491-de100a9ca8b5
     type: regular
     task:
-      id: 08592196-e4d8-48e5-8023-17bb56751b1a
+      id: ba25bb46-15fd-4d06-8491-de100a9ca8b5
       version: -1
       name: Set hostnames in context
       description: Sets a value into the context with the given context key.
@@ -108,16 +107,16 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 57597566-c297-4f70-89eb-a8fb2b6d28f2
+    taskid: 63ee6de7-76f6-4e99-88ad-0b0c217871fd
     type: title
     task:
-      id: 57597566-c297-4f70-89eb-a8fb2b6d28f2
+      id: 63ee6de7-76f6-4e99-88ad-0b0c217871fd
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -131,10 +130,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: d279268a-58f3-4bde-8fb8-4b6712498e29
+    taskid: b07a17a8-6610-4437-8307-d9cd7197e5cd
     type: condition
     task:
-      id: d279268a-58f3-4bde-8fb8-4b6712498e29
+      id: b07a17a8-6610-4437-8307-d9cd7197e5cd
       version: -1
       name: Did enrichment work?
       description: Checks whether the enrichment outputs that we expected are in the
@@ -157,24 +156,20 @@ tasks:
               complex:
                 root: Endpoint
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: ID
                       iscontext: true
                     right:
                       value:
-                        simple: CN=moshe,DC=demisto,DC=ninja
+                        simple: DC=demisto,DC=ninja
             iscontext: true
-      - - operator: containsGeneral
+      - - operator: isExists
           left:
             value:
-              simple: Endpoint.OSVersion
+              simple: Endpoint.CbSensorID
             iscontext: true
-          right:
-            value:
-              simple: Windows 7
-          ignorecase: true
     view: |-
       {
         "position": {
@@ -187,10 +182,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: afc9aa2d-ff12-48cf-87bb-a4e5cf9f4638
+    taskid: ade5fa29-00fc-4a66-86f5-58a94dd3a4db
     type: regular
     task:
-      id: afc9aa2d-ff12-48cf-87bb-a4e5cf9f4638
+      id: ade5fa29-00fc-4a66-86f5-58a94dd3a4db
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message
@@ -221,17 +216,17 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 82b2e537-3a2e-45b9-8b97-9879f23d00f5
+    taskid: d07d9734-b6b6-4e27-8518-1524bcb6f005
     type: playbook
     task:
-      id: 82b2e537-3a2e-45b9-8b97-9879f23d00f5
+      id: d07d9734-b6b6-4e27-8518-1524bcb6f005
       version: -1
       name: Endpoint Enrichment - Generic v2.1
-      description: ""
       playbookName: Endpoint Enrichment - Generic v2.1
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -260,3 +255,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

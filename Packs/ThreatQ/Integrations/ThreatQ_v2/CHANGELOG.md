@@ -1,4 +1,8 @@
 ## [Unreleased]
+Fixed an issue where indicators with custom indicator statuses, indicator types, event types and attachment types would raise an error.
+
+
+## [20.5.0] - 2020-05-12
 -
 
 
