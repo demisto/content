@@ -1,4 +1,4 @@
-id: TIM_Processing - Add Bad Hash Indicators To SIEM
+id: TIM - Add Bad Hash Indicators To SIEM
 version: -1
 fromversion: 5.5.0
 name: TIM_Processing - Add Bad Hash Indicators To SIEM
