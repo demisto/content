@@ -31,6 +31,7 @@ script: |-
   demisto.results({'Type': entryTypes['note'], 'Contents': nicerRes, 'ContentsFormat': formats['json'], 'HumanReadable': tableToMarkdown('AD URLs', nicerRes) + '\nTotal: ' + str(totalAds),
       'EntryContext': {'Ads': nicerRes, 'URL(val.Data == obj.Data)': {'Data': u, 'AdsCount': totalAds}}})
 type: python
+subtype: python2
 tags:
 - Utility
 comment: Fetches the numbers of ads in the given url

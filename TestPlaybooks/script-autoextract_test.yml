@@ -28,6 +28,7 @@ script: |
       'HumanReadable': indicator_data
       })
 type: python
+subtype: python2
 tags:
 - autoextract
 comment: |-

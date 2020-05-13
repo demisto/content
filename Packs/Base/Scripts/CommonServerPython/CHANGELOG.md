@@ -1,4 +1,12 @@
 ## [Unreleased]
+  - Added retry mechanism to the BaseClient.
+  - Fixed an issue where the **appendContext** function did not behave as expected.
+
+
+## [20.5.0] - 2020-05-12
+  - Added retry mechanism to the BaseClient
+
+## [20.4.1] - 2020-04-29
   - Deprecated the following enums: 
     - **entryTypes**
     - **formats**
@@ -16,6 +24,7 @@
     - **Domain**
     - **WHOIS**
     - **CommandResults** (returns results to the War Room)
+  - Added support for traceback in debug-log mode.
 
 ## [20.4.0] - 2020-04-14
   - Added the argument *ignore_auto_extract* to the ***return_outputs*** command.

@@ -1,7 +1,7 @@
 {
     "scan_id": "d8945310-f8d9-476b-bbd5-980505382c7f",
     "status": "COMPLETE",
-    "data": [
+    "entities": [
         {
             "type": "Smart Beer",
             "entity-id": "4e9a0f0f-2a24-46b5-bbb1-1ea5b1362ece",
