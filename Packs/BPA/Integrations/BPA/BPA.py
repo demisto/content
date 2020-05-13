@@ -116,7 +116,7 @@ class Client(BaseClient):
         return response
 
     def get_download_results_request(self, task_id: str) -> bytes:
-        response = self._http_request('GET', f'results/{task_id}/download', resp_type='content')
+        response = self._http_request('GET', f'results/{task_id}/download', resp_type='content', proxies=self.proxies)
         return response
 
 
