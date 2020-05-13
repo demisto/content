@@ -30,4 +30,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![TIM - QRadar Add Url Indicators](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_QRadar_Add_Url_Indicators.png)
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/QRadar/doc_files/TIM_-_QRadar_Add_Url_Indicators.png)
