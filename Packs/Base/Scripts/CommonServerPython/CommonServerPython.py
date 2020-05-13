@@ -14,7 +14,7 @@ import socket
 import sys
 import time
 import traceback
-import tldextract
+# import tldextract
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -3635,13 +3635,13 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(domainRegex, indicator_value):
         return FeedIndicatorType.Domain
 
-    try:
-        if tldextract.extract(indicator_value).suffix:
-            if '*' in indicator_value:
-                return FeedIndicatorType.DomainGlob
-            return FeedIndicatorType.Domain
-    except Exception:
-        pass
+    # try:
+    #     if tldextract.extract(indicator_value).suffix:
+    #         if '*' in indicator_value:
+    #             return FeedIndicatorType.DomainGlob
+    #         return FeedIndicatorType.Domain
+    # except Exception:
+    #     pass
 
     return None
 
