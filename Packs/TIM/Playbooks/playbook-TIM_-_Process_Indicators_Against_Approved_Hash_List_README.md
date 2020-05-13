@@ -32,4 +32,6 @@ This playbook does not use any sub-playbooks.
 | HashesInApprovedList | File hashes that are found in the approved\_hash list. | string |
 | HashesNotInApprovedList | File hashes that are not found in the approved\_hash list. | string |
 
-![TIM - Process Indicators Against Approved Hash List](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Process_Indicators_Against_Approved_Hash_List.png)
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Process_Indicators_Against_Approved_Hash_List.png)

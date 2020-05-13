@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/05df12f12419ea6911a106ff61b4dc9a2780d55e/docs/im    ages/playbooks/TIM_-_Review_Indicators_Manually_For_Whitelisting.png)
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Review_Indicators_Manually_For_Whitelisting.png)

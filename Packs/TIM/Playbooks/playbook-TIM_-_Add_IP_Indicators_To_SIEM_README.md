@@ -29,4 +29,6 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
-![TIM - Add IP Indicators To SIEM](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Add_IP_Indicators_To_SIEM.png)
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Add_IP_Indicators_To_SIEM.png)

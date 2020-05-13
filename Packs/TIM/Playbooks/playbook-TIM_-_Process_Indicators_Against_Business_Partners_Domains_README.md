@@ -32,4 +32,6 @@ This playbook does not use any sub-playbooks.
 | BusinessPartnerDomain | Domain that are found in the business partner domains list. | string |
 | NotBusinessPartnerDomain | Domain that are not found in the business partner domains list. | string |
 
-![TIM - Process Indicators Against Business Partners Domains List](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Process_Indicators_Against_Business_Partners_Domains.png)
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Process_Indicators_Against_Business_Partners_Domains.png)

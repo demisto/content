@@ -29,4 +29,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![TIM - Process Indicators - Manual Review](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Process_Indicators_-_Manual_Review.png)
+## Playbook Image
+---
+![Playbook Image](https://github.com/demisto/content/blob/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Process_Indicators_-_Manual_Review.png)

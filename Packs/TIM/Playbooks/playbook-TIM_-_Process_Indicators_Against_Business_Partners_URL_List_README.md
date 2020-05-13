@@ -32,4 +32,6 @@ This playbook does not use any sub-playbooks.
 | BusinessPartnerUrl | URLs that are found in the business partner url list. | string |
 | NotBusinessPartnerUrl | URLs that are not found in the business partner url list. | string |
 
-![TIM - Process Indicators Against Business Partners URL List](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Process_Indicators_Against_Business_Partners_URL_List.png)
+## Playbook Image
+---
+![Playbook Image](https://github.com/demisto/content/blob/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Process_Indicators_Against_Business_Partners_URL_List.png)

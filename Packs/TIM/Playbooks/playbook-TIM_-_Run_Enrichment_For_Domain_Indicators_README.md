@@ -30,4 +30,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![TIM - Run Enrichment For Domain Indicators](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Run_Enrichment_For_Domain_Indicators.png)
+## Playbook Image
+---
+![Playbook Image](https://github.com/demisto/content/blob/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Run_Enrichment_For_Domain_Indicators.png)

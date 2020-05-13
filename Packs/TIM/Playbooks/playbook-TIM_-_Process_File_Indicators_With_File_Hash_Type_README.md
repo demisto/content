@@ -26,4 +26,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![TIM - Process File Indicators With File Hash Type](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Process_File_Indicators_With_File_Hash_Type.png)
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Process_File_Indicators_With_File_Hash_Type.png)

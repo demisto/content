@@ -29,4 +29,6 @@ This playbook does not use any commands.
 ---
 There are no outputs for this playbook.
 
-![TIM - Add Url Indicators To SIEM](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Add_Url_Indicators_To_SIEM.png)
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_Add_Url_Indicators_To_SIEM.png)
