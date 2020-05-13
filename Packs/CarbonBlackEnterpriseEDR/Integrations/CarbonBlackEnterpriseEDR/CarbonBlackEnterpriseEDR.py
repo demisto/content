@@ -6,9 +6,6 @@ import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-# IMPORTS
-
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -42,33 +39,35 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
 
-    def search_alerts_request(self, group_results, minimum_severity, create_time, device_os_version,
-                              policy_id, alert_tag, alert_id, device_username, device_id, device_os,
-                              process_sha256, policy_name, reputation, alert_type, alert_category,
-                              workflow, device_name, process_name, sort_field, sort_order, limit):
+    def search_alerts_request(self, group_results: bool, minimum_severity: int, create_time: dict,
+                              device_os_version: str, policy_id: int, alert_tag: str, alert_id: str,
+                              device_username: str, device_id: int, device_os: str, process_sha256: str,
+                              policy_name: str, reputation: str, alert_type: str, alert_category: str, workflow: str,
+                              device_name: str, process_name: str, sort_field: str, sort_order: str,
+                              limit: int) -> dict:
 
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/alerts/_search'
         body = {
-            "criteria": {
-                'group_results': group_results,
-                'minimum_severity': minimum_severity,
-                'create_time': create_time,
-                'device_os_version': device_os_version,
-                'policy_id': policy_id,
-                'tag': alert_tag,
-                'id': alert_id,
-                'device_username': device_username,
-                'device_id': device_id,
-                'device_os': device_os,
-                'process_sha256': process_sha256,
-                'policy_name': policy_name,
-                'reputation': reputation,
-                'type': alert_type,
-                'category': alert_category,
-                'workflow': workflow,
-                'device_name': device_name,
-                'process_name': process_name
-            },
+            'criteria': assign_params(
+                group_results=group_results,
+                minimum_severity=minimum_severity,
+                create_time=create_time,
+                device_os_version=device_os_version,
+                policy_id=policy_id,
+                tag=alert_tag,
+                id=alert_id,
+                device_username=device_username,
+                device_id=device_id,
+                device_os=device_os,
+                process_sha256=process_sha256,
+                policy_name=policy_name,
+                reputation=reputation,
+                type=alert_type,
+                category=alert_category,
+                workflow=workflow,
+                device_name=device_name,
+                process_name=process_name
+            ),
             'sort': [
                 {
                     'field': sort_field,
@@ -78,10 +77,10 @@ class Client(BaseClient):
             'rows': limit,
             'start': 0
         }
-
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def alert_workflow_update_request(self, alert_id, state, comment, remediation_state):
+    def alert_workflow_update_request(self, alert_id: str, state: str, comment: str,
+                                      remediation_state: str) -> Dict[str, Any]:
 
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/alerts/{alert_id}/workflow'
         body = assign_params(
@@ -94,7 +93,7 @@ class Client(BaseClient):
 
     def devices_list_request(self, device_id: Union[list, str], status: str, device_os: str,
                              last_contact_time: Dict[str, Optional[Any]], ad_group_id: int, policy_id: int,
-                             target_priority: str, limit: int, sort_field: str, sort_order: str):
+                             target_priority: str, limit: int, sort_field: str, sort_order: str) -> dict:
 
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/devices/_search'
 
@@ -120,7 +119,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def device_quarantine_request(self, device_id: Union[list, str]):
+    def device_quarantine_request(self, device_id: Union[list, str]) -> None:
 
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/device_actions'
 
@@ -134,7 +133,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_unquarantine_request(self, device_id: Union[list, str]):
+    def device_unquarantine_request(self, device_id: Union[list, str]) -> None:
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/device_actions'
 
         body = {
@@ -147,7 +146,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_bypass_request(self, device_id: Union[list, str]):
+    def device_bypass_request(self, device_id: Union[list, str]) -> None:
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/device_actions'
 
         body = {
@@ -160,7 +159,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_unbypass_request(self, device_id: Union[list, str]):
+    def device_unbypass_request(self, device_id: Union[list, str]) -> None:
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/device_actions'
 
         body = {
@@ -173,7 +172,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_background_scan_request(self, device_id: Union[list, str]):
+    def device_background_scan_request(self, device_id: Union[list, str]) -> None:
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/device_actions'
 
         body = {
@@ -186,7 +185,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_background_scan_request_stop(self, device_id: Union[list, str]):
+    def device_background_scan_request_stop(self, device_id: Union[list, str]) -> None:
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/device_actions'
 
         body = {
@@ -199,7 +198,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_policy_update(self, device_id: Union[list, str], policy_id: str):
+    def device_policy_update(self, device_id: Union[list, str], policy_id: str) -> None:
         suffix_url = f'/appservices/v6/orgs/{CB_ORG_KEY}/device_actions'
 
         body = {
@@ -227,14 +226,14 @@ def test_module(client):
     return 'ok'
 
 
-def alert_list_command(client: Client, args: dict):
+def alert_list_command(client: Client, args: dict) -> CommandResults:
 
     group_results = args.get('group_results')
     minimum_severity = args.get('minimum_severity')
-    create_time = {
-        'start': args.get('start_time'),
-        'end': args.get('end_time')
-    }
+    create_time = assign_params(
+        start=args.get('start_time'),
+        end=args.get('end_time')
+    )
     device_os_version = argToList(args.get('device_os_version'))
     policy_id = argToList(args.get('policy_id'))
     alert_tag = argToList(args.get('alert_tag'))
@@ -262,6 +261,8 @@ def alert_list_command(client: Client, args: dict):
                                           process_name, sort_field, sort_order, limit)
 
     alerts = result.get('results')
+    if not alerts:
+        return 'No alerts were found'
     for alert in alerts:
         contents.append({
             'AlertID': alert.get('id'),
@@ -271,7 +272,7 @@ def alert_list_command(client: Client, args: dict):
             'PolicyName': alert.get('policy_name'),
             'ProcessName': alert.get('process_name'),
             'Type': alert.get('type'),
-            'WorkflowState': alert.get('workflow').get('state')
+            'WorkflowState': alert.get('workflow', {}).get('state')
         })
 
     readable_output = tableToMarkdown('Alerts list results', contents)
@@ -285,7 +286,7 @@ def alert_list_command(client: Client, args: dict):
     return results
 
 
-def alert_workflow_update_command(client: Client, args: dict):
+def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
 
     alert_id = args.get('alert_id')
     state = args.get('state')
@@ -314,7 +315,7 @@ def alert_workflow_update_command(client: Client, args: dict):
     return results
 
 
-def list_devices_command(client: Client, args: dict):
+def list_devices_command(client: Client, args: dict) -> CommandResults:
     device_id = argToList(args.get('device_id'))
     status = argToList(args.get('status'))
     device_os = argToList(args.get('device_os'))
@@ -334,6 +335,8 @@ def list_devices_command(client: Client, args: dict):
     result = client.devices_list_request(device_id, status, device_os, last_contact_time, ad_group_id, policy_id,
                                          target_priority, limit, sort_field, sort_order)
     devices = result.get('results')
+    if not devices:
+        return 'No devices were found.'
     for device in devices:
         contents.append({
             'ID': device.get('id'),
@@ -349,7 +352,6 @@ def list_devices_command(client: Client, args: dict):
             'TargetPriority': device.get('target_priority')
         })
 
-
     readable_output = tableToMarkdown('Devices list results', contents)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Device',
@@ -361,57 +363,57 @@ def list_devices_command(client: Client, args: dict):
     return results
 
 
-def device_quarantine_command(client: Client, args: dict):
+def device_quarantine_command(client: Client, args: dict) -> str:
 
     device_id = argToList(args.get('device_id'))
     client.device_quarantine_request(device_id)
 
-    return 'The device has been quarantine'
+    return f'The device {device_id} has been quarantined successfully.'
 
 
-def device_unquarantine_command(client: Client, args: dict):
+def device_unquarantine_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_unquarantine_request(device_id)
 
-    return 'The device has been unquarantine'
+    return f'The device {device_id} has been unquarantined successfully.'
 
 
-def device_bypass_command(client: Client, args: dict):
+def device_bypass_command(client: Client, args: dict) -> str:
 
     device_id = argToList(args.get('device_id'))
     client.device_bypass_request(device_id)
 
-    return 'The bypassed has been enabled'
+    return f'The device {device_id} bypass has been enabled successfully.'
 
 
-def device_unbypass_command(client: Client, args: dict):
+def device_unbypass_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_unbypass_request(device_id)
 
-    return 'The bypass has been disabled.'
+    return f'The device {device_id} bypass has been disabled successfully.'
 
 
-def device_background_scan_command(client: Client, args: dict):
+def device_background_scan_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_background_scan_request(device_id)
 
-    return 'The background scan has been enabled.'
+    return f'The device {device_id} background scan has been enabled successfully.'
 
 
-def device_background_scan_stop_command(client: Client, args: dict):
+def device_background_scan_stop_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_background_scan_request_stop(device_id)
 
-    return 'The background scan has been disabled.'
+    return f'The device {device_id} background scan has been disabled successfully.'
 
 
-def device_policy_update_command(client: Client, args: dict):
+def device_policy_update_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     policy_id = args.get('policy_id')
 
     client.device_policy_update(device_id, policy_id)
 
-    return f'The policy has been assigned to device {device_id}'
+    return f'The policy {policy_id} has been assigned to device {device_id} successfully.'
 
 # def fetch_incidents(client, last_run, first_fetch_time):
 #     """

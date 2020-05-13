@@ -1,9 +1,9 @@
-category: Authentication
+category: Endpoint
 commonfields:
-  id: CarbonBlackEnterpriseEDR
+  id: Carbon Black Enterprise EDR
   version: -1
 configuration:
-- display: Server URL (e.g. https://example.net)
+- display: Server URL (e.g. https://defense.conferdeploy.net)
   name: url
   required: true
   type: 0
@@ -11,7 +11,7 @@ configuration:
   hidden: false
   name: organization_key
   required: true
-  type: 0
+  type: 4
 - display: Custom Key
   name: custom_key
   required: true
@@ -38,8 +38,8 @@ configuration:
   required: false
   type: 8
 description: This is the Hello World integration for getting started.
-display: CarbonBlackEnterpriseEDR
-name: CarbonBlackEnterpriseEDR
+display: Carbon Black Enterprise EDR
+name: Carbon Black Enterprise EDR
 script:
   commands:
   - arguments:
