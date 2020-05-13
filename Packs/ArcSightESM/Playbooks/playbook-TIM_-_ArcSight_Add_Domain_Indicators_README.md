@@ -33,4 +33,6 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-![TIM - ArcSight Add Domain Indicators](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/TIM_-_ArcSight_Add_Domain_Indicators.png)
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/ArcSightESM/doc_files/TIM_-_ArcSight_Add_Domain_Indicators.png)
