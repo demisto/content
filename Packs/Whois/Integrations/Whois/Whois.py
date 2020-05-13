@@ -8270,7 +8270,8 @@ def get_domain_from_query(query):
 
 def create_outputs(whois_result, domain, query=None):
     md = {'Name': domain}
-    ec = {'Name': domain}
+    ec = {'Name': domain,
+          'QueryResult': 'NOT FOUND' not in str(whois_result.get('raw', 'NOT FOUND'))}
     standard_ec = {}  # type:dict
     standard_ec['WHOIS'] = {}
     if 'status' in whois_result:

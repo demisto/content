@@ -1,10 +1,8 @@
 # pylint: disable=no-member
+import demisto_ml
+import pandas as pd
 from collections import defaultdict, Counter
 from io import BytesIO, StringIO
-
-import demisto_ml
-import numpy as np
-import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 
 from CommonServerPython import *
@@ -111,7 +109,8 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
     return new_data, dict(exist_labels_counter), dict(missing_labels_counter)
 
 
-def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix):
+def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true, y_test_pred,
+                           y_test_pred_prob):
     model = demisto_ml.train_text_classifier(X, y, True)
     model_data = demisto_ml.encode_model(model)
     model_labels = demisto_ml.get_model_labels(model)
@@ -119,7 +118,9 @@ def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix):
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelLabels': model_labels,
-                                                   'modelOverride': model_override})
+                                                   'modelOverride': model_override,
+                                                   'modelExtraInfo': {'threshold': threshold}
+                                                   })
     if is_error(res):
         return_error(get_error(res))
     confusion_matrix_no_all = {k: v for k, v in confusion_matrix.items() if k != 'All'}
@@ -127,7 +128,12 @@ def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix):
                                for k, v in confusion_matrix_no_all.items()}
     res = demisto.executeCommand('evaluateMLModel',
                                  {'modelConfusionMatrix': confusion_matrix_no_all,
-                                  'modelName': model_name})
+                                  'modelName': model_name,
+                                  'modelEvaluationVectors': {'Ypred': y_test_pred,
+                                                             'Ytrue': y_test_true,
+                                                             'YpredProb': y_test_pred_prob
+                                                             }
+                                  })
     if is_error(res):
         return_error(get_error(res))
 
@@ -164,16 +170,18 @@ def set_tag_field(data, tag_fields):
 
 
 def output_model_evaluation(model_name, y_test, y_pred, res, context_field, human_readable_title=None):
-    threshold = float(res[0]['Contents']['threshold'])
-    confusion_matrix = json.loads(res[0]['Contents']['csr_matrix_at_threshold'])
-    metrics_df = json.loads(res[0]['Contents']['metrics_df'])
-    human_readable = res[0]['HumanReadable']
+    threshold = float(res['Contents']['threshold'])
+    confusion_matrix_at_thresh = json.loads(res['Contents']['csr_matrix_at_threshold'])
+    confusion_matrix_no_thresh = json.loads(res['Contents']['csr_matrix_no_threshold'])
+    metrics_df = json.loads(res['Contents']['metrics_df'])
+    human_readable = res['HumanReadable']
     if human_readable_title is not None:
         human_readable = '\n'.join([human_readable_title, human_readable])
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': {'Threshold': threshold, 'ConfusionMatrixAtThreshold': confusion_matrix,
-                     'Metrics': metrics_df, 'YTrue': y_test, 'YPred': y_pred},
+        'Contents': {'Threshold': threshold, 'ConfusionMatrixAtThreshold': confusion_matrix_at_thresh,
+                     'ConfusionMatrixNoThreshold': confusion_matrix_no_thresh, 'Metrics': metrics_df,
+                     'YTrue': y_test, 'YPred': y_pred},
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
@@ -181,12 +189,14 @@ def output_model_evaluation(model_name, y_test, y_pred, res, context_field, huma
             context_field: {
                 'ModelName': model_name,
                 'EvaluationScores': metrics_df,
-                'ConfusionMatrix': confusion_matrix,
+                'ConfusionMatrix': confusion_matrix_at_thresh,
+                'ConfusionMatrixNoThresh': confusion_matrix_no_thresh,
+
             }
         }
     }
     demisto.results(result_entry)
-    return confusion_matrix
+    return confusion_matrix_no_thresh
 
 
 def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=False):
@@ -310,14 +320,14 @@ def main():
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
     store_model = demisto.args()['storeModel'] == 'true'
-    model_override = demisto.args()['overrideExistingModel'] == 'true'
+    model_override = demisto.args().get('overrideExistingModel', 'false') == 'true'
     target_accuracy = float(demisto.args()['targetAccuracy'])
     text_field = demisto.args()['textField']
     tag_fields = demisto.args()['tagField'].split(",")
     labels_mapping = get_phishing_map_labels(demisto.args()['phishingLabels'])
     keyword_min_score = float(demisto.args()['keywordMinScore'])
-    return_predictions_on_test_set = demisto.args()['returnPredictionsOnTestSet'] == 'true'
-    original_text_fields = demisto.args()['originalTextFields']
+    return_predictions_on_test_set = demisto.args().get('returnPredictionsOnTestSet', 'false') == 'true'
+    original_text_fields = demisto.args().get('originalTextFields', '')
     if input_type.endswith("filename"):
         data = read_files_by_name(input, input_type.split("_")[0].strip())
     else:
@@ -359,19 +369,18 @@ def main():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-    res_threshold = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
-    # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
-    if not np.isclose(float(res_threshold[0]['Contents']['threshold']), 0):
-        res = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
-        human_readable = '\n'.join(['## Results for No Threshold',
-                                    'The following results were achieved by using no threshold (threshold equals 0)'])
-        output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred, res=res,
-                                context_field='DBotPhishingClassifierNoThresh', human_readable_title=human_readable)
+    [threshold_metrics_entry, per_class_entry] = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
+                                                                         detailed=True)
+    demisto.results(per_class_entry)
     # show results for the threshold found - last result so it will appear first
-    confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred, res=res_threshold,
-                                               context_field='DBotPhishingClassifier')
+    confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
+                                               res=threshold_metrics_entry, context_field='DBotPhishingClassifier')
     if store_model:
-        store_model_in_demisto(model_name, model_override, X, y, confusion_matrix)
+        y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
+        y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
+        threshold = float(threshold_metrics_entry['Contents']['threshold'])
+        store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true=y_test,
+                               y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
     else:
         demisto.results('Skip storing model')
