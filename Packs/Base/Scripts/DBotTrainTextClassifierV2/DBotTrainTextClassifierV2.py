@@ -378,6 +378,7 @@ def main():
     if store_model:
         y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
+        threshold = float(threshold_metrics_entry['Contents']['threshold'])
         store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true=y_test,
                                y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
