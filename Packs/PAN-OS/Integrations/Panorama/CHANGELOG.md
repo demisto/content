@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Fixed an issue with the command ***panorama-get-applications***
 - Fixed an issue where running the ***panorama-get-url-category*** command multiple times, displayed previous results in the war room.
 
 

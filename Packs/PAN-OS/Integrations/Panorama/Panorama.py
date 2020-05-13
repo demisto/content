@@ -3142,15 +3142,16 @@ def panorama_get_pcap_command():
 
 def prettify_applications_arr(applications_arr):
     pretty_application_arr = []
+    if not isinstance(applications_arr, list):
+        applications_arr = [applications_arr]
     for i in range(len(applications_arr)):
         application = applications_arr[i]
         pretty_application_arr.append({
-            'SubCategory': application['subcategory'],
-            'Risk': application['risk'],
-            'Technology': application['technology'],
-            'Name': application['@name'],
-            'Description': application['description'],
-            'Id': application['@id']
+            'SubCategory': application.get('subcategory'),
+            'Risk': application.get('risk'),
+            'Technology': application.get('technology'),
+            'Name': application.get('@name'),
+            'Description': application.get('description'),
         })
     return pretty_application_arr
 
@@ -3158,16 +3159,18 @@ def prettify_applications_arr(applications_arr):
 @logger
 def panorama_list_applications():
     params = {
-        'type': 'op',
-        'command': '<show><objects></objects></show>',
+        'type': 'config',
+        'action': 'get',
+        'xpath': XPATH_OBJECTS + "application/entry",
         'key': API_KEY
     }
+    demisto.log(params['xpath'])
     result = http_request(
         URL,
         'POST',
         params=params
     )
-    return result['response']['result']['config']['shared']['content-preview']['application']['entry']
+    return result['response']['result']['entry']
 
 
 def panorama_list_applications_command():
@@ -3175,7 +3178,6 @@ def panorama_list_applications_command():
     List all applications
     """
     applications_arr = panorama_list_applications()
-
     applications_arr_output = prettify_applications_arr(applications_arr)
 
     demisto.results({
@@ -3184,10 +3186,9 @@ def panorama_list_applications_command():
         'Contents': applications_arr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Applications', applications_arr_output,
-                                         ['Name', 'Id', 'Risk', 'Category', 'SubCategory', 'Technology',
-                                          'Description']),
+                                         ['Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']),
         'EntryContext': {
-            "Panorama.Applications(val.Id == obj.Id)": applications_arr_output
+            "Panorama.Applications(val.Name == obj.Name)": applications_arr_output
         }
     })
 
