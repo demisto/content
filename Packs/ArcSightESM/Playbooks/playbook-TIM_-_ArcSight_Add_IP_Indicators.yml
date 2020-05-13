@@ -1,7 +1,7 @@
 id: TIM - ArcSight Add IP Indicators
 version: -1
 fromversion: 5.5.0
-name: TIM_Processing - ArcSight Add IP Indicators
+name: TIM - ArcSight Add IP Indicators
 description: This playbook receives indicators from its parent playbook
   and provides the indicators as inputs for the sub-playbooks that push the indicators
   to SIEM.

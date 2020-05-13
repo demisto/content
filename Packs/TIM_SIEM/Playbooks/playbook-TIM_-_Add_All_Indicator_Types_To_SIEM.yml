@@ -1,7 +1,7 @@
 id: TIM - Add All Indicator Types To SIEM
 version: -1
 fromversion: 5.5.0
-name: TIM_Processing - Add All Indicator Types To SIEM
+name: TIM - Add All Indicator Types To SIEM
 description: |-
   This playbook runs sub playbooks that send indicators to your SIEM. To select the indicators you want to add, go to playbook inputs, choose “from indicators” and set your query. For example tags:approved_black, approved_white etc. The purpose of the playbook is to send to SIEM only indicators that have been processed and tagged accordingly after an automatic or manual review process. The default playbook query is"
   (type:ip or type:file or type:Domain or type:URL) -tags:pending_review and (tags:approved_black or tags:approved_white or tags:approved_watchlist)"

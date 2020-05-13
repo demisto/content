@@ -1,7 +1,7 @@
 id: TIM - Process Indicators - Fully Automated
 version: -1
 fromversion: 5.5.0
-name: TIM_Processing - Process Indicators - Fully Automated
+name: TIM - Process Indicators - Fully Automated
 description: This playbook tags indicators ingested from high reliability feeds. The
   playbook is triggered due to a Cortex XSOAR job. The indicators are tagged as approved_white,
   approved_black, approved_watchlist. The tagged indicators will be ready for consumption

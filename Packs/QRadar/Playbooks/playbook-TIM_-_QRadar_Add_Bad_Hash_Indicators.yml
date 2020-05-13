@@ -1,7 +1,7 @@
 id: TIM - QRadar Add Bad Hash Indicators
 version: -1
 fromversion: 5.5.0
-name: TIM_Processing - QRadar Add Bad Hash Indicators
+name: TIM - QRadar Add Bad Hash Indicators
 description: This playbook queries indicators based on a pre-defined query or results
   from a parent playbook, and adds the resulting indicators to a QRadar Reference
   Set. The Reference Set name must be defined in the playbook inputs.

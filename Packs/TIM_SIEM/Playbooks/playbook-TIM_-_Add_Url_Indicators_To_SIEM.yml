@@ -1,7 +1,7 @@
 id: TIM - Add Url Indicators To SIEM
 version: -1
 fromversion: 5.5.0
-name: TIM_Processing - Add Url Indicators To SIEM
+name: TIM - Add Url Indicators To SIEM
 description: |-
   TIM playbook - This playbook receives indicators from its parent playbook
     and provides the indicators as inputs for the sub-playbooks that push the indicators
