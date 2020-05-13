@@ -169,11 +169,11 @@ tasks:
     nexttasks:
       '#default#':
       - '6'
-      true:
+      'true':
       - '1'
     separatecontext: false
     conditions:
-    - label: true
+    - label: 'true'
       condition:
       - - operator: isNotEmpty
           left:
@@ -270,3 +270,5 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file.
 fromversion: 5.0.0
+tests:
+  - No tests

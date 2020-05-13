@@ -1,6 +1,6 @@
 {
     "closeForm": false,
-    "fromVersion": "4.1.0",
+    "fromVersion": "5.0.0",
     "cliName": "remediationsla", 
     "neverSetAsRequired": false, 
     "threshold": 0, 

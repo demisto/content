@@ -31,5 +31,6 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": true
+    "unsearchable": true,
+    "fromVersion": "5.0.0"
 }

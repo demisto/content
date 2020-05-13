@@ -19,7 +19,7 @@
 	"useAsKpi": false,
 	"locked": false,
 	"system": false,
-	"content": false,
+	"content": true,
 	"group": 0,
 	"hidden": false,
 	"associatedTypes": [
@@ -32,5 +32,6 @@
 	"caseInsensitive": true,
 	"sla": 0,
 	"threshold": 72,
-	"breachScript": ""
+	"breachScript": "",
+	"fromVersion": "5.0.0"
 }

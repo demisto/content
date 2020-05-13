@@ -1,9 +1,5 @@
 id: Indeni Demo
 version: -1
-rolename:
-- Administrator
-- Analyst
-- Read-Only
 name: Indeni Demo
 starttaskid: '0'
 tasks:
