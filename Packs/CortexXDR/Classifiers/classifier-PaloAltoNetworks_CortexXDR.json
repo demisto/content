@@ -1,8 +1,6 @@
 {
 	"brandName": "Cortex XDR - IR",
-    "type": "classification",
 	"custom": true,
-    "description": "Classifies Cortex XDR incidents",
 	"defaultIncidentType": "",
 	"fromVersion": "5.0.0",
 	"id": "32f26072-9a69-41a5-8db8-0d1226431078",
