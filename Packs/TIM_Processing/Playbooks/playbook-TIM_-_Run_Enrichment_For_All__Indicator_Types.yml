@@ -48,11 +48,11 @@ tasks:
     task:
       id: 4ebcc123-837c-4723-88a0-9e4c317c085d
       version: -1
-      name: TIM_Processing - Run Enrichment For IP Indicators
+      name: TIM - Run Enrichment For IP Indicators
       description: |-
         This playbook processes indicators enriching indicators based on the indicator feed's reputation, as specified in the
                 playbook inputs. The playbook ignores indicators that have been tagged by other processing playbooks.
-      playbookName: TIM_Processing - Run Enrichment For IP Indicators
+      playbookName: TIM - Run Enrichment For IP Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -84,11 +84,11 @@ tasks:
     task:
       id: 2c05429b-ee28-4e32-849c-7010e608823c
       version: -1
-      name: TIM_Processing - Run Enrichment For Hash Indicators
+      name: TIM - Run Enrichment For Hash Indicators
       description: |-
         This playbook processes indicators enriching indicators based on the indicator feed's reputation, as specified in the
                 playbook inputs. The playbook ignores indicators that have been tagged by other processing playbooks.
-      playbookName: TIM_Processing - Run Enrichment For Hash Indicators
+      playbookName: TIM - Run Enrichment For Hash Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -227,8 +227,8 @@ tasks:
     task:
       id: f1827ab1-aa83-4e0a-8668-bf1f1a4a6810
       version: -1
-      name: TIM_Processing - Run Enrichment For Domain Indicators
-      playbookName: TIM_Processing - Run Enrichment For Domain Indicators
+      name: TIM - Run Enrichment For Domain Indicators
+      playbookName: TIM - Run Enrichment For Domain Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -256,8 +256,8 @@ tasks:
     task:
       id: 15a11194-7277-46a2-8469-55834e6fb029
       version: -1
-      name: TIM_Processing - Run Enrichment For Url Indicators
-      playbookName: TIM_Processing - Run Enrichment For Url Indicators
+      name: TIM - Run Enrichment For Url Indicators
+      playbookName: TIM - Run Enrichment For Url Indicators
       type: playbook
       iscommand: false
       brand: ""

@@ -273,8 +273,8 @@ tasks:
     task:
       id: d17483ed-8790-4e8a-8661-30ebe2006eef
       version: -1
-      name: TIM_Processing - ArcSight Add IP Indicators
-      playbookName: TIM_Processing - ArcSight Add IP Indicators
+      name: TIM - ArcSight Add IP Indicators
+      playbookName: TIM - ArcSight Add IP Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -302,8 +302,8 @@ tasks:
     task:
       id: 65064d5a-8ddf-4c6d-8758-be07a266ac6f
       version: -1
-      name: TIM_Processing - QRadar Add IP Indicators
-      playbookName: TIM_Processing - QRadar Add IP Indicators
+      name: TIM - QRadar Add IP Indicators
+      playbookName: TIM - QRadar Add IP Indicators
       type: playbook
       iscommand: false
       brand: ""

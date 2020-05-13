@@ -273,8 +273,8 @@ tasks:
     task:
       id: 91b9c160-c50b-4650-8d1d-4df2d3eaf73d
       version: -1
-      name: TIM_Processing - QRadar Add Url Indicators
-      playbookName: TIM_Processing - QRadar Add Url Indicators
+      name: TIM - QRadar Add Url Indicators
+      playbookName: TIM - QRadar Add Url Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -302,8 +302,8 @@ tasks:
     task:
       id: f3b0edf1-22cd-4ee1-8b4e-ee95536c2576
       version: -1
-      name: TIM_Processing - ArcSight Add Url Indicators
-      playbookName: TIM_Processing - ArcSight Add Url Indicators
+      name: TIM - ArcSight Add Url Indicators
+      playbookName: TIM - ArcSight Add Url Indicators
       type: playbook
       iscommand: false
       brand: ""

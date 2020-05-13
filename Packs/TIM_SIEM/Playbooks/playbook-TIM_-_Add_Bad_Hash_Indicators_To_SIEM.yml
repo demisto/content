@@ -291,8 +291,8 @@ tasks:
     task:
       id: e76f1e85-104f-4753-8570-b0ea45244303
       version: -1
-      name: TIM_Processing - ArcSight Add Bad Hash Indicators
-      playbookName: TIM_Processing - ArcSight Add Bad Hash Indicators
+      name: TIM - ArcSight Add Bad Hash Indicators
+      playbookName: TIM - ArcSight Add Bad Hash Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -320,8 +320,8 @@ tasks:
     task:
       id: b0a6de41-61eb-44fe-8463-f891fbe8e875
       version: -1
-      name: TIM_Processing - QRadar Add Bad Hash Indicators
-      playbookName: TIM_Processing - QRadar Add Bad Hash Indicators
+      name: TIM - QRadar Add Bad Hash Indicators
+      playbookName: TIM - QRadar Add Bad Hash Indicators
       type: playbook
       iscommand: false
       brand: ""

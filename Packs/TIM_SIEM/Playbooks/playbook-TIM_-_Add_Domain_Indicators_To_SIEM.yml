@@ -272,8 +272,8 @@ tasks:
     task:
       id: 522496d3-b40a-43a2-874e-3cd53941eedb
       version: -1
-      name: TIM_Processing - QRadar Add Domain Indicators
-      playbookName: TIM_Processing - QRadar Add Domain Indicators
+      name: TIM - QRadar Add Domain Indicators
+      playbookName: TIM - QRadar Add Domain Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -301,8 +301,8 @@ tasks:
     task:
       id: 64badc8f-c603-4f81-8d8a-753a76414576
       version: -1
-      name: TIM_Processing - ArcSight Add Domain Indicators
-      playbookName: TIM_Processing - ArcSight Add Domain Indicators
+      name: TIM - ArcSight Add Domain Indicators
+      playbookName: TIM - ArcSight Add Domain Indicators
       type: playbook
       iscommand: false
       brand: ""
