@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added the *language* and *tokenizer* arguments, which enable you to get predictions for text in additional languages.
 
 ## [20.5.0] - 2020-05-12
 Added the option to map automation output to out-of-the-box incidents fields.
