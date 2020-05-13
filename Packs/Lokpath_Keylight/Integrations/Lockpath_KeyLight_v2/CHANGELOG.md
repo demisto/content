@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 - Added `kl-get-user-by-id` command.
 
 
