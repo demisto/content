@@ -99,6 +99,8 @@ def reformat_df_fractions_to_percentage(metrics_df):
 def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_threshold, target_precision,
                   actual_threshold_precision, detailed_output=True):
     csr_matrix_at_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, found_threshold)
+    csr_matrix_no_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, 0)
+
     metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, found_threshold)
 
     coverage = metrics_df.loc[['All']]['Coverage'][0]
@@ -134,6 +136,13 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
                                     tablefmt="pipe",
                                     headers="keys").replace("True", "True \\ Predicted"),
                            '\n']
+    csr_matrix_no_thresh_readable = ['## Confusion Matrix - No Threshold',
+                                     'This table displays the predictions of the model on the evaluation set per each '
+                                     + 'class when no threshold is used:',
+                                     tabulate(csr_matrix_no_threshold,
+                                              tablefmt="pipe",
+                                              headers="keys").replace("True", "True \\ Predicted"),
+                                     '\n']
     human_readable = []  # type: ignore
     if detailed_output:
         human_readable += human_readable_threshold + ['\n']
@@ -142,8 +151,11 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
     human_readable += class_metrics_human_readable + ['\n']
     human_readable += class_metrics_explanation_human_readable
     human_readable += csr_matrix_readable
+    human_readable += csr_matrix_no_thresh_readable
     human_readable = '\n'.join(human_readable)
-    contents = {'threshold': found_threshold, 'csr_matrix_at_threshold': csr_matrix_at_threshold.to_json(),
+    contents = {'threshold': found_threshold,
+                'csr_matrix_at_threshold': csr_matrix_at_threshold.to_json(),
+                'csr_matrix_no_threshold': csr_matrix_no_threshold.to_json(),
                 'metrics_df': metrics_df.to_json()}
     entry = {
         'Type': entryTypes['note'],
@@ -155,6 +167,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
             'GetMLModelEvaluation': {
                 'Threshold': found_threshold,
                 'ConfusionMatrixAtThreshold': csr_matrix_at_threshold.to_json(),
+                'ConfusionMatrixNoThreshold': csr_matrix_no_threshold.to_json(),
                 'Metrics': metrics_df.to_json()
             }
         }

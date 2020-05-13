@@ -1,6 +1,5 @@
 # pylint: disable=no-member
 import demisto_ml
-import numpy as np
 import pandas as pd
 from collections import defaultdict, Counter
 from io import BytesIO, StringIO
@@ -172,15 +171,17 @@ def set_tag_field(data, tag_fields):
 
 def output_model_evaluation(model_name, y_test, y_pred, res, context_field, human_readable_title=None):
     threshold = float(res['Contents']['threshold'])
-    confusion_matrix = json.loads(res['Contents']['csr_matrix_at_threshold'])
+    confusion_matrix_at_thresh = json.loads(res['Contents']['csr_matrix_at_threshold'])
+    confusion_matrix_no_thresh = json.loads(res['Contents']['csr_matrix_no_threshold'])
     metrics_df = json.loads(res['Contents']['metrics_df'])
     human_readable = res['HumanReadable']
     if human_readable_title is not None:
         human_readable = '\n'.join([human_readable_title, human_readable])
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': {'Threshold': threshold, 'ConfusionMatrixAtThreshold': confusion_matrix,
-                     'Metrics': metrics_df, 'YTrue': y_test, 'YPred': y_pred},
+        'Contents': {'Threshold': threshold, 'ConfusionMatrixAtThreshold': confusion_matrix_at_thresh,
+                     'ConfusionMatrixNoThreshold': confusion_matrix_no_thresh, 'Metrics': metrics_df,
+                     'YTrue': y_test, 'YPred': y_pred},
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
@@ -188,12 +189,14 @@ def output_model_evaluation(model_name, y_test, y_pred, res, context_field, huma
             context_field: {
                 'ModelName': model_name,
                 'EvaluationScores': metrics_df,
-                'ConfusionMatrix': confusion_matrix,
+                'ConfusionMatrix': confusion_matrix_at_thresh,
+                'ConfusionMatrixNoThresh': confusion_matrix_no_thresh,
+
             }
         }
     }
     demisto.results(result_entry)
-    return confusion_matrix
+    return confusion_matrix_no_thresh
 
 
 def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=False):
@@ -369,13 +372,6 @@ def main():
     [threshold_metrics_entry, per_class_entry] = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
                                                                          detailed=True)
     demisto.results(per_class_entry)
-    # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
-    if not np.isclose(float(threshold_metrics_entry['Contents']['threshold']), 0):
-        [no_threshold_metrics_entry, _] = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
-        human_readable = '\n'.join(['## Results for No Threshold',
-                                    'The following results were achieved by using no threshold (threshold equals 0)'])
-        output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred, res=no_threshold_metrics_entry,
-                                context_field='DBotPhishingClassifierNoThresh', human_readable_title=human_readable)
     # show results for the threshold found - last result so it will appear first
     confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
                                                res=threshold_metrics_entry, context_field='DBotPhishingClassifier')
