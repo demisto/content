@@ -1,5 +1,6 @@
 ## [Unreleased]
-- Fixed an issue with the command ***panorama-get-applications***
+- Added the option to list predefined applications in PAN-OS 9.X in the command ***panorama-get-applications*** using the argument *predefined*.
+- Fixed an issue where listing custom applications in PAN-OS 9.X using the command ***panorama-get-applications*** was not working.
 - Fixed an issue where running the ***panorama-get-url-category*** command multiple times, displayed previous results in the war room.
 
 
