@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where the integration failed to fetch indicators from a list within a JSON object.
 
 ## [20.4.0] - 2020-04-14
 Added the *Tags* parameter.
