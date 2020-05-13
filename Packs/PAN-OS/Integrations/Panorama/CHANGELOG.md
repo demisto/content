@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Fixed an issue where running the ***panorama-get-url-category*** command multiple times, displayed previous results in the war room.
 
 
 ## [20.5.0] - 2020-05-12
