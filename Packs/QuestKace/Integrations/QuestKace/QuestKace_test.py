@@ -1,9 +1,10 @@
 import pytest
 import json
+import time
 from QuestKace import Client, get_machines_list_command, \
     get_assets_list_command, get_queues_list_command, get_tickets_list_command, \
     parse_response, fetch_incidents, create_body_from_args, shaping_by_fields, convert_specific_keys, \
-    delete_ticket_command, demisto, get_fields_by_queue
+    delete_ticket_command, demisto, get_fields_by_queue, shaping_fetch
 
 from test_module.RawData import MACHINES_LIST_COMMAND_RESPONSE, \
     ASSETS_LIST_COMMAND_RESPONSE, QUEUES_LIST_COMMAND_RESPONSE, \
@@ -70,6 +71,7 @@ def test_first_fetch(mocker):
     mocker.patch('QuestKace.set_shaping', return_value=[])
     mocker.patch.object(Client, 'tickets_list_request', return_value=FIRST_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    mocker.patch.object(Client, 'queues_list_request', return_value={'Queues': []})
     client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
     incidents = fetch_incidents(client=client, last_run={}, fetch_time="3 years", fetch_shaping="", fetch_limit="3")
     assert len(incidents) == 3
@@ -104,6 +106,7 @@ def test_second_fetch(mocker):
     mocker.patch('QuestKace.set_shaping', return_value=[])
     mocker.patch.object(Client, 'tickets_list_request', return_value=SECOND_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    mocker.patch.object(Client, 'queues_list_request', return_value={'Queues': []})
     client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
     incidents = fetch_incidents(client=client, last_run={'last_fetch': '2020-04-12T02:28:02Z'},
                                 fetch_time="1 day", fetch_shaping="", fetch_limit="5")
@@ -113,7 +116,7 @@ def test_second_fetch(mocker):
     assert json.loads(incidents[4]['rawJSON'])['id'] == 10
 
 
-def test_fetch_No_Results(mocker):
+def test_fetch_no_Results(mocker):
     """Unit test
         Given
         - fetch incidents command
@@ -131,6 +134,7 @@ def test_fetch_No_Results(mocker):
     mocker.patch('QuestKace.set_shaping', return_value=[])
     mocker.patch.object(Client, 'tickets_list_request', return_value=NO_RESULTS_FETCH_INCIDENTS_RAW_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    mocker.patch.object(Client, 'queues_list_request', return_value={'Queues': []})
     client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
     incidents = fetch_incidents(client=client, last_run={'last_fetch': '2020-04-12T02:28:02Z'},
                                 fetch_time="1 day", fetch_shaping="", fetch_limit="5")
@@ -138,14 +142,29 @@ def test_fetch_No_Results(mocker):
 
 
 def test_create_body_from_args():
+    """Unit test
+        Given
+        - Different fields as arguments to function
+        Then
+        - run the create_body_from_args command .
+        Validate that the function returns a correct string
+    """
     body = create_body_from_args(hd_queue_id=1, title="test from unit testing",
-                                 category={'name': 'test from unittesting'}, status={'name': ' test unit'})
+                                 category=1, status=2)
     assert body == {'hd_queue_id': 1, 'title': 'test from unit testing',
-                    'category': {'name': 'test from unittesting'},
-                    'status': {'name': ' test unit'}}
+                    'category': 1,
+                    'status': 2}
 
 
 def test_shaping_by_fields():
+    """Unit test
+        Given
+        - List of string of names of fields
+        Then
+        - run the shaping_by_fields command .
+        Validate the returned string, which should be correct shaping string.
+        Validate that when no fields are given then it returns only hd_ticket all string
+    """
     fields = shaping_by_fields(['title', 'summary', 'impact', 'status'])
     assert fields == 'hd_ticket all,title limited,summary limited,impact limited,status limited'
     fields = shaping_by_fields([])
@@ -153,6 +172,13 @@ def test_shaping_by_fields():
 
 
 def test_convert_specific_keys():
+    """Unit test
+        Given
+        - String
+        Then
+        - run the convert_specific_keys command .
+        Validate that for all special keys, the function converts them to correct convention.
+    """
     converted = convert_specific_keys('OsName')
     assert converted == 'OSName'
     converted = convert_specific_keys('OsNumber')
@@ -178,6 +204,19 @@ def test_convert_specific_keys():
 
 
 def test_get_fields_by_queue(mocker):
+    """Unit test
+        Given
+        - List of queues
+        - Client
+        When
+        - mock the Clients's get token function.
+        - mock the Clients's queues_list_request function.
+        - mock the Clients's queues_list_fields_request function.
+        Then
+        - run the get_fields_by_queue command .
+        Validate that when 1 queue is given then a list of its fields is returned.
+        Validate that when no queue is given then a list of all fields of all available queues are returned.
+        """
     mocker.patch.object(Client, 'queues_list_request', return_value=QUEUES_LIST_COMMAND_RESPONSE)
     mocker.patch.object(Client, 'queues_list_fields_request', return_value=FIELDS_RESPONSE)
     mocker.patch.object(Client, 'get_token', return_value=(1, 1))
@@ -186,3 +225,75 @@ def test_get_fields_by_queue(mocker):
     assert fields == FIELDS_EXPECTED
     fields = get_fields_by_queue(client, [])
     assert fields == FIELDS_EXPECTED
+
+
+def test_shaping_fetch_no_previous_integration_context(mocker):
+    """Unit test
+        Given
+        - fetch incidents command
+        - command args
+        When
+        - mock the Clients's get token function.
+        - mock the Demisto's getIntegrationContext.
+        - mock the set_shaping function.
+        Then
+        - run the fetch incidents command using the Client
+        Validate when no integration context is saved, Then new shaping will be created and saved.
+        """
+    mocker.patch('QuestKace.set_shaping', return_value='Test shaping default')
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+    mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
+    shaping = shaping_fetch(client, [])
+    assert shaping == 'Test shaping default'
+
+
+def test_shaping_fetch_with_previous_integration_context_valid(mocker):
+    """Unit test
+        Given
+        - fetch incidents command
+        - command args
+        When
+        - mock the Clients's get token function.
+        - mock the Demisto's getIntegrationContext.
+        - mock the set_shaping function.
+        Then
+        - run the fetch incidents command using the Client
+        Validate when a day has not passed since the last update of shaping, then return last shaping available.
+        Validate that the shaping was not changed.
+        """
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
+        'shaping_fields': 'Tests shpaing',
+        'valid_until': int(time.time()) + 3600 * 24
+    })
+    mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
+
+    mocker.patch('QuestKace.set_shaping', return_value='Test shaping not default default')
+    shaping = shaping_fetch(client, [])
+    assert shaping == 'Tests shpaing'
+
+
+def test_shaping_fetch_with_previous_integration_context_not_valid(mocker):
+    """Unit test
+        Given
+        - fetch incidents command
+        - command args
+        When
+        - mock the Clients's get token function.
+        - mock the Demisto's getIntegrationContext.
+        - mock the set_shaping function.
+        Then
+        - run the fetch incidents command using the Client
+        Validate when a day has passed since last update of shaping, Then the shaping will be checked again.
+        Validate That the shaping is set to new shaping.
+        """
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
+        'shaping_fields': 'Tests shpaing',
+        'valid_until': int(time.time())
+    })
+    mocker.patch.object(Client, 'get_token', return_value=(1, 1))
+    client = Client(url="http://test.com", username="admin", password="123", verify=False, proxy=False)
+    mocker.patch('QuestKace.set_shaping', return_value='Test shaping not default default')
+    shaping = shaping_fetch(client, [])
+    assert shaping == 'Test shaping not default default'

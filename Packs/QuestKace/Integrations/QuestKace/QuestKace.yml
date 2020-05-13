@@ -25,12 +25,10 @@ configuration:
   name: fetch_shaping
   required: false
   type: 0
-  additionalinfo: Shaping parameter limits the amount of returned data. In order to get more extended data use shaping. If non is givven all the data will be returned.
 - display: Filter for the tickets
   name: fetch_filter
   required: false
   type: 0
-  additionalinfo: Adding this argument will enable you to filter the results. e.g "id eq 2" , "machine.name eq Mac".
 - defaultvalue: '50'
   display: Fetch limit per query
   name: fetch_limit
@@ -41,7 +39,6 @@ configuration:
   name: fetch_queue_id
   required: false
   type: 0
-  additionalinfo: If you wish to fetch incidents of a specific queues should add their ids with seperated comma. By default all tickets from all queues will be returned.
 - display: Incident type
   name: incidentType
   required: false
@@ -408,28 +405,55 @@ script:
       name: summary
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: name of the impact of the new ticket.
       isArray: false
       name: impact
+      predefined:
+      - 1 person cannot work
+      - Many people cannot work
+      - 1 person inconvenienced
+      - Many people inconvenienced
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: category name of the new ticket.
       isArray: false
       name: category
+      predefined:
+      - Network
+      - Other
+      - Software
+      - Hardware
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: status name fo the new ticket.
       isArray: false
       name: status
+      predefined:
+      - Opened
+      - Closed
+      - Need More Info
+      - New
+      - Reopened
+      - Waiting Overdue
+      - Waiting on Customer
+      - Waiting on Third Party
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: priority name of the new ticket.
       isArray: false
       name: priority
+      predefined:
+      - Medium
+      - High
+      - Low
       required: false
       secret: false
     - default: false
@@ -473,28 +497,55 @@ script:
       name: summary
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: updated impact of the ticket.
       isArray: false
       name: impact
+      predefined:
+      - 1 person cannot work
+      - Many people cannot work
+      - 1 person inconvenienced
+      - Many people inconvenienced
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: updated category of the ticket.
       isArray: false
       name: category
+      predefined:
+      - Network
+      - Other
+      - Software
+      - Hardware
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: updated status of the ticket.
       isArray: false
       name: status
+      predefined:
+      - Opened
+      - Closed
+      - Need More Info
+      - New
+      - Reopened
+      - Waiting Overdue
+      - Waiting on Customer
+      - Waiting on Third Party
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: updated priority of the ticket.
       isArray: false
       name: priority
+      predefined:
+      - Medium
+      - High
+      - Low
       required: false
       secret: false
     - default: false

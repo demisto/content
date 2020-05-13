@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple, Callable, Any
+from typing import Dict, Optional, Tuple, Callable, Any, Union
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -9,6 +9,37 @@ import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
+# key =  field of a ticket , val = dict of (name,id) of options
+TICKETS_OBJECTS = {
+    'impact': {
+        '1 person cannot work': 1,
+        'Many people cannot work': 2,
+        '1 person inconvenienced': 3,
+        'Many people inconvenienced': 4
+    },
+    'category': {
+        "Network": 1,
+        "Other": 2,
+        "Software": 4,
+        "Hardware": 3
+    },
+    'priority': {
+        "Medium": 1,
+        'High': 2,
+        'Low': 3
+    },
+    'status': {
+        'Opened': 1,
+        'Closed': 2,
+        'Need More Info': 3,
+        'New': 4,
+        'Reopened': 5,
+        'Waiting Overdue': 6,
+        'Waiting on Customer': 7,
+        'Waiting on Third Party': 8
+    }
+}
 
 
 def convert_snake_to_camel(snake_str: str) -> str:
@@ -458,28 +489,34 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
        Returns:
            human readable, context, raw response of this command.
     """
+    impact = None
+    category = None
+    status = None
+    priority = None
     hd_queue_id = args.get('queue_id')
     custom_fields = args.get('custom_fields')
-    if not hd_queue_id and not custom_fields:
-        raise DemistoException("queue id is a mandatory value, please add it to your request.")
-    if custom_fields and "hd_queue_id" not in custom_fields:
-        raise DemistoException("hd_queue_id is a mandatory value, please add it to your custom request.")
+    if (custom_fields and "hd_queue_id" not in custom_fields) and (not hd_queue_id):
+        raise DemistoException("hd_queue_id is a mandatory value, please add it.")
     title = args.get("title")
     summary = args.get('summary')
-    impact = args.get('impact')
-    category = args.get('category')
-    status = args.get('status')
-    priority = args.get('priority')
+    if args.get('impact'):
+        impact = TICKETS_OBJECTS['impact'][args.get('impact')]
+    if args.get('category'):
+        category = TICKETS_OBJECTS['category'][args.get('category')]
+    if args.get('status'):
+        status = TICKETS_OBJECTS['status'][args.get('status')]
+    if args.get('priority'):
+        priority = TICKETS_OBJECTS['priority'][args.get('priority')]
+
     machine = args.get('machine')
     asset = args.get('asset')
-    if not custom_fields:
-        temp_data = create_body_from_args(hd_queue_id, title, summary, impact, category, status, priority, machine,
-                                          asset)
-        temp_data = {'Tickets': [temp_data]}
-    else:
-        temp_data = {'Tickets': [json.loads(custom_fields)]}
+    body_from_args = create_body_from_args(hd_queue_id, title, summary, impact, category, status, priority, machine,
+                                           asset)
+    if custom_fields:
+        splited = split_fields(custom_fields)
+        body_from_args.update(splited)
+    temp_data = {'Tickets': [body_from_args]}
     data = json.dumps(temp_data)
-    demisto.log(data)
     response = client.create_ticket_request(data)
     if response.get('Result') != 'Success':
         raise DemistoException(f'Error while adding a new ticket.')
@@ -494,9 +531,11 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
     return ticket_view, {}, {}
 
 
-def create_body_from_args(hd_queue_id: str = None, title: str = None, summary: str = None, impact: str = None,
-                          category: str = None, status: str = None, priority: str = None, machine: str = None,
-                          asset: str = None) -> dict:
+def create_body_from_args(hd_queue_id: Union[str, int] = None, title: Union[str, int] = None,
+                          summary: Union[str, int] = None, impact: Union[str, int] = None,
+                          category: Union[str, int] = None, status: Union[str, int] = None,
+                          priority: Union[str, int] = None, machine: Union[str, int] = None,
+                          asset: Union[str, int] = None) -> dict:
     """Function which creates the body of the request from user arguments.
         Args:
            hd_queue_id: the queue number to insert the ticket to.
@@ -541,23 +580,32 @@ def update_ticket_command(client, args) -> Tuple[str, dict, dict]:
        Returns:
            human readable, context, raw response of this command.
     """
+    impact = None
+    category = None
+    status = None
+    priority = None
     ticket_id = args.get('ticket_id')
     title = args.get("title")
     summary = args.get('summary')
-    impact = args.get('impact')
-    category = args.get('category')
-    status = args.get('status')
-    priority = args.get('priority')
+    if args.get('impact'):
+        impact = TICKETS_OBJECTS['impact'][args.get('impact')]
+    if args.get('category'):
+        category = TICKETS_OBJECTS['category'][args.get('category')]
+    if args.get('status'):
+        status = TICKETS_OBJECTS['status'][args.get('status')]
+    if args.get('priority'):
+        priority = TICKETS_OBJECTS['priority'][args.get('priority')]
     machine = args.get('machine')
     asset = args.get('asset')
     custom_fields = args.get('custom_fields')
 
-    if not custom_fields:
-        temp_data = create_body_from_args(title=title, summary=summary, impact=impact, category=category, status=status,
-                                          priority=priority, machine=machine, asset=asset)
-        temp_data = {'Tickets': [temp_data]}
-    else:
-        temp_data = {'Tickets': [json.loads(custom_fields)]}
+    body_from_args = create_body_from_args(title=title, summary=summary, impact=impact, category=category,
+                                           status=status,
+                                           priority=priority, machine=machine, asset=asset)
+    if custom_fields:
+        splited = split_fields(custom_fields)
+        body_from_args.update(splited)
+    temp_data = {'Tickets': [body_from_args]}
     data = json.dumps(temp_data)
 
     response = client.update_ticket_request(ticket_id, data)
@@ -613,7 +661,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
     Returns:
         incidents: Incidents that will be created in Demisto
     """
-
+    if not fetch_queue_id or fetch_queue_id[0] == 'All':
+        fetch_queue_id = get_queue_ids(client)
     time_format = '%Y-%m-%dT%H:%M:%SZ'
     if not last_run:  # if first time running
         new_last_run = {'last_fetch': parse_date_range(fetch_time, date_format=time_format)[0]}
@@ -621,27 +670,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
         new_last_run = last_run
 
     if not fetch_shaping:
-        integration_context = demisto.getIntegrationContext()
-        if integration_context:
-
-            valid_until = integration_context.get('valid_until')
-            time_now = int(time.time())
-            if time_now < valid_until:
-                fetch_shaping = integration_context.get('shaping_fields')
-            else:
-                fetch_shaping = set_shaping(client, fetch_queue_id)
-                integration_context = {
-                    'shaping_fields': fetch_shaping,
-                    'valid_until': int(time.time()) + 3600 * 24
-                }
-                demisto.setIntegrationContext(integration_context)
-        else:
-            fetch_shaping = set_shaping(client, fetch_queue_id)
-            integration_context = {
-                'shaping_fields': fetch_shaping,
-                'valid_until': int(time.time()) + 3600 * 24
-            }
-            demisto.setIntegrationContext(integration_context)
+        shaping_fetch(client, fetch_queue_id)
 
     parsed_last_time = datetime.strptime(new_last_run.get('last_fetch', ''), time_format)
     filter_after_last_run = f'created gt {parsed_last_time}'
@@ -668,15 +697,50 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
     return incidents
 
 
+def shaping_fetch(client: Client, fetch_queue_id: list) -> str:
+    """
+    Create and Update shaping fields once a day and saves them in integration context.
+    Args:
+        client: Client for the api.
+        fetch_queue_id:
+    Returns:
+        the current shaping.
+    """
+    integration_context = demisto.getIntegrationContext()
+    if integration_context:
+        valid_until = integration_context.get('valid_until')
+        time_now = int(time.time())
+        if time_now < valid_until:
+            fetch_shaping = integration_context.get('shaping_fields')
+        else:
+            fetch_shaping = set_shaping(client, fetch_queue_id)
+            integration_context = {
+                'shaping_fields': fetch_shaping,
+                'valid_until': int(time.time()) + 3600 * 24
+            }
+            demisto.setIntegrationContext(integration_context)
+    else:
+        fetch_shaping = set_shaping(client, fetch_queue_id)
+        integration_context = {
+            'shaping_fields': fetch_shaping,
+            'valid_until': int(time.time()) + 3600 * 24
+        }
+        demisto.setIntegrationContext(integration_context)
+    return fetch_shaping
+
+
 def get_fields_by_queue(client, queue: Optional[list]) -> list:
+    """
+    Creating a list of all queue ids that are in the system.
+    Args:
+        client: Client for the api.
+    Returns:
+        list of queue ids.
+    """
     if queue:
         queues_id = queue
     else:
-        queues = client.queues_list_request()
-        queues = queues.get('Queues', [])
-        queues_id = []
-        for q in queues:
-            queues_id.append(q.get('id'))
+        queues_id = get_queue_ids(client)
     fields: list = []
     for q in queues_id:
         client.update_token()
@@ -688,6 +752,22 @@ def get_fields_by_queue(client, queue: Optional[list]) -> list:
                 if field.get('jsonKey') != 'related_tickets' and field.get('jsonKey') != 'referring_tickets':
                     fields.append(field.get('jsonKey'))
     return fields
+
+
+def get_queue_ids(client: Client) -> list:
+    """
+    Creating a list of all queue ids that are in the system.
+    Args:
+        client: Client for the api.
+    Returns:
+        list of queue ids.
+    """
+    queues = client.queues_list_request()
+    queues = queues.get('Queues', [])
+    queues_id = []
+    for q in queues:
+        queues_id.append(str(q.get('id')))
+    return queues_id
 
 
 def shaping_by_fields(fields: list) -> str:
@@ -750,6 +830,26 @@ def parse_incidents(items: list, fetch_limit: str, time_format: str, parsed_last
         parsed_last_time = incident_created_time
 
     return incidents, parsed_last_time
+
+
+def split_fields(fields: str = '') -> dict:
+    """Split str fields of Demisto arguments to SNOW request fields by the char ';'.
+    Args:
+        fields: fields in a string representation.
+    Returns:
+        dic_fields object for SNOW requests.
+    """
+    dic_fields = {}
+    if fields:
+        if '=' not in fields:
+            raise Exception(
+                f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
+        arr_fields = fields.split(';')
+        for f in arr_fields:
+            field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
+            if len(field) > 1:
+                dic_fields[field[0]] = field[1]
+    return dic_fields
 
 
 def main():
