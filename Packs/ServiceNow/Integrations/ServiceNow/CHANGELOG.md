@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Deprecated - We recommend using ServiceNow v2 instead (available from 5.0.0).
 
 ## [20.4.1] - 2020-04-29
 -

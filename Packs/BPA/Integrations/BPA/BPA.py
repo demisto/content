@@ -22,10 +22,15 @@ class LightPanoramaClient(BaseClient):
     '''
     def __init__(self, server, port, api_key, verify, proxy):
         if port is None:
-            super().__init__(server + '/', verify, proxy)
+            super().__init__(server + '/', verify)
         else:
-            super().__init__(server.rstrip('/:') + ':' + port + '/', verify, proxy)
+            super().__init__(server.rstrip('/:') + ':' + port + '/', verify)
         self.api_key = api_key
+        if proxy:
+            self.proxies = handle_proxy()
+
+        else:
+            self.proxies = {}
 
     def simple_op_request(self, cmd):
         params = {
@@ -38,7 +43,8 @@ class LightPanoramaClient(BaseClient):
             'POST',
             'api',
             params=params,
-            resp_type='text'
+            resp_type='text',
+            proxies=self.proxies
         )
 
         return result
@@ -67,7 +73,8 @@ class LightPanoramaClient(BaseClient):
             'POST',
             'api',
             params=params,
-            resp_type='text'
+            resp_type='text',
+            proxies=self.proxies
         )
 
         return result
@@ -80,11 +87,16 @@ class Client(BaseClient):
 
     def __init__(self, bpa_token: str, verify: bool, proxy: bool):
         headers = {'Authorization': f'Token {bpa_token}'}
-        super().__init__(base_url=BPA_URL, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url=BPA_URL, verify=verify, headers=headers)
         self.token = bpa_token
+        if proxy:
+            self.proxies = handle_proxy()
+
+        else:
+            self.proxies = {}
 
     def get_documentation_request(self):
-        response = self._http_request('GET', 'documentation/')
+        response = self._http_request('GET', 'documentation/', proxies=self.proxies)
         return response
 
     def submit_task_request(self, running_config, system_info, license_info, system_time, generate_zip_bundle) -> Dict:
@@ -96,15 +108,15 @@ class Client(BaseClient):
             'generate_zip_bundle': generate_zip_bundle
         }
 
-        response = self._http_request('POST', 'create/', data=data)
+        response = self._http_request('POST', 'create/', data=data, proxies=self.proxies)
         return response
 
     def get_results_request(self, task_id: str):
-        response = self._http_request('GET', f'results/{task_id}/')
+        response = self._http_request('GET', f'results/{task_id}/', proxies=self.proxies)
         return response
 
     def get_download_results_request(self, task_id: str) -> bytes:
-        response = self._http_request('GET', f'results/{task_id}/download', resp_type='content')
+        response = self._http_request('GET', f'results/{task_id}/download', resp_type='content', proxies=self.proxies)
         return response
 
 
