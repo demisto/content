@@ -1,6 +1,6 @@
 commonfields:
   id: CheckFiles
-  version: 1
+  version: -1
 name: CheckFiles
 script: |-
   var fileNames = [];
