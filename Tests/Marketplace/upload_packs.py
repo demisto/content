@@ -1,6 +1,5 @@
 import json
 import os
-import io
 import sys
 import argparse
 import warnings
@@ -31,7 +30,7 @@ def get_modified_packs(specific_packs=""):
         set: unique collection of modified/new packs names.
 
     """
-
+    packs = None
     if specific_packs.lower() == "all":
         if os.path.exists(PACKS_FULL_PATH):
             all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
