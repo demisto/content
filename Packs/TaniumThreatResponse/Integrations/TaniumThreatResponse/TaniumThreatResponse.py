@@ -77,7 +77,9 @@ class Client(BaseClient):
         if resp_type == 'text':
             return res.text, res.headers.get('Content-Disposition')
         if resp_type == 'content':
-            return res.text, res.headers.get('Content-Disposition')
+            return res.content, res.headers.get('Content-Disposition')
+
+        return res
 
     def update_session(self):
         body = {
@@ -809,7 +811,7 @@ def get_file_downloads(client, data_args):
 def get_downloaded_file(client, data_args):
     file_id = data_args.get('file-id')
     file_content, content_desc = client.do_request('GET', f'/plugin/products/trace/filedownloads/{file_id}',
-                                                   resp_type='text')
+                                                   resp_type='content')
 
     filename = re.findall(r"filename\*=UTF-8\'\'(.+)", content_desc)[0]
 
