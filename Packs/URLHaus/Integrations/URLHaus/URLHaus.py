@@ -46,17 +46,22 @@ HEADERS = {
 
 
 def http_request(method, command, data=None):
-    url = f'{API_URL}/{command}/'
-    res = requests.request(method,
-                           url,
-                           verify=USE_SSL,
-                           data=data,
-                           headers=HEADERS)
+    retry = int(demisto.params().get('retry', 3))
+    try_num = 0
 
-    if res.status_code != 200:
-        raise Exception(f'Error in API call {url} [{res.status_code}] - {res.reason}')
+    while try_num < retry:
+        try_num += 1
+        url = f'{API_URL}/{command}/'
+        res = requests.request(method,
+                               url,
+                               verify=USE_SSL,
+                               data=data,
+                               headers=HEADERS)
 
-    return res
+        if res.status_code == 200:
+            return res
+
+    raise Exception(f'Error in API call {url} [{res.status_code}] - {res.reason}')
 
 
 def reformat_date(date):
@@ -394,7 +399,14 @@ def file_command():
                     'MD5': urlhaus_data.get('MD5', ''),
                     'SHA256': urlhaus_data.get('SHA256')
                 },
-                'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
+                'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data,
+                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': hash,
+                    'Type': 'File',
+                    'Vendor': 'URLhaus',
+                    'Score': 0  # unknown as there is nothing from the
+                                # output to directly indicate the maliciousness of the file
+                }
             }
 
             human_readable = tableToMarkdown(f'URLhaus reputation for {hash_type.upper()} : {hash}',
