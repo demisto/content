@@ -34,16 +34,21 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: incidents
+  hidden: false
+  name: incident_object_type
+  required: true
+  type: 0
+- defaultvalue: subject
+  hidden: false
+  name: incident_name_field
+  required: true
+  type: 0
 display: Ivanti Heat
 name: Ivanti Heat
 script:
   commands:
   - arguments:
-    - default: false
-      isArray: false
-      name: ticket-type
-      required: false
-      secret: false
     - default: false
       isArray: false
       name: rec-id
@@ -76,13 +81,14 @@ script:
       name: search-query
       required: false
       secret: false
+    - default: false
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
     deprecated: false
     execution: false
-    name: ivanti-heat-tickets-list
-    outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
+    name: ivanti-heat-objects-list
   - arguments:
     - default: false
       isArray: false
@@ -90,24 +96,33 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Fields and their values to update in the record, in json format:
-        {"fieldname1":value,"fieldname2":value,...}'
+      description: 'Fields and their values to update in the record, in format: fieldname1=value;fieldname2=value;...'
       isArray: false
       name: fields
-      required: false
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: object-type
+      required: true
       secret: false
     deprecated: false
     execution: false
-    name: ivanti-heat-ticket-update
+    name: ivanti-heat-object-update
   - arguments:
     - default: false
       isArray: false
       name: rec-id
       required: true
       secret: false
+    - default: false
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
     deprecated: false
     execution: false
-    name: ivanti-heat-ticket-delete
+    name: ivanti-heat-object-delete
   - arguments:
     - default: false
       isArray: false
@@ -116,7 +131,7 @@ script:
       secret: false
     deprecated: false
     execution: false
-    name: ivanti-heat-ticket-attachment-get
+    name: ivanti-heat-object-attachment-download
   - arguments:
     - default: false
       isArray: false
@@ -128,9 +143,14 @@ script:
       name: rec-id
       required: true
       secret: false
+    - default: false
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
     deprecated: false
     execution: false
-    name: ivanti-heat-ticket-attachment-upload
+    name: ivanti-heat-object-attachment-upload
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true

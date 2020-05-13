@@ -13,8 +13,9 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 TOKEN = demisto.params().get('token')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-TICKET_HEADERS = ['RecId', 'Subject','CreatedDateTime','Status','Symptom','Urgency','OwnerTeam','IncidentNumber'
-                  'Priority', 'Email', 'TypeOfIncident', 'ClosedDateTime','ActualCategory','SocialTextHeader']
+OBJECT_HEADERS = ['RecId', 'Subject', 'Name', 'Status', 'CreatedDateTime', 'Symptom', 'Urgency', 'OwnerTeam',
+                  'IncidentNumber', 'CreatedBy', 'Details', 'Owner', 'Category', 'Description', 'Priority',
+                  'Email', 'TypeOfIncident', 'ClosedDateTime', 'ActualCategory', 'SocialTextHeader']
 
 
 class Client(BaseClient):
@@ -37,38 +38,32 @@ def test_module(client):
     return 'ok'
 
 
-def add_ticket_filter(curr_filter, new_filter):
-    if curr_filter:
-        return f'{curr_filter} and {new_filter}'
-    return new_filter
-
-
-def generate_filter_param(ticket_type, rec_id, from_date, to_date):
+def generate_filter_param(rec_id, from_date, to_date):
     if rec_id:
         return f'recId eq \'{rec_id}\''
 
-    filter = ''
-    if ticket_type:
-        filter = add_ticket_filter(filter, f'TypeOfIncident eq \'{ticket_type}\'')
-    if from_date:
-        filter = add_ticket_filter(filter, f'CreatedDateTime gt {from_date}')
-    if to_date:
-        filter = add_ticket_filter(filter, f'CreatedDateTime lt {to_date}')
-    return filter
+    if not from_date and not to_date:
+        return ''
+    if from_date and not to_date:
+        return f'CreatedDateTime gt {from_date}'
+    if to_date and not from_date:
+        return f'CreatedDateTime lt {to_date}'
+    return f'CreatedDateTime gt {from_date} and CreatedDateTime lt {to_date}'
 
 
 @logger
-def tickets_list_command(client, args):
-    ticket_type = args.get('ticket-type')
+def objects_list_command(client, args):
+    object_type = args.get('object-type')
     rec_id = args.get('rec-id')
     from_date = args.get('from')
     to_date = args.get('to')
-
     limit = args.get('limit')
     offset = args.get('offset')
     query = args.get('search-query')
+
     params = {'$orderby': 'CreatedDateTime desc'}
-    filter_txt = generate_filter_param(ticket_type, rec_id, from_date, to_date)
+    filter_txt = generate_filter_param(rec_id, from_date, to_date)
+    print(filter_txt)
     if filter_txt:
         params['$filter'] = filter_txt
     if limit:
@@ -78,19 +73,20 @@ def tickets_list_command(client, args):
     if query:
         params['$search'] = query
 
-    raw_res = client.do_request('GET', 'odata/businessobject/incidents', params=params)
+    raw_res = client.do_request('GET', f'odata/businessobject/{object_type}', params=params)
     if raw_res.get('value'):
-        human_readable = tableToMarkdown('Tickets results', t=raw_res.get('value'), headers=TICKET_HEADERS,
+        human_readable = tableToMarkdown(f'{object_type} results', t=raw_res.get('value'), headers=OBJECT_HEADERS,
                                          removeNull=True)
 
-        entry_context = {'ivantiHeat.Ticket(val.RecId===obj.RecId)': raw_res.get('value')}
+        entry_context = {f'ivantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res.get('value')}
         return human_readable, entry_context, raw_res
 
-    return 'No tickets found', {}, raw_res
+    return 'No records found', {}, raw_res
 
 
 @logger
-def update_ticket_command(client, args):
+def update_object_command(client, args):
+    object_type = args.get('object-type')
     rec_id = args.get('rec-id')
     fields = args.get('fields')
 
@@ -100,18 +96,19 @@ def update_ticket_command(client, args):
         field_data = field.split('=')
         body[field_data[0]] = field_data[1]
 
+    raw_res = client.do_request('PUT', f'odata/businessobject/{object_type}(\'{rec_id}\')', json_data=body)
 
-    raw_res = client.do_request('PUT', f'odata/businessobject/incidents(\'{rec_id}\')', json_data=body)
-    human_readable = tableToMarkdown('Tickets results', t=raw_res, headers=TICKET_HEADERS, removeNull=True)
-    entry_context = {'ivantiHeat.Ticket(val.RecId===obj.RecId)': raw_res}
+    human_readable = tableToMarkdown(f'{rec_id} updated successfully', t=raw_res, headers=OBJECT_HEADERS, removeNull=True)
+    entry_context = {f'ivantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res}
     return human_readable, entry_context, raw_res
 
 
 @logger
-def delete_ticket_command(client, args):
+def delete_object_command(client, args):
+    object_type = args.get('object-type')
     rec_id = args.get('rec-id')
-    raw_res = client.do_request('DELETE', f'odata/businessobject/incidents(\'{rec_id}\')')
-    return f'Ticket {rec_id} deleted successfully', {}, raw_res
+    raw_res = client.do_request('DELETE', f'odata/businessobject/{object_type}(\'{rec_id}\')')
+    return f'{rec_id} deleted successfully', {}, raw_res
 
 
 @logger
@@ -122,7 +119,6 @@ def get_attachment_command(client, args):
     filename_header = raw_res.headers.get('content-disposition')
 
     f_attr = 'filename='
-
     if filename_header and f_attr in filename_header:
         filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
         return fileResult(filename, raw_res.content)
@@ -130,16 +126,17 @@ def get_attachment_command(client, args):
 
 @logger
 def upload_attachment_command(client, args):
+    object_type = args.get('object-type')
     entry_id = args.get('entry-id')
     rec_id = args.get('rec-id')
 
-    body = {'ObjectID': rec_id, 'ObjectType': 'incident#'}
+    body = {'ObjectID': rec_id, 'ObjectType': f'{object_type}#'}
     raw_res = client.do_request('POST', 'rest/Attachment', data=body, files={'file': get_file(entry_id)})
     if raw_res:
         attachment = raw_res[0]
         attachment_id = attachment.get('Message')
         file_name =attachment.get('FileName')
-        entry_context = {'ivantiHeat.TicketAttachment':
+        entry_context = {'ivantiHeat.Attachment':
                         {'RecId': rec_id, 'AttachmentId':attachment_id, 'FileName': file_name}}
         return f'{file_name} uploaded successfully, attachment ID: {attachment_id}', entry_context, raw_res
 
@@ -157,7 +154,8 @@ def get_file(entry_id):
 def fetch_incidents(client, last_run, first_fetch_time):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
-
+    object_type = demisto.params().get('incident_object_type')
+    name_field = demisto.params().get('incident_name_field')
     # Handle first time fetch
     if last_fetch is None:
         last_fetch = dateparser.parse(first_fetch_time)
@@ -168,12 +166,13 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     params = {'$orderby': 'CreatedDateTime asc'}
     params['$filter'] = f'CreatedDateTime gt {last_fetch.strftime(DATE_FORMAT)}'
-    raw_res = client.do_request('GET', 'odata/businessobject/incidents', params=params)
+    raw_res = client.do_request('GET', f'odata/businessobject/{object_type}', params=params)
     if raw_res.get('value'):
         for item in raw_res['value']:
             incident_created_time = dateparser.parse(item.get('CreatedDateTime'))
+            incident_name = item.get(name_field, item.get('RecId'))
             incident = {
-                'name': item.get('Subject'),
+                'name': incident_name,
                 'details': json.dumps(item),
                 'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 'rawJSON': json.dumps(item)
@@ -201,10 +200,10 @@ def main():
     proxy = demisto.params().get('proxy', False)
 
     commands = {
-        'ivanti-heat-tickets-list': tickets_list_command,
-        'ivanti-heat-ticket-update': update_ticket_command,
-        'ivanti-heat-ticket-delete': delete_ticket_command,
-        'ivanti-heat-ticket-attachment-upload': upload_attachment_command
+        'ivanti-heat-objects-list': objects_list_command,
+        'ivanti-heat-object-update': update_object_command,
+        'ivanti-heat-object-delete': delete_object_command,
+        'ivanti-heat-object-attachment-upload': upload_attachment_command
     }
 
     LOG(f'Command being called is {demisto.command()}')
@@ -219,7 +218,7 @@ def main():
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
-        elif demisto.command() == 'ivanti-heat-ticket-attachment-get':
+        elif demisto.command() == 'ivanti-heat-object-attachment-download':
             demisto.results(get_attachment_command(client, demisto.args()))
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
