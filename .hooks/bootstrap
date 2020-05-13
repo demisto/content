@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-f = open(".hooks/.skip-hooks","r+")
-lines = f.readlines()
-if len(lines) != 0:
-    if lines[0] == "true":
-        print("Skipping git hooks because `.skip-hooks` contains true")
-        sys.exit()
-
 # exit on errors
 set -e
 
