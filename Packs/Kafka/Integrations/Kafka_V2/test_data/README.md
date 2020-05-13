@@ -2,7 +2,10 @@
 
 Use https://github.com/wurstmeister/kafka-docker
 
+
 ```
+mkdir kafka-docker
+cd kafka-docker
 git clone https://github.com/wurstmeister/kafka-docker .
 ```
 <!-- disable-secrets-detection-start -->
@@ -13,15 +16,19 @@ git clone https://github.com/wurstmeister/kafka-docker .
 docker-compose -f docker-compose-single-broker.yml up
 ```
 
-Setup via shell:
-Run the following to start a shell:
+This will startup a kafka with a default topic named `test`.
+
+## Creating Additional Topics for Testing 
+In the `kafka-docker` dir run the following to start a shell:
 ```
 ./start-kafka-shell.sh host.docker.internal host.docker.internal:2181
 ```
 In the shell run:
 * Create topic with 4 partitions: `$KAFKA_HOME/bin/kafka-topics.sh --zookeeper $ZK --create --topic mytest-topic --partitions 4 --replication-factor 1`
+* Create topic with lz4 compression: `$KAFKA_HOME/bin/kafka-topics.sh --zookeeper $ZK --create --topic test-lz4  --replication-factor 1 --config compression.type=lz4 --partitions 1`
 * List topics: `$KAFKA_HOME/bin/kafka-topics.sh --zookeeper $ZK --list`
-* Produce 10 messages:
+
+### Producin 10 messages:
 ```
 for i in `seq 1 10`; do echo '{"id":'$i',"user":"test","date":"'`date -R`'","message":"this is a test from kafka shell"}' | $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list=`broker-list.sh` --topic mytest-topic; done
 ```
@@ -33,7 +40,8 @@ $KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server=`broker-list.sh` --
 Recommend utility: `kafkacat`
 
 * Install via: `brew install kafkacat`
-* Then do: `kafkacat  -b localhost:9092 -t mytest-topic`
+* Then do to get messages: `kafkacat  -b localhost:9092 -t test -J`
+* To send a message run: `echo "test message" | kafkacat  -b localhost:9092 -t test -J`
 
 Another good cmdline client: https://github.com/fgeller/kt
 * Install via: go get -u github.com/fgeller/kt
