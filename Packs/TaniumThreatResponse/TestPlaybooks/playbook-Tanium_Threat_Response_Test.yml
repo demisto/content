@@ -2,6 +2,7 @@ elasticcommonfields: {}
 id: Tanium Threat Response Test
 version: -1
 name: Tanium Threat Response Test
+description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -9,6 +10,7 @@ tasks:
     taskid: f13f7e5c-80e3-42d4-8e3e-82090b4cd9de
     type: start
     task:
+      description: ""
       elasticcommonfields: {}
       id: f13f7e5c-80e3-42d4-8e3e-82090b4cd9de
       version: -1
@@ -107,6 +109,7 @@ tasks:
     taskid: eb741492-d7cd-4fbd-8082-8cfc2313d0a1
     type: title
     task:
+      description: ""
       elasticcommonfields: {}
       id: eb741492-d7cd-4fbd-8082-8cfc2313d0a1
       version: -1
@@ -135,6 +138,7 @@ tasks:
     taskid: f8d9222f-7163-4198-83b8-c98e27498daa
     type: title
     task:
+      description: ""
       elasticcommonfields: {}
       id: f8d9222f-7163-4198-83b8-c98e27498daa
       version: -1
@@ -385,6 +389,7 @@ tasks:
     taskid: 492a460d-2b05-437e-8a70-20b8a981b0a0
     type: title
     task:
+      description: ""
       elasticcommonfields: {}
       id: 492a460d-2b05-437e-8a70-20b8a981b0a0
       version: -1
@@ -478,6 +483,7 @@ tasks:
     taskid: 44c23af0-6d88-48e4-8b20-05d5261eb89e
     type: condition
     task:
+      description: ""
       elasticcommonfields: {}
       id: 44c23af0-6d88-48e4-8b20-05d5261eb89e
       version: -1
@@ -618,6 +624,7 @@ tasks:
     taskid: 5c2a510a-acc8-4a94-8b8b-88f8bea736a8
     type: title
     task:
+      description: ""
       elasticcommonfields: {}
       id: 5c2a510a-acc8-4a94-8b8b-88f8bea736a8
       version: -1

@@ -271,7 +271,7 @@
 <h5>Command Example</h5>
 <pre>!sep-endpoints-info</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_1.png" alt="Human_Readable_Output_1.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_1.png" alt="Human_Readable_Output_1.png"></p>
 <h3 id="h_8712e8d6-9700-4f38-b5be-31a9839b82bb">2. Get group information</h3>
 <hr>
 <p>Returns information about groups.</p>
@@ -351,7 +351,7 @@
 <h5>Command Example</h5>
 <pre>!sep-groups-info</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_2.png" alt="Human_Readable_Output_2.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_2.png" alt="Human_Readable_Output_2.png"></p>
 <h3 id="h_ed8ebbd3-b99c-4ff7-91e4-1b570fd22307">3. Get system information</h3>
 <hr>
 <p>Returns information about the system, such as version or AV definition.</p>
@@ -384,7 +384,7 @@
 <h5>Command Example</h5>
 <pre>!sep-system-info</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_3.png" alt="Human_Readable_Output_3.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_3.png" alt="Human_Readable_Output_3.png"></p>
 <h3 id="h_ff841874-a4d7-4b06-9276-a4a79394d536">4. Get the status of a command</h3>
 <hr>
 <p>Retrieves the status of a command.</p>
@@ -434,7 +434,7 @@
 <h5>Command Example</h5>
 <pre>!sep-command-status commandId=04A68CA5952B4726AAFEB421E0EB436C</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_4.png" alt="Human_Readable_Output_4.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_4.png" alt="Human_Readable_Output_4.png"></p>
 <h3 id="h_724d8a8f-4d71-4bb6-b00d-4d8424d71a62">5. Get a client's content</h3>
 <hr>
 <p>Retrieves the content of the client.</p>
@@ -470,7 +470,7 @@
 <h5>Command Example</h5>
 <pre>!sep-client-content</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_5.png" alt="Human_Readable_Output_5.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_5.png" alt="Human_Readable_Output_5.png"></p>
 <h3 id="h_68b59fcc-df96-4eb4-a3d9-a1f6db7432e3">6. Get a list of all policies</h3>
 <hr>
 <p>Retrieves a list of existing policies.</p>
@@ -537,7 +537,7 @@
 <h5>Command Example</h5>
 <pre>!sep-list-policies</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_6.png" alt="Human_Readable_Output_6.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_6.png" alt="Human_Readable_Output_6.png"></p>
 <h3 id="h_6dd260f4-b605-4642-abbc-bbb9364e90d4">7. Assign a policy</h3>
 <hr>
 <p>Assigns an existing policy to a specified location.</p>
@@ -579,7 +579,7 @@
 <h5>Command Example</h5>
 <pre>!sep-assign-policy groupID=44BE96AFC0A8010B0CFACB30929326C2 locationID=50FEEA3FC0A8010B739E49CB0C321A7E policyID=A00ADE188AA148D7AD319CBCA1FA2F23 policyType=hi</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_7.png" alt="Human_Readable_Output_7.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_7.png" alt="Human_Readable_Output_7.png"></p>
 <h3 id="h_c0f37a51-3739-4f20-a956-4465824ed0e3">8. Get a list of location IDs for a group</h3>
 <hr>
 <p>Retrieves a list of location IDs for a specified group.</p>
@@ -624,7 +624,7 @@
 <h5>Command Example</h5>
 <pre>!sep-list-locations groupID=44BE96AFC0A8010B0CFACB30929326C2</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_8.png" alt="Human_Readable_Output_8.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_8.png" alt="Human_Readable_Output_8.png"></p>
 <h3 id="h_a94940c8-6662-4557-b878-2c59e6c4af89">9. Quarantine an endpoint</h3>
 <hr>
 <p>Quarantines an endpoint according to its policy.</p>
@@ -684,7 +684,7 @@
 <h5>Command Example</h5>
 <pre>!sep-endpoint-quarantine actionType=add endpoint=demisto-PC</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_9.png" alt="Human_Readable_Output_9.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_9.png" alt="Human_Readable_Output_9.png"></p>
 <h3 id="h_74d2ac85-1b26-41a3-b6f3-d66cb57af74b">10. Scan an endpoint</h3>
 <hr>
 <p>Scans an endpoint.</p>
@@ -744,7 +744,7 @@
 <h5>Command Example</h5>
 <pre>!sep-scan-endpoint endpoint=demisto-PC scanType=ScanNow_Quick</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_10.png" alt="Human_Readable_Output_10.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_10.png" alt="Human_Readable_Output_10.png"></p>
 <h3 id="h_da2481d9-a52c-4dc9-9a04-935321ff282d">11. Update an endpoint's content</h3>
 <hr>
 <p>Updates the content of a specified client.</p>
@@ -794,7 +794,7 @@
 <h5>Command Example</h5>
 <pre>!sep-update-endpoint-content endpoint=demisto-PC</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_11.png" alt="Human_Readable_Output_11.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_11.png" alt="Human_Readable_Output_11.png"></p>
 <h3 id="h_685c3737-08dd-4b75-a0b3-8400f3f57646">12. Move a client to a group</h3>
 <hr>
 <p>Moves a client to a group.</p>
@@ -826,7 +826,7 @@
 <h5>Command Example</h5>
 <pre>!sep-move-client-to-group groupID=AA51516BC0A8010B3BFBBE37F7B71214 hardwareKey=269CE816FDB1BA25A2505D0A5A59294C</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_112.png" alt="Human_Readable_Output_112.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_112.png" alt="Human_Readable_Output_112.png"></p>
 <h3 id="h_1f33c82e-9a16-446f-86fe-a200996cf2db">13. Get endpoints for a running version</h3>
 <hr>
 <p>Get endpoints for a running version that is different than the target version or the desired version (if specified).</p>
@@ -883,7 +883,7 @@
 <h5>Command Example</h5>
 <pre>!sep-identify-old-clients desiredVersion=10</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/99f76ce4ae35d745cfb49c2bd291a7059f23f3fa/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_13.png" alt="Human_Readable_Output_13.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/SymantecEndpointProtection_V2_Human_Readable_Output_13.png" alt="Human_Readable_Output_13.png"></p>
 <h2>Known Limitations</h2>
 <ul>
 <li>SEPM REST- API currently exposes statistics, but does not expose extended information about Risks, Application and Device control, and Network logs.</li>

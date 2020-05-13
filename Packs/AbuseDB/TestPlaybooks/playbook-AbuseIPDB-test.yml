@@ -4,12 +4,14 @@ contentitemfields:
   propagationLabels: []
 name: AbuseIPDB Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
     taskid: 8f06ac1e-a5a9-45fb-8af5-2c27ab76fc84
     type: start
     task:
+      description: ""
       id: 8f06ac1e-a5a9-45fb-8af5-2c27ab76fc84
       version: -1
       name: ""
@@ -34,6 +36,7 @@ tasks:
     taskid: 8f48b4b4-eaf7-42bd-803a-c73061c6de0f
     type: regular
     task:
+      description: ""
       id: 8f48b4b4-eaf7-42bd-803a-c73061c6de0f
       version: -1
       name: delete context
@@ -67,6 +70,7 @@ tasks:
     taskid: a1b537dc-8452-4df0-844c-63a747ec4391
     type: regular
     task:
+      description: ""
       id: a1b537dc-8452-4df0-844c-63a747ec4391
       version: -1
       name: check IP
@@ -106,6 +110,7 @@ tasks:
     taskid: fc730b7a-3b51-4424-8850-59c93d412972
     type: regular
     task:
+      description: ""
       id: fc730b7a-3b51-4424-8850-59c93d412972
       version: -1
       name: report IP
@@ -138,6 +143,7 @@ tasks:
     taskid: 766389d6-afd3-4789-8a35-954a5749dc62
     type: regular
     task:
+      description: ""
       id: 766389d6-afd3-4789-8a35-954a5749dc62
       version: -1
       name: check IPs CIDR
@@ -173,6 +179,7 @@ tasks:
     taskid: bf0b00ce-2439-4532-8b83-910593c7acc7
     type: regular
     task:
+      description: ""
       id: bf0b00ce-2439-4532-8b83-910593c7acc7
       version: -1
       name: blacklist
@@ -233,6 +240,7 @@ tasks:
     taskid: 9a7b62ab-4f92-4d27-8070-cf65542b4c80
     type: regular
     task:
+      description: ""
       id: 9a7b62ab-4f92-4d27-8070-cf65542b4c80
       version: -1
       name: check IP with CSV
