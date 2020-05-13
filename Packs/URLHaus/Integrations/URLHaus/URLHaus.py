@@ -399,14 +399,7 @@ def file_command():
                     'MD5': urlhaus_data.get('MD5', ''),
                     'SHA256': urlhaus_data.get('SHA256')
                 },
-                'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data,
-                'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
-                    'Indicator': hash,
-                    'Type': 'File',
-                    'Vendor': 'URLhaus',
-                    'Score': 0  # unknown as there is nothing from the
-                                # output to directly indicate the maliciousness of the file
-                }
+                'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
             }
 
             human_readable = tableToMarkdown(f'URLhaus reputation for {hash_type.upper()} : {hash}',

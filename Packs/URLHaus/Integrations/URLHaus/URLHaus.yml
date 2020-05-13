@@ -176,18 +176,6 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
     - contextPath: URLhaus.File.MD5
       description: MD5 hash of the file.
       type: String
