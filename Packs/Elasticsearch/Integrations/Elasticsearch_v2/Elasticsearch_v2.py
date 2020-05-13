@@ -560,6 +560,10 @@ def fetch_incidents():
         last_fetch = parse(str(last_fetch))
         last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
 
+    # if last_fetch is set and we are in a "Timestamp" method - than the last_fetch_timestamp is the last_fetch.
+    else:
+        last_fetch_timestamp = last_fetch
+
     es = elasticsearch_builder()
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
