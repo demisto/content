@@ -470,7 +470,8 @@ def urlhaus_download_sample_command():
                 'HumanReadable': f'No results for SHA256: {file_sha256}',
                 'HumanReadableFormat': formats['markdown']
             })
-        elif res.headers['content-type'] == 'text/html' and res.json()['query_status'] == 'not_found':
+        elif res.headers['content-type'] in ['text/html', 'application/json'] and \
+                res.json()['query_status'] == 'not_found':
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
@@ -487,7 +488,7 @@ def urlhaus_download_sample_command():
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
-            'Contents': res.content
+            'Contents': str(res.content)
         })
 
 
