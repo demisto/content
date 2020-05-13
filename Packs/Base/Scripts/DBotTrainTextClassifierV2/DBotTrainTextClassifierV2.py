@@ -372,9 +372,6 @@ def main():
     # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
     if not np.isclose(float(threshold_metrics_entry['Contents']['threshold']), 0):
         [no_threshold_metrics_entry, _] = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
-    threshold = float(res_threshold[0]['Contents']['threshold'])
-    if not np.isclose(threshold, 0):
-        res = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
         human_readable = '\n'.join(['## Results for No Threshold',
                                     'The following results were achieved by using no threshold (threshold equals 0)'])
         output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred, res=no_threshold_metrics_entry,
