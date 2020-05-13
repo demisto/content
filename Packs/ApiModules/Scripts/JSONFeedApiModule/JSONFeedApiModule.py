@@ -157,15 +157,14 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     for result in client.build_iterator(**kwargs):
         for service_name, items in result.items():
             feed_config = client.feed_name_to_config.get(service_name, {})
-            indicator_field = feed_config.get('indicator', 'indicator')
+            indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
             indicator_type = feed_config.get('indicator_type', indicator_type)
             for item in items:
                 mapping = feed_config.get('mapping')
 
                 if isinstance(item, str):
-                    indicator_value = item
-                else:
-                    indicator_value = item.get(indicator_field)
+                    item = {indicator_field: item}
+                indicator_value = item.get(indicator_field)
 
                 current_indicator_type = indicator_type or auto_detect_indicator_type(indicator_value)
                 if not current_indicator_type:
@@ -221,9 +220,6 @@ def extract_all_fields_from_indicator(indicator, indicator_key):
         elif json_element and indicator_key not in json_element:
             for key, value in json_element:
                 insert_value_to_fields(key, value)
-
-    if not isinstance(indicator, dict):
-        return {}
 
     extract(indicator)
     return fields
