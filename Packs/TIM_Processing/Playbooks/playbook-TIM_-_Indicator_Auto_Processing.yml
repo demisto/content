@@ -1,7 +1,7 @@
-id: TIM - Indicator Auto Processing
+id: TIM_Processing - Indicator Auto Processing
 version: -1
 fromversion: 5.5.0
-name: TIM - Indicator Auto Processing
+name: TIM_Processing - Indicator Auto Processing
 description: This playbook uses several sub playbooks to process and tag indicators,
   which is used to identify indicators that shouldn't be blacklisted. For example
   IP indicators that belong to business partners or important hashes we wish to not
@@ -136,10 +136,10 @@ tasks:
     task:
       id: 80bac8f9-7dcf-4063-8279-9a71f56eeccd
       version: -1
-      name: TIM - Process File Indicators With File Hash Type
+      name: TIM_Processing - Process File Indicators With File Hash Type
       description: This playbook processes file indicator by tagging them with the
         relevant file hash type tag, such as Sha256, Sha1, and Md5.
-      playbookName: TIM - Process File Indicators With File Hash Type
+      playbookName: TIM_Processing - Process File Indicators With File Hash Type
       type: playbook
       iscommand: false
       brand: ""
@@ -374,12 +374,12 @@ tasks:
     task:
       id: ea3117c5-b2c3-4183-895e-298b29f36e1a
       version: -1
-      name: TIM - Process CIDR Indicators By Size
+      name: TIM_Processing - Process CIDR Indicators By Size
       description: This playbook processes CIDR indicators of both IPV4 and IPV6.
         By specifying in the inputs the maximum number of hosts allowed per CIDR,
         the playbook tags any CIDR that exceeds the number as pending_review. If the
         maximum CIDR size is not specified in the inputs, the playbook does not run.
-      playbookName: TIM - Process CIDR Indicators By Size
+      playbookName: TIM_Processing - Process CIDR Indicators By Size
       type: playbook
       iscommand: false
       brand: ""
@@ -413,12 +413,12 @@ tasks:
     task:
       id: 96a8c7a9-e2e7-4e97-8555-39d842269c8a
       version: -1
-      name: TIM - Process Indicators Against Business Partners URL List
+      name: TIM_Processing - Process Indicators Against Business Partners URL List
       description: This playbook processes indicators to check if they exist in a
         Cortex XSOAR list containing business partner urls, and tags the indicators
         accordingly. To enable the playbook, provide a Cortex XSOAR list name containing
         business partner urls.
-      playbookName: TIM - Process Indicators Against Business Partners URL List
+      playbookName: TIM_Processing - Process Indicators Against Business Partners URL List
       type: playbook
       iscommand: false
       brand: ""
@@ -452,10 +452,10 @@ tasks:
     task:
       id: ce07cf89-c81f-4c99-853c-c66551949f27
       version: -1
-      name: TIM - Process Indicators Against Approved Hash List
+      name: TIM_Processing - Process Indicators Against Approved Hash List
       description: This playbook checks if file hash indicators exist in a Cortex
         XSOAR list. If the indicators exist in the list, they are tagged as approved_hash.
-      playbookName: TIM - Process Indicators Against Approved Hash List
+      playbookName: TIM_Processing - Process Indicators Against Approved Hash List
       type: playbook
       iscommand: false
       brand: ""
@@ -482,11 +482,11 @@ tasks:
     task:
       id: d6985b52-6b88-45ad-8be4-4d581bae290e
       version: -1
-      name: TIM - Process Indicators Against Organizations External IP List
+      name: TIM_Processing - Process Indicators Against Organizations External IP List
       description: This playbook processes indicators to check if they exist in a
         Cortex XSOAR list containing the organizational External IP addresses, and
         tags the indicators accordingly.
-      playbookName: TIM - Process Indicators Against Organizations External IP List
+      playbookName: TIM_Processing - Process Indicators Against Organizations External IP List
       type: playbook
       iscommand: false
       brand: ""
@@ -520,11 +520,11 @@ tasks:
     task:
       id: 504ccb2f-3423-4738-8f29-677c632137b6
       version: -1
-      name: TIM - Process Indicators Against Business Partners IP List
+      name: TIM_Processing - Process Indicators Against Business Partners IP List
       description: This playbook processes indicators to check if they exist in a
         Cortex XSOAR list containing business partner IP addresses, and tags the indicators
         accordingly.
-      playbookName: TIM - Process Indicators Against Business Partners IP List
+      playbookName: TIM_Processing - Process Indicators Against Business Partners IP List
       type: playbook
       iscommand: false
       brand: ""
@@ -558,11 +558,11 @@ tasks:
     task:
       id: e929cc6d-64f2-4a38-8f35-9aca71c62e21
       version: -1
-      name: TIM - Process Indicators Against Business Partners Domains List
+      name: TIM_Processing - Process Indicators Against Business Partners Domains List
       description: This playbook processes indicators to check if they exist in a
         Cortex XSOAR list containing the business partner domains, and tags the indicators
         accordingly.
-      playbookName: TIM - Process Indicators Against Business Partners Domains List
+      playbookName: TIM_Processing - Process Indicators Against Business Partners Domains List
       type: playbook
       iscommand: false
       brand: ""

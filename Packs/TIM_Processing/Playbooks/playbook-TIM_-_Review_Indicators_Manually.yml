@@ -1,24 +1,23 @@
-id: TIM - Review Indicators Manually For Whitelisting
+id: TIM_Processing - Review Indicators Manually
 version: -1
 fromversion: 5.5.0
-name: TIM - Review Indicators Manually For Whitelisting
-description: This playbook helps analysts manage the manual process of whitelisting
-  indicators from cloud providers, apps, services etc . The playbook indicator query
-  is set to search for indicators that have the 'whitelist_review' tag. The playbooks
-  layout displays all of the related indicators in the summary page. While reviewing
-  the indicators, the analyst can go to the summary page and tag the indicators accordingly
-  with tags such as, 'approved_black', 'approved_white', etc. Once the analyst completes
-  the review, the playbook can optionally send an email with a list of changes done
-  by the analyst which haven't been approved. Once complete, the playbook removes
-  the 'whitelist review' tag from the indicators.
+name: TIM_Processing - Review Indicators Manually
+description: This playbook helps analysts manage the manual process of reviewing indicators.
+  The playbook indicator query is set to search for indicators that have the 'pending
+  review' tag. The playbook's layout displays all of the related indicators in the
+  summary page. While reviewing the indicators, the analyst can go to the summary
+  page and tag the indicators accordingly with tags 'such as, 'approved_black', 'approved_white',
+  etc. Once the analyst completes their review, the playbook can optionally send an
+  email with a list of changes done by the analyst which haven't been approved. Once
+  complete, the playbook removes the 'pending review' tag from the indicators.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ec484071-3d69-4a74-8e11-72d0a8ebdc1a
+    taskid: f162095d-8a2a-4284-8067-de9cc4e1f2b2
     type: start
     task:
-      id: ec484071-3d69-4a74-8e11-72d0a8ebdc1a
+      id: f162095d-8a2a-4284-8067-de9cc4e1f2b2
       version: -1
       name: ""
       iscommand: false
@@ -42,10 +41,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 45a0bb8a-26a9-4af8-8099-84544bccad92
+    taskid: f0d90b34-79f7-4b83-838d-90536bd85b72
     type: regular
     task:
-      id: 45a0bb8a-26a9-4af8-8099-84544bccad92
+      id: f0d90b34-79f7-4b83-838d-90536bd85b72
       version: -1
       name: Associate indicators to incident
       description: Associates indicators to an incident.
@@ -77,10 +76,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: bcc580c5-c88c-45a1-8ee7-b038d930c14b
+    taskid: 22a51e47-818d-4bdb-84b7-2ce46c053108
     type: regular
     task:
-      id: bcc580c5-c88c-45a1-8ee7-b038d930c14b
+      id: 22a51e47-818d-4bdb-84b7-2ce46c053108
       version: -1
       name: Manually review indicators
       description: Manually review the indicators. The review process can include
@@ -110,10 +109,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 58ce9edb-06d2-4601-8b65-5efe0ff19ea1
+    taskid: d6303bc0-484d-4642-8678-d74488ed3d91
     type: title
     task:
-      id: 58ce9edb-06d2-4601-8b65-5efe0ff19ea1
+      id: d6303bc0-484d-4642-8678-d74488ed3d91
       version: -1
       name: Done
       type: title
@@ -135,10 +134,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 6347cecd-69c5-45e1-8e33-a9ff184ed697
+    taskid: 673fbda5-c8c1-4628-8167-b550c3e36013
     type: regular
     task:
-      id: 6347cecd-69c5-45e1-8e33-a9ff184ed697
+      id: 673fbda5-c8c1-4628-8167-b550c3e36013
       version: -1
       name: Add being reviewed tag to indicators
       description: Add being reviewed tag to indicators
@@ -171,12 +170,12 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 21dc7963-c302-415d-843b-257e7d2861ac
+    taskid: dca3b3a9-aba8-449b-8947-899260a923d6
     type: condition
     task:
-      id: 21dc7963-c302-415d-843b-257e7d2861ac
+      id: dca3b3a9-aba8-449b-8947-899260a923d6
       version: -1
-      name: Allow to remove whitelist review tag from all indicators
+      name: Allow to remove pending review tag from all indicators
       type: condition
       iscommand: false
       brand: ""
@@ -201,13 +200,13 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: f7de89f6-eb9a-44e6-84da-8ef43a58aa25
+    taskid: f4ec900c-87b6-4144-844d-8d9355f3882b
     type: regular
     task:
-      id: f7de89f6-eb9a-44e6-84da-8ef43a58aa25
+      id: f4ec900c-87b6-4144-844d-8d9355f3882b
       version: -1
-      name: Remove whitelist review tag from indicators
-      description: Removes the whitelist review tag from indicators
+      name: Remove pending review tag from indicators
+      description: Remove pending review tag from indicators
       script: Builtin|||removeIndicatorField
       type: regular
       iscommand: true
@@ -219,7 +218,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: whitelist_review
+        simple: pending_review
       indicatorsValues:
         simple: ${playbookQuery.value}
     separatecontext: false
@@ -237,10 +236,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: ddb2dcd9-bacf-4de5-83a7-e15d66aac4f5
+    taskid: 988f9d8e-1eed-4246-8a33-90f7301be80c
     type: condition
     task:
-      id: ddb2dcd9-bacf-4de5-83a7-e15d66aac4f5
+      id: 988f9d8e-1eed-4246-8a33-90f7301be80c
       version: -1
       name: Are there query results?
       type: condition
@@ -275,10 +274,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 96afe586-c3c2-4b1c-823a-b9b2856f13ca
+    taskid: 69a24474-140a-4fce-8fc3-770b257a3cc3
     type: regular
     task:
-      id: 96afe586-c3c2-4b1c-823a-b9b2856f13ca
+      id: 69a24474-140a-4fce-8fc3-770b257a3cc3
       version: -1
       name: Remove being reviewed tag from indicators
       description: Removes the 'being_reviewed' tag from the indicator.
@@ -311,12 +310,12 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: e9f7c185-a753-4fb4-83d4-3dc7fe0c2652
+    taskid: d7d97ca9-8558-4063-8d5f-e2cb8fc97087
     type: regular
     task:
-      id: e9f7c185-a753-4fb4-83d4-3dc7fe0c2652
+      id: d7d97ca9-8558-4063-8d5f-e2cb8fc97087
       version: -1
-      name: Make changes according the approver's request
+      name: Make changes according the approvers request
       type: regular
       iscommand: false
       brand: ""
@@ -339,10 +338,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: b9b0154e-efc7-4f6a-808f-c9faff5ad536
+    taskid: 689ca540-4687-441f-8971-0202ce7d004d
     type: collection
     task:
-      id: b9b0154e-efc7-4f6a-808f-c9faff5ad536
+      id: 689ca540-4687-441f-8971-0202ce7d004d
       version: -1
       name: Email for indicator changes approval
       type: collection
@@ -404,7 +403,7 @@ tasks:
       title: List the indicators are are not approved
       description: The approver reviews the incident and changes made by the analyst.
         In case the approver needs specific indicators to be changed, they will list
-        the relevant indicators.
+        the indicators in question.
       sender: ""
       expired: false
       totalanswers: 0
@@ -412,10 +411,10 @@ tasks:
     quietmode: 2
   "16":
     id: "16"
-    taskid: 22860fd3-c8dd-4c17-8f81-4f9537a1e3c3
+    taskid: c3cd5682-a73d-4725-8685-c3b54dacb587
     type: condition
     task:
-      id: 22860fd3-c8dd-4c17-8f81-4f9537a1e3c3
+      id: c3cd5682-a73d-4725-8685-c3b54dacb587
       version: -1
       name: Was an email address provided for approval?
       type: condition
@@ -458,12 +457,12 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 46edfee8-7778-4c27-85ed-d4b0fdc1825f
+    taskid: 12758c44-b346-4c69-86fe-83e72d221b4c
     type: condition
     task:
-      id: 46edfee8-7778-4c27-85ed-d4b0fdc1825f
+      id: 12758c44-b346-4c69-86fe-83e72d221b4c
       version: -1
-      name: Are there indicators that weren't approved?
+      name: Are there indicators that werent approved?
       type: condition
       iscommand: false
       brand: ""
@@ -512,7 +511,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: tags:whitelist_review and -tags:being_reviewed
+    query: tags:pending_review and -tags:being_reviewed
     queryEntity: indicators
     results: null
     daterange:

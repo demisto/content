@@ -1,10 +1,11 @@
-id: TIM - Add Domain Indicators To SIEM
+id: TIM_Processing - Add Bad Hash Indicators To SIEM
 version: -1
 fromversion: 5.5.0
-name: TIM - Add Domain Indicators To SIEM
-description: This playbook receives indicators from its parent playbook
-  and provides the indicators as inputs for the sub-playbooks that push the indicators
-  to the SIEM.
+name: TIM_Processing - Add Bad Hash Indicators To SIEM
+description: |-
+    This playbook recives indicators from its parent playbook
+    and provides the indicators as inputs for the sub-playbooks that push the indicators
+    to the SIEM.
 starttaskid: "0"
 tasks:
   "0":
@@ -64,10 +65,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 43f38660-2c88-47da-8441-f14c5f54cdac
+    taskid: 4741c303-4a1c-4d0c-89c2-86a56850fecf
     type: condition
     task:
-      id: 43f38660-2c88-47da-8441-f14c5f54cdac
+      id: 4741c303-4a1c-4d0c-89c2-86a56850fecf
       version: -1
       name: Is Qradar enabled?
       type: condition
@@ -78,7 +79,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "10"
+      - "11"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -133,7 +134,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 780
+          "y": 810
         }
       }
     note: false
@@ -160,7 +161,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
+          "x": -60,
           "y": 210
         }
       }
@@ -185,7 +186,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "11"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -214,7 +215,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
+          "x": -60,
           "y": 360
         }
       }
@@ -225,12 +226,12 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 8e80cd72-5f33-43a0-8e14-01c953b9b015
+    taskid: 763fdb99-c58a-4ca3-869b-d95bf50ebadd
     type: condition
     task:
-      id: 8e80cd72-5f33-43a0-8e14-01c953b9b015
+      id: 763fdb99-c58a-4ca3-869b-d95bf50ebadd
       version: -1
-      name: Are there Domain results?
+      name: Are there Hash results?
       type: condition
       iscommand: false
       brand: ""
@@ -245,14 +246,32 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: playbookQuery.indicator_type
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                accessor: value
+                transformers:
+                - operator: uniq
             iscontext: true
-          right:
-            value:
-              simple: Domain
     view: |-
       {
         "position": {
@@ -267,13 +286,13 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 522496d3-b40a-43a2-874e-3cd53941eedb
+    taskid: e76f1e85-104f-4753-8570-b0ea45244303
     type: playbook
     task:
-      id: 522496d3-b40a-43a2-874e-3cd53941eedb
+      id: e76f1e85-104f-4753-8570-b0ea45244303
       version: -1
-      name: TIM - QRadar Add Domain Indicators
-      playbookName: TIM - QRadar Add Domain Indicators
+      name: TIM_Processing - ArcSight Add Bad Hash Indicators
+      playbookName: TIM_Processing - ArcSight Add Bad Hash Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -285,8 +304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 600
+          "x": -170,
+          "y": 590
         }
       }
     note: false
@@ -296,13 +315,13 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 64badc8f-c603-4f81-8d8a-753a76414576
+    taskid: b0a6de41-61eb-44fe-8463-f891fbe8e875
     type: playbook
     task:
-      id: 64badc8f-c603-4f81-8d8a-753a76414576
+      id: b0a6de41-61eb-44fe-8463-f891fbe8e875
       version: -1
-      name: TIM - ArcSight Add Domain Indicators
-      playbookName: TIM - ArcSight Add Domain Indicators
+      name: TIM_Processing - QRadar Add Bad Hash Indicators
+      playbookName: TIM_Processing - QRadar Add Bad Hash Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -314,8 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 600
+          "x": 1100,
+          "y": 590
         }
       }
     note: false
@@ -328,9 +347,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1045,
-        "width": 1660,
-        "x": -190,
+        "height": 1075,
+        "width": 1650,
+        "x": -170,
         "y": -200
       }
     }

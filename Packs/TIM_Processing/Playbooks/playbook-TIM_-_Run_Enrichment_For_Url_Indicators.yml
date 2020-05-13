@@ -1,8 +1,9 @@
-id: TIM - Run Enrichment For Domain Indicators
+id: TIM_Processing - Run Enrichment For Url Indicators
 version: -1
 fromversion: 5.5.0
-name: TIM - Run Enrichment For Domain Indicators
-description: This playbook processes indicators by enriching indicators
+name: TIM_Processing - Run Enrichment For Url Indicators
+description: |-
+    This playbook processes indicators by enriching indicators
     based on the indicator feed's reputation, as specified in the playbook
     inputs. This playbook needs to be used with caution as it might use up the user
     enrichment integration's API license when running enrichment for large amounts of
@@ -41,10 +42,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 63583391-162a-41bb-8bcb-ca636d550566
+    taskid: 583e0fd9-25e4-4a0f-8141-88a29cb61d27
     type: condition
     task:
-      id: 63583391-162a-41bb-8bcb-ca636d550566
+      id: 583e0fd9-25e4-4a0f-8141-88a29cb61d27
       version: -1
       name: Are there bad results?
       description: ''
@@ -73,7 +74,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Domain
+                        simple: URL
                 - - operator: isEqualString
                     left:
                       value:
@@ -164,14 +165,14 @@ tasks:
     quietmode: 0
   "130":
     id: "130"
-    taskid: d5c08cd3-8f57-43e0-8899-8d0279fd06f1
+    taskid: e81120d8-dc36-484d-8841-27c13df99945
     type: regular
     task:
-      id: d5c08cd3-8f57-43e0-8899-8d0279fd06f1
+      id: e81120d8-dc36-484d-8841-27c13df99945
       version: -1
       name: Enrich bad indicators
       description: Perform enrichment with enabled enrichment intergations
-      script: '|||domain'
+      script: '|||url'
       type: regular
       iscommand: true
       brand: ""
@@ -179,7 +180,15 @@ tasks:
       '#none#':
       - "127"
     scriptarguments:
-      domain:
+      limit: {}
+      long: {}
+      public: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
         complex:
           root: playbookQuery
           filters:
@@ -190,7 +199,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Domain
+                  simple: URL
           - - operator: isEqualString
               left:
                 value:
@@ -202,11 +211,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
       wait: {}
     separatecontext: false
     view: |-
@@ -264,10 +268,10 @@ tasks:
     quietmode: 0
   "132":
     id: "132"
-    taskid: 4d8290ee-5e34-448f-83b6-c262a644d127
+    taskid: a6f61158-5b7f-4bb9-8f8f-2ba72dd1ab3b
     type: condition
     task:
-      id: 4d8290ee-5e34-448f-83b6-c262a644d127
+      id: a6f61158-5b7f-4bb9-8f8f-2ba72dd1ab3b
       version: -1
       name: Are there good results?
       description: ''
@@ -296,7 +300,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Domain
+                        simple: URL
                 - - operator: isEqualString
                     left:
                       value:
@@ -321,14 +325,14 @@ tasks:
     quietmode: 2
   "133":
     id: "133"
-    taskid: 5de7dd20-1265-4ede-8165-187ed5a240ab
+    taskid: 46cb4bec-b75d-41fa-8a35-045fc68d256e
     type: regular
     task:
-      id: 5de7dd20-1265-4ede-8165-187ed5a240ab
+      id: 46cb4bec-b75d-41fa-8a35-045fc68d256e
       version: -1
       name: Enrich good indicators
       description: Perform enrichment with enabled enrichment intergations
-      script: '|||domain'
+      script: '|||url'
       type: regular
       iscommand: true
       brand: ""
@@ -336,7 +340,15 @@ tasks:
       '#none#':
       - "127"
     scriptarguments:
-      domain:
+      limit: {}
+      long: {}
+      public: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
         complex:
           root: playbookQuery
           filters:
@@ -347,7 +359,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Domain
+                  simple: URL
           - - operator: isEqualString
               left:
                 value:
@@ -359,11 +371,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
       wait: {}
     separatecontext: false
     view: |-
@@ -380,10 +387,10 @@ tasks:
     quietmode: 0
   "134":
     id: "134"
-    taskid: 97748f59-5bb0-4dd9-83f1-e318c992ca05
+    taskid: 06341244-463a-46e3-8ce2-04e02efb5b07
     type: condition
     task:
-      id: 97748f59-5bb0-4dd9-83f1-e318c992ca05
+      id: 06341244-463a-46e3-8ce2-04e02efb5b07
       version: -1
       name: Are there suspicious results?
       description: ''
@@ -412,7 +419,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Domain
+                        simple: URL
                 - - operator: isEqualString
                     left:
                       value:
@@ -478,14 +485,14 @@ tasks:
     quietmode: 0
   "136":
     id: "136"
-    taskid: 205e5e73-70af-4c64-8066-43101be1b7d1
+    taskid: ca9ea73c-b29c-40b6-8a8a-2b932b57c7dc
     type: regular
     task:
-      id: 205e5e73-70af-4c64-8066-43101be1b7d1
+      id: ca9ea73c-b29c-40b6-8a8a-2b932b57c7dc
       version: -1
       name: Enrich suspicious indicators
       description: Perform enrichment with enabled enrichment intergations
-      script: '|||domain'
+      script: '|||url'
       type: regular
       iscommand: true
       brand: ""
@@ -493,7 +500,15 @@ tasks:
       '#none#':
       - "127"
     scriptarguments:
-      domain:
+      limit: {}
+      long: {}
+      public: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
         complex:
           root: playbookQuery
           filters:
@@ -504,7 +519,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Domain
+                  simple: URL
           - - operator: isEqualString
               left:
                 value:
@@ -516,11 +531,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
       wait: {}
     separatecontext: false
     view: |-
@@ -537,10 +547,10 @@ tasks:
     quietmode: 0
   "137":
     id: "137"
-    taskid: 9c62e342-3f5c-4f98-8e3e-dfc47cfe37a6
+    taskid: d2000281-57c8-4fe3-8261-f7d69320376f
     type: condition
     task:
-      id: 9c62e342-3f5c-4f98-8e3e-dfc47cfe37a6
+      id: d2000281-57c8-4fe3-8261-f7d69320376f
       version: -1
       name: Are there unknown results?
       description: ''
@@ -569,7 +579,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Domain
+                        simple: URL
                 - - operator: isEqualString
                     left:
                       value:
@@ -635,14 +645,14 @@ tasks:
     quietmode: 0
   "139":
     id: "139"
-    taskid: ba0ccb4f-c61e-44c3-85a3-600e2c80dd9d
+    taskid: 76db99f4-68ce-4128-803c-36e2ec6674f5
     type: regular
     task:
-      id: ba0ccb4f-c61e-44c3-85a3-600e2c80dd9d
+      id: 76db99f4-68ce-4128-803c-36e2ec6674f5
       version: -1
       name: Enrich unknown indicators
       description: Perform enrichment with enabled enrichment intergations
-      script: '|||domain'
+      script: '|||url'
       type: regular
       iscommand: true
       brand: ""
@@ -650,7 +660,15 @@ tasks:
       '#none#':
       - "127"
     scriptarguments:
-      domain:
+      limit: {}
+      long: {}
+      public: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
         complex:
           root: playbookQuery
           filters:
@@ -661,7 +679,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Domain
+                  simple: URL
           - - operator: isEqualString
               left:
                 value:
@@ -673,11 +691,6 @@ tasks:
           accessor: value
           transformers:
           - operator: uniq
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
       wait: {}
     separatecontext: false
     view: |-

@@ -1,7 +1,7 @@
-id: TIM - Add All Indicator Types To SIEM
+id: TIM_Processing - Add All Indicator Types To SIEM
 version: -1
 fromversion: 5.5.0
-name: TIM - Add All Indicator Types To SIEM
+name: TIM_Processing - Add All Indicator Types To SIEM
 description: |-
   This playbook runs sub playbooks that send indicators to your SIEM. To select the indicators you want to add, go to playbook inputs, choose “from indicators” and set your query. For example tags:approved_black, approved_white etc. The purpose of the playbook is to send to SIEM only indicators that have been processed and tagged accordingly after an automatic or manual review process. The default playbook query is"
   (type:ip or type:file or type:Domain or type:URL) -tags:pending_review and (tags:approved_black or tags:approved_white or tags:approved_watchlist)"
@@ -45,11 +45,11 @@ tasks:
     task:
       id: e71aedcf-fdf6-4749-8033-354298bcfff1
       version: -1
-      name: TIM - Add IP Indicators To SIEM
+      name: TIM_Processing - Add IP Indicators To SIEM
       description: This playbook pushes to your SIEM indicators that have
         the tag processed_black. These indicators have been either received by a reliable
         Threat Intel feed or approved by an analyst manually.
-      playbookName: TIM - Add IP Indicators to SIEM
+      playbookName: TIM_Processing - Add IP Indicators to SIEM
       type: playbook
       iscommand: false
       brand: ""
@@ -215,8 +215,8 @@ tasks:
     task:
       id: 8d713b29-1486-45a6-8280-c71965b11c17
       version: -1
-      name: TIM - Add Bad Hash Indicators To SIEM
-      playbookName: TIM - Add Bad Hash Indicators To SIEM
+      name: TIM_Processing - Add Bad Hash Indicators To SIEM
+      playbookName: TIM_Processing - Add Bad Hash Indicators To SIEM
       type: playbook
       iscommand: false
       brand: ""
@@ -346,8 +346,8 @@ tasks:
     task:
       id: 202e48ee-1193-4afc-8ad7-a21d49eaf97b
       version: -1
-      name: TIM - Add Domain Indicators To SIEM
-      playbookName: TIM - Add Domain Indicators To SIEM
+      name: TIM_Processing - Add Domain Indicators To SIEM
+      playbookName: TIM_Processing - Add Domain Indicators To SIEM
       type: playbook
       iscommand: false
       brand: ""
@@ -375,8 +375,8 @@ tasks:
     task:
       id: f85efed7-c95e-403f-8092-c14ebc6d5ae0
       version: -1
-      name: TIM - Add Url Indicators To SIEM
-      playbookName: TIM - Add Url Indicators To SIEM
+      name: TIM_Processing - Add Url Indicators To SIEM
+      playbookName: TIM_Processing - Add Url Indicators To SIEM
       type: playbook
       iscommand: false
       brand: ""

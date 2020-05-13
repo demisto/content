@@ -1,11 +1,10 @@
-id: TIM - Add Url Indicators To SIEM
+id: TIM_Processing - Add Domain Indicators To SIEM
 version: -1
 fromversion: 5.5.0
-name: TIM - Add Url Indicators To SIEM
-description: |-
-  TIM playbook - This playbook receives indicators from its parent playbook
-    and provides the indicators as inputs for the sub-playbooks that push the indicators
-    to your SIEM.
+name: TIM_Processing - Add Domain Indicators To SIEM
+description: This playbook receives indicators from its parent playbook
+  and provides the indicators as inputs for the sub-playbooks that push the indicators
+  to the SIEM.
 starttaskid: "0"
 tasks:
   "0":
@@ -226,12 +225,12 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 43b55454-b4d2-4388-84d0-6bbd7ea2be45
+    taskid: 8e80cd72-5f33-43a0-8e14-01c953b9b015
     type: condition
     task:
-      id: 43b55454-b4d2-4388-84d0-6bbd7ea2be45
+      id: 8e80cd72-5f33-43a0-8e14-01c953b9b015
       version: -1
-      name: Are there Url results?
+      name: Are there Domain results?
       type: condition
       iscommand: false
       brand: ""
@@ -253,7 +252,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: URL
+              simple: Domain
     view: |-
       {
         "position": {
@@ -268,13 +267,13 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 91b9c160-c50b-4650-8d1d-4df2d3eaf73d
+    taskid: 522496d3-b40a-43a2-874e-3cd53941eedb
     type: playbook
     task:
-      id: 91b9c160-c50b-4650-8d1d-4df2d3eaf73d
+      id: 522496d3-b40a-43a2-874e-3cd53941eedb
       version: -1
-      name: TIM - QRadar Add Url Indicators
-      playbookName: TIM - QRadar Add Url Indicators
+      name: TIM_Processing - QRadar Add Domain Indicators
+      playbookName: TIM_Processing - QRadar Add Domain Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -286,8 +285,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 610
+          "x": 1090,
+          "y": 600
         }
       }
     note: false
@@ -297,13 +296,13 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: f3b0edf1-22cd-4ee1-8b4e-ee95536c2576
+    taskid: 64badc8f-c603-4f81-8d8a-753a76414576
     type: playbook
     task:
-      id: f3b0edf1-22cd-4ee1-8b4e-ee95536c2576
+      id: 64badc8f-c603-4f81-8d8a-753a76414576
       version: -1
-      name: TIM - ArcSight Add Url Indicators
-      playbookName: TIM - ArcSight Add Url Indicators
+      name: TIM_Processing - ArcSight Add Domain Indicators
+      playbookName: TIM_Processing - ArcSight Add Domain Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -315,8 +314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 610
+          "x": -190,
+          "y": 600
         }
       }
     note: false
@@ -330,8 +329,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1045,
-        "width": 1610,
-        "x": -160,
+        "width": 1660,
+        "x": -190,
         "y": -200
       }
     }

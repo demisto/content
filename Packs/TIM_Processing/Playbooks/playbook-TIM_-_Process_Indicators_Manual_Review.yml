@@ -1,7 +1,7 @@
-id: TIM - Process Indicators - Manual Review
+id: TIM_Processing - Process Indicators - Manual Review
 version: -1
 fromversion: 5.5.0
-name: TIM - Process Indicators - Manual Review
+name: TIM_Processing - Process Indicators - Manual Review
 description: |-
   This playbook tags indicators ingested by feeds that require manual approval. The playbook is triggered due to a job. The indicators are tagged as requiring a manual review. The playbook optionally concludes with creating a new incident that includes all of the indicators that the analyst must review.
   To enable the playbook, the indicator query needs to be configured. An example query is a list of the feeds whose ingested indicators should be manually reviewed. For example, sourceBrands:"Feed A" or sourceBrands:"Feed B".
@@ -441,11 +441,11 @@ tasks:
     task:
       id: 39a942f7-9326-4700-8900-e0bf16492f88
       version: -1
-      name: TIM - Indicator Auto Processing
+      name: TIM_Processing - Indicator Auto Processing
       description: This playbook uses several sub playbooks to process and tag indicators, which is used to identify indicators that shouldn't be
         blacklisted. For example IP indicators that belong to business partners or important hashes we wish to not process. Additional sub playbooks can be added for improving the
         business logic and tagging according to the user's needs.
-      playbookName: TIM - Indicator Auto Processing
+      playbookName: TIM_Processing - Indicator Auto Processing
       type: playbook
       iscommand: false
       brand: ""

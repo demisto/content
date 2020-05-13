@@ -1,11 +1,10 @@
-id: TIM - Process Indicators Against Business Partners URL List
+id: TIM_Processing - Process Indicators Against Business Partners Domains List
 version: -1
-fromversion: 5.5.0
-name: TIM - Process Indicators Against Business Partners URL List
+fromversion: 5.5.0 
+name: TIM_Processing - Process Indicators Against Business Partners Domains List
 description: This playbook processes indicators to check if they exist
-  in a Cortex XSOAR list containing business partner urls, and tags the indicators accordingly.
-  To enable the playbook, provide a Cortex XSOAR list name containing business
-  partner urls.
+  in a Cortex XSOAR list containing the business partner domains, and tags the indicators
+  accordingly.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,12 +36,12 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: fad906c6-d3e0-4a0e-8634-19a013593115
+    taskid: e81312ce-5c7d-4eda-8179-3f8f443047fa
     type: condition
     task:
-      id: fad906c6-d3e0-4a0e-8634-19a013593115
+      id: e81312ce-5c7d-4eda-8179-3f8f443047fa
       version: -1
-      name: Are there URL results?
+      name: Are there Domain results?
       description: ''
       type: condition
       iscommand: false
@@ -63,7 +62,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: URL
+              simple: Domain
     view: |-
       {
         "position": {
@@ -78,12 +77,12 @@ tasks:
     quietmode: 2
   "101":
     id: "101"
-    taskid: 4edcbfde-1649-4143-84a2-09fb7625fc6a
+    taskid: 3541a32c-5eff-4916-8e3c-4c8dcd5c3b84
     type: condition
     task:
-      id: 4edcbfde-1649-4143-84a2-09fb7625fc6a
+      id: 3541a32c-5eff-4916-8e3c-4c8dcd5c3b84
       version: -1
-      name: Is there a business partners url list?
+      name: Is there a business partners domain list?
       type: condition
       iscommand: false
       brand: ""
@@ -100,7 +99,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.BusinessPartnersUrlListName
+              simple: inputs.BusinessPartnersDomainsListName
             iscontext: true
     view: |-
       {
@@ -116,10 +115,10 @@ tasks:
     quietmode: 2
   "102":
     id: "102"
-    taskid: 0adde51c-5191-46d8-852c-e4f61242f900
+    taskid: db8ecb83-41a2-40d3-8a5d-0b101ae30ab4
     type: regular
     task:
-      id: 0adde51c-5191-46d8-852c-e4f61242f900
+      id: db8ecb83-41a2-40d3-8a5d-0b101ae30ab4
       version: -1
       name: Run filter by list check on indicators
       description: Checks whether the specified item is in a Cortex XSOAR list.
@@ -135,7 +134,7 @@ tasks:
       ignorecase:
         simple: "yes"
       listname:
-        simple: ${inputs.BusinessPartnersUrlListName}
+        simple: ${inputs.BusinessPartnersDomainsListName}
       matchexact:
         simple: "yes"
       values:
@@ -155,12 +154,12 @@ tasks:
     quietmode: 2
   "103":
     id: "103"
-    taskid: f196bf61-03cd-4934-82e0-dfbcbc603c59
+    taskid: cc9a2fca-f919-4642-8f01-848b1645b235
     type: condition
     task:
-      id: f196bf61-03cd-4934-82e0-dfbcbc603c59
+      id: cc9a2fca-f919-4642-8f01-848b1645b235
       version: -1
-      name: Do values appear in business partner url list?
+      name: Do values appear in business partner domain list?
       type: condition
       iscommand: false
       brand: ""
@@ -193,10 +192,10 @@ tasks:
     quietmode: 2
   "104":
     id: "104"
-    taskid: 8a99ccf5-0932-4f72-8a99-7c61bc684480
+    taskid: 1459bf7b-62d1-4860-8e81-b4c755888805
     type: regular
     task:
-      id: 8a99ccf5-0932-4f72-8a99-7c61bc684480
+      id: 1459bf7b-62d1-4860-8e81-b4c755888805
       version: -1
       name: Add business partner tag to indicators
       description: Adds the 'business_partner' tag to the relevant indicators.
@@ -260,10 +259,10 @@ tasks:
     quietmode: 0
   "106":
     id: "106"
-    taskid: 572ddf87-39a8-487b-850f-ebacb94f235b
+    taskid: 60a3a95e-596e-4d65-8a4a-b85185b48501
     type: regular
     task:
-      id: 572ddf87-39a8-487b-850f-ebacb94f235b
+      id: 60a3a95e-596e-4d65-8a4a-b85185b48501
       version: -1
       name: Set values in list
       description: Checks if the specified value exists in context. If the value exists,
@@ -279,7 +278,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: BusinessPartnerUrl
+        simple: BusinessPartnerDomain
       stringify: {}
       value:
         simple: ${List.In}
@@ -298,10 +297,10 @@ tasks:
     quietmode: 0
   "107":
     id: "107"
-    taskid: 26c4f372-32b2-4f95-8485-310f20cb0641
+    taskid: 94a9bd3c-163d-4de2-87ee-8a42f6c73556
     type: regular
     task:
-      id: 26c4f372-32b2-4f95-8485-310f20cb0641
+      id: 94a9bd3c-163d-4de2-87ee-8a42f6c73556
       version: -1
       name: Set values not in list
       description: Checks if the specified value exists in context. If the value exists,
@@ -317,7 +316,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: NotBusinessPartnerUrl
+        simple: NotBusinessPartnerDomain
       stringify: {}
       value:
         simple: ${List.NotIn}
@@ -336,10 +335,10 @@ tasks:
     quietmode: 0
   "108":
     id: "108"
-    taskid: 4709e8af-66f1-4877-8bde-89739d7f8a66
+    taskid: 82d4aa14-2235-47a6-8e81-1c8a364e22eb
     type: regular
     task:
-      id: 4709e8af-66f1-4877-8bde-89739d7f8a66
+      id: 82d4aa14-2235-47a6-8e81-1c8a364e22eb
       version: -1
       name: Set values
       description: Checks if the specified value exists in context. If the value exists,
@@ -355,7 +354,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: NotBusinessPartnerUrl
+        simple: NotBusinessPartnerDomain
       stringify: {}
       value:
         complex:
@@ -368,7 +367,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: URL
+                  simple: Domain
           accessor: value
           transformers:
           - operator: uniq
@@ -376,7 +375,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
+          "x": 790,
           "y": -920
         }
       }
@@ -387,13 +386,11 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {
-      "19_105_#default#": 0.48
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1215,
-        "width": 1550,
+        "width": 1540,
         "x": -370,
         "y": -1390
       }
@@ -420,18 +417,18 @@ inputs:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
-- key: BusinessPartnersUrlListName
+- key: BusinessPartnersDomainsListName
   value: {}
   required: false
-  description: A Cortex XSOAR list containing business partner url values. Url Indicators
-    that appear in the list are tagged as business partners.
+  description: A Cortex XSOAR list containing business partner domain names values. Domain
+    Indicators that appear in the list are tagged as business partner.
   playbookInputQuery: null
 outputs:
-- contextPath: BusinessPartnerUrl
-  description: URLs that are found in the business partner url list.
+- contextPath: BusinessPartnerDomain
+  description: Domain that are found in the business partner domains list.
   type: string
-- contextPath: NotBusinessPartnerUrl
-  description: URLs that are not found in the business partner url list.
+- contextPath: NotBusinessPartnerDomain
+  description: Domain that are not found in the business partner domains list.
   type: string
 quiet: true
 tests:

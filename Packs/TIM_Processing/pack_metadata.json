@@ -1,5 +1,5 @@
 {
-    "name": "TIM",
+    "name": "TIM - Processing",
     "description": "TIM threat intel management package for processing and working with indicators.",
     "support": "demisto",
     "currentVersion": "1.0.0",
