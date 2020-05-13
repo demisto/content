@@ -1796,7 +1796,9 @@ INDICATOR_VALUE_AND_TYPE = [
     ('fe80:0000:0000:0000:91ba:7558:26d3:acde', 'IPv6'),
     ('fd60:e22:f1b9::2', 'IPv6'),
     ('2001:db8:0000:0000:0000:0000:0000:0000', 'IPv6'),
-    ('112.126.94.107', 'IP')
+    ('112.126.94.107', 'IP'),
+    ('a', None),
+    ('*castaneda-thornton.com', 'DomainGlob')
 ]
 
 
