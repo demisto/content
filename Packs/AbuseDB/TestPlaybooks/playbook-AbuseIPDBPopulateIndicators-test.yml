@@ -2,12 +2,14 @@ id: AbuseIPDB PopulateIndicators Test
 version: -1
 name: AbuseIPDB PopulateIndicators Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
     taskid: 0295597d-b28b-437b-8c9c-f81c3ca854e4
     type: start
     task:
+      description: ""
       id: 0295597d-b28b-437b-8c9c-f81c3ca854e4
       version: -1
       name: ""
@@ -31,6 +33,7 @@ tasks:
     taskid: 00a03d74-204e-4af1-8684-cb04e2db32bf
     type: regular
     task:
+      description: ""
       id: 00a03d74-204e-4af1-8684-cb04e2db32bf
       version: -1
       name: AbuseIPDBPopulateIndicators
