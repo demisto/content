@@ -119,7 +119,7 @@ def main():
                                   int(d_args['limit']),
                                   d_args.get('fromDate'))
     fields_to_populate = d_args.get('populateFields')   # type: ignore
-    if len(fields_to_populate) > 0:
+    if len(fields_to_populate) > 0:  # type: ignore
         fields_to_populate += d_args['NonEmptyFields']
         fields_to_populate = set([x for x in fields_to_populate if x])  # type: ignore
     include_context = d_args['includeContext'] == 'true'
