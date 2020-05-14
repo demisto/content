@@ -2,6 +2,7 @@ id: ExtractURL Test
 version: -1
 name: ExtractURL Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
