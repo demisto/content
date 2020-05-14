@@ -2,12 +2,14 @@ id: Palo Alto Networks Cortex Test
 version: -1
 name: Palo Alto Networks Cortex Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
     taskid: edf28dd0-abd7-4bd6-8247-fdc9093505af
     type: start
     task:
+      description: ""
       id: edf28dd0-abd7-4bd6-8247-fdc9093505af
       version: -1
       name: ""
@@ -65,6 +67,7 @@ tasks:
     taskid: b41f9512-fb16-4568-8457-73b0e988f08c
     type: condition
     task:
+      description: ""
       id: b41f9512-fb16-4568-8457-73b0e988f08c
       version: -1
       name: Verify Query Logs Outputs
@@ -303,6 +306,7 @@ tasks:
     taskid: c409f106-b13e-4566-8e43-60ad0756075e
     type: condition
     task:
+      description: ""
       id: c409f106-b13e-4566-8e43-60ad0756075e
       version: -1
       name: Verify Query Threat Logs Outputs
@@ -392,6 +396,7 @@ tasks:
     taskid: bf212a19-2209-4316-860f-a879c39cd06c
     type: condition
     task:
+      description: ""
       id: bf212a19-2209-4316-860f-a879c39cd06c
       version: -1
       name: Verify Query Traffic Logs Outputs
@@ -519,6 +524,7 @@ tasks:
     taskid: de7978f6-928b-4385-8479-1fd2fc37a82a
     type: condition
     task:
+      description: ""
       id: de7978f6-928b-4385-8479-1fd2fc37a82a
       version: -1
       name: Verify Query Traps Logs Outputs
@@ -575,6 +581,7 @@ tasks:
     taskid: 33fe8ccd-134b-4f1b-8c6a-03dbb692800b
     type: condition
     task:
+      description: ""
       id: 33fe8ccd-134b-4f1b-8c6a-03dbb692800b
       version: -1
       name: Verify Query Analytics Logs Outputs
