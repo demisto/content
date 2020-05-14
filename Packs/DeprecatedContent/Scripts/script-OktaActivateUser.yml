@@ -1,5 +1,5 @@
 commonfields:
-  id: 840aa9a7-04b2-4505-8238-8fe85f010dde
+  id: OktaActivateUser
   version: -1
 name: OktaActivateUser
 script: |2
