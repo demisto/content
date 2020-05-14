@@ -1,7 +1,7 @@
 {
     "name": "TIM - Processing",
     "description": "TIM threat intel management package for processing and working with indicators.",
-    "support": "demisto",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "",
