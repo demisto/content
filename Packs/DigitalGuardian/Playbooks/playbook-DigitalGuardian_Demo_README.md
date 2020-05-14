@@ -27,11 +27,11 @@ This playbook does not use any scripts.
 | User Name | User Name to check | ${incident.digitalguardianusername} |  | Required |
 | Watchlist Name | The name of the DG watchlist to add the user to. | DLP-USB-USERS |  | Required |
 | Incident Match | The incident name should contain this string in order for the playbook to handle the event.  The default is DLP1008 which is a USB Exfiltration event. | DLP1008 |  | Required |
-| Notify Manager | Notify User&\#x27;s Manager | true |  | Optional |
+| Notify Manager | Notify User's Manager | true |  | Optional |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
 
 <!-- Playbook PNG image comes here -->
-https://github.com/demisto/content/raw/master/Packs/DigitalGuardian/doc_files/DigitalGuardian_image.png
+![Digital Guardian Logo](https://github.com/demisto/content/raw/master/Packs/DigitalGuardian/doc_files/DigitalGuardian_image.png)
