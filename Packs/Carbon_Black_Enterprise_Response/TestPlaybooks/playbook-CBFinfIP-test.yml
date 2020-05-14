@@ -2,12 +2,15 @@ id: CBFindIP - Test
 version: -1
 name: CBFindIP - Test
 starttaskid: "0"
+description: ""
+fromversion: 3.6.0
 tasks:
   "0":
     id: "0"
     taskid: 11ee419a-12a9-4c9a-8064-661025b9413c
     type: start
     task:
+      description: ""
       id: 11ee419a-12a9-4c9a-8064-661025b9413c
       version: -1
       name: ""
@@ -96,6 +99,7 @@ tasks:
     taskid: fd769a21-e039-49d1-8f17-2fa528084b89
     type: condition
     task:
+      description: ""
       id: fd769a21-e039-49d1-8f17-2fa528084b89
       version: -1
       name: Check results
@@ -133,6 +137,7 @@ tasks:
     taskid: a85785c4-6612-447c-873f-142d418f61f0
     type: title
     task:
+      description: ""
       id: a85785c4-6612-447c-873f-142d418f61f0
       version: -1
       name: Done

@@ -1,29 +1,34 @@
-id: Send Investigation Summary Reports - Test
-version: -1
-name: Send Investigation Summary Reports - Test
 description: 'Playbook should be run as a scheduled job at a recommended interval
   of once every 15 minutes. Playbook simply calls sub playbook: "Send Investigation
   Summary Reports" and closes the incident. Playbook by default will search all closed
   incidents within the last hour. If you wish to run the playbook more frequently,
   you should adjust the search query of the child playbook: Send Investigation Summary
   Reports.'
+id: Send Investigation Summary Reports - Test
+inputs: []
+name: Send Investigation Summary Reports - Test
+outputs: []
 starttaskid: "0"
-fromversion: "4.1.0"
 tasks:
   "0":
     id: "0"
-    taskid: fc0a6190-d696-4466-8e5c-ab71401906aa
-    type: start
-    task:
-      id: fc0a6190-d696-4466-8e5c-ab71401906aa
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ec1ef6d0-7e70-4fc0-8659-8dc910aad3b4
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: ec1ef6d0-7e70-4fc0-8659-8dc910aad3b4
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -31,26 +36,19 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "1":
     id: "1"
-    taskid: bbf0ddef-a046-4741-813a-7827763fda83
-    type: playbook
-    task:
-      id: bbf0ddef-a046-4741-813a-7827763fda83
-      version: -1
-      name: Send Investigation Summary Reports
-      description: 'Playbook will iterate over closed incidents and generate a summary
-        report for each. Will then email all reports. '
-      playbookName: Send Investigation Summary Reports
-      type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
       iscommand: false
-      brand: ""
+      max: 0
+      wait: 1
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       IncidentSearchQuery:
         simple: -category:job status:closed closed:>="1 hour ago"
@@ -61,10 +59,20 @@ tasks:
       ReportType:
         simple: pdf
     separatecontext: true
-    loop:
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'This playbook iterates over closed incidents, generates a summary
+        report for each closed incident, and emails the reports to specified users. '
+      id: f833a3ac-e3a6-4391-861b-90fd86652dd7
       iscommand: false
-      exitCondition: ""
-      wait: 1
+      name: Send Investigation Summary Reports
+      playbookId: Send Investigation Summary Reports
+      type: playbook
+      version: -1
+    taskid: f833a3ac-e3a6-4391-861b-90fd86652dd7
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -72,25 +80,14 @@ tasks:
           "y": 820
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "2":
     id: "2"
-    taskid: d44442a4-d24f-407c-8304-9857d65ba054
-    type: regular
-    task:
-      id: d44442a4-d24f-407c-8304-9857d65ba054
-      version: -1
-      name: Clear Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
@@ -99,6 +96,19 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: d586b933-52a3-4f19-8e3d-34d006a753b1
+      iscommand: false
+      name: Clear Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: d586b933-52a3-4f19-8e3d-34d006a753b1
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -106,22 +116,24 @@ tasks:
           "y": 190
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "3":
     id: "3"
-    taskid: be2ceee1-3c92-4985-8dd9-2f9fd265ddca
-    type: title
-    task:
-      id: be2ceee1-3c92-4985-8dd9-2f9fd265ddca
-      version: -1
-      name: Test Completed
-      description: commands.local.cmd.close.inv
-      type: title
-      iscommand: false
-      brand: Builtin
+    ignoreworker: false
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: acb04428-1d31-4afe-8f7f-d9683f813d18
+      iscommand: false
+      name: Test Completed
+      type: title
+      version: -1
+    taskid: acb04428-1d31-4afe-8f7f-d9683f813d18
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -129,25 +141,14 @@ tasks:
           "y": 1300
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "4":
     id: "4"
-    taskid: 2fc5c77d-ea37-4d1c-8bfd-922085d846bf
-    type: regular
-    task:
-      id: 2fc5c77d-ea37-4d1c-8bfd-922085d846bf
-      version: -1
-      name: Create Incident
-      description: commands.local.cmd.create.inc
-      script: Builtin|||createNewIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - "10"
+    note: false
+    quietmode: 0
     scriptarguments:
       affecteddata: {}
       affecteddatatype: {}
@@ -243,6 +244,19 @@ tasks:
       vulnerabilitycategory: {}
       whereisdatahosted: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.create.inc
+      id: aab0ed43-2cfb-4d5f-81a1-59f08159f260
+      iscommand: true
+      name: Create Incident
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: aab0ed43-2cfb-4d5f-81a1-59f08159f260
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -250,58 +264,53 @@ tasks:
           "y": 350
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "5":
     id: "5"
-    taskid: 56eeed89-f912-4de0-8940-f7c989ee1669
-    type: regular
-    task:
-      id: 56eeed89-f912-4de0-8940-f7c989ee1669
-      version: -1
-      name: Close Incident
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "9"
+    note: false
+    quietmode: 0
     scriptarguments:
       assetid: {}
-      closeNotes: {}
+      closeNotes:
+        simple: Test Send Investigation Summary Reports
       closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
       id:
         simple: ${CreatedIncidentID}
+      phishingsubtype: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 4e359292-c652-4ef5-83c1-42ad4236c8ef
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 4e359292-c652-4ef5-83c1-42ad4236c8ef
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 500
+          "y": 510
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "6":
     id: "6"
-    taskid: a7729fd7-8fac-4f29-86cd-5c4fd2ad147c
-    type: regular
-    task:
-      id: a7729fd7-8fac-4f29-86cd-5c4fd2ad147c
-      version: -1
-      name: Get Incident
-      description: Searches Demisto incidents
-      scriptName: SearchIncidents
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "7"
+    note: false
+    quietmode: 0
     scriptarguments:
       details: {}
       fromclosedate: {}
@@ -324,6 +333,19 @@ tasks:
       toduedate: {}
       type: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches Demisto incidents
+      id: 821bfa0a-952b-4066-81fa-34348543fad1
+      iscommand: false
+      name: Get Incident
+      script: SearchIncidents
+      type: regular
+      version: -1
+    taskid: 821bfa0a-952b-4066-81fa-34348543fad1
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -331,32 +353,34 @@ tasks:
           "y": 955
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "7":
     id: "7"
-    taskid: 9e16a3f4-3990-415c-8497-e486e7b120b8
-    type: condition
-    task:
-      id: 9e16a3f4-3990-415c-8497-e486e7b120b8
-      version: -1
-      name: Verify ReportSent is set
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       "no":
       - "8"
       "yes":
       - "3"
+    note: false
+    quietmode: 0
     scriptarguments:
       value:
         simple: ${foundIncidents.labels(val.type == 'ReportSent').value}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: bee224c9-9ad9-4b18-8336-153d2b249bcc
+      iscommand: false
+      name: Verify ReportSent is set
+      script: Exists
+      type: condition
+      version: -1
+    taskid: bee224c9-9ad9-4b18-8336-153d2b249bcc
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -364,26 +388,28 @@ tasks:
           "y": 1100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "8":
     id: "8"
-    taskid: 281fa39b-c3d6-48a6-84e3-e1a019c4d59b
-    type: regular
-    task:
-      id: 281fa39b-c3d6-48a6-84e3-e1a019c4d59b
-      version: -1
-      name: Print Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    note: false
+    quietmode: 0
     scriptarguments:
       message:
         simple: Failed verifying that ReportSent is set on the incident
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 9a98c450-9d7e-49c6-8d12-5166ea7684a2
+      iscommand: false
+      name: Print Error
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 9a98c450-9d7e-49c6-8d12-5166ea7684a2
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -391,29 +417,31 @@ tasks:
           "y": 1270
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "9":
     id: "9"
-    taskid: 9693e88f-26ee-4a64-8177-f8de5173c2ea
-    type: regular
-    task:
-      id: 9693e88f-26ee-4a64-8177-f8de5173c2ea
-      version: -1
-      name: Wait 10 seconds
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     scriptarguments:
       seconds:
         simple: "10"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: b14a7f32-337e-4ff6-837e-c710eca31804
+      iscommand: false
+      name: Wait 10 seconds
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: b14a7f32-337e-4ff6-837e-c710eca31804
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -421,9 +449,39 @@ tasks:
           "y": 660
         }
       }
-    note: false
-    timertriggers: []
+  "10":
+    id: "10"
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: 2d2ef7ad-0b31-4e61-838f-1acba37bc253
+      iscommand: false
+      name: Wait 10 seconds
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: 2d2ef7ad-0b31-4e61-838f-1acba37bc253
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 430
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -436,5 +494,3 @@ view: |-
       }
     }
   }
-inputs: []
-outputs: []

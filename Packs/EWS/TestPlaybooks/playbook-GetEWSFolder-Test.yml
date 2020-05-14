@@ -3,6 +3,7 @@ id: Get EWS Folder Test
 version: -1
 name: Get EWS Folder Test
 fromversion: 4.5.0
+description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -10,6 +11,7 @@ tasks:
     taskid: 867ca0a0-3d08-4e63-8db2-d1b24c15829e
     type: start
     task:
+      description: ""
       elasticcommonfields: {}
       id: 867ca0a0-3d08-4e63-8db2-d1b24c15829e
       version: -1
@@ -107,6 +109,7 @@ tasks:
     taskid: 2b181bb0-5b23-4284-815e-b4f126fe0fb6
     type: title
     task:
+      description: ""
       elasticcommonfields: {}
       id: 2b181bb0-5b23-4284-815e-b4f126fe0fb6
       version: -1
@@ -132,6 +135,7 @@ tasks:
     taskid: 047ae1a6-7c04-4ba6-87fa-31c85a339cf2
     type: playbook
     task:
+      description: ""
       elasticcommonfields: {}
       id: 047ae1a6-7c04-4ba6-87fa-31c85a339cf2
       version: -1
