@@ -732,13 +732,16 @@ class TAXIIClient(object):
             stream=True
         )
 
+        parser = etree.XMLPullParser(events=('start', 'end'))
+        parser.feed(result.text)
+
         while True:
             result_part_number = None
             result_id = None
             more = None
             tag_stack = collections.deque()  # type: ignore
             try:
-                for action, element in etree.iterparse(result.raw, events=('start', 'end'), recover=True):
+                for action, element in parser.read_events():
                     if action == 'start':
                         tag_stack.append(element.tag)
 
