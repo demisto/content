@@ -1,0 +1,77 @@
+category: Network Security
+commonfields:
+  id: Nozomi_Guardian
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: An Integration to Query ICS Data from Nozomi Guardian
+display: NozomiGuardian
+name: Nozomi_Guardian
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The query to search with, please use Demisto's user manual for
+        examples on building the query
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Nozomi Query
+    execution: false
+    name: guardian-search
+    outputs:
+    - contextPath: Nozomi.QueryResults
+      description: Query Results
+      type: String
+  - deprecated: false
+    description: List all the nodes discovered by Nozomi
+    execution: false
+    name: guardian-list-all-nodes
+  - arguments:
+    - default: false
+      description: the mac address value
+      isArray: false
+      name: mac
+      required: true
+      secret: false
+    deprecated: false
+    description: Find the IP of a MAC address
+    execution: false
+    name: guardian-find-ip-by-mac
+    outputs:
+    - contextPath: Nozomi.Mappings.IP
+      type: Unknown
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
