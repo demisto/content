@@ -2149,8 +2149,20 @@ script:
     - contextPath: Panorama.SecurityRule.DeviceGroup
       description: Device group for the rule (Panorama instances).
       type: string
-  - deprecated: false
-    description: Returns a list of predefined applications.
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to list predefined applications or not.
+      isArray: false
+      name: predefined
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of applications.
     execution: false
     name: panorama-list-applications
     outputs:
@@ -3567,7 +3579,7 @@ script:
     description: Reboots the Firewall device.
     execution: false
     name: panorama-device-reboot
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false
   longRunning: false
