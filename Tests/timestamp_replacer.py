@@ -133,7 +133,7 @@ class TimestampReplacer:
                 content = ''
             json_data = content.startswith('{')
             if json_data:
-                content = json.loads(content)
+                content = json.loads(content, object_pairs_hook=OrderedDict)
 
             if ctx.options.detect_timestamps:
                 if req.multipart_form:
@@ -196,7 +196,8 @@ class TimestampReplacer:
         if modified:
             print('original request body:\n{}'.format(json.dumps(original_content, indent=4)))
             print('modified request body:\n{}'.format(json.dumps(json_body, indent=4)))
-            flow.request.raw_content = json.dumps(json_body).encode()
+            # flow.request.raw_content = json.dumps(json_body).encode()
+            flow.request.set_content(json.dumps(json_body).encode())
 
     def handle_url_query(self, flow: flow.Flow) -> None:
         query_data = flow.request._get_query()
