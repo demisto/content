@@ -12,12 +12,19 @@ from time import ctime
 from dateutil.parser import parse
 
 
-def record_concurrently(replaying=''):
+def record_concurrently(replaying: bool = False):
     '''
-    A decorator to return a decorator that just executes the function it decorates normally if 'replaying' has a value,
-    (AKA mitmdump is executing in server-replay mode), otherwise pass the 'concurrant' decorater so that when mitmdump
-    is executing in recording mode, that requests will be processed concurrently and not be blocking which can cause
-    proxy errors during recording if multiple requests are made in short timespan
+    A decorator to return a decorator that just executes the function it decorates normally if 'replaying' is true,
+    (AKA mitmdump is executing in server-replay mode or reading in a mock file and cleaning it and saving the cleaned
+    mock to a new file), otherwise pass the 'concurrant' decorater so that when mitmdump is executing in recording
+    mode, that requests will be processed concurrently and not be blocking which can cause proxy errors during
+    recording if multiple requests are made in a short timespan.
+
+    Arguments:
+        replaying (bool): True if timestamp replacer script is running in server playback mode or cleaning a mock file
+
+    Returns:
+        (function): decorator
     '''
     print(f'replaying={replaying}')
     if replaying:
@@ -105,6 +112,12 @@ class TimestampReplacer:
             print(f'multipart_form data = {req.multipart_form.items()}')
         if req.urlencoded_form:
             print(f'urlencoded_form data = {req.urlencoded_form.items()}')
+
+    @record_concurrently(
+        replaying=bool(
+            ctx.options.server_replay or (ctx.options.rfile and ctx.options.save_stream_file)
+        )
+    )
     def request(self, flow: flow.Flow) -> None:
         self.count += 1
         req = flow.request
