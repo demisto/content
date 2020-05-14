@@ -162,6 +162,13 @@ def create_context(indicators, include_dbot_score=False):
 
 
 def get_xindapi(tc, indicator_value, indicator_type, owner):
+    """
+    :param tc: tc object
+    :param indicator_value: the indicator e.g. domain.com 8.8.8.8 ...
+    :param indicator_type: the indicator type e.g. URL, IP ...
+    :param owner: indicator owner e.g. Demisto Inc.
+    :return: the data of the indicator
+    """
     stdout = []
     types = tc_get_indicator_types_request()['data']['indicatorType']
     if indicator_type:
@@ -2115,7 +2122,7 @@ COMMANDS = {
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     try:
         command_func = demisto.command()
-        # LOG('command is %s' % (demisto.command(),))
+        LOG('command is %s' % (demisto.command(),))
         if command_func in COMMANDS.keys():
             COMMANDS[command_func]()
 
