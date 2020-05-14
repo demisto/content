@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 #### New Playbook
 
 This playbook remediates Prisma Cloud GCP VPC Network alerts.  It calls sub-playbooks that perform the actual remediation steps.
@@ -20,5 +23,3 @@ Remediation:
 - GCP Firewall rule allows internet traffic to NetBIOS-SSN port (139)
 - GCP Firewall rule allows internet traffic to POP3 port (110)
 - GCP Firewall rule allows internet traffic to SMTP port (25)
-- GCP Default Firewall rule should not have any rules (except http and https)
-- GCP Firewall with Inbound rule overly permissive to All Traffic

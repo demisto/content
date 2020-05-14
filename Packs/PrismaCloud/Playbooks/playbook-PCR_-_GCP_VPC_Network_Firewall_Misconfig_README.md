@@ -16,8 +16,6 @@ Prisma Cloud policies remediated:
  - GCP Firewall rule allows internet traffic to NetBIOS-SSN port (139)
  - GCP Firewall rule allows internet traffic to POP3 port (110)
  - GCP Firewall rule allows internet traffic to SMTP port (25)
- - GCP Default Firewall rule should not have any rules (except http and https)
- - GCP Firewall with Inbound rule overly permissive to All Traffic
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -47,4 +45,4 @@ This playbook does not use any scripts.
 There are no outputs for this playbook.
 
 ## Playbook Image
-![Playbook Image](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Firewall_Misconfig.png)
+![Playbook Image](https://github.com/demisto/content/raw/fa56c69a59978dbeafe993cce90fb9f882033153/Packs/Legacy/doc_files/PCR_-_GCP_VPC_Network_Firewall_Misconfig.png)

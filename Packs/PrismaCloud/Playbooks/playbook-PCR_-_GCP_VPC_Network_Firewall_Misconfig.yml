@@ -21,8 +21,6 @@ description: |-
    - GCP Firewall rule allows internet traffic to NetBIOS-SSN port (139)
    - GCP Firewall rule allows internet traffic to POP3 port (110)
    - GCP Firewall rule allows internet traffic to SMTP port (25)
-   - GCP Default Firewall rule should not have any rules (except http and https)
-   - GCP Firewall with Inbound rule overly permissive to All Traffic
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +41,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
+          "x": 630,
           "y": 0
         }
       }
@@ -92,8 +90,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 1040
+          "x": 220,
+          "y": 670
         }
       }
     note: false
@@ -115,8 +113,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1100,
-          "y": 1440
+          "x": 630,
+          "y": 840
         }
       }
     note: false
@@ -154,7 +152,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
+          "x": 630,
           "y": 150
         }
       }
@@ -163,10 +161,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 667e0724-e6d3-47ad-800e-46b34c77e7bf
+    taskid: 1c48d12b-f4cf-40ea-8d06-6d3ddbd72848
     type: condition
     task:
-      id: 667e0724-e6d3-47ad-800e-46b34c77e7bf
+      id: 1c48d12b-f4cf-40ea-8d06-6d3ddbd72848
       version: -1
       name: Execute remediation
       description: Execute the appropriate remediation task.
@@ -176,15 +174,11 @@ tasks:
     nexttasks:
       '#default#':
       - "3"
-      commonPorts:
+      common:
       - "7"
-      overlyPermissive:
-      - "12"
-      webPorts:
-      - "9"
     separatecontext: false
     conditions:
-    - label: commonPorts
+    - label: common
       condition:
       - - operator: isEqualString
           left:
@@ -312,33 +306,11 @@ tasks:
           right:
             value:
               simple: e35ce679-e427-4e00-a9d2-44d808c694bd
-    - label: webPorts
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 3b814978-44a0-4a5b-9736-492d67ee4994
-    - label: overlyPermissive
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: ff6a9cca-8bc5-4a72-9235-ec7b65c547d5
     view: |-
       {
         "position": {
-          "x": 1100,
-          "y": 320
+          "x": 630,
+          "y": 330
         }
       }
     note: false
@@ -358,413 +330,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -160,
-          "y": 495
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 93c84ca6-1154-409a-8ef5-bd78a4f994d0
-    type: condition
-    task:
-      id: 93c84ca6-1154-409a-8ef5-bd78a4f994d0
-      version: -1
-      name: Check default FW for HTTP/HTTPS rules
-      description: Check the default firewall rule for the web ports; 80 and 443.  If
-        the firewall rule contains either one, or both of these ports, manually update
-        the rule.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "1"
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: startWith
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: labels.resource
-                transformers:
-                - operator: ParseJSON
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: name
-            iscontext: true
-          right:
-            value:
-              simple: default
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: labels.resource
-                transformers:
-                - operator: ParseJSON
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: sourceRanges
-            iscontext: true
-          right:
-            value:
-              simple: 0.0.0.0/0
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: labels.resource
-                transformers:
-                - operator: ParseJSON
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: allowed
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: ports
-            iscontext: true
-          right:
-            value:
-              simple: "80"
-        - operator: containsString
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: labels.resource
-                transformers:
-                - operator: ParseJSON
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: allowed
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: ports
-            iscontext: true
-          right:
-            value:
-              simple: "443"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 340,
-          "y": 740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: fc7f12a5-57d9-41f2-86a8-a5ba6f38f965
-    type: title
-    task:
-      id: fc7f12a5-57d9-41f2-86a8-a5ba6f38f965
-      version: -1
-      name: Default Firewall Rules
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 340,
-          "y": 560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: e99009d7-4c50-4566-8f8e-f0b24dacf525
-    type: regular
-    task:
-      id: e99009d7-4c50-4566-8f8e-f0b24dacf525
-      version: -1
-      name: Manually update FW rules
-      description: |-
-        1. Login to GCP Console and from Networking, select VPC network.
-        2. Go to Firewall rules and click on Ingress.
-        3. Modify, disable, or delete the offending firewall rule.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 1270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 07c1fd42-42f9-4347-86d5-4a7b72835e48
-    type: condition
-    task:
-      id: 07c1fd42-42f9-4347-86d5-4a7b72835e48
-      version: -1
-      name: Check FW rule for public access to common ports
-      description: Check the firewall rule for public access.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
       - "1"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: labels.resource
-                transformers:
-                - operator: ParseJSON
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: sourceRanges
-            iscontext: true
-          right:
-            value:
-              simple: 0.0.0.0/0
-      - - operator: inList
-          left:
-            value:
-              simple: ${portNumber}
-          right:
-            value:
-              simple: 21, 80, 27017, 3306, 1521, 5432, 3389, 22, 23, 53, 445, 139,
-                110, 25
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 33008433-91a2-405b-8701-1ffc9c605e66
-    type: title
-    task:
-      id: 33008433-91a2-405b-8701-1ffc9c605e66
-      version: -1
-      name: Overly Permissive
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 625
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: e1c7877e-41cb-480c-82f0-8e1f5fc067f2
-    type: condition
-    task:
-      id: e1c7877e-41cb-480c-82f0-8e1f5fc067f2
-      version: -1
-      name: Check FW rule for public access to all protocols
-      description: Check the firewall rule for public access.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: labels.resource
-                transformers:
-                - operator: ParseJSON
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: sourceRanges
-            iscontext: true
-          right:
-            value:
-              simple: 0.0.0.0/0
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: labels.resource
-                transformers:
-                - operator: ParseJSON
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: allowed
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: IPProtocol
-            iscontext: true
-          right:
-            value:
-              simple: all
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 5ca9a652-7c9c-44de-8859-229500a353a8
-    type: regular
-    task:
-      id: 5ca9a652-7c9c-44de-8859-229500a353a8
-      version: -1
-      name: 'Find the port number '
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      append: {}
-      key:
-        simple: portNumber
-      stringify: {}
-      value:
-        complex:
-          root: incident
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: rawName
-          - operator: substringFrom
-            args:
-              from:
-                value:
-                  simple: port (
-          - operator: substringTo
-            args:
-              to:
-                value:
-                  simple: )
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -160,
-          "y": 665
+          "x": 220,
+          "y": 500
         }
       }
     note: false
@@ -773,22 +345,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "11_10_#default#": 0.12,
-      "11_1_yes": 0.26,
-      "13_10_#default#": 0.59,
-      "13_1_yes": 0.28,
-      "5_12_overlyPermissive": 0.65,
-      "5_3_#default#": 0.23,
-      "5_7_commonPorts": 0.82,
-      "5_9_webPorts": 0.83,
-      "8_10_yes": 0.15,
-      "8_1_#default#": 0.35
+      "5_3_#default#": 0.31,
+      "5_7_common": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 1505,
-        "width": 1640,
-        "x": -160,
+        "height": 905,
+        "width": 790,
+        "x": 220,
         "y": 0
       }
     }
