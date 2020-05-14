@@ -1,4 +1,7 @@
 ## [Unreleased]
+Added the *Domain.Whois.QueryResult* output, which tells whether the query found a matching result.
+
+## [20.4.1] - 2020-04-29
  - Fixed an issue where duplicate fields were created by the ***domain*** and ***whois*** commands outputs.
  - Added support for the *Domain.Whois.QueryValue* context output in ***whois*** command.
  - You can now query Whois with subdomains.  

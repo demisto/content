@@ -880,6 +880,30 @@ script:
     - contextPath: EWS.Items.isRead
       description: The read status of the email.
       type: String
+    - contextPath: Email.CC
+      description: Email addresses CC'ed to the email.
+      type: String
+    - contextPath: Email.BCC
+      description: Email addresses BCC'ed to the email.
+      type: String
+    - contextPath: Email.To
+      description: The recipient of the email.
+      type: String
+    - contextPath: Email.From
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Subject
+      description: The subject of the email.
+      type: String
+    - contextPath: Email.Text
+      description: The plain-text version of the email.
+      type: String
+    - contextPath: Email.HTML
+      description: The HTML version of the email.
+      type: String
+    - contextPath: Email.HeadersMap
+      description: The headers of the email.
+      type: String
   - arguments:
     - default: false
       description: The item ID to move.
@@ -1179,6 +1203,7 @@ script:
       description: The extension of the file.
       type: String
   dockerimage: demisto/py-ews:2.0
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

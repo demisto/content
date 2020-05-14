@@ -90,6 +90,7 @@ script: |-
   else:
       demisto.results("No resolved incidents found")
 type: python
+subtype: python2
 tags:
 - ml
 comment: Return indicators appears in resolved incidents, and resolved incident ids.

@@ -227,11 +227,11 @@ tasks:
     nexttasks:
       '#default#':
       - '31'
-      'Malicious ':
+      'Malicious':
       - '30'
     separatecontext: false
     conditions:
-    - label: 'Malicious '
+    - label: 'Malicious'
       condition:
       - - operator: greaterThanOrEqual
           left:
@@ -509,9 +509,9 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      No:
+      'No':
       - '16'
-      Yes:
+      'Yes':
       - '17'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 130,\n    \"y\": 3470\n  }\n}"
@@ -543,24 +543,24 @@ tasks:
     ignoreworker: false
   '36':
     id: '36'
-    taskid: 0c8816d8-8be2-4bed-8f12-02f70a25dd60
+    taskid: b9d04ddd-d78f-430f-8c41-4e73e45d4660
     type: condition
     task:
-      id: 0c8816d8-8be2-4bed-8f12-02f70a25dd60
+      id: b9d04ddd-d78f-430f-8c41-4e73e45d4660
       version: -1
-      name: Execute the "Search and Delete" sub-playbook?
-      description: Verify that the "Search and Delete" parameter is set to "True"?
+      name: Should emails be searched and deleted?
+      description: Checks whether the "SearchAndDelete" playbook input is set to True.
       type: condition
       iscommand: false
       brand: ''
     nexttasks:
       '#default#':
       - '43'
-      yes:
+      'yes':
       - '28'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -584,24 +584,24 @@ tasks:
     ignoreworker: false
   '37':
     id: '37'
-    taskid: 2c4bace5-7d57-4846-89ce-78ddee6e40c8
+    taskid: 083e4b4d-99e1-4b9e-88e8-8195ed0c9592
     type: condition
     task:
-      id: 2c4bace5-7d57-4846-89ce-78ddee6e40c8
+      id: 083e4b4d-99e1-4b9e-88e8-8195ed0c9592
       version: -1
-      name: Execute the "Block Indicators" sub-playbook?
-      description: Verify that the "Block indicators" parameter is set to "True"?
+      name: Should indicators be blocked automatically?
+      description: Checks whether the "BlockIndicators" playbook input is set to True.
       type: condition
       iscommand: false
       brand: ''
     nexttasks:
       '#default#':
       - '43'
-      yes:
-      - '38'
+      'yes':
+      - '91'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -620,27 +620,6 @@ tasks:
                     ignorecase: true
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 1510,\n    \"y\": 4310\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '38':
-    id: '38'
-    taskid: d32af5b0-4287-49f7-82da-ca70c78d4345
-    type: playbook
-    task:
-      id: d32af5b0-4287-49f7-82da-ca70c78d4345
-      version: -1
-      name: Block Indicators - Generic
-      playbookName: Block Indicators - Generic
-      type: playbook
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '43'
-    separatecontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1510,\n    \"y\": 4515\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -994,11 +973,11 @@ tasks:
     nexttasks:
       '#default#':
       - '84'
-      yes:
+      'yes':
       - '80'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -1506,42 +1485,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '86':
-    id: '86'
-    taskid: b88d67de-5b86-49e0-8e3d-14a93ca89b8b
-    type: playbook
-    task:
-      id: b88d67de-5b86-49e0-8e3d-14a93ca89b8b
-      version: -1
-      name: URL Enrichment - Generic v2
-      playbookName: URL Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '56'
-    scriptarguments:
-      Rasterize:
-        simple: 'True'
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-          transformers:
-          - operator: uniq
-      VerifyURL:
-        simple: 'False'
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: "{\n  \"position\": {\n    \"x\": -52.5,\n    \"y\": 1020\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '87':
     id: '87'
     taskid: bf7ea13b-64cd-46fb-8563-825432a1c808
@@ -1897,11 +1840,11 @@ tasks:
     nexttasks:
       '#default#':
       - '56'
-      yes:
+      'yes':
       - '89'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1925,6 +1868,202 @@ tasks:
                 accessor: TextTokensHighlighted
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": -1142.5,\n    \"y\": 860\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '91':
+    id: '91'
+    taskid: 3001d958-52e1-4bb2-8c2f-700d478b032d
+    type: playbook
+    task:
+      id: 3001d958-52e1-4bb2-8c2f-700d478b032d
+      version: -1
+      name: Block Indicators - Generic v2
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '43'
+    scriptarguments:
+      AutoCommit:
+        simple: 'No'
+      CustomBlockRule:
+        simple: 'True'
+      CustomURLCategory: {}
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: '3'
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: '32'
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: '3'
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+              ignorecase: true
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: '64'
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: '3'
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+              ignorecase: true
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: '3'
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName: {}
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: '3'
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: "{\n  \"position\": {\n    \"x\": 1510,\n    \"y\": 4515\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1962,11 +2101,11 @@ inputs:
     DKIM and DMARC.
 - key: OnCall
   value:
-    simple: false
+    simple: 'false'
   required: false
-  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
 outputs: []
-sourceplaybookid: Phishing Investigation - Generic v2
 fromversion: 4.5.0
 tests:
 - Phishing v2 Test - Attachment

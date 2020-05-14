@@ -25,8 +25,7 @@ def alexa_fallback_command(domain):
     resp = requests.request('GET', 'https://www.alexa.com/minisiteinfo/{}'.format(domain),
                             headers=headers, verify=USE_SSL, proxies=PROXIES)
     try:
-        x = re.search(r"style=\"margin-bottom:-2px;\"\/>\s(\d{0,3},)?(\d{3},)?\d{0,3}<\/a>",
-                      resp.content)
+        x = re.search(r"style=\"margin-bottom:-2px;\"\/>\s(\d{0,3},)?(\d{3},)?\d{0,3}<\/a>", resp.content)
         raw_result = x.group()  # type:ignore
         strip_beginning = raw_result.replace('style="margin-bottom:-2px;"/> ', '')
         strip_commas = strip_beginning.replace(',', '')
@@ -43,7 +42,7 @@ def alexa_domain_command():
                                 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain),
                                 verify=USE_SSL, proxies=PROXIES)
         root = ET.fromstring(str(resp.content))
-        rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
+        rank = root.find(".//POPULARITY").attrib['TEXT']  # type: ignore
     except:  # noqa
         rank = alexa_fallback_command(domain)
     if int(rank) > THRESHOLD:
@@ -90,7 +89,7 @@ def test_module_command():
                                 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain),
                                 verify=USE_SSL, proxies=PROXIES)
         root = ET.fromstring(str(resp.content))
-        rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
+        rank = root.find(".//POPULARITY").attrib['TEXT']  # type: ignore
     except:  # noqa
         rank = alexa_fallback_command(domain)
     if rank == '1':

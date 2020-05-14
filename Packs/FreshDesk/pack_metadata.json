@@ -2,16 +2,14 @@
     "name": "Freshdesk",
     "description": "The Freshdesk integration allows you to create, update, and delete tickets; reply to and create notes for tickets as well as view Groups, Agents and Contacts.",
     "support": "xsoar",
-    "serverMinVersion": "1.0.0",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Case Management"
     ],
-    "tags": [
-        "Freshdesk"
-    ],
+    "tags": [],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
     "beta": false,

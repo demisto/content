@@ -20,6 +20,7 @@ script: |-
   message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'], option1, entitlementString, option2, entitlementString)
   demisto.results(demisto.executeCommand('mattermost-send', {'to': demisto.get(demisto.args(), 'user'), 'message': message, 'IgnoreAddURL': 'true'}))
 type: python
+subtype: python2
 tags:
 - mattermost
 comment: Ask a user a question on Mattermost and expect a response. The response can

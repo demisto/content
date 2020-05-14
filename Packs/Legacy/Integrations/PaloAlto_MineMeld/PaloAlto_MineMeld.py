@@ -444,12 +444,19 @@ def file():
                 break
 
     # start building output and context
-    dbotscore_list = {
+    dbotscore_list = [{
         'Indicator': file,
         'Type': 'hash',
         'Vendor': 'Palo Alto MineMeld',
         'Score': dbotscore
+    },
+        {
+        'Indicator': file,
+        'Type': 'file',
+        'Vendor': 'Palo Alto MineMeld',
+        'Score': dbotscore
     }
+    ]
 
     if result_indicator:
         miner_name = result_indicator[0]['miner']

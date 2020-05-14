@@ -18,6 +18,8 @@ API_USER = demisto.params()['credentials']['identifier']
 API_PASS = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params()['insecure']
 
+handle_proxy()
+
 
 class BSAPI:
     BS_DEFAULT_PORT = 8443
@@ -76,7 +78,8 @@ class BSAPI:
 
     def login(self, bs_user, bs_pass):
         url = "/auth/login"
-        login_data = {'userName': base64.b64encode(bs_user), 'password': base64.b64encode(bs_pass)}
+        login_data = {'userName': base64.b64encode(bs_user.encode()).decode(),
+                      'password': base64.b64encode(bs_pass.encode()).decode()}
 
         login_status = self.do_request(url, data=login_data)
         if login_status and 'sessionKey' in login_status:
@@ -603,7 +606,9 @@ if demisto.command() == 'attivo-list-hosts':
     td_monitoring = attivo_api.get_threatdirect_rules()
     bs_monitoring = attivo_api.get_monitoring_rules()
 
-    if td_monitoring['forwarder_vm_monitoring_rules']['forwarderVmMonitoringRules']:
+    if td_monitoring.get('forwarder_vm_monitoring_rules') is not None \
+            and td_monitoring.get('forwarder_vm_monitoring_rules').get('forwarderVmMonitoringRules') is not None:
+
         for rule in td_monitoring['forwarder_vm_monitoring_rules']['forwarderVmMonitoringRules']:
             if rule['type'] == 'onNet':
                 td_type = "EP"
@@ -624,7 +629,9 @@ if demisto.command() == 'attivo-list-hosts':
                           }
             all_hosts.append(host_entry)
 
-    if bs_monitoring['cfg_monitoring_rules']['monitoringRules']:
+    if bs_monitoring.get('cfg_monitoring_rules') is not None \
+            and bs_monitoring.get('cfg_monitoring_rules').get('monitoringRules') is not None:
+
         for rule in bs_monitoring['cfg_monitoring_rules']['monitoringRules']:
             # demisto.info("BS RULE: {}".format(rule))
             vlan = rule['vlanID']
@@ -686,7 +693,9 @@ if demisto.command() == 'attivo-check-host':
 
     # Check native Monitoring Rules
     bs_monitoring = attivo_api.get_monitoring_rules()
-    if bs_monitoring is not None:
+    if bs_monitoring is not None and bs_monitoring.get('cfg_monitoring_rules') is not None and \
+            bs_monitoring.get('cfg_monitoring_rules').get('monitoringRules') is not None:
+
         for rule in bs_monitoring['cfg_monitoring_rules']['monitoringRules']:
             this_ip = rule['ipAddress']
             mac = rule['externalMAC']
@@ -714,7 +723,9 @@ if demisto.command() == 'attivo-check-host':
     if not is_deceptive:
         # Check ThreatDirect Monitoring Rules
         td_monitoring = attivo_api.get_threatdirect_rules()
-        if td_monitoring is not None:
+        if td_monitoring is not None and td_monitoring.get('forwarder_vm_monitoring_rules') is not None \
+                and td_monitoring.get('forwarder_vm_monitoring_rules').get('forwarderVmMonitoringRules') is not None:
+
             for rule in td_monitoring['forwarder_vm_monitoring_rules']['forwarderVmMonitoringRules']:
                 this_ip = rule['ip']
                 this_host_name = []

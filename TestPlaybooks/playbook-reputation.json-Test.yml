@@ -110,7 +110,7 @@ tasks:
       key:
         simple: valid_emails
       value:
-        simple: '"support@threatx.com", "someuser@contoso.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com",
+        simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com",
           "woo@demisto.com", "this.is@email.format"'
     separatecontext: false
     view: |-
@@ -213,7 +213,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: someuser@contoso.com
+              simple: foo@test.com
     view: |-
       {
         "position": {
