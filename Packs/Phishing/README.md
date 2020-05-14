@@ -1,12 +1,8 @@
-# Metadata
-##### Pack Name
-Phishing
-
-##### Pack Description
+# Pack Documentation
 A pack used for the complete investigation of potential phishing incidents. It can retrieve emails from user inboxes, extract and analyze attachments, authenticate the email using SPF, DKIM and DMARC checks, provide reputation for links and email adresses involved, and contain and remediate the incident by blocking malicious indicators found in the process with analyst approval.
 
----
-# Documentation
+
+
 ##### Triggers
 The investigation is triggered by an email sent or forwarded to a designated "phishing inbox". A mail listener integration that listens to that mailbox, will use every received email to create a phishing incident in Cortex XSOAR.
 A mail listener can be one of the following integrations:
@@ -28,7 +24,7 @@ These task have the following names:
   - Update the user that the reported email is malicious (task #17
 
 
-# Main Playbook Stages and Capabilities
+##### Main Playbook Stages and Capabilities
 - Performs a triage of a phishing incident, dissecting attached emails (EML or MSG files) or retrieving the original email from the user's inbox.
 - Extracts and enriches all indicators from the suspected email and from its attachments. Analyzes files and provides reputation using sandbox and threat intelligence integrations.
 - Provides a rendered image of HTML formatted emails, and screenshots for URLs that were found anywhere (email subject, body, attachments, etc.)
@@ -38,12 +34,11 @@ These task have the following names:
 - Engages with the user throughout the investigation - updating them when their email is received and starts to be investigated, and whether it is found to be malicious or benign.
 
 
-# Best Practices & Suggestions
+##### Best Practices & Suggestions
 - The email received in the designated phishing inbox should be an email **containing** the potential phishing email as a file attachment, so that the headers of the original suspected email are retained.
 - Using Gmail or EWS v2 work best with the use case.
-- Auto-extract should not be turned off, so that all indicators are properly extracted and analyzed.
+- If phishing emails are forwarded instead of attached as files, Auto extract should not be turned off so that all indicators are properly extracted and analyzed.
 - Configuring the optional configurations can greatly enhance the investigation.
 
-
-# Visualization
+##### Visualization
 ![Phishing_Investigation_Generic_v2](https://raw.githubusercontent.com/demisto/content/7a20daa4d3560df3be0d2f3f41c00d43ac1a1e23/Packs/Phishing/doc_files/Phishing_Investigation_Generic_v2.png)
