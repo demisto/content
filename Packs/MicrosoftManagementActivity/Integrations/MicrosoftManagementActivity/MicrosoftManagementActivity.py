@@ -176,7 +176,8 @@ def test_module(client):
         return 'Error: first fetch time delta should not be over one week.'
     if client.self_deployed and not params.get('auth_code'):
         return 'Error: in the self_deployed authentication flow the authentication code parameter cannot be empty.'
-    return 'The basic parameters are ok, authentication cannot be checked using the test module'
+    return 'The basic parameters are ok, authentication cannot be checked using the test module. ' \
+           'Please run ms-management-activity-list-subscriptions to test your credentials.'
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
@@ -498,15 +499,16 @@ def main():
             auth_code=params.get('auth_code', '')
         )
 
+        if demisto.command() == 'test-module':
+            # A separate case, since we don't handle authentication in the test module.
+            result_message = test_module(client)
+            return_error(result_message)
+
         access_token, token_data = client.get_access_token_data()
         client.access_token = access_token
         client.tenant_id = token_data['tid']
 
-        if demisto.command() == 'test-module':
-            result = test_module(client)
-            demisto.results(result)
-
-        elif demisto.command() == 'fetch-incidents':
+        if demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
