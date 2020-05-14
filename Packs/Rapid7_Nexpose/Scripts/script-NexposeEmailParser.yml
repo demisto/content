@@ -1,6 +1,6 @@
 commonfields:
   id: NexposeEmailParser
-  version: 1
+  version: -1
 name: NexposeEmailParser
 script: |-
   var entries = executeCommand('getEntries', {});
