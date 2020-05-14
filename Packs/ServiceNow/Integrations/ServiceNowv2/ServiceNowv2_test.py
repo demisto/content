@@ -182,6 +182,7 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
+    assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
 
 
 def test_fetch_incidents_with_attachments(mocker):
