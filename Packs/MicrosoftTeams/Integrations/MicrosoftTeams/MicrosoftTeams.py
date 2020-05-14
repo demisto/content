@@ -1586,8 +1586,6 @@ def long_running_loop():
         certificate_path = str()
         private_key_path = str()
 
-        error_message = str()
-
         try:
             port_mapping: str = PARAMS.get('longRunningPort', '')
             port: int
@@ -1624,14 +1622,15 @@ def long_running_loop():
             server.serve_forever()
         except Exception as e:
             error_message = str(e)
+            demisto.error(f'An error occurred in long running loop: {error_message}')
+            demisto.updateModuleHealth(f'An error occurred: {error_message}')
         finally:
             if certificate_path:
                 os.unlink(certificate_path)
             if private_key_path:
                 os.unlink(private_key_path)
-            if error_message:
-                demisto.error(f'An error occurred in long running loop: {error_message}')
-                demisto.updateModuleHealth(f'An error occurred: {error_message}')
+            if server:
+                server.stop()
             time.sleep(5)
 
 
