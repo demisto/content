@@ -15,18 +15,32 @@ requests.packages.urllib3.disable_warnings()
 class Client:
 
     def __init__(self, url, api_key, proxies, verify):#, include_apt, reputation):
-        # self.base_url = url
+        self.base_url = url
         self.api_key = api_key
         self.proxies = proxies
         self.verify = verify
-        # self.server = Server(url, verify=self.verify, proxies=self.proxies,
-        #                      password={'Authorization': f'Token {self.api_key}'})
-        # demisto.log(str(self.server.api_roots))
-        # demisto.log(str(self.server.description))
-        # demisto.log(str(dir(self.server)))
+
+        # session = requests.Session()
+        # session.verify = verify
+        # session.headers = {
+        #     'Authorization': f'Token {self.api_key}',
+        #     'Accept': 'application/vnd.oasis.taxii+json; version=2.0'
+        # }
+        # r1 = session.get(self.base_url)
+        # demisto.log(str(r1))
+        # demisto.log(str(r1.headers))
+        # demisto.log(str(r1.raw))
+        # demisto.log(str(r1.text))
+        # demisto.log(str(dir(r1)))
+
+        self.server = Server(url, verify=self.verify, proxies=self.proxies,
+                             password={'Authorization': f'Token {self.api_key}'})
+        demisto.log(str(self.server.api_roots))
+        demisto.log(str(self.server.description))
+        demisto.log(str(dir(self.server)))
         # '_Server__raw', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__enter__', '__eq__', '__exit__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_conn', '_ensure_loaded', '_loaded', '_password', '_populate_fields', '_proxies', '_raw', '_user', '_validate_server', '_verify', 'api_roots', 'close', 'contact', 'custom_properties', 'default', 'description', 'refresh', 'title', 'url']
-        # self.api_root: List[ApiRoot]
-        # self.collections: List[Collection]
+        self.api_root: List[ApiRoot]
+        self.collections: List[Collection]
 
     # def get_server(self):
     #     server_url = urljoin(self.base_url, '/taxii/')
@@ -261,23 +275,22 @@ def main():
     args = demisto.args()
     url = 'https://stix2.unit42.org/taxii/'
     api_key = str(params.get('api_key', ''))
-    include_apt = params.get('includeAPT')
-    reputation = params.get('feedReputation', 'None')
+    # include_apt = params.get('includeAPT')
+    # reputation = params.get('feedReputation', 'None')
     proxies = handle_proxy()
-    verify_certificate = not params.get('insecure', False)
+    verify = not params.get('insecure', False)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(url, api_key, proxies, verify_certificate)#, include_apt, reputation)
+        client = Client(url, api_key, proxies, verify)#, include_apt, reputation)
         # client.initialise()
         commands = {
             'unit42-get-indicators': get_indicators_command,
         }
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             test_module(client)
 
         elif demisto.command() == 'fetch-indicators':
@@ -288,7 +301,6 @@ def main():
         else:
             commands[command](client, args)
 
-    # Log exceptions
     except Exception as err:
         return_error(err)
 
