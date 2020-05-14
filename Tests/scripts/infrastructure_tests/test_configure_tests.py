@@ -352,7 +352,7 @@ class TestChangedIntegrationAndPlaybook:
 class TestChangedScript:
     TEST_ID = 'Extract Indicators From File - test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Packs/Legacy/Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
+    GIT_DIFF_RET = "M Packs/CommonScripts/Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
