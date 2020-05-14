@@ -201,6 +201,7 @@ class Client(BaseClient):
             'autofocus_tags': single_sample_data.get('tag', []),
             'autofocus_tags_groups': single_sample_data.get('tag_groups', []),
             'autofocus_num_matching_artifacts': len(artifacts),
+            'service': 'AutoFocus Samples Feed'
         }
 
         create_date = single_sample_data.get('create_date', None)
@@ -283,7 +284,8 @@ class Client(BaseClient):
             'firstseenbysource': raw_json_data.get('autofocus_create_date'),
             'region': raw_json_data.get('autofocus_region'),
             'tags': raw_json_data.get('autofocus_tags'),
-            'threattypes': [{'threatcategory': threat} for threat in raw_json_data.get('autofocus_tags_groups', [])]
+            'threattypes': [{'threatcategory': threat} for threat in raw_json_data.get('autofocus_tags_groups', [])],
+            'service': 'AutoFocus Samples Feed'
         }
 
         return {
@@ -292,7 +294,6 @@ class Client(BaseClient):
             'rawJSON': raw_json_data,
             'fields': fields_mapping,
             'score': CONFIDENCE_TO_DBOTSCORE.get(artifact.get('confidence'), 0),  # type: ignore
-            'service': 'AutoFocus Samples Feed'
         }
 
     @staticmethod
@@ -388,7 +389,8 @@ class Client(BaseClient):
                         'value': indicator,
                         'type': indicator_type,
                         'service': feed_type
-                    }
+                    },
+                    'fields': {'service': feed_type}
                 })
 
         return parsed_indicators
@@ -402,8 +404,9 @@ class Client(BaseClient):
         parsed_indicators = []  # type:List
 
         for service in ["Daily Threat Feed", "Custom Feed"]:
-            response = self.daily_custom_http_request(feed_type=service)
-            parsed_indicators.extend(self.create_indicators_from_response(service, response))
+            if service in self.indicator_feeds:
+                response = self.daily_custom_http_request(feed_type=service)
+                parsed_indicators.extend(self.create_indicators_from_response(service, response))
 
         # for get_indicator_command only
         if limit:
