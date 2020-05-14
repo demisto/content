@@ -30,14 +30,6 @@ def test_conversations_to_md():
                                                          "|1.1.1.3|2.2.2.2|15|\n|1.1.1.3|8.8.8.8|15|\n"
 
 
-def test_remove_nones():
-    d = {'Oh': 1,
-         'My': None,
-         'God': None}
-    from PcapMinerV2 import remove_nones
-    assert remove_nones(d) == {'Oh': 1}
-
-
 args_to_test = [
     ({}, {'ID': 1}, None, {}),  # Test that just an ID is not added.
     ({}, {'ID': 2, 'Input': 'wow'}, None, {2: {'ID': 2, 'Input': 'wow'}}),  # Test data added correctly
@@ -58,7 +50,7 @@ def test_add_to_data(main_data, data_to_add, future_id, wanted_output):
 
 
 def test_mine_pcap():
-    file_path = '../../../../TestData/smb-on-windows-10.pcapng'
+    file_path = '../../../TestData/smb-on-windows-10.pcapng'
     decrypt_key = ""
     conversation_number_to_display = 15
     is_flows = True
@@ -81,7 +73,7 @@ def test_mine_pcap():
 
 
 def test_mine_pcap_homemade_regex():
-    file_path = '../../../../TestData/smb-on-windows-10.pcapng'
+    file_path = '../../../TestData/smb-on-windows-10.pcapng'
     decrypt_key = ""
     conversation_number_to_display = 15
     is_flows = True

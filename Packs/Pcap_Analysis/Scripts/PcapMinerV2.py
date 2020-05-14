@@ -475,13 +475,11 @@ class PCAP():
 
             self.tcp_streams += 1
             self.udp_streams += 1
+            cap.close()
 
         except pyshark.capture.capture.TSharkCrashException:
             raise ValueError("Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file "
                              "or that filter is of the correct syntax.")
-
-        except Exception as error:
-            raise error
 
 
 '''HELPER FUNCTIONS'''
@@ -495,7 +493,7 @@ def strip(s: str, bad_chars=None):
         bad_chars: all characters to remove from string.
 
     Returns:
-        The input s without the bac_chars
+        The input s without the bad_chars
     """
     if bad_chars is None:
         bad_chars = BAD_CHARS
@@ -542,8 +540,9 @@ def conversations_to_md(conversations: dict, disp_num: int) -> str:
     md = '|A|B|# of Packets|\n|---|---|---|\n'
     ordered_conv_list = sorted(conversations.items(), key=lambda x: x[1], reverse=True)
     disp_num = min(disp_num, len(ordered_conv_list))
-    for i in range(disp_num):
-        md += f'|{ordered_conv_list[i][0][0]}|{ordered_conv_list[i][0][1]}|{ordered_conv_list[i][1]}|\n'
+    for conv in ordered_conv_list[:disp_num]:
+        (ipA, ipB), data = conv
+        md += f'|{ipA}|{ipB}|{data}|\n'
     return md
 
 
@@ -558,12 +557,12 @@ def flows_to_md(flows: dict, disp_num: int) -> str:
         A mardkown of <=disp_num of flows, ordered in descending order.
 
     """
-    md = '|A|port|B|port|# of Packets\n|---|---|---|---|---|\n'
+    md = '|A|port|B|port|# of Packets|\n|---|---|---|---|---|\n'
     ordered_flow_list = sorted(flows.items(), key=lambda x: x[1].get('counter'), reverse=True)
     disp_num = min(disp_num, len(ordered_flow_list))
-    for i in range(disp_num):
-        md += f'|{ordered_flow_list[i][0][0]}|{ordered_flow_list[i][0][1]}|{ordered_flow_list[i][0][2]}|' \
-            f'{ordered_flow_list[i][0][3]}|{ordered_flow_list[i][1].get("counter", 0)}|\n'
+    for flow in ordered_flow_list[:disp_num]:
+        (ipA, portA, ipB, portB), data = flow
+        md += f'|{ipA}|{portA}|{ipB}|{portB}|{data.get("counter", 0)}|\n'
     return md
 
 
@@ -593,18 +592,6 @@ def flows_to_ec(flows: dict) -> list:
     return flows_ec
 
 
-def remove_nones(d: dict) -> dict:
-    """
-
-    Args:
-        d: a dictionary
-
-    Returns: A new dictionary that does not contain keys with None values.
-
-    """
-    return {k: v for k, v in d.items() if v is not None}
-
-
 def add_to_data(d: dict, data: dict, next_id: int = None) -> None:
     """
     updates dictionary d to include/update the data. Also removes None values.
@@ -627,50 +614,45 @@ def add_to_data(d: dict, data: dict, next_id: int = None) -> None:
                 # The dictionary doesn't exist and is empty (except ID)
                 return
             if next_id:
-                d[next_id] = remove_nones(data)
+                d[next_id] = assign_params(**data)
             else:
-                d[data_id] = remove_nones(data)
+                d[data_id] = assign_params(**data)
         else:
             if next_id and next_id > data_id:
                 # id exists but we want to keep its next seq as ID (and also next seq id is larger therefore
                 # there's another packet in the future)
                 temp = d.pop(data_id)
-                temp.update(remove_nones(data))
+                temp.update(assign_params(**data))
                 d[next_id] = temp
             else:
                 # ID exists, we just want to update it.
-                d[data_id].update(remove_nones(data))
+                d[data_id].update(assign_params(**data))
 
 
 '''MAIN'''
 
 
 def main():
-    entry_id = demisto.args().get('entry_id', '')
-    file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
-    if is_error(file_path):
-        return_error(get_error(file_path))
+    args = demisto.args()
+    entry_id = args.get('entry_id', '')
+    file_path = demisto.getFilePath(entry_id).get('path')
+    # file_path = file_path[0]["Contents"]["path"]
 
-    file_path = file_path[0]["Contents"]["path"]
+    decrypt_key = args.get('wpa_password', '')
 
-    decrypt_key = demisto.args().get('wpa_password', '')
-
-    decrypt_key_entry_id = demisto.args().get('rsa_decrypt_key_entry_id', '')
+    decrypt_key_entry_id = args.get('rsa_decrypt_key_entry_id', '')
     if decrypt_key_entry_id and not decrypt_key:
-        decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
-        if is_error(decrypt_key_file_path):
-            return_error(get_error(decrypt_key_file_path))
-        decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
+        decrypt_key = demisto.getFilePath(entry_id).get('path')
 
-    conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
-    extracted_protocols = argToList(demisto.args().get('protocol_output', ''))
+    conversation_number_to_display = int(args.get('convs_to_display', '15'))
+    extracted_protocols = argToList(args.get('protocol_output', ''))
     is_flows = True
-    is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
-    pcap_filter = demisto.args().get('pcap_filter', '')
-    homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
+    is_reg_extract = args.get('extract_strings', 'False') == 'True'
+    pcap_filter = args.get('pcap_filter', '')
+    homemade_regex = args.get('custom_regex', '')  # 'Layer (.+):'
     pcap_filter_new_file_path = ''
-    pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
-    unique_ips = demisto.args().get('extract_ips', 'False') == 'True'
+    pcap_filter_new_file_name = args.get('filtered_file_name', '')
+    unique_ips = args.get('extract_ips', 'False') == 'True'
 
     if pcap_filter_new_file_name:
         temp = demisto.uniqueFile()
@@ -687,6 +669,46 @@ def main():
     if pcap_filter_new_file_name:
         demisto.results({'Contents': '', 'ContentsFormat': formats['text'], 'Type': 3,
                          'File': pcap_filter_new_file_name, 'FileID': temp})
+
+
+def local_main():  # TODO remove this function
+    # Variables from demisto
+    # file_path = "/Users/olichter/Downloads/chargen-udp.pcap"
+    # file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
+    # file_path = "/Users/olichter/Downloads/dns.cap"                        # DNS
+    # file_path = "/Users/olichter/Downloads/tftp_rrq.pcap"                 # tftp
+    # file_path = "/Users/olichter/Downloads/rsasnakeoil2.cap"              # encrypted SSL
+    # file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
+    # file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP#
+    # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
+    # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
+    # file_path = "/Users/olichter/Downloads/iseries.cap"
+    file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
+    file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
+    # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"                  # telnet
+    # file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
+    # file_path = "/Users/olichter/Downloads/SkypeIRC.cap"                        #IRC
+    # file_path = "/Users/olichter/Downloads/ftp.pcapng"                      #FTP
+    # PC Script
+    entry_id = ''
+
+    decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
+    conversation_number_to_display = 15
+    is_flows = True
+    is_reg_extract = True
+    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH',
+                           'IRC', 'FTP', 'TELNET', 'LLMNR']
+
+    pcap_filter = ''
+    # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
+    homemade_regex = ''  # 'Layer (.+):'
+    pcap_filter_new_file_path = ''
+    unique_ips = True
+
+    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
+    pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
+    hr, ec, raw = pcap.get_outputs(entry_id, conversation_number_to_display, is_flows, is_reg_extract)
+    return_outputs(hr, ec, raw)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
