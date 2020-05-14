@@ -65,8 +65,9 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-description: IT service management
-display: ServiceNow
+description: Deprecated - We recommend using ServiceNow v2 instead.
+display: ServiceNow - Deprecated
+deprecated: true
 name: ServiceNow
 script:
   commands:
