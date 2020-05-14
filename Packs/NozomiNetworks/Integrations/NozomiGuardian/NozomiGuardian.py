@@ -37,11 +37,12 @@ class Client:
             verify=False
         )
         if res.status_code not in [200, 204]:
-            raise ValueError("Error in API call to Service API %s. Reason: %s " % (res.status_code,res.text))
+            return_error("Error in API call to Service API %s. Reason: %s " % (res.status_code,res.text))
         try:
             return res.json()
-        except Exception:
-            raise ValueError("Failed to parse http response to JSON format. Original response body: \n %s" % res.text)
+        except Exception as e:
+            LOG(e)
+            return_error("Failed to parse http response to JSON format. Original response body: \n %s" % res.text)
 
 
 '''' Commands '''
@@ -72,13 +73,15 @@ def search_by_query(client):
             })
 
         if not raws:
-            return ("%s - Could not find any results for given query" % INTEGRATION_NAME)
+            return_error ("%s - Could not find any results for given query" % INTEGRATION_NAME)
 
         context_entry = {
-            "Nozomi": nozomi_ec
+            "NozomiGuardian": {
+                "Queries": nozomi_ec
+            }
          }
 
-        human_readable = tableToMarkdown(t=context_entry.get("Nozomi"),name=title)
+        human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Queries'],name=title)
 
         return [human_readable,context_entry,raws]
 
@@ -87,9 +90,9 @@ def search_by_query(client):
         return_error(e)
 
 
-def list_all_nodes(client):
+def list_all_assets(client):
     args = demisto.args()
-    search_query = "nodes"
+    search_query = "assets"
     try:
         title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
         raws = []
@@ -98,23 +101,26 @@ def list_all_nodes(client):
 
         if raw_response:
             for item in raw_response:
-                raws.append(raw_response)
+                raws.append(item)
                 nozomi_ec.append({
-                    'Host': item['appliance_host'],
+                    'Name': item['name'],
                     'IP': item['ip'],
                     'MAC': item['mac_address'],
-                    'Vendor': item['mac_vendor'],
-                    'OS': item['os']
+                    'Vendor': item['vendor'],
+                    'OS': item['os'],
+                    'CaptureDevice': item ['capture_device']
                 })
 
         if not raws:
-            return ("%s - Could not find any results for given query" % INTEGRATION_NAME)
+            return "%s - Could not any nodes" % INTEGRATION_NAME
 
         context_entry = {
-            "Nozomi": nozomi_ec
+            "NozomiGuardian": {
+                "Assets": nozomi_ec
+            }
          }
 
-        human_readable = tableToMarkdown(t=context_entry.get("Nozomi"),name=title)
+        human_readable = tableToMarkdown(t=context_entry["NozomiGuardian"]['Assets'],name=title)
 
         return [human_readable,context_entry,raws]
 
@@ -126,7 +132,7 @@ def list_all_nodes(client):
 def find_ip_by_mac(client):
     args = demisto.args()
     mac_address=args.get('mac')
-    search_query = "nodes | where mac_address match " + mac_address
+    search_query = "assets | where mac_address match " + mac_address
     try:
         title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
         raws = []
@@ -135,27 +141,26 @@ def find_ip_by_mac(client):
 
         if raw_response:
             for item in raw_response:
-                if 'ip' in item and item['ip'] is not None and len(item['ip'].split('.')) == 4:
-                    raws.append(raw_response)
+                if 'ip' in item and item['ip'][0] is not None and len(item['ip'][0].split('.')) == 4:
+                    raws.append(item)
                     nozomi_ec.append({
-                        'Mappings':
-                            {
-                                'IP': item['ip'],
-                                'MAC': mac_address
-                            }
+                        'IP': item['ip'],
+                        'MAC': mac_address
                     })
 
-        if not raws:
-            return ("%s - Could not find any results for given query" % INTEGRATION_NAME)
+            if not raws:
+                return ("%s - Could not find any results for given query" % INTEGRATION_NAME)
 
-        context_entry = {
-            "Nozomi": nozomi_ec
-         }
+            context_entry = {
+                "NozomiGuardian": {
+                   "Mappings": nozomi_ec
+                }
+            }
 
-        human_readable = tableToMarkdown(t=context_entry.get("Nozomi"),name=title)
+            human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Mappings'],name=title)
 
-        return [human_readable,context_entry,raws]
-
+            return [human_readable,context_entry,raws]
+        return_error("Could not find the mac address: %s" % mac_address)
     except Exception as e:
         LOG(e)
         return_error(e)
@@ -177,7 +182,7 @@ def main():
         client = Client(url, proxies,username,password)
         commands = {
             'guardian-search': search_by_query,
-            'guardian-list-all-nodes': list_all_nodes,
+            'guardian-list-all-assets': list_all_assets,
             'guardian-find-ip-by-mac': find_ip_by_mac,
             'test-module': test_module
         }
