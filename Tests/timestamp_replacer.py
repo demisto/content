@@ -79,12 +79,12 @@ class TimestampReplacer:
             '''
         )
         loader.add_option(
-            name='mode',
+            name='script_mode',
             typespec=str,
             default='playback',
             help='''
             The mode that timestamp_replacer.py is being executed in. The options are 'record', 'clean', and
-            'playback'. If no
+            'playback'. If no option is provided, defaults to 'playback'.
             '''
         )
         loader.add_option(
@@ -135,41 +135,14 @@ class TimestampReplacer:
         if ctx.options.debug:
             self._debug_request(flow)
         req = flow.request
-        if ctx.options.mode == 'record':
+        if ctx.options.script_mode == 'record':
             if ctx.options.detect_timestamps:
                 self.run_all_key_detections(req)
                 print('updating problem_keys file at "{}"'.format(self.bad_keys_filepath))
                 self.update_problem_keys_file()
-        elif ctx.options.mode in {'clean', 'playback'}:
-            print(f'mode={ctx.options.mode} cleaning problematic key values from the request')
+        elif ctx.options.script_mode in {'clean', 'playback'}:
+            print(f'mode={ctx.options.script_mode} cleaning problematic key values from the request')
             self.clean_bad_keys(req)
-        # if ctx.options.detect_timestamps:
-        #     self.handle_url_query(flow)
-        # if req.method == 'POST':
-        #     raw_content = req.raw_content
-        #     if raw_content is not None:
-        #         content = req.raw_content.decode()
-        #     else:
-        #         content = ''
-        #     json_data = content.startswith('{')
-        #     if json_data:
-        #         content = json.loads(content, object_pairs_hook=OrderedDict)
-
-            # if ctx.options.detect_timestamps:
-            #     if req.multipart_form:
-            #         self.handle_multipart_form(flow)
-            #     # form_urlencoded = 'application/x-www-form-urlencoded' in req.headers.get('content-type', '').lower()
-            #     elif req.urlencoded_form:
-            #         self.handle_urlencoded_form(flow)
-            #     elif json_data:
-            #         print('req num: {}\n{}'.format(self.count, content))
-            #         for problem_key in self.determine_problematic_keys(content):
-            #             self.json_keys.add(problem_key)
-            # elif json_data:
-            #     self.modify_json_body(flow, content)
-        # if ctx.options.detect_timestamps:
-        #     print('updating problem_keys file at "{}"'.format(self.bad_keys_filepath))
-        #     self.update_problem_keys_file()
 
     def clean_bad_keys(self, req: HTTPRequest) -> None:
         '''Modify the request so that values of problematic keys are constant data
@@ -489,58 +462,23 @@ class TimestampReplacer:
         print('executing "load_problematic_keys" method')
         if path.exists(self.bad_keys_filepath):
             print('"{}" path exists - loading bad keys'.format(self.bad_keys_filepath))
-            # log_msg = 'options pre update: \nkeys_to_replace: {}'.format(ctx.options.keys_to_replace)
-            # log_msg += '\nserver_replay_ignore_params: {}'.format(ctx.options.server_replay_ignore_params)
-            # log_msg += '\nserver_replay_ignore_payload_params: {}'.format(
-            #     ctx.options.server_replay_ignore_payload_params
-            # )
-            # print(log_msg)
 
             problem_keys = json.load(open(self.bad_keys_filepath, 'r'))
-            # ctx.options.set(problem_keys.items())
 
-            # need to do this because arguments for these options are interpreted as 1 list item
             query_keys = problem_keys.get('server_replay_ignore_params')
             self.query_keys.update(query_keys.split() if isinstance(query_keys, str) else query_keys)
-            # ctx.options.server_replay_ignore_params = query_keys.split() if isinstance(query_keys, str) else query_keys
             form_keys = problem_keys.get('server_replay_ignore_payload_params')
-            # ctx.options.server_replay_ignore_payload_params = (
-            #     form_keys.split() if isinstance(form_keys, str) else form_keys
-            # )
             self.form_keys.update(form_keys.split() if isinstance(form_keys, str) else form_keys)
-            keys_to_replace = problem_keys.get('keys_to_replace')
-            # ctx.options.keys_to_replace = (
-            #     keys_to_replace.split() if isinstance(keys_to_replace, str) else keys_to_replace
-            # )
-            # ctx.options.keys_to_replace = keys_to_replace
-            self.json_keys.update(keys_to_replace.split() if isinstance(keys_to_replace, str) else keys_to_replace)
+            json_keys = problem_keys.get('keys_to_replace')
+            self.json_keys.update(json_keys.split() if isinstance(json_keys, str) else json_keys)
 
-            # log_msg = 'options post update: \nkeys_to_replace: {}'.format(ctx.options.keys_to_replace)
-            # log_msg += '\nserver_replay_ignore_params: {}'.format(ctx.options.server_replay_ignore_params)
-            # log_msg += '\nserver_replay_ignore_payload_params: {}'.format(
-            #     ctx.options.server_replay_ignore_payload_params
-            # )
-            # print(log_msg)
-            print('bad keys loaded\n---------------\n')
+            print('bad keys loaded\n---------------')
             print(f'self.query_keys={self.query_keys}')
             print(f'self.form_keys={self.form_keys}')
             print(f'self.json_keys={self.json_keys}')
         else:
             print('"{}" path doesn\'t exist - no bad keys to set'.format(self.bad_keys_filepath))
             print('not setting bad keys from file')
-
-    # def done(self):
-    #     print('timestamp_replacer.py "done()" called')
-    #     # print('ctx.options: \n{}'.format(json.dumps(ctx.options, indent=4)))
-    #     if self.detect_timestamps:
-    #         # bad_keys_filepath = ctx.options.keys_filepath
-    #         all_keys = {
-    #             'keys_to_replace': ' '.join(self.json_keys),
-    #             'server_replay_ignore_payload_params': ' '.join(self.form_keys),
-    #             'server_replay_ignore_params': ' '.join(self.query_keys)
-    #         }
-    #         with open(self.bad_keys_filepath, 'w') as bad_keys_file:
-    #             bad_keys_file.write(json.dumps(all_keys))
 
 
 addons = [TimestampReplacer()]
