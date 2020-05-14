@@ -14,6 +14,7 @@ from typing import Match, Union, Optional, cast, Dict, Any, List, Tuple
 import re
 from jwt.algorithms import RSAAlgorithm
 from tempfile import NamedTemporaryFile
+from traceback import format_exc
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1238,6 +1239,13 @@ def channel_mirror_loop():
                         break
                 if found_channel_to_mirror:
                     break
+        except json.decoder.JSONDecodeError as json_decode_error:
+            demisto.error(
+                f'An error occurred in channel mirror loop while trying to deserialize teams from cache: '
+                f'{str(json_decode_error)}'
+            )
+            demisto.debug(f'Cache object: {integration_context}')
+            demisto.updateModuleHealth(f'An error occurred: {str(json_decode_error)}')
         except Exception as e:
             demisto.error(f'An error occurred in channel mirror loop: {str(e)}')
             demisto.updateModuleHealth(f'An error occurred: {str(e)}')
@@ -1571,54 +1579,60 @@ def long_running_loop():
     """
     The infinite loop which runs the mirror loop and the bot app in two different threads
     """
+    while True:
+        certificate: str = demisto.params().get('certificate', '')
+        private_key: str = demisto.params().get('key', '')
 
-    certificate: str = demisto.params().get('certificate', '')
-    private_key: str = demisto.params().get('key', '')
+        certificate_path = str()
+        private_key_path = str()
 
-    certificate_path = str()
-    private_key_path = str()
+        error_message = str()
 
-    try:
-        port_mapping: str = PARAMS.get('longRunningPort', '')
-        port: int
-        if port_mapping:
-            if ':' in port_mapping:
-                port = int(port_mapping.split(':')[1])
+        try:
+            port_mapping: str = PARAMS.get('longRunningPort', '')
+            port: int
+            if port_mapping:
+                if ':' in port_mapping:
+                    port = int(port_mapping.split(':')[1])
+                else:
+                    port = int(port_mapping)
             else:
-                port = int(port_mapping)
-        else:
-            raise ValueError('No port mapping was provided')
-        Thread(target=channel_mirror_loop, daemon=True).start()
-        demisto.info('Started channel mirror loop thread')
+                raise ValueError('No port mapping was provided')
+            Thread(target=channel_mirror_loop, daemon=True).start()
+            demisto.info('Started channel mirror loop thread')
 
-        ssl_args = dict()
+            ssl_args = dict()
 
-        if certificate and private_key:
-            certificate_file = NamedTemporaryFile(delete=False)
-            certificate_path = certificate_file.name
-            certificate_file.write(bytes(certificate, 'utf-8'))
-            certificate_file.close()
-            ssl_args['certfile'] = certificate_path
+            if certificate and private_key:
+                certificate_file = NamedTemporaryFile(delete=False)
+                certificate_path = certificate_file.name
+                certificate_file.write(bytes(certificate, 'utf-8'))
+                certificate_file.close()
+                ssl_args['certfile'] = certificate_path
 
-            private_key_file = NamedTemporaryFile(delete=False)
-            private_key_path = private_key_file.name
-            private_key_file.write(bytes(private_key, 'utf-8'))
-            private_key_file.close()
-            ssl_args['keyfile'] = private_key_path
+                private_key_file = NamedTemporaryFile(delete=False)
+                private_key_path = private_key_file.name
+                private_key_file.write(bytes(private_key, 'utf-8'))
+                private_key_file.close()
+                ssl_args['keyfile'] = private_key_path
 
-            demisto.info('Starting HTTPS Server')
-        else:
-            demisto.info('Starting HTTP Server')
+                demisto.info('Starting HTTPS Server')
+            else:
+                demisto.info('Starting HTTP Server')
 
-        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
-        server.serve_forever()
-    except Exception as e:
-        if certificate_path:
-            os.unlink(certificate_path)
-        if private_key_path:
-            os.unlink(private_key_path)
-        demisto.error(f'An error occurred in long running loop: {str(e)}')
-        raise ValueError(str(e))
+            server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
+            server.serve_forever()
+        except Exception as e:
+            error_message = str(e)
+        finally:
+            if certificate_path:
+                os.unlink(certificate_path)
+            if private_key_path:
+                os.unlink(private_key_path)
+            if error_message:
+                demisto.error(f'An error occurred in long running loop: {error_message}')
+                demisto.updateModuleHealth(f'An error occurred: {error_message}')
+            time.sleep(5)
 
 
 def test_module():
@@ -1646,7 +1660,6 @@ def main():
         'microsoft-teams-ring-user': ring_user,
         'microsoft-teams-create-channel': create_channel_command,
         'microsoft-teams-add-user-to-channel': add_user_to_channel_command,
-
     }
 
     ''' EXECUTION '''
@@ -1658,12 +1671,7 @@ def main():
             commands[command]()
     # Log exceptions
     except Exception as e:
-        if command == 'long-running-execution':
-            LOG(str(e))
-            LOG.print_log()
-            demisto.updateModuleHealth(str(e))
-        else:
-            return_error(str(e))
+        return_error(f'{str(e)} - {format_exc()}')
 
 
 if __name__ == 'builtins':
