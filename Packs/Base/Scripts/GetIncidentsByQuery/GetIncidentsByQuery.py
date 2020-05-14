@@ -118,7 +118,7 @@ def main():
     incident_list = get_incidents(query, d_args['timeField'],
                                   int(d_args['limit']),
                                   d_args.get('fromDate'))
-    fields_to_populate = d_args.get('populateFields')
+    fields_to_populate = d_args.get('populateFields')  # type: List[Text]
     if len(fields_to_populate) > 0:
         fields_to_populate += d_args['NonEmptyFields']
         fields_to_populate = set([x for x in fields_to_populate if x])
