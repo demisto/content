@@ -3,12 +3,14 @@ version: -1
 name: Get File Sample By Hash - Cylance Protect - Test
 fromversion: 3.5.0
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
     taskid: b4e8ef9f-c463-45d5-8798-facca14978c6
     type: start
     task:
+      description: ""
       id: b4e8ef9f-c463-45d5-8798-facca14978c6
       version: -1
       name: ""
@@ -32,6 +34,7 @@ tasks:
     taskid: c72ea6b4-a3e1-4d28-8271-5777873b1a85
     type: regular
     task:
+      description: ""
       id: c72ea6b4-a3e1-4d28-8271-5777873b1a85
       version: -1
       name: Verify output
@@ -59,6 +62,7 @@ tasks:
     taskid: 5b021f07-65f4-4734-89e3-121ec397cb83
     type: regular
     task:
+      description: ""
       id: 5b021f07-65f4-4734-89e3-121ec397cb83
       version: -1
       name: Clear Context
@@ -88,6 +92,7 @@ tasks:
     taskid: 901737e8-d0da-4864-8ed7-abedebd837cc
     type: regular
     task:
+      description: ""
       id: 901737e8-d0da-4864-8ed7-abedebd837cc
       version: -1
       name: add hash to context
@@ -119,6 +124,7 @@ tasks:
     taskid: 319cc4d2-b0f5-4b3f-87cd-4dad905a1fba
     type: regular
     task:
+      description: ""
       id: 319cc4d2-b0f5-4b3f-87cd-4dad905a1fba
       version: -1
       name: add hash to context

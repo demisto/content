@@ -19,14 +19,14 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Trust any certificate (insecute)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Company name
