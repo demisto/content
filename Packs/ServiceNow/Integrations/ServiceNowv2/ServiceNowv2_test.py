@@ -212,7 +212,7 @@ def test_fetch_incidents_with_attachments(mocker):
     assert incidents[0].get('attachment')[0]['path'] == 'file_id'
 
 
-def test_fetch_incidents(mocker):
+def test_fetch_incidents_with_incident_name(mocker):
     """Unit test
     Given
     - fetch incidents command
