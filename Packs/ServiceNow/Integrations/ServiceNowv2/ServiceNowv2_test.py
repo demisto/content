@@ -124,7 +124,8 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
     validate the entry context
     """
     client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments')
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
@@ -153,7 +154,8 @@ def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extr
     validate the human readable
     """
     client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments')
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert expected_hr in result[0]  # HR is found in the 1st place in the result of the command
@@ -176,7 +178,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='incident', get_attachments=False)
+                    ticket_type='incident', get_attachments=False, incident_name='number')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
@@ -199,7 +201,7 @@ def test_fetch_incidents_with_attachments(mocker):
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='incident', get_attachments=True)
+                    ticket_type='incident', get_attachments=True, incident_name='number')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH_ATTACHMENTS_TICKET)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_FETCH_ATTACHMENTS_FILE)
 
@@ -208,3 +210,25 @@ def test_fetch_incidents_with_attachments(mocker):
     assert len(incidents) == 1
     assert incidents[0].get('attachment')[0]['name'] == 'wireframe'
     assert incidents[0].get('attachment')[0]['path'] == 'file_id'
+
+
+def test_fetch_incidents(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's send_request.
+    Then
+    - run the fetch incidents command using the Client
+    Validate The length of the results.
+    """
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+    mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
+    incidents = fetch_incidents(client)
+    assert incidents[0].get('name') == 'ServiceNow Incident Unable to access Oregon mail server. Is it down?'
