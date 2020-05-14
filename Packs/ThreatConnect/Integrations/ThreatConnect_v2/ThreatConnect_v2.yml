@@ -6,6 +6,11 @@ display: ThreatConnect v2
 category: Data Enrichment & Threat Intelligence
 description: Threat intelligence platform.
 configuration:
+- display: baseUrl
+  name: baseUrl
+  defaultvalue: https://api.threatconnect.com
+  type: 0
+  required: true
 - display: Access ID
   name: accessId
   defaultvalue: ""
@@ -16,23 +21,8 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: baseUrl
-  name: baseUrl
-  defaultvalue: https://api.threatconnect.com
-  type: 0
-  required: true
 - display: Default Organization
   name: defaultOrg
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: ProxyIP  (or http://${ip} )
-  name: proxyIp
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: ProxyPort
-  name: proxyPort
   defaultvalue: ""
   type: 0
   required: false
@@ -51,8 +41,18 @@ configuration:
   defaultvalue: "7"
   type: 0
   required: false
+- display: ProxyIP  (or http://${ip} )
+  name: proxyIp
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ProxyPort
+  name: proxyPort
+  defaultvalue: ""
+  type: 0
+  required: false
 script:
-  script: " - "
+  script: '-'
   type: python
   commands:
   - name: ip
@@ -2054,5 +2054,4 @@ script:
   runonce: false
   subtype: python3
 tests:
-- test-ThreatConnect
 - ThreatConnect v2 - Test

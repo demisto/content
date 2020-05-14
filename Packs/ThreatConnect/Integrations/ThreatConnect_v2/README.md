@@ -8,15 +8,15 @@ This integration was integrated and tested with version xx of ThreatConnect v2
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| baseUrl | baseUrl | True |
 | accessId | Access ID | True |
 | secretKey | Secret Key | True |
-| baseUrl | baseUrl | True |
 | defaultOrg | Default Organization | False |
-| proxyIp | ProxyIP  \(or http://\<ip\>) | False |
-| proxyPort | ProxyPort | False |
 | rating | Rating threshold for Malicious Indicators | False |
 | confidence | Confidence threshold for Malicious Indicators | False |
 | freshness | Indicator Reputation Freshness \(in days\) | False |
+| proxyIp | ProxyIP  \(or http://\<ip\>) | False |
+| proxyPort | ProxyPort | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -139,13 +139,41 @@ Searches for an indicator of type URL.
 
 #### Context Example
 ```
-{}
+{
+    "DBotScore": [
+        {
+            "Indicator": "https://www.domain.com",
+            "Score": 2,
+            "Type": "url",
+            "Vendor": "ThreatConnect"
+        }
+    ],
+    "TC": {
+        "Indicator": {
+            "Confidence": 50,
+            "CreateDate": "2020-04-23T14:41:16Z",
+            "ID": 112618313,
+            "LastModified": "2020-04-27T10:03:38Z",
+            "Name": "https://www.domain.com",
+            "Owner": "Demisto Inc.",
+            "Rating": 3,
+            "Type": "URL"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
 
->Make sure that the indicator exists in your ThreatConnect environment### ThreatConnect URL Reputation for: https://www.domain.com
->**No entries.**
+>### ThreatConnect URL Reputation for: https://www.domain.com
+>|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
+>|---|---|---|---|---|---|---|---|
+>| 50 | 2020-04-23T14:41:16Z | 112618313 | 2020-04-27T10:03:38Z | https://www.domain.com | Demisto Inc. | 3 | URL |
+>### ThreatConnect URL Reputation for: https://www.domain.com
+>|Confidence|Create Date|ID|Last Modified|Name|Owner|Rating|Type|
+>|---|---|---|---|---|---|---|---|
+>| 50 | 2020-04-23T14:41:16Z | 112618313 | 2020-04-27T10:03:38Z | https://www.domain.com | Demisto Inc. | 3 | URL |
+
 
 
 ### file

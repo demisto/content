@@ -23,8 +23,8 @@ def get_client():
     secret = params['secretKey']
     default_org = params.get('defaultOrg')
     url = params['baseUrl']
-    proxy_ip = params['proxyIp']
-    proxy_port = params['proxyPort']
+    proxy_ip = params.get('proxyIp')
+    proxy_port = params.get('proxyPort')
 
     tc = ThreatConnect(access, secret, default_org, url)
     if proxy_ip and proxy_port and len(proxy_ip) > 0 and len(proxy_port) > 0:
@@ -123,7 +123,7 @@ def create_context(indicators, include_dbot_score=False):
             'ID': ind['id'],
             'Name': value,
             'Type': ind['type'],
-            'Owner': ind['ownerName'],
+            'Owner': ind.get('ownerName', ind.get('owner')),
             'Description': ind.get('description'),
             'CreateDate': ind['dateAdded'],
             'LastModified': ind['lastModified'],
@@ -140,39 +140,38 @@ def create_context(indicators, include_dbot_score=False):
         })
 
         if 'group_associations' in ind:
-            if len(ind['group_associations']) >= 0:
+            if ind['group_associations']:
                 context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorGroups'] = ind['group_associations']
 
         if 'indicator_associations' in ind:
-            if len(ind['indicator_associations']) >= 0:
+            if ind['indicator_associations']:
                 context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorAssociations'] = ind[
                     'indicator_associations']
 
         if 'indicator_tags' in ind:
-            if len(ind['indicator_tags']) >= 0:
+            if ind['indicator_tags']:
                 context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorTags'] = ind['indicator_tags']
 
         if 'indicator_observations' in ind:
-            if len(ind['indicator_observations']) >= 0:
+            if ind['indicator_observations']:
                 context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorsObservations'] = ind[
                     'indicator_observations']
 
-    context = {k: createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if len(v) > 0}
+    context = {k: createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if v}
     return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
 
 
-def get_xindapi(indicator_value, indicatorType, owner, tc):
+def get_xindapi(tc, indicator_value, indicator_type, owner):
     stdout = []
     types = tc_get_indicator_types_request()['data']['indicatorType']
-    if indicatorType:
+    if indicator_type:
         for item in types:
-            if item['apiEntity'] == indicatorType:
-                apiBranch = item['apiBranch']
+            if item['apiEntity'] == indicator_type.lower():
+                api_branch = item['apiBranch']
                 ro = RequestObject()
                 ro.set_http_method('GET')
                 ro.set_owner(owner)
-                ro.set_request_uri('/v2/indicators/' + str(apiBranch) + "/" + quote(indicator_value).replace("/", "%2F"))
-                demisto.log('/v2/indicators/' + str(apiBranch) + "/" + quote(indicator_value).replace("/", "%2F"))
+                ro.set_request_uri('/v2/indicators/' + str(api_branch) + "/" + quote(indicator_value).replace("/", "%2F"))
                 results = tc.api_request(ro)
                 if results.headers['content-type'] == 'application/json':
                     if results.json()['status'] == 'Success':
@@ -183,14 +182,11 @@ def get_xindapi(indicator_value, indicatorType, owner, tc):
                         break
     else:
         for item in types:
-            if indicatorType and item['apiEntity'] == indicatorType:
-                apiBranch = item['apiBranch']
-            else:
-                apiBranch = item['apiBranch']
+            api_branch = item['apiBranch']
             ro = RequestObject()
             ro.set_http_method('GET')
             ro.set_owner(owner)
-            ro.set_request_uri('/v2/indicators/' + str(apiBranch) + "/" + quote(indicator_value).replace("/", "%2F"))
+            ro.set_request_uri('/v2/indicators/' + str(api_branch) + "/" + quote(indicator_value).replace("/", "%2F"))
             results = tc.api_request(ro)
             if results.headers['content-type'] == 'application/json':
                 if results.json()['status'] == 'Success':
@@ -203,21 +199,9 @@ def get_xindapi(indicator_value, indicatorType, owner, tc):
     return stdout
 
 
-def get_indapi(indicator_value, owner, tc):
-    ro = RequestObject()
-    ro.set_http_method('GET')
-    ro.set_owner(owner)
-    ro.set_request_uri('/v2/indicators?filters=summary/v2/indicators?filters=summary%3D'
-                       + quote(indicator_value).replace("/", "%2F"))
-    results = tc.api_request(ro)
-    if results.headers['content-type'] == 'application/json':
-        return results.json()
-    else:
-        return {}
-
-
-def get_indicatorOwner(indicator_value, owner=demisto.params()['defaultOrg']):
+def get_indicator_owner(indicator_value, owner=None):
     tc = get_client()
+    owner = demisto.params()['defaultOrg'] if not owner else owner
     indsowners = {}
     types = tc_get_indicator_types_request()['data']['indicatorType']
     for item in types:
@@ -246,21 +230,20 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
     if owners and owners.find(",") > -1:
         owners = owners.split(",")
         for owner in owners:
-            raw_indicators = get_xindapi(indicator_value, indicator_type, owner, tc)
-            if len(raw_indicators) > 0:
+            raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owner)
+            if raw_indicators:
                 owners = owner
                 break
     else:
-        raw_indicators = get_xindapi(indicator_value, indicator_type, owners, tc)
-        if len(raw_indicators) == 0 and loopowners is True:
-            owners = get_indicatorOwner(indicator_value)
-            if 'data' in owners:
-                if 'owner' in owners['data']:
-                    for owner in owners['data']['owner']:
-                        raw_indicators = get_xindapi(indicator_value, indicator_type, owner['name'], tc)
-                        if len(raw_indicators) > 0:
-                            owners = owner['name']
-                            break
+        raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owners)
+        if raw_indicators and loopowners is True:
+            owners = get_indicator_owner(indicator_value)
+            if 'owner' in owners.get('data', {}):
+                for owner in owners['data']['owner']:
+                    raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owner['name'])
+                    if raw_indicators:
+                        owners = owner['name']
+                        break
                 else:
                     demisto.results("Unable to indentify the owner for the given indicator")
             else:
@@ -270,7 +253,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
     associatedIndicators = []
     indicator_observations = []
 
-    if len(raw_indicators) > 0:
+    if raw_indicators:
         if associated_groups:
             indicators[0]['group_associations'] = tc_associated_groups(tc, owners, indicator_value, raw_indicators[0]['type'])
 
@@ -283,7 +266,8 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                     for observation in indicator.observations:
                         indicator_observations.append({"count": observation.count, "date_observed": observation.date_observed})
                 indicators[0]['indicator_observations'] = indicator_observations
-            except Exception:
+            except Exception as error:
+                demisto.error(str(error))
                 indicators[0]['indicator_observations'] = indicator_observations
 
         if associated_indicators:
@@ -301,7 +285,8 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                                                      "last_modified": associated_indicator.last_modified,
                                                      "weblink": associated_indicator.weblink})
                 indicators[0]['indicator_associations'] = associatedIndicators
-            except Exception:
+            except Exception as error:
+                demisto.error(str(error))
                 indicators[0]['indicator_associations'] = associatedIndicators
 
     return indicators
@@ -469,7 +454,7 @@ def tc_owners():
 
 def tc_get_indicator_owners():
     owners = []
-    ownersRaw = get_indicatorOwner(demisto.args()['indicator'])
+    ownersRaw = get_indicator_owner(demisto.args()['indicator'])
     if 'status' in ownersRaw:
         if ownersRaw['status'] == 'Success':
             if len(ownersRaw['data']['owner']) > 0:
@@ -520,8 +505,8 @@ def tc_associated_groups(tc, owners, indicator_value, indicator_type):
                             break
                     else:
                         group_associations = []
-        except Exception:
-            pass
+        except Exception as error:
+            demisto.error(str(error))
 
     return group_associations
 
@@ -562,8 +547,8 @@ def tc_indicator_get_tags(tc, owners, indicator_value, indicator_type):
                             break
                     else:
                         tags = []
-        except Exception:
-            pass
+        except Exception as error:
+            demisto.error(str(error))
 
     return tags
 
@@ -686,9 +671,9 @@ def tc_get_indicator_command():
         = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
                            associated_indicators, include_observations, include_tags, indicator_type)
     # remove extra items from the indicator markdown
-    if str(ec) == '[]':
+    if ec == []:
         ec = {}
-    if len(ec) > 0:
+    if ec:
         indicators = copy.deepcopy(ec)
         indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
 
@@ -2130,7 +2115,7 @@ COMMANDS = {
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     try:
         command_func = demisto.command()
-        LOG('command is %s' % (demisto.command(),))
+        # LOG('command is %s' % (demisto.command(),))
         if command_func in COMMANDS.keys():
             COMMANDS[command_func]()
 
