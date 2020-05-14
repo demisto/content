@@ -1388,23 +1388,20 @@ def search_domain_command(args):
             integration_name=VENDOR_NAME,
             score=score
         )
-        demisto.log(json.dumps(raw_res, indent=4))
 
         domain = Common.Domain(
             domain=domain_name,
             dbot_score=dbot_score,
-            whois=Common.WHOIS(
-                creation_date=indicator.get('whoisDomainCreationDate'),
-                expiration_date=indicator.get('whoisDomainExpireDate'),
-                update_date=indicator.get('whoisDomainUpdateDate'),
+            creation_date=indicator.get('whoisDomainCreationDate'),
+            expiration_date=indicator.get('whoisDomainExpireDate'),
+            updated_date=indicator.get('whoisDomainUpdateDate'),
 
-                admin_email=indicator.get('whoisAdminEmail'),
-                admin_name=indicator.get('whoisAdminName'),
+            admin_email=indicator.get('whoisAdminEmail'),
+            admin_name=indicator.get('whoisAdminName'),
 
-                registrar_name=indicator.get('whoisRegistrar'),
+            registrar_name=indicator.get('whoisRegistrar'),
 
-                registrant_name=indicator.get('whoisRegistrant')
-            )
+            registrant_name=indicator.get('whoisRegistrant')
         )
 
         autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)

@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.4.1"
+      CONTENT_VERSION: "20.5.0"
       SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "79973624c8b5f0c7ee33d22e8e541d2a8edf1920" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "1ac60fc841b4fbd1afeb3c44713532960f1c1ebb" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -578,3 +578,17 @@ workflows:
   commit:
     jobs:
       - build
+  instances_testing:
+    # for details of triggered builds see https://circleci.com/docs/2.0/workflows/#nightly-example
+    # for details of cron syntax see https://www.unix.com/man-page/POSIX/1posix/crontab/ disable-secrets-detection
+    triggers:
+      - schedule:
+          # should trigger every day at 2 AM UTC (5 AM Israel Time)
+          cron: "0 2 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build:
+          context: instances_test_env

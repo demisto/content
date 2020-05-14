@@ -183,7 +183,7 @@ class TestChangedPlaybook:
 class TestChangedTestPlaybook:
     TEST_ID = 'EWSv2_empty_attachment_test'
     # points at a real file. if that file will change path the test should fail
-    GIT_DIFF_RET = "M TestPlaybooks/playbook-EWSv2_empty_attachment_test.yml"
+    GIT_DIFF_RET = "M Packs/EWS/TestPlaybooks/playbook-EWSv2_empty_attachment_test.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)

@@ -19,7 +19,7 @@ SCRIPT_ARGS = 'scriptarguments'
 
 def check_yaml(spellchecker, yml_info, unknown_words):
     for key, value in yml_info.items():
-        if key in DISPLAYABLE_LINES:
+        if key in DISPLAYABLE_LINES and isinstance(value, str):
             for word in value.split():
                 if word.isalpha() and spellchecker.unknown([word]):
                     unknown_words.add(word)
