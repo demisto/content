@@ -214,7 +214,6 @@
 			}
 		}
 	},
-	"sortValues": null,
 	"transformer": {
 		"complex": {
 			"accessor": "",
