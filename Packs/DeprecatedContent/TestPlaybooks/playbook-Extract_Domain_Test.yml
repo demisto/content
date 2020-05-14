@@ -2,6 +2,7 @@ id: ExtractDomainTest
 version: -1
 name: ExtractDomainTest
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
