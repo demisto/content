@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Fixed Dockerfile version
+- Removed duplicated values on context
 
 ## [20.5.0] - 2020-05-12
 -
