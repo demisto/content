@@ -16,7 +16,7 @@ comment: Commit configuration to panorama
 system: true
 deprecated: true
 scripttarget: 0
-args: []
+args: {}
 dependson:
   must:
   - panorama

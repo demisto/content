@@ -47,7 +47,7 @@ tags:
 comment: Delete Mails with ID's under the context key "ExchangeItemIDs"
 system: true
 scripttarget: 0
-args: []
+args: {}
 dependson:
   must:
   - ews-delete-items
