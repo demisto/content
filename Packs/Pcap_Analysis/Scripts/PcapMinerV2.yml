@@ -87,6 +87,22 @@ args:
   - 'False'
   required: false
   secret: false
+- default: false
+  description: Wether to iterate over this pcap and run only the `iterate_num_of_packets`
+    packets. To be used in playbooks.
+  isArray: false
+  name: iterate
+  required: false
+  secret: false
+- default: false
+  description: The number of packets to analyze. Recomended not over 20,000.
+  isArray: false
+  name: packets_to_analyze
+  required: false
+  secret: false
+comment: PcapMIner V2 allows to parse pcap files by displaying the all of the relevant
+  data within including ip addresses, ports, flows, specific protocol breakdown, searching
+  by regex, decrypting encrypted  traffic and more.
 commonfields:
   id: 386e2ffc-fcf5-406c-840a-68c3ff2fefe8
   version: -1
