@@ -345,13 +345,12 @@ tasks:
       - "12"
     scriptarguments:
       app_name: {}
-      key:
-        simple: t
+      key: {}
       kv_store_collection_name:
         simple: test_playbook
-      query: {}
-      value:
-        simple: "9"
+      query:
+        simple: '{"t": 9}'
+      value: {}
     separatecontext: false
     view: |-
       {

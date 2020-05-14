@@ -403,8 +403,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The list of name and value types to define the KV store collection
-        scheme. For example field.id=number,field.name=string,field.address=string
+      description: |
+        The list of name and value types to define the KV store collection scheme. For example field.id=number,field.name=string,field.address=string
       isArray: true
       name: kv_store_fields
       required: true
@@ -495,7 +495,7 @@ script:
     outputs:
     - contextPath: Splunk.KVstoreData
       description: collection names in an array and each collection name will have
-        an array of values
+        an array of values (e.g. Splunk.KVstoreData.<colletion_name> is a list of the data in the collection)
       type: Unknown
   - arguments:
     - default: true
@@ -556,7 +556,7 @@ script:
         this argument will be ignored
       isArray: false
       name: key
-      required: true
+      required: false
       secret: false
     - default: false
       description: The value to search in the store. If the query argument is used,
@@ -581,7 +581,7 @@ script:
     outputs:
     - contextPath: Splunk.KVstoreData
       description: collection names in an array and each collection name will have
-        an array of values
+        an array of values (e.g. Splunk.KVstoreData.<colletion_name> is a list of the data in the collection)
       type: Unknown
   - arguments:
     - default: true
