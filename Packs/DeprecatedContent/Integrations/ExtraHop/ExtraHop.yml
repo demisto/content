@@ -883,7 +883,7 @@ script:
     description: Modifies an alert in ExtraHop.
     execution: false
     name: extrahop-modify-alert-rule
-  dockerimage: demisto/python3:3.7.2.200
+  dockerimage: demisto/python3:3.8.2.6981
   isfetch: false
   runonce: false
   script: ''

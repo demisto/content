@@ -50,7 +50,7 @@ def http_request(method, url, headers):
 
         res.raise_for_status()
 
-    except Exception, e:
+    except Exception as e:
         raise (e)
 
 

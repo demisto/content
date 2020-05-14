@@ -84,7 +84,7 @@ class APIClient(object):
             content = result.read()
             result.close()
 
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError as e:
             demisto.debug(e.reason)
             if e.code != 400:
                 return_error('{0}: {1} \nCheck you Minmeld instance.'.format(e.reason, e.code))

@@ -1763,7 +1763,7 @@ script:
     - contextPath: File.Company
       description: The name of the company that released a binary.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.286
+  dockerimage: demisto/python_pancloud:1.0.0.7740
   isfetch: true
   longRunning: false
   longRunningPort: false
