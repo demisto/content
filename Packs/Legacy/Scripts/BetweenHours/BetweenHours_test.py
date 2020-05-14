@@ -14,6 +14,6 @@ TEST_INPUTS = [
 ]
 
 
-@pytest.mark.parametrize("value, begin_date, end_date, expected_result, test_title", TEST_INPUTS)
-def test_is_between_hours(value, begin_date, end_date, expected_result, test_title):
-    assert is_between_hours(value, begin_date, end_date) == expected_result, test_title
+@pytest.mark.parametrize("value, begin_time, end_time, expected_result, test_title", TEST_INPUTS)
+def test_is_between_hours(value, begin_time, end_time, expected_result, test_title):
+    assert is_between_hours(value, begin_time, end_time) == expected_result, test_title

@@ -2,6 +2,7 @@ commonfields:
   id: BetweenHours
   version: -1
 name: BetweenHours
+fromversion: 5.0.0
 comment: Whether value is within an hour range.
 script: ''
 type: python

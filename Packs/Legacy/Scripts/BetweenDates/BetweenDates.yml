@@ -2,6 +2,7 @@ commonfields:
   id: BetweenDates
   version: -1
 name: BetweenDates
+fromversion: 5.0.0
 comment: Whether value is within a date range.
 script: ''
 type: python
