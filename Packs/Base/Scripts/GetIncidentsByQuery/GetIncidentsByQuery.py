@@ -3,7 +3,6 @@ import re
 import uuid
 from datetime import datetime, timedelta
 from dateutil import parser
-from typing import List, Dict
 
 from CommonServerPython import *
 
@@ -92,7 +91,7 @@ def get_comma_sep_list(value):
     return map(lambda x: x.strip(), value.split(","))
 
 
-def preprocess_incidents_fields_list(incidents_fields):  # type: (List[str]) -> List[str]
+def preprocess_incidents_fields_list(incidents_fields):
     res = []
     for field in incidents_fields:
         field = field.strip()
