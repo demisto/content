@@ -12,7 +12,6 @@ tags:
 - Utility
 system: true
 deprecated: true
-args:
 outputs:
 - contextPath: ConfiguredModules.instance
   description: The instance name of the configured module
