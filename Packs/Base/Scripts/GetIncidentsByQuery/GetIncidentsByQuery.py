@@ -148,7 +148,7 @@ def main():
         data_encoded = json.dumps(incident_list)
     else:
         return_error("Invalid output format: %s" % output_format)
-    entry = fileResult(file_name, data_encoded)`
+    entry = fileResult(file_name, data_encoded)
     entry['Contents'] = incident_list
     entry['HumanReadable'] = "Fetched %d incidents successfully by the query: %s" % (len(incident_list), query)
     entry['EntryContext'] = {
