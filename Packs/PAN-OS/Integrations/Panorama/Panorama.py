@@ -3142,52 +3142,71 @@ def panorama_get_pcap_command():
 
 def prettify_applications_arr(applications_arr):
     pretty_application_arr = []
+    if not isinstance(applications_arr, list):
+        applications_arr = [applications_arr]
     for i in range(len(applications_arr)):
         application = applications_arr[i]
         pretty_application_arr.append({
-            'SubCategory': application['subcategory'],
-            'Risk': application['risk'],
-            'Technology': application['technology'],
-            'Name': application['@name'],
-            'Description': application['description'],
-            'Id': application['@id']
+            'SubCategory': application.get('subcategory'),
+            'Risk': application.get('risk'),
+            'Technology': application.get('technology'),
+            'Name': application.get('@name'),
+            'Description': application.get('description'),
+            'Id': application.get('@id'),
         })
     return pretty_application_arr
 
 
 @logger
-def panorama_list_applications():
+def panorama_list_applications(predefined: bool):
+    major_version = get_pan_os_major_version()
     params = {
-        'type': 'op',
-        'command': '<show><objects></objects></show>',
+        'type': 'config',
+        'action': 'get',
         'key': API_KEY
     }
+    if predefined:
+        if major_version < 9:
+            raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
+        else:
+            params['xpath'] = '/config/predefined/application'
+    else:
+        params['xpath'] = XPATH_OBJECTS + "application/entry"
+
     result = http_request(
         URL,
         'POST',
         params=params
     )
-    return result['response']['result']['config']['shared']['content-preview']['application']['entry']
+    applications = result['response']['result']
+    if predefined:
+        application_arr = applications.get('application', {}).get('entry')
+    else:
+        if major_version < 9:
+            application_arr = applications.get('entry')
+        else:
+            application_arr = applications.get('application')
+
+    return application_arr
 
 
 def panorama_list_applications_command():
     """
     List all applications
     """
-    applications_arr = panorama_list_applications()
-
+    predefined = str(demisto.args().get('predefined', '')) == 'true'
+    applications_arr = panorama_list_applications(predefined)
     applications_arr_output = prettify_applications_arr(applications_arr)
+    headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': applications_arr,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Applications', applications_arr_output,
-                                         ['Name', 'Id', 'Risk', 'Category', 'SubCategory', 'Technology',
-                                          'Description']),
+        'HumanReadable': tableToMarkdown('Applications', t=applications_arr_output, headers=headers),
         'EntryContext': {
-            "Panorama.Applications(val.Id == obj.Id)": applications_arr_output
+            "Panorama.Applications(val.Name == obj.Name)": applications_arr_output
         }
     })
 
