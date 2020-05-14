@@ -1052,6 +1052,7 @@ def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
 
     return content_packs
 
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
     """Create a test list that should run"""
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
@@ -1151,8 +1152,6 @@ def create_test_file(is_nightly, skip_save=False):
             print('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
             print('No filter configured, running all tests')
-
-
 
         packs_to_install_string = '\n'.join(packs_to_install)
         if packs_to_install_string:
