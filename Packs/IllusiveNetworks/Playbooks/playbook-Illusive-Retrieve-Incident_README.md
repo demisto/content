@@ -13,8 +13,8 @@ This playbook does not use any sub-playbooks.
 * Print
 
 ### Commands
-* illusive-get-incidents
 * illusive-get-forensics-timeline
+* illusive-get-incidents
 
 ## Playbook Inputs
 ---

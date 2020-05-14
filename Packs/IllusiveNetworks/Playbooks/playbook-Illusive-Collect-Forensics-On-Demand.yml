@@ -18,9 +18,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '9'
+      - '1'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": -220\n  }\n}"
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": -10\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -234,38 +234,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '9':
-    id: '9'
-    taskid: 06c0ae30-f8a4-447d-8fa6-112794edc5aa
-    type: regular
-    task:
-      id: 06c0ae30-f8a4-447d-8fa6-112794edc5aa
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '1'
-    scriptarguments:
-      all: {}
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": -30\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1405,\n      \"width\": 380,\n      \"x\": 440,\n      \"y\":\
-  \ -220\n    }\n  }\n}"
+  \     \"height\": 1195,\n      \"width\": 380,\n      \"x\": 440,\n      \"y\":\
+  \ -10\n    }\n  }\n}"
 inputs:
 - key: 'fqdn_or_ip '
   value: {}

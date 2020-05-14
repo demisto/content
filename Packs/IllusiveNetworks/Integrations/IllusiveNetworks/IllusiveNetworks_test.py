@@ -309,7 +309,7 @@ def test_fetch_incidents(requests_mock):
     first_fetch_time = "7 days"
     requests_mock.get('https://server/api/v1/incidents?limit=10&offset=0&start_date=2018-10-24T14:13:20+00:000Z',
                       json=mock_response)
-    nextcheck, incidents = fetch_incidents(client, {'last_run': "2018-10-24T14:13:20+00:000Z"}, first_fetch_time)
+    nextcheck, incidents = fetch_incidents(client, {'last_run': "2018-10-24T14:13:20+00:000Z"}, first_fetch_time, None)
 
     assert str(nextcheck['last_run']) == '2020-04-21T15:39:32.954Z'
     assert isinstance(incidents, list)
@@ -323,7 +323,7 @@ def test_fetch_incidents_first_fetch(requests_mock):
     last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
     requests_mock.get('https://server/api/v1/incidents?limit=10&offset=0&start_date={}'.format(last_fetch),
                       json=mock_response)
-    nextcheck, incidents = fetch_incidents(client, {'last_run': None}, first_fetch_time)
+    nextcheck, incidents = fetch_incidents(client, {'last_run': None}, first_fetch_time, None)
 
     assert str(nextcheck['last_run']) == last_fetch
     assert isinstance(incidents, list)

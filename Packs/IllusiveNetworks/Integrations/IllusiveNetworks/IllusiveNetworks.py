@@ -128,7 +128,7 @@ def test_module(client):
             return "Test failed: {}".format(e.args[0])
 
 
-def fetch_incidents(client, last_run, first_fetch_time):
+def fetch_incidents(client, last_run, first_fetch_time, has_forensics):
     """
     This function will execute each interval (default is 1 minute).
     """
@@ -141,7 +141,7 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     latest_created_time = last_fetch
     incidents = []
-    items = client.list_all_incidents(None, None, limit=10, offset=0, start_date=latest_created_time)
+    items = client.list_all_incidents(has_forensics, None, limit=10, offset=0, start_date=latest_created_time)
     for item in items:
         incident_created_time = item['incidentTimeUTC']
         incident_type = 'None'
@@ -152,7 +152,6 @@ def fetch_incidents(client, last_run, first_fetch_time):
             'occurred': (dateparser.parse(incident_created_time)).strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item)
         }
-
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
@@ -165,7 +164,15 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
 def get_deceptive_users_command(client: Client, args: dict) -> Tuple:
     user_type = args.get("type", "ALL")
-    result = client.get_deceptive_users(user_type)
+    try:
+        result = client.get_deceptive_users(user_type)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
 
     readable_output = tableToMarkdown('Illusive Deceptive Users', result)
     outputs = {
@@ -180,7 +187,15 @@ def get_deceptive_users_command(client: Client, args: dict) -> Tuple:
 
 def get_deceptive_servers_command(client: Client, args: dict) -> Tuple:
     server_type = args.get("type", "ALL")
-    result = client.get_deceptive_serves(server_type)
+    try:
+        result = client.get_deceptive_serves(server_type)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
     readable_output = tableToMarkdown('Illusive Deceptive Servers', result)
     outputs = {
         'Illusive.DeceptiveServer(val.host == obj.host)': result
@@ -200,8 +215,15 @@ def add_deceptive_users_command(client: Client, args: dict) -> Tuple:
 
     request_body = [
         {'domainName': domain_name, 'password': password, 'policyNames': policy_names, 'username': user_name}]
-
-    client.add_deceptive_users(request_body)
+    try:
+        client.add_deceptive_users(request_body)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
 
     result = {
         'userName': user_name,
@@ -229,8 +251,15 @@ def add_deceptive_servers_command(client: Client, args: dict) -> Tuple:
         raise DemistoException("host name must have the following pattern: <host>.<domain>")
 
     request_body = [{'host': host_name, 'serviceTypes': service_types, 'policyNames': policy_names}]
-
-    client.add_deceptive_servers(request_body)
+    try:
+        client.add_deceptive_servers(request_body)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
 
     result = {
         'host': host_name,
@@ -258,8 +287,15 @@ def assign_host_to_policy_command(client: Client, args: dict) -> Tuple:
         if len(host_name_split) != 2:
             raise Exception('bad hostname format: {}. Should be  <machineName>@<domainName> '.format(host_name))
         request_body.append({"machineName": host_name_split[0], "domainName": host_name_split[1]})
-
-    client.assign_host_to_policy(policy_name, request_body)
+    try:
+        client.assign_host_to_policy(policy_name, request_body)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
     result = []
     for host in host_names:
         result.append({
@@ -288,8 +324,16 @@ def remove_host_from_policy_command(client: Client, args: dict) -> Tuple:
         if len(host_name_split) != 2:
             raise Exception('bad hostname format: {}. Should be  <machineName>@<domainName> '.format(host_name))
         request_body.append({"machineName": host_name_split[0], "domainName": host_name_split[1]})
+    try:
+        client.remove_host_from_policy(request_body)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
 
-    client.remove_host_from_policy(request_body)
     result = []
     for host in host_names:
         result.append({
@@ -330,6 +374,10 @@ def get_forensics_timeline_command(client: Client, args: dict) -> Tuple:
     except DemistoException as e:
         if "404" in e.args[0]:
             raise DemistoException("Incident id {} doesn't not exist".format(incident_id))
+        elif "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
         elif "202" in e.args[0]:
             readable_output = "Incident id {} hasn't been closed yet".format(incident_id)
             outputs = {
@@ -359,8 +407,8 @@ def get_asm_host_insight_command(client: Client, args: dict) -> Tuple:
             result = []
         elif "429" in e.args[0]:
             raise DemistoException(
-                "Number of calls exceeded the rate limit. In order to fix the issue, wait or change the property in "
-                "management server")
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
         else:
             raise DemistoException("{}".format(e.args[0]))
     readable_output = tableToMarkdown('Illusive ASM Host Insights', result)
@@ -381,8 +429,8 @@ def get_asm_cj_insight_command(client: Client, args: dict) -> Tuple:
     except DemistoException as e:
         if "429" in e.args[0]:
             raise DemistoException(
-                "Number of calls exceeded the rate limit. In order to fix the issue, wait or change the property in "
-                "management server")
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
         else:
             raise DemistoException("{}".format(e.args[0]))
     readable_output = tableToMarkdown('Illusive ASM Crown Jewels Insights', result)
@@ -399,9 +447,15 @@ def get_asm_cj_insight_command(client: Client, args: dict) -> Tuple:
 
 def run_forensics_on_demand_command(client: Client, args: dict) -> Tuple:
     fqdn_or_ip = args.get("fqdn_or_ip", None)
-
-    result = client.run_forensics_on_demand(fqdn_or_ip)
-
+    try:
+        result = client.run_forensics_on_demand(fqdn_or_ip)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
     readable_output = tableToMarkdown('Illusive Run Forensics On Demand', result)
     outputs = {
         'Illusive.Event(val.eventId == obj.eventId)': result
@@ -453,8 +507,15 @@ def is_deceptive_server_command(client: Client, args: dict) -> Tuple:
 
 def delete_deceptive_users_command(client: Client, args: dict) -> Tuple:
     deceptive_users = argToList(args.get('deceptive_users'))
-
-    client.delete_deceptive_users(deceptive_users)
+    try:
+        client.delete_deceptive_users(deceptive_users)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
     if len(deceptive_users) > 1:
         a, b = "s", "were"
     else:
@@ -473,8 +534,16 @@ def delete_deceptive_users_command(client: Client, args: dict) -> Tuple:
 
 def delete_deceptive_servers_command(client: Client, args: dict) -> Tuple:
     deceptive_servers = argToList(args.get('deceptive_hosts'))
+    try:
+        client.delete_deceptive_servers(deceptive_servers)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
 
-    client.delete_deceptive_servers(deceptive_servers)
     if len(deceptive_servers) > 1:
         a, b = "s", "were"
     else:
@@ -500,11 +569,19 @@ def get_incidents_command(client: Client, args: dict) -> Tuple:
     start_date = args.get("start_date", None)
     if start_date:
         start_date, _ = parse_date_range(start_date, date_format=DATE_FORMAT, utc=True)
-    if incident_id:
-        incident = client.get_incident(incident_id)
-    else:
-        limit = "100" if int(limit) > 100 else limit
-        incident = client.list_all_incidents(has_forensics, host_names, limit, offset, start_date)
+    try:
+        if incident_id:
+            incident = client.get_incident(incident_id)
+        else:
+            limit = "100" if int(limit) > 100 else limit
+            incident = client.list_all_incidents(has_forensics, host_names, limit, offset, start_date)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
 
     readable_output = tableToMarkdown('Illusive Incidents', incident)
     outputs = {
@@ -530,8 +607,8 @@ def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
             status = "InProgress"
         elif "429" in e.args[0]:
             raise DemistoException(
-                "Number of calls exceeded the rate limit. In order to fix the issue, wait or change the property "
-                "in management server")
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
         else:
             raise DemistoException("{}".format(e.args[0]))
     result = [{
@@ -557,6 +634,8 @@ def main():
     """
     # get the service API token
     api_token = demisto.params().get('api_token')
+    has_forensics = demisto.params().get('has_forensics')
+    has_forensics = None if has_forensics == "ALL" else has_forensics
 
     # get the service API url
     base_url = demisto.params()['url']
@@ -587,7 +666,8 @@ def main():
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
+                first_fetch_time=first_fetch_time,
+                has_forensics=has_forensics)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

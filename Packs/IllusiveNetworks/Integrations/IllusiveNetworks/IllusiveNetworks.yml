@@ -35,6 +35,15 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Fetch only incidents with forensics
+  hidden: false
+  name: has_forensics
+  options:
+  - 'True'
+  - 'False'
+  - ALL
+  required: true
+  type: 15
 description: The Illusive Attack Management API allows customers to retrieve detected
   incidents with a forensics timeline, attack surface insights, collect forensics
   on-demand, and manage a variety of operations with regard to deceptive entities,

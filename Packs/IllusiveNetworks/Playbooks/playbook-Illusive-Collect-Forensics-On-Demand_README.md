@@ -10,13 +10,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * IllusiveNetworks
 
 ### Scripts
-* DeleteContext
 * Print
 
 ### Commands
-* illusive-get-event-incident-id
-* illusive-get-forensics-timeline
 * illusive-run-forensics-on-demand
+* illusive-get-forensics-timeline
+* illusive-get-event-incident-id
 
 ## Playbook Inputs
 ---
