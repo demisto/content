@@ -1,5 +1,5 @@
 id: test_url_regex
-version: 3
+version: -1
 name: Test URL Regex
 description: Test the URL regex
 starttaskid: "0"

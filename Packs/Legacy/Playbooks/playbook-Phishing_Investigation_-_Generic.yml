@@ -52,6 +52,9 @@ tasks:
     scriptarguments:
       assignBy: {}
       email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
       roles:
         complex:
           root: inputs.Role
@@ -1013,7 +1016,11 @@ inputs:
   description: |-
     Enable the "Block Indicators" capability (can be either "True" or "False").
     In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
+- key: OnCall
+  value:
+    simple: false
+  required: false
+  description: Set to true to assign only user that is currently on shift
 outputs: []
 tests:
-- Phishing test - attachment
-- Phishing test - Inline
+- No test - tests in no circle - Phishing test - attachment and Phishing test - Inline

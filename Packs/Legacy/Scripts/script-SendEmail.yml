@@ -25,6 +25,7 @@ script: |-
       dArgs['subject'] = 'No subject'
   demisto.results(demisto.executeCommand('send-mail', dArgs))
 type: python
+subtype: python2
 tags:
 - response
 - email

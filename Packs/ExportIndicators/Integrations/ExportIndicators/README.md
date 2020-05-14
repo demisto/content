@@ -21,14 +21,13 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     months, 1 year)
     * __Collapse IPs__: Whether to collapse IPs and if so - to ranges or CIDRs.
     * __Show CSV Formats as Text__: If checked, csv and XSOAR-csv formats will create a textual web page instead of downloading a csv file.
-    * __Long Running Instance__: Must be set to true, otherwise the service will be available.
-    * __Listen Port__: Will run the *Export Indicators Service* on this port from within Demisto
+    * __Listen Port__: Will run the *Export Indicators Service* on this port from within Cortex XSOAR. If you have multiple Export Indicators Service integration instances, make sure to use **different listening ports** to separate the outbound feeds.
     * __Certificate (Required for HTTPS)__: HTTPS Certificate provided by pasting its values into this field.
     * __Private Key (Required for HTTPS)__: HTTPS private key provided by pasting its valuies into this field.
     * __HTTP Server__: Ignores certificate and private key, and will run the export indicators service
-    in HTTP
-    * __Username__: The username to authenticate when fetching the indicators.
-    * __Password__: The password to authenticate when fetching the indicators.
+    in HTTP. (Not recommended.)
+    * __Username__: The username with which to authenticate when fetching the indicators.
+    * __Password__: The password with which to authenticate when fetching the indicators.
     * __Mcafee Gateway Indicator List Type__: For use with McAfee Web Gateway format to indicate the list type.
     * __PAN-OS URL Format Port Strip__: For use with PAN-OS URL format - if checked will strip the port off
     urls. If not checked - url with ports will be ignored.
@@ -42,9 +41,9 @@ Use the Export Indicators Service integration to provide an endpoint with a list
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ### Access the Export Indicators Service by Instance Name (HTTPS)
-**The route will be open without security hardening and might expose you to network risks.**
+**Note**: By default, the route will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to connect to the integration.
 
-To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
+To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Demisto, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.

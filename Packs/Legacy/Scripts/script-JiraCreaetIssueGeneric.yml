@@ -46,6 +46,7 @@ script: |-
   createIssueResult = demisto.executeCommand("jira-create-issue", createIssueArgs)
   demisto.results(createIssueResult)
 type: python
+subtype: python2
 tags:
 - jira
 - example

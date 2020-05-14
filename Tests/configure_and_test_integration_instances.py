@@ -19,8 +19,11 @@ from Tests.test_content import load_conf_files, extract_filtered_tests, Parallel
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, \
     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
-from Tests.test_content import server_version_compare
+from demisto_sdk.commands.common.tools import server_version_compare
 from Tests.update_content_data import update_content
+# from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
+
+MARKET_PLACE_MACHINES = ('master',)
 
 
 def options_handler():
@@ -205,15 +208,19 @@ def filepath_to_integration_name(integration_file_path):
     return integration_name
 
 
-def get_new_and_modified_integrations(git_sha1):
+def get_integration_names_from_files(integration_files_list):
+    integration_names_list = [filepath_to_integration_name(path) for path in integration_files_list]
+    return [name for name in integration_names_list if name]  # remove empty values
+
+
+def get_new_and_modified_integration_files(git_sha1):
     """Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
 
     Args:
         git_sha1 (str): The git sha of the commit against which we will run the 'git diff' command.
 
     Returns:
-        (tuple): Returns a tuple of two lists, the names of the new integrations, and the names of
-            modified integrations.
+        (tuple): Returns a tuple of two lists, the file paths of the new integrations and modified integrations.
     """
     # get changed yaml files (filter only added and modified files)
     tag = get_last_release_version()
@@ -222,23 +229,17 @@ def get_new_and_modified_integrations(git_sha1):
     modified_files, added_files, removed_files, old_format_files = file_validator.get_modified_files(change_log, tag)
     all_integration_regexes = YML_INTEGRATION_REGEXES
     all_integration_regexes.extend([INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX])
-    added_integration_files = [
+
+    new_integration_files = [
         file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
     ]
+
     modified_integration_files = [
         file_path for file_path in modified_files if
         isinstance(file_path, str) and checked_type(file_path, all_integration_regexes)
     ]
 
-    new_integrations_names = [
-        filepath_to_integration_name(file_path) for
-        file_path in added_integration_files if filepath_to_integration_name(file_path)
-    ]
-    modified_integrations_names = [
-        filepath_to_integration_name(file_path) for
-        file_path in modified_integration_files if filepath_to_integration_name(file_path)
-    ]
-    return new_integrations_names, modified_integrations_names
+    return new_integration_files, modified_integration_files
 
 
 def is_content_update_in_progress(client, prints_manager, thread_index):
@@ -271,11 +272,12 @@ def is_content_update_in_progress(client, prints_manager, thread_index):
         return response_data
 
 
-def get_content_version_details(client, prints_manager, thread_index):
+def get_content_version_details(client, ami_name, prints_manager, thread_index):
     """Make request for details about the content installed on the demisto instance.
 
     Args:
         client (demisto_client): The configured client to use.
+        ami_name (string): the role name of the machine
         prints_manager (ParallelPrintsManager): Print manager object
         thread_index (int): The thread index
 
@@ -287,7 +289,8 @@ def get_content_version_details(client, prints_manager, thread_index):
     prints_manager.add_print_job(installed_content_message, print_color, thread_index, LOG_COLORS.GREEN)
 
     # make request to installed content details
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/installed',
+    uri = '/content/installedlegacy' if ami_name in MARKET_PLACE_MACHINES else '/content/installed'
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path=uri,
                                                                         method='POST')
 
     try:
@@ -511,7 +514,7 @@ def get_integrations_for_test(test, skipped_integrations_conf):
     return integrations
 
 
-def update_content_on_demisto_instance(client, server, prints_manager, thread_index):
+def update_content_on_demisto_instance(client, server, ami_name, prints_manager, thread_index):
     """Try to update the content
 
     Args:
@@ -537,7 +540,7 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
     else:
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
-        release, asset_id = get_content_version_details(client, prints_manager, thread_index)
+        release, asset_id = get_content_version_details(client, ami_name, prints_manager, thread_index)
         with open('content-descriptor.json', 'r') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
@@ -553,7 +556,9 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
                 'Content Update to version: {} was Unsuccessful:\n{}'.format(release, err_details),
                 print_error, thread_index)
             prints_manager.execute_thread_prints(thread_index)
-            os._exit(1)
+
+            if ami_name not in MARKET_PLACE_MACHINES:
+                os._exit(1)
 
 
 def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
@@ -668,18 +673,38 @@ def main():
         tests_for_iteration = []
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
+
     tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version,
                                                                  prints_manager)
     prints_manager.execute_thread_prints(0)
 
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
-    new_integrations_names, modified_integrations_names = get_new_and_modified_integrations(git_sha1)
-    if new_integrations_names:
+    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
+    new_integrations_names, modified_integrations_names = [], []
+
+    if new_integrations_files:
+        # TODO: uncomment when we start testing packs
+        # if server_version_compare(server_numeric_version, '6.0') >= 0:
+        #    # Test packs search and installation - beginning of infrastructure
+        #    client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+        #                                      verify_ssl=False)
+        #    search_and_install_packs_and_their_dependencies(new_integrations_files, client, prints_manager)
+
+        new_integrations_names = get_integration_names_from_files(new_integrations_files)
         new_integrations_names_message = \
             'New Integrations Since Last Release:\n{}\n'.format('\n'.join(new_integrations_names))
         prints_manager.add_print_job(new_integrations_names_message, print_warning, 0)
-    if modified_integrations_names:
+
+    if modified_integrations_files:
+        # TODO: uncomment when we start testing packs
+        # if server_version_compare(server_numeric_version, '6.0') >= 0:
+        #     # Test packs search and installation - beginning of infrastructure
+        #     client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+        #                                       verify_ssl=False)
+        #     search_and_install_packs_and_their_dependencies(modified_integrations_files, client, prints_manager)
+
+        modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
         modified_integrations_names_message = \
             'Updated Integrations Since Last Release:\n{}\n'.format('\n'.join(modified_integrations_names))
         prints_manager.add_print_job(modified_integrations_names_message, print_warning, 0)
@@ -779,7 +804,8 @@ def main():
     for thread_index, server_url in enumerate(servers):
         client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
         t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': client, 'server': server_url, 'prints_manager': threads_prints_manager,
+                   kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
+                           'prints_manager': threads_prints_manager,
                            'thread_index': thread_index})
         threads_list.append(t)
 

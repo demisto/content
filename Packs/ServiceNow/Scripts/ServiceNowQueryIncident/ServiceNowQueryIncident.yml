@@ -1,0 +1,55 @@
+args:
+- default: false
+  description: Incident System ID
+  isArray: false
+  name: id
+  required: false
+  secret: false
+- default: false
+  description: Incident number
+  isArray: false
+  name: number
+  required: false
+  secret: false
+- default: false
+  description: Incident assigne name (e.g John Smith)
+  isArray: false
+  name: assignee
+  required: false
+  secret: false
+comment: |-
+  This script is used to wrap the generic query-table command in ServiceNow.
+  You can add fields that you want to use as inputs and outputs from the record as script arguments or in the
+  code and work with the records easily.
+commonfields:
+  id: ServiceNowQueryIncident
+  version: -1
+enabled: true
+name: ServiceNowQueryIncident
+outputs:
+- contextPath: ServiceNow.Incident.ID
+  description: Incident ID
+  type: string
+- contextPath: ServiceNow.Incident.Description
+  description: Incident description
+  type: string
+- contextPath: ServiceNow.Incident.Number
+  description: Incident number
+  type: number
+- contextPath: ServiceNow.Incident.Caller
+  description: Incident caller
+  type: string
+script: '-'
+tags:
+- servicenow
+- servicenow v2
+system: false
+timeout: '0'
+type: python
+subtype: python2
+runonce: false
+tests:
+- No test - Hibernating instance
+dependson:
+  must:
+  - servicenow-query-table

@@ -1,8 +1,3 @@
-commonfields:
-  id: FilterByList
-  version: -1
-enabled: true
-name: FilterByList
 args:
 - default: true
   description: The item to look for in the list.
@@ -42,8 +37,20 @@ args:
   - 'no'
   required: false
   secret: false
+- default: false
+  defaultValue: ','
+  description: A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration.
+  isArray: false
+  name: delimiter
+  required: false
+  secret: false
 comment: Checks whether the specified item is in a list. The default list is the Demisto
   Indicators Whitelist.
+commonfields:
+  id: FilterByList
+  version: -1
+enabled: true
+name: FilterByList
 outputs:
 - contextPath: List.ListName
   description: The name of the list you compared with.

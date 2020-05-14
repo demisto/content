@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 
+## [20.5.0] - 2020-05-12
+- Removed `Long Running Instance` from instance configuration.
+
+## [20.4.1] - 2020-04-29
+-
+
 ## [20.4.0] - 2020-04-14
 Reduced the maximum number of threads used by the integration.
 
