@@ -1,5 +1,9 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 - Command - "ews-get-items", add Email entry context by demisto standards as an output.
+- Fixed an issue where an error occurred while getting emails with malformed attachments.
 
 ## [20.4.1] - 2020-04-29
   - Added the *Email entry* context to the ***ews-get-items*** command.

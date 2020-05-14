@@ -1,5 +1,5 @@
 {
-    "name": "PagerDuty v2",
+    "name": "PagerDuty",
     "description": "Alert and notify users using PagerDuty",
     "support": "xsoar",
     "currentVersion": "1.0.0",
@@ -9,9 +9,7 @@
     "categories": [
         "Messaging"
     ],
-    "tags": [
-        "PagerDuty v2"
-    ],
+    "tags": [],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-03-14T00:00:00Z",
     "beta": false,

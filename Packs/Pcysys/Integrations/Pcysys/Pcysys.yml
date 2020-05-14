@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: '8181'
+- defaultvalue: '5555'
   display: Pentera API port
   hidden: false
   name: port

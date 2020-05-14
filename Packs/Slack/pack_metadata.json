@@ -1,5 +1,5 @@
 {
-    "name": "Slack v2",
+    "name": "Slack",
     "description": "Send messages and notifications to your Slack team.",
     "support": "xsoar",
     "serverMinVersion": "5.0.0",
@@ -10,9 +10,7 @@
     "categories": [
         "Messaging"
     ],
-    "tags": [
-        "Slack"
-    ],
+    "tags": [],
     "created": "2020-03-15T17:02:40Z",
     "updated": "2020-03-15T17:02:40Z",
     "beta": false,

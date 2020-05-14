@@ -94,7 +94,7 @@ Returns all assessment information by ID.
         "AssessmentTemplateModified": "2019-02-19T03:31:54.393885Z",
         "AssessmentTemplateName": "Ransomware Project",
         "Created": "2019-08-27T10:17:09.809036Z",
-        "Creator": "akrupnik@paloaltonetworks.com",
+        "Creator": "foo@test.com",
         "DefaultAssetCount": 1,
         "DefaultAssetGroupCount": 0,
         "DefaultSchedule": "41;8;*;*;1",
@@ -105,9 +105,9 @@ Returns all assessment information by ID.
         "MasterJobCount": 3,
         "Modified": "2019-09-18T08:16:23.079961Z",
         "Name": "Arseny's ransomware project",
-        "Owner": "akrupnik@paloaltonetworks.com",
+        "Owner": "foo@test.com",
         "StartDate": null,
-        "User": "akrupnik@paloaltonetworks.com",
+        "User": "foo@test.com",
         "Users": [
             "71e92cf9-5159-466c-8050-142d1ba279ea"
         ]
@@ -121,7 +121,7 @@ Returns all assessment information by ID.
 
 | **Id** | **Name** | **Description** | **User** | **Created** | **Modified** |
 | --- | --- | --- | --- | --- | --- |
-| c4e352ae-1506-4c74-bd90-853f02dd765a | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span></span>@paloaltonetworks.com | 2019-08-27T10:17:09.809036Z | 2019-09-18T08:16:23.079961Z |
+| c4e352ae-1506-4c74-bd90-853f02dd765a | Arseny's ransomware project | Test of common ransomware variants | foo<span></span>@test.com | 2019-08-27T10:17:09.809036Z | 2019-09-18T08:16:23.079961Z |
 
 ### Get all assessments details by page
 
@@ -187,11 +187,11 @@ Returns all assessment details by page.
 
 | **Id** | **Name** | **Description** | **User** | **Created** | **Modified** |
 | --- | --- | --- | --- | --- | --- |
-| c4e352ae-1506-4c74-bd90-853f02dd765a | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span></span>@paloaltonetworks.com | 2019-08-27T10:17:09.809036Z | 2019-09-18T08:16:23.079961Z |
-| f57edb34-ccb2-4695-b79c-bb739cab70a1 | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span></span>@paloaltonetworks.com | 2019-09-02T11:52:09.915614Z | 2019-09-16T09:02:59.401994Z |
-| 8978fe24-607a-4815-a36a-89fb6191b318 | ATT&CK by the Numbers @ NOVA BSides 2019 | AttackIQ’s analysis and mapping of the “ATT&CK by the Numbers” @ NOVA BSides 2019 | akrupnik<span></span>@paloaltonetworks.com | 2019-09-05T08:47:38.243320Z | 2019-09-10T11:16:25.619197Z |
-| 5baca9b4-e55c-497f-a05a-8004b9a36efe | Custom | Custom project | darbel<span></span>@paloaltonetworks.com | 2019-09-10T08:38:55.165853Z | 2019-09-10T08:38:55.165874Z |
-| 58440d47-d7b5-4f57-913f-3e13903fa2fc | Arseny's ransomware project | Test of common ransomware variants | akrupnik<span></span>@paloaltonetworks.com | 2019-09-02T11:52:13.933084Z | 2019-09-02T11:52:16.100942Z |
+| c4e352ae-1506-4c74-bd90-853f02dd765a | Arseny's ransomware project | Test of common ransomware variants | foo<span></span>@test.com | 2019-08-27T10:17:09.809036Z | 2019-09-18T08:16:23.079961Z |
+| f57edb34-ccb2-4695-b79c-bb739cab70a1 | Arseny's ransomware project | Test of common ransomware variants | foo<span></span>@test.com | 2019-09-02T11:52:09.915614Z | 2019-09-16T09:02:59.401994Z |
+| 8978fe24-607a-4815-a36a-89fb6191b318 | ATT&CK by the Numbers @ NOVA BSides 2019 | AttackIQ’s analysis and mapping of the “ATT&CK by the Numbers” @ NOVA BSides 2019 | foo<span></span>@test.com | 2019-09-05T08:47:38.243320Z | 2019-09-10T11:16:25.619197Z |
+| 5baca9b4-e55c-497f-a05a-8004b9a36efe | Custom | Custom project | goo<span></span>@test.com | 2019-09-10T08:38:55.165853Z | 2019-09-10T08:38:55.165874Z |
+| 58440d47-d7b5-4f57-913f-3e13903fa2fc | Arseny's ransomware project | Test of common ransomware variants | foo<span></span>@test.com | 2019-09-02T11:52:13.933084Z | 2019-09-02T11:52:16.100942Z |
 
 ### Activate an assessment 
 
@@ -979,7 +979,7 @@ Creates a new assesment.
         "AssessmentTemplateModified": "2018-07-10T21:38:32.040806Z",
         "AssessmentTemplateName": "Custom",
         "Created": "2019-10-29T08:37:22.187577Z",
-        "Creator": "olichter@paloaltonetworks.com",
+        "Creator": "foo@test.com",
         "DefaultAssetCount": 0,
         "DefaultAssetGroupCount": 0,
         "DefaultSchedule": null,
@@ -990,9 +990,9 @@ Creates a new assesment.
         "MasterJobCount": 0,
         "Modified": "2019-10-29T08:37:22.187603Z",
         "Name": "Assessment from test playbook",
-        "Owner": "olichter@paloaltonetworks.com",
+        "Owner": "foo@test.com",
         "StartDate": null,
-        "User": "olichter@paloaltonetworks.com",
+        "User": "foo@test.com",
         "Users": [
             "e9f58a46-31bc-4099-9bb1-624bb20a7340"
         ]
@@ -1006,7 +1006,7 @@ Creates a new assesment.
 
 | **Id** | **Name** | **Description** | **User** | **Created** | **Modified** |
 | --- | --- | --- | --- | --- | --- |
-| 08023e86-3b8c-4f98-ab46-7c931d759157 | Assessment from test playbook | Custom project | olichter<span></span>@paloaltonetworks.com | 2019-10-29T08:37:22.187577Z | 2019-10-29T08:37:22.187603Z |
+| 08023e86-3b8c-4f98-ab46-7c931d759157 | Assessment from test playbook | Custom project | woo<span></span>@test.com | 2019-10-29T08:37:22.187577Z | 2019-10-29T08:37:22.187603Z |
 
 ### Add assets to an assesment
 

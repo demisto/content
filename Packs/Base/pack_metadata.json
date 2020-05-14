@@ -15,8 +15,10 @@
     "beta": false,
     "deprecated": false,
     "useCases": [],
-    "keywords": [],
-    "price": 0,
+    "keywords": [
+        "base",
+        "common"
+    ],
     "dependencies": {},
     "displayedImages": []
 }

@@ -1,12 +1,17 @@
 import pytest
-from CommonServerPython import *
-from FeedAzure import Client, main
+from FeedAzure import Client
 
 
 @pytest.mark.parametrize('regions_list, services_list', [(['All'], ['All'])])
-def test_download_link_fetching(regions_list, services_list):
-    client = Client(regions_list, services_list)
-    assert client.get_azure_download_link()
+def test_download_link_fetching(mocker, regions_list, services_list):
+    with open('./test_data/response_mock.txt') as f:
+        response = f.read()
+        client = Client(regions_list, services_list)
+
+        mocker.patch('CommonServerPython.BaseClient._http_request', return_value=response)
+        assert client.get_azure_download_link() == 'https://download.microsoft.com/download' \
+                                                   '/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/' \
+                                                   'ServiceTags_Public_20200504.json'
 
 
 BUILD_IP_PACK = [
@@ -192,15 +197,3 @@ EXTRACT_INDICATORS_PACK = [
 def test_extract_indicators(regions_list, services_list, values_group_section, expected_result):
     client = Client(regions_list, services_list)
     assert (client.extract_indicators_from_values_dict(values_group_section) == expected_result)
-
-
-def test_get_indicators(mocker):
-    mocker.patch.object(demisto, 'args', return_value={
-        'regions': 'norwaye, westus',
-        'services': 'AzureBackup, AzureAppService',
-    })
-    mocker.patch.object(demisto, 'command', return_value='azure-get-indicators')
-    mocker.patch.object(demisto, 'results')
-
-    main()
-    assert demisto.results.call_args[0][0]['Contents']

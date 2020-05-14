@@ -28,6 +28,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use a self-deployed Azure Application
+  name: self_deployed
+  required: false
+  type: 8
 description: 'Use the Microsoft Graph Files integration to enable your app get authorized
   access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires
   admin consent.'
