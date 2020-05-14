@@ -160,11 +160,11 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
         dbotScore = 2
     else:
         dbotScore = 1
-    ec['DBotScore'].append({'Indicator': file_hash, 'Type': 'hash',
-                            'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
-
-    ec['DBotScore'].append({'Indicator': file_hash, 'Type': 'file',
-                            'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
+    if is_demisto_version_ge('5.5.0'):
+        ec['DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type'
+           ' == obj.Type)'] = get_dbot_file_context(file_hash, dbotScore)
+    else:
+        ec['DBotScore'] = get_dbot_file_context(file_hash, dbotScore)
 
     md += 'MD5: **' + vt_response.get('md5') + '**\n'
     md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
@@ -221,6 +221,12 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     return entry
 
 
+def get_dbot_file_context(file_hash, dbotscore):
+
+    return [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': dbotscore},
+            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'VirusTotal - Private API', 'Score': dbotscore}]
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -253,19 +259,20 @@ def check_file_behaviour_command():
     # VT response
     response = check_file_behaviour(file_hash)
 
+    ec = {}
     if (response.get('response_code', None) == 0):
+
+        if is_demisto_version_ge('5.5.0'):
+            ec['DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type'
+               ' == obj.Type)'] = get_dbot_file_context(file_hash, 0)
+
+        else:
+            ec['DBotScore'] = get_dbot_file_context(file_hash, 0)
         return {
             'Type': entryTypes['note'],
             'Contents': response,
             'ContentsFormat': formats['json'],
-            'EntryContext': {
-                'DBotScore': {[
-                    {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': 0},
-                    {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'VirusTotal - Private API', 'Score': 0}
-                ]
-                },
-
-            },
+            'EntryContext': ec,
 
             'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following "
                                                                              "response: " + json.dumps
