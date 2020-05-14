@@ -68,7 +68,6 @@ configuration:
   - spyware-wildfire-raven
   - spyware-wpc-raven
   - wpc-virus
-  - sctp
   required: false
   type: 16
 - display: Incident type
