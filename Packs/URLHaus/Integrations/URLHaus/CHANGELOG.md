@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added *Number of retries* instance parameter to determine how many times should a command be attempted before raising an error.
+- Added the *Number of retries* parameter which determines how many times a command should attempt before raising an error.
 - Fixed an issue where ***urlhaus-download-sample*** command would raise an error in case on results were found.
 
 ## [20.5.0] - 2020-05-12
