@@ -7,10 +7,10 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: What layers to ouput as context. Could be multiple layers seperated
+  description: What protocols to ouput as context. Could be multiple protocols seperated
     by commas.
   isArray: true
-  name: context_output
+  name: protocol_output
   predefined:
   - HTTP
   - DNS
@@ -24,6 +24,7 @@ args:
   - SSH
   - IRC
   - FTP
+  - SMB2
   required: false
   secret: false
 - auto: PREDEFINED
@@ -56,9 +57,9 @@ args:
   required: false
   secret: false
 - default: false
-  description: The entry id for a decryption key.
+  description: The entry id for the RSA decryption key.
   isArray: false
-  name: decrypt_key_entry_id
+  name: rsa_decrypt_key_entry_id
   required: false
   secret: false
 - default: false

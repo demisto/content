@@ -655,7 +655,7 @@ def main():
 
     decrypt_key = demisto.args().get('wpa_password', '')
 
-    decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
+    decrypt_key_entry_id = demisto.args().get('rsa_decrypt_key_entry_id', '')
     if decrypt_key_entry_id and not decrypt_key:
         decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
         if is_error(decrypt_key_file_path):
@@ -663,7 +663,7 @@ def main():
         decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
 
     conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
-    extracted_protocols = argToList(demisto.args().get('context_output', ''))
+    extracted_protocols = argToList(demisto.args().get('protocol_output', ''))
     is_flows = True
     is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
     pcap_filter = demisto.args().get('pcap_filter', '')
