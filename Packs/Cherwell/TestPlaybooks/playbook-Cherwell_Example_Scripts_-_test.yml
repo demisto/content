@@ -2,6 +2,7 @@ id: Cherwell Example Scripts - test
 version: -1
 name: Cherwell Example Scripts - test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
