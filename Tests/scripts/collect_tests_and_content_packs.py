@@ -1023,6 +1023,34 @@ def get_random_tests(tests_num, rand, conf=None, id_set=None, server_version='0'
     return tests
 
 
+def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
+    """Returns the content packs names in which given test playbooks are in.
+
+    Args:
+        tests (set): The names of the tests to find their content packs.
+        id_set (Dict): Structure which holds all content entities to extract pack names from.
+
+    Returns:
+        str. The content pack name in which the test playbook is in.
+    """
+    if not id_set:
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
+
+    content_packs = set()
+
+    for test_playbook_object in id_set.get('TestPlaybooks', []):
+        test_playbook_name = list(test_playbook_object.keys())[0]
+        test_playbook_data = list(test_playbook_object.values())[0]
+        if test_playbook_name in tests:
+            if pack_name := test_playbook_data.get('pack'):
+                content_packs.add(pack_name)
+                if len(tests) == len(content_packs):
+                    # we found all content packs for all tests we were looking for
+                    break
+
+    return content_packs
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
     """Create a test list that should run"""
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
@@ -1054,6 +1082,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         rand = random.Random(branch_name)
         tests = get_random_tests(
             tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+        packs_to_install = get_content_pack_name_of_test(tests, id_set)
         if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
@@ -1121,6 +1150,8 @@ def create_test_file(is_nightly, skip_save=False):
             print('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
             print('No filter configured, running all tests')
+
+
 
         packs_to_install_string = '\n'.join(packs_to_install)
         if packs_to_install_string:

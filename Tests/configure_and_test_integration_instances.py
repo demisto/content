@@ -245,35 +245,6 @@ def get_new_and_modified_integration_files(git_sha1):
     return new_integration_files, modified_integration_files
 
 
-def get_content_packs_to_install():
-    """Reads content packs to install from /Tests/content_packs_to_install.txt and converts them to .
-
-    Args:
-        git_sha1 (str): The git sha of the commit against which we will run the 'git diff' command.
-
-    Returns:
-        (tuple): Returns a tuple of two lists, the file paths of the new integrations and modified integrations.
-    """
-    # get changed yaml files (filter only added and modified files)
-    tag = get_last_release_version()
-    file_validator = FilesValidator()
-    change_log = run_command('git diff --name-status {}'.format(git_sha1))
-    modified_files, added_files, removed_files, old_format_files = file_validator.get_modified_files(change_log, tag)
-    all_integration_regexes = YML_INTEGRATION_REGEXES + [INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX,
-                                                         BETA_INTEGRATION_REGEX]
-
-    new_integration_files = [
-        file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
-    ]
-
-    modified_integration_files = [
-        file_path for file_path in modified_files if
-        isinstance(file_path, str) and checked_type(file_path, all_integration_regexes)
-    ]
-
-    return new_integration_files, modified_integration_files
-
-
 def is_content_update_in_progress(client, prints_manager, thread_index):
     """Make request to check if content is updating.
 

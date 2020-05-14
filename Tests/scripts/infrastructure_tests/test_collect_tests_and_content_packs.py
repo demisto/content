@@ -413,7 +413,7 @@ class TestSampleTesting:
         get_modified_files_ret = create_get_modified_files_ret(modified_tests_list=[test_path],
                                                                sample_tests=['test'])
         filterd_tests, content_packs = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
-                                           get_modified_files_ret=get_modified_files_ret)
+                                                          get_modified_files_ret=get_modified_files_ret)
         assert len(filterd_tests) == 1
         assert content_packs == set()
 
@@ -628,6 +628,7 @@ def test_conf_has_modified(mocker):
 
         # When
         # - filtering tests to run
+
         get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
