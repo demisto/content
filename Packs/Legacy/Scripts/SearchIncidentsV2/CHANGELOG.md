@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Fixed an issue where using `\\` caused parsing error.
+- Fixed an issue where using `\\` caused a parsing error.
 
 
 ## [20.4.0] - 2020-04-14
