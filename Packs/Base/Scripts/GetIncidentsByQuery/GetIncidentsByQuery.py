@@ -91,7 +91,7 @@ def get_comma_sep_list(value):
     return map(lambda x: x.strip(), value.split(","))
 
 
-def preprocess_incidents_fields_list(incidents_fields):
+def preprocess_incidents_fields_list(incidents_fields):  # type: (List[str]) -> List[str]
     res = []
     for field in incidents_fields:
         field = field.strip()
@@ -118,10 +118,10 @@ def main():
     incident_list = get_incidents(query, d_args['timeField'],
                                   int(d_args['limit']),
                                   d_args.get('fromDate'))
-    fields_to_populate = d_args.get('populateFields')  # type: List[Text]
+    fields_to_populate = d_args.get('populateFields')   # type: ignore
     if len(fields_to_populate) > 0:
         fields_to_populate += d_args['NonEmptyFields']
-        fields_to_populate = set([x for x in fields_to_populate if x])
+        fields_to_populate = set([x for x in fields_to_populate if x])  # type: ignore
     include_context = d_args['includeContext'] == 'true'
     # extend incidents fields \ context
     new_incident_list = []
@@ -148,7 +148,7 @@ def main():
         data_encoded = json.dumps(incident_list)
     else:
         return_error("Invalid output format: %s" % output_format)
-    entry = fileResult(file_name, data_encoded)
+    entry = fileResult(file_name, data_encoded)`
     entry['Contents'] = incident_list
     entry['HumanReadable'] = "Fetched %d incidents successfully by the query: %s" % (len(incident_list), query)
     entry['EntryContext'] = {
