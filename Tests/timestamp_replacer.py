@@ -102,8 +102,9 @@ class TimestampReplacer:
         else:
             self.load_problematic_keys()
 
-    def _debug_request(self, req: HTTPRequest) -> None:
+    def _debug_request(self, flow: flow.Flow) -> None:
         '''Print details of the request'''
+        req = flow.request
         print(f'{req.method} {req.pretty_url}')
         _, _, path, _, query, _ = urllib.parse.urlparse(req.url)
         queriesArray = urllib.parse.parse_qsl(query, keep_blank_values=True)
@@ -112,6 +113,7 @@ class TimestampReplacer:
             print(f'multipart_form data = {req.multipart_form.items()}')
         if req.urlencoded_form:
             print(f'urlencoded_form data = {req.urlencoded_form.items()}')
+        print(f'hashed_data={ServerPlayback._hash(self, flow)}')
 
     @record_concurrently(
         replaying=bool(
@@ -120,9 +122,9 @@ class TimestampReplacer:
     )
     def request(self, flow: flow.Flow) -> None:
         self.count += 1
-        req = flow.request
         if ctx.options.debug:
-            self._debug_request(req)
+            self._debug_request(flow)
+        req = flow.request
         if ctx.options.detect_timestamps:
             self.handle_url_query(flow)
         if req.method == 'POST':
