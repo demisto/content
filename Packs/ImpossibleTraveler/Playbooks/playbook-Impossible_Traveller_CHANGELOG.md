@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
   - Simplified the process that gets details of the user's manager.
   - Fixed a potential error with running Active Directory commands when the integration is disabled.
 
