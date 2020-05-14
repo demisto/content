@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cdf676a5-2d39-449d-8a08-b243eb255d59
+    taskid: d7616781-7931-4e6b-89b2-07382a4f84b9
     type: start
     task:
-      id: cdf676a5-2d39-449d-8a08-b243eb255d59
+      id: d7616781-7931-4e6b-89b2-07382a4f84b9
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +27,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 4039d080-9aa8-4c0b-80f1-ccb9b9ca8ca4
+    taskid: a0b420c8-fdff-44a4-8429-e807fd84df4a
     type: regular
     task:
-      id: 4039d080-9aa8-4c0b-80f1-ccb9b9ca8ca4
+      id: a0b420c8-fdff-44a4-8429-e807fd84df4a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -68,12 +70,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 46e5a32c-7b52-4ef2-8428-120069876497
+    taskid: 070b3d4e-aa14-451e-8d56-2117e3a6eded
     type: regular
     task:
-      id: 46e5a32c-7b52-4ef2-8428-120069876497
+      id: 070b3d4e-aa14-451e-8d56-2117e3a6eded
       version: -1
       name: url - with data
       description: Retrieve URL information from URLhaus
@@ -104,12 +108,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 76a502da-a3d0-482b-8714-e5c0583194b9
+    taskid: 19f3d24b-25c1-491f-8eed-770d22a67bf1
     type: condition
     task:
-      id: 76a502da-a3d0-482b-8714-e5c0583194b9
+      id: 19f3d24b-25c1-491f-8eed-770d22a67bf1
       version: -1
       name: verify context
       type: condition
@@ -151,12 +157,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 0c627bb5-48d9-4fb5-8b1a-e7d005ae7fb7
+    taskid: 00285b1b-8c6e-42b9-8817-4720e3bde01f
     type: title
     task:
-      id: 0c627bb5-48d9-4fb5-8b1a-e7d005ae7fb7
+      id: 00285b1b-8c6e-42b9-8817-4720e3bde01f
       version: -1
       name: complete
       type: title
@@ -173,12 +181,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: cdb26154-c0fe-461c-8855-7a39747bf497
+    taskid: a6a68e69-a32b-46c5-86a1-0ae8bc54e321
     type: regular
     task:
-      id: cdb26154-c0fe-461c-8855-7a39747bf497
+      id: a6a68e69-a32b-46c5-86a1-0ae8bc54e321
       version: -1
       name: url - nonexisting
       description: Retrieve URL information from URLhaus
@@ -209,12 +219,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: f6a47339-25d1-4fb7-8228-d9407777a4bf
+    taskid: fd8af1b1-c83c-4354-84fc-0547f13151b0
     type: condition
     task:
-      id: f6a47339-25d1-4fb7-8228-d9407777a4bf
+      id: fd8af1b1-c83c-4354-84fc-0547f13151b0
       version: -1
       name: verify context
       type: condition
@@ -256,12 +268,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 20e74a44-a3e7-40ac-83a7-646ee6cd44d9
+    taskid: f2664a18-6b82-4dff-8b69-48e2c5a35f25
     type: regular
     task:
-      id: 20e74a44-a3e7-40ac-83a7-646ee6cd44d9
+      id: f2664a18-6b82-4dff-8b69-48e2c5a35f25
       version: -1
       name: domain - with data
       description: Retrieve domain information from URLhaus
@@ -292,12 +306,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 527bdb18-e7e1-4657-8942-b6acee842ad8
+    taskid: 9770aa46-145f-4da5-824c-5415e877e9ab
     type: condition
     task:
-      id: 527bdb18-e7e1-4657-8942-b6acee842ad8
+      id: 9770aa46-145f-4da5-824c-5415e877e9ab
       version: -1
       name: verify context
       type: condition
@@ -339,12 +355,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 9a693a70-b3d3-46ec-8d8a-f54002e7182e
+    taskid: a295b127-06e6-4adb-80f2-1a9f70dabbd4
     type: regular
     task:
-      id: 9a693a70-b3d3-46ec-8d8a-f54002e7182e
+      id: a295b127-06e6-4adb-80f2-1a9f70dabbd4
       version: -1
       name: domain - no data
       description: Retrieve domain information from URLhaus
@@ -375,12 +393,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 04f6b2dc-a9b5-4334-84e0-0a15b0724fee
+    taskid: 729e90ca-1927-4cde-8c1c-fbf62eecca72
     type: condition
     task:
-      id: 04f6b2dc-a9b5-4334-84e0-0a15b0724fee
+      id: 729e90ca-1927-4cde-8c1c-fbf62eecca72
       version: -1
       name: verify context
       type: condition
@@ -422,12 +442,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: f2fa7790-b361-4547-881d-d8ac97d2b5d3
+    taskid: 983bea7f-3175-4c84-8642-e6abe02de307
     type: regular
     task:
-      id: f2fa7790-b361-4547-881d-d8ac97d2b5d3
+      id: 983bea7f-3175-4c84-8642-e6abe02de307
       version: -1
       name: file - no data
       description: Retrieve file information from URLhaus
@@ -460,12 +482,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: e58d7c2b-9978-461d-8e9c-90786ad9af40
+    taskid: 8a9b8cee-79fe-46bf-8e2e-97d2f9cd2a9f
     type: condition
     task:
-      id: e58d7c2b-9978-461d-8e9c-90786ad9af40
+      id: 8a9b8cee-79fe-46bf-8e2e-97d2f9cd2a9f
       version: -1
       name: verify context
       type: condition
@@ -507,12 +531,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 81efc6d1-8b26-4609-84f3-d1965ee635b7
+    taskid: 550a02a9-54c0-4a3e-8c56-cc874b9892f6
     type: regular
     task:
-      id: 81efc6d1-8b26-4609-84f3-d1965ee635b7
+      id: 550a02a9-54c0-4a3e-8c56-cc874b9892f6
       version: -1
       name: urlhaus-download-sample - with data
       description: Download a malware sample from URLhaus
@@ -537,12 +563,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: b3c40ff4-a660-4dd3-8cf0-5df41f4ed78f
+    taskid: 67ca41db-b26b-4bf2-8d9e-25b300598fe6
     type: condition
     task:
-      id: b3c40ff4-a660-4dd3-8cf0-5df41f4ed78f
+      id: 67ca41db-b26b-4bf2-8d9e-25b300598fe6
       version: -1
       name: verify context
       type: condition
@@ -568,12 +596,12 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
+                        simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b
                 accessor: MD5
             iscontext: true
           right:
             value:
-              simple: 12c8aec5766ac3e6f26f2505e2f4a8f2
+              simple: a820381c8acf07cfcb4d9b13498db71d
     view: |-
       {
         "position": {
@@ -584,12 +612,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: de322ffd-9a70-4009-87a9-55beaca96bc2
+    taskid: 4bea44bb-3cd6-4bd2-819b-90831db4d9c9
     type: regular
     task:
-      id: de322ffd-9a70-4009-87a9-55beaca96bc2
+      id: 4bea44bb-3cd6-4bd2-819b-90831db4d9c9
       version: -1
       name: urlhaus-download-sample - w/o data
       description: Download a malware sample from URLhaus
@@ -614,12 +644,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: e4ce9205-b8a7-48b4-896c-ece17cf89354
+    taskid: e5c617a3-cd7a-4089-89a2-c42b8b159f93
     type: regular
     task:
-      id: e4ce9205-b8a7-48b4-896c-ece17cf89354
+      id: e5c617a3-cd7a-4089-89a2-c42b8b159f93
       version: -1
       name: file - with data
       description: Retrieve file information from URLhaus
@@ -652,6 +684,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
