@@ -4,10 +4,11 @@ import urllib
 from collections import OrderedDict
 from os import path
 from copy import deepcopy
-from typing import List, Union
+from typing import List, Union  # , Hashable
 from mitmproxy import ctx, flow
-from mitmproxy.http import HTTPRequest
+from mitmproxy.http import HTTPRequest  # , HTTPFlow
 from mitmproxy.script import concurrent
+from mitmproxy.addons.serverplayback import ServerPlayback
 from time import ctime
 from dateutil.parser import parse
 
@@ -78,6 +79,15 @@ class TimestampReplacer:
             '''
         )
         loader.add_option(
+            name='mode',
+            typespec=str,
+            default='playback',
+            help='''
+            The mode that timestamp_replacer.py is being executed in. The options are 'record', 'clean', and
+            'playback'. If no
+            '''
+        )
+        loader.add_option(
             name='debug',
             typespec=bool,
             default=False,
@@ -115,18 +125,117 @@ class TimestampReplacer:
             print(f'urlencoded_form data = {req.urlencoded_form.items()}')
         print(f'hashed_data={ServerPlayback._hash(self, flow)}')
 
-    @record_concurrently(
-        replaying=bool(
-            ctx.options.server_replay or (ctx.options.rfile and ctx.options.save_stream_file)
-        )
-    )
+    # @record_concurrently(
+    #     replaying=bool(
+    #         ctx.options.server_replay or (ctx.options.rfile and ctx.options.save_stream_file)
+    #     )
+    # )
     def request(self, flow: flow.Flow) -> None:
         self.count += 1
         if ctx.options.debug:
             self._debug_request(flow)
         req = flow.request
-        if ctx.options.detect_timestamps:
-            self.handle_url_query(flow)
+        if ctx.options.mode == 'record':
+            if ctx.options.detect_timestamps:
+                self.run_all_key_detections(req)
+                print('updating problem_keys file at "{}"'.format(self.bad_keys_filepath))
+                self.update_problem_keys_file()
+        elif ctx.options.mode in {'clean', 'playback'}:
+            print(f'mode={ctx.options.mode} cleaning problematic key values from the request')
+            self.clean_bad_keys(req)
+        # if ctx.options.detect_timestamps:
+        #     self.handle_url_query(flow)
+        # if req.method == 'POST':
+        #     raw_content = req.raw_content
+        #     if raw_content is not None:
+        #         content = req.raw_content.decode()
+        #     else:
+        #         content = ''
+        #     json_data = content.startswith('{')
+        #     if json_data:
+        #         content = json.loads(content, object_pairs_hook=OrderedDict)
+
+            # if ctx.options.detect_timestamps:
+            #     if req.multipart_form:
+            #         self.handle_multipart_form(flow)
+            #     # form_urlencoded = 'application/x-www-form-urlencoded' in req.headers.get('content-type', '').lower()
+            #     elif req.urlencoded_form:
+            #         self.handle_urlencoded_form(flow)
+            #     elif json_data:
+            #         print('req num: {}\n{}'.format(self.count, content))
+            #         for problem_key in self.determine_problematic_keys(content):
+            #             self.json_keys.add(problem_key)
+            # elif json_data:
+            #     self.modify_json_body(flow, content)
+        # if ctx.options.detect_timestamps:
+        #     print('updating problem_keys file at "{}"'.format(self.bad_keys_filepath))
+        #     self.update_problem_keys_file()
+
+    def clean_bad_keys(self, req: HTTPRequest) -> None:
+        '''Modify the request so that values of problematic keys are constant data
+
+        Args:
+            req (HTTPRequest): The request to modify
+        '''
+        self.clean_url_query(req)
+        self.clean_urlencoded_form(req)
+        self.clean_multipart_form(req)
+        self.clean_json_body(req)
+
+    def clean_url_query(self, req: HTTPRequest) -> None:
+        '''Replace any problematic values of query parameters with constant data
+
+        Args:
+            req (HTTPRequest): The request to modify
+        '''
+        query_data = req._get_query()
+        print('fetched query_data: {}'.format(query_data))
+        updated_query_data = []
+        if query_data and self.query_keys:
+            for key, val in query_data:
+                if key in self.query_keys:
+                    updated_query_data.append((key, self.constant))
+                else:
+                    updated_query_data.append((key, val))
+            req._set_query(updated_query_data)
+            print(f'updated query_data: {req._get_query()}')
+
+    def clean_urlencoded_form(self, req: HTTPRequest) -> None:
+        '''Replace any problematic values of urlencoded form keys with constant data
+
+        Args:
+            req (HTTPRequest): The request to modify
+        '''
+        if req.urlencoded_form and self.form_keys:
+            updated_urlencoded_form_data = []
+            for key, val in req.urlencoded_form.items(multi=True):
+                if key in self.form_keys:
+                    updated_urlencoded_form_data.append((key, self.constant))
+                else:
+                    updated_urlencoded_form_data.append((key, val))
+            req._set_urlencoded_form(updated_urlencoded_form_data)
+
+    def clean_multipart_form(self, req: HTTPRequest) -> None:
+        '''Replace any problematic values of multipart form keys with constant data
+
+        Args:
+            req (HTTPRequest): The request to modify
+        '''
+        if req.multipart_form and self.form_keys:
+            updated_multipart_form_data = []
+            for key, val in req.multipart_form.items(multi=True):
+                if key in self.form_keys:
+                    updated_multipart_form_data.append((key, self.constant))
+                else:
+                    updated_multipart_form_data.append((key, val))
+            req._set_multipart_form(updated_multipart_form_data)
+
+    def clean_json_body(self, req: HTTPRequest) -> None:
+        '''Replace any problematic values of keys in the request's json body (if it has one)
+
+        Args:
+            req (HTTPRequest): The request to modify
+        '''
         if req.method == 'POST':
             raw_content = req.raw_content
             if raw_content is not None:
@@ -136,34 +245,20 @@ class TimestampReplacer:
             json_data = content.startswith('{')
             if json_data:
                 content = json.loads(content, object_pairs_hook=OrderedDict)
+                self.modify_json_body(req, content)
 
-            if ctx.options.detect_timestamps:
-                if req.multipart_form:
-                    self.handle_multipart_form(flow)
-                # form_urlencoded = 'application/x-www-form-urlencoded' in req.headers.get('content-type', '').lower()
-                elif req.urlencoded_form:
-                    self.handle_urlencoded_form(flow)
-                elif json_data:
-                    print('req num: {}\n{}'.format(self.count, content))
-                    for problem_key in self.determine_problematic_keys(content):
-                        self.json_keys.add(problem_key)
-            elif json_data:
-                self.modify_json_body(flow, content)
-        if ctx.options.detect_timestamps:
-            print('updating problem_keys file at "{}"'.format(self.bad_keys_filepath))
-            self.update_problem_keys_file()
-
-    def modify_json_body(self, flow: flow.Flow, json_body: dict) -> None:
-        '''Modify the json body of a request by replacing any timestamp data with the number of the current request.
+    def modify_json_body(self, req: HTTPRequest, json_body: dict) -> None:
+        '''Modify the json body of a request by replacing any timestamp data with constant data
 
         Args:
-            flow (flow.Flow): The flow whose request body is to be modified.
+            req (HTTPRequest): The request whose json body will be modified.
             json_body (dict): The request body to modify.
         '''
         original_content = deepcopy(json_body)
         body = json_body
         modified = False
-        keys_to_replace = ctx.options.keys_to_replace.split() or []
+        # keys_to_replace = ctx.options.keys_to_replace.split() or []
+        keys_to_replace = self.json_keys
         print('{}'.format(keys_to_replace))
         for key_path in keys_to_replace:
             body = json_body
@@ -186,12 +281,12 @@ class TimestampReplacer:
                     break
             if not skip_key:
                 if lastkey in body:
-                    print('modifying request to "{}"'.format(flow.request.pretty_url))
+                    print('modifying request to "{}"'.format(req.pretty_url))
                     # body[lastkey] = self.count
                     body[lastkey] = self.constant
                     modified = True
                 elif isinstance(body, list) and lastkey.isdigit() and int(lastkey) <= len(body) - 1:
-                    print('modifying request to "{}"'.format(flow.request.pretty_url))
+                    print('modifying request to "{}"'.format(req.pretty_url))
                     # body[int(lastkey)] = self.count
                     body[int(lastkey)] = self.constant
                     modified = True
@@ -199,10 +294,24 @@ class TimestampReplacer:
             print('original request body:\n{}'.format(json.dumps(original_content, indent=4)))
             print('modified request body:\n{}'.format(json.dumps(json_body, indent=4)))
             # flow.request.raw_content = json.dumps(json_body).encode()
-            flow.request.set_content(json.dumps(json_body).encode())
+            req.set_content(json.dumps(json_body).encode())
 
-    def handle_url_query(self, flow: flow.Flow) -> None:
-        query_data = flow.request._get_query()
+    def run_all_key_detections(self, req: HTTPRequest) -> None:
+        '''Used to detect problematic keys in
+        1. request query parameters
+        2. urlencoded forms parameters and multipart forms parameters
+        3. json request body
+
+        Args:
+            req (HTTPRequest): The request to inspect for problematic keys
+        '''
+        self.handle_url_query(req)
+        self.handle_urlencoded_form(req)
+        self.handle_multipart_form(req)
+        self.handle_json_body(req)
+
+    def handle_url_query(self, req: HTTPRequest) -> None:
+        query_data = req._get_query()
         print('query_data: {}'.format(query_data))
         for key, val in query_data:
             # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
@@ -213,35 +322,55 @@ class TimestampReplacer:
                 except ValueError:
                     pass
 
-    def handle_multipart_form(self, flow: flow.Flow) -> None:
-        '''Used when detecting what keys in a multipart form to ignore.
+    def handle_multipart_form(self, req: HTTPRequest) -> None:
+        '''Used when detecting what keys in a multipart form to replace with constants.
 
         Args:
-            flow (flow.Flow): The flow whose request is being inspected
+            req (HTTPRequest): The request to inspect
         '''
-        for key, val in flow.request.multipart_form.items(multi=True):
-            # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
-            if len(val) > 4:
-                try:
-                    parse(val)
-                    self.form_keys.add(key)
-                except ValueError:
-                    pass
+        if req.multipart_form:
+            for key, val in req.multipart_form.items(multi=True):
+                # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
+                if len(val) > 4:
+                    try:
+                        parse(val)
+                        self.form_keys.add(key)
+                    except ValueError:
+                        pass
 
-    def handle_urlencoded_form(self, flow: flow.Flow) -> None:
-        '''Used when detecting what keys in an url encoded parameters to ignore.
+    def handle_urlencoded_form(self, req: HTTPRequest) -> None:
+        '''Used when detecting what keys in an url encoded parameters to replace with constants.
 
         Args:
-            flow (flow.Flow): The flow whose request is being inspected
+            req (HTTPRequest): The request to inspect
         '''
-        for key, val in flow.request.urlencoded_form.items(multi=True):
-            # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
-            if len(val) > 4:
-                try:
-                    parse(val)
-                    self.form_keys.add(key)
-                except ValueError:
-                    pass
+        if req.urlencoded_form:
+            for key, val in req.urlencoded_form.items(multi=True):
+                # don't bother trying to interpret an argument less than 4 characters as some type of timestamp
+                if len(val) > 4:
+                    try:
+                        parse(val)
+                        self.form_keys.add(key)
+                    except ValueError:
+                        pass
+
+    def handle_json_body(self, req: HTTPRequest) -> None:
+        '''Used when detecting what keys in a request's json body to replace with constants.
+
+        Args:
+            req (HTTPRequest): The request to inspect
+        '''
+        if req.method == 'POST':
+            raw_content = req.raw_content
+            if raw_content is not None:
+                content = req.raw_content.decode()
+            else:
+                content = ''
+            json_data = content.startswith('{')
+            if json_data:
+                content = json.loads(content, object_pairs_hook=OrderedDict)
+                json_keys = self.determine_problematic_keys(content)
+                self.json_keys.update(json_keys)
 
     def determine_problematic_keys(self, content: dict) -> List[str]:
         '''Given a json request body, return the keys (in dot notation) whose values are potentially timestamp data.
@@ -360,35 +489,42 @@ class TimestampReplacer:
         print('executing "load_problematic_keys" method')
         if path.exists(self.bad_keys_filepath):
             print('"{}" path exists - loading bad keys'.format(self.bad_keys_filepath))
-            log_msg = 'options pre update: \nkeys_to_replace: {}'.format(ctx.options.keys_to_replace)
-            log_msg += '\nserver_replay_ignore_params: {}'.format(ctx.options.server_replay_ignore_params)
-            log_msg += '\nserver_replay_ignore_payload_params: {}'.format(
-                ctx.options.server_replay_ignore_payload_params
-            )
-            print(log_msg)
+            # log_msg = 'options pre update: \nkeys_to_replace: {}'.format(ctx.options.keys_to_replace)
+            # log_msg += '\nserver_replay_ignore_params: {}'.format(ctx.options.server_replay_ignore_params)
+            # log_msg += '\nserver_replay_ignore_payload_params: {}'.format(
+            #     ctx.options.server_replay_ignore_payload_params
+            # )
+            # print(log_msg)
 
             problem_keys = json.load(open(self.bad_keys_filepath, 'r'))
             # ctx.options.set(problem_keys.items())
 
             # need to do this because arguments for these options are interpreted as 1 list item
             query_keys = problem_keys.get('server_replay_ignore_params')
-            ctx.options.server_replay_ignore_params = query_keys.split() if isinstance(query_keys, str) else query_keys
+            self.query_keys.update(query_keys.split() if isinstance(query_keys, str) else query_keys)
+            # ctx.options.server_replay_ignore_params = query_keys.split() if isinstance(query_keys, str) else query_keys
             form_keys = problem_keys.get('server_replay_ignore_payload_params')
-            ctx.options.server_replay_ignore_payload_params = (
-                form_keys.split() if isinstance(form_keys, str) else form_keys
-            )
+            # ctx.options.server_replay_ignore_payload_params = (
+            #     form_keys.split() if isinstance(form_keys, str) else form_keys
+            # )
+            self.form_keys.update(form_keys.split() if isinstance(form_keys, str) else form_keys)
             keys_to_replace = problem_keys.get('keys_to_replace')
             # ctx.options.keys_to_replace = (
             #     keys_to_replace.split() if isinstance(keys_to_replace, str) else keys_to_replace
             # )
-            ctx.options.keys_to_replace = keys_to_replace
+            # ctx.options.keys_to_replace = keys_to_replace
+            self.json_keys.update(keys_to_replace.split() if isinstance(keys_to_replace, str) else keys_to_replace)
 
-            log_msg = 'options post update: \nkeys_to_replace: {}'.format(ctx.options.keys_to_replace)
-            log_msg += '\nserver_replay_ignore_params: {}'.format(ctx.options.server_replay_ignore_params)
-            log_msg += '\nserver_replay_ignore_payload_params: {}'.format(
-                ctx.options.server_replay_ignore_payload_params
-            )
-            print(log_msg)
+            # log_msg = 'options post update: \nkeys_to_replace: {}'.format(ctx.options.keys_to_replace)
+            # log_msg += '\nserver_replay_ignore_params: {}'.format(ctx.options.server_replay_ignore_params)
+            # log_msg += '\nserver_replay_ignore_payload_params: {}'.format(
+            #     ctx.options.server_replay_ignore_payload_params
+            # )
+            # print(log_msg)
+            print('bad keys loaded\n---------------\n')
+            print(f'self.query_keys={self.query_keys}')
+            print(f'self.form_keys={self.form_keys}')
+            print(f'self.json_keys={self.json_keys}')
         else:
             print('"{}" path doesn\'t exist - no bad keys to set'.format(self.bad_keys_filepath))
             print('not setting bad keys from file')
