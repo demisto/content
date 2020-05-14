@@ -10,6 +10,7 @@ tasks:
     taskid: c9c99f1d-5962-49bf-8aef-26d2ed366ec9
     type: start
     task:
+      description: ""
       id: c9c99f1d-5962-49bf-8aef-26d2ed366ec9
       version: -1
       name: ""
@@ -34,6 +35,7 @@ tasks:
     taskid: 49dd1b55-421b-4bf7-8e5b-7ab17a00c628
     type: regular
     task:
+      description: ""
       id: 49dd1b55-421b-4bf7-8e5b-7ab17a00c628
       version: -1
       name: 'Get corrupted file '
@@ -107,6 +109,7 @@ tasks:
     taskid: 6cbbd724-5c83-43ed-8c72-733323e7f66b
     type: regular
     task:
+      description: ""
       id: 6cbbd724-5c83-43ed-8c72-733323e7f66b
       version: -1
       name: Delete Context
@@ -140,6 +143,7 @@ tasks:
     taskid: ef22626a-506b-4bb1-881f-11ea01fe0b23
     type: condition
     task:
+      description: ""
       id: ef22626a-506b-4bb1-881f-11ea01fe0b23
       version: -1
       name: 'Check if PSEOF '
@@ -178,6 +182,7 @@ tasks:
     taskid: e7564bda-5012-4908-8fb6-de73bd2d2276
     type: regular
     task:
+      description: ""
       id: e7564bda-5012-4908-8fb6-de73bd2d2276
       version: -1
       name: Delete Context
@@ -211,6 +216,7 @@ tasks:
     taskid: 4b8ca77e-8e46-40fa-8e5d-98e7dfe53e36
     type: regular
     task:
+      description: ""
       id: 4b8ca77e-8e46-40fa-8e5d-98e7dfe53e36
       version: -1
       name: Get working PDF
@@ -252,6 +258,7 @@ tasks:
     taskid: eec65d20-9dec-4a6c-8851-ccd87bcfdcfb
     type: regular
     task:
+      description: ""
       id: eec65d20-9dec-4a6c-8851-ccd87bcfdcfb
       version: -1
       name: Read PDF
@@ -282,6 +289,7 @@ tasks:
     taskid: e58e419a-6a14-4cc2-8fa3-fab1b6888cb0
     type: title
     task:
+      description: ""
       id: e58e419a-6a14-4cc2-8fa3-fab1b6888cb0
       version: -1
       name: End of test
@@ -304,6 +312,7 @@ tasks:
     taskid: dba3165b-1c0c-40c4-8e3b-0f86deeeb057
     type: regular
     task:
+      description: ""
       id: dba3165b-1c0c-40c4-8e3b-0f86deeeb057
       version: -1
       name: 'Get encrypted file '
@@ -345,6 +354,7 @@ tasks:
     taskid: 0573b421-d80e-4709-8797-27e0a5a2090b
     type: condition
     task:
+      description: ""
       id: 0573b421-d80e-4709-8797-27e0a5a2090b
       version: -1
       name: Check if encrypted
@@ -383,6 +393,7 @@ tasks:
     taskid: b00f61a4-8240-4807-8964-88c7eab76c63
     type: regular
     task:
+      description: ""
       id: b00f61a4-8240-4807-8964-88c7eab76c63
       version: -1
       name: Delete Context

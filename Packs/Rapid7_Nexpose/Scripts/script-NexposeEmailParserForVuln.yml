@@ -1,6 +1,6 @@
 commonfields:
   id: NexposeEmailParserForVuln
-  version: 1
+  version: -1
 name: NexposeEmailParserForVuln
 script: |-
   var report = args.report ? args.report : incidents[0].details;

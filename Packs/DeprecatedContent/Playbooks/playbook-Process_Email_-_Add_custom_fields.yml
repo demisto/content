@@ -647,3 +647,5 @@ inputs:
   required: true
   description: Email object to extract
 outputs: []
+tests:
+  - No tests
