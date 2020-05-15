@@ -55,5 +55,6 @@
 	"keyTypeMap": {
 		"DetectionSummaryEvent": "Malware"
 	},
-	"brandName": "crowdstrike-streaming-api"
+	"brandName": "crowdstrike-streaming-api",
+	"toVersion": "5.9.9"
 }

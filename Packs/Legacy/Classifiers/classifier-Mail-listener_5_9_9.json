@@ -211,5 +211,6 @@
 	"keyTypeMap": {
 		"mail-listener": "Phishing"
 	},
-	"brandName": "mail-listener"
+	"brandName": "mail-listener",
+	"toVersion": "5.9.9"
 }
