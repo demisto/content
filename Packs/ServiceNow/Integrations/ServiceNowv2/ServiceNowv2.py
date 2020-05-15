@@ -356,7 +356,8 @@ def split_fields(fields: str = '') -> dict:
 
     if fields:
         if '=' not in fields:
-            raise Exception(f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
+            raise Exception(
+                f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
         arr_fields = fields.split(';')
         for f in arr_fields:
             field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
@@ -371,9 +372,8 @@ class Client(BaseClient):
     Client to use in the ServiceNow integration. Overrides BaseClient.
     """
 
-    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, proxy: bool,
-                 fetch_time: str, sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str,
-                 get_attachments: bool):
+    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
+                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool):
         """
 
         Args:
@@ -382,7 +382,6 @@ class Client(BaseClient):
             username: SNOW username
             password: SNOW password
             verify: whether to verify the request
-            proxy: whether to allow proxy
             fetch_time: first time fetch for fetch_incidents
             sysparm_query: system query
             sysparm_limit: system limit
@@ -395,7 +394,7 @@ class Client(BaseClient):
         self._verify = verify
         self._username = username
         self._password = password
-        self._proxies = handle_proxy() if proxy else None
+        self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -438,26 +437,26 @@ class Client(BaseClient):
                 file_name = file['name']
                 shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                 with open(file_name, 'rb') as f:
-                    files = {'file': f}
-                    res = requests.request(method, url, headers=headers, params=params, data=body, files=files,
-                                           auth=(self._username, self._password), verify=self._verify)
+                    res = requests.request(method, url, headers=headers, data=body, params=params, files={'file': f},
+                                           auth=(self._username, self._password), verify=self._verify,
+                                           proxies=self._proxies)
                 shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
             except Exception as err:
                 raise Exception('Failed to upload file - ' + str(err))
         else:
             res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
-                                   auth=(self._username, self._password), verify=self._verify)
+                                   auth=(self._username, self._password), verify=self._verify, proxies=self._proxies)
 
         try:
-            obj = res.json()
+            json_res = res.json()
         except Exception as err:
             if not res.content:
                 return ''
             raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
-        if 'error' in obj:
-            message = obj.get('error', {}).get('message')
-            details = obj.get('error', {}).get('detail')
+        if 'error' in json_res:
+            message = json_res.get('error', {}).get('message')
+            details = json_res.get('error', {}).get('detail')
             if message == 'No Record found':
                 return {'result': []}  # Return an empty results array
             raise Exception(f'ServiceNow Error: {message}, details: {details}')
@@ -466,7 +465,7 @@ class Client(BaseClient):
             raise Exception(f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
                             f' with headers {str(res.headers)}')
 
-        return obj
+        return json_res
 
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
@@ -536,7 +535,8 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify)
+            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+                                    proxies=self._proxies)
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
@@ -768,11 +768,11 @@ def get_ticket_command(client: Client, args: dict):
 
     result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
     if not result or 'result' not in result:
-        return 'Ticket was not found.', {}, {}
+        return 'Ticket was not found.'
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
-            return 'Ticket was not found.', {}, {}
+            return 'Ticket was not found.'
         ticket = result['result'][0]
     else:
         ticket = result['result']
@@ -1612,7 +1612,6 @@ def get_item_details_command(client: Client, args: dict) -> Tuple[Any, Dict[Any,
         Demisto Outputs.
     """
     id_ = str(args.get('id', ''))
-
     result = client.get_item_details(id_)
     if not result or 'result' not in result:
         return 'Item was not found.', {}, {}, True
@@ -1626,7 +1625,6 @@ def get_item_details_command(client: Client, args: dict) -> Tuple[Any, Dict[Any,
                                           headers=['Question', 'Type', 'Name', 'Mandatory'],
                                           removeNull=True, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.CatalogItem(val.ID===obj.ID)': createContext(mapped_item, removeNull=True)}
-
     return human_readable, entry_context, result, True
 
 
@@ -1695,7 +1693,7 @@ def document_route_to_table(client: Client, args: dict) -> Tuple[Any, Dict[Any, 
     return human_readable, entry_context, result, True
 
 
-def fetch_incidents(client: Client):
+def fetch_incidents(client: Client) -> list:
     query_params = {}
     incidents = []
 
@@ -1760,11 +1758,11 @@ def fetch_incidents(client: Client):
                         raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
                     file_names.append({
                         'path': file_result.get('FileID', ''),
-                        'name': file_result.ge('File', '')
+                        'name': file_result.get('File', '')
                     })
 
         incidents.append({
-            'name': 'ServiceNow Incident ' + result.get('number'),
+            'name': f"ServiceNow Incident {result.get('number')}",
             'labels': labels,
             'details': json.dumps(result),
             'severity': severity,
@@ -1775,8 +1773,8 @@ def fetch_incidents(client: Client):
         count += 1
         snow_time = result.get(client.timestamp_field)
 
-    demisto.incidents(incidents)
     demisto.setLastRun({'time': snow_time})
+    return incidents
 
 
 def test_module(client: Client, *_):
@@ -1807,7 +1805,6 @@ def main():
     username = params['credentials']['identifier']
     password = params['credentials']['password']
     verify = not params.get('insecure', False)
-    proxy = demisto.params().get('proxy') is True
 
     version = params.get('api_version')
     if version:
@@ -1829,7 +1826,7 @@ def main():
 
     raise_exception = False
     try:
-        client = Client(server_url, sc_server_url, username, password, verify, proxy, fetch_time, sysparm_query,
+        client = Client(server_url, sc_server_url, username, password, verify, fetch_time, sysparm_query,
                         sysparm_limit, timestamp_field, ticket_type, get_attachments)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
@@ -1860,7 +1857,8 @@ def main():
         args = demisto.args()
         if command == 'fetch-incidents':
             raise_exception = True
-            fetch_incidents(client)
+            incidents = fetch_incidents(client)
+            demisto.incidents(incidents)
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
         elif command in commands:
