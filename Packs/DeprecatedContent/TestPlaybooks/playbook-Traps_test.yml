@@ -11,6 +11,7 @@ tasks:
     taskid: cd141148-ace4-4eb1-866d-e6a904a177d3
     type: start
     task:
+      description: ""
       id: cd141148-ace4-4eb1-866d-e6a904a177d3
       version: -1
       name: ""
@@ -36,6 +37,7 @@ tasks:
     taskid: e3ebee45-4797-4a54-84df-c243015d50ef
     type: title
     task:
+      description: ""
       id: e3ebee45-4797-4a54-84df-c243015d50ef
       version: -1
       name: 'Missing: get all endpoints'
@@ -96,6 +98,7 @@ tasks:
     taskid: 575b27e1-0d5d-4fe0-803c-2432edb4c929
     type: title
     task:
+      description: ""
       id: 575b27e1-0d5d-4fe0-803c-2432edb4c929
       version: -1
       name: 'Missing: Get events'
@@ -248,6 +251,7 @@ tasks:
     taskid: cb1e029e-91c4-4c52-884e-8c45656f6b48
     type: condition
     task:
+      description: ""
       id: cb1e029e-91c4-4c52-884e-8c45656f6b48
       version: -1
       name: Is blacklisted?
@@ -285,6 +289,7 @@ tasks:
     taskid: 84df4f18-36b8-4c9c-84f9-1404045d7c3e
     type: condition
     task:
+      description: ""
       id: 84df4f18-36b8-4c9c-84f9-1404045d7c3e
       version: -1
       name: Verify context
@@ -345,6 +350,7 @@ tasks:
     taskid: b4e6db43-ccc9-4825-88a6-c34e80372d3d
     type: condition
     task:
+      description: ""
       id: b4e6db43-ccc9-4825-88a6-c34e80372d3d
       version: -1
       name: Is not blacklisted?
@@ -419,6 +425,7 @@ tasks:
     taskid: 04c5f9f8-a53d-46df-87ea-886bc46f5d0d
     type: title
     task:
+      description: ""
       id: 04c5f9f8-a53d-46df-87ea-886bc46f5d0d
       version: -1
       name: DONE!
@@ -442,6 +449,7 @@ tasks:
     taskid: 0def5ef4-3b16-452b-8eb9-16ac3894e6ff
     type: playbook
     task:
+      description: ""
       id: 0def5ef4-3b16-452b-8eb9-16ac3894e6ff
       version: -1
       name: Traps Retrieve And Download Files
@@ -618,6 +626,7 @@ tasks:
     taskid: fe1156ed-fb93-4ed6-869b-31a8ed503f3d
     type: condition
     task:
+      description: ""
       id: fe1156ed-fb93-4ed6-869b-31a8ed503f3d
       version: -1
       name: Check if Scan status is not pending or in_progress

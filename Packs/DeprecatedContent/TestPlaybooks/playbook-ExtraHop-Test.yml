@@ -2,12 +2,14 @@ id: ExtraHop-Test
 version: -1
 name: ExtraHop-Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
     taskid: 2a774637-8d52-4c88-8417-340fc29c2748
     type: start
     task:
+      description: ""
       id: 2a774637-8d52-4c88-8417-340fc29c2748
       version: -1
       name: ""
@@ -32,6 +34,7 @@ tasks:
     taskid: cd474bbb-cea3-4957-818a-f47980ab915a
     type: regular
     task:
+      description: ""
       id: cd474bbb-cea3-4957-818a-f47980ab915a
       version: -1
       name: extrahop-devices
@@ -91,6 +94,7 @@ tasks:
     taskid: c5350b5b-cbd2-45c5-81da-1c9de324242d
     type: condition
     task:
+      description: ""
       id: c5350b5b-cbd2-45c5-81da-1c9de324242d
       version: -1
       name: Check rule exists
@@ -127,6 +131,7 @@ tasks:
     taskid: d6c7ffb9-5e7f-4d55-8fbd-c9bcb1a6d5fc
     type: condition
     task:
+      description: ""
       id: d6c7ffb9-5e7f-4d55-8fbd-c9bcb1a6d5fc
       version: -1
       name: Check device
@@ -187,6 +192,7 @@ tasks:
     taskid: 917cd0cb-926b-4ecd-8604-6eda883196e0
     type: condition
     task:
+      description: ""
       id: 917cd0cb-926b-4ecd-8604-6eda883196e0
       version: -1
       name: Verify device on whitelist
