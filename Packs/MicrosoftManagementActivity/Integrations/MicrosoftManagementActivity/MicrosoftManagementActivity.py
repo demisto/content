@@ -171,7 +171,7 @@ class Client(BaseClient):
 def test_module(client):
     params = demisto.params()
     fetch_delta = params.get('first_fetch_delta', '10 minutes')
-    user_input_fetch_start_date = parse_date_range(fetch_delta)
+    user_input_fetch_start_date, _ = parse_date_range(fetch_delta)
     if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
         return 'Error: first fetch time delta should not be over one week.'
     if client.self_deployed and not params.get('auth_code'):
