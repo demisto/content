@@ -223,8 +223,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
 
 def get_dbot_file_context(file_hash, dbotscore):
 
-    return [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': dbotscore},
-            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'VirusTotal - Private API', 'Score': dbotscore}]
+    return {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'VirusTotal - Private API', 'Score': dbotscore}
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -1018,10 +1017,7 @@ def hash_communication_command():
             'Contents': response,
             'ContentsFormat': formats['json'],
             'EntryContext': {
-                'DBotScore': [
-                    {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': 0},
-                    {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'VirusTotal - Private API', 'Score': 0}]
-
+                'DBotScore': get_dbot_file_context(file_hash, 0)
             },
 
             'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following"

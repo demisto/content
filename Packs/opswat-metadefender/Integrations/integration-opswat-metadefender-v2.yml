@@ -131,8 +131,7 @@ script:
 
     def get_dbot_file_context(file_hash, dbotscore):
 
-        return [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotscore},
-                {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'OPSWAT', 'Score': dbotscore}]
+        return {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'OPSWAT', 'Score': dbotscore}
 
 
     def get_hash_info_command():
