@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 24d5298d-fedf-401c-8bfd-5f50d6c0f640
+    taskid: b75ab023-3285-4733-801a-8d8b0a492aa2
     type: start
     task:
-      id: 24d5298d-fedf-401c-8bfd-5f50d6c0f640
+      id: b75ab023-3285-4733-801a-8d8b0a492aa2
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,460 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 31e4da82-c83c-413c-82a3-46e256942bff
+    taskid: d3f6da20-f926-4e50-8001-65e0c80b31f4
     type: regular
     task:
-      id: 31e4da82-c83c-413c-82a3-46e256942bff
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 0a10c2df-c807-49d4-80ac-4fd642fbaedb
-    type: regular
-    task:
-      id: 0a10c2df-c807-49d4-80ac-4fd642fbaedb
-      version: -1
-      name: vulndb-get-vuln-by-id - with data
-      description: Provides full details about a specific vulnerability by id
-      script: VulnDB|||vulndb-get-vuln-by-id
-      type: regular
-      iscommand: true
-      brand: VulnDB
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      vuln_id:
-        simple: "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: f7aa0d45-d785-4f9b-836a-6ba6895f7eb2
-    type: condition
-    task:
-      id: f7aa0d45-d785-4f9b-836a-6ba6895f7eb2
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: VulnDB.Vulnerability.Title
-            iscontext: true
-          right:
-            value:
-              simple: ColdFusion Application Server exprcalc.cfm OpenFilePath Parameter
-                Arbitrary File Disclosure
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: ffe5d8a3-9d7e-402a-8368-4aa6acd48467
-    type: title
-    task:
-      id: ffe5d8a3-9d7e-402a-8368-4aa6acd48467
-      version: -1
-      name: sucess
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 79a55a1e-7115-4cb0-8e05-4e7fdeb9739f
-    type: regular
-    task:
-      id: 79a55a1e-7115-4cb0-8e05-4e7fdeb9739f
-      version: -1
-      name: vulndb-get-vuln-by-id - w/o data
-      description: Provides full details about a specific vulnerability by id
-      script: VulnDB|||vulndb-get-vuln-by-id
-      type: regular
-      iscommand: true
-      brand: VulnDB
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      vuln_id:
-        simple: "123456789012345678"
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 538bfa53-ad35-4603-8629-fa6c81b075a4
-    type: condition
-    task:
-      id: 538bfa53-ad35-4603-8629-fa6c81b075a4
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: VulnDB.Vulnerability.Title
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 60e4c740-ac33-408c-8c03-0bd2a0058e66
-    type: regular
-    task:
-      id: 60e4c740-ac33-408c-8c03-0bd2a0058e66
-      version: -1
-      name: vulndb-get-vuln-by-vendor-and-product-name - with data
-      description: Provides full details about a specific vulnerability by vendor
-        and product name
-      script: VulnDB|||vulndb-get-vuln-by-vendor-and-product-name
-      type: regular
-      iscommand: true
-      brand: VulnDB
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      product_name:
-        simple: ColdFusion
-      vendor_name:
-        simple: Adobe Systems Incorporated
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4045
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 12097bed-6a57-4497-86b3-f51617c3bb34
-    type: condition
-    task:
-      id: 12097bed-6a57-4497-86b3-f51617c3bb34
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: VulnDB.Vulnerability.ID
-            iscontext: true
-          right:
-            value:
-              simple: "3236"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: e240a948-20dd-497a-80e7-ffd2b8da70b9
-    type: regular
-    task:
-      id: e240a948-20dd-497a-80e7-ffd2b8da70b9
-      version: -1
-      name: vulndb-get-vuln-by-vendor-and-product-name - w/o data
-      description: Provides full details about a specific vulnerability by vendor
-        and product name
-      script: VulnDB|||vulndb-get-vuln-by-vendor-and-product-name
-      type: regular
-      iscommand: true
-      brand: VulnDB
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      product_name:
-        simple: bbbbbb
-      vendor_name:
-        simple: aaaaaa
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 21454bb0-3591-4e27-8ebd-6d9105251889
-    type: condition
-    task:
-      id: 21454bb0-3591-4e27-8ebd-6d9105251889
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: VulnDB.Vulnerability.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: e3eb6b79-eda9-4161-8b74-a8595cc57da9
-    type: regular
-    task:
-      id: e3eb6b79-eda9-4161-8b74-a8595cc57da9
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: 391d61ab-23d4-462d-8277-e795aa2acbf5
-    type: regular
-    task:
-      id: 391d61ab-23d4-462d-8277-e795aa2acbf5
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: 1807456e-ebe6-4d21-8334-ed8a609ac27e
-    type: condition
-    task:
-      id: 1807456e-ebe6-4d21-8334-ed8a609ac27e
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: VulnDB.Vulnerability.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 88a58ed0-54b6-4aed-800c-1be9d7bcd73d
-    type: regular
-    task:
-      id: 88a58ed0-54b6-4aed-800c-1be9d7bcd73d
+      id: d3f6da20-f926-4e50-8001-65e0c80b31f4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -507,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 195
         }
       }
     note: false
@@ -515,35 +66,170 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: 50ad45de-822f-4993-821d-4c9334480a97
+  "2":
+    id: "2"
+    taskid: e85f9772-fa0f-4a64-80e0-aadc2d6b71c0
     type: regular
     task:
-      id: 50ad45de-822f-4993-821d-4c9334480a97
+      id: e85f9772-fa0f-4a64-80e0-aadc2d6b71c0
       version: -1
-      name: vulndb-get-vuln-by-vendor-and-product-id - w/o data
-      description: Provides full details about a specific vulnerability by vendor
-        and product id
-      script: VulnDB|||vulndb-get-vuln-by-vendor-and-product-id
+      name: vulndb-get-vuln-by-id - with data
+      description: Provides full details about a specific vulnerability by id
+      script: VulnDB|||vulndb-get-vuln-by-id
       type: regular
       iscommand: true
       brand: VulnDB
     nexttasks:
       '#none#':
-      - "14"
+      - "3"
     scriptarguments:
-      product_id:
-        simple: "234563456"
-      vendor_id:
-        simple: "675433645435"
-    continueonerror: true
+      vuln_id:
+        simple: "1"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 859e422d-7429-4ca6-847c-5742c41a8343
+    type: condition
+    task:
+      id: 859e422d-7429-4ca6-847c-5742c41a8343
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: VulnDB.Vulnerability.Title
+            iscontext: true
+          right:
+            value:
+              simple: ColdFusion Application Server exprcalc.cfm OpenFilePath Parameter
+                Arbitrary File Disclosure
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4f1ab671-7788-4023-8fda-94526a40b975
+    type: title
+    task:
+      id: 4f1ab671-7788-4023-8fda-94526a40b975
+      version: -1
+      name: sucess
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d899304f-d27a-4b77-84ac-d7b705cad9c3
+    type: regular
+    task:
+      id: d899304f-d27a-4b77-84ac-d7b705cad9c3
+      version: -1
+      name: vulndb-get-vuln-by-vendor-and-product-name - with data
+      description: Provides full details about a specific vulnerability by vendor
+        and product name
+      script: VulnDB|||vulndb-get-vuln-by-vendor-and-product-name
+      type: regular
+      iscommand: true
+      brand: VulnDB
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      product_name:
+        simple: ColdFusion
+      vendor_name:
+        simple: Adobe Systems Incorporated
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a61cc225-d019-4d07-82b7-6ec7fb5880c2
+    type: condition
+    task:
+      id: a61cc225-d019-4d07-82b7-6ec7fb5880c2
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: VulnDB.Vulnerability.ID
+            iscontext: true
+          right:
+            value:
+              simple: "3236"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -553,10 +239,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: c1945f86-b4e2-4fa8-8882-3410bad4d275
+    taskid: 045fc651-e3b8-438c-8a85-f502dbe87ef2
     type: regular
     task:
-      id: c1945f86-b4e2-4fa8-8882-3410bad4d275
+      id: 045fc651-e3b8-438c-8a85-f502dbe87ef2
       version: -1
       name: vulndb-get-vuln-by-vendor-and-product-id - with data
       description: Provides full details about a specific vulnerability by vendor
@@ -578,7 +264,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 1420
         }
       }
     note: false
@@ -588,15 +274,16 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 33498db8-de7c-47dd-8370-ca0184c8d5d2
+    taskid: 6f72a028-125a-4bad-899b-6c5734e7877e
     type: condition
     task:
-      id: 33498db8-de7c-47dd-8370-ca0184c8d5d2
+      id: 6f72a028-125a-4bad-899b-6c5734e7877e
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "27"
@@ -616,7 +303,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 1595
         }
       }
     note: false
@@ -626,10 +313,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: e9c2b2d9-a35c-4558-8c3c-f7f3b2d64ee8
+    taskid: 130b427b-ef51-4beb-8fac-a84b3568133e
     type: regular
     task:
-      id: e9c2b2d9-a35c-4558-8c3c-f7f3b2d64ee8
+      id: 130b427b-ef51-4beb-8fac-a84b3568133e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -652,7 +339,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 720
         }
       }
     note: false
@@ -662,10 +349,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 40d6ffa4-b7c7-449e-80b6-a421324488d4
+    taskid: 4609f084-794a-4be3-8507-3e5f86f80e4e
     type: regular
     task:
-      id: 40d6ffa4-b7c7-449e-80b6-a421324488d4
+      id: 4609f084-794a-4be3-8507-3e5f86f80e4e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -688,215 +375,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: d940096a-64c9-47b5-8944-1cc87516df8f
-    type: regular
-    task:
-      id: d940096a-64c9-47b5-8944-1cc87516df8f
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 037eb1d0-c0c6-46ba-8022-72683e941ee0
-    type: regular
-    task:
-      id: 037eb1d0-c0c6-46ba-8022-72683e941ee0
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: 93ea8426-80b9-4c86-826a-2173f2868716
-    type: regular
-    task:
-      id: 93ea8426-80b9-4c86-826a-2173f2868716
-      version: -1
-      name: vulndb-get-vuln-by-vendor-id - w/o data
-      description: Provides full details about vulnerabilities by vendor id
-      script: VulnDB|||vulndb-get-vuln-by-vendor-id
-      type: regular
-      iscommand: true
-      brand: VulnDB
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      vendor_id:
-        simple: "675433645435"
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: 89ffa205-1ef9-4237-863e-991274052205
-    type: regular
-    task:
-      id: 89ffa205-1ef9-4237-863e-991274052205
-      version: -1
-      name: vulndb-get-vuln-by-product-id - w/o data
-      description: Provides full details about vulnerabilities by product id
-      script: VulnDB|||vulndb-get-vuln-by-product-id
-      type: regular
-      iscommand: true
-      brand: VulnDB
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      product_id:
-        simple: "234563456"
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: 6bd4d9df-3eb3-4354-8c65-ce1ec4a55cad
-    type: condition
-    task:
-      id: 6bd4d9df-3eb3-4354-8c65-ce1ec4a55cad
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: VulnDB.Vulnerability.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: 100afc25-de38-4c24-8162-0b6543623b28
-    type: condition
-    task:
-      id: 100afc25-de38-4c24-8162-0b6543623b28
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "33"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: VulnDB.Vulnerability.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
+          "y": 1245
         }
       }
     note: false
@@ -906,10 +385,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 42d9b9a3-6292-4989-8a3b-96107046829c
+    taskid: 1af4409a-8db0-4819-8d6b-0e30850b0cbc
     type: regular
     task:
-      id: 42d9b9a3-6292-4989-8a3b-96107046829c
+      id: 1af4409a-8db0-4819-8d6b-0e30850b0cbc
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -932,7 +411,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 1770
         }
       }
     note: false
@@ -942,10 +421,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 1ca17384-1109-4acc-8e4b-0178f94e9a0a
+    taskid: 30f11738-05e7-42e7-8d8c-0441195ed238
     type: regular
     task:
-      id: 1ca17384-1109-4acc-8e4b-0178f94e9a0a
+      id: 30f11738-05e7-42e7-8d8c-0441195ed238
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -968,7 +447,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 2295
         }
       }
     note: false
@@ -978,10 +457,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 17d67b9d-a8d2-4dc9-8ae1-bcabdf5ea75b
+    taskid: 03e496bd-a07c-4aac-861c-1265aac9b9c4
     type: regular
     task:
-      id: 17d67b9d-a8d2-4dc9-8ae1-bcabdf5ea75b
+      id: 03e496bd-a07c-4aac-861c-1265aac9b9c4
       version: -1
       name: vulndb-get-vuln-by-product-id - with data
       description: Provides full details about vulnerabilities by product id
@@ -1000,7 +479,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 2470
         }
       }
     note: false
@@ -1010,10 +489,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 6c840064-9411-4511-82d2-d4cabdccd453
+    taskid: e9816766-f738-481f-83eb-96812885b50d
     type: regular
     task:
-      id: 6c840064-9411-4511-82d2-d4cabdccd453
+      id: e9816766-f738-481f-83eb-96812885b50d
       version: -1
       name: vulndb-get-vuln-by-vendor-id - with data
       description: Provides full details about vulnerabilities by vendor id
@@ -1032,7 +511,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 1945
         }
       }
     note: false
@@ -1042,15 +521,16 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: cb483c13-8161-4e02-83c9-06a596938bf5
+    taskid: d6f3117c-8920-4e1a-8bf2-296ab4ba76a4
     type: condition
     task:
-      id: cb483c13-8161-4e02-83c9-06a596938bf5
+      id: d6f3117c-8920-4e1a-8bf2-296ab4ba76a4
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "28"
@@ -1070,7 +550,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 2120
         }
       }
     note: false
@@ -1080,15 +560,16 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: ec5d3853-11bb-49f9-80c9-51900518a523
+    taskid: a88d0b7a-de6b-4520-8008-52b224e5e5c5
     type: condition
     task:
-      id: ec5d3853-11bb-49f9-80c9-51900518a523
+      id: a88d0b7a-de6b-4520-8008-52b224e5e5c5
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "38"
@@ -1108,111 +589,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "33":
-    id: "33"
-    taskid: a530f1d4-55dc-4999-85ee-1468319dba04
-    type: regular
-    task:
-      id: a530f1d4-55dc-4999-85ee-1468319dba04
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "34":
-    id: "34"
-    taskid: 6c5274c9-2bdc-4db2-8a8f-0075092b7df1
-    type: regular
-    task:
-      id: 6c5274c9-2bdc-4db2-8a8f-0075092b7df1
-      version: -1
-      name: vulndb-get-vuln-by-cve-id - w/o data
-      description: Provides full details about vulnerabilities by cve id
-      script: VulnDB|||vulndb-get-vuln-by-cve-id
-      type: regular
-      iscommand: true
-      brand: VulnDB
-    nexttasks:
-      '#none#':
-      - "35"
-    scriptarguments:
-      cve_id:
-        simple: "1234567890"
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "35":
-    id: "35"
-    taskid: 561d39c9-7379-4542-8aad-9578685059d2
-    type: condition
-    task:
-      id: 561d39c9-7379-4542-8aad-9578685059d2
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: VulnDB.Vulnerability.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3170
+          "y": 2645
         }
       }
     note: false
@@ -1222,10 +599,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: bec00804-0b32-4eac-8763-04ddee293b59
+    taskid: 952b3681-142e-46e4-8a75-719034e41023
     type: regular
     task:
-      id: bec00804-0b32-4eac-8763-04ddee293b59
+      id: 952b3681-142e-46e4-8a75-719034e41023
       version: -1
       name: vulndb-get-vuln-by-cve-id - with data
       description: Provides full details about vulnerabilities by cve id
@@ -1244,7 +621,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 2995
         }
       }
     note: false
@@ -1254,15 +631,16 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 578c05e4-346a-48aa-8f30-a4072f4b99a0
+    taskid: 3462bd71-9dc1-4dbf-8049-f2d7fe4e5602
     type: condition
     task:
-      id: 578c05e4-346a-48aa-8f30-a4072f4b99a0
+      id: 3462bd71-9dc1-4dbf-8049-f2d7fe4e5602
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "39"
@@ -1282,7 +660,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 3170
         }
       }
     note: false
@@ -1292,10 +670,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: be7cae17-63c0-4c69-8c03-fb2cd2742e31
+    taskid: 96b25964-e6cb-4e80-8cc5-13032fb34a77
     type: regular
     task:
-      id: be7cae17-63c0-4c69-8c03-fb2cd2742e31
+      id: 96b25964-e6cb-4e80-8cc5-13032fb34a77
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1318,7 +696,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 2820
         }
       }
     note: false
@@ -1328,10 +706,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: c8b6b5a9-2bd8-4fd5-8ed5-83c7c6cd16ac
+    taskid: a8b2d73e-6097-44b1-8077-57a6bd241035
     type: regular
     task:
-      id: c8b6b5a9-2bd8-4fd5-8ed5-83c7c6cd16ac
+      id: a8b2d73e-6097-44b1-8077-57a6bd241035
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1354,7 +732,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 3345
         }
       }
     note: false
@@ -1364,10 +742,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: a2655e90-5184-486b-8a39-31b0cbe1cd73
+    taskid: e2253204-ab2d-47bd-8c23-439ddc00101e
     type: regular
     task:
-      id: a2655e90-5184-486b-8a39-31b0cbe1cd73
+      id: e2253204-ab2d-47bd-8c23-439ddc00101e
       version: -1
       name: vulndb-get-vendor (all) - with data
       description: Provides all or specific vendor details to include vendor name
@@ -1387,7 +765,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 3520
         }
       }
     note: false
@@ -1397,15 +775,16 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 369da1c9-179a-49c2-8433-d97bd5c44fc8
+    taskid: 7c514e8d-7e82-478b-88c7-915c12ad77de
     type: condition
     task:
-      id: 369da1c9-179a-49c2-8433-d97bd5c44fc8
+      id: 7c514e8d-7e82-478b-88c7-915c12ad77de
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "42"
@@ -1425,7 +804,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 3695
         }
       }
     note: false
@@ -1435,10 +814,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 4751df3e-caa8-4bd9-8033-1fa38c48d4dc
+    taskid: d2d42774-0856-4d75-800d-e8a2e9fc7a6f
     type: regular
     task:
-      id: 4751df3e-caa8-4bd9-8033-1fa38c48d4dc
+      id: d2d42774-0856-4d75-800d-e8a2e9fc7a6f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1461,7 +840,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7020
+          "y": 3870
         }
       }
     note: false
@@ -1471,10 +850,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 57194d09-4bcf-4353-87de-414ffa1b64f6
+    taskid: 0e60efa0-07c7-4bef-8093-4413d569891f
     type: regular
     task:
-      id: 57194d09-4bcf-4353-87de-414ffa1b64f6
+      id: 0e60efa0-07c7-4bef-8093-4413d569891f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1497,7 +876,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7545
+          "y": 4395
         }
       }
     note: false
@@ -1507,10 +886,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: c6f97ab3-ca67-485e-8994-26767317afd9
+    taskid: ab2f9764-1537-48ec-818c-cb942afedc24
     type: regular
     task:
-      id: c6f97ab3-ca67-485e-8994-26767317afd9
+      id: ab2f9764-1537-48ec-818c-cb942afedc24
       version: -1
       name: vulndb-get-vendor (id) - with data
       description: Provides all or specific vendor details to include vendor name
@@ -1531,7 +910,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7195
+          "y": 4045
         }
       }
     note: false
@@ -1541,10 +920,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 41b5a945-d995-4321-8dcd-28c13ed6fd92
+    taskid: 0b84d04c-1919-427a-80cf-6c7f8b2a1c42
     type: regular
     task:
-      id: 41b5a945-d995-4321-8dcd-28c13ed6fd92
+      id: 0b84d04c-1919-427a-80cf-6c7f8b2a1c42
       version: -1
       name: vulndb-get-vendor (name) - with data
       description: Provides all or specific vendor details to include vendor name
@@ -1565,7 +944,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7720
+          "y": 4570
         }
       }
     note: false
@@ -1575,15 +954,16 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 0f476708-48ae-4fc2-8c2a-50a102370a59
+    taskid: b1e11440-2cdb-49f4-840c-69c6227d1523
     type: condition
     task:
-      id: 0f476708-48ae-4fc2-8c2a-50a102370a59
+      id: b1e11440-2cdb-49f4-840c-69c6227d1523
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "43"
@@ -1603,7 +983,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 4220
         }
       }
     note: false
@@ -1613,15 +993,16 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: b4d62e0f-1a2d-4dd5-8eef-35feb719cea0
+    taskid: 148b4f91-f885-4faa-87e4-d1e0fdb38c43
     type: condition
     task:
-      id: b4d62e0f-1a2d-4dd5-8eef-35feb719cea0
+      id: 148b4f91-f885-4faa-87e4-d1e0fdb38c43
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "48"
@@ -1641,7 +1022,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7895
+          "y": 4745
         }
       }
     note: false
@@ -1651,10 +1032,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 268f9f19-9788-4248-8ec3-f22b3c3c6bfd
+    taskid: 2dcedb7b-f231-49f5-84c9-165486d3e6c6
     type: regular
     task:
-      id: 268f9f19-9788-4248-8ec3-f22b3c3c6bfd
+      id: 2dcedb7b-f231-49f5-84c9-165486d3e6c6
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1677,7 +1058,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8070
+          "y": 4920
         }
       }
     note: false
@@ -1687,10 +1068,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 78879c73-3e5b-41be-8ccc-d5ea6b09c0ac
+    taskid: a83816b7-e954-41d9-8e24-c2f62d43978d
     type: regular
     task:
-      id: 78879c73-3e5b-41be-8ccc-d5ea6b09c0ac
+      id: a83816b7-e954-41d9-8e24-c2f62d43978d
       version: -1
       name: vulndb-get-product (id) - with data
       description: Provides a list of versions by product name or id
@@ -1710,7 +1091,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8245
+          "y": 5095
         }
       }
     note: false
@@ -1720,15 +1101,16 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 3d527b2d-48b5-49c0-8dda-bb1c359a2747
+    taskid: 94515b6d-3463-46fa-89a1-00a91f11cfe1
     type: condition
     task:
-      id: 3d527b2d-48b5-49c0-8dda-bb1c359a2747
+      id: 94515b6d-3463-46fa-89a1-00a91f11cfe1
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "51"
@@ -1748,7 +1130,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8420
+          "y": 5270
         }
       }
     note: false
@@ -1758,10 +1140,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: a7c827d2-9947-4041-8e8c-86b61a6220e6
+    taskid: ff578b5d-379f-4e2f-8d00-21d555b21788
     type: regular
     task:
-      id: a7c827d2-9947-4041-8e8c-86b61a6220e6
+      id: ff578b5d-379f-4e2f-8d00-21d555b21788
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1784,7 +1166,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8595
+          "y": 5445
         }
       }
     note: false
@@ -1794,10 +1176,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 269ade4a-de46-4ca2-8a58-a620a712e0eb
+    taskid: cc1dd17b-134d-4617-8e7d-b2ddaf97cae7
     type: regular
     task:
-      id: 269ade4a-de46-4ca2-8a58-a620a712e0eb
+      id: cc1dd17b-134d-4617-8e7d-b2ddaf97cae7
       version: -1
       name: vulndb-get-version (name) - with data
       description: Provides the versions for the specified product by product name
@@ -1818,7 +1200,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8770
+          "y": 5620
         }
       }
     note: false
@@ -1828,15 +1210,16 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 5e60f06f-3380-4ad6-80f7-954f72a77563
+    taskid: f06ad146-30d7-476e-8692-315a7a0277dc
     type: condition
     task:
-      id: 5e60f06f-3380-4ad6-80f7-954f72a77563
+      id: f06ad146-30d7-476e-8692-315a7a0277dc
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "55"
@@ -1856,7 +1239,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8945
+          "y": 5795
         }
       }
     note: false
@@ -1866,10 +1249,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 86c9a5cc-8f34-403b-87a0-c685a90b8182
+    taskid: 81a48406-0199-416e-8060-88d18ab61910
     type: regular
     task:
-      id: 86c9a5cc-8f34-403b-87a0-c685a90b8182
+      id: 81a48406-0199-416e-8060-88d18ab61910
       version: -1
       name: vulndb-get-updates-by-dates-or-hours (only start_date) - with data
       description: Provides the recent vulnerabilities by dates or hours
@@ -1890,7 +1273,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9295
+          "y": 6145
         }
       }
     note: false
@@ -1900,10 +1283,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: ecf1d784-f6a9-4820-8b8a-50c12def73d8
+    taskid: f76295e5-6ac6-4777-8f7d-b19d112e5297
     type: regular
     task:
-      id: ecf1d784-f6a9-4820-8b8a-50c12def73d8
+      id: f76295e5-6ac6-4777-8f7d-b19d112e5297
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1926,7 +1309,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9120
+          "y": 5970
         }
       }
     note: false
@@ -1936,15 +1319,16 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 36e9e65d-9112-4c6c-80b4-7e728d871497
+    taskid: 9554b1a7-9e35-4df2-8c1d-9a239243284e
     type: condition
     task:
-      id: 36e9e65d-9112-4c6c-80b4-7e728d871497
+      id: 9554b1a7-9e35-4df2-8c1d-9a239243284e
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "57"
@@ -1965,7 +1349,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9470
+          "y": 6320
         }
       }
     note: false
@@ -1975,10 +1359,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: 9622d0e3-c276-4169-8026-5d724fa2c25c
+    taskid: 04f457d0-b793-4b29-8d52-c5fd57c85eb7
     type: regular
     task:
-      id: 9622d0e3-c276-4169-8026-5d724fa2c25c
+      id: 04f457d0-b793-4b29-8d52-c5fd57c85eb7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2001,7 +1385,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9645
+          "y": 6495
         }
       }
     note: false
@@ -2011,10 +1395,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: 919beb39-bbe6-4b68-8871-c8d869182fe6
+    taskid: abeb2377-deb2-435e-85e3-e23ee28af5a2
     type: regular
     task:
-      id: 919beb39-bbe6-4b68-8871-c8d869182fe6
+      id: abeb2377-deb2-435e-85e3-e23ee28af5a2
       version: -1
       name: vulndb-get-updates-by-dates-or-hours (start_date and end_date) - with
         data
@@ -2037,7 +1421,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9820
+          "y": 6670
         }
       }
     note: false
@@ -2047,15 +1431,16 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 7674dfee-3d69-47c7-8f0b-7f31be605d7e
+    taskid: 036f6bea-65b6-4ab5-8f6b-7ff684ef58fd
     type: condition
     task:
-      id: 7674dfee-3d69-47c7-8f0b-7f31be605d7e
+      id: 036f6bea-65b6-4ab5-8f6b-7ff684ef58fd
       version: -1
       name: verify context
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "61"
@@ -2076,7 +1461,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9995
+          "y": 6845
         }
       }
     note: false
@@ -2086,10 +1471,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 9c687cf2-2015-4fa7-8481-76c2265ddf62
+    taskid: b136b894-1e43-40b7-8894-f8c33c2f3c9d
     type: regular
     task:
-      id: 9c687cf2-2015-4fa7-8481-76c2265ddf62
+      id: b136b894-1e43-40b7-8894-f8c33c2f3c9d
       version: -1
       name: cve-indicator-test
       description: Returns CVE information by CVE ID.
@@ -2109,7 +1494,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10215
+          "y": 7020
         }
       }
     note: false
@@ -2119,10 +1504,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: f7e44794-3169-4f9b-8b31-4aaff44a0d5b
+    taskid: 5e8dd80e-aacb-47c7-87de-32bf61fc0134
     type: condition
     task:
-      id: f7e44794-3169-4f9b-8b31-4aaff44a0d5b
+      id: 5e8dd80e-aacb-47c7-87de-32bf61fc0134
       version: -1
       name: Verify Outputs
       description: Returns CVE information by CVE ID.
@@ -2165,7 +1550,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10410
+          "y": 7195
         }
       }
     note: false
@@ -2178,7 +1563,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10655,
+        "height": 7385,
         "width": 380,
         "x": 50,
         "y": 50
@@ -2187,3 +1572,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 1.0.0
+description: ''
