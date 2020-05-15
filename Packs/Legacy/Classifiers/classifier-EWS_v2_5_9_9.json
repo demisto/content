@@ -363,5 +363,6 @@
 		"Low": "Phishing",
 		"Normal": "Phishing"
 	},
-	"brandName": "EWS v2"
+	"brandName": "EWS v2",
+	"toVersion": "5.9.9"
 }

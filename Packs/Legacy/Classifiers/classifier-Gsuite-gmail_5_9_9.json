@@ -156,5 +156,6 @@
 	"keyTypeMap": {
 		"Gmail": "Phishing"
 	},
-	"brandName": "Gmail"
+	"brandName": "Gmail",
+	"toVersion": "5.9.9"
 }
