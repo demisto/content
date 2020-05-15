@@ -1,0 +1,173 @@
+id: DNSDB - Hostname from IP
+version: -1
+name: DNSDB - Hostname from IP
+description: A playbook that uses DNSDB to retrieve all hostnames seen for a given
+  IP around the time of observation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 66d033eb-51d8-42fe-87b6-4f2b349a2c55
+    type: start
+    task:
+      id: 66d033eb-51d8-42fe-87b6-4f2b349a2c55
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e57c076e-07d8-4c8b-8940-3312b786b887
+    type: regular
+    task:
+      id: e57c076e-07d8-4c8b-8940-3312b786b887
+      version: -1
+      name: DNSDB Lookup RData/IP
+      description: Lookup RData records
+      script: DNSDB|||dnsdb-rdata
+      type: regular
+      iscommand: true
+      brand: DNSDB
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      aggr: {}
+      limit: {}
+      offset: {}
+      rrtype: {}
+      time_first_after: {}
+      time_first_before:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "86400"
+      time_last_after:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: subtraction
+            args:
+              by:
+                value:
+                  simple: "15552000"
+      time_last_before: {}
+      type:
+        simple: ip
+      value:
+        simple: ${IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Host Name
+      output:
+        simple: ${DNSDB.Record.RRName}
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f4e03c19-90be-4e35-8992-4cfa0f943f6e
+    type: title
+    task:
+      id: f4e03c19-90be-4e35-8992-4cfa0f943f6e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 375,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+  required: true
+  description: The IP Address to enhance with hostnames from Farsight DNSDB.
+  playbookInputQuery:
+outputs:
+- contextPath: DNSDB.Record.RRName
+  description: The owner name of the resource record in DNS presentation format.
+quiet: true
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

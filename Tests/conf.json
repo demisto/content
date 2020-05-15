@@ -1564,8 +1564,10 @@
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-            "integrations": "Farsight DNSDB",
-            "playbookID": "DNSDBTest"
+            "integrations": "DNSDB",
+            "playbookID": "DNSDB-Test",
+	    "timeout": 500,
+	    "nightly": true
         },
         {
             "integrations": "carbonblack-v2",
@@ -2977,7 +2979,6 @@
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Netskope": "instance is down",
-        "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
