@@ -156,5 +156,6 @@
 	"keyTypeMap": {
 		"Gmail Single User": "Phishing"
 	},
-	"brandName": "Gmail Single User"
+	"brandName": "Gmail Single User",
+	"toVersion": "5.9.9"
 }

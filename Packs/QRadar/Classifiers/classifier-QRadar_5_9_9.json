@@ -64,5 +64,6 @@
 		"SIM User Authentication": "Access",
 		"User Login Failure": "Access"
 	},
-	"brandName": "QRadar"
+	"brandName": "QRadar",
+	"toVersion": "5.9.9"
 }
