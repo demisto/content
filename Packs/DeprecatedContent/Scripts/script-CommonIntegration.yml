@@ -1,6 +1,6 @@
 commonfields:
   id: CommonIntegration
-  version: 1
+  version: -1
 name: CommonIntegration
 script: |-
   function encodeToURLQuery(args) {
@@ -19,7 +19,7 @@ script: |-
           }
           return query;
   };
-  
+
   function replaceInTemplates(input, args) {
     var res = input;
     var keys = Object.keys(args);
