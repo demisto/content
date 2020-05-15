@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Microsoft Management Activity API (O365 Azure Events)_test_new
+  id: Microsoft Management Activity API (O365 Azure Events)
   version: -1
 configuration:
 - defaultvalue: https://manage.office.com/api/v1.0/
@@ -83,8 +83,8 @@ configuration:
 description: The Microsoft Management Activity API integration enables you to subscribe
   or unsubscribe to different audits, receive their content and fetch new content
   as incidents.
-display: Microsoft Management Activity API (O365 Azure Events)_test_new
-name: Microsoft Management Activity API (O365 Azure Events)_test_new
+display: Microsoft Management Activity API (O365 Azure Events)
+name: Microsoft Management Activity API (O365 Azure Events)
 script:
   commands:
   - arguments:
