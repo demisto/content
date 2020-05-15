@@ -2,6 +2,7 @@ id: ShodanTest
 version: -1
 name: ShodanTest
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"

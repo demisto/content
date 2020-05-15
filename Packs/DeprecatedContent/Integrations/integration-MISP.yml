@@ -816,3 +816,5 @@ script:
       required: true
       description: Value of the attribute
     description: Add attribute to existing MISP event
+tests:
+  - No tests

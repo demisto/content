@@ -10,7 +10,7 @@ description: Deprecated. Use the Have I Been Pwned? V2 integration instead.
 configuration:
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
@@ -345,4 +345,4 @@ script:
   runonce: false
 deprecated: true
 tests:
-  - Pwned test
+  - No tests
