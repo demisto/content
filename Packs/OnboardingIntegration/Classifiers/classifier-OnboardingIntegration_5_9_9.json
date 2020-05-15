@@ -121,5 +121,6 @@
 		"complex": null
 	},
 	"keyTypeMap": {},
-	"brandName": "OnboardingIntegration"
+	"brandName": "OnboardingIntegration",
+	"toVersion": "5.9.9"
 }
