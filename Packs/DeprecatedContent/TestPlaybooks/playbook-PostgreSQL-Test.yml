@@ -2,6 +2,7 @@ id: PostgreSQL Test
 version: -1
 name: PostgreSQL Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
@@ -36,6 +37,7 @@ tasks:
     taskid: 9674640e-c06c-473e-8592-fa33e2806248
     type: regular
     task:
+      description: ""
       id: 9674640e-c06c-473e-8592-fa33e2806248
       version: -1
       name: Run a PostgreSQL Query
@@ -58,11 +60,6 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description: null
-      occurred: null
-      tags: null
-      customfields: {}
   "2":
     id: "2"
     taskid: 630d0a33-3041-4259-86fc-ea3d86bb3d61

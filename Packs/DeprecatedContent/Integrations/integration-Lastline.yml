@@ -1007,7 +1007,7 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: The task UUID of the submitted Lastline analysis. 
+      description: The task UUID of the submitted Lastline analysis.
       isArray: true
     outputs:
     - contextPath: Lastline.Submission.UUID
@@ -1019,4 +1019,4 @@ script:
     description: Checks the status of a submission.
   runonce: false
 tests:
-  - detonate_file_-_generic_test
+  - No tests - deprecated

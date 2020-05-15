@@ -2,6 +2,7 @@ id: AlienVaultOTX Test
 version: -1
 name: AlienVaultOTX Test
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
