@@ -183,5 +183,6 @@
 	},
 	"unclassifiedCases": {},
 	"version": -1,
-	"fromversion": "5.0.0"
+	"fromversion": "5.0.0",
+	"toversion": "5.0.0"
 }
