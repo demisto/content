@@ -71,30 +71,21 @@ def translate_indicators(ts_indicators, context_path=''):
     ec = {}
     if file_context:
         ec['{}File(val.Name && val.Name === obj.Name)'.format(context_path)] = file_context
-        ec['File(val.Name && val.Name === obj.Name)'] = file_context
     if url_context:
         ec['{}URL(val.Address && val.Address === obj.Address)'.format(context_path)] = url_context
-        ec['URL(val.Address && val.Address === obj.Address)'] = url_context
     if ip_context:
         ec['{}IP(val.Address && val.Address === obj.Address)'.format(context_path)] = ip_context
-        ec['IP(val.Address && val.Address === obj.Address)'] = ip_context
     if email_context:
         ec['{}Account.Email(val.Address && val.Address === obj.Address)'.format(context_path)] = email_context
-        ec['Account.Email(val.Address && val.Address === obj.Address)'] = email_context
     if key_context:
         ec['{}RegistryKey(val.Path && val.Path === obj.Path)'.format(context_path)] = key_context
-        ec['RegistryKey(val.Path && val.Path === obj.Path)'] = key_context
     if cve_context:
         ec['{}CVE(val.ID && val.ID === obj.ID)'.format(context_path)] = cve_context
-        ec['CVE(val.ID && val.ID === obj.ID)'] = cve_context
     return indicators, ec
 
 
 def translate_triage_submission(submissions):
     submission_dicts = [s.to_dict(remove_nones=True) for s in submissions]
-    for submission in submission_dicts:
-        indicators = [c.to_dict(remove_nones=True) for c in submission.get('context')]
-        submission['context'] = indicators
     ec = {'TruSTAR.PhishingSubmission(val.submissionId == obj.submissionId)': submission_dicts}
     return submission_dicts, ec
 
@@ -661,14 +652,14 @@ def get_enclaves():
     return entry
 
 
-def get_all_phishing_indicators(normalized_triage_score,
-                                normalized_source_score,
+def get_all_phishing_indicators(priority_event_score,
+                                normalized_indicator_score,
                                 from_time,
                                 to_time,
                                 status):
     cursor = encode_cursor(1000, 0)
-    args = {'normalized_triage_score': normalized_triage_score,
-            'normalized_source_score': normalized_source_score,
+    args = {'priority_event_score': priority_event_score,
+            'normalized_indicator_score': normalized_indicator_score,
             'status': status,
             'cursor': cursor,
             'from_time': date_to_unix(from_time) if from_time else None,
@@ -689,12 +680,12 @@ def get_all_phishing_indicators(normalized_triage_score,
     return 'No phishing indicators were found.'
 
 
-def get_phishing_submissions(normalized_triage_score,
+def get_phishing_submissions(priority_event_score,
                              from_time,
                              to_time,
                              status):
     cursor = encode_cursor(1000, 0)
-    args = {'normalized_triage_score': normalized_triage_score,
+    args = {'priority_event_score': priority_event_score,
             'status': status,
             'cursor': cursor,
             'from_time': date_to_unix(from_time) if from_time else None,
@@ -820,15 +811,15 @@ try:
                                                  ('Domain', 'URL',), create_domain_ec))
 
     elif demisto.command() == 'trustar-get-phishing-indicators':
-        nts = argToList(demisto.args().get('normalized_triage_score'))
-        nss = argToList(demisto.args().get('normalized_source_score'))
+        nts = argToList(demisto.args().get('priority_event_score'))
+        nss = argToList(demisto.args().get('normalized_indicator_score'))
         ft = demisto.args().get('from_time')
         tt = demisto.args().get('to_time')
         st = argToList(demisto.args().get('status'))
         demisto.results(get_all_phishing_indicators(nts, nss, ft, tt, st))
 
     elif demisto.command() == 'trustar-get-phishing-submissions':
-        nts = argToList(demisto.args().get('normalized_triage_score'))
+        nts = argToList(demisto.args().get('priority_event_score'))
         ft = demisto.args().get('from_time')
         tt = demisto.args().get('to_time')
         st = argToList(demisto.args().get('status'))
