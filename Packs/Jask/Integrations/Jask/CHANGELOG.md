@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with bad access to a `SourceType` key in **jask-get-insight-details** command.
 
 ## [20.5.0] - 2020-05-12
 -
