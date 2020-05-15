@@ -33,6 +33,7 @@ tasks:
     taskid: 327dbe71-4358-4537-8886-5387ea8a573f
     type: regular
     task:
+      description: ""
       id: 327dbe71-4358-4537-8886-5387ea8a573f
       version: -1
       name: Add indicator to miner
@@ -97,6 +98,7 @@ tasks:
     taskid: d0fc8601-4837-4643-880f-bb162c700012
     type: regular
     task:
+      description: ""
       id: d0fc8601-4837-4643-880f-bb162c700012
       version: -1
       name: Retrieve indicator from miner's list
@@ -128,6 +130,7 @@ tasks:
     taskid: 8913bd00-a0ca-441a-8299-567967c292cd
     type: condition
     task:
+      description: ""
       id: 8913bd00-a0ca-441a-8299-567967c292cd
       version: -1
       name: Test if indicator exists
@@ -184,6 +187,7 @@ tasks:
     taskid: 94a9d11a-348d-40f4-8c65-f1e11f0df8bd
     type: regular
     task:
+      description: ""
       id: 94a9d11a-348d-40f4-8c65-f1e11f0df8bd
       version: -1
       name: Remove indicator from miner
@@ -215,6 +219,7 @@ tasks:
     taskid: 6a78600e-5eee-4788-8fef-fc674e4a6f45
     type: condition
     task:
+      description: ""
       id: 6a78600e-5eee-4788-8fef-fc674e4a6f45
       version: -1
       name: Test if indicator exists
@@ -271,6 +276,7 @@ tasks:
     taskid: ea914bc7-d916-44a1-89ba-87e18f86b1c3
     type: title
     task:
+      description: ""
       id: ea914bc7-d916-44a1-89ba-87e18f86b1c3
       version: -1
       name: Test finished successfuly
@@ -293,6 +299,7 @@ tasks:
     taskid: b3277152-1d15-42b6-8dc9-124fa028d4b4
     type: regular
     task:
+      description: ""
       id: b3277152-1d15-42b6-8dc9-124fa028d4b4
       version: -1
       name: Retrieve miner's indicators list
@@ -384,6 +391,7 @@ tasks:
     taskid: 6d398f72-da10-4c01-8649-6d9e562154d3
     type: regular
     task:
+      description: ""
       id: 6d398f72-da10-4c01-8649-6d9e562154d3
       version: -1
       name: Check IP
@@ -413,6 +421,7 @@ tasks:
     taskid: b4e69877-d0c5-4c00-8ed7-40fda5c77b00
     type: regular
     task:
+      description: ""
       id: b4e69877-d0c5-4c00-8ed7-40fda5c77b00
       version: -1
       name: Add IP indicator to miner
@@ -446,6 +455,7 @@ tasks:
     taskid: f726c9a4-d16c-4d8e-87fd-9ebd799ec860
     type: condition
     task:
+      description: ""
       id: f726c9a4-d16c-4d8e-87fd-9ebd799ec860
       version: -1
       name: Test if IP indicator exists
@@ -503,6 +513,7 @@ tasks:
     taskid: f35d7413-1dd6-4649-85c9-f14c46d148b5
     type: regular
     task:
+      description: ""
       id: f35d7413-1dd6-4649-85c9-f14c46d148b5
       version: -1
       name: Remove indicator from miner
@@ -633,6 +644,7 @@ tasks:
     taskid: 4feb6d0c-ff62-46e0-871a-878c7dc3534a
     type: condition
     task:
+      description: ""
       id: 4feb6d0c-ff62-46e0-871a-878c7dc3534a
       version: -1
       name: Test if indicator Exists
@@ -741,6 +753,7 @@ tasks:
     taskid: 541e6287-ea77-4c73-8b1a-71259424f2f2
     type: condition
     task:
+      description: ""
       id: 541e6287-ea77-4c73-8b1a-71259424f2f2
       version: -1
       name: Test if SHA256 indicator exists
@@ -815,6 +828,7 @@ tasks:
     taskid: ed829bc7-d559-499b-85ef-6656af77bffe
     type: condition
     task:
+      description: ""
       id: ed829bc7-d559-499b-85ef-6656af77bffe
       version: -1
       name: Test if MD5 indicator exists
@@ -889,6 +903,7 @@ tasks:
     taskid: 721f3efa-3ce8-4c13-8814-652d34df7ee0
     type: condition
     task:
+      description: ""
       id: 721f3efa-3ce8-4c13-8814-652d34df7ee0
       version: -1
       name: Test if SHA1 indicator exists
