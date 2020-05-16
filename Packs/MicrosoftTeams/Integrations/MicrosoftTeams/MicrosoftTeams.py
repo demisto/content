@@ -551,7 +551,7 @@ def integration_health():
         'Graph API Health': graph_api_health
     }]
 
-    api_health_human_readble: str = tableToMarkdown('Microsoft API Health', api_health_output)
+    adi_health_human_readable: str = tableToMarkdown('Microsoft API Health', api_health_output)
 
     mirrored_channels_output = list()
     integration_context: dict = demisto.getIntegrationContext()
@@ -574,7 +574,12 @@ def integration_health():
     else:
         mirrored_channels_human_readable = 'No mirrored channels.'
 
-    demisto.results(api_health_human_readble + mirrored_channels_human_readable)
+    demisto.results({
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'HumanReadable': adi_health_human_readable + mirrored_channels_human_readable,
+        'Contents': adi_health_human_readable + mirrored_channels_human_readable
+    })
 
 
 def validate_auth_header(headers: dict) -> bool:
