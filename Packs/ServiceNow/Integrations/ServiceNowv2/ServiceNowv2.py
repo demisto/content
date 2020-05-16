@@ -1793,6 +1793,8 @@ def test_module(client: Client, *_):
             ticket = ticket[0]
         if client.timestamp_field not in ticket:
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket.")
+        if client.incident_name not in ticket:
+            raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
     demisto.results('ok')
     return '', {}, {}
 

@@ -47,7 +47,7 @@ configuration:
   name: timestamp_field
   required: false
   type: 0
-- display: ServiceNow ticket column to be set as the incident name
+- display: ServiceNow ticket column to be set as the incident name, default is the incident number
   hidden: false
   name: incident_name
   required: false
