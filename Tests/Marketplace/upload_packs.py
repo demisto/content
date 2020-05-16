@@ -432,7 +432,6 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
@@ -443,6 +442,7 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
+    parser.add_argument('--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Comma separated list of target pack names. "
                               "Define `All` in order to store all available packs."),
