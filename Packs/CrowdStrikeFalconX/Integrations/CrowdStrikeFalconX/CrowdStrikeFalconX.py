@@ -406,12 +406,13 @@ def check_quota_status_command(
 
 def find_sandbox_reports_command(
         client: Client,
-        limit: int = 50, #lower?
+        limit: int = 50,
         filter: str = "",
         offset: str = "",
         sort: str = "",
 ) -> Tuple[str, dict, dict]:
     """Find sandbox reports by providing an FQL filter and paging details.
+    :param client: the client object with an access token
     :param limit: maximum number of report IDs to return
     :param filter: optional filter and sort criteria in the form of an FQL query
     :param offset: the offset to start retrieving reports from.
@@ -443,6 +444,7 @@ def find_submission_id_command(
         sort: str = "",
 ) -> Tuple[str, dict, dict]:
     """Find submission IDs for uploaded files by providing an FQL filter and paging details.
+    :param client: the client object with an access token
     :param limit: maximum number of report IDs to return
     :param filter: optional filter and sort criteria in the form of an FQL query
     :param offset: the offset to start retrieving reports from.
