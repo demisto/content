@@ -274,7 +274,7 @@ def upload_core_packs_config(storage_bucket, packs_list):
     print_color(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.", LOG_COLORS.GREEN)
 
 
-def upload_id_set(storage_bucket, id_set_local_path):
+def upload_id_set(storage_bucket, id_set_local_path=None):
     """
     Uploads the id_set.json artifact to the bucket.
 
@@ -282,6 +282,9 @@ def upload_id_set(storage_bucket, id_set_local_path):
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         id_set_local_path: path to the id_set.json file
     """
+    if not id_set_local_path:
+        print("Skipping upload of id set to gcs.")
+
     id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
     blob = storage_bucket.blob(id_set_gcs_path)
 
@@ -582,8 +585,7 @@ def main():
     upload_core_packs_config(storage_bucket, packs_list)
 
     # upload id_set.json to bucket
-    if id_set_path:
-        upload_id_set(storage_bucket, id_set_path)
+    upload_id_set(storage_bucket, id_set_path)
 
     # summary of packs status
     print_packs_summary(packs_list)
