@@ -7,15 +7,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: This is the Hello World integration for getting started.
+description: Fully automated malware analysis.
 display: CrowdStrikeFalconX
 name: CrowdStrikeFalconX
 script:
@@ -594,9 +586,9 @@ script:
     - contextPath: csfalconx.resource.environment_id
       description: Environment ID of the analysis
       type: Unknown
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.2.6981
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false

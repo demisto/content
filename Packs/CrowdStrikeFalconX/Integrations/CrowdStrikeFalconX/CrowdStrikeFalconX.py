@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -17,60 +18,19 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url: str, username: str, password: str):
+        super().__init__(base_url=server_url, verify=False)
         self._base_url = server_url
         self._username = username
         self._password = password
         self.token = self._generate_token()
 
-    def http_request(self, method, url_suffix, data=None, headers=None, params=None, json=None, response_type: str = 'json'):
-        """
-        Generic request to CrowdStrikeFalconX
-        """
-        full_url = urljoin(self._base_url, url_suffix)
-
-        try:
-            result = requests.request(
-                method,
-                full_url,
-                verify=False,
-                params=params,
-                data=data,
-                headers=headers,
-                json=json
-            )
-            if not result.ok:
-                demisto.log(result.text)
-                raise ValueError(f'Error in API call to CrowdStrikeFalconX {result.status_code}. Reason: {result.text}')
-
-            if response_type != 'json':
-                return result.text
-            return result.json()
-
-        except Exception as exception:
-            raise Exception(str(exception))
-
-    def post_http_req_falconx_json(self, url_suffix, data):
-        headers = {
-            'Authorization': 'bearer ' + self.token,
-            'Content-Type': 'application/json',
-        }
-
-        return self.http_request("POST", url_suffix, headers=headers, json=data)
-
-    def post_http_req_falconx_octet_stream(self, url_suffix, data):
-        headers = {
-            'Authorization': 'bearer ' + self.token,
-            'Content-Type': 'application/octet-stream',
-        }
-
-        return self.http_request("POST", url_suffix, headers=headers, data=data)
-
-    def get_http_req_falconx(self, url_suffix, params=None):
+    def cs_falconx_http_req(self, method, url_suffix, content_type=None, data=None, json_data=None, param=None):
         headers = {
             'Authorization': 'bearer ' + self.token,
         }
-
-        return self.http_request("Get", url_suffix, headers=headers, params=params)
+        if content_type:
+            headers['Content-Type'] = content_type
+        return self._http_request(method, url_suffix, headers=headers, data=data, json_data=json_data, params=param)
 
     def _generate_token(self) -> str:
         """Generate an Access token
@@ -89,61 +49,66 @@ class Client(BaseClient):
         headers = {
             'Authorization': f'Basic {base64.b64encode(byte_creds).decode()}'
         }
-        token_res = self.http_request('POST', '/oauth2/token', data=body, headers=headers)
+        token_res = self._http_request('POST', '/oauth2/token', data=body, headers=headers)
         return token_res.get('access_token')
 
 
-def _create_short_context_falconx(resources: dict):
-    sandbox = resources.get("sandbox")[0]
-    resource_output = {
-        'id': resources.get("id"),
-        'state': resources.get("state"),
-        'created_timestamp': resources.get("created_timestamp"),
-        'sha256': sandbox.get("sha256"),
-        'environment_id': sandbox.get("environment_id")
-    }
-    return {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
+def add_outputs_from_dict(
+        api_current_dict: dict,
+        fields_to_keep: list
+) -> dict:
+    if not api_current_dict or not fields_to_keep:
+        return {}
 
-
-def parse_outputs(groups_data: Dict[str, str], fields_to_keep) -> Dict[str, str]:
-    """Parse group data as received from Microsoft Graph API into Demisto's conventions
-    Args:
-        groups_data: a dictionary containing the group data
-    Returns:
-        A Camel Cased dictionary with the relevant fields.
-        groups_readable: for the human readable
-        groups_outputs: for the entry context
-    """
     group_outputs = {}
-    for group_data in groups_data:
-        group_outputs = {i: j for i, j in group_data.items() if i in fields_to_keep}
+
+    for field_to_keep in fields_to_keep:
+        if field_to_keep in api_current_dict.keys():
+            group_outputs[field_to_keep] = api_current_dict.get(field_to_keep)
+
     return group_outputs
 
 
-def _create_full_context_falconx(resources: dict):
-    sandbox = resources.get("sandbox")[0]
-    resource_output = {
-        'id': resources.get("id"),
-        'verdict': resources.get("verdict"),
-        'created_timestamp': resources.get("created_timestamp"),
-        'environment_id': sandbox.get("environment_id"),
-        'environment_description': sandbox.get("environment_description"),
-        'sandbox_threat_score': sandbox.get("threat_score"),
-        'sandbox_submit_url': sandbox.get("submit_url"),
-        'submission_type': sandbox.get("submission_type"),
-        'sandbox_filetyp': sandbox.get("filetyp"),  # find
-        'sandbox_filesize': sandbox.get("filesize"),  # find
-        'sandbox_sha256': sandbox.get("sha256"),
-        'ioc_strict_csv': resources.get("ioc_report_strict_csv_artifact_id"),
-        'ioc_broad_csv': resources.get("ioc_report_broad_csv_artifact_id"),
-        'ioc_strict_jason': resources.get("ioc_report_strict_json_artifact_id"),
-        'ioc_broad_jason': resources.get("ioc_report_broad_json_artifact_id"),
-        'ioc_strict_stix': resources.get("ioc_report_strict_stix_artifact_id"),
-        'ioc_broad_stix': resources.get("ioc_report_broad_stix_artifact_id"),
-        'ioc_strict_maec': resources.get("ioc_report_strict_maec_artifact_id"),
-        'ioc_broad_maec': resources.get("ioc_report_broad_maec_artifact_id"),
-    }
-    return {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
+def parse_outputs(
+        api_res: Dict,
+        meta_fields: list = [],
+        quota_fields: list = [],
+        resources_fields: list = [],
+        sandbox_filds: list = []
+) -> Dict[str, dict]:
+    """Parse group data as received from CrowdStrike FalconX API into Demisto's conventions
+    the output from the API is a dict that contains the keys: meta, resources and errors
+    the meta contains a "quota" dict
+    the "resources" is an array that contains the sandbox dict
+    if the error isn't empty......
+    """
+    if api_res.get("errors"):
+        return api_res.get("errors")
+
+    api_res_meta, api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}, {}
+    resources_group_outputs, sandbox_group_outputs = {}, {}
+
+    api_res_meta = api_res.get("meta")
+    if api_res_meta:
+        api_res_quota = api_res_meta.get("quota")
+
+    meta_group_outputs = add_outputs_from_dict(api_res_meta, meta_fields)
+    quota_group_outputs = add_outputs_from_dict(api_res_quota, quota_fields)
+
+    if api_res.get("resources"):
+        if type(api_res.get("resources")[0]) == dict:
+            api_res_resources = api_res.get("resources")[0]
+            resources_group_outputs = add_outputs_from_dict(api_res_resources, resources_fields)
+
+            if api_res_resources and api_res_resources.get("sandbox"):
+                api_res_sandbox = api_res_resources.get("sandbox")[0]
+                sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, sandbox_filds)
+        else:
+            resources_group_outputs={"resources":api_res.get("resources")}
+
+    merged_dicts = {**meta_group_outputs, **quota_group_outputs, **resources_group_outputs, **sandbox_group_outputs}
+
+    return {f'csfalconx.resource(val.resource === obj.resource)': merged_dicts}
 
 
 def test_module(client):
@@ -151,25 +116,25 @@ def test_module(client):
     If a client was made then an accesses token was successfully reached,
     therefor the username and password are valid and a connection was made
     """
-    return 'ok'
+    return 'ok', {}, []
 
 
 def upload_file_command(
         client: Client,
-        file: str,# orel.fix file path?
+        file: str,
         file_name: str,
-        comment: str,
-        is_confidential: str
+        is_confidential: str,
+        comment: str = ""
 ) -> Tuple[str, dict, dict]:
 
     url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
     data = open(file, 'rb').read()
-    response = client.post_http_req_falconx_octet_stream(url_suffix, data)
-    resource_output = {
-        'sha256': response.get("resources")[0].get("sha256"),
-        'file_name': file_name,
-    }
-    entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
+
+    response = client.cs_falconx_http_req("POST", url_suffix, content_type='application/octet-stream', data=data)
+
+    resources_fields = ["file_name", "sha256"]
+    entry_context = parse_outputs(response, resources_fields=resources_fields)
+
     return response, entry_context, response
 
 
@@ -177,13 +142,13 @@ def send_uploaded_file_to_sendbox_analysis_command(
         client: Client,
         sha256: str,
         environment_id: int,
-        action_script: str,
-        command_line: str,
-        document_password: str,
-        enable_tor: str,
-        submit_name: str,
-        system_date: str,
-        system_time: str
+        action_script: str = "",
+        command_line: str = "",
+        document_password: str = "",
+        enable_tor: str = "false",
+        submit_name: str = "",
+        system_date: str = "",
+        system_time: str = ""
 ) -> Tuple[str, dict, dict]:
 
     url_suffix = "/falconx/entities/submissions/v1"
@@ -203,17 +168,12 @@ def send_uploaded_file_to_sendbox_analysis_command(
         ]
     }
 
-    response = client.post_http_req_falconx_json(url_suffix, body)
+    response = client.cs_falconx_http_req("POST", url_suffix, content_type='application/json', json_data=body)
 
-    resources = response.get("resources")[0]
-    resource_output = {
-        'id': resources.get("id"),
-        'state': resources.get("state"),
-        'created_timestamp': resources.get("created_timestamp"),
-        'sha256': sha256,
-        'environment_id': environment_id
-    }
-    entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
+    sandbox_filds = ["environment_id", "sha256"]
+    resource_fields = ['id', 'state', 'created_timestamp', 'created_timestamp']
+    entry_context = parse_outputs(response, sandbox_filds=sandbox_filds, resources_fields=resource_fields)
+
     return response, entry_context, response
 
 
@@ -245,9 +205,12 @@ def send_url_to_sandbox_analysis_command(
             }
         ]
     }
-    response = client.post_http_req_falconx_json(url_suffix, body)
-    resources = response.get("resources")[0]
-    entry_context = _create_short_context_falconx(resources)
+    response = client.cs_falconx_http_req("POST", url_suffix, content_type='application/json', json_data=body)
+
+    resources_fields = ['id', 'state', 'created_timestamp']
+    sandbox_filds = ["environment_id", "sha256"]
+    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_filds=sandbox_filds)
+
     return response, entry_context, response
 
 
@@ -260,12 +223,18 @@ def get_full_report_command(
     params = {
         "ids": ids
     }
-    response = client.get_http_req_falconx(url_suffix, params)
-    resources = response.get("resources")[0]
+    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
 
-    entry_context = _create_full_context_falconx(resources)
-    print(response)
-    print(entry_context)
+    resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
+                        "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
+                        "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
+                        "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
+                        "ioc_report_broad_maec_artifact_id"]
+
+    sandbox_filds = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
+                     "filetyp", "filesize", "sha256"]
+    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_filds=sandbox_filds)
+
     return response, entry_context, response
 
 
@@ -278,10 +247,17 @@ def get_report_summary_command(
     params = {
         "ids": ids
     }
-    response = client.get_http_req_falconx(url_suffix, params)
-    resources = response.get("resources")[0]
+    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
 
-    entry_context = _create_full_context_falconx(resources)
+    resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
+                        "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
+                        "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
+                        "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
+                        "ioc_report_broad_maec_artifact_id"]
+
+    sandbox_filds = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
+                     "filetyp", "filesize", "sha256"]
+    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_filds=sandbox_filds)
 
     return response, entry_context, response
 
@@ -295,9 +271,11 @@ def get_analysis_status_command(
     params = {
         "ids": ids
     }
-    response = client.get_http_req_falconx(url_suffix, params)
-    resources = response.get("resources")[0]
-    entry_context = _create_short_context_falconx(resources)
+    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
+
+    resources_fields = ['id', 'state', 'created_timestamp']
+    sandbox_filds = ["environment_id", "sha256"]
+    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_filds=sandbox_filds)
 
     return response, entry_context, response
 
@@ -305,19 +283,18 @@ def get_analysis_status_command(
 def download_ioc_command(
         client: Client,
         id: str,
-        name: str,
-        accept_encoding: str
+        name: str = "",
+        accept_encoding: str = ""
 ) -> Tuple[str, dict, dict]:
 
     url_suffix = f"/falconx/entities/artifacts/v1?id={id}&name={name}&Accept-Encoding={accept_encoding}"
     params = {
-        "id": id,
+        "ids": id,
         "name": name,
         "Accept-Encoding": accept_encoding,
     }
-    response = client.get_http_req_falconx(url_suffix, params)
-    # entry_context not final
-    return response
+    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
+    return response, {}, response # there is an issue with the entry context here
 
 
 def check_quota_status_command(
@@ -325,24 +302,20 @@ def check_quota_status_command(
 ) -> Tuple[str, dict, dict]:
     url_suffix = f"/falconx/entities/submissions/v1?ids="
 
-    response = client.get_http_req_falconx(url_suffix)
-    quota = response.get("meta").get("quota")
-    resource_output = {
-        'quota_total': quota.get("total"),
-        'quota_used': quota.get("used"),
-        'quota_in_progress': quota.get("in_progress"),
-    }
-    entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
+    response = client.cs_falconx_http_req("Get", url_suffix)
+
+    quota_fields = ['total', 'used', 'in_progress']
+    entry_context = parse_outputs(response, quota_fields=quota_fields)
 
     return response, entry_context, response
 
 
 def find_sandbox_reports_command(
         client: Client,
-        filter: str,
-        offset: str,
         limit: int,
-        sort: str
+        filter: str = "",
+        offset: str = "",
+        sort: str = "",
 ) -> Tuple[str, dict, dict]:
 
     url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
@@ -353,21 +326,20 @@ def find_sandbox_reports_command(
         "sort": sort,
     }
 
-    response = client.get_http_req_falconx(url_suffix, params)
-    resource_output = {
-        'id': response.get("resources")[0],
-    }
-    entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
+    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
+
+    resources_fields = ['id']
+    entry_context = parse_outputs(response, resources_fields=resources_fields)
 
     return response, entry_context, response
 
 
 def find_submission_id_command(
         client: Client,
-        offset: str,
-        filter: str,
         limit: int,
-        sort: str
+        offset: str="",
+        filter: str="",
+        sort: str = "",
 ) -> Tuple[str, dict, dict]:
 
     url_suffix = f"/falconx/queries/submissions/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
@@ -378,13 +350,11 @@ def find_submission_id_command(
         "limit": limit,
         "sort": sort,
     }
-    response = client.get_http_req_falconx(url_suffix, params)
-    resource_output = {
-        'id': response.get("resources")[0],
-    }
-    entry_context = {f'csfalconx.resource(val.resource === obj.resource)': resource_output}
-    print(response)
-    print(entry_context)
+    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
+
+    resources_fields = ['id']
+    entry_context = parse_outputs(response, resources_fields=resources_fields)
+
     return response, entry_context, response
 
 
@@ -416,7 +386,7 @@ def main():
         else:
             raise NotImplementedError(f'{command} is not an existing CrowdStrikeFalconX command')
     except Exception as err:
-        return_error(str(err))
+        return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
