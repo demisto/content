@@ -12,9 +12,27 @@ import traceback
 requests.packages.urllib3.disable_warnings()
 
 
+def convert_environment_id_string_to_int(environment_id: str) -> int:
+    """
+    Converting the string that describes the environment id into an int which needed for the http request
+    :param environment_id: one of the environment_id options
+    :return: environment_id represented by an int
+    """
+    environment_id_options = {
+        "300: Linux Ubuntu 16.04": 300,
+        "200: Android (static analysis)": 200,
+        "160: Windows 10": 160,
+        "110: Windows 7": 110,
+        "100: Windows 7": 100,
+        "64-bit": 64,
+        "32-bit": 32,
+    }
+    return environment_id_options.get(environment_id)
+
+
 class Client(BaseClient):
     """
-    Client to use in the CrowdStrikeFalconX integration. Overrides BaseClient
+    Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
     """
 
     def __init__(self, server_url: str, username: str, password: str):
@@ -33,10 +51,8 @@ class Client(BaseClient):
         return self._http_request(method, url_suffix, headers=headers, data=data, json_data=json_data, params=param)
 
     def _generate_token(self) -> str:
-        """Generate an Access token
-
-        Returns:
-            valid token
+        """Generate an Access token using the user name and password
+        :return: valid token
         """
 
         body = {
@@ -57,6 +73,12 @@ def add_outputs_from_dict(
         api_current_dict: dict,
         fields_to_keep: list
 ) -> dict:
+    """
+    Filters a dict and keeps only the keys that appears in the given list
+    :param api_current_dict: the origin dict
+    :param fields_to_keep: the list which contains the wanted keys
+    :return: a dict based on api_current_dict without the keys that doesn't appear in fields_to_keep
+    """
     if not api_current_dict or not fields_to_keep:
         return {}
 
@@ -80,9 +102,16 @@ def parse_outputs(
     the output from the API is a dict that contains the keys: meta, resources and errors
     the meta contains a "quota" dict
     the "resources" is an array that contains the sandbox dict
-    if the error isn't empty......
+    the function filters the wanted params from the api result
+    :param api_res: the api result from the http request
+    :param meta_fields: the wanted params that appear in the mate section
+    :param quota_fields: the wanted params that appear in the quota section
+    :param resources_fields: the wanted params that appear in the resources section
+    :param sandbox_filds: the wanted params that appear in the sandbox section
+    :return: a dict based on api_res with the wanted params only
     """
     if api_res.get("errors"):
+        # if there is an error in the api result, return only the error
         return api_res.get("errors")
 
     api_res_meta, api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}, {}
@@ -96,6 +125,8 @@ def parse_outputs(
     quota_group_outputs = add_outputs_from_dict(api_res_quota, quota_fields)
 
     if api_res.get("resources"):
+        # depended on the command, the resources section can be a str list or a list that contains
+        # only one argument which is a dict
         if type(api_res.get("resources")[0]) == dict:
             api_res_resources = api_res.get("resources")[0]
             resources_group_outputs = add_outputs_from_dict(api_res_resources, resources_fields)
@@ -104,7 +135,8 @@ def parse_outputs(
                 api_res_sandbox = api_res_resources.get("sandbox")[0]
                 sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, sandbox_filds)
         else:
-            resources_group_outputs={"resources":api_res.get("resources")}
+            # the resources section is a list of strings
+            resources_group_outputs = {"resources": api_res.get("resources")}
 
     merged_dicts = {**meta_group_outputs, **quota_group_outputs, **resources_group_outputs, **sandbox_group_outputs}
 
@@ -123,9 +155,17 @@ def upload_file_command(
         client: Client,
         file: str,
         file_name: str,
-        is_confidential: str,
+        is_confidential: str = "true",
         comment: str = ""
 ) -> Tuple[str, dict, dict]:
+    """Upload a file for sandbox analysis.
+    :param client: the client object with an access token
+    :param file: content of the uploaded sample in binary format
+    :param file_name: name of the file
+    :param is_confidential: defines visibility of this file in Falcon MalQuery, either via the API or the Falcon console
+    :param comment: a descriptive comment to identify the file for other users
+    :return: Demisto outputs
+    """
 
     url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
     data = open(file, 'rb').read()
@@ -150,13 +190,26 @@ def send_uploaded_file_to_sendbox_analysis_command(
         system_date: str = "",
         system_time: str = ""
 ) -> Tuple[str, dict, dict]:
+    """Submit a sample SHA256 for sandbox analysis.
+    :param client: the client object with an access token
+    :param sha256: SHA256 ID of the sample, which is a SHA256 hash value
+    :param environment_id: specifies the sandbox environment used for analysis
+    :param action_script: runtime script for sandbox analysis
+    :param command_line: command line script passed to the submitted file at runtime
+    :param document_password: auto-filled for Adobe or Office files that prompt for a password
+    :param enable_tor: if true, sandbox analysis routes network traffic via TOR
+    :param submit_name: name of the malware sample that’s used for file type detection and analysis
+    :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
+    :param system_time: set a custom time in the format HH:mm for the sandbox environment.
+    :return: Demisto outputs
+    """
 
     url_suffix = "/falconx/entities/submissions/v1"
     body = {
         "sandbox": [
             {
                 "sha256": sha256,
-                "environment_id": environment_id,
+                "environment_id": convert_environment_id_string_to_int(environment_id),
                 "action_script": action_script,
                 "command_line": command_line,
                 "document_password": document_password,
@@ -181,20 +234,34 @@ def send_url_to_sandbox_analysis_command(
         client: Client,
         url: str,
         environment_id: int,
-        action_script: str,
-        command_line: str,
-        document_password: str,
-        enable_tor: str,
-        submit_name: str,
-        system_date: str,
-        system_time: str
+        action_script: str = "",
+        command_line: str = "",
+        document_password: str = "",
+        enable_tor: str = "false",
+        submit_name: str = "",
+        system_date: str = "",
+        system_time: str = ""
 ) -> Tuple[str, dict, dict]:
+    """Submit a URL or FTP for sandbox analysis.
+    :param client: the client object with an access token
+    :param url: a web page or file URL. It can be HTTP(S) or FTP.
+    :param environment_id: specifies the sandbox environment used for analysis
+    :param action_script: runtime script for sandbox analysis
+    :param command_line: command line script passed to the submitted file at runtime
+    :param document_password: auto-filled for Adobe or Office files that prompt for a password
+    :param enable_tor: if true, sandbox analysis routes network traffic via TOR
+    :param submit_name: name of the malware sample that’s used for file type detection and analysis
+    :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
+    :param system_time: set a custom time in the format HH:mm for the sandbox environment.
+    :return: Demisto outputs
+    """
+
     url_suffix = "/falconx/entities/submissions/v1"
     body = {
         "sandbox": [
             {
                 "url": url,
-                "environment_id": environment_id,
+                "environment_id": convert_environment_id_string_to_int(environment_id),
                 "action_script": action_script,
                 "command_line": command_line,
                 "document_password": document_password,
@@ -218,6 +285,11 @@ def get_full_report_command(
         client: Client,
         ids: list
 ) -> Tuple[str, dict, dict]:
+    """Get a full version of a sandbox report.
+    :param client: the client object with an access token
+    :param ids: ids of a submitted malware samples.
+    :return: Demisto outputs
+    """
 
     url_suffix = f"/falconx/entities/reports/v1?ids={id}"
     params = {
@@ -242,6 +314,11 @@ def get_report_summary_command(
         client: Client,
         ids: list
 ) -> Tuple[str, dict, dict]:
+    """Get a short summary version of a sandbox report.
+    :param client: the client object with an access token
+    :param ids: ids of a submitted malware samples.
+    :return: Demisto outputs
+    """
 
     url_suffix = f"/falconx/entities/report-summaries/v1?ids={id}"
     params = {
@@ -266,6 +343,11 @@ def get_analysis_status_command(
         client: Client,
         ids: list
 ) -> Tuple[str, dict, dict]:
+    """Check the status of a sandbox analysis.
+    :param client: the client object with an access token
+    :param ids: ids of a submitted malware samples.
+    :return: Demisto outputs
+    """
 
     url_suffix = f"/falconx/entities/submissions/v1?ids={ids}"
     params = {
@@ -286,6 +368,13 @@ def download_ioc_command(
         name: str = "",
         accept_encoding: str = ""
 ) -> Tuple[str, dict, dict]:
+    """Download IOC packs, PCAP files, and other analysis artifacts.
+    :param client: the client object with an access token
+    :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
+    :param name: the name given to your downloaded file
+    :param accept_encoding: format used to compress your downloaded file
+    :return: Demisto outputs
+    """
 
     url_suffix = f"/falconx/entities/artifacts/v1?id={id}&name={name}&Accept-Encoding={accept_encoding}"
     params = {
@@ -300,6 +389,11 @@ def download_ioc_command(
 def check_quota_status_command(
         client: Client
 ) -> Tuple[str, dict, dict]:
+    """Search endpoint contains File Hash.
+    :param client: the client object with an access token
+    :return: Demisto outputs
+    """
+
     url_suffix = f"/falconx/entities/submissions/v1?ids="
 
     response = client.cs_falconx_http_req("Get", url_suffix)
@@ -312,11 +406,18 @@ def check_quota_status_command(
 
 def find_sandbox_reports_command(
         client: Client,
-        limit: int,
+        limit: int = 50, #lower?
         filter: str = "",
         offset: str = "",
         sort: str = "",
 ) -> Tuple[str, dict, dict]:
+    """Find sandbox reports by providing an FQL filter and paging details.
+    :param limit: maximum number of report IDs to return
+    :param filter: optional filter and sort criteria in the form of an FQL query
+    :param offset: the offset to start retrieving reports from.
+    :param sort: sort order: asc or desc
+    :return: Demisto outputs
+    """
 
     url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
     params = {
@@ -336,11 +437,18 @@ def find_sandbox_reports_command(
 
 def find_submission_id_command(
         client: Client,
-        limit: int,
-        offset: str="",
-        filter: str="",
+        limit: int = 50,
+        offset: str = "",
+        filter: str = "",
         sort: str = "",
 ) -> Tuple[str, dict, dict]:
+    """Find submission IDs for uploaded files by providing an FQL filter and paging details.
+    :param limit: maximum number of report IDs to return
+    :param filter: optional filter and sort criteria in the form of an FQL query
+    :param offset: the offset to start retrieving reports from.
+    :param sort: sort order: asc or desc
+    :return: Demisto outputs
+    """
 
     url_suffix = f"/falconx/queries/submissions/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
 

@@ -27,7 +27,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'true'
       description: Defines visibility of this file in Falcon MalQuery.
       isArray: false
       name: is_confidential
@@ -68,14 +67,14 @@ script:
       name: environment_id
       predefined:
       - '300: Linux Ubuntu 16.04'
-      - ' 64-bit'
+      - 64-bit
       - '200: Android (static analysis)'
       - '160: Windows 10'
-      - ' 64-bit'
+      - 64-bit
       - '110: Windows 7'
-      - ' 64-bit'
+      - 64-bit
       - '100: Windows 7'
-      - ' 32-bit'
+      - 32-bit
       required: true
       secret: false
     - auto: PREDEFINED
@@ -107,13 +106,12 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
       description: If true, sandbox analysis routes network traffic via TOR.
       isArray: false
       name: enable_tor
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -497,16 +495,21 @@ script:
       name: url
       required: true
       secret: false
-    - default: false
-      description: |-
-        Specifies the sandbox environment used for analysis. Values:
-        300: Linux Ubuntu 16.04, 64-bit
-        200: Android (static analysis)
-        160: Windows 10, 64-bit
-        110: Windows 7, 64-bit
-        100: Windows 7, 32-bit
+    - auto: PREDEFINED
+      default: false
+      description: Specifies the sandbox environment used for analysis.
       isArray: false
       name: environment_id
+      predefined:
+      - '300: Linux Ubuntu 16.04'
+      - 64-bit
+      - '200: Android (static analysis)'
+      - '160: Windows 10'
+      - 64-bit
+      - '110: Windows 7'
+      - 64-bit
+      - '100: Windows 7'
+      - 32-bit
       required: true
       secret: false
     - default: false
