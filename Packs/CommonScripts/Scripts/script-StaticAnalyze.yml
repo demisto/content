@@ -1,6 +1,6 @@
 commonfields:
   id: StaticAnalyze
-  version: 1
+  version: -1
 name: StaticAnalyze
 script: |-
   var entries = executeCommand('getEntries', {});
