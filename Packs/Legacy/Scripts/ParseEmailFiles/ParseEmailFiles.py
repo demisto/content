@@ -3180,7 +3180,7 @@ def parse_email_headers(header, raw=False):
 
 def get_msg_mail_format(msg_dict):
     try:
-        return msg_dict.get('Headers', 'Content-type:Unknown').split('Content-type:')[1].split(';')[0]
+        return msg_dict.get('Headers', 'Content-type:').split('Content-type:')[1].split(';')[0]
     except ValueError:
         return ''
     except IndexError:

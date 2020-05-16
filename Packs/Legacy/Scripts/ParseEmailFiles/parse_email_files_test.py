@@ -1,5 +1,5 @@
 from __future__ import print_function
-from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg
+from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import pytest
@@ -509,6 +509,18 @@ def test_no_content_type_file(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['Subject'] == 'No content type'
+
+
+def test_get_msg_mail_format():
+    format = get_msg_mail_format({
+        'Headers': 'Content-Type: text/plain;'
+    })
+    assert format == 'text/plain'
+
+    format = get_msg_mail_format({
+        'Something': 'else'
+    })
+    assert format == ''
 
 
 def test_no_content_file(mocker):
