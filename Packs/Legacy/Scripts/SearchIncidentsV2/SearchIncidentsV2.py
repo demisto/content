@@ -23,16 +23,12 @@ def is_valid_args(args: Dict):
     error_msg: List[str] = []
     for _key, value in args.items():
         if _key in array_args:
-            value = ','.join(value)
-        i = 0
-        while i < len(value):
-            if value[i] == '\\':
-                if value[i + 1] not in special:
-                    error_msg.append(f'Error while parsing the argument: "{_key}" '
-                                     f'\nSucceeded parsing untill:\n- "{value[0:i]}"')
-                else:
-                    i += 1
-            i += 1
+            try:
+                _ = bytes(value, "utf-8").decode("unicode_escape")
+            except UnicodeDecodeError as ex:
+                error_msg.append(f'Error while parsing the argument: "{_key}" '
+                                 f'\nError:\n- "{str(ex)}"')
+
     if len(error_msg) != 0:
         raise DemistoException('\n'.join(error_msg))
 
