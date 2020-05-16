@@ -1458,6 +1458,7 @@ def messages() -> Response:
     """
     Main handler for messages sent to the bot
     """
+    demisto.debug('Processing POST query...')
     headers: dict = cast(Dict[Any, Any], request.headers)
     if validate_auth_header(headers) is False:
         demisto.info(f'Authorization header failed: {str(headers)}')
