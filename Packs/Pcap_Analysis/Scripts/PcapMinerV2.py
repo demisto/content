@@ -25,7 +25,8 @@ RESPONSE_CODE = r'Response code: (.+)'
 
 class PCAP():
     @logger
-    def __init__(self, is_reg_extract: bool, extracted_protocols: list, homemade_regex: str, unique_ips: bool):
+    def __init__(self, is_reg_extract: bool, extracted_protocols: list, homemade_regex: str, unique_ips: bool,
+                 entry_id: str):
         """
         PCAP class. This class will contain all data and functions in order to mine the pcap.
 
@@ -56,6 +57,7 @@ class PCAP():
         self.last_layer = set([])  # type: set
         self.irc_data = list()  # type: list
         self.protocol_data = dict()  # type: Dict[str, Any]
+        self.entry_id = entry_id
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
         self.unique_ips = unique_ips
@@ -86,9 +88,10 @@ class PCAP():
             self.reg_cmd = re.compile(COMMAND_REGEX)
         if 'KERBEROS' in extracted_protocols:
             self.reg_sname = re.compile(SNAME_REGEX)
-            self.kerb_data = set()  # type: set
+            self.kerb_data = list()
         if 'SSH' in extracted_protocols:
             self.ssh_data = {
+                'EntryID': entry_id,
                 'ClientProtocols': set(),
                 'ServerProtocols': set(),
                 'KeyExchangeMessageCode': set()
@@ -103,7 +106,7 @@ class PCAP():
             self.reg_homemade = re.compile(self.homemade_regex)
 
     @logger
-    def repopulate_pcap_class(self, entry_id: str) -> None:
+    def repopulate_pcap_class(self) -> None:
         """
         If script is called with `iterate` parameter then it is called in a playbook and will run again and again (has
         to be defined in the playbook to rerun) until the whole PCAP is analyzed.
@@ -116,11 +119,11 @@ class PCAP():
         if not pcap_results:
             return
         if isinstance(pcap_results, dict):
-            if pcap_results.get('EntryID') == entry_id:
+            if pcap_results.get('EntryID') == self.entry_id:
                 pcap_saved_data = pcap_results.get('temp_data')
         else:
             for pcap_analysis in pcap_results:
-                if pcap_analysis.get('EntryID') == entry_id:
+                if pcap_analysis.get('EntryID') == self.entry_id:
                     pcap_saved_data = pcap_analysis.get('temp_data')
                     break
         if not pcap_saved_data:
@@ -132,9 +135,9 @@ class PCAP():
         self.__dict__.update(pickle.loads(codecs.decode(pcap_saved_data.encode(), "base64")))
 
     @logger
-    def save_pcap_to_context(self, entry_id, mined_packets):
+    def save_pcap_to_context(self, mined_packets):
         pickled_str = codecs.encode(pickle.dumps(self.__dict__), "base64").decode()
-        pcap_saved_data = {'EntryID': entry_id,
+        pcap_saved_data = {'EntryID': self.entry_id,
                            'temp_data': pickled_str}
         ec = {'PcapResults(val.EntryID == obj.EntryID)': pcap_saved_data}
         return_outputs(f'Analyzed {mined_packets} packets', ec, {})
@@ -143,6 +146,7 @@ class PCAP():
     def extract_dns(self, packet):
         dns_layer = packet.dns
         temp_dns = {
+            'EntryID': self.entry_id,
             'ID': dns_layer.get('id'),
             'Request': dns_layer.get('qry_name'),
             'Response': dns_layer.get('a'),
@@ -155,7 +159,8 @@ class PCAP():
     def extract_kerberos(self, packet):
         kerb_layer = packet.kerberos
         sname_results = self.reg_sname.findall(str(kerb_layer))
-        self.kerb_data.update({
+        self.kerb_data.append({
+            'EntryID': self.entry_id,
             'Realm': kerb_layer.get('realm'),
             'CName': kerb_layer.get('CNameString'),
             'SName': sname_results if sname_results else None,
@@ -178,6 +183,7 @@ class PCAP():
         query_type_results = self.llmnr_type.findall(llmnr_layer_string)
         query_class_results = self.llmnr_class.findall(llmnr_layer_string)
         llmnr_data = {
+            'EntryID': self.entry_id,
             'ID': llmnr_layer.get('dns_id'),
             'QueryType': None if len(query_type_results) == 0 else query_type_results[0],
             'QueryClass': None if len(query_class_results) == 0 else query_class_results[0],
@@ -190,6 +196,7 @@ class PCAP():
     def extract_syslog(self, packet):
         syslog_layer = packet.syslog
         syslog_data = {
+            'EntryID': self.entry_id,
             'ID': syslog_layer.get('msgid'),
             'Message': syslog_layer.get('msg'),
             'Hostname': syslog_layer.get('hostname'),
@@ -201,6 +208,7 @@ class PCAP():
     def extract_imf(self, packet):
         imf_layer = packet.imf
         imf_data = {
+            'EntryID': self.entry_id,
             'ID': imf_layer.get('Message-ID', -1),
             'To': imf_layer.get('to'),
             'From': imf_layer.get('from'),
@@ -213,7 +221,8 @@ class PCAP():
     def extract_smtp(self, packet):
         smtp_layer = packet.smtp
         parameters = smtp_layer.req_parameter.split(':')
-        smtp_data = {'ID': packet.tcp.seq}
+        smtp_data = {'EntryID': self.entry_id,
+            'ID': packet.tcp.seq}
         if len(parameters) == 2:
             smtp_data[parameters[0].title()] = strip(parameters[1], ['<', '>'])
         add_to_data(self.protocol_data['SMTP'], smtp_data, packet.tcp.nxtseq)
@@ -223,6 +232,7 @@ class PCAP():
         smb_layer = packet.smb2
         command_results = self.reg_cmd.findall(str(smb_layer))
         smb_data = {
+            'EntryID': self.entry_id,
             'ID': smb_layer.get('sesid', -1),
             'UserName': smb_layer.get('ntlmssp_auth_username'),
             'Domain': smb_layer.get('ntlmssp_auth_domain'),
@@ -239,6 +249,7 @@ class PCAP():
         type_results = self.reg_type.findall(str(netbios_layer))
         class_results = self.reg_class.findall(str(netbios_layer))
         netbios_data = {
+            'EntryID': self.entry_id,
             'ID': netbios_layer.get('id', -1),
             'Name': netbios_layer.get('name'),
             'Type': type_results if type_results else None,
@@ -280,6 +291,7 @@ class PCAP():
                 .replace(prefix, '').split(' ')
             parameters.remove(' ')
             irc_data = {
+                'EntryID': self.entry_id,
                 'ID': packet.tcp.get('ack'),
                 'RequestCommand': command,
                 'RequestTrailer': trailer,
@@ -294,6 +306,7 @@ class PCAP():
                 .replace(prefix, '').split(' ')
             parameters.remove(' ')
             irc_data = {
+                'EntryID': self.entry_id,
                 'ID': packet.tcp.get('seq'),
                 'ResponseCommand': command,
                 'ResponseTrailer': trailer,
@@ -307,6 +320,7 @@ class PCAP():
         ftp_layer = packet.ftp
         res_code_results = self.reg_res_code.findall(str(ftp_layer))
         ftp_data = {
+            'EntryID': self.entry_id,
             'ID': packet.tcp.get('seq'),
             'RequestCommand': ftp_layer.get('request_command'),
             'ResponseArgs': ftp_layer.get('response_arg'),
@@ -379,7 +393,7 @@ class PCAP():
                 return self.extract_smtp(packet)
 
     @logger
-    def get_outputs(self, entry_id, conversation_number_to_display=15, is_flows=False, is_reg_extract=False):
+    def get_outputs(self, conversation_number_to_display=15, is_flows=False, is_reg_extract=False):
         if self.num_of_packets == 0:
             return "## No packets found.\nTry changing the filter, if applied.", {}, {}
         md = f'## PCAP Info:\n' \
@@ -396,7 +410,7 @@ class PCAP():
 
         # Entry Context
         general_context = {
-            'EntryID': entry_id,
+            'EntryID': self.entry_id,
             'Bytes': self.bytes_transmitted,
             'Packets': self.num_of_packets,
             'StreamCount': self.tcp_streams + self.udp_streams,
@@ -406,21 +420,28 @@ class PCAP():
             'EndTime': formatEpochDate(self.max_time),
             'Protocols': list(self.last_layer)
         }
+        ec = {'PcapResults(val.EntryID == obj.EntryID)': general_context}
         for protocol in self.extracted_protocols:
-            general_context[protocol] = list(self.protocol_data[protocol].values())
-        if 'ICMP' in self.extracted_protocols:
-            general_context['ICMP'] = list(self.icmp_data)
-        if 'KERBEROS' in self.extracted_protocols:
-            general_context['KERBEROS'] = list(self.kerb_data)
+            if self.protocol_data[protocol]:
+                ec[f'PcapResults{protocol}'] = list(self.protocol_data[protocol].values())
+        if 'ICMP' in self.extracted_protocols and self.icmp_data:
+            ec[f'PcapResultsICMP'] = list(self.icmp_data)
+        if 'KERBEROS' in self.extracted_protocols and self.kerb_data:
+            ec[f'PcapResultsKERBEROS'] = self.kerb_data
         if 'SSH' in self.extracted_protocols:
-            general_context['SSH'] = dict()
-            for key in self.ssh_data.keys():
-                general_context['SSH'][key] = list(self.ssh_data[key])
+            temp = {
+                'EntryID': self.entry_id,
+                'ClientProtocols': list(self.ssh_data['ClientProtocols']),
+                'ServerProtocols': list(self.ssh_data['ServerProtocols']),
+                'KeyExchangeMessageCode': list(self.ssh_data['KeyExchangeMessageCode'])
+            }
+            ec['PcapResultsSSH'] = assign_params(**temp)
         if 'TELNET' in self.extracted_protocols:
-            general_context['Telnet'] = {'Commands': list(self.telnet_commands),
-                                         'Data': list(self.telnet_data)}
+            ec['PcapResultsTelnet'] = {'Commands': list(self.telnet_commands),
+                                         'Data': list(self.telnet_data),
+                                         'EntryID': self.entry_id}
         if is_flows:
-            general_context['Flow'] = flows_to_ec(self.flows)
+            ec['PcapResultsFlow'] = flows_to_ec(self.flows)
         if is_reg_extract:
             general_context['IP'] = list(self.ips_extracted)
             general_context['URL'] = list(self.urls_extracted)
@@ -437,29 +458,34 @@ class PCAP():
 
             general_context['SourceIP'] = list(self.unique_source_ip)
             general_context['DestIP'] = list(self.unique_dest_ip)
-        ec = {'PcapResults(val.EntryID == obj.EntryID)': general_context}
         return md, ec, general_context
 
     @logger
-    def mine(self, file_path: str, decrypt_key: str, is_flows: bool, is_reg_extract: bool, pcap_filter: str,
-             pcap_filter_new_file_path: str, num_of_packets_to_mine=None) -> int:
+    def mine(self, file_path: str, wpa_password: str,  rsa_key_file_path: str, is_flows: bool, is_reg_extract: bool,
+             pcap_filter: str, pcap_filter_new_file_path: str, num_of_packets_to_mine=None) -> int:
         """
         The main function of the script. Mines the PCAP.
 
         Args:
             file_path: The PCAP's file path.
-            decrypt_key: The decryption key (if needed) to decrypt the PCAP.
+            wpa_password: The wpa password for the decryption
+            rsa_key_file_path: The file path of the RSA key.
             is_flows: Whether to extract flows.
             is_reg_extract: Whether to extract regexes from the PCAP.
             pcap_filter: A filter to apply on the PCAP. Same filter syntax as in Wireshark
             pcap_filter_new_file_path: The new path to save the filtered PCAP in
+            num_of_packets_to_mine: The number of packets to analyze. Usually meant for iteration over script.
 
         """
-
+        custom_parameters = None
+        if rsa_key_file_path:
+            custom_parameters = {'-o': f'''uat:rsa_keys:"{rsa_key_file_path}",""'''}
         try:
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
-                                      decryption_key=decrypt_key, encryption_type='WPA-PWD', keep_packets=False)
-            j=0
+                                      decryption_key=wpa_password, encryption_type='WPA-PWD', keep_packets=False,
+                                      custom_parameters=custom_parameters)
+            j = 0
+            demisto.log(custom_parameters)
             for packet in cap:
                 j += 1
 
@@ -489,13 +515,13 @@ class PCAP():
                 tcp = packet.get_multiple_layers('tcp')
 
                 if tcp:
-                    tcp_streams = max(int(tcp[0].get('stream', 0)), self.tcp_streams)
+                    self.tcp_streams = max(int(tcp[0].get('stream', 0))+1, self.tcp_streams)
                     src_port = int(tcp[0].get('srcport', 0))
                     dest_port = int(tcp[0].get('dstport', 0))
 
                 udp = packet.get_multiple_layers('udp')
                 if udp:
-                    udp_streams = max(int(udp[0].get('stream', 0)), self.udp_streams)
+                    self.udp_streams = max(int(udp[0].get('stream', 0))+1, self.udp_streams)
                     src_port = int(udp[0].get('srcport', 0))
                     dest_port = int(udp[0].get('dstport', 0))
 
@@ -514,7 +540,8 @@ class PCAP():
                         if (b, dest_port, a, src_port) in self.flows.keys():
                             b, a, src_port, dest_port = a, b, dest_port, src_port
                         flow = (a, src_port, b, dest_port)
-                        flow_data = self.flows.get(flow, {'min_time': float('inf'),
+                        flow_data = self.flows.get(flow, {'EntryID': self.entry_id,
+                                                          'min_time': float('inf'),
                                                           'max_time': -float('inf'),
                                                           'bytes': 0,
                                                           'counter': 0})
@@ -531,6 +558,7 @@ class PCAP():
                             http_layer = http_layer[0]
                             all_fields = http_layer._all_fields
                             temp_http = {
+                                'EntryID': self.entry_id,
                                 "ID": http_layer.get('request_in', packet.number),
                                 'RequestAgent': all_fields.get("http.user_agent"),
                                 'RequestHost': all_fields.get('http.host'),
@@ -548,6 +576,7 @@ class PCAP():
                             # if the packet is a response
                             if all_fields.get('http.response'):
                                 temp_http.update({
+                                    'EntryID': self.entry_id,
                                     'ResponseStatusCode': http_layer.get('response_code'),
                                     'ResponseVersion': all_fields.get('http.response.version'),
                                     'ResponseCodeDesc': http_layer.get('response_code_desc'),
@@ -567,8 +596,8 @@ class PCAP():
             return j
 
         except pyshark.capture.capture.TSharkCrashException:
-            raise ValueError("Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file "
-                             "or that filter is of the correct syntax.")
+            raise ValueError("Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file, "
+                             "the filter is of the correct syntax and that the rsa key is added correctly.")
 
 
 '''HELPER FUNCTIONS'''
@@ -680,7 +709,8 @@ def flows_to_ec(flows: dict) -> list:
             'Duration': round(flow_data.get('max_time', 0) - flow_data.get('min_time', 0)),
             'StartTime': formatEpochDate(flow_data.get('min_time', 0)),
             'EndTime': formatEpochDate(flow_data.get('max_time', 0)),
-            'Bytes': flow_data.get('bytes', 0)
+            'Bytes': flow_data.get('bytes', 0),
+            'EntryID': flow_data.get('EntryID')
         }
         flows_ec.append(flow_ec)
     return flows_ec
@@ -705,8 +735,8 @@ def add_to_data(d: dict, data: dict, next_id: int = None) -> None:
         return
     else:
         if not d.get(data_id):
-            if len(data.keys()) == 1:
-                # The dictionary doesn't exist and is empty (except ID)
+            if list(data.keys()) == ['ID'] or list(data.keys()) == ['ID', 'EntryID']:
+                # The dictionary doesn't exist and is empty (except ID/EntryID)
                 return
             if next_id:
                 d[next_id] = assign_params(**data)
@@ -730,13 +760,12 @@ def main():
     args = demisto.args()
     entry_id = args.get('entry_id', '')
     file_path = demisto.getFilePath(entry_id).get('path')
-    # file_path = file_path[0]["Contents"]["path"]
 
-    decrypt_key = args.get('wpa_password', '')
-
-    decrypt_key_entry_id = args.get('rsa_decrypt_key_entry_id', '')
-    if decrypt_key_entry_id and not decrypt_key:
-        decrypt_key = demisto.getFilePath(entry_id).get('path')
+    wpa_password = args.get('wpa_password', '')
+    rsa_decrypt_key_entry_id = args.get('rsa_decrypt_key_entry_id', '')
+    rsa_key_file_path = None
+    if rsa_decrypt_key_entry_id:
+        rsa_key_file_path = demisto.getFilePath(rsa_decrypt_key_entry_id).get('path')
 
     conversation_number_to_display = int(args.get('convs_to_display', '15'))
     extracted_protocols = argToList(args.get('protocol_output', ''))
@@ -761,23 +790,22 @@ def main():
                      ' These parameters are meant for playbook use.')
 
     try:
-        pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
+        pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips, entry_id)
         if iterate:
-            pcap.repopulate_pcap_class(entry_id)
+            pcap.repopulate_pcap_class()
             if pcap.last_packet > 0:
                 if pcap_filter:
                     pcap_filter += f' && frame.number>{pcap.last_packet}'
                 else:
                     pcap_filter = f'frame.number>{pcap.last_packet}'
-
-        mined_packets = pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter,
+        mined_packets = pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
                                   pcap_filter_new_file_path, packets_to_analyze)
 
         if iterate and mined_packets == packets_to_analyze:
-            pcap.save_pcap_to_context(entry_id, mined_packets)
+            pcap.save_pcap_to_context(mined_packets)
 
         else:
-            hr, ec, raw = pcap.get_outputs(entry_id, conversation_number_to_display, is_flows, is_reg_extract)
+            hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
             return_outputs(hr, ec, raw)
 
     except Exception as e:
@@ -788,50 +816,6 @@ def main():
                          'File': pcap_filter_new_file_name, 'FileID': temp})
 
 
-def local_main():  # TODO remove this function
-    # Variables from demisto
-    # file_path = "/Users/olichter/Downloads/chargen-udp.pcap"
-    # file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
-    # file_path = "/Users/olichter/Downloads/dns.cap"                        # DNS
-    # file_path = "/Users/olichter/Downloads/tftp_rrq.pcap"                 # tftp
-    file_path = "/Users/olichter/Downloads/rsasnakeoil2.cap"              # encrypted SSL
-    # file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
-    # file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP#
-    # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
-    # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
-    # file_path = "/Users/olichter/Downloads/iseries.cap"
-    # file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise.pcap"  # 1 min
-    # file_path = "/Users/olichter/Downloads/smb-on-windows-10.pcapng"  # ran for 2.906 secs
-    # file_path = "/Users/olichter/Downloads/telnet-cooked.pcap"                  # telnet
-    # file_path = "/Users/olichter/Downloads/SSHv2.cap"                        #SSH
-    # file_path = "/Users/olichter/Downloads/SkypeIRC.cap"                        #IRC
-    # file_path = "/Users/olichter/Downloads/ftp.pcapng"                      #FTP
-    # PC Script
-    entry_id = ''
-
-    decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-    conversation_number_to_display = 15
-    is_flows = True
-    is_reg_extract = True
-    extracted_protocols = ['SMTP', 'DNS', 'HTTP', 'SMB2', 'NETBIOS', 'ICMP', 'KERBEROS', 'SYSLOG', 'SSH',
-                           'IRC', 'FTP', 'TELNET', 'LLMNR']
-
-    pcap_filter = ''
-    homemade_regex = ''
-    pcap_filter_new_file_path = ''
-    unique_ips = True
-    iterate = True
-    pcap_saved_data = 'gAN9cQAoWAkAAABoaWVyYXJjaHlxAX1xAihYCgAAAEVUSCxJUCxUQ1BxA0sOWA4AAABFVEgsSVAsVENQLFNTTHEESw91WA4AAABudW1fb2ZfcGFja2V0c3EFSx1YCwAAAHRjcF9zdHJlYW1zcQZLAVgLAAAAdWRwX3N0cmVhbXNxB0sBWAsAAABsYXN0X3BhY2tldHEIY3B5c2hhcmsucGFja2V0LmZpZWxkcwpMYXllckZpZWxkc0NvbnRhaW5lcgpxCVgCAAAAMjlxCoVxC4FxDH1xDVgGAAAAZmllbGRzcQ5dcQ9jcHlzaGFyay5wYWNrZXQuZmllbGRzCkxheWVyRmllbGQKcRApgXERfXESKFgEAAAAbmFtZXETWAMAAABudW1xFFgIAAAAc2hvd25hbWVxFVgGAAAATnVtYmVycRZYCQAAAHJhd192YWx1ZXEXWAIAAAAxZHEYWAQAAABzaG93cRlYAgAAADI5cRpYBAAAAGhpZGVxG4lYAwAAAHBvc3EcWAEAAAAwcR1YBAAAAHNpemVxHlgDAAAANTYycR9YDQAAAHVubWFza2VkdmFsdWVxIE51YmFzYlgRAAAAYnl0ZXNfdHJhbnNtaXR0ZWRxIU1LL1gIAAAAbWluX3RpbWVxIkdB0RMlI/XyQVgIAAAAbWF4X3RpbWVxI0dB0RMlJLV9MVgNAAAAY29udmVyc2F0aW9uc3EkfXElaAlYCQAAADEyNy4wLjAuMXEmhXEngXEofXEpaA5dcSpoECmBcSt9cSwoaBNYCwAAAGlwLnNyY19ob3N0cS1oFVgWAAAAU291cmNlIEhvc3Q6IDEyNy4wLjAuMXEuaBdYCAAAADdmMDAwMDAxcS9oGVgJAAAAMTI3LjAuMC4xcTBoG4hoHFgCAAAAMjZxMWgeWAEAAAA0cTJoIE51YmFzYmgJWAkAAAAxMjcuMC4wLjFxM4VxNIFxNX1xNmgOXXE3aBApgXE4fXE5KGgTWAsAAABpcC5kc3RfaG9zdHE6aBVYGwAAAERlc3RpbmF0aW9uIEhvc3Q6IDEyNy4wLjAuMXE7aBdYCAAAADdmMDAwMDAxcTxoGVgJAAAAMTI3LjAuMC4xcT1oG4hoHFgCAAAAMzBxPmgeaDJoIE51YmFzYoZxP0sdc1gFAAAAZmxvd3NxQH1xQSgoaChNOZdoNU27AXRxQn1xQyhoIkdB0RMlI/XyQWgjR0HREyUks6tgWAUAAABieXRlc3FETSkqWAcAAABjb3VudGVycUVLFXUoaAlYCQAAADEyNy4wLjAuMXFGhXFHgXFIfXFJaA5dcUpoECmBcUt9cUwoaBNYCwAAAGlwLnNyY19ob3N0cU1oFVgWAAAAU291cmNlIEhvc3Q6IDEyNy4wLjAuMXFOaBdYCAAAADdmMDAwMDAxcU9oGVgJAAAAMTI3LjAuMC4xcVBoG4hoHFgCAAAAMjZxUWgeaDJoIE51YmFzYk06l2gJWAkAAAAxMjcuMC4wLjFxUoVxU4FxVH1xVWgOXXFWaBApgXFXfXFYKGgTWAsAAABpcC5kc3RfaG9zdHFZaBVYGwAAAERlc3RpbmF0aW9uIEhvc3Q6IDEyNy4wLjAuMXFaaBdYCAAAADdmMDAwMDAxcVtoGVgJAAAAMTI3LjAuMC4xcVxoG4hoHFgCAAAAMzBxXWgeaDJoIE51YmFzYk27AXRxXn1xXyhoIkdB0RMlJLOtzWgjR0HREyUktX0xaERNIgVoRUsIdXVYEAAAAHVuaXF1ZV9zb3VyY2VfaXBxYGNidWlsdGlucwpzZXQKcWFdcWJoKGGFcWNScWRYDgAAAHVuaXF1ZV9kZXN0X2lwcWVoYV1xZmg1YYVxZ1JxaFgNAAAAaXBzX2V4dHJhY3RlZHFpaGFdcWqFcWtScWxYDgAAAHVybHNfZXh0cmFjdGVkcW1oYV1xboVxb1JxcFgQAAAAZW1haWxzX2V4dHJhY3RlZHFxaGFdcXKFcXNScXRYEgAAAGhvbWVtYWRlX2V4dHJhY3RlZHF1aGFdcXaFcXdScXhYCgAAAGxhc3RfbGF5ZXJxeWhhXXF6KFgDAAAAdGNwcXtYAwAAAHNzbHF8ZYVxfVJxflgIAAAAaXJjX2RhdGFxf11xgFgNAAAAcHJvdG9jb2xfZGF0YXGBfXGCWBMAAABleHRyYWN0ZWRfcHJvdG9jb2xzcYNdcYRYDgAAAGhvbWVtYWRlX3JlZ2V4cYVYAAAAAHGGWAoAAAB1bmlxdWVfaXBzcYeJdS4='
-
-    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
-    pcap.__dict__.update(pickle.loads(codecs.decode(pcap_saved_data.encode(), "base64")))
-    pcap_filter = f'frame.number>{pcap.last_packet}'
-    pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path, 30)
-    hr, ec, raw = pcap.get_outputs(entry_id, conversation_number_to_display, is_flows, is_reg_extract)
-    return_outputs(hr, ec, raw)
-
-
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    # local_main()
     main()
 

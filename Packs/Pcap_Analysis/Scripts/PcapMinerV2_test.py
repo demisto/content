@@ -39,7 +39,8 @@ args_to_test = [
      {2: {'ID': 2, 'Input': 'amazing', 'new_key': 'new'}}),  # Test that ID changed and new added
     ({2: {'ID': 2, 'Input': 'wow'}}, {'ID': 2, 'Input': 'amazing', 'new_key': 'new'}, 10,
      {10: {'ID': 2, 'Input': 'amazing', 'new_key': 'new'}}),  # Test that ID changed and new added and future_id added
-    ({}, {'noID': 15}, None, {})  # Test that data without ID isn't added
+    ({}, {'noID': 15}, None, {}),  # Test that data without ID isn't added
+    ({}, {'ID': 1, 'EntryID': 15}, None, {} ) # Test that just an ID and EntryID is not added.
 ]
 @pytest.mark.parametrize("main_data, data_to_add, future_id, wanted_output", args_to_test)
 def test_add_to_data(main_data, data_to_add, future_id, wanted_output):
