@@ -1,24 +1,16 @@
 {
-    "name": "ServiceNow",
-    "description": "IT service management.",
-    "support": "xsoar",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Case Management"
-    ],
-    "tags": [],
-    "created": "2020-03-10T10:21:03Z",
-    "updated": "2020-03-10T10:21:03Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "price": 0,
-    "dependencies": {},
-    "displayedImages": []
+  "name": "ServiceNow",
+  "description": "IT service management.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-10T10:21:03Z",
+  "categories": [
+    "Case Management"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
 }
