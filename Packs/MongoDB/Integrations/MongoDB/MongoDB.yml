@@ -16,9 +16,9 @@ configuration:
   name: database
   required: true
   type: 0
-- display: Use SSL/TLS secured connection
+- defaultvalue: 'false'
+  display: Use SSL/TLS secured connection
   hidden: false
-  defaultvalue: false
   name: use_ssl
   required: false
   type: 8
@@ -98,7 +98,8 @@ script:
       secret: false
     - default: false
       description: 'The entry to insert, in JSON format. Can include the `_id` argument
-        or not, for example: `{"key": "value"}`'
+        or not. Timestamp needs to be in this format%Y-%m-%dT%H:%M:%S.000Z. for example:
+        `{"key": "value"}`'
       isArray: false
       name: entry
       required: true
@@ -223,3 +224,4 @@ script:
   type: python
 tests:
 - MongoDB - Test
+fromversion: 4.1.0

@@ -129,6 +129,27 @@ def convert_id_to_object_id(
     return _convert(entries)
 
 
+def convert_str_to_datetime(entries):
+    """ Converts list or dict with date values of type str to Datetime.
+
+    Args:
+        entries: The object contains list or dict with possible dates value.
+
+    Returns:
+        All Dates converted to Datetime.
+    """
+    # regex for finding timestamp in string
+    regex_for_timestamp = re.compile(r'\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?')
+    for key, value in entries.items():
+        for match in regex_for_timestamp.findall(str(value)):
+            try:
+                entries[key] = datetime.strptime(match, '%Y-%m-%dT%H:%M:%S.000Z')
+            except ValueError as e:
+                raise DemistoException(str(e))
+
+    return entries
+
+
 def convert_object_id_to_str(entries: List[ObjectId]) -> List[str]:
     ''' Converts list of ObjectID to list of str.
 
@@ -161,6 +182,7 @@ def get_entry_by_id_command(
 ) -> Tuple[str, dict, list]:
     raw_response = client.get_entry_by_id(collection, argToList(object_id))
     if raw_response:
+        raw_response = datetime_to_str(raw_response)
         readable_outputs = tableToMarkdown(
             f'Total of {len(raw_response)} found in MongoDB collection `{collection}`:',
             raw_response,
@@ -182,11 +204,13 @@ def search_query(
 ) -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
-        query_json = json.loads(query)
+        query_json = validate_json_objects(json.loads(query))
+
         raw_response = client.query(collection, query_json, int(limit))
     except JSONDecodeError:
         raise DemistoException('The `query` argument is not a valid json.')
     if raw_response:
+        raw_response = datetime_to_str(raw_response)
         readable_outputs = tableToMarkdown(
             f'Total of {len(raw_response)} entries were found in MongoDB collection `{collection}` with query: {query}:',
             [entry.get('_id') for entry in raw_response],
@@ -207,7 +231,8 @@ def insert_entry_command(
 ) -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
-        entry_json = json.loads(entry)
+        entry_json = validate_json_objects(json.loads(entry))
+
         if not isinstance(entry_json, list):
             entry_json = [entry_json]
         entries = convert_id_to_object_id(entry_json)
@@ -231,6 +256,19 @@ def insert_entry_command(
         raise DemistoException('The `entry` argument is not a valid json.')
 
 
+def validate_json_objects(json):
+    """ Validate that all objects in the json are according to MongoDB convention.
+
+    Args:
+        json: The json to send to MongoDB
+
+    Returns:
+        valid json according to MongoDB convention.
+    """
+    valid_mongodb_json = convert_str_to_datetime(convert_id_to_object_id(json))
+    return valid_mongodb_json
+
+
 def update_entry_command(
     client: Client,
     collection: str,
@@ -240,12 +278,12 @@ def update_entry_command(
     **kwargs,
 ) -> Tuple[str, None]:
     try:
-        json_filter = json.loads(filter)
-        json_filter = convert_id_to_object_id(json_filter)
+        json_filter = validate_json_objects(json.loads(filter))
+
     except JSONDecodeError:
         raise DemistoException('The `filter` argument is not a valid json.')
     try:
-        json_update = json.loads(update)
+        json_update = validate_json_objects(json.loads(update))
     except JSONDecodeError:
         raise DemistoException('The `update` argument is not a valid json.')
     response = client.update_entry(
@@ -313,6 +351,25 @@ def drop_collection_command(
     ):
         raise DemistoException('Error occurred when trying to drop collection entries.')
     return f'MongoDB: Collection \'{collection}` has been successfully dropped.', None
+
+
+def datetime_to_str(obj):
+    """ Converts any object with date value of type datetime to str
+
+    Args:
+        obj: The object contains possible date values.
+
+    Returns:
+        All Dates from type datetime converted to str in this format - %Y-%m-%dT%H:%M:%S.000Z
+    """
+    if isinstance(obj, list):
+        return [datetime_to_str(item) for item in obj]
+    if isinstance(obj, dict):
+        return {datetime_to_str(k): datetime_to_str(v) for k, v in obj.items()}
+    if isinstance(obj, datetime):
+        return obj.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+    else:
+        return obj
 
 
 def main():
