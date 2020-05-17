@@ -359,6 +359,28 @@ def translate_severity(alert):
     return 0
 
 
+def get_remediation_details():
+    """
+    Retrieve remediation details for a given alert
+    """
+    ids = argToList(demisto.getArg('alert-id'))
+    payload = {'alerts': ids, 'filter': {}}
+    handle_filters(payload['filter'])
+    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+    if not ids:
+        return_error('You must specify the alert-id to retrieve with CLI remediation')
+    response = req('POST', 'alert/remediation', payload, None)
+    MD = tableToMarkdown("remediationCLIoutput", response)
+    context = {'Redlock.Remediation': response}
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'EntryContext': context,
+        'HumanReadable': MD
+    })
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
@@ -410,6 +432,8 @@ try:
         dismiss_alerts()
     elif demisto.command() == 'redlock-reopen-alerts':
         reopen_alerts()
+    elif demisto.command() == 'redlock-get-remediation-details':
+        get_remediation_details()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
     else:

@@ -482,5 +482,20 @@ script:
   - name: redlock-list-alert-filters
     arguments: []
     description: List the acceptable filters and values for alerts
+  - name: redlock-get-remediation-details
+    description: Get remediation details for a given alert
+    outputs:
+    - contextPath: Redlock.Remediation.cliDescription
+      description: Description of CLI remediation instructions
+      type: string
+    - contextPath: Redlock.Remediation.scriptImpact
+      description: Summary of remediation impact
+      type: string
+    - contextPath: Redlock.Remediation.alertIdVsCliScript
+      description: Exact CLI command string
+      type: string
+    arguments:
+    - name: alert-id
+      description: The alert id to get remediation details for
   isfetch: true
   runonce: false
