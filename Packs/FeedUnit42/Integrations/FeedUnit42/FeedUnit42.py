@@ -94,10 +94,12 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, D
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
-    indicators, raw_response = client.build_iterator()[:limit]
-    demisto.log(str(indicators))
-    human_readable = tableToMarkdown('Unit42 Indicators:', t=indicators, headers=['type', 'value'])
-    entry_context = {'Unit42(val.value && val.value == obj.value)': indicators}
+    indicators, raw_response = client.build_iterator()
+    limited_indicators = indicators[:limit]
+
+    human_readable = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
+    entry_context = {'Unit42(val.value && val.value == obj.value)': limited_indicators}
+
     return human_readable, entry_context, raw_response
 
 
