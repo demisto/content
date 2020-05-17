@@ -2761,7 +2761,6 @@
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "PhishLabsIOC TestPlaybook": "integration bug (23926)",
         "Symantec Deepsight Test": "Issue 22971",
-        "OTRS Test": "Issue 23167",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "Cloaken-Test": "Issue 20036",
         "test_MsGraphFiles": "Issue 22853 ",
