@@ -1,7 +1,6 @@
 ## [Unreleased]
-Added support for samples feed.
-
-
+- Added support for samples feed.
+- Added service mapping for indicator.
 
 ## [20.4.1] - 2020-04-29
 -
