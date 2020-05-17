@@ -293,7 +293,8 @@ class MITMProxy:
             log_file = os.path.join(path, get_log_file_path(playbook_id, record=True))
             # Handle proxy log output
             debug_opt = " >>{} 2>&1".format(log_file) if not self.debug else ''
-            options = ' '.join(['--set {}="{}"'.format(key, val) for key, val in problem_keys.items() if val])
+            # options = ' '.join(['--set {}="{}"'.format(key, val) for key, val in problem_keys.items() if val])
+            options = f'--set script_mode=clean --set keys_filepath={problem_keys_filepath}'
             if options.strip():
                 command += options
             command += ' -r {} -w {}{}'.format(mock_file_path, cleaned_mock_filepath, debug_opt)
@@ -357,9 +358,9 @@ class MITMProxy:
             # print('Replace old mock with cleaned one.')
             prints_manager.add_print_job('Replace old mock with cleaned one.', print, thread_index)
             # keep the old mock file for debugging purposes
-            old_mock_file_path = mock_file_path.replace('.mock', '_old.mock')
-            rm_cmd = 'mv {} {}'.format(mock_file_path, old_mock_file_path)
-            self.ami.call(rm_cmd.split())
+            # old_mock_file_path = mock_file_path.replace('.mock', '_old.mock')
+            # rm_cmd = 'mv {} {}'.format(mock_file_path, old_mock_file_path)
+            # self.ami.call(rm_cmd.split())
             mv_cmd = 'mv {} {}'.format(cleaned_mock_filepath, mock_file_path)
             self.ami.call(mv_cmd.split())
         else:
@@ -406,12 +407,14 @@ class MITMProxy:
         if record:
             # actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
             actions = '-s {} '.format(remote_script_path)
+            actions += '--set script_mode=record '
             actions += '--set detect_timestamps=true --set keys_filepath={} --save-stream-file'.format(
                 current_problem_keys_filepath
             )
         else:
             # actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
             actions = '-s {} '.format(remote_script_path)
+            actions += '--set script_mode=playback '
             actions += '--set keys_filepath={} --server-replay-kill-extra --server-replay'.format(
                 repo_problem_keys_filepath
             )
