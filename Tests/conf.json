@@ -691,6 +691,12 @@
             "integrations": "EDL",
             "fromversion": "5.5.0"
         },
+      {
+          "playbookID": "PAN-OS EDL Service Configuration",
+          "integrations": ["Panorama", "EDL"],
+          "instance_names": "palo_alto_firewall_9.0","EDL",
+          "fromversion": "5.5.0"
+      },
         {
             "playbookID": "Test_export_indicators_service",
             "integrations": "ExportIndicators",
