@@ -78,6 +78,15 @@ tasks:
               toReplace:
                 value:
                   simple: https://
+          - operator: replace
+            args:
+              limit:
+                value:
+                  simple: "1"
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: :443
       IndicatorQuery:
         simple: reputation:Bad
       InstanceName: {}
