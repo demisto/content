@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ccf9c820-a626-42de-8cb8-e2737baa57d9
+    taskid: 33930745-eeda-4467-808f-b3109964dd33
     type: start
     task:
-      id: ccf9c820-a626-42de-8cb8-e2737baa57d9
+      id: 33930745-eeda-4467-808f-b3109964dd33
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 785d08d6-b12a-4982-8e38-97ff612e4a71
+    taskid: a584565d-45e0-48d6-8b3e-911de18654d2
     type: regular
     task:
-      id: 785d08d6-b12a-4982-8e38-97ff612e4a71
+      id: a584565d-45e0-48d6-8b3e-911de18654d2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 2808c5a1-7e2b-4800-8c8a-cfd00956c50a
+    taskid: 864913ea-71c9-49dd-88d4-1d93b5bdff93
     type: regular
     task:
-      id: 2808c5a1-7e2b-4800-8c8a-cfd00956c50a
+      id: 864913ea-71c9-49dd-88d4-1d93b5bdff93
       version: -1
       name: pan-os-bpa-submit-job
       description: Submits a BPA job.
@@ -99,10 +99,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 09cf5dff-6591-4f78-8583-5288ffc14646
+    taskid: 333cfc71-49f5-4be0-8e02-bd8f2dac3835
     type: playbook
     task:
-      id: 09cf5dff-6591-4f78-8583-5288ffc14646
+      id: 333cfc71-49f5-4be0-8e02-bd8f2dac3835
       version: -1
       name: GenericPolling
       description: |-
@@ -155,10 +155,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 3b5705db-2d96-4139-8359-9cb26c737cd5
+    taskid: e3843b2a-b8e9-45ae-8820-2788455081eb
     type: condition
     task:
-      id: 3b5705db-2d96-4139-8359-9cb26c737cd5
+      id: e3843b2a-b8e9-45ae-8820-2788455081eb
       version: -1
       name: Test BPA Checks Are Returned
       type: condition
@@ -179,7 +179,15 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: InfoFile.Name
+              complex:
+                root: InfoFile
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: InfoFile
+                      iscontext: true
+                accessor: Name
             iscontext: true
           right:
             value:
@@ -198,10 +206,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 0a7fa13b-5933-4226-8607-d8f5099a896c
+    taskid: 86e0b324-2b01-4958-8c27-78c66a293c83
     type: regular
     task:
-      id: 0a7fa13b-5933-4226-8607-d8f5099a896c
+      id: 86e0b324-2b01-4958-8c27-78c66a293c83
       version: -1
       name: closeInvestigation
       description: Close the current incident
@@ -232,10 +240,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 3c91a302-3f0a-4482-80d2-0a3fd61cb494
+    taskid: 548b923e-b896-40bf-8d8f-42ac39c45874
     type: regular
     task:
-      id: 3c91a302-3f0a-4482-80d2-0a3fd61cb494
+      id: 548b923e-b896-40bf-8d8f-42ac39c45874
       version: -1
       name: pan-os-get-documentation
       description: Get documentaion
@@ -261,10 +269,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: d2f87b70-f9b9-4c10-88e5-d420828a48c9
+    taskid: 4f8f98eb-d21f-4d4b-828a-eada7d92941a
     type: regular
     task:
-      id: d2f87b70-f9b9-4c10-88e5-d420828a48c9
+      id: 4f8f98eb-d21f-4d4b-828a-eada7d92941a
       version: -1
       name: pan-os-bpa-get-job-results
       description: Returns results of BPA job.

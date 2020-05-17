@@ -138,11 +138,12 @@ def get_insight_details():
     patterns = 0
     for signal_item in signal_list_json:
         result_signal = signal_to_readable(signal_item)
-        if result_signal['SourceType'] == 'threatintel':
+        source_type = result_signal.get('SourceType', '')
+        if source_type == 'threatintel':
             threat_intel += 1
-        elif result_signal['SourceType'] == 'rule':
+        elif source_type == 'rule':
             patterns += 1
-        elif result_signal['SourceType'] == 'anomaly':
+        elif source_type == 'anomaly':
             anomalies += 1
         signal_list.append(result_signal)
     ec['SignalList'] = signal_list
