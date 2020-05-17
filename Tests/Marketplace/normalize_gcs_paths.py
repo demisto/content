@@ -65,7 +65,14 @@ def normalize_pack_integration_urls(pack, original_base_path):
                 integration_image_data['imagePath'] = switch_image_path(image_path=image_path,
                                                                         original_base_path=original_base_path)
 
+        # set back integration section
         metadata['integrations'] = integration_images_section
+        # check author image
+        author_image = metadata.get('authorImage', '')
+        # normalize author path if needed
+        if author_image.startswith(original_base_path):
+            metadata['authorImage'] = switch_image_path(image_path=author_image,
+                                                        original_base_path=original_base_path)
 
         with open(metadata_path, "w") as metadata_file:
             json.dump(metadata, metadata_file, indent=4)
