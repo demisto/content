@@ -264,7 +264,6 @@ class MITMProxy:
             prints_manager.add_print_job(err_msg, print_error, thread_index)
             return
         problem_keys = json.loads(self.ami.check_output(['cat', problem_keys_filepath]))
-        # print('Test "{}" problem_keys: \n{}'.format(playbook_id, json.dumps(problem_keys, indent=4)))
         prints_manager.add_print_job(
             f'Test "{playbook_id}" problem_keys: \n{json.dumps(problem_keys, indent=4)}',
             print,
@@ -272,7 +271,6 @@ class MITMProxy:
         )
 
         # is there data in problematic_keys.json that needs whitewashing?
-        # print('checking if there is data to whitewash')
         prints_manager.add_print_job('checking if there is data to whitewash', print, thread_index)
         needs_whitewashing = False
         for _, val in problem_keys.items():
@@ -282,7 +280,7 @@ class MITMProxy:
         if problem_keys and needs_whitewashing:
             mock_file_path = os.path.join(path, get_mock_file_path(playbook_id))
             cleaned_mock_filepath = mock_file_path.strip('.mock') + '_cleaned.mock'
-            # rewrite mock file with problematic keys in request bodies replaced
+            # rewrite mock file with problematic key values replaced
             command = 'mitmdump -ns ~/timestamp_replacer.py '
             log_file = os.path.join(path, get_log_file_path(playbook_id, record=True))
             # Handle proxy log output
@@ -399,7 +397,6 @@ class MITMProxy:
         command = "source .bash_profile && mitmdump --ssl-insecure --verbose --listen-port {} {} {}{}".format(
             self.PROXY_PORT, actions, os.path.join(path, get_mock_file_path(playbook_id)), debug_opt
         )
-        # print('mitm command: "{}"'.format(command))
         prints_manager.add_print_job(f'mitm command: "{command}"', print, thread_index)
         command = command.split()
 
