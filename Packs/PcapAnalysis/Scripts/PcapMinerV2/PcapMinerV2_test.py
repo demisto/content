@@ -40,7 +40,7 @@ args_to_test = [
     ({2: {'ID': 2, 'Input': 'wow'}}, {'ID': 2, 'Input': 'amazing', 'new_key': 'new'}, 10,
      {10: {'ID': 2, 'Input': 'amazing', 'new_key': 'new'}}),  # Test that ID changed and new added and future_id added
     ({}, {'noID': 15}, None, {}),  # Test that data without ID isn't added
-    ({}, {'ID': 1, 'EntryID': 15}, None, {} ) # Test that just an ID and EntryID is not added.
+    ({}, {'ID': 1, 'EntryID': 15}, None, {})  # Test that just an ID and EntryID is not added.
 ]
 @pytest.mark.parametrize("main_data, data_to_add, future_id, wanted_output", args_to_test)
 def test_add_to_data(main_data, data_to_add, future_id, wanted_output):
@@ -52,7 +52,7 @@ def test_add_to_data(main_data, data_to_add, future_id, wanted_output):
 
 def test_mine_pcap():
     file_path = '../../../TestData/smb-on-windows-10.pcapng'
-    decrypt_key = ""
+    wpa_password = ""
     conversation_number_to_display = 15
     is_flows = True
     is_reg_extract = True
@@ -61,21 +61,24 @@ def test_mine_pcap():
     homemade_regex = ''
     pcap_filter_new_file_path = ''
     unique_ips = False
+    rsa_key_file_path = ''
+    packets_to_analyze = 0
     from PcapMinerV2 import PCAP
-    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
-    pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
-    hr, ec, raw = pcap.get_outputs('entry_id', conversation_number_to_display, is_flows, is_reg_extract)
+    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips, 'entry_id')
+    pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
+              pcap_filter_new_file_path, packets_to_analyze)
+    hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
     assert raw['EntryID'] == 'entry_id'
     assert raw['StartTime'] == 'Sun Oct 16 11:07:57 2016'
     assert raw['Packets'] == 1000
-    assert len(raw['DNS']) == 80
-    assert len(raw['SMB2']) == 7
+    assert len(ec['PcapResultsDNS']) == 80
+    assert len(ec['PcapResultsSMB2']) == 7
     assert raw['URL'][0] == 'http://239.255.255.250:1900*'
 
 
 def test_mine_pcap_homemade_regex():
     file_path = '../../../TestData/smb-on-windows-10.pcapng'
-    decrypt_key = ""
+    wpa_password = ""
     conversation_number_to_display = 15
     is_flows = True
     is_reg_extract = True
@@ -85,7 +88,10 @@ def test_mine_pcap_homemade_regex():
     pcap_filter_new_file_path = ''
     unique_ips = False
     from PcapMinerV2 import PCAP
-    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips)
-    pcap.mine(file_path, decrypt_key, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
-    hr, ec, raw = pcap.get_outputs('entry_id', conversation_number_to_display, is_flows, is_reg_extract)
+    rsa_key_file_path = ''
+    packets_to_analyze = 0
+    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips, 'entry_id')
+    pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
+              pcap_filter_new_file_path, packets_to_analyze)
+    hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
     assert raw['Regex'] != []
