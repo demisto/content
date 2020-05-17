@@ -1,114 +1,198 @@
-args:
-- default: false
+id: PcapMiner Playbook
+version: -1
+name: PcapMiner Playbook
+description: This playbook only launches the PCAP Miner script. It is used in the
+  `Pcap Miner (Large Files)` playbook and is equivalent to running the `PcapMinerV2`
+  script.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3654cd42-4e5f-496b-8ded-4211f12fc34d
+    type: start
+    task:
+      id: 3654cd42-4e5f-496b-8ded-4211f12fc34d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 68db7045-9b58-43df-8395-dc10d27ea240
+    type: regular
+    task:
+      id: 68db7045-9b58-43df-8395-dc10d27ea240
+      version: -1
+      name: Pcap Miner V2
+      description: PcapMIner V2 allows to parse pcap files by displaying the all of
+        the relevant data within including ip addresses, ports, flows, specific protocol
+        breakdown, searching by regex, decrypting encrypted  traffic and more.
+      scriptName: PcapMinerV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      convs_to_display:
+        simple: ${inputs.convs_to_display}
+      custom_regex:
+        simple: ${inputs.custom_regex}
+      entry_id:
+        simple: ${inputs.entry_id}
+      extract_ips: {}
+      extract_strings:
+        simple: ${inputs.extract_strings}
+      filtered_file_name:
+        simple: ${inputs.filtered_file_name}
+      iterate:
+        simple: "True"
+      packets_to_analyze:
+        simple: ${inputs.packets_to_analyze}
+      pcap_filter:
+        simple: ${inputs.pcap_filter}
+      protocol_output:
+        simple: ${inputs.protocol_output}
+      rsa_decrypt_key_entry_id:
+        simple: ${inputs.rsa_decrypt_key_entry_id}
+      wpa_password:
+        simple: ${inputs.wpa_password}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: bd68598a-ebd2-4bfd-80f9-846463f9e116
+    type: title
+    task:
+      id: bd68598a-ebd2-4bfd-80f9-846463f9e116
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 375,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: entry_id
+  value: {}
+  required: false
   description: The entry_id of the PCAP file to mine.
-  isArray: false
-  name: entry_id
-  required: true
-  secret: false
-- auto: PREDEFINED
-  default: false
+  playbookInputQuery:
+- key: protocol_output
+  value: {}
+  required: false
   description: What protocols to output as context. Could be multiple protocols separated
     by commas. If left empty will not output any protocols to context.
-  isArray: true
-  name: protocol_output
-  predefined:
-  - HTTP
-  - DNS
-  - LLMNR
-  - SYSLOG
-  - SMTP
-  - NETBIOS
-  - ICMP
-  - KERBEROS
-  - TELNET
-  - SSH
-  - IRC
-  - FTP
-  - SMB2
+  playbookInputQuery:
+- key: extract_strings
+  value: {}
   required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
   description: Whether to  extract IP, URL and Email from PCAP file.
-  isArray: false
-  name: extract_strings
-  predefined:
-  - 'True'
-  - 'False'
+  playbookInputQuery:
+- key: pcap_filter
+  value: {}
   required: false
-  secret: false
-- default: false
   description: 'Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html'
-  isArray: false
-  name: pcap_filter
+  playbookInputQuery:
+- key: custom_regex
+  value: {}
   required: false
-  secret: false
-- default: false
   description: Your own regular expression to extract from the PCAP.
-  isArray: false
-  name: custom_regex
+  playbookInputQuery:
+- key: filtered_file_name
+  value: {}
   required: false
-  secret: false
-- default: false
   description: The name of the PCAP file to save to the war room after applying the
     `pcap_filter` (i.e. `filtered_file.pcap`).
-  isArray: false
-  name: filtered_file_name
+  playbookInputQuery:
+- key: rsa_decrypt_key_entry_id
+  value: {}
   required: false
-  secret: false
-- default: false
   description: The entry ID for the RSA decryption key.
-  isArray: false
-  name: rsa_decrypt_key_entry_id
+  playbookInputQuery:
+- key: convs_to_display
+  value: {}
   required: false
-  secret: false
-- default: false
-  defaultValue: '15'
   description: Number of conversatinos to display.
-  isArray: false
-  name: convs_to_display
+  playbookInputQuery:
+- key: wpa_password
+  value: {}
   required: false
-  secret: false
-- default: false
   description: The WPA password. By providing the password you will be able to decrypt
     encrypted traffic data.
-  isArray: false
-  name: wpa_password
+  playbookInputQuery:
+- key: extract_ips
+  value: {}
   required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'False'
   description: Output to context the source and destination IPs in the PCAP file.
-  isArray: false
-  name: extract_ips
-  predefined:
-  - 'True'
-  - 'False'
+  playbookInputQuery:
+- key: packets_to_analyze
+  value: {}
   required: false
-  secret: false
-- default: false
-  description: Wether to iterate over this pcap and run only the `iterate_num_of_packets`
-    packets. To be used in playbooks.
-  isArray: false
-  name: iterate
+  description: The number of packets to analyze at each iteration of this playbook.
+    Recommended not over 50,000.
+  playbookInputQuery:
+- key: iterate
+  value: {}
   required: false
-  secret: false
-- default: false
-  description: The number of packets to analyze. Recommended not over 20,000.
-  isArray: false
-  name: packets_to_analyze
-  required: false
-  secret: false
-comment: PcapMIner V2 allows to parse pcap files by displaying the all of the relevant
-  data within including ip addresses, ports, flows, specific protocol breakdown, searching
-  by regex, decrypting encrypted  traffic and more.
-commonfields:
-  id: PcapMinerV2
-  version: -1
-enabled: true
-name: PcapMinerV2
+  description: Whether this run of the playbook is an iteration of a large PCAP file.
+  playbookInputQuery:
 outputs:
+- contextPath: PcapResults
+  type: unknown
 - contextPath: PcapResults.Bytes
   description: The number of bytes transmitted in the PCAP file.
   type: Number
@@ -133,30 +217,6 @@ outputs:
 - contextPath: PcapResults.UniqueDestIP
   description: The number of unique IPs from to packets were transmitted.
   type: Number
-- contextPath: PcapResultsFlow.Bytes
-  description: The number of bytes transmitted in the flow.
-  type: String
-- contextPath: PcapResultsFlow.DestIP
-  description: The destination IP of the flow.
-  type: String
-- contextPath: PcapResultsFlow.SourceIP
-  description: The source IP of the flow.
-  type: String
-- contextPath: PcapResultsFlow.SourcePort
-  description: The source port of the flow.
-  type: String
-- contextPath: PcapResultsFlow.DestPort
-  description: The destination port of the flow.
-  type: String
-- contextPath: PcapResultsFlow.Duration
-  description: The duration of the flow (in seconds).
-  type: String
-- contextPath: PcapResultsFlow.EndTime
-  description: The date time the flow ended.
-  type: Date
-- contextPath: PcapResultsFlow.StartTime
-  description: The date time the flow started.
-  type: Date
 - contextPath: PcapResults.URL
   description: The URLs extracted from the file.
   type: String
@@ -170,6 +230,33 @@ outputs:
   description: The regular expressions specified in `extract_regex`,extracted from
     the file
   type: String
+- contextPath: PcapResults.Protocols
+  description: List of protocls found in the PCAP.
+  type: String
+- contextPath: PcapResultsFlow.Bytes
+  description: The number of bytes transmitted in the flow.
+  type: String
+- contextPath: PcapResultsFlow.DestIP
+  description: The destination IP of the flow.
+  type: String
+- contextPath: PcapResultsFlow.SourceIP
+  description: The source IP of the flow.
+  type: String
+- contextPath: PcapResultsFlow.SourcePort
+  description: The source port of the flow.
+  type: String
+- contextPath: PcapResultsFlow.Duration
+  description: The duration of the flow (in seconds).
+  type: String
+- contextPath: PcapResultsFlow.DestPort
+  description: The destination port of the flow.
+  type: String
+- contextPath: PcapResultsFlow.EndTime
+  description: The date time the flow ended.
+  type: Date
+- contextPath: PcapResultsFlow.StartTime
+  description: The date time the flow started.
+  type: Date
 - contextPath: PcapResultsHTTP.ResponseStatusCode
   description: The response code.
   type: String
@@ -224,18 +311,16 @@ outputs:
 - contextPath: PcapResultsDNS.Response
   description: The DNS response.
   type: String
+- contextPath: PcapResultsDNS
+  type: unknown
 - contextPath: PcapResultsDNS.Type
   description: The type of the DNS request.
-  type: String
-- contextPath: PcapResultsDNS.ID
-  description: The DNS's packet ID.
   type: String
 - contextPath: PcapResultsDNS.EntryID
   description: The PCAP's entry ID.
   type: String
-- contextPath: PcapResults.Protocols
-  description: List of protocls found in the PCAP.
-  type: String
+- contextPath: PcapResultsSMTP
+  type: unknown
 - contextPath: PcapResultsSMTP.From
   description: Who the mail is from.
   type: String
@@ -254,6 +339,8 @@ outputs:
 - contextPath: PcapResultsSMTP.EntryID
   description: The PCAP's entry ID.
   type: String
+- contextPath: PcapResultsKERBEROS
+  type: unknown
 - contextPath: PcapResultsKERBEROS.EntryID
   description: The PCAP's entry ID.
   type: String
@@ -266,6 +353,8 @@ outputs:
 - contextPath: PcapResultsKERBEROS.CName
   description: The KERBEROS's CName.
   type: String
+- contextPath: PcapResultsTelnet
+  type: unknown
 - contextPath: PcapResultsTelnet.Data
   description: The Telnet data.
   type: String
@@ -275,6 +364,8 @@ outputs:
 - contextPath: PcapResultsTelnet.EntryID
   description: The PCAP's entry ID.
   type: String
+- contextPath: PcapResultsLLMNR
+  type: unknown
 - contextPath: PcapResultsLLMNR.EntryID
   description: The PCAP's entry ID.
   type: String
@@ -293,21 +384,8 @@ outputs:
 - contextPath: PcapResultsLLMNR.QueryType
   description: The LLMNR's query type.
   type: String
-- contextPath: PcapResultsSYSLOG.EntryID
-  description: The PCAP's entry ID.
-  type: String
-- contextPath: PcapResultsSYSLOG.ID
-  description: The  SYSLOGS's packet ID.
-  type: String
-- contextPath: PcapResultsSYSLOG.Message
-  description: The  SYSLOGS's message.
-  type: String
-- contextPath: PcapResultsSYSLOG.Hostname
-  description: The  SYSLOGS's host name.
-  type: String
-- contextPath: PcapResultsSYSLOG.Timestamp
-  description: The  SYSLOGS's time stamp.
-  type: String
+- contextPath: PcapResultsSMB2
+  type: unknown
 - contextPath: PcapResultsSMB2.EntryID
   description: The PCAP's entry ID.
   type: String
@@ -332,6 +410,8 @@ outputs:
 - contextPath: PcapResultsSMB2.Tree
   description: The  SMB2's tree.
   type: String
+- contextPath: PcapResultsNETBIOS
+  type: unknown
 - contextPath: PcapResultsNETBIOS.EntryID
   description: The PCAP's entry ID.
   type: String
@@ -347,6 +427,8 @@ outputs:
 - contextPath: PcapResultsNETBIOS.Class
   description: The  NETIOS's class.
   type: String
+- contextPath: PcapResultsIRC
+  type: unknown
 - contextPath: PcapResultsIRC.EntryID
   description: The PCAP's entry ID.
   type: String
@@ -377,6 +459,8 @@ outputs:
 - contextPath: PcapResultsIRC.ResponseParameters
   description: The  IRC's response parameters.
   type: String
+- contextPath: PcapResultsFTP
+  type: unknown
 - contextPath: PcapResultsFTP.EntryID
   description: The PCAP's entry ID.
   type: String
@@ -386,37 +470,12 @@ outputs:
 - contextPath: PcapResultsFTP.RequestCommand
   description: The  FTP's request command.
   type: String
-- contextPath: PcapResultsFTP.ResponseArgs
-  description: The  FTP's response arguments.
-  type: String
 - contextPath: PcapResultsFTP.ResponseCode
   description: The  FTP's response code.
   type: String
-- contextPath: PcapResultsICMP
-  description: ICMP data.
+- contextPath: PcapResultsFTP.ResponseArgs
+  description: The  FTP's response arguments.
   type: String
-- contextPath: PcapResultsSSH.EntryID
-  description: The PCAP's entry ID.
-  type: String
-- contextPath: PcapResultsSSH.ClientProtocols
-  description: The SSH client protocols in the PCAP.
-  type: String
-- contextPath: PcapResultsSSH.ServerProtocols
-  description: The SSH server protocols in the PCAP.
-  type: String
-- contextPath: PcapResultsSSH.KeyExchangeMessageCode
-  description: The SSH key exchange message codes.
-  type: String
-script: '-'
-system: false
-timeout: '0'
-type: python
-dockerimage: demisto/pcap-http-extractor:1.0.0.4873
-runas: DBotWeakRole
-runonce: false
-subtype: python3
 fromversion: 5.0.0
-tags:
--
 tests:
 - No tests (auto formatted)
