@@ -129,6 +129,11 @@ script:
         res = http_req(method='GET', url_suffix=f'file/{scan_id}')
         return res
 
+    def get_dbot_file_context(file_hash, dbotscore):
+
+        return {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'OPSWAT', 'Score': dbotscore}
+
+
     def get_hash_info_command():
         file_hash = demisto.args()['hash']
         res = get_hash_info(file_hash)
@@ -173,8 +178,13 @@ script:
                 dbotScore = 2
             else:
                 dbotScore = 1
-            ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)'] = {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotScore}
-            ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)'] = {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'OPSWAT', 'Score': dbotScore}
+
+            if is_demisto_version_ge('5.5.0'):
+                ec['DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type' \
+                   ' == obj.Type)'] = get_dbot_file_context(file_hash, dbotScore)
+
+            else:
+                ec['DBotScore'] = get_dbot_file_context(file_hash, dbotScore)
 
         else:
             md += f'No results for hash {file_hash}\n'
@@ -259,8 +269,13 @@ script:
                 else:
                     dbotScore = 1
 
-                ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)'] = {'Indicator': file_info['md5'], 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotScore}
-                ec['DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)'] = {'Indicator': file_info['md5'], 'Type': 'file', 'Vendor': 'OPSWAT', 'Score': dbotScore}
+                file_md5_hash = file_info['md5']
+                if is_demisto_version_ge('5.5.0'):
+                    ec['DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type' \
+                       ' == obj.Type)'] = get_dbot_file_context(file_md5_hash, dbotScore)
+
+                else:
+                    ec['DBotScore'] = get_dbot_file_context(file_md5_hash, dbotScore)
 
         else:
             md += 'No results for this id\n';
