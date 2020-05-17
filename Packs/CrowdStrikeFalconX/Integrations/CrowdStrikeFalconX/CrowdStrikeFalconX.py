@@ -11,7 +11,6 @@ import traceback
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 def convert_environment_id_string_to_int(environment_id: str) -> int:
     """
     Converting the string that describes the environment id into an int which needed for the http request
@@ -35,8 +34,8 @@ class Client(BaseClient):
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
     """
 
-    def __init__(self, server_url: str, username: str, password: str):
-        super().__init__(base_url=server_url, verify=False)
+    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool):
+        super().__init__(base_url=server_url, verify=use_ssl)
         self._base_url = server_url
         self._username = username
         self._password = password
@@ -147,7 +146,15 @@ def test_module(client):
     """
     If a client was made then an accesses token was successfully reached,
     therefor the username and password are valid and a connection was made
+    additionally, checks if not using all the optional quota
+    :param client: the client object with an access token
+    :return: ok if got a valid accesses token and not all the quota is used at the moment
     """
+    _, _, output = check_quota_status_command(client)
+    total = output.get("meta").get("quota").get("total")
+    used = output.get("meta").get("quota").get("used")
+    if total == used:
+        return_error(f"Currently using all the optional quota: {used}")
     return 'ok', {}, []
 
 
@@ -472,12 +479,13 @@ def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
+    use_ssl = params.get('insecure', False)
     url = "https://api.crowdstrike.com/"
 
     try:
         command = demisto.command()
         LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
-        client = Client(server_url=url, username=username, password=password)
+        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,

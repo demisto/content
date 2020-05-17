@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
   - Fixed exception parsing.
   - Added a retry mechanism when requesting an access token from a refresh token.
   - Fixed an issue with the *dest_port* and *source_port* arguments were not processed correctly in the ***cdl-query-traffic-logs*** and ***cdl-query-threat-logs*** commands.

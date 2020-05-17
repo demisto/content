@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added support Windows authentication (NTLM).
 
 
 ## [19.12.1] - 2019-12-25
