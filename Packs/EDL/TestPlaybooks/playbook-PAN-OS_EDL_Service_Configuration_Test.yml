@@ -1,3 +1,4 @@
+description: ''
 id: PAN-OS EDL Service Configuration Test
 version: -1
 fromversion: 5.5.0
@@ -516,4 +517,3 @@ inputs:
 outputs: []
 tests:
 - No tests
-description: ''
