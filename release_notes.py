@@ -109,9 +109,9 @@ class Content(object):  # pylint: disable=useless-object-inheritance
         :param data: object data
         :return: raw release notes or None in case of an error.
         """
-        release_note_path = get_release_notes_file_path(file_path)
+        release_note_path = old_get_release_notes_file_path(file_path)
 
-        return get_latest_release_notes_text(release_note_path)
+        return old_get_latest_release_notes_text(release_note_path)
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
