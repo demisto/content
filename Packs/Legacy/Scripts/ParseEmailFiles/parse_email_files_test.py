@@ -513,7 +513,7 @@ def test_no_content_type_file(mocker):
 
 def test_get_msg_mail_format():
     format = get_msg_mail_format({
-        'Headers': 'Content-Type: text/plain;'
+        'Headers': 'Content-type:text/plain;'
     })
     assert format == 'text/plain'
 
