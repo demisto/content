@@ -166,6 +166,9 @@ script:
     - contextPath: Domain.Whois.QueryValue
       description: The query requested by the user.
       type: string
+    - contextPath: Domain.Whois.QueryResult
+      description: Whether the query found a matching result.
+      type: Boolean
   - arguments:
     - default: true
       description: The domain to enrich.
@@ -313,6 +316,9 @@ script:
     - contextPath: Domain.Whois.QueryStatus
       description: The result of the command ("Success" or "Failed").
       type: string
+    - contextPath: Domain.Whois.QueryResult
+      description: Whether the query found a matching result.
+      type: Boolean
   dockerimage: demisto/ippysocks:1.0.0.7353
   isfetch: false
   runonce: false

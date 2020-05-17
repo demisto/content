@@ -46,17 +46,22 @@ HEADERS = {
 
 
 def http_request(method, command, data=None):
-    url = f'{API_URL}/{command}/'
-    res = requests.request(method,
-                           url,
-                           verify=USE_SSL,
-                           data=data,
-                           headers=HEADERS)
+    retry = int(demisto.params().get('retry', 3))
+    try_num = 0
 
-    if res.status_code != 200:
-        raise Exception(f'Error in API call {url} [{res.status_code}] - {res.reason}')
+    while try_num < retry:
+        try_num += 1
+        url = f'{API_URL}/{command}/'
+        res = requests.request(method,
+                               url,
+                               verify=USE_SSL,
+                               data=data,
+                               headers=HEADERS)
 
-    return res
+        if res.status_code == 200:
+            return res
+
+    raise Exception(f'Error in API call {url} [{res.status_code}] - {res.reason}')
 
 
 def reformat_date(date):
@@ -465,7 +470,8 @@ def urlhaus_download_sample_command():
                 'HumanReadable': f'No results for SHA256: {file_sha256}',
                 'HumanReadableFormat': formats['markdown']
             })
-        elif res.headers['content-type'] == 'text/html' and res.json()['query_status'] == 'not_found':
+        elif res.headers['content-type'] in ['text/html', 'application/json'] and \
+                res.json()['query_status'] == 'not_found':
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
@@ -482,7 +488,7 @@ def urlhaus_download_sample_command():
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
-            'Contents': res.content
+            'Contents': str(res.content)
         })
 
 
