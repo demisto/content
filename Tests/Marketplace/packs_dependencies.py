@@ -67,6 +67,7 @@ def main():
         }
 
     print(f"Number of created pack dependencies entries: {len(pack_dependencies_result.keys())}")
+    # finished iteration over pack folders
     print_color("Finished dependencies calculation", LOG_COLORS.GREEN)
 
     with open(output_path, 'w') as pack_dependencies_file:
