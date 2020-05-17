@@ -517,5 +517,4 @@ outputs:
   description: Original attachments
   type: unknown
 tests:
-  - Phishing test - attachment
-  - Phishing test - Inline
+  - No test (no test was ever created for this playbook)

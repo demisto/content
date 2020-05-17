@@ -31,4 +31,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Calculate_Severity_By_Email_Authenticity](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_By_Email_Authenticity.png)
+![Calculate_Severity_By_Email_Authenticity](https://raw.githubusercontent.com/demisto/content/7a20daa4d3560df3be0d2f3f41c00d43ac1a1e23/Packs/Phishing/doc_files/Calculate_Severity_By_Email_Authenticity.png)
