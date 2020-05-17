@@ -1,9 +1,10 @@
 import os
 import json
 import argparse
-from Tests.Marketplace.upload_packs import PACKS_FULL_PATH, IGNORED_FILES
-
+from Tests.Marketplace.upload_packs import PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER
+from Tests.Marketplace.marketplace_services import GCPConfig
 from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, parse_for_pack_metadata
+from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
 
 
 def option_handler():
@@ -36,6 +37,7 @@ def main():
     option = option_handler()
     output_path = option.output_path
     id_set_path = option.id_set_path
+    IGNORED_FILES.append(GCPConfig.BASE_PACK)  # skip dependency calculation of Base pack
     # loading id set json
     with open(id_set_path, 'r') as id_set_file:
         id_set = json.load(id_set_file)
@@ -46,23 +48,31 @@ def main():
     # starting iteration over pack folders
     for pack in os.scandir(PACKS_FULL_PATH):
         if not pack.is_dir() or pack.name in IGNORED_FILES:
+            print_warning(f"Skipping dependency calculation of {pack.name} pack.")
             continue  # skipping ignored packs
         print(f"Calculating {pack.name} pack dependencies.")
 
-        dependency_graph = PackDependencies.build_dependency_graph(pack_id=pack.name, id_set=id_set)
-        first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(dependency_graph, pack.name)
+        try:
+            dependency_graph = PackDependencies.build_dependency_graph(pack_id=pack.name, id_set=id_set)
+            first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(dependency_graph, pack.name)
+        except Exception as e:
+            print_error(f"Failed calculating {pack.name} pack dependencies. Additional info:\n{e}")
+            continue
 
         pack_dependencies_result[pack.name] = {
             "dependencies": first_level_dependencies,
             "displayedImages": all_level_dependencies,
+            "path": os.path.join(PACKS_FOLDER, pack.name),
+            "fullPath": pack.path
         }
 
-    print("Finished dependencies calculation")
+    print(f"Number of created pack dependencies entries: {len(pack_dependencies_result.keys())}")
+    print_color("Finished dependencies calculation", LOG_COLORS.GREEN)
 
     with open(output_path, 'w') as pack_dependencies_file:
         json.dump(pack_dependencies_result, pack_dependencies_file, indent=4)
 
-    print(f"Created packs dependencies file at: {output_path}")
+    print_color(f"Created packs dependencies file at: {output_path}", LOG_COLORS.GREEN)
 
 
 if __name__ == "__main__":
