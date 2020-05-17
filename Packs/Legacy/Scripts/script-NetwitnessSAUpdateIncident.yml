@@ -15,6 +15,7 @@ script: |
           mdText = "Received an error from NetWitness. Please ensure that the referred incidents exist in NetWitness.\n" + tblToMd("Data returned:", [demisto.get(resp[0], "Contents")])
           demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": mdText} )
 type: python
+subtype: python2
 tags:
 - RSA NetWitness Security Analytics
 comment: Update information for NetWitness SA incidents.

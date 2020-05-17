@@ -25,6 +25,7 @@ script: |+
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No csv file found in the war room. Ensure the file was uploaded and the filename ends in ".csv".' } )
 
 type: python
+subtype: python2
 tags:
 - Utility
 - ingestion

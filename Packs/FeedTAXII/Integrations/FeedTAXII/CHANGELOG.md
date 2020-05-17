@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 Added authentication using certificate key and text file.
 
 ## [20.4.1] - 2020-04-29

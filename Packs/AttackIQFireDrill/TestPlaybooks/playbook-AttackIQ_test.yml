@@ -342,7 +342,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: akrupnik@paloaltonetworks.com
+              simple: foo@test.com
       - - operator: isEqualString
           left:
             value:
@@ -350,7 +350,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: akrupnik@paloaltonetworks.com
+              simple: foo@test.com
       - - operator: isEqualString
           left:
             value:
@@ -358,7 +358,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: akrupnik@paloaltonetworks.com
+              simple: foo@test.com
       - - operator: isExists
           left:
             value:
@@ -473,7 +473,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: akrupnik@paloaltonetworks.com
+              simple: foo@test.com
       - - operator: isEqualString
           left:
             value:

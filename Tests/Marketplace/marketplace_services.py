@@ -1,12 +1,12 @@
 import json
 import os
-import sys
 import subprocess
 import fnmatch
 import shutil
 import yaml
 import enum
 import base64
+import urllib.parse
 from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
@@ -25,6 +25,7 @@ class GCPConfig(object):
 
     """
     STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
+    STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     BASE_PACK = "Base"  # base pack name
@@ -60,7 +61,7 @@ class PackFolders(enum.Enum):
     INDICATOR_FIELDS = 'IndicatorFields'
     LAYOUTS = 'Layouts'
     CLASSIFIERS = 'Classifiers'
-    MISC = 'Misc'
+    INDICATOR_TYPES = 'IndicatorTypes'
     CONNECTIONS = "Connections"
 
     @classmethod
@@ -68,7 +69,7 @@ class PackFolders(enum.Enum):
         return [
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.MISC.value
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
         ]
 
     @classmethod
@@ -79,7 +80,8 @@ class PackFolders(enum.Enum):
     def json_supported_folders(cls):
         return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
-                PackFolders.LAYOUTS.value, PackFolders.MISC.value, PackFolders.REPORTS.value, PackFolders.REPORTS.value]
+                PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
+                PackFolders.REPORTS.value]
 
 
 class PackStatus(enum.Enum):
@@ -99,6 +101,7 @@ class PackStatus(enum.Enum):
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
+    FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
 
 
 class Pack(object):
@@ -111,22 +114,22 @@ class Pack(object):
     Attributes:
         PACK_INITIAL_VERSION (str): pack initial version that will be used as default.
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
-        CHANGELOG_MD (str): changelog md full name.
         README (str): pack's readme file name.
         METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
         USER_METADATA (str); user metadata file name, the one that located in content repo.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
+        RELEASE_NOTES (str): release notes folder name.
 
     """
     PACK_INITIAL_VERSION = "1.0.0"
     CHANGELOG_JSON = "changelog.json"
-    CHANGELOG_MD = "changelog.md"
     README = "README.md"
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
+    RELEASE_NOTES = "ReleaseNotes"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -138,6 +141,7 @@ class Pack(object):
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
         self._hidden = False  # initialized in load_user_metadata function
+        self._description = None  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -216,6 +220,18 @@ class Pack(object):
         """ setter of hidden property of the pack.
         """
         self._hidden = hidden_value
+
+    @property
+    def description(self):
+        """ str: Description of the pack (found in pack_metadata.json).
+        """
+        return self._description
+
+    @description.setter
+    def description(self, description_value):
+        """ setter of description property of the pack.
+        """
+        self._description = description_value
 
     @property
     def server_min_version(self):
@@ -565,6 +581,92 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
+    def prepare_release_notes(self, index_folder_path):
+        """
+        Handles the creation and update of the changelog.json files.
+
+        Args:
+            index_folder_path (str): Path to the unzipped index json.
+        Returns:
+            bool: whether the operation succeeded.
+        """
+        task_status = False
+        try:
+            if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
+                print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
+                changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+                release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+
+                if os.path.exists(release_notes_dir):
+                    found_versions = []
+                    for filename in os.listdir(release_notes_dir):
+                        _version = filename.replace('.md', '')
+                        version = _version.replace('_', '.')
+                        found_versions.append(LooseVersion(version))
+                    found_versions.sort(reverse=True)
+                    latest_release_notes = found_versions[0].vstring
+
+                    print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
+                    if self._current_version != latest_release_notes:
+                        # TODO Need to implement support for pre-release versions
+                        print_error(f"Version mismatch detected between current version: {self._current_version} "
+                                    f"and latest release notes version: {latest_release_notes}")
+                        task_status = False
+                        return task_status
+                    else:
+                        with open(changelog_index_path, "r") as changelog_file:
+                            changelog = json.load(changelog_file)
+
+                            if latest_release_notes in changelog:
+                                shutil.copyfile(changelog_index_path,
+                                                os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
+                                print_warning(f"Found existing release notes for version: {latest_release_notes} "
+                                              f"in the {self._pack_name} pack.")
+                                task_status = True
+                                return task_status
+
+                        latest_rn_file = latest_release_notes.replace('.', '_')
+                        latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
+
+                        with open(latest_rn_path, 'r') as changelog_md:
+                            changelog_lines = changelog_md.read()
+                        version_changelog = {'releaseNotes': changelog_lines,
+                                             'displayName': latest_release_notes,
+                                             'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+                        changelog[latest_release_notes] = version_changelog
+
+                        with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
+                            json.dump(changelog, f, indent=4)
+
+                else:  # will enter only on initial version and release notes folder still was not created
+                    shutil.copyfile(changelog_index_path, os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
+                    print(f"Keeping existing {Pack.CHANGELOG_JSON} of {self._pack_name} pack.")
+
+            elif self._current_version == Pack.PACK_INITIAL_VERSION:
+                changelog = {}
+                version_changelog = {'releaseNotes': self._description,
+                                     'displayName': Pack.PACK_INITIAL_VERSION,
+                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+                changelog[Pack.PACK_INITIAL_VERSION] = version_changelog
+
+                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
+                    json.dump(changelog, f, indent=4)
+
+            else:
+                print_error(f"No release notes found for: {self._pack_name}")
+                task_status = False
+                return task_status
+
+            task_status = True
+            print_color(
+                f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)
+        except Exception as e:
+            print_error(
+                f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
+                f"Additional info: {e}")
+        finally:
+            return task_status
+
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
 
@@ -586,7 +688,7 @@ class Pack(object):
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
-                PackFolders.MISC.value: "reputation"
+                PackFolders.INDICATOR_TYPES.value: "reputation"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -601,8 +703,8 @@ class Pack(object):
                     pack_file_path = os.path.join(root, pack_file_name)
 
                     # reputation in old format aren't supported in 6.0.0 server version
-                    if current_directory == PackFolders.MISC.value and not fnmatch.fnmatch(pack_file_name,
-                                                                                           'reputation-*.json'):
+                    if current_directory == PackFolders.INDICATOR_TYPES.value \
+                            and not fnmatch.fnmatch(pack_file_name, 'reputation-*.json'):
                         os.remove(pack_file_path)
                         print(f"Deleted pack {pack_file_name} reputation file for {self._pack_name} pack")
                         continue
@@ -684,7 +786,7 @@ class Pack(object):
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', "")
                         })
-                    elif current_directory == PackFolders.MISC.value:
+                    elif current_directory == PackFolders.INDICATOR_TYPES.value:
                         folder_collected_items.append({
                             'details': content_item.get('details', ""),
                             'reputationScriptName': content_item.get('reputationScriptName', ""),
@@ -710,13 +812,14 @@ class Pack(object):
 
         """
         task_status = False
+        user_metadata = {}
 
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
 
             if not os.path.exists(user_metadata_path):
                 print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
-                return task_status
+                return task_status, user_metadata
 
             with open(user_metadata_path, "r") as user_metadata_file:
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
@@ -727,6 +830,7 @@ class Pack(object):
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get('currentVersion', '')
             self.hidden = user_metadata.get('hidden', False)
+            self.description = user_metadata.get('description', False)
 
             print(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -777,22 +881,6 @@ class Pack(object):
             print_error(f"Failed in formatting {self._pack_name} pack metadata. Additional info:\n{e}")
         finally:
             return task_status
-
-    def parse_release_notes(self):
-        """ Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
-
-        """
-        changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
-
-        if not os.path.exists(changelog_md_path):
-            print_error(f"The pack {self._pack_name} is missing {Pack.CHANGELOG_MD} file.")
-            sys.exit(1)
-
-        # with open(changelog_md_path, 'r') as release_notes_file:
-        #     release_notes = release_notes_file.read()
-        # todo implement release notes logic and create changelog.json
-
-        return {}
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
@@ -946,7 +1034,7 @@ class Pack(object):
                     pack_image_blob.upload_from_file(image_file)
                     uploaded_integration_images.append({
                         'name': image_data.get('display_name', ''),
-                        'imagePath': pack_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH
+                        'imagePath': urllib.parse.quote(pack_image_blob.name) if GCPConfig.USE_GCS_RELATIVE_PATH
                         else pack_image_blob.public_url
                     })
 

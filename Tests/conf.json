@@ -352,9 +352,6 @@
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
         },
         {
-            "playbookID": "TestParseEmailFile-deprecated-script"
-        },
-        {
             "integrations": "RSA NetWitness Packets and Logs",
             "playbookID": "rsa_packets_and_logs_test"
         },
@@ -394,14 +391,6 @@
         },
         {
             "playbookID": "StringContainsArray_test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pcysys-Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan - Test"
         },
         {
             "integrations": "Fidelis Elevate Network",
@@ -2181,10 +2170,6 @@
             "playbookID": "Detonate File From URL - ANYRUN - Test"
         },
         {
-            "integrations": "AWS - CloudWatchLogs",
-            "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
-        },
-        {
             "integrations": "AWS - CloudTrail",
             "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
         },
@@ -2825,8 +2810,9 @@
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
-        "_comment": "~~~ NO INSTANCE ~~~",
+        "_comment1": "~~~ NO INSTANCE ~~~",
         "AttackIQFireDrill": "Issue 24281",
+        "Nessus": "No instance",
         "MxToolBox": "No instance",
         "Traps": "Issue 24122",
         "Skyformation": "No instance, old partner",
@@ -2840,7 +2826,6 @@
         "Twilio": "No instance",
         "Zendesk": "No instance",
         "GuardiCore": "No instance",
-        "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
         "SentinelOne": "No instance",
         "Vectra v2": "No instance",
@@ -2915,12 +2900,12 @@
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
 
-        "_comment1": "~~~ UNSTABLE ~~~",
+        "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
 
-        "_comment2": "~~~ OTHER ~~~",
+        "_comment": "~~~ OTHER ~~~",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
@@ -2945,7 +2930,7 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "reached out our monthly quota (08/03/2020)",
 
-        "_comment3": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
+        "_comment2": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer"
     },
     "nightly_integrations": [

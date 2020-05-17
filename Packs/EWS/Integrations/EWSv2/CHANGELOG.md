@@ -1,12 +1,16 @@
 ## [Unreleased]
 
 
+## [20.5.0] - 2020-05-12
+- Command - "ews-get-items", add Email entry context by demisto standards as an output.
+- Fixed an issue where an error occurred while getting emails with malformed attachments.
+
 ## [20.4.1] - 2020-04-29
-Fixed an issue where the **fetch-incidents** command caused a timeout from EWS.
+  - Added the *Email entry* context to the ***ews-get-items*** command.
+  - Fixed an issue where the ***fetch-incidents*** command caused a timeout from EWS.
 
 ## [20.4.0] - 2020-04-14
 -
-
 
 ## [20.3.1] - 2020-03-04
 Added the ability to run the integration as a separate process, which protects against memory depletion.

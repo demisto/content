@@ -71,30 +71,21 @@ def translate_indicators(ts_indicators, context_path=''):
     ec = {}
     if file_context:
         ec['{}File(val.Name && val.Name === obj.Name)'.format(context_path)] = file_context
-        ec['File(val.Name && val.Name === obj.Name)'] = file_context
     if url_context:
         ec['{}URL(val.Address && val.Address === obj.Address)'.format(context_path)] = url_context
-        ec['URL(val.Address && val.Address === obj.Address)'] = url_context
     if ip_context:
         ec['{}IP(val.Address && val.Address === obj.Address)'.format(context_path)] = ip_context
-        ec['IP(val.Address && val.Address === obj.Address)'] = ip_context
     if email_context:
         ec['{}Account.Email(val.Address && val.Address === obj.Address)'.format(context_path)] = email_context
-        ec['Account.Email(val.Address && val.Address === obj.Address)'] = email_context
     if key_context:
         ec['{}RegistryKey(val.Path && val.Path === obj.Path)'.format(context_path)] = key_context
-        ec['RegistryKey(val.Path && val.Path === obj.Path)'] = key_context
     if cve_context:
         ec['{}CVE(val.ID && val.ID === obj.ID)'.format(context_path)] = cve_context
-        ec['CVE(val.ID && val.ID === obj.ID)'] = cve_context
     return indicators, ec
 
 
 def translate_triage_submission(submissions):
     submission_dicts = [s.to_dict(remove_nones=True) for s in submissions]
-    for submission in submission_dicts:
-        indicators = [c.to_dict(remove_nones=True) for c in submission.get('context')]
-        submission['context'] = indicators
     ec = {'TruSTAR.PhishingSubmission(val.submissionId == obj.submissionId)': submission_dicts}
     return submission_dicts, ec
 

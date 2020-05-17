@@ -14,7 +14,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
-    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge
+    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
+    appendContext
 
 try:
     from StringIO import StringIO
@@ -870,8 +871,17 @@ class TestBuildDBotEntry(object):
 class TestCommandResults:
     def test_return_command_results(self):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
         ip = Common.IP(
             ip='8.8.8.8',
+            dbot_score=dbot_score,
             asn='some asn',
             hostname='test.com',
             geo_country=None,
@@ -881,14 +891,6 @@ class TestCommandResults:
             positive_engines=None,
             detection_engines=None
         )
-
-        dbot_score = Common.DBotScore(
-            indicator='8.8.8.8',
-            integration_name='Virus Total',
-            indicator_type=DBotScoreType.IP,
-            score=Common.DBotScore.GOOD
-        )
-        ip.set_dbot_score(dbot_score)
 
         results = CommandResults(
             outputs_key_field=None,
@@ -903,36 +905,70 @@ class TestCommandResults:
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
-                'IP(val.Address && val.Address == obj.Address)': {
-                    'Address': '8.8.8.8',
-                    'ASN': 'some asn',
-                    'Hostname': 'test.com'
-                },
+                'IP(val.Address && val.Address == obj.Address)': [
+                    {
+                        'Address': '8.8.8.8',
+                        'ASN': 'some asn',
+                        'Hostname': 'test.com'
+                    }
+                ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Indicator': '8.8.8.8',
-                    'Vendor': 'Virus Total',
-                    'Score': 1,
-                    'Type': 'ip'
-                }
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': '8.8.8.8',
+                        'Vendor': 'Virus Total',
+                        'Score': 1,
+                        'Type': 'ip'
+                    }
+                ]
             }
         }
 
-    def test_create_dbot_score(self):
+    def test_multiple_indicators(self):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
-
-        dbot_score = Common.DBotScore(
+        dbot_score1 = Common.DBotScore(
             indicator='8.8.8.8',
             integration_name='Virus Total',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
+        )
+        ip1 = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score1,
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
+        )
+
+        dbot_score2 = Common.DBotScore(
+            indicator='5.5.5.5',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+        ip2 = Common.IP(
+            ip='5.5.5.5',
+            dbot_score=dbot_score2,
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
         )
 
         results = CommandResults(
             outputs_key_field=None,
             outputs_prefix=None,
             outputs=None,
-            indicators=[dbot_score]
+            indicators=[ip1, ip2]
         )
 
         assert results.to_context() == {
@@ -941,13 +977,33 @@ class TestCommandResults:
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
+                'IP(val.Address && val.Address == obj.Address)': [
+                    {
+                        'Address': '8.8.8.8',
+                        'ASN': 'some asn',
+                        'Hostname': 'test.com'
+                    },
+                    {
+                        'Address': '5.5.5.5',
+                        'ASN': 'some asn',
+                        'Hostname': 'test.com'
+                    }
+                ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Indicator': '8.8.8.8',
-                    'Vendor': 'Virus Total',
-                    'Score': 1,
-                    'Type': 'ip'
-                }
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': '8.8.8.8',
+                        'Vendor': 'Virus Total',
+                        'Score': 1,
+                        'Type': 'ip'
+                    },
+                    {
+                        'Indicator': '5.5.5.5',
+                        'Vendor': 'Virus Total',
+                        'Score': 1,
+                        'Type': 'ip'
+                    }
+                ]
             }
         }
 
@@ -979,6 +1035,37 @@ class TestCommandResults:
             }
         }
 
+    def test_return_list_of_items_the_old_way(self):
+        from CommonServerPython import CommandResults, EntryFormat, EntryType
+        tickets = [
+            {
+                'ticket_id': 1,
+                'title': 'foo'
+            },
+            {
+                'ticket_id': 2,
+                'title': 'goo'
+            }
+        ]
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs={
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+            },
+            raw_response=tickets
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': tickets,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+            }
+        }
+
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
 
@@ -994,43 +1081,32 @@ class TestCommandResults:
         except TypeError:
             assert True
 
-    def test_create_ip(self):
-        from CommonServerPython import Common
-
-        ip = Common.IP(
-            ip='8.8.8.8',
-            asn='some asn',
-            hostname='test.com',
-            geo_country=None,
-            geo_description=None,
-            geo_latitude=None,
-            geo_longitude=None,
-            positive_engines=None,
-            detection_engines=None
-        )
-
-        assert ip is not None
-
     def test_create_domain(self):
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
 
+        dbot_score = Common.DBotScore(
+            indicator='somedomain.com',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.DOMAIN,
+            score=Common.DBotScore.GOOD
+        )
+
         domain = Common.Domain(
             domain='somedomain.com',
+            dbot_score=dbot_score,
             dns='dns.somedomain',
             detection_engines=10,
             positive_detections=5,
             organization='Some Organization',
-            whois=Common.WHOIS(
-                admin_phone='18000000',
-                admin_email='admin@test.com',
+            admin_phone='18000000',
+            admin_email='admin@test.com',
 
-                registrant_name='Mr Registrant',
+            registrant_name='Mr Registrant',
 
-                registrar_name='Mr Registrar',
-                registrar_abuse_email='registrar@test.com'
-            ),
+            registrar_name='Mr Registrar',
+            registrar_abuse_email='registrar@test.com',
             creation_date='2019-01-01T00:00:00',
-            update_date='2019-01-02T00:00:00',
+            updated_date='2019-01-02T00:00:00',
             expiration_date=None,
             domain_status='ACTIVE',
             name_servers=[
@@ -1043,14 +1119,6 @@ class TestCommandResults:
                 'sub-domain3.somedomain.com'
             ]
         )
-
-        dbot_score = Common.DBotScore(
-            indicator='somedomain.com',
-            integration_name='Virus Total',
-            indicator_type=DBotScoreType.DOMAIN,
-            score=Common.DBotScore.GOOD
-        )
-        domain.set_dbot_score(dbot_score)
 
         results = CommandResults(
             outputs_key_field=None,
@@ -1065,59 +1133,79 @@ class TestCommandResults:
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
-                'Domain(val.Name && val.Name == obj.Name)': {
-                    'Name': 'somedomain.com',
-                    'DNS': 'dns.somedomain',
-                    'DetectionEngines': 10,
-                    'PositiveDetections': 5,
-                    'Organization': 'Some Organization',
-                    'CreationDate': '2019-01-01T00:00:00',
-                    'UpdateDate': '2019-01-02T00:00:00',
-                    'DomainStatus': 'ACTIVE',
-                    'NameServers': [
-                        'PNS31.CLOUDNS.NET',
-                        'PNS32.CLOUDNS.NET'
-                    ],
-                    'Subdomains': [
-                        'sub-domain1.somedomain.com',
-                        'sub-domain2.somedomain.com',
-                        'sub-domain3.somedomain.com'
-                    ],
-                    'Admin': {
-                        'Phone': '18000000',
-                        'Email': 'admin@test.com',
-                        'Name': None
-                    },
-                    'Registrant': {
-                        'Name': 'Mr Registrant',
-                        'Email': None,
-                        'Phone': None
-                    },
-                    'WHOIS': {
-                        'Admin': {
-                            'Name': None,
-                            'Phone': '18000000',
-                            'Email': 'admin@test.com'
+                'Domain(val.Name && val.Name == obj.Name)': [
+                    {
+                        "Name": "somedomain.com",
+                        "DNS": "dns.somedomain",
+                        "DetectionEngines": 10,
+                        "PositiveDetections": 5,
+                        "Registrar": {
+                            "Name": "Mr Registrar",
+                            "AbuseEmail": "registrar@test.com",
+                            "AbusePhone": None
                         },
-                        'Registrar': {
-                            'Name': 'Mr Registrar',
-                            'AbuseEmail': 'registrar@test.com',
-                            'AbusePhone': None
+                        "Registrant": {
+                            "Name": "Mr Registrant",
+                            "Email": None,
+                            "Phone": None,
+                            "Country": None
                         },
-                        'Registrant': {
-                            'Name': 'Mr Registrant',
-                            'Email': None,
-                            'Phone': None
+                        "Admin": {
+                            "Name": None,
+                            "Email": "admin@test.com",
+                            "Phone": "18000000",
+                            "Country": None
+                        },
+                        "Organization": "Some Organization",
+                        "Subdomains": [
+                            "sub-domain1.somedomain.com",
+                            "sub-domain2.somedomain.com",
+                            "sub-domain3.somedomain.com"
+                        ],
+                        "DomainStatus": "ACTIVE",
+                        "CreationDate": "2019-01-01T00:00:00",
+                        "UpdatedDate": "2019-01-02T00:00:00",
+                        "NameServers": [
+                            "PNS31.CLOUDNS.NET",
+                            "PNS32.CLOUDNS.NET"
+                        ],
+                        "WHOIS": {
+                            "Registrar": {
+                                "Name": "Mr Registrar",
+                                "AbuseEmail": "registrar@test.com",
+                                "AbusePhone": None
+                            },
+                            "Registrant": {
+                                "Name": "Mr Registrant",
+                                "Email": None,
+                                "Phone": None,
+                                "Country": None
+                            },
+                            "Admin": {
+                                "Name": None,
+                                "Email": "admin@test.com",
+                                "Phone": "18000000",
+                                "Country": None
+                            },
+                            "DomainStatus": "ACTIVE",
+                            "CreationDate": "2019-01-01T00:00:00",
+                            "UpdatedDate": "2019-01-02T00:00:00",
+                            "NameServers": [
+                                "PNS31.CLOUDNS.NET",
+                                "PNS32.CLOUDNS.NET"
+                            ]
                         }
                     }
-                },
+                ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Indicator': 'somedomain.com',
-                    'Vendor': 'Virus Total',
-                    'Score': 1,
-                    'Type': 'domain'
-                }
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'somedomain.com',
+                        'Vendor': 'Virus Total',
+                        'Score': 1,
+                        'Type': 'domain'
+                    }
+                ]
             }
         }
 
@@ -1126,6 +1214,58 @@ class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
     client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
+
+    RETRIES_POSITIVE_TEST = [
+        'get',
+        'put',
+        'post'
+    ]
+
+    @pytest.mark.parametrize('method', RETRIES_POSITIVE_TEST)
+    def test_http_requests_with_retry_sanity(self, method):
+        """
+            Given
+            - A base client
+
+            When
+            - Making http request call with retries configured to a number higher then 0
+
+            Then
+            -  Ensure a successful request return response as expected
+        """
+        url = 'http://httpbin.org/{}'.format(method)
+        res = self.client._http_request(method,
+                                        '',
+                                        full_url=url,
+                                        retries=1,
+                                        status_list_to_retry=[401])
+        assert res['url'] == url
+    RETRIES_NEGATIVE_TESTS_INPUT = [
+        ('get', 400), ('get', 401), ('get', 500),
+        ('put', 400), ('put', 401), ('put', 500),
+        ('post', 400), ('post', 401), ('post', 500),
+
+    ]
+
+    @pytest.mark.parametrize('method, status', RETRIES_NEGATIVE_TESTS_INPUT)
+    def test_http_requests_with_retry_negative_sanity(self, method, status):
+        """
+            Given
+            - A base client
+
+            When
+            - Making http request call with retries configured to a number higher then 0
+
+            Then
+            -  An unsuccessful request returns a DemistoException regardless the bad status code.
+        """
+        from CommonServerPython import DemistoException
+        with raises(DemistoException, match='{}'.format(status)):
+            self.client._http_request(method,
+                                      '',
+                                      full_url='http://httpbin.org/status/{}'.format(status),
+                                      retries=3,
+                                      status_list_to_retry=[400, 401, 500])
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -1549,3 +1689,82 @@ def test_traceback_in_return_error_debug_mode_off(mocker):
     assert "This is a test string" not in str(demisto.results.call_args)
     assert "Traceback" not in str(demisto.results.call_args)
     assert "some text" in str(demisto.results.call_args)
+
+
+# append_context unit test
+CONTEXT_MOCK = {
+    'str_key': 'str_value',
+    'dict_key': {
+        'key1': 'val1',
+        'key2': 'val2'
+    },
+    'int_key': 1,
+    'list_key_str': ['val1', 'val2'],
+    'list_key_list': ['val1', 'val2'],
+    'list_key_dict': ['val1', 'val2']
+}
+
+UPDATED_CONTEXT = {
+    'str_key': 'str_data,str_value',
+    'dict_key': {
+        'key1': 'val1',
+        'key2': 'val2',
+        'data_key': 'data_val'
+    },
+    'int_key': [1, 2],
+    'list_key_str': ['val1', 'val2', 'str_data'],
+    'list_key_list': ['val1', 'val2', 'val1', 'val2'],
+    'list_key_dict': ['val1', 'val2', {'data_key': 'data_val'}]
+}
+
+DATA_MOCK_STRING = "str_data"
+DATA_MOCK_LIST = ['val1', 'val2']
+DATA_MOCK_DICT = {
+    'data_key': 'data_val'
+}
+DATA_MOCK_INT = 2
+
+STR_KEY = "str_key"
+DICT_KEY = "dict_key"
+
+APPEND_CONTEXT_INPUT = [
+    (CONTEXT_MOCK, DATA_MOCK_STRING, STR_KEY, "key = {}, val = {}".format(STR_KEY, UPDATED_CONTEXT[STR_KEY])),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, STR_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_DICT, STR_KEY, "TypeError"),
+
+    (CONTEXT_MOCK, DATA_MOCK_STRING, DICT_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, DICT_KEY, "TypeError"),
+    (CONTEXT_MOCK, DATA_MOCK_DICT, DICT_KEY, "key = {}, val = {}".format(DICT_KEY, UPDATED_CONTEXT[DICT_KEY])),
+
+    (CONTEXT_MOCK, DATA_MOCK_STRING, 'list_key_str',
+     "key = {}, val = {}".format('list_key_str', UPDATED_CONTEXT['list_key_str'])),
+    (CONTEXT_MOCK, DATA_MOCK_LIST, 'list_key_list',
+     "key = {}, val = {}".format('list_key_list', UPDATED_CONTEXT['list_key_list'])),
+    (CONTEXT_MOCK, DATA_MOCK_DICT, 'list_key_dict',
+     "key = {}, val = {}".format('list_key_dict', UPDATED_CONTEXT['list_key_dict'])),
+
+    (CONTEXT_MOCK, DATA_MOCK_INT, 'int_key', "key = {}, val = {}".format('int_key', UPDATED_CONTEXT['int_key'])),
+]
+
+
+def get_set_context(key, val):
+    from CommonServerPython import return_error
+    return_error("key = {}, val = {}".format(key, val))
+
+
+@pytest.mark.parametrize('context_mock, data_mock, key, expected_answer', APPEND_CONTEXT_INPUT)
+def test_append_context(mocker, context_mock, data_mock, key, expected_answer):
+    from CommonServerPython import demisto
+    mocker.patch.object(demisto, 'get', return_value=context_mock.get(key))
+    mocker.patch.object(demisto, 'setContext', side_effect=get_set_context)
+    mocker.patch.object(demisto, 'results')
+
+    if "TypeError" not in expected_answer:
+        with raises(SystemExit, match='0'):
+            appendContext(key, data_mock)
+            assert expected_answer in demisto.results.call_args[0][0]['Contents']
+
+    else:
+        with raises(TypeError) as e:
+            appendContext(key, data_mock)
+            assert expected_answer in e.value

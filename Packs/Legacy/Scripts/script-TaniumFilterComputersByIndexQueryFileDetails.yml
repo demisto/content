@@ -32,6 +32,7 @@ script: |
 
   demisto.results(demisto.executeCommand('tn-ask-manual-question', {'sensors':sensors, 'question_filters': question_filters}))
 type: python
+subtype: python2
 tags:
 - tanium
 comment: "Get the requested sensors from all machines where the Index Query File Details

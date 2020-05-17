@@ -160,9 +160,12 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
         dbotScore = 2
     else:
         dbotScore = 1
+    if is_demisto_version_ge('5.5.0'):
+        ec['DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type'
+           ' == obj.Type)'] = get_dbot_file_context(file_hash, dbotScore)
+    else:
+        ec['DBotScore'] = get_dbot_file_context(file_hash, dbotScore)
 
-    ec['DBotScore'].append(  # type:ignore
-        {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
     md += 'MD5: **' + vt_response.get('md5') + '**\n'
     md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
     md += 'SHA256: **' + vt_response.get('sha256') + '**\n'
@@ -218,6 +221,11 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     return entry
 
 
+def get_dbot_file_context(file_hash, dbotscore):
+
+    return {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'VirusTotal - Private API', 'Score': dbotscore}
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -250,22 +258,24 @@ def check_file_behaviour_command():
     # VT response
     response = check_file_behaviour(file_hash)
 
+    ec = {}
     if (response.get('response_code', None) == 0):
+
+        if is_demisto_version_ge('5.5.0'):
+            ec['DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type'
+               ' == obj.Type)'] = get_dbot_file_context(file_hash, 0)
+
+        else:
+            ec['DBotScore'] = get_dbot_file_context(file_hash, 0)
         return {
             'Type': entryTypes['note'],
             'Contents': response,
             'ContentsFormat': formats['json'],
-            'EntryContext': {
-                "DBotScore": {
-                    'Indicator': file_hash,
-                    'Type': 'hash',
-                    'Vendor': 'VirusTotal - Private API',
-                    'Score': 0
-                }
-            },
-            'HumanReadable': "A report wasn't found for file "
-                             + file_hash + ". Virus Total returned the following response: " + json.dumps(
-                response.get('verbose_msg'))
+            'EntryContext': ec,
+
+            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following "
+                                                                             "response: " + json.dumps
+                             (response.get('verbose_msg'))
         }
 
     # data processing
@@ -546,7 +556,7 @@ def get_file_report_command():
         }
 
     if response.get('response_code', None) == 0:
-        return"A report wasn't found. Virus Total returned the following response: " + json.dumps(
+        return "A report wasn't found. Virus Total returned the following response: " + json.dumps(
             response.get('verbose_msg'))
 
     del response['response_code']
@@ -1007,16 +1017,12 @@ def hash_communication_command():
             'Contents': response,
             'ContentsFormat': formats['json'],
             'EntryContext': {
-                "DBotScore": {
-                    'Indicator': file_hash,
-                    'Type': 'hash',
-                    'Vendor': 'VirusTotal - Private API',
-                    'Score': 0
-                }
+                'DBotScore': get_dbot_file_context(file_hash, 0)
             },
-            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following "
-                                                                             "response: " + json.dumps(
-                response.get('verbose_msg'))
+
+            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following"
+                                                                             " response: " + json.dumps
+                             (response.get('verbose_msg'))
         }
 
     # network data contains all the communication data
