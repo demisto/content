@@ -274,7 +274,7 @@ def upload_core_packs_config(storage_bucket, packs_list):
     print_color(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.", LOG_COLORS.GREEN)
 
 
-def upload_id_set(storage_bucket, id_set_local_path):
+def upload_id_set(storage_bucket, id_set_local_path=None):
     """
     Uploads the id_set.json artifact to the bucket.
 
@@ -282,6 +282,9 @@ def upload_id_set(storage_bucket, id_set_local_path):
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         id_set_local_path: path to the id_set.json file
     """
+    if not id_set_local_path:
+        print("Skipping upload of id set to gcs.")
+
     id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
     blob = storage_bucket.blob(id_set_gcs_path)
 
@@ -429,7 +432,6 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
@@ -440,6 +442,7 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
+    parser.add_argument('--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Comma separated list of target pack names. "
                               "Define `All` in order to store all available packs."),
@@ -582,8 +585,7 @@ def main():
     upload_core_packs_config(storage_bucket, packs_list)
 
     # upload id_set.json to bucket
-    if id_set_path:
-        upload_id_set(storage_bucket, id_set_path)
+    upload_id_set(storage_bucket, id_set_path)
 
     # summary of packs status
     print_packs_summary(packs_list)
