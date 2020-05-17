@@ -47,6 +47,11 @@ configuration:
   name: timestamp_field
   required: false
   type: 0
+- display: ServiceNow ticket column to be set as the incident name, default is the incident number
+  hidden: false
+  name: incident_name
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -80,7 +85,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -200,7 +206,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -214,8 +221,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket urgency. You can either select from the predefined options or
-         enter another value, for example: "Urgent" or "5".'
+      description: 'Ticket urgency. You can either select from the predefined options
+        or enter another value, for example: "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
@@ -226,8 +233,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket severity. You can either select from the predefined options or
-        enter another value, for example: "Urgent" or "5".'
+      description: 'Ticket severity. You can either select from the predefined options
+        or enter another value, for example: "Urgent" or "5".'
       isArray: false
       name: severity
       predefined:
@@ -331,7 +338,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
+      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)",
+        "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved
+        (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
       isArray: false
       name: close_code
       predefined:
@@ -412,7 +421,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to display comments, work notes, and so on. Can be "true" or "false".
+      description: Whether to display comments, work notes, and so on. Can be "true"
+        or "false".
       isArray: false
       name: display
       predefined:
@@ -458,7 +468,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the ticket is solved in the knowledge base. Can be "true" or "false".
+      description: Whether the ticket is solved in the knowledge base. Can be "true"
+        or "false".
       isArray: false
       name: knowledge
       predefined:
@@ -525,7 +536,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS.'
+      description: 'The date/time that the ticket was resolved, in the format: YYYY-MM-DD
+        HH:MM:SS.'
       isArray: false
       name: resolved_at
       required: false
@@ -561,7 +573,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Last date/time that the system was updated, in the format: YYYY-MM-DD HH:MM:SS.'
+      description: 'Last date/time that the system was updated, in the format: YYYY-MM-DD
+        HH:MM:SS.'
       isArray: false
       name: sys_updated_on
       required: false
@@ -649,7 +662,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: normal
-      description: Type of Change Request ticket. Can be "normal", "standard", or "emergency". Default is "normal".
+      description: Type of Change Request ticket. Can be "normal", "standard", or
+        "emergency". Default is "normal".
       isArray: false
       name: change_type
       predefined:
@@ -742,7 +756,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -756,8 +771,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket urgency. You can either select from the predefined options or
-         enter another value, for example: "Urgent" or "5".'
+      description: 'Ticket urgency. You can either select from the predefined options
+        or enter another value, for example: "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
@@ -768,8 +783,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket severity. You can either select from the predefined options or
-        enter another value, for example: "Urgent" or "5".'
+      description: 'Ticket severity. You can either select from the predefined options
+        or enter another value, for example: "Urgent" or "5".'
       isArray: false
       name: severity
       predefined:
@@ -818,7 +833,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The ticket approval set date/time, in the format: "2016-07-02 21:51:11".'
+      description: 'The ticket approval set date/time, in the format: "2016-07-02
+        21:51:11".'
       isArray: false
       name: approval_set
       required: false
@@ -873,7 +889,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket's close code. Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
+      description: Ticket's close code. Ticket's close code. Can be "Solved (Work
+        Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved
+        Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too
+        Costly)", or "Closed/Resolved by Caller".
       isArray: false
       name: close_code
       predefined:
@@ -954,7 +973,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to display comments, work notes, and so on. Can be "true" or "false".
+      description: Whether to display comments, work notes, and so on. Can be "true"
+        or "false".
       isArray: false
       name: display
       predefined:
@@ -1000,7 +1020,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the ticket is solved in the knowledge base. Can be "true" or "false".
+      description: Whether the ticket is solved in the knowledge base. Can be "true"
+        or "false".
       isArray: false
       name: knowledge
       predefined:
@@ -1103,7 +1124,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Date/time the system was last updated.'
+      description: Date/time the system was last updated.
       isArray: false
       name: sys_updated_on
       required: false
@@ -1191,7 +1212,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: normal
-      description: Type of Change Request ticket. Can be "normal", "standard", or "emergency". Default is "normal".
+      description: Type of Change Request ticket. Can be "normal", "standard", or
+        "emergency". Default is "normal".
       isArray: false
       name: change_type
       predefined:
@@ -1237,7 +1259,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item".
       isArray: false
       name: ticket_type
       predefined:
@@ -1264,7 +1287,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1356,7 +1380,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1368,14 +1393,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The actual link to publish in ServiceNow ticket, in a valid URL format, for example, http://www.demisto.com.
+      description: The actual link to publish in ServiceNow ticket, in a valid URL
+        format, for example, http://www.demisto.com.
       isArray: false
       name: link
       required: true
       secret: false
     - default: false
-      description: Whether to publish the link as comment on the ticket. Can be "true" or "false". If false will publish
-        the link as WorkNote.
+      description: Whether to publish the link as comment on the ticket. Can be "true"
+        or "false". If false will publish the link as WorkNote.
       isArray: false
       name: post-as-comment
       required: false
@@ -1400,7 +1426,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1420,7 +1447,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to publish the note as comment on the ticket. Can be "true" or "false". Default is "false".
+      description: Whether to publish the note as comment on the ticket. Can be "true"
+        or "false". Default is "false".
       isArray: false
       name: post-as-comment
       predefined:
@@ -1442,7 +1470,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1460,8 +1489,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Filename of the uploaded file to override the existing file name in
-        the entry.
+      description: Filename of the uploaded file to override the existing file name
+        in the entry.
       isArray: false
       name: file_name
       required: false
@@ -1488,8 +1517,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of table fields to display and output to the context,
-        for example: name,tag,company. ID field is added by default.'
+      description: 'Comma-separated list of table fields to display and output to
+        the context, for example: name,tag,company. ID field is added by default.'
       isArray: false
       name: fields
       required: false
@@ -1544,8 +1573,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of table fields to display and output to the context,
-        for example: name,tag,company. ID field is added by default.'
+      description: 'Comma-separated list of table fields to display and output to
+        the context, for example: name,tag,company. ID field is added by default.'
       isArray: true
       name: fields
       required: false
@@ -1900,7 +1929,8 @@ script:
       type: date
   - arguments:
     - default: false
-      description: 'The table label, for example: Asset, Incident, IP address, and so on.'
+      description: 'The table label, for example: Asset, Incident, IP address, and
+        so on.'
       isArray: false
       name: label
       required: true
@@ -1982,8 +2012,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Tag system ID. Can be retrieved using the "!servicenow-query-table
-        table_name=label fields=name,active,sys_id" command.'
+      description: Tag system ID. Can be retrieved using the "!servicenow-query-table
+        table_name=label fields=name,active,sys_id" command.
       isArray: false
       name: tag_id
       required: true
@@ -1997,7 +2027,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -2010,9 +2041,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Adds a tag to a ticket. The tag will be visible in the label_entry
+    description: Adds a tag to a ticket. The tag will be visible in the label_entry
       table and can be retrieved using the "!servicenow-query-table table_name=label_entry
-      fields=title,table,sys_id,id_display,id_type" command.'
+      fields=title,table,sys_id,id_display,id_type" command.
     execution: false
     name: servicenow-add-tag
     outputs:
@@ -2172,8 +2203,8 @@ script:
       description: Unique ID of the queue on which to route a document.
       type: String
     - contextPath: ServiceNow.WorkItem.DisplayName
-      description: 'Name of the document to be routed by this work item, for example: case
-        record.'
+      description: 'Name of the document to be routed by this work item, for example:
+        case record.'
       type: String
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
