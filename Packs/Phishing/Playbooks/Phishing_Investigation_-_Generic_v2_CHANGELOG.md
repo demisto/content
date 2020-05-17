@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.5.0] - 2020-05-12
 The playbook now uses Block Indicators - Generic v2 to block malicious indicators (off by default).
