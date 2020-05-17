@@ -322,5 +322,5 @@
     ],
     "fromVersion": "6.0.0",
     "description": "",
-    "isPredefined": false
+    "isPredefined": true
 }
