@@ -39,10 +39,11 @@ def main():
             print(exc.output)
 
         if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
-            print(f'Destroying instance {env.get("Role", "Unknown role")}')
-            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
-            if aws_functions.isError(rminstance):
-                print_error(rminstance)
+            # print(f'Destroying instance {env.get("Role", "Unknown role")}')
+            print(f'Skipping destruction of instance {env.get("Role", "Unknown role")}')
+            # rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
+            # if aws_functions.isError(rminstance):
+            #     print_error(rminstance)
         else:
             print_warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
 
