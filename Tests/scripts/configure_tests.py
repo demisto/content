@@ -158,8 +158,10 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
 
             # reputations.json
-            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(PACKS_INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
             elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
