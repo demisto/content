@@ -46,6 +46,11 @@ configuration:
   name: referer
   required: false
   type: 0
+- defaultvalue: '0'
+  display: Fetch incidents limit (the max amount of incidents per fetch iteration)
+  name: fetch_limit
+  required: false
+  type: 0
 description: Request Tracker for Incident Response is a ticketing system which provides
   pre-configured queues and workflows designed for incident response teams.
 display: RTIR
@@ -238,6 +243,14 @@ script:
       description: Ticket due date, in format of YYYY-MM-DD, e.g. 2011-02-24
       isArray: false
       name: due
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: A limit for the max number of results that will return from the
+        search. 0 means no limit, which is the default.
+      isArray: false
+      name: results_limit
       required: false
       secret: false
     deprecated: false

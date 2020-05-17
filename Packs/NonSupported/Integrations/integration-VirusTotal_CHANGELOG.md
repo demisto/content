@@ -1,5 +1,6 @@
 ## [Unreleased]
-Fixed an issue where urls with a comma were parsed incorrectly.
+- Fixed an issue where urls with a comma were parsed incorrectly.
+- Fixed an issue where running file related commands would raise an error.
 
 
 ## [20.3.3] - 2020-03-18

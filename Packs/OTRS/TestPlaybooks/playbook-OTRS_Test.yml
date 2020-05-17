@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ca20645c-eeae-4bac-88ff-728411ebf3ae
+    taskid: 50777ca7-f966-49e4-81f6-8e6b6115445f
     type: start
     task:
-      id: ca20645c-eeae-4bac-88ff-728411ebf3ae
+      id: 50777ca7-f966-49e4-81f6-8e6b6115445f
       version: -1
       name: ""
       iscommand: false
@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: 2c646fd1-cef0-4bf4-891a-3d24acb4ecff
+    taskid: a8b5a7e6-2b8c-46bd-8ace-dfdb5b7a2a96
     type: regular
     task:
-      id: 2c646fd1-cef0-4bf4-891a-3d24acb4ecff
+      id: a8b5a7e6-2b8c-46bd-8ace-dfdb5b7a2a96
       version: -1
       name: Create ticket
       description: Create a new ticket in OTRS
@@ -71,10 +71,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 4cf8d89a-b10b-4226-8923-d5f18366083c
+    taskid: fa037010-596f-4d56-89b2-34058fcbe6fe
     type: condition
     task:
-      id: 4cf8d89a-b10b-4226-8923-d5f18366083c
+      id: fa037010-596f-4d56-89b2-34058fcbe6fe
       version: -1
       name: Verify outputs
       type: condition
@@ -154,10 +154,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: 07eb83ca-35de-4700-8977-51863b7b9b8d
+    taskid: 592bfabe-5569-416a-85bd-7ca0c4fc3920
     type: regular
     task:
-      id: 07eb83ca-35de-4700-8977-51863b7b9b8d
+      id: 592bfabe-5569-416a-85bd-7ca0c4fc3920
       version: -1
       name: Get ticket
       script: '|||otrs-get-ticket'
@@ -182,10 +182,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 361669b4-23d9-47ea-8c68-a7e4e739a571
+    taskid: b67649f2-17cf-486b-88a3-1e9f630c0d65
     type: condition
     task:
-      id: 361669b4-23d9-47ea-8c68-a7e4e739a571
+      id: b67649f2-17cf-486b-88a3-1e9f630c0d65
       version: -1
       name: Verify outputs
       type: condition
@@ -265,10 +265,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: aef07169-3598-4fda-8638-6679dcf8067a
+    taskid: f63d1a46-fdbc-4909-8de9-bba048a10cf4
     type: regular
     task:
-      id: aef07169-3598-4fda-8638-6679dcf8067a
+      id: f63d1a46-fdbc-4909-8de9-bba048a10cf4
       version: -1
       name: Update ticket
       script: '|||otrs-update-ticket'
@@ -304,10 +304,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: b0ac94b8-5aaa-4231-8393-c1ed6fca5a42
+    taskid: 9c64e321-0644-451d-8582-c602301b9960
     type: condition
     task:
-      id: b0ac94b8-5aaa-4231-8393-c1ed6fca5a42
+      id: 9c64e321-0644-451d-8582-c602301b9960
       version: -1
       name: Verify outputs
       type: condition
@@ -387,10 +387,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 749e71df-5037-456f-8ce3-18f1e72cbb30
+    taskid: c80c45e4-36f0-4b3c-8b8e-f4b6fdfefbc2
     type: regular
     task:
-      id: 749e71df-5037-456f-8ce3-18f1e72cbb30
+      id: c80c45e4-36f0-4b3c-8b8e-f4b6fdfefbc2
       version: -1
       name: Search ticket
       script: '|||otrs-search-ticket'
@@ -419,10 +419,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: c4c65a22-80fc-4fa3-8222-4bd86e9d81cd
+    taskid: 9e799e9a-0e9b-4972-8532-a592d603a993
     type: condition
     task:
-      id: c4c65a22-80fc-4fa3-8222-4bd86e9d81cd
+      id: 9e799e9a-0e9b-4972-8532-a592d603a993
       version: -1
       name: Verify outputs
       type: condition
@@ -502,10 +502,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 48d01342-700c-48f7-886e-ef5112072336
+    taskid: 69484779-02a4-476e-8ca6-a0df80f2294e
     type: regular
     task:
-      id: 48d01342-700c-48f7-886e-ef5112072336
+      id: 69484779-02a4-476e-8ca6-a0df80f2294e
       version: -1
       name: Close ticket
       script: '|||otrs-close-ticket'
@@ -534,10 +534,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: d79df38b-50a2-4afe-8beb-8211a7a897d4
+    taskid: 3f87e2e1-84c9-4a22-810f-806331bcf115
     type: condition
     task:
-      id: d79df38b-50a2-4afe-8beb-8211a7a897d4
+      id: 3f87e2e1-84c9-4a22-810f-806331bcf115
       version: -1
       name: Verify outputs
       type: condition
@@ -593,10 +593,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 2ced9c7b-46c6-41ef-8299-645349c6ab59
+    taskid: f2bc247c-43ca-4b5c-8dd9-066bfbb0f0b8
     type: title
     task:
-      id: 2ced9c7b-46c6-41ef-8299-645349c6ab59
+      id: f2bc247c-43ca-4b5c-8dd9-066bfbb0f0b8
       version: -1
       name: Done
       type: title
@@ -614,10 +614,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: 5806892e-dccd-4f7a-866b-07be907d56dd
+    taskid: 21c27c51-b0f3-4f81-8697-5ce71e2380d4
     type: regular
     task:
-      id: 5806892e-dccd-4f7a-866b-07be907d56dd
+      id: 21c27c51-b0f3-4f81-8697-5ce71e2380d4
       version: -1
       name: FetchFromInstance
       scriptName: FetchFromInstance
@@ -628,6 +628,10 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      add_to_context: {}
+      brand_name: {}
+      error_msg_in_incident: {}
+      expect_data: {}
       instance_name:
         complex:
           root: modules
@@ -640,6 +644,15 @@ tasks:
               right:
                 value:
                   simple: OTRS
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+              ignorecase: true
           accessor: name
     separatecontext: false
     view: |-
