@@ -3,17 +3,11 @@ commonfields:
   id: Unit42 Feed
   version: -1
 configuration:
-- defaultvalue: 'false'
-  display: Include external actor references as indicators
-  name: includeAPT
-  required: false
-  type: 8
 - display: Fetch indicators
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
-  display: Indicator Reputation
+- display: Indicator Reputation
   name: feedReputation
   options:
   - None
@@ -22,8 +16,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
+- defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -35,8 +28,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- display: ''
-  name: feedExpirationPolicy
+- name: feedExpirationPolicy
   options:
   - never
   - interval
@@ -44,8 +36,7 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- display: ''
-  name: feedExpirationInterval
+- name: feedExpirationInterval
   required: false
   type: 1
 - defaultvalue: '240'
@@ -53,10 +44,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this
-    feed. This means that if an indicator from this feed is on the exclusion list, the
-    indicator might still be added to the system.
-  display: Bypass exclusion list
+- display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
@@ -69,9 +57,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: api_key
+- display: API Key
   hidden: false
-  name: API Key
+  name: api_key
   required: false
   type: 4
 description: Unit42 Feed for fetching indicators.
@@ -85,18 +73,6 @@ script:
       description: The maximum number of indicators to return. The default is 10.
       isArray: false
       name: limit
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Output in raw JSON format. Can be "True" or "False". The default
-        is "False".
-      isArray: false
-      name: raw
-      predefined:
-      - 'False'
-      - 'True'
       required: false
       secret: false
     deprecated: false
@@ -112,6 +88,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
-  - No test
+- No test
+fromversion: 5.5.0
