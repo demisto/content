@@ -26,4 +26,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://github.com/demisto/content/raw/master/Packs/HelloWorld/doc_files/Handle_Hello_World_Alert.png)
