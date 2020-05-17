@@ -1,5 +1,6 @@
 ## [Unreleased]
-Added an argument that enables you to download a Panorama report.
+- Added an argument which enables you to download a Panorama report.
+- Fixed an issue where proxy settings were not handled properly.
 
 ## [20.4.0] - 2020-04-14
 -

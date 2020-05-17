@@ -10,7 +10,7 @@ import requests
 import yaml
 
 from demisto_sdk.commands.common.constants import INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, \
-    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
+    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, INDICATOR_TYPES_DIR
 from demisto_sdk.commands.common.tools import print_error, print_warning, get_last_release_version, \
     filter_packagify_changes, is_file_path_in_pack, \
     run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
@@ -40,7 +40,7 @@ LAYOUT_TYPE_TO_NAME = {
 
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
                        DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR,
-                       CLASSIFIERS_DIR, MISC_DIR]
+                       CLASSIFIERS_DIR, INDICATOR_TYPES_DIR]
 
 
 def add_dot(text):
@@ -490,7 +490,7 @@ RELEASE_NOTE_GENERATOR = {
     INCIDENT_FIELDS_DIR: IncidentFieldContent(),
     LAYOUTS_DIR: LayoutContent(),
     CLASSIFIERS_DIR: ClassifierContent(),
-    MISC_DIR: ReputationContent()
+    INDICATOR_TYPES_DIR: ReputationContent()
 }
 
 

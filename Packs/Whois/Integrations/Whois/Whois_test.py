@@ -1,3 +1,5 @@
+import datetime
+
 import Whois
 import demistomock as demisto
 import pytest
@@ -64,3 +66,73 @@ def test_socks_proxy(mocker, request):
     assert_results_ok()
     tmp.seek(0)
     assert 'connected to' in tmp.read()  # make sure we went through microsocks
+
+
+TEST_QUERY_RESULT_INPUT = [
+    (
+        {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
+         'raw': ['NOT FOUND\n>>> Last update of WHOIS database: 2020-05-07T13:55:34Z <<<']},
+        'rsqupuo.info',
+        False
+    ),
+    (
+        {'status': ['clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)'],
+         'updated_date': [datetime.datetime(2019, 9, 9, 8, 39, 4)],
+         'contacts': {'admin': {'country': 'US', 'state': 'CA', 'name': 'Google LLC'},
+                      'tech': {'organization': 'Google LLC', 'state': 'CA', 'country': 'US'},
+                      'registrant': {'organization': 'Google LLC', 'state': 'CA', 'country': 'US'}, 'billing': None},
+         'nameservers': ['ns1.google.com', 'ns4.google.com', 'ns3.google.com', 'ns2.google.com'],
+         'expiration_date': [datetime.datetime(2028, 9, 13, 0, 0), datetime.datetime(2028, 9, 13, 0, 0)],
+         'emails': ['abusecomplaints@markmonitor.com', 'whoisrequest@markmonitor.com'],
+         'raw': ['Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'],
+         'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
+        'google.com',
+        True
+    ),
+    (
+        {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None}},
+        'rsqupuo.info',
+        False
+    ),
+    (
+        {'status': ['clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)'],
+         'updated_date': [datetime.datetime(2019, 9, 9, 8, 39, 4)],
+         'contacts': {'admin': {'country': 'US', 'state': 'CA', 'name': 'Google LLC'},
+                      'tech': {'organization': 'Google LLC', 'state': 'CA', 'country': 'US'},
+                      'registrant': {'organization': 'Google LLC', 'state': 'CA', 'country': 'US'}, 'billing': None},
+         'nameservers': ['ns1.google.com', 'ns4.google.com', 'ns3.google.com', 'ns2.google.com'],
+         'expiration_date': [datetime.datetime(2028, 9, 13, 0, 0), datetime.datetime(2028, 9, 13, 0, 0)],
+         'emails': ['abusecomplaints@markmonitor.com', 'whoisrequest@markmonitor.com'],
+         'raw': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN',
+         'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
+        'google.com',
+        True
+    ),
+    (
+        {'status': ['clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)'],
+         'updated_date': [datetime.datetime(2019, 9, 9, 8, 39, 4)],
+         'contacts': {'admin': {'country': 'US', 'state': 'CA', 'name': 'Google LLC'},
+                      'tech': {'organization': 'Google LLC', 'state': 'CA', 'country': 'US'},
+                      'registrant': {'organization': 'Google LLC', 'state': 'CA', 'country': 'US'}, 'billing': None},
+         'nameservers': ['ns1.google.com', 'ns4.google.com', 'ns3.google.com', 'ns2.google.com'],
+         'expiration_date': [datetime.datetime(2028, 9, 13, 0, 0), datetime.datetime(2028, 9, 13, 0, 0)],
+         'emails': ['abusecomplaints@markmonitor.com', 'whoisrequest@markmonitor.com'],
+         'raw': {'data': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'},
+         'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
+        'google.com',
+        True
+    ),
+    (
+        {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
+         'raw': {'data': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'}},
+        'rsqupuo.info',
+        True
+    ),
+]
+
+
+@pytest.mark.parametrize('whois_result, domain, expected', TEST_QUERY_RESULT_INPUT)
+def test_query_result(whois_result, domain, expected):
+    from Whois import create_outputs
+    md, standard_ec, dbot_score = create_outputs(whois_result, domain)
+    assert standard_ec['Whois']['QueryResult'] == expected
