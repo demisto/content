@@ -28,6 +28,7 @@ FETCH_QUEUE = demisto.params()['fetch_queue']
 CURLY_BRACKETS_REGEX = r'\{(.*?)\}'  # Extracts string in curly brackets, e.g. '{string}' -> 'string'
 apostrophe = "'"
 SESSION = requests.session()
+SESSION.verify = USE_SSL
 REFERER = demisto.params().get('referer')
 HEADERS = {'Referer': REFERER} if REFERER else {}
 
@@ -95,7 +96,11 @@ def login():
         'user': USERNAME,
         'pass': PASSWORD
     }
-    SESSION.post(SERVER, data=data)  # type: ignore
+    res = SESSION.post(SERVER, data=data)  # type: ignore
+    response_text = str(res.text)
+    are_credentials_wrong = 'Your username or password is incorrect' in response_text
+    if are_credentials_wrong:
+        return_error("Error: login failed. please check your credentials.")
 
 
 def logout():
@@ -266,69 +271,92 @@ def get_ticket_request(ticket_id):
     return raw_ticket
 
 
-def search_ticket():
-    raw_query = ''
-    ticket_id = demisto.args().get('ticket-id')
+def fix_query_suffix(query):
+    new_query = query
+    if new_query.endswith('+AND+'):
+        new_query = new_query[:-5]
+    elif new_query.endswith('+OR+'):
+        new_query = new_query[:-4]
+    return new_query
 
+
+def build_search_query():
+    raw_query = ''
+    args = demisto.args()
+    ticket_id = args.get('ticket-id')
     if ticket_id:
         raw_query += 'id={}{}{}+AND+'.format(apostrophe, ticket_id, apostrophe)
 
-    subject = demisto.args().get('subject')
+    subject = args.get('subject')
     if subject:
         raw_query += 'Subject={}{}{}+AND+'.format(apostrophe, subject, apostrophe)
 
-    status = demisto.args().get('status')
+    status = args.get('status')
     if status:
         raw_query += 'Status={}{}{}+AND+'.format(apostrophe, status, apostrophe)
 
-    creator = demisto.args().get('creator')
+    creator = args.get('creator')
     if creator:
         raw_query += 'Creator={}{}{}+AND+'.format(apostrophe, creator, apostrophe)
 
-    priority_equal_to = demisto.args().get('priority-equal-to')
+    priority_equal_to = args.get('priority-equal-to')
     if priority_equal_to:
         raw_query += 'Priority={}{}{}+AND+'.format(apostrophe, priority_equal_to, apostrophe)
 
-    priority_greater_than = demisto.args().get('priority-greater-than')
+    priority_greater_than = args.get('priority-greater-than')
     if priority_greater_than:
         raw_query += 'Priority>{}{}{}+AND+'.format(apostrophe, priority_greater_than, apostrophe)
 
-    created_after = demisto.args().get('created-after')
+    created_after = args.get('created-after')
     if created_after:
         raw_query += 'Created>{}{}{}+AND+'.format(apostrophe, created_after, apostrophe)
 
-    created_on = demisto.args().get('created-on')
+    created_on = args.get('created-on')
     if created_on:
         raw_query += 'Created={}{}{}+AND+'.format(apostrophe, created_on, apostrophe)
 
-    created_before = demisto.args().get('created-before')
+    created_before = args.get('created-before')
     if created_before:
         raw_query += 'Created<{}{}{}+AND+'.format(apostrophe, created_before, apostrophe)
 
-    owner = demisto.args().get('owner')
+    owner = args.get('owner')
     if owner:
         raw_query += 'Created={}{}{}+AND+'.format(apostrophe, owner, apostrophe)
 
-    due = demisto.args().get('due')
+    due = args.get('due')
     if due:
         raw_query += 'Due={}{}{}+AND+'.format(apostrophe, due, apostrophe)
 
-    queue = demisto.args().get('queue')
+    queue = args.get('queue')
     if queue:
         raw_query += 'Queue={}{}{}+AND+'.format(apostrophe, queue, apostrophe)
+    raw_query = fix_query_suffix(raw_query)
+    return raw_query
+
+
+def search_ticket():
+    raw_query = build_search_query()
+
     raw_tickets = search_ticket_request(raw_query)
     headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority',
                'FinalPriority']
     search_context = []
     data = raw_tickets.content.split('\n')
     data = data[2:]
+    results_limit = int(demisto.args().get('results_limit', 0))
+    data = data if (results_limit == 0) else data[:results_limit]
     for line in data:
         split_line = line.split(': ')
-        search_ticket = get_ticket_request(split_line[0]).content
-        search_ticket = search_ticket.split('\n')
-        search_ticket = search_ticket[2:]
-        id_ticket = search_ticket[0].upper()
-        search_ticket[0] = id_ticket
+        empty_line_response = ['NO OBJECTS SPECIFIED.', '']
+        is_line_non_empty = split_line[0] != ''
+        if is_line_non_empty:
+            search_ticket = get_ticket_request(split_line[0]).content
+            search_ticket = search_ticket.split('\n')
+            search_ticket = search_ticket[2:]
+            id_ticket = search_ticket[0].upper()
+            search_ticket[0] = id_ticket
+        else:
+            search_ticket = empty_line_response
 
         current_ticket_search = {}
         for entity in search_ticket:
@@ -753,6 +781,10 @@ def add_reply():
         return_error('Failed to reply')
 
 
+def get_ticket_id(ticket):
+    return int(ticket['ID'])
+
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_ticket_id = last_run['ticket_id'] if (last_run and last_run['ticket_id']) else 0
@@ -763,8 +795,12 @@ def fetch_incidents():
         status_query = '+AND+('
         for status in status_list:
             status_query += 'Status={}{}{}+OR+'.format(apostrophe, status, apostrophe)
+        status_query = fix_query_suffix(status_query)
         raw_query += status_query + ')'
     tickets = parse_ticket_data(raw_query)
+    tickets.sort(key=get_ticket_id)
+    fetch_batch_limit = int(demisto.params().get('fetch_limit', 0))
+    tickets = tickets if (fetch_batch_limit == 0) else tickets[:fetch_batch_limit]
     incidents = []
     max_ticket_id = last_ticket_id
     for ticket in tickets:
@@ -782,8 +818,9 @@ def fetch_incidents():
 
 LOG('command is %s' % (demisto.command(),))
 try:
-    login()
     if demisto.command() == 'test-module':
+        login()
+        logout()
         demisto.results('ok')
 
     if demisto.command() in {'fetch-incidents'}:
@@ -820,6 +857,3 @@ except Exception, e:
     LOG(e.message)
     LOG.print_log()
     raise
-
-finally:
-    logout()

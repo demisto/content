@@ -30,7 +30,7 @@ def get_modified_packs(specific_packs=""):
         set: unique collection of modified/new packs names.
 
     """
-
+    packs = None
     if specific_packs.lower() == "all":
         if os.path.exists(PACKS_FULL_PATH):
             all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
@@ -47,7 +47,7 @@ def get_modified_packs(specific_packs=""):
         packs = modified_packs
     else:
         cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
-        modified_packs_path = run_command(cmd, use_shell=True).splitlines()
+        modified_packs_path = run_command(cmd).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         print(f"Number of modified packs is: {len(modified_packs)}")
 
@@ -274,6 +274,23 @@ def upload_core_packs_config(storage_bucket, packs_list):
     print_color(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.", LOG_COLORS.GREEN)
 
 
+def upload_id_set(storage_bucket, id_set_local_path):
+    """
+    Uploads the id_set.json artifact to the bucket.
+
+    Args:
+        storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
+        id_set_local_path: path to the id_set.json file
+    """
+    id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
+    blob = storage_bucket.blob(id_set_gcs_path)
+
+    with open(id_set_local_path, mode='r') as f:
+        blob.upload_from_file(f)
+
+    print_color(f"Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
+
+
 def get_private_packs(private_index_path):
     """ Get the list of ID and price of the private packs.
 
@@ -412,6 +429,7 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
@@ -448,6 +466,7 @@ def main():
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_pack = option.override_pack
     signature_key = option.key_string
+    id_set_path = option.id_set_path
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -504,8 +523,11 @@ def main():
             pack.cleanup()
             continue
 
-        # todo finish implementation of release notes
-        # pack.parse_release_notes()
+        task_status = pack.prepare_release_notes(index_folder_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.cleanup()
+            continue
 
         task_status = pack.remove_unwanted_files()
         if not task_status:
@@ -552,13 +574,16 @@ def main():
             continue
 
         pack.status = PackStatus.SUCCESS.name
-        pack.cleanup()
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
     # upload core packs json to bucket
     upload_core_packs_config(storage_bucket, packs_list)
+
+    # upload id_set.json to bucket
+    if id_set_path:
+        upload_id_set(storage_bucket, id_set_path)
 
     # summary of packs status
     print_packs_summary(packs_list)
