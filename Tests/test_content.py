@@ -32,8 +32,6 @@ INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
 
-AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
-
 SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
 
@@ -182,7 +180,6 @@ def print_test_summary(tests_data_keeper, is_ami=True):
     rerecorded_count = len(rerecorded_tests) if is_ami else 0
     empty_mocks_count = len(empty_files) if is_ami else 0
     unmocklable_integrations_count = len(unmocklable_integrations)
-
     print('\nTEST RESULTS:')
     tested_playbooks_message = '\t Number of playbooks tested - ' + str(succeed_count + failed_count)
     print(tested_playbooks_message)
@@ -361,12 +358,6 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
             end_mock_message = f'------ Test {test_message} end ------\n'
             prints_manager.add_print_job(end_mock_message, print, thread_index, include_timestamp=True)
             return
-        elif status == PB_Status.FAILED_DOCKER_TEST:
-            error_message = 'Failed: {} failed'.format(test_message)
-            prints_manager.add_print_job(error_message, print_error, thread_index)
-            failed_playbooks.append(playbook_id)
-            end_mock_message = '------ Test {} end ------\n'.format(test_message)
-            prints_manager.add_print_job(end_mock_message, print, thread_index)
 
         mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
         prints_manager.add_print_job(mock_failed_message, print, thread_index)
@@ -404,9 +395,6 @@ def run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrati
     mock_run(tests_settings, client, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
              prints_manager, thread_index=thread_index)
-
-    # mock_run(client, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-    #          test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message)
 
 
 def http_request(url, params_dict=None):
@@ -560,25 +548,6 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def organize_tests(tests, unmockable_integrations, skipped_integrations_conf, nightly_integrations):
-    mock_tests, mockless_tests = [], []
-    for test in tests:
-        integrations_conf = test.get('integrations', [])
-
-        if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf, ]
-
-        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
-            integrations_conf, set(), skipped_integrations_conf, nightly_integrations)
-
-        if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
-            mockless_tests.append(test)
-        else:
-            mock_tests.append(test)
-
-    return mock_tests, mockless_tests
-
-
 def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
                       filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
@@ -671,7 +640,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
 
 
 def get_and_print_server_numeric_version(tests_settings):
-    if tests_settings.is_local_run:
+    if tests_settings.is_local_run or not os.path.isfile('./Tests/images_data.txt'):
         # TODO: verify this logic, it's a workaround because the test_image file does not exist on local run
         return '99.99.98'  # latest
     with open('./Tests/images_data.txt', 'r') as image_data_file:
@@ -775,12 +744,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
 
-    # if is_ami:
-    #     # move all mock tests to the top of the list
-    #     mock_tests, mockless_tests = organize_tests(tests, unmockable_integrations, skipped_integrations_conf,
-    #                                                 nightly_integrations)
-    # else:  # In case of a non AMI run we don't want to use the mocking mechanism
-    #     mockless_tests = tests
     if is_nightly and is_memory_check:
         mem_lim, err = get_docker_limit()
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
@@ -820,45 +783,21 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                           prints_manager, thread_index, is_ami)
 
         prints_manager.execute_thread_prints(thread_index)
-    # server_version = server_numeric_version
-    # with open('./artifacts/test_summary.txt', 'a') as test_summary:
-    #     sys.stdout = test_summary
-    #     print('Test Summary - Server "{}"'.format(server_version))
-    #     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
-    #                        unmockable_integrations, proxy, is_ami)
-    #     print('\n\n')
-    #     sys.stdout = sys.__stdout__
 
     tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
                                      skipped_integration, unmockable_integrations)
-    if not tests_settings.is_local_run:
+    if is_ami:
         tests_data_keeper.add_proxy_related_test_data(proxy)
 
-    if is_ami and build_name == 'figure-out-mocks':
-        updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
-        prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
-        ami.upload_mock_files(build_name, build_number)
+        if build_name == 'master':
+            updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
+            prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
+            ami.upload_mock_files(build_name, build_number)
 
     if playbook_skipped_integration and build_name == 'master':
         comment = 'The following integrations are skipped and critical for the test:\n {}'.\
             format('\n- '.join(playbook_skipped_integration))
         add_pr_comment(comment)
-
-    # sys.exit(1)
-    # if len(failed_playbooks):
-    #     print("Some tests have failed. Not destroying instances.")
-    #     sys.exit(1)
-    # else:
-    #     file_path = "./Tests/is_build_passed_{}.txt".format(server_version.replace(' ', ''))
-    #     with open(file_path, "w") as is_build_passed_file:
-    #         is_build_passed_file.write('Build passed')
-
-# def main():
-#     options = options_handler()
-#     server = options.server
-#     is_ami = options.isAMI
-#     server_version = options.serverVersion
-#     server_numeric_version = '0.0.0'
 
 
 def get_unmockable_tests(tests_settings):
@@ -1030,7 +969,7 @@ def main():
     # -------------
     if 'master' in tests_settings.serverVersion.lower():
         print('[{}] sleeping for 30 secs'.format(datetime.now()))
-        sleep(30)
+        sleep(45)
     # -------------
     manage_tests(tests_settings)
 

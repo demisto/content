@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.4.1"
+      CONTENT_VERSION: "20.5.0"
       SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "79973624c8b5f0c7ee33d22e8e541d2a8edf1920" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "1ac60fc841b4fbd1afeb3c44713532960f1c1ebb" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -23,7 +23,6 @@ jobs:
                 echo "Skipping - instance tests tasks are running only in container number 0"
                 exit 0
             fi
-
             echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
             echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
             echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
@@ -33,7 +32,6 @@ jobs:
             sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
             chmod +x ./Tests/scripts/*
             chmod +x ./Tests/lastest_server_build_scripts/*
-            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
             if [ ! -e "venv" ]; then
               echo "installing venv"
               NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
@@ -49,6 +47,9 @@ jobs:
             # store in bash env so we load our venv in each step
             echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
             git config diff.renameLimit 6000
+
+            echo "========== Build Parameters =========="
+            echo "Parameters: NIGHTLY: $NIGHTLY, INSTANCE_TESTS: $INSTANCE_TESTS, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, ARTIFACT_BUILD_NUM: $ARTIFACT_BUILD_NUM"
             python --version
             python3 --version
             demisto-sdk --version
@@ -59,8 +60,8 @@ jobs:
           key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - add_ssh_keys:
           fingerprints:
-              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
-              - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+            - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
+            - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
           name: Check if CircleCI's config file is up to date
           when: always
@@ -107,18 +108,10 @@ jobs:
                 exit 0
             fi
 
-            # python -m pytest ./Tests/scripts/hook_validations/tests/ -v
-            # # after moving to all to python3, run the tests by folder
-            # # python -m pytest ./Tests/scripts/infrastructure_tests/ -v
-
-            # python3 -m pytest ./Tests/scripts/infrastructure_tests/constants_regex_test.py -v
-            # python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
-            # python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
-            # python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
-            # python3 -m pytest ./Tests/scripts/infrastructure_tests/test_configure_tests.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
             python3 -m pytest ./Tests/Marketplace/Tests/marketplace_services_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
+            python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -247,9 +240,9 @@ jobs:
             mkdir ./unit-tests
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
+              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
             else
-              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --json-report ./artifacts
+              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
             fi
       - store_test_results:
           path: ./unit-tests
@@ -263,27 +256,6 @@ jobs:
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
               then
                 python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
-            fi
-      - run:
-          name: Download Artifacts
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                echo "Using AMI - Not downloading artifacts"
-
-              else
-                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
       - run:
           name: Download Configuration
@@ -304,6 +276,26 @@ jobs:
 
               else
                 ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
+            fi
+      - run:
+          name: Download Artifacts
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            if ./Tests/scripts/is_ami.sh ;
+              then
+                echo "Using AMI - Not downloading artifacts"
+              else
+                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
       - run:
           name: Create Instance
@@ -327,18 +319,14 @@ jobs:
                   then
                     export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
 
-                else
-                  export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
-
-                  # filter environments created to just preGA
-                  echo "filter environments created to just preGA"
-                  echo '{"Server Master": false, "Demisto PreGA": true, "Demisto two before GA": false, "Demisto one before GA": false, "Demisto GA": false}' | tee ./Tests/filter_envs.json
+                  else
+                    export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
-                echo "IFRA_ENV_TYPE equals $IFRA_ENV_TYPE"
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
 
-            else
-              python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
+              else
+                . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -outfile ./env_results.json
             fi
       - run:
           name: Setup Instance
@@ -358,10 +346,8 @@ jobs:
                 python3 ./Tests/scripts/run_content_installation.py
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                # python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
             fi
             python3 ./Tests/scripts/wait_until_server_ready.py
-            mkdir ./artifacts/tests_outputs
       - run:
           name: Run Tests - Latest GA
           shell: /bin/bash
@@ -385,12 +371,10 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto GA" | tee ./artifacts/tests_outputs/demisto_ga.log
-                echo "failing step purposely"
-                exit 1
+                ./Tests/scripts/run_tests.sh "Demisto GA"
 
               else
-                ./Tests/lastest_server_build_scripts/run_tests.sh
+                ./Tests/scripts/run_tests.sh "master"
             fi
       - run:
           name: Run Tests - One Before GA
@@ -415,9 +399,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto one before GA" | tee ./artifacts/tests_outputs/one_before_ga.log
-                echo "failing step purposely"
-                exit 1
+                ./Tests/scripts/run_tests.sh "Demisto one before GA"
 
               else
                 echo "Not AMI run, can't run on this version"
@@ -445,9 +427,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto two before GA" | tee ./artifacts/tests_outputs/two_before_ga.log
-                echo "failing step purposely"
-                exit 1
+                ./Tests/scripts/run_tests.sh "Demisto two before GA"
 
               else
                 echo "Not AMI run, can't run on this version"
@@ -475,16 +455,13 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Server Master" | tee ./artifacts/tests_outputs/server_master.log
-                echo "failing step purposely"
-                exit 1
+                ./Tests/scripts/run_tests.sh "Server Master"
 
             else
                 echo "Not AMI run, can't run on this version"
             fi
       - run:
           name: Run Tests - Demisto PreGA
-          no_output_timeout: 120m
           shell: /bin/bash
           when: always
           command: |
@@ -506,13 +483,10 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto PreGA" | tee ./artifacts/tests_outputs/demisto_prega.log
-                # export RETVAL=$?
+                ./Tests/scripts/run_tests.sh "Demisto PreGA"
+                export RETVAL=$?
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                # exit $RETVAL
-                echo "endtime: $(date)"
-                echo "failing step purposely"
-                exit 1
+                exit $RETVAL
 
             else
                 echo "Not AMI run, can't run on this version"
@@ -584,7 +558,7 @@ jobs:
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p 'All' -pb 'marketplace-dist-private' -o
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' --id_set_path $CIRCLE_ARTIFACTS/id_set.json -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p 'All' -pb 'marketplace-dist-private' -o
             rm $GCS_PATH
           when: on_success
       - store_artifacts:
@@ -601,14 +575,17 @@ workflows:
   commit:
     jobs:
       - build
-  nightly:
+  instances_testing:
+    # for details of triggered builds see https://circleci.com/docs/2.0/workflows/#nightly-example
+    # for details of cron syntax see https://www.unix.com/man-page/POSIX/1posix/crontab/ disable-secrets-detection
     triggers:
       - schedule:
-          cron: "0 21 * * *"
+          # should trigger every day at 2 AM UTC (5 AM Israel Time)
+          cron: "0 2 * * *"
           filters:
             branches:
               only:
-                - figure-out-mocks
+                - master
     jobs:
       - build:
-          context: nightly_env
+          context: instances_test_env

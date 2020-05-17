@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
+Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
-import re
 import os
+import re
 import sys
 import json
-import time
 import glob
 import random
 import argparse
@@ -158,8 +158,10 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
 
             # reputations.json
-            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(PACKS_INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
             elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
@@ -930,17 +932,15 @@ def is_any_test_runnable(test_ids, conf, id_set=None, server_version='0'):
     return False
 
 
-def get_random_tests(tests_num, conf=None, id_set=None, server_version='0'):
+def get_random_tests(tests_num, rand, conf=None, id_set=None, server_version='0'):
     """Gets runnable tests for the server version"""
     if not id_set:
         with open("./Tests/id_set.json", 'r') as conf_file:
             id_set = json.load(conf_file)
 
     tests = set([])
-
     test_ids = conf.get_test_playbook_ids()
 
-    rand = random.Random(time.time())
     while len(tests) < tests_num:
         test = rand.choice(test_ids)
         if is_test_runnable(test, id_set, conf, server_version):
@@ -974,20 +974,16 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
-    # if all_tests:
-    #     print_warning('Running all tests due to: {}'.format(','.join(all_tests)))
-    #     tests.add("Run all tests")
-
     if not tests:
-        tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+        rand = random.Random(branch_name)
+        tests = get_random_tests(
+            tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
         if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
             print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         else:
             print_warning("Running Sanity check only")
-            tests = get_random_tests(tests_num=RANDOM_TESTS_NUM, conf=conf, id_set=id_set,
-                                     server_version=two_before_ga_ver)
             tests.add('DocumentationTest')  # test with integration configured
             tests.add('TestCommonPython')  # test with no integration configured
 
@@ -1041,61 +1037,6 @@ def create_test_file(is_nightly, skip_save=False):
             id_set = json.load(conf_file)
         tests = get_test_list(files_string, branch_name, two_before_ga, conf, id_set)
         create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set)
-        # files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
-
-        tests = [
-            # 'Intezer Testing v2',
-            # 'get_file_sample_by_hash_-_cylance_protect_-_test',
-            # 'Test - CrowdStrike Falcon',
-            # 'Detonate File - SNDBOX - Test',
-            # 'Test Playbook McAfee ATD',
-            # 'CuckooTest',
-            # #
-            # 'Microsoft Defender Advanced Threat Protection - Test',
-            # 'Test XDR Playbook',
-            # 'Cherwell - test',
-            # 'RSA NetWitness Test',
-            # #
-            # 'TestHelloWorld',
-            # 'Cherwell Example Scripts - test',
-            # 'Splunk-Test',
-            # 'Microsoft Graph Calendar - Test',
-            # 'cisco-ise-test-playbook',
-            # 'hashicorp_test',
-            # 'AWS-Lambda-Test (Read-Only)',
-            # 'minemeld_test',
-            # 'QRadar Indicator Hunting Test',
-            # 'Azure SecurityCenter - Test',
-            # 'Claroty - Test',
-            # 'CloudShark - Test Playbook',
-            # 'pyEWS_Test',
-            # 'CarbonBlackLiveResponseTest',
-            # 'SplunkPy-Test-V2',
-            # 'test-Expanse-Playbook',
-            # 'Test-BPA',
-            # 'Azure Compute - Test',
-            # 'Calculate Severity - Standard - Test',
-            # 'CVE Search v2 - Test',
-            # 'Symantec Messaging Gateway Test',
-            # 'Tanium Test Playbook',
-            # 'MISP V2 Test',
-            # 'Jira-v2-Test',
-            # 'Palo Alto Networks - Malware Remediation Test',
-            # 'SymantecEndpointProtection_Test',
-            # 'Cylance Protect v2 Test',
-            # 'ACM-Test',
-            # 'AWS_DynamoDB-Test',
-            # 'test_Qradar',
-            # 'playbook-feodotrackeripblock_test',
-            # 'PhishlabsIOC_EIR-Test',
-            # 'SplunkPySearch_Test',
-            # 'rsa_packets_and_logs_test',
-            # 'Trend Micro Apex - Test',
-            # 'Endpoint Malware Investigation - Generic - Test',
-            # 'TestHelloWorldPlaybook',
-            # 'EWS Public Folders Test'
-            'CanaryTools Test'
-        ]
 
         tests_string = '\n'.join(tests)
         if tests_string:
@@ -1120,7 +1061,6 @@ if __name__ == "__main__":
 
     # Create test file based only on committed files
     create_test_file(options.nightly, options.skip_save)
-
     if not _FAILED:
         print_color("Finished test configuration", LOG_COLORS.GREEN)
         sys.exit(0)

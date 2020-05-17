@@ -95,10 +95,8 @@ class AMIConnection:
         Returns:
             string. The IP of the AMI on the docker bridge.
         """
-        # out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
         out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).decode().split('\n')
         lines_of_words = map(lambda y: y.strip().split(' '), out)  # Split output to lines[words[]]
-        # address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)  # Take only lines with ipv4 addresses
         address_lines = list(filter(lambda x: x[0] == 'inet', lines_of_words))  # Take only lines with ipv4 addresses
         if len(address_lines) != 1:
             raise Exception("docker bridge interface has {} ipv4 addresses, should only have one."
@@ -192,7 +190,6 @@ class MITMProxy:
         self.rerecorded_tests = []
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
-        # silence_output(self.ami.call, ['pip', 'install', 'python-dateutil'], stderr='null')
 
     def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
         client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
@@ -256,17 +253,14 @@ class MITMProxy:
             self.ami.call(['mv', src_files, dst_folder])
 
     def clean_mock_file(self, playbook_id, path=None, thread_index=0, prints_manager=None):
-        # print('"clean_mock_file({})" was called'.format(playbook_id))
         prints_manager.add_print_job(f'clean_mock_file was called for test "{playbook_id}"', print, thread_index)
         path = path or self.current_folder
         problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
-        # print('problem_keys_filepath: "{}"'.format(problem_keys_filepath))
         prints_manager.add_print_job(f'problem_keys_filepath="{problem_keys_filepath}"', print, thread_index)
         problem_key_file_exists = ["[", "-f", problem_keys_filepath, "]"]
         if not self.ami.call(problem_key_file_exists) == 0:
             err_msg = 'Error: The problematic_keys.json file was not written to the file path' \
                       ' "{}" when recording the "{}" test playbook'.format(problem_keys_filepath, playbook_id)
-            # print(err_msg)
             prints_manager.add_print_job(err_msg, print_error, thread_index)
             return
         problem_keys = json.loads(self.ami.check_output(['cat', problem_keys_filepath]))
@@ -293,55 +287,42 @@ class MITMProxy:
             log_file = os.path.join(path, get_log_file_path(playbook_id, record=True))
             # Handle proxy log output
             debug_opt = " >>{} 2>&1".format(log_file) if not self.debug else ''
-            # options = ' '.join(['--set {}="{}"'.format(key, val) for key, val in problem_keys.items() if val])
             options = f'--set script_mode=clean --set keys_filepath={problem_keys_filepath}'
             if options.strip():
                 command += options
             command += ' -r {} -w {}{}'.format(mock_file_path, cleaned_mock_filepath, debug_opt)
             command = "source .bash_profile && {}".format(command)
-            # print(f'command to clean mockfile:\n\t{command}')
             prints_manager.add_print_job(f'command to clean mockfile:\n\t{command}', print, thread_index)
             split_command = command.split()
-            # print('Let\'s try and clean the mockfile from timestamp data!')
             prints_manager.add_print_job('Let\'s try and clean the mockfile from timestamp data!', print, thread_index)
-            # if not call(self.ami.add_ssh_prefix(split_command, '-t')):
             try:
                 clean_cmd_output = check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
-                # print(f'clean_cmd_output="{clean_cmd_output}"')
                 prints_manager.add_print_job(
                     f'clean_cmd_output.decode()={clean_cmd_output.decode()}',
                     print,
                     thread_index
                 )
             except CalledProcessError as e:
-                # print('There may have been a problem when filtering timestamp data from the mock file.')
                 cleaning_err_msg = 'There may have been a problem when filtering timestamp data from the mock file.'
                 prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
                 err_msg = 'command `{}` exited with return code [{}]'.format(command, e.returncode)
                 err_msg = '{} and the output of "{}"'.format(err_msg, e.output) if e.output else err_msg
-                # print(err_msg)
                 prints_manager.add_print_job(err_msg, print_error, thread_index)
             else:
-                # print('Success!')
                 prints_manager.add_print_job('Success!', print_color, thread_index, LOG_COLORS.GREEN)
 
             # verify cleaned mock is different than original
-            # print('verifying cleaned mock file is different than the original mock file')
             verify_diff_start_msg = 'verifying cleaned mock file is different than the original mock file'
             prints_manager.add_print_job(verify_diff_start_msg, print, thread_index)
             diff_cmd = 'diff -sq {} {}'.format(cleaned_mock_filepath, mock_file_path)
             try:
                 diff_cmd_output = self.ami.check_output(diff_cmd.split()).decode().strip()
-                # print(f'diff_cmd_output="{diff_cmd_output}"')
                 prints_manager.add_print_job(f'diff_cmd_output={diff_cmd_output}', print, thread_index)
                 if diff_cmd_output.endswith('are identical'):
                     identical_msg = 'cleaned mock file and original mock file are identical... ' \
                                     'uh oh looks like cleaning didn\'t work properly'
                     prints_manager.add_print_job(identical_msg, print_warning, thread_index)
-                    # print('cleaned mock file and original mock file are identical... '
-                    #       'uh oh looks like cleaning didn\'t work properly')
                 else:
-                    # print('looks like the cleaning process did something!')
                     prints_manager.add_print_job(
                         'looks like the cleaning process did something!',
                         print_color,
@@ -352,19 +333,12 @@ class MITMProxy:
             except CalledProcessError as e:
                 err_msg = 'command `{}` exited with return code [{}]'.format(diff_cmd, e.returncode)
                 err_msg = '{} and the output of "{}"'.format(err_msg, e.output) if e.output else err_msg
-                # print(err_msg)
                 prints_manager.add_print_job(err_msg, print_error, thread_index)
 
-            # print('Replace old mock with cleaned one.')
             prints_manager.add_print_job('Replace old mock with cleaned one.', print, thread_index)
-            # keep the old mock file for debugging purposes
-            # old_mock_file_path = mock_file_path.replace('.mock', '_old.mock')
-            # rm_cmd = 'mv {} {}'.format(mock_file_path, old_mock_file_path)
-            # self.ami.call(rm_cmd.split())
             mv_cmd = 'mv {} {}'.format(cleaned_mock_filepath, mock_file_path)
             self.ami.call(mv_cmd.split())
         else:
-            # print('"problematic_keys.json" dictionary values were empty - no data to whitewash from the mock file.')
             empty_msg = '"problematic_keys.json" dictionary values were empty - ' \
                         'no data to whitewash from the mock file.'
             prints_manager.add_print_job(empty_msg, print, thread_index)
@@ -388,31 +362,29 @@ class MITMProxy:
         silence_output(self.ami.call, ['mkdir', os.path.join(path, get_folder_path(playbook_id))], stderr='null')
 
         # if the keys file doesn't exist, create an empty one
-        repo_problem_keys_filepath = os.path.join(self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json')
+        repo_problem_keys_filepath = os.path.join(
+            self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json'
+        )
         prints_manager.add_print_job(f'repo_problem_keys_filepath={repo_problem_keys_filepath}', print, thread_index)
-        # print('repo_problem_keys_filepath: "{}"'.format(repo_problem_keys_filepath))
         current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
-        # print('current_problem_keys_filepath: "{}"'.format(current_problem_keys_filepath))
-        prints_manager.add_print_job(f'current_problem_keys_filepath={current_problem_keys_filepath}', print, thread_index)
+        prints_manager.add_print_job(
+            f'current_problem_keys_filepath={current_problem_keys_filepath}', print, thread_index
+        )
 
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
-        # print('script_filepath: {}'.format(script_filepath))
         prints_manager.add_print_job(f'script_filepath={script_filepath}', print, thread_index)
         remote_script_path = self.ami.copy_file(script_filepath)
-        # print('remote_script_path: {}'.format(remote_script_path))
         prints_manager.add_print_job(f'remote_script_path={remote_script_path}', print, thread_index)
 
         # if recording
         # record with detect_timestamps and then rewrite mock file
         if record:
-            # actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
             actions = '-s {} '.format(remote_script_path)
             actions += '--set script_mode=record '
             actions += '--set detect_timestamps=true --set keys_filepath={} --save-stream-file'.format(
                 current_problem_keys_filepath
             )
         else:
-            # actions = '--set stream_large_bodies=1 -s {} '.format(remote_script_path)
             actions = '-s {} '.format(remote_script_path)
             actions += '--set script_mode=playback '
             actions += '--set keys_filepath={} --server-replay-kill-extra --server-replay'.format(
@@ -437,7 +409,6 @@ class MITMProxy:
         if self.process.returncode is not None:
             raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
                             .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
-
         log_file_exists = False
         seconds_since_init = 0
         # Make sure process is up and running
@@ -456,17 +427,12 @@ class MITMProxy:
         if not self.process:
             raise Exception("Cannot stop proxy - not running.")
 
-        # print('proxy.stop() was called')
         prints_manager.add_print_job('proxy.stop() was called', print, thread_index)
-
         self.process.send_signal(signal.SIGINT)  # Terminate proxy process
         self.ami.call(["rm", "-rf", "/tmp/_MEI*"])  # Clean up temp files
 
         # Handle logs
         if self.debug:
-            # print("proxy outputs:")
-            # print(self.process.stdout.read())
-            # print(self.process.stderr.read())
             prints_manager.add_print_job('proxy outputs:', print, thread_index)
             prints_manager.add_print_job(f'{self.process.stdout.read()}', print, thread_index)
             prints_manager.add_print_job(f'{self.process.stderr.read()}', print, thread_index)
