@@ -20,19 +20,10 @@ def option_handler():
     return parser.parse_args()
 
 
-def load_id_set(id_set_path):
-    """
-    #todo
-    """
-    with open(id_set_path, 'r') as id_set_file:
-        id_set = json.load(id_set_file)
-
-    return id_set
-
-
 def main():
-    """
-    #todo
+    """ Main function for iterating over existing packs folder in content repo and creating json of all
+    packs dependencies. The logic of pack dependency is identical to sdk find-dependencies command.
+
     """
     option = option_handler()
     output_path = option.output_path
