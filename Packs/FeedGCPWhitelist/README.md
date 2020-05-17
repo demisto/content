@@ -1,1 +1,0 @@
-Pack for the Google Cloud Platform Whitelist Feed integration.

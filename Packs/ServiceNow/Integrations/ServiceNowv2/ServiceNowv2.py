@@ -373,7 +373,8 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
-                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool):
+                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
+                 incident_name: str):
         """
 
         Args:
@@ -388,6 +389,7 @@ class Client(BaseClient):
             timestamp_field: timestamp field for fetch_incidents
             ticket_type: default ticket type
             get_attachments: whether to get ticket attachments by default
+            incident_name: the ServiceNow ticket field to be set as the incident name
         """
         self._base_url = server_url
         self._sc_server_url = sc_server_url
@@ -399,6 +401,7 @@ class Client(BaseClient):
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
         self.get_attachments = get_attachments
+        self.incident_name = incident_name
         self.sys_param_query = sysparm_query
         self.sys_param_limit = sysparm_limit
         self.sys_param_offset = 0
@@ -1762,7 +1765,7 @@ def fetch_incidents(client: Client) -> list:
                     })
 
         incidents.append({
-            'name': f"ServiceNow Incident {result.get('number')}",
+            'name': f"ServiceNow Incident {result.get(client.incident_name)}",
             'labels': labels,
             'details': json.dumps(result),
             'severity': severity,
@@ -1790,6 +1793,8 @@ def test_module(client: Client, *_):
             ticket = ticket[0]
         if client.timestamp_field not in ticket:
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket.")
+        if client.incident_name not in ticket:
+            raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
     demisto.results('ok')
     return '', {}, {}
 
@@ -1822,12 +1827,13 @@ def main():
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
     ticket_type = params.get('ticket_type', 'incident')
+    incident_name = params.get('incident_name', 'number')
     get_attachments = params.get('get_attachments', False)
 
     raise_exception = False
     try:
         client = Client(server_url, sc_server_url, username, password, verify, fetch_time, sysparm_query,
-                        sysparm_limit, timestamp_field, ticket_type, get_attachments)
+                        sysparm_limit, timestamp_field, ticket_type, get_attachments, incident_name)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-update-ticket': update_ticket_command,
