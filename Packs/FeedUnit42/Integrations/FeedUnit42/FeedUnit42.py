@@ -33,7 +33,7 @@ class Client(BaseClient):
         super().__init__(base_url=f'{url}playbooks/collections/{collection}/objects/', verify=verify,
                          proxy=handle_proxy(), headers={'Authorization': f'Token {api_key}'})
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> Tuple[List, Dict]:
         """Retrieves all entries from the feed.
 
         Returns:
@@ -48,17 +48,17 @@ class Client(BaseClient):
         for indicator_object in indicators_objects:
             pattern = indicator_object.get('pattern')
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
-                if key in pattern:
+                if key in pattern:  # retrieve only Demisto indicator types
                     indicators.append({
                         "value": indicator_object.get('name'),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
                         "rawJSON": indicator_object,
                     })
 
-        return indicators
+        return indicators, response
 
 
-def test_module(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -79,11 +79,11 @@ def fetch_indicators(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicators = client.build_iterator()
+    indicators, _ = client.build_iterator()
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, List[Any]], List[Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -94,16 +94,16 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, D
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
-    indicators = client.build_iterator()[:limit]
+    indicators, raw_response = client.build_iterator()[:limit]
     demisto.log(str(indicators))
     human_readable = tableToMarkdown('Unit42 Indicators:', t=indicators, headers=['type', 'value'])
     entry_context = {'Unit42(val.value && val.value == obj.value)': indicators}
-    return human_readable, entry_context, indicators
+    return human_readable, entry_context, raw_response
 
 
 def main():
     """
-    PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE FEED PARAMS
     """
     params = demisto.params()
     args = demisto.args()
@@ -113,7 +113,7 @@ def main():
     verify = not params.get('insecure', False)
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f'Command being called in Unit42 feed is: {command}')
 
     try:
         client = Client(url, collection, api_key, verify)
