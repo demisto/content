@@ -43,15 +43,16 @@ def options_handler():
 def get_failing_unit_tests_file_data():
     try:
         failing_ut_list = None
-        if os.path.isfile('./artifacts/failed_unittests.txt'):
-            print('Extracting failed_unittests')
-            with open('./artifacts/failed_unittests.txt', 'r') as failed_unittests_file:
+        file_name = './artifacts/failed_lint_report.txt'
+        if os.path.isfile(file_name):
+            print('Extracting lint_report')
+            with open(file_name, 'r') as failed_unittests_file:
                 failing_ut = failed_unittests_file.readlines()
                 failing_ut_list = [line.strip('\n') for line in failing_ut]
         else:
-            print('Did not find failed_unittests.txt file')
+            print('Did not find failed_lint_report.txt file')
     except Exception as err:
-        print_error('Error getting failed_unittests.txt file: \n {}'.format(err))
+        print_error('Error getting failed_lint_report.txt file: \n {}'.format(err))
     return failing_ut_list
 
 

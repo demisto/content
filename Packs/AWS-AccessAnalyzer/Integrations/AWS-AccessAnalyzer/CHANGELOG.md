@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.0] - 2020-05-12
 Fix incorrect YAML definition of the integration.
 
 ## [20.1.0] - 2020-01-07

@@ -25,6 +25,7 @@ class GCPConfig(object):
 
     """
     STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
+    STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     BASE_PACK = "Base"  # base pack name
@@ -60,7 +61,7 @@ class PackFolders(enum.Enum):
     INDICATOR_FIELDS = 'IndicatorFields'
     LAYOUTS = 'Layouts'
     CLASSIFIERS = 'Classifiers'
-    MISC = 'Misc'
+    INDICATOR_TYPES = 'IndicatorTypes'
     CONNECTIONS = "Connections"
 
     @classmethod
@@ -68,7 +69,7 @@ class PackFolders(enum.Enum):
         return [
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.MISC.value
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
         ]
 
     @classmethod
@@ -79,7 +80,8 @@ class PackFolders(enum.Enum):
     def json_supported_folders(cls):
         return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
-                PackFolders.LAYOUTS.value, PackFolders.MISC.value, PackFolders.REPORTS.value, PackFolders.REPORTS.value]
+                PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
+                PackFolders.REPORTS.value]
 
 
 class PackStatus(enum.Enum):
@@ -686,7 +688,7 @@ class Pack(object):
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
-                PackFolders.MISC.value: "reputation"
+                PackFolders.INDICATOR_TYPES.value: "reputation"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -701,8 +703,8 @@ class Pack(object):
                     pack_file_path = os.path.join(root, pack_file_name)
 
                     # reputation in old format aren't supported in 6.0.0 server version
-                    if current_directory == PackFolders.MISC.value and not fnmatch.fnmatch(pack_file_name,
-                                                                                           'reputation-*.json'):
+                    if current_directory == PackFolders.INDICATOR_TYPES.value \
+                            and not fnmatch.fnmatch(pack_file_name, 'reputation-*.json'):
                         os.remove(pack_file_path)
                         print(f"Deleted pack {pack_file_name} reputation file for {self._pack_name} pack")
                         continue
@@ -784,7 +786,7 @@ class Pack(object):
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', "")
                         })
-                    elif current_directory == PackFolders.MISC.value:
+                    elif current_directory == PackFolders.INDICATOR_TYPES.value:
                         folder_collected_items.append({
                             'details': content_item.get('details', ""),
                             'reputationScriptName': content_item.get('reputationScriptName', ""),

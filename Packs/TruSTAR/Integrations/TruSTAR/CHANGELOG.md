@@ -1,4 +1,8 @@
 ## [Unreleased]
+- Updated docker image
+- Removed duplicated values on context
+
+## [20.5.0] - 2020-05-12
 -
 
 ## [20.4.1] - 2020-04-29
