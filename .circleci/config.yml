@@ -242,9 +242,9 @@ jobs:
             mkdir ./unit-tests
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts
+              demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
             else
-              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts
+              demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
             fi
       - store_test_results:
           path: ./unit-tests
@@ -561,7 +561,7 @@ jobs:
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p 'All' -pb 'marketplace-dist-private' -o
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' --id_set_path $CIRCLE_ARTIFACTS/id_set.json -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -p 'All' -pb 'marketplace-dist-private' -o
             rm $GCS_PATH
           when: on_success
       - store_artifacts:
