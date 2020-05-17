@@ -21,8 +21,8 @@ def test_check_if_found_incident(_input, expected_output):
 
 
 data_test_is_valid_args = [
-    ('\\\n', False),
-    ('\\s', False),
+    ('\\', True),
+    ('\n', True),
     ('\\n', True),
     ('\\t', True),
     ('\\\\', True),

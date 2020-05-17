@@ -5,7 +5,7 @@ from datetime import datetime
 import yaml
 
 from demisto_sdk.commands.common.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, \
-    REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
+    REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, INDICATOR_TYPES_DIR
 from demisto_sdk.commands.common.tools import server_version_compare, run_command, get_release_notes_file_path, \
     print_warning
 from demisto_sdk.commands.validate.file_validator import FilesValidator
@@ -76,7 +76,8 @@ def get_new_header(file_path):
         # should have RN when added
         INCIDENT_FIELDS_DIR: ('Incident Field', data.get('name', '')),
         CLASSIFIERS_DIR: ('Classifier', data.get('brandName', '')),
-        MISC_DIR: ('Reputation', data.get('id', data.get('name', ''))),  # reputations.json has name at first layer
+        # reputations.json has name at first layer
+        INDICATOR_TYPES_DIR: ('Reputation', data.get('id', data.get('name', ''))),
     }
 
     for entity_dir in mapping:
