@@ -25,6 +25,7 @@ class GCPConfig(object):
 
     """
     STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
+    STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     BASE_PACK = "Base"  # base pack name

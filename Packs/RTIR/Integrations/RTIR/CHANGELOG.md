@@ -5,5 +5,10 @@
 - Added the *results_limit* argument to the ***search-tickets*** command, which specified the maximum number of results to return.
 
 
+
+## [20.5.0] - 2020-05-12
+-
+
+
 ## [20.4.0] - 2020-04-14
 -

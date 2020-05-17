@@ -3,7 +3,7 @@ commonfields:
   id: Symantec Deepsight Intelligence
   version: -1
 configuration:
-- defaultvalue: https://deepsightapi.symantec.com
+- defaultvalue: https://deepsightapi.accenture.com/v1
   display: Base URL
   name: url
   required: true
