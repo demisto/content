@@ -666,7 +666,11 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
             'marketplace.gcp.bucket': 'marketplace-ci-build',
             'marketplace.gcp.path': 'content/builds/{}/{}'.format(branch_name, ci_build_number),
             'content.pack.verify': 'false',
-            'jobs.marketplacepacks.schedule': '1m'
+            'jobs.marketplacepacks.schedule': '1m',
+            'marketplace.bootstrap.bypass.url':
+                'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
+                    branch_name, ci_build_number
+                )
         },
         'version': -1
     }
