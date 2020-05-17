@@ -491,3 +491,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultClassifier: Claroty
+defaultMapperIn: Claroty-mapper
+
