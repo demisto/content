@@ -22,13 +22,14 @@ echo "-------------------------------------"
 
 sudo yum -y install python3
 python3 -m pip install --user pipx
-pipx install mitmproxy
-pipx inject mitmproxy python-dateutil
-
 # disable-secrets-detection-start
 echo "
 export PATH=$HOME/.local/bin:$PATH" >> ~/.bash_profile
 # disable-secrets-detection-end
+source ~/.bash_profile
+pipx install mitmproxy
+pipx inject mitmproxy python-dateutil
+
 source ~/.bash_profile
 echo "Python 'python-dateutil' and 'mitmproxy' installed."
 echo "mitmproxy dependencies setup completed"
