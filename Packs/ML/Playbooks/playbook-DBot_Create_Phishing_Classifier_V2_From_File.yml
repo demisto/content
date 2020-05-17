@@ -310,3 +310,5 @@ outputs:
 - contextPath: DBotPhishingClassifier.ModelName
   description: Model name in Demisto
   type: String
+tests:
+  - No test
