@@ -4,9 +4,9 @@ import urllib
 from collections import OrderedDict
 from os import path
 from copy import deepcopy
-from typing import List, Union  # , Hashable
+from typing import List, Union
 from mitmproxy import ctx, flow
-from mitmproxy.http import HTTPRequest  # , HTTPFlow
+from mitmproxy.http import HTTPRequest
 from mitmproxy.script import concurrent
 from mitmproxy.addons.serverplayback import ServerPlayback
 from time import ctime
@@ -52,15 +52,6 @@ class TimestampReplacer:
 
     def load(self, loader):
         loader.add_option(
-            name='keys_to_replace',
-            typespec=str,
-            default='',
-            help='''
-            The keys inside a Posted Request's body whose value is a timestamp and needs to be replaced.
-            Nested keys whould be written in dot notation.
-            '''
-        )
-        loader.add_option(
             name='detect_timestamps',
             typespec=bool,
             default=False,
@@ -97,11 +88,6 @@ class TimestampReplacer:
         )
 
     def running(self):
-        # # need to do this because arguments for these options are interpreted as 1 list item
-        # query_keys = ctx.options.server_replay_ignore_params
-        # ctx.options.server_replay_ignore_params = query_keys[0].split() if len(query_keys) == 1 else query_keys
-        # form_keys = ctx.options.server_replay_ignore_payload_params
-        # ctx.options.server_replay_ignore_payload_params = form_keys[0].split() if len(form_keys) == 1 else form_keys
         if ctx.options.debug:
             print(f'ctx.options={ctx.options}')
 
@@ -109,8 +95,7 @@ class TimestampReplacer:
         if ctx.options.detect_timestamps:
             print('Detecting Timestamp Fields')
             self.detect_timestamps = True
-        else:
-            self.load_problematic_keys()
+        self.load_problematic_keys()
 
     def _debug_request(self, flow: flow.Flow) -> None:
         '''Print details of the request'''
@@ -230,7 +215,6 @@ class TimestampReplacer:
         original_content = deepcopy(json_body)
         body = json_body
         modified = False
-        # keys_to_replace = ctx.options.keys_to_replace.split() or []
         keys_to_replace = self.json_keys
         print('{}'.format(keys_to_replace))
         for key_path in keys_to_replace:
@@ -243,7 +227,6 @@ class TimestampReplacer:
             for k in keys[:-1]:
                 if k in body:
                     body = body[k]
-                    # print('updated body: {}'.format(body))
                 elif isinstance(body, list) and k.isdigit():
                     if int(k) > len(body) - 1:
                         skip_key = True
@@ -255,18 +238,15 @@ class TimestampReplacer:
             if not skip_key:
                 if lastkey in body:
                     print('modifying request to "{}"'.format(req.pretty_url))
-                    # body[lastkey] = self.count
                     body[lastkey] = self.constant
                     modified = True
                 elif isinstance(body, list) and lastkey.isdigit() and int(lastkey) <= len(body) - 1:
                     print('modifying request to "{}"'.format(req.pretty_url))
-                    # body[int(lastkey)] = self.count
                     body[int(lastkey)] = self.constant
                     modified = True
         if modified:
             print('original request body:\n{}'.format(json.dumps(original_content, indent=4)))
             print('modified request body:\n{}'.format(json.dumps(json_body, indent=4)))
-            # flow.request.raw_content = json.dumps(json_body).encode()
             req.set_content(json.dumps(json_body).encode())
 
     def run_all_key_detections(self, req: HTTPRequest) -> None:
@@ -367,7 +347,6 @@ class TimestampReplacer:
                         possible_timestamp = isinstance(val, (int, float)) and len(str(val)) >= 8
                         try:
                             if is_string or possible_timestamp:
-                                # print('req num: {} keypath: {}'.format(self.count, sub_key_path))
                                 for_eval = val
                                 if possible_timestamp:
                                     if isinstance(for_eval, float):
@@ -394,7 +373,6 @@ class TimestampReplacer:
                         possible_timestamp = isinstance(val, (int, float)) and len(str(val)) >= 8
                         try:
                             if is_string or possible_timestamp:
-                                # print('req num: {} keypath: {}'.format(self.count, sub_key_path))
                                 for_eval = val
                                 if possible_timestamp:
                                     if isinstance(for_eval, float):
@@ -416,8 +394,7 @@ class TimestampReplacer:
         return bad_keys
 
     def update_problem_keys_file(self):
-        '''Update the problem keys dictionary at the keys_filepath with new problematic keys
-        '''
+        '''Update the problem keys dictionary at the keys_filepath with new problematic keys'''
         existing_problem_keys = self.read_in_problematic_keys()
         for key, val in existing_problem_keys.items():
             if key == 'keys_to_replace':
