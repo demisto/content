@@ -435,8 +435,11 @@ class TimestampReplacer:
         print('executing "read_in_problematic_keys" method')
         repo_bad_keys_filepath = self.bad_keys_filepath.replace('/tmp/Mocks', 'content-test-data')
         print('reading in problematic keys data from "{}"'.format(repo_bad_keys_filepath))
-        if path.exists(repo_bad_keys_filepath):
+        if not path.exists(self.bad_keys_filepath) and path.exists(repo_bad_keys_filepath):
             with open(repo_bad_keys_filepath, 'r') as fp:
+                problem_keys = json.load(fp)
+        elif path.exists(self.bad_keys_filepath):
+            with open(self.bad_keys_filepath, 'r') as fp:
                 problem_keys = json.load(fp)
         else:
             problem_keys = {
