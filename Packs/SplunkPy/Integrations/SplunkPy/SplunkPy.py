@@ -532,7 +532,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     args = assign_params(
         event=event,
         host=host,
-        fields={'fields': fields} if fields else None,
+        fields=json.loads(fields) if fields else None,
         index=index,
         sourcetype=source_type,
         source=source,
