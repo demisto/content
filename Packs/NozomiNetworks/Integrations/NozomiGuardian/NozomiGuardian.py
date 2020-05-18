@@ -1,48 +1,36 @@
-import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from base64 import b64encode
+''' IMPORTS '''
+
 import urllib.parse
 import urllib3
+from base64 import b64encode
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
-INTEGRATION_NAME = "Nozomi Guardian"
+''' CONSTANTS '''
+
+
+INTEGRATION_NAME = 'Nozomi Guardian'
+
 
 '''API Client'''
 
 
-class Client:
-
-    def __init__(self, url, proxies, username, password):
-        self.base_url = url
-        self.proxies = proxies
-        self.username = username
-        self.password = password
+class Client(BaseClient):
 
     def query(self, search_query):
         query = search_query
-        LOG('running request with url=%s' % self.base_url)
-        full_url = self.base_url + '/api/open/query/do?query=' + urllib.parse.quote(query.encode('utf8'))
-        auth = (self.username + ':' + self.password).encode('utf-8')
-        basic_auth = 'Basic ' + b64encode(auth).decode()
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        LOG('running request with url=%s' % self._base_url)
 
-        res = requests.request(
+        res = self._http_request(
             "GET",
-            full_url,
-            headers={
-                'accept': "application/json",
-                'Authorization': basic_auth
-            },
-            verify=False
+            url_suffix='/api/open/query/do?query='+query,
+            resp_type="json"
         )
-        if res.status_code not in [200, 204]:
-            return_error("Error in API call to Service API %s. Reason: %s " % (res.status_code,res.text))
-        try:
-            return res.json()
-        except Exception as e:
-            LOG(e)
-            return_error("Failed to parse http response to JSON format. Original response body: \n %s" % res.text)
+        return res
 
 
 '''' Commands '''
@@ -53,18 +41,17 @@ def test_module(client):
         client.query('help')
     except Exception as e:
         LOG(e)
-        return_error(e)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
     return 'ok'
 
 
-def search_by_query(client):
-    args = demisto.args()
+def search_by_query(client, args):
     search_query = args.get('query')
     try:
         title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
         raws = []
         nozomi_ec = []
-        raw_response=client.query(search_query)['result']
+        raw_response = client.query(search_query)['result']
 
         if raw_response:
             raws.append(raw_response)
@@ -81,17 +68,16 @@ def search_by_query(client):
             }
          }
 
-        human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Queries'],name=title)
+        human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Queries'], name=title)
 
         return [human_readable,context_entry,raws]
 
     except Exception as e:
         LOG(e)
-        return_error(e)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 def list_all_assets(client):
-    args = demisto.args()
     search_query = "assets"
     try:
         title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
@@ -120,18 +106,17 @@ def list_all_assets(client):
             }
          }
 
-        human_readable = tableToMarkdown(t=context_entry["NozomiGuardian"]['Assets'],name=title)
+        human_readable = tableToMarkdown(t=context_entry["NozomiGuardian"]['Assets'], name=title)
 
-        return [human_readable,context_entry,raws]
+        return [human_readable, context_entry, raws]
 
     except Exception as e:
         LOG(e)
-        return_error(e)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
-def find_ip_by_mac(client):
-    args = demisto.args()
-    mac_address=args.get('mac')
+def find_ip_by_mac(client, args):
+    mac_address = args.get('mac')
     search_query = "assets | where mac_address match " + mac_address
     try:
         title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
@@ -159,49 +144,55 @@ def find_ip_by_mac(client):
 
             human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Mappings'],name=title)
 
-            return [human_readable,context_entry,raws]
+            return [human_readable, context_entry, raws]
+
         return_error("Could not find the mac address: %s" % mac_address)
+
     except Exception as e:
         LOG(e)
-        return_error(e)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 def main():
+    """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+    """
     params = demisto.params()
-
     username = params.get('credentials', {}).get('identifier', '')
     password = params.get('credentials', {}).get('password', '')
+    base_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
+    verify_certificate = not demisto.params().get('insecure', False)
+    proxy = demisto.params().get('proxy', False)
 
-
-    # Remove trailing slash to prevent wrong URL path to service
-    url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
-    # Remove proxy if not set to true in params
-    proxies = handle_proxy()
-
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        client = Client(url, proxies,username,password)
-        commands = {
-            'guardian-search': search_by_query,
-            'guardian-list-all-assets': list_all_assets,
-            'guardian-find-ip-by-mac': find_ip_by_mac,
-            'test-module': test_module
-        }
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            auth=(username, password),
+            proxy=proxy,
+            ok_codes=(200, 201, 204),
+            headers={'accept': "application/json"}
+        )
 
-        command = demisto.command()
-        LOG('Command being called is %s' % command)
+        if demisto.command() == 'test-module':
+            result = test_module(client)
+            return_outputs(result)
 
-        if command in commands:
-            if command == 'test-module':
-                return_outputs(test_module(client))
+        elif demisto.command() == 'guardian-search':
+            result = search_by_query(client, demisto.args())
+            return_outputs(result[0], result[1], result[2])
 
-            else:
-                outputs=commands[command](client)
-                return_outputs(outputs[0],outputs[1],outputs[2])
-        else:
-            return_error("Command Not Found")
+        elif demisto.command() == 'guardian-list-all-assets':
+            result = list_all_assets(client)
+            return_outputs(result[0], result[1], result[2])
+
+        elif demisto.command() == 'guardian-find-ip-by-mac':
+            result = find_ip_by_mac(client, demisto.args())
+            return_outputs(result[0], result[1], result[2])
 
     except Exception as e:
-        return_error(str(e))
+        return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

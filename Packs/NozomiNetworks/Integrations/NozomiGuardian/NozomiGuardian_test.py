@@ -1,24 +1,68 @@
-from NozomiGuardian import Client, say_hello_command, say_hello_over_http_command
+import json
 
 
-def test_say_hello():
-    client = Client(base_url='https://test.com', verify=False, auth=('test', 'test'))
+NOZOMIGUARDIAN_URL = 'https://test.com'
+
+
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
+
+
+def test_search_by_query(requests_mock):
+    from NozomiGuardian import Client, search_by_query
+    search_by_query_response = load_test_data('./test_data/search_by_query.json')
+    requests_mock.get(f'{NOZOMIGUARDIAN_URL}/api/open/query/do?query='
+                      f'links | where from match 192.168.10.2 | where protocol match ssh', json=search_by_query_response)
+
+    client = Client(
+        f'{NOZOMIGUARDIAN_URL}',
+        username='test',
+        password='test',
+        proxies=False
+    )
     args = {
-        'name': 'Dbot'
+        'query': 'links | where from match 192.168.10.2 | where protocol match ssh'
     }
-    _, outputs, _ = say_hello_command(client, args)
+    _, outputs, _ = search_by_query(client, args)
+    expected_output = search_by_query_response
 
-    assert outputs['hello'] == 'Hello Dbot'
+    assert expected_output.get('result') == outputs.get('NozomiGuardian').get('Queries')[0].get('QueryResults')[0]
 
 
-def test_say_hello_over_http(requests_mock):
-    mock_response = {'result': 'Hello Dbot'}
-    requests_mock.get('https://test.com/hello/Dbot', json=mock_response)
+def test_list_all_assets(requests_mock):
+    from NozomiGuardian import Client, list_all_assets
+    list_all_assets_response = load_test_data('./test_data/list_all_assets.json')
+    requests_mock.get(f'{NOZOMIGUARDIAN_URL}/api/open/query/do?query=assets', json=list_all_assets_response)
 
-    client = Client(base_url='https://test.com', verify=False, auth=('test', 'test'))
+    client = Client(
+        f'{NOZOMIGUARDIAN_URL}',
+        username='test',
+        password='test',
+        proxies=False
+    )
+    _, outputs, _ = list_all_assets(client)
+    expected_output = list_all_assets_response
+
+    assert expected_output.get('result')[0].get('capture_device') == outputs.get('NozomiGuardian').get('Assets')[0]['CaptureDevice']
+
+
+def test_find_ip_by_mac(requests_mock):
+    from NozomiGuardian import Client, find_ip_by_mac
+    find_ip_by_mac_response = load_test_data('./test_data/find_ip_by_mac.json')
+    requests_mock.get(f'{NOZOMIGUARDIAN_URL}/api/open/query/do?query=assets | '
+                      f'where mac_address match 00:0c:29:22:50:26', json=find_ip_by_mac_response)
+
+    client = Client(
+        f'{NOZOMIGUARDIAN_URL}',
+        username='test',
+        password='test',
+        proxies=False
+    )
     args = {
-        'name': 'Dbot'
+        'mac': '00:0c:29:22:50:26'
     }
-    _, outputs, _ = say_hello_over_http_command(client, args)
+    _, outputs, _ = find_ip_by_mac(client,args)
+    expected_output = find_ip_by_mac_response
 
-    assert outputs['hello'] == 'Hello Dbot'
+    assert expected_output.get('result')[0].get('ip') == outputs.get('NozomiGuardian').get('Mappings')[0]['IP']

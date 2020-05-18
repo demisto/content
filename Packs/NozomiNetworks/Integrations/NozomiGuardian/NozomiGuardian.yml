@@ -58,7 +58,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: the mac address value
+      description: The MAC address value
       isArray: false
       name: mac
       required: true
