@@ -1,13 +1,13 @@
 ## Overview
 ---
 
-Use the Google Chronicle Backstory integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
+Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
 
-## Configure Google Chronicle Backstory on Demisto
+## Configure Chronicle on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for Google Chronicle Backstory.
+2. Search for Chronicle.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __User's Service Account JSON__
