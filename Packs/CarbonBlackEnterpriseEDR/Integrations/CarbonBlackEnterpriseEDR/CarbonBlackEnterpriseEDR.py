@@ -288,7 +288,7 @@ class Client(BaseClient):
 
     def ignore_ioc_request(self, report_id: str, ioc_id: str) -> Dict:
 
-        suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id})/iocs/{ioc_id}/ignore'
+        suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id}/iocs/{ioc_id}/ignore'
 
         return self._http_request('PUT', suffix_url)
 
@@ -296,7 +296,7 @@ class Client(BaseClient):
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id})/iocs/{ioc_id}/ignore'
 
-        return self._http_request('DELETE', suffix_url)
+        return self._http_request('DELETE', suffix_url, resp_type='content')
 
     def get_report_request(self, report_id: str) -> Dict:
 
@@ -329,7 +329,7 @@ class Client(BaseClient):
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id}/ignore'
 
-        return self._http_request('DELETE', suffix_url)
+        return self._http_request('DELETE', suffix_url, resp_type='content')
 
     def get_report_ignore_status_request(self, report_id: str) -> Dict:
 
