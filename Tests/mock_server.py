@@ -273,9 +273,10 @@ class MITMProxy:
         # is there data in problematic_keys.json that needs whitewashing?
         prints_manager.add_print_job('checking if there is data to whitewash', print, thread_index)
         needs_whitewashing = False
-        for _, val in problem_keys.items():
+        for val in problem_keys.values():
             if val:
                 needs_whitewashing = True
+                break
 
         if problem_keys and needs_whitewashing:
             mock_file_path = os.path.join(path, get_mock_file_path(playbook_id))
@@ -284,7 +285,7 @@ class MITMProxy:
             command = 'mitmdump -ns ~/timestamp_replacer.py '
             log_file = os.path.join(path, get_log_file_path(playbook_id, record=True))
             # Handle proxy log output
-            debug_opt = " >>{} 2>&1".format(log_file) if not self.debug else ''
+            debug_opt = f' >>{log_file} 2>&1' if not self.debug else ''
             options = f'--set script_mode=clean --set keys_filepath={problem_keys_filepath}'
             if options.strip():
                 command += options
@@ -303,8 +304,8 @@ class MITMProxy:
             except CalledProcessError as e:
                 cleaning_err_msg = 'There may have been a problem when filtering timestamp data from the mock file.'
                 prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
-                err_msg = 'command `{}` exited with return code [{}]'.format(command, e.returncode)
-                err_msg = '{} and the output of "{}"'.format(err_msg, e.output) if e.output else err_msg
+                err_msg = f'command `{command}` exited with return code [{e.returncode}]'
+                err_msg = f'{err_msg} and the output of "{e.output}"' if e.output else err_msg
                 prints_manager.add_print_job(err_msg, print_error, thread_index)
             else:
                 prints_manager.add_print_job('Success!', print_color, thread_index, LOG_COLORS.GREEN)
@@ -359,7 +360,6 @@ class MITMProxy:
         # Create mock files directory
         silence_output(self.ami.call, ['mkdir', os.path.join(path, get_folder_path(playbook_id))], stderr='null')
 
-        # if the keys file doesn't exist, create an empty one
         repo_problem_keys_filepath = os.path.join(
             self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json'
         )
@@ -393,6 +393,8 @@ class MITMProxy:
         # Handle proxy log output
         debug_opt = " >{} 2>&1".format(log_file) if not self.debug else ''
 
+        # all mitmproxy/mitmdump commands should have the 'source .bash_profile && ' prefix to ensure the PATH
+        # is correct when executing the command over ssh
         # Configure proxy server
         command = "source .bash_profile && mitmdump --ssl-insecure --verbose --listen-port {} {} {}{}".format(
             self.PROXY_PORT, actions, os.path.join(path, get_mock_file_path(playbook_id)), debug_opt

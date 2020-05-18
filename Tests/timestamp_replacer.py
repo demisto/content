@@ -461,4 +461,5 @@ class TimestampReplacer:
             print('not setting bad keys from file')
 
 
+# mitmproxy picks up the contents of the addons global list and loads what it finds into the addons mechanism.
 addons = [TimestampReplacer()]
