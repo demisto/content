@@ -13,7 +13,7 @@ FIELD_TYPE_DICT = {1: 'Text', 2: 'Numeric', 3: 'Date', 4: 'Values List', 6: 'Tra
                    8: 'Users/Groups List', 9: 'Cross-Reference', 11: 'Attachment', 12: 'Image',
                    14: 'Cross-Application Status Tracking (CAST)', 16: 'Matrix', 19: 'IP Address', 20: 'Record Status',
                    21: 'First Published', 22: 'Last Updated Field', 23: 'Related Records', 24: 'Sub-Form',
-                   25: 'History Log',26: 'Discussion',27: 'Multiple Reference Display Control',
+                   25: 'History Log', 26: 'Discussion',27: 'Multiple Reference Display Control',
                    28: 'Questionnaire Reference', 29: 'Access History', 30: 'V oting', 31: 'Scheduler',
                    1001: 'Cross-Application Status Tracking Field Value'}
 
@@ -118,11 +118,6 @@ SOAP_COMMANDS = {'archer-get-reports':
                       'urlSuffix': 'rsaarcher/ws/search.asmx',
                       'soapBody': get_search_options_soap_request,
                       'outputPath': 'Envelope.Body.GetSearchOptionsByGuidResponse.GetSearchOptionsByGuidResult'},
-                 'archer-get-valuelist':
-                     {'soapAction': 'http://archer-tech.com/webservices/GetValueListForField',
-                      'urlSuffix': 'rsaarcher/ws/field.asmx',
-                      'soapBody': get_value_list_soap_request,
-                      'outputPath': 'Envelope.Body.GetValueListForFieldResponse.GetValueListForFieldResult'},
                  'archer-get-user-id':
                      {'soapAction': 'http://archer-tech.com/webservices/LookupDomainUserId',
                       'urlSuffix': 'rsaarcher/ws/accesscontrol.asmx',
@@ -209,19 +204,21 @@ class Client(BaseClient):
             return cache[app_id]
 
         levels = []
-        res = self.do_request('GET', f'rsaarcher/api/core/system/level/module/{app_id}')
-        for level in res:
+        all_levels_res = self.do_request('GET', f'rsaarcher/api/core/system/level/module/{app_id}')
+        for level in all_levels_res:
             if level.get('RequestedObject') and level.get('IsSuccessful'):
                 level_id = level.get('RequestedObject').get('Id')
 
                 fields = {}
-                res = self.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level_id}')
-                for field in res:
+                level_res = self.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level_id}')
+                for field in level_res:
                     if field.get('RequestedObject') and field.get('IsSuccessful'):
                         field_item = field.get('RequestedObject')
-                        fields[str(field_item.get('Id'))] = {'Type': field_item.get('Type'),
+                        field_id = str(field_item.get('Id'))
+                        fields[field_id] = {'Type': field_item.get('Type'),
                                                         'Name': field_item.get('Name'),
-                                                        'IsRequired': field_item.get('IsRequired', False)}
+                                                        'IsRequired': field_item.get('IsRequired', False),
+                                                        'RelatedValuesListId': field_item.get('RelatedValuesListId')}
 
                 levels.append({'level': level_id, 'mapping': fields})
 
@@ -230,6 +227,22 @@ class Client(BaseClient):
             demisto.setIntegrationContext(cache)
             return levels
         return []
+
+    def generate_field(self, field_id, field_data, value):
+        field_type = field_data['Type']
+
+        if field_type:
+            return {'Type': field_type,
+                    'Value': value,
+                    'FieldId': field_id}
+        if field_type == 4:
+            return {'Type': field_type,
+                    'Value': {'ValuesListIds': [int(value)]},
+                    'FieldId': field_id}
+        if field_type == 7:
+            return {'Type': field_type,
+                    'Value': [{'Name': value, "URL": value}],
+                    'FieldId': field_id}
 
     def generate_field_contents(self, fields_values, level_fields):
         fields_values = json.loads(fields_values)
@@ -243,9 +256,8 @@ class Client(BaseClient):
                     break
 
             if field_data:
-                field_content[_id] = {'Type': field_data['Type'],
-                                      'Value': fields_values[field_name],
-                                      'FieldId': _id}
+                field_content[_id] = self.generate_field(_id, field_data, fields_values[field_name])
+
         return field_content
 
     def get_sub_form_id(self, app_id, field_id, value_for_sub_form):
@@ -300,8 +312,9 @@ def get_application_fields_command(client: Client, args: Dict[str, str]) -> Tupl
     for field in res:
         if field.get('RequestedObject') and field.get('IsSuccessful'):
             field_obj = field['RequestedObject']
+            field_type = field_obj.get('Type')
             fields.append({'FieldId': field_obj.get('Id'),
-                           'FieldType': field_obj.get('Type'),
+                           'FieldType': FIELD_TYPE_DICT.get(field_type, 'Unknown'),
                            'FieldName': field_obj.get('Name'),
                            'LevelID': field_obj.get('LevelId')})
 
@@ -320,8 +333,10 @@ def get_field_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, 
     field = {}
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         field_obj = res['RequestedObject']
+        item_type = field_obj.get('Type')
+        item_type = FIELD_TYPE_DICT.get(item_type, 'Unknown')
         field = {'FieldId': field_obj.get('Id'),
-                       'FieldType': field_obj.get('Type'),
+                       'FieldType': item_type,
                        'FieldName': field_obj.get('Name'),
                        'LevelID': field_obj.get('LevelId')}
 
@@ -344,7 +359,7 @@ def get_mapping_by_level_command(client: Client, args: Dict[str, str]) -> Tuple[
             item_obj = item['RequestedObject']
             item_type = item_obj.get('Type')
             if item_type:
-                item_type = FIELD_TYPE_DICT.get(item_type,'Unknown')
+                item_type = FIELD_TYPE_DICT.get(item_type, 'Unknown')
             else:
                 item_type = 'Unknown'
             items.append({'Name': item_obj.get('Name'),
@@ -378,7 +393,7 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
         if level_fields:
             level_fields = level_fields[0]['mapping']
 
-        record_fields = {}
+        record = {}
         for _id, field in content_obj.get('FieldContents').items():
             field_data = level_fields.get(str(_id))
             field_value = field.get('Value')
@@ -388,9 +403,10 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
                 if field_data.get('Type') == 8:
                     field_value = str(field_value.get('UserList'))
             if field_value and field_data.get('Name'):
-                record_fields[field_data.get('Name')] = field_value
+                record[field_data.get('Name')] = field_value
 
-        record = {'Id': content_obj.get('Id'),'Record': record_fields}
+        record['Id'] = content_obj.get('Id')
+
         markdown = tableToMarkdown('archer-get-record', record)
         context: dict = {
             f'Archer.Record(val.Id && val.Id == obj.Id)':
@@ -407,7 +423,7 @@ def create_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
     field_contents = client.generate_field_contents(fields_values, level_data['mapping'])
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
-
+    print(json.dumps(body))
     res = client.do_request('Post', f'rsaarcher/api/core/content', data=body)
 
     if res.get('ValidationMessages'):
@@ -417,14 +433,15 @@ def create_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
         return messages, {}, res
 
     if res.get('RequestedObject') and res.get('IsSuccessful'):
-        return res, {}, res
+        rec_id = res['RequestedObject']['Id']
+        return f'Record created successfully, record id: {rec_id}', {}, res
 
 
 def delete_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     record_id = args.get('record-id')
     res = client.do_request('Delete', f'rsaarcher/api/core/content/{record_id}')
     if res.get('IsSuccessful'):
-        return 'succesfully deleted', {}, res
+        return f'Record {record_id} deleted successfully', {}, res
 
     return 'delete record failed', {}, res
 
@@ -439,8 +456,14 @@ def update_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
     body = {'Content': {'Id': record_id, 'LevelId':  level_data['level'], 'FieldContents': field_contents}}
     res = client.do_request('Put', f'rsaarcher/api/core/content', data=body)
 
+    if res.get('ValidationMessages'):
+        messages = []
+        for message in res.get('ValidationMessages'):
+            messages.append(message.get('ResourcedMessage'))
+        return messages, {}, res
+
     if res.get('IsSuccessful'):
-        return 'succesfully updated', {}, res
+        return f'Record {record_id} updated successfully', {}, res
     else:
         return 'update failed', {}, res
 
@@ -483,12 +506,26 @@ def reset_cache(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
 def get_value_list(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     field_id = args.get('field-id')
-    res = client.do_soap_request('archer-get-valuelist', field_id=field_id)
-    try:
-        res = json.loads(xml2json(res))
-    except Exception as e:
-        print('')
-    return res, {}, {}
+    res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
+    if res.get('RequestedObject') and res.get('IsSuccessful'):
+        list_id = res['RequestedObject']['RelatedValuesListId']
+        values_list_res = client.do_request('GET', f'rsaarcher/api/core/system/valueslistvalue/valueslist/{list_id}')
+        if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
+            values_list = []
+            for value in values_list_res['RequestedObject'].get('Children'):
+                values_list.append({'Id': value['Data']['Id'],
+                                    'Name': value['Data']['Name'],
+                                    'IsSelectable': value['Data']['IsSelectable']})
+
+            field_data = {'FieldId': field_id, 'ValuesList': values_list}
+            markdown = tableToMarkdown('archer-get-valuelist', values_list)
+
+            context: dict = {
+                f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
+                    field_data
+            }
+            return markdown, context, values_list_res
+
 
 
 def get_user_id(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
