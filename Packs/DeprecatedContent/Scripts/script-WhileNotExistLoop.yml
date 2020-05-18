@@ -1,6 +1,6 @@
 commonfields:
-  id: f99a85a6-c572-4c3a-8afd-5b4ac539000a
-  version: 8
+  id: WhileNotExistLoop
+  version: -1
 name: WhileNotExistLoop
 script: |
   var val = invContext.keyToWatch;
