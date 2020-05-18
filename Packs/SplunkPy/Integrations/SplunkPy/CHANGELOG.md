@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue in which incomplete IncompleteRead exception was raised when got partial results from Splunk. 
 
 
 ## [20.4.0] - 2020-04-14

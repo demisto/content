@@ -1,6 +1,11 @@
+import json
 from copy import deepcopy
 import pytest
+from httplib import IncompleteRead
+
 import SplunkPy as splunk
+import demistomock as demisto
+
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
@@ -215,3 +220,70 @@ def test_commands(search_result, chosen_fields, expected_result):
     headers = update_headers_from_field_names(search_result, chosen_fields)
 
     assert expected_result == headers
+
+
+class MockService:
+    indexes = []
+
+
+def test_get_indexes(monkeypatch, mocker):
+    """
+    Given:
+     - Splunk client service indexes initialized with partial XML response.
+
+    When:
+     - Running get-indexes command.
+
+    Then:
+     - Ensure indexes are parsed and return as expected.
+    """
+    mocker.patch.object(demisto, 'results')
+    service = MockService
+
+    class IndexIterable():
+        def __iter__(self):
+            raise IncompleteRead(
+                partial="""<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>indexes</title>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <link href="/services/data/indexes/_reload" rel="_reload"/>
+  <link href="/services/data/indexes/_acl" rel="_acl"/>
+  <opensearch:totalResults>444</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <s:messages/>
+  <entry>
+    <title>_audit</title>
+    <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_audit/_reload" rel="_reload"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="archiver.enableDataArchive">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>_internal</title>
+    <link href="/servicesNS/nobody/system/data/indexes/_internal" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/_internal" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_internal/_reload" rel="_reload"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="archiver.enableDataArchive">0</s:key>
+        <s:key name="archiver.maxDataArchiveRetentionPeriod">0</s:key>""")
+
+    monkeypatch.setattr(service, 'indexes', IndexIterable())
+    splunk.splunk_get_indexes_command(service)
+    results = demisto.results.call_args[0][0]
+    assert json.loads(results['Contents']) == [{"name": "_audit"}, {"name": "_internal"}]
