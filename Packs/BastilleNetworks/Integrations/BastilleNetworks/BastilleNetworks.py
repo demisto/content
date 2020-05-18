@@ -4,6 +4,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
 import json
+import copy
 import requests
 from datetime import datetime
 
@@ -115,17 +116,20 @@ def test_module(client):
     """ Check connection to the Bastille API service """
 
     try:
-        client.get_zone_events(limit=0)
-        result = 'ok'
+        site, concentrator, map = get_site_params()
+        client.get_zone_events(limit=0, site=site, concentrator=concentrator, map=map)
     except DemistoException as exc:
-        if '404' in str(exc):
-            result = '404 Server Not Found'
-        elif '401' in str(exc):
-            result = '401 Unauthorized'
-        elif '500' in str(exc):
-            result = '500 Internal Server Error'
+        exc_msg = str(exc)
+        if '[404]' in exc_msg or 'ConnectionError' in exc_msg:
+            result = 'Server not found: check server URL'
+        elif '[401]' in exc_msg or '[403]' in exc_msg:
+            result = 'Authorization error: check API key'
+        elif '[500]' in exc_msg:
+            result = 'Internal server error'
         else:
-            result = f'Unknown Error {exc}'
+            result = f'Unknown error {exc_msg}'
+    else:
+        result = 'ok'
 
     return result
 
@@ -169,11 +173,15 @@ def parse_events(events, readable_fields):
     """ Helper to parse common event command response """
 
     for event in events:
-        event['time_s'] = format_timestamp(event['time_s'])
-        event['first_seen']['time_s'] = format_timestamp(event['first_seen']['time_s'])
+        event['first_seen'] = {
+            'time': format_timestamp(event['first_seen']['time_s']),
+            'position': [round(p, 2) for p in event['first_seen']['position']]
+        }
         if 'last_seen' in event:
-            event['last_seen']['time_s'] = format_timestamp(event['last_seen']['time_s'])
-
+            event['last_seen'] = {
+                'time': format_timestamp(event['last_seen']['time_s']),
+                'position': [round(p, 2) for p in event['last_seen']['position']]
+            }
     readable_events = [{f: e[f] for f in readable_fields} for e in events]
 
     return events, readable_events
@@ -191,13 +199,13 @@ def get_zone_events_command(client, args):
                                     until=until, limit=limit, tags=tags,
                                     event_id=event_id)
 
-    readable_fields = ['event_id', 'time_s', 'area', 'zone_name', 'tags', 'device_info',
+    readable_fields = ['event_id', 'area', 'zone_name', 'tags', 'device_info',
                        'emitter', 'first_seen', 'last_seen']
 
-    raw_response = json.dumps(events)
+    raw_response = copy.deepcopy(events)
     context_events, readable_events = parse_events(events, readable_fields)
 
-    readable_output = tableToMarkdown('Zone Events', readable_events)
+    readable_output = tableToMarkdown('Zone Events', readable_events, readable_fields)
     context_output = {'Bastille.ZoneEvent(val.event_id == obj.event_id)': context_events}
 
     return readable_output, context_output, raw_response
@@ -215,13 +223,13 @@ def get_device_events_command(client, args):
                                       limit=limit, tags=tags, event_id=event_id,
                                       transmitter_id=transmitter_id)
 
-    readable_fields = ['event_id', 'time_s', 'area', 'tags', 'device_info', 'emitter',
+    readable_fields = ['event_id', 'area', 'tags', 'device_info', 'emitter',
                        'first_seen', 'last_seen']
 
-    raw_response = json.dumps(events)
+    raw_response = copy.deepcopy(events)
     context_events, readable_events = parse_events(events, readable_fields)
 
-    readable_output = tableToMarkdown('Device Events', readable_events)
+    readable_output = tableToMarkdown('Device Events', readable_events, readable_fields)
     context_output = {
         'Bastille.DeviceEvent(val.event_id == obj.event_id)': context_events}
 
@@ -239,7 +247,10 @@ def add_device_tag_command(client, args):
     result = client.add_device_tag(site=site, concentrator=concentrator, map=map,
                                    transmitter_id=transmitter_id, tag=tag)
 
-    return result.get('status', 'failed'), {}, result
+    if 'status' not in result:
+        return_error('Failed to add device tag')
+
+    return result['status'], {}, result
 
 
 def remove_device_tag_command(client, args):
@@ -253,7 +264,10 @@ def remove_device_tag_command(client, args):
     result = client.remove_device_tag(site=site, concentrator=concentrator, map=map,
                                       transmitter_id=transmitter_id, tag=tag)
 
-    return result.get('status', 'failed'), {}, result
+    if 'status' not in result:
+        return_error('Failed to remove device tag')
+
+    return result['status'], {}, result
 
 
 def fetch_incidents(client, last_run):
@@ -268,12 +282,12 @@ def fetch_incidents(client, last_run):
     event_types = params.get('event_types')
 
     zone_events = []
-    if event_types is None or 'zone_event' in event_types:
+    if 'all' in event_types or 'zone_event' in event_types:
         zone_events = client.get_zone_events(concentrator=concentrator, map=map,
                                              site=site, tags=tags, since=last_fetch_time)
 
     device_events = []
-    if event_types is None or 'device_event' in event_types:
+    if 'all' in event_types or 'device_event' in event_types:
         device_events = client.get_device_events(concentrator=concentrator, map=map,
                                                  site=site, tags=tags,
                                                  since=last_fetch_time)

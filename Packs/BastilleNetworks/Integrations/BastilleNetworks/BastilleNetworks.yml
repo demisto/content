@@ -1,9 +1,10 @@
 category: Network Security
 commonfields:
-  id: BastilleNetworks
+  id: Bastille Networks
   version: -1
 configuration:
-- display: Server URL
+- additionalinfo: 'Example: https://api.demisto-example.com'
+  display: Server URL
   name: api_url
   required: false
   type: 0
@@ -51,12 +52,13 @@ configuration:
   options:
   - zone_event
   - device_event
-  required: false
+  - all
+  required: true
   type: 16
 description: RF monitoring for wireless intrusion detection and policy enforcement.
   Visit https://www.bastille.net for details.
 display: Bastille Networks
-name: BastilleNetworks
+name: Bastille Networks
 script:
   commands:
   - arguments:
