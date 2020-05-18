@@ -512,7 +512,7 @@ script:
         var md = '## Falcon Host Threat Graph Processess Summary\n';
         var ec = {};
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec= {"CrowdStrikeHostThreatGraphProcessess": res.obj.resources};
+            ec= {"CrowdStrikeHost.ThreatGraphProcessess": res.obj.resources};
             for (var i=0; i<res.obj.resources.length; i++) {
                md += objToList(res.obj.resources[i], res.obj.resources[i].value)
 
