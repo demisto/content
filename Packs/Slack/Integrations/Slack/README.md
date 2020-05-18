@@ -734,14 +734,13 @@ Channel renamed successfully.
 <h2>Additional Information</h2>
 <h3>Direct messages</h3>
 <p>You may send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
-<pre>
-list incidents [page x]
-list my incidents [page x]
-list my tasks
-list closed incidents
-new incident [details]
-mirror incident-id
-</pre>
+<p><strong>list incidents [page x]</strong> - list the current incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list my incidents [page x]</strong> - list the current incidents assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list my tasks [page x]</strong> - list the current tasks assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list closed incidents</strong> - list the closed incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>new incident [details]</strong> - Create a new incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR, or the `Allow external users to create incidents via DM` parameter to be enabled.</p>
+<p><strong>mirror incident-id</strong> - mirror an incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+
 <h3>Notifications</h3>
 <p>The integration sends notifications as they are configured in the notification settings (User Preferences in Cortex XSOAR), and to the dedicated channel configured for incident notifications (according to the integration configuration).
 If a dedicated channel for incident notifications is configured, the following notifications will be sent there:</p>
