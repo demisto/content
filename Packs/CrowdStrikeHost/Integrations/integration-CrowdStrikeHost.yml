@@ -489,11 +489,8 @@ script:
         var md = '## Falcon Host Threat Graph Summary\n';
         var ec = {};
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec= {"CrowdStrikeHost.ThreatGraphSummary": res.obj.resources};
-            for (var i=0; i<res.obj.resources.length; i++) {
-               md += objToList(res.obj.resources[i], res.obj.resources[i].value)
-
-            }
+            ec = {"CrowdStrikeHost.ThreatGraphSummary": res.obj.resources};
+            md += tableToMarkdown('', res.obj.resources)
         } else {
             md += 'No result found';
         }
@@ -512,11 +509,8 @@ script:
         var md = '## Falcon Host Threat Graph Processess Summary\n';
         var ec = {};
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec= {"CrowdStrikeHost.ThreatGraphProcessess": res.obj.resources};
-            for (var i=0; i<res.obj.resources.length; i++) {
-               md += objToList(res.obj.resources[i], res.obj.resources[i].value)
-
-            }
+            ec = {"CrowdStrikeHost.ThreatGraphProcessess": res.obj.resources};
+            md += tableToMarkdown('', res.obj.resources)
         } else {
             md += 'No result found';
         }
@@ -534,11 +528,8 @@ script:
         var md = '## Falcon Host Threat Graph Detections Summary\n';
         var ec = {};
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec= {"CrowdStrikeHost.ThreatGraphDetections":res.obj.resources};
-            for (var i=0; i<res.obj.resources.length; i++) {
-               md += objToList(res.obj.resources[i], res.obj.resources[i].value)
-
-            }
+            ec = {"CrowdStrikeHost.ThreatGraphDetections":res.obj.resources};
+            md += tableToMarkdown('', res.obj.resources)
         } else {
             md += 'No result found';
         }
