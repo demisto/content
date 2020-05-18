@@ -282,8 +282,12 @@ script:
         if (!args.categoryID && !args.categoryName) {
             throw "Please provide either the category name or it's ID.";
         }
-        var urls = args.urls ? args.urls.split(',') : undefined;
-        var ips = args.ips ? args.ips.split(',') : undefined;
+        if (args.urls){
+            var urls = Array.isArray(args.urls) ? args.urls: args.urls.split(',');
+        }
+        if (args.ips){
+            var ips = Array.isArray(args.ips) ? args.ips: args.ips.split(',');
+        }
         var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID)) : editAddressRequest(urls, ips, undefined, args.categoryName);
         var title = 'Forcepoint Category Details';
         var data = [
@@ -515,8 +519,10 @@ script:
     arguments:
     - name: urls
       description: 'Comma separated list of URL addresses to add. '
+      isArray: true
     - name: ips
       description: 'Comma separated list of IP address to add. '
+      isArray: true
     - name: categoryID
       description: The category ID. Leave blank if category name is provided.
     - name: categoryName
