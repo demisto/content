@@ -218,3 +218,11 @@ def test_search_alerts_command(mocker):
     mocker.patch.object(client_mocker, 'search_alerts', return_value=ALERTS_RAW_RESPONSE)
     _, ec, _ = search_alerts_command(client_mocker, {'severity': 'medium'})
     assert ec == EXPECTED_ALERTS_OUTPUT
+
+
+def test_fetch_incidents_command(mocker):
+    from MicrosoftGraphSecurity import fetch_incidents
+    mocker.patch('MicrosoftGraphSecurity.parse_date_range', return_value=("2020-04-19 08:14:21", 'never mind'))
+    mocker.patch.object(client_mocker, 'search_alerts', return_value=ALERTS_RAW_RESPONSE)
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=10, providers_param='', filter_param='')
+    assert len(incidents) == 3

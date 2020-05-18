@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any
+from typing import Dict, List, Any
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -39,15 +39,15 @@ class MsGraphClient:
     def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query):
         filters = []
         if last_modified:
-            filters.append("modifiedDate gt '{}'".format(get_timestamp(last_modified)))
+            filters.append("lastModifiedDateTime gt {}".format(get_timestamp(last_modified)))
         if category:
             filters.append("category eq '{}'".format(category))
         if severity:
             filters.append("severity eq '{}'".format(severity))
         if time_from:
-            filters.append("createdDate gt '{}'".format(time_from))
+            filters.append("createdDateTime gt {}".format(time_from))
         if time_to:
-            filters.append("createdDate lt '{}'".format(time_to))
+            filters.append("createdDateTime lt {}".format(time_to))
         if filter_query:
             filters.append("{}".format(filter_query))
         filters = " and ".join(filters)
@@ -93,6 +93,61 @@ class MsGraphClient:
         cmd_url = f'users/{user_id}'
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         return response
+
+
+def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter_param: str, providers_param: str) \
+        -> list:
+    filter_query = ""
+    if providers_param:
+        providers_query = []
+        providers_lst = providers_param.split(',')
+        for provider in providers_lst:
+            providers_query.append(f"vendorInformation/provider eq '{provider}'")
+        filter_query = (" or ".join(providers_query))
+    if filter_param:  # overrides the providers query, if given
+        filter_query = filter_param
+
+    severity_map = {'low': 1, 'medium': 2, 'high': 3, 'unknown': 0, 'informational': 0}
+
+    last_run = demisto.getLastRun()
+    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+    now = datetime.now().strftime(timestamp_format)
+    if not last_run:  # if first time running
+        new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
+    else:
+        new_last_run = last_run
+    demisto_incidents: List = list()
+    time_from = new_last_run.get('time')
+    time_to = datetime.now().strftime(timestamp_format)
+
+    # Get incidents from MS Graph Security
+    demisto.debug(f'Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}\n')
+    incidents = client.search_alerts(last_modified=None, severity=None, category=None, vendor=None, time_from=time_from,
+                                     time_to=time_to, filter_query=filter_query)['value']
+
+    if incidents:
+        count = 0
+        incidents = sorted(incidents, key=lambda k: k['createdDateTime'])  # sort the incidents by time-increasing order
+        last_incident_time = last_run.get('time', '0')
+        demisto.debug(f'Incidents times: {[incidents[i]["createdDateTime"] for i in range(len(incidents))]}\n')
+        for incident in incidents:
+            incident_time = incident.get('createdDateTime')
+            if incident_time > last_incident_time and count < fetch_limit:
+                demisto_incidents.append({
+                    'name': incident.get('title'),
+                    'occurred': incident.get('createdDateTime'),
+                    'severity': severity_map.get(incident.get('severity', ''), 0),  # todo: check with Arseny
+                    'rawJSON': json.dumps(incident)
+                })
+                count += 1
+        if demisto_incidents:
+            last_incident_time = demisto_incidents[-1].get('occurred')
+            new_last_run.update({'time': last_incident_time})
+
+    if not demisto_incidents:
+        new_last_run.update({'time': now})
+    demisto.setLastRun(new_last_run)
+    return demisto_incidents
 
 
 def search_alerts_command(client: MsGraphClient, args):
@@ -425,7 +480,6 @@ def test_function(client: MsGraphClient, args):
 
 
 def main():
-
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
     tenant = params.get('tenant_id')
@@ -450,8 +504,17 @@ def main():
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=use_ssl, proxy=proxy,
                                               self_deployed=self_deployed)
-        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        if command == "fetch-incidents":
+            fetch_time = params.get('fetch_time', '1 day')
+            fetch_limit = params.get('fetch_limit', 10)
+            fetch_providers = params.get('fetch_providers', '')
+            fetch_filter = params.get('fetch_filter', '')
+            incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),
+                                        filter_param=fetch_filter, providers_param=fetch_providers)
+            demisto.incidents(incidents)
+        else:
+            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
         return_error(str(err))
