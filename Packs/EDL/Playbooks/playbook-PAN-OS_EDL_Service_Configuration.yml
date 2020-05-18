@@ -444,7 +444,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               simple: Panorama.EDL.Name
@@ -780,7 +780,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               simple: Panorama.EDL.Name
@@ -1293,7 +1293,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: playbookQuery.indicator_type
@@ -1334,7 +1334,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: playbookQuery.indicator_type
