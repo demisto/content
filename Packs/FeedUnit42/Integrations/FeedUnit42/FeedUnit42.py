@@ -33,29 +33,36 @@ class Client(BaseClient):
         super().__init__(base_url=f'{url}playbooks/collections/{collection}/objects/', verify=verify,
                          proxy=handle_proxy(), headers={'Authorization': f'Token {api_key}'})
 
-    def build_iterator(self) -> Tuple[List, Dict]:
+    def get_indicators(self) -> Tuple[List, Dict]:
         """Retrieves all entries from the feed.
 
         Returns:
             A list of objects, containing the indicators.
         """
-        response = self._http_request('GET', url_suffix='', full_url=self._base_url, ok_codes=(200, 201, 206))
+        return self._http_request('GET', url_suffix='', full_url=self._base_url, ok_codes=(200, 201, 206))
 
-        objects = response.get('objects')
-        indicators_objects = [item for item in objects if item.get('type') == 'indicator']  # retrieve only indicators
 
-        indicators = []
-        for indicator_object in indicators_objects:
-            pattern = indicator_object.get('pattern')
-            for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
-                if key in pattern:  # retrieve only Demisto indicator types
-                    indicators.append({
-                        "value": indicator_object.get('name'),
-                        "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
-                        "rawJSON": indicator_object,
-                    })
+def parse_response(response: dict) -> list:
+    """Parse the objects retrieved from the feed.
 
-        return indicators, response
+    Returns:
+        A list of indicators, containing the indicators.
+    """
+    objects = response.get('objects')
+    indicators_objects = [item for item in objects if item.get('type') == 'indicator']  # retrieve only indicators
+
+    indicators = []
+    for indicator_object in indicators_objects:
+        pattern = indicator_object.get('pattern')
+        for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
+            if key in pattern:  # retrieve only Demisto indicator types
+                indicators.append({
+                    "value": indicator_object.get('name'),
+                    "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
+                    "rawJSON": indicator_object,
+                })
+
+    return indicators
 
 
 def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
@@ -66,7 +73,8 @@ def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     Returns:
         Outputs.
     """
-    client.build_iterator()
+    response = client.get_indicators()
+    _ = parse_response(response)
     return 'ok', {}, {}
 
 
@@ -79,7 +87,8 @@ def fetch_indicators(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicators, _ = client.build_iterator()
+    response = client.get_indicators()
+    indicators = parse_response(response)
     return indicators
 
 
@@ -94,13 +103,14 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, D
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
-    indicators, raw_response = client.build_iterator()
+    response = client.build_iterator()
+    indicators = parse_response(response)
     limited_indicators = indicators[:limit]
 
     human_readable = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
     entry_context = {'Unit42(val.value && val.value == obj.value)': limited_indicators}
 
-    return human_readable, entry_context, raw_response
+    return human_readable, entry_context, response
 
 
 def main():
