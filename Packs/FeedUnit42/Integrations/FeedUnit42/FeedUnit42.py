@@ -48,7 +48,7 @@ def parse_response(response: dict) -> list:
     Returns:
         A list of indicators, containing the indicators.
     """
-    objects = response.get('objects')
+    objects = response.get('objects', [])
     indicators_objects = [item for item in objects if item.get('type') == 'indicator']  # retrieve only indicators
 
     indicators = []
