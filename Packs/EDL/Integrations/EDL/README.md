@@ -20,9 +20,10 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 | EDL Size | Max amount of entries in the service instance. | True |
 | Update EDL On Demand Only | When set to true, will only update the service indicators via **edl-update** command. | False |
 | Refresh Rate | How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-| Listen Port | Will run the *External Dynamic List* on this port from within Demisto | True |
-| Certificate (Required for HTTPS) | HTTPS Certificate provided by pasting its value into this field. | False |
-| Private Key (Required for HTTPS | HTTPS private key provided by pasting its value into this field. | False |
+| Listen Port | By default HTTP, Will run the *External Dynamic List* on this port from within Demisto | True |
+| Certificate (Required for HTTPS) | Configure A certificate for the EDL instance, certificate is provided by pasting its value into this field. use only when accesing EDL instance by port. | False |
+| Private Key (Required for HTTPS) | Configure A private key, private key is provided by pasting its value into this field. use only when accesing EDL instance by port. | False |
+| Credintials | Set user and password for accessing the EDL Instance. (only applicable when https is used and a certificate profile is configured on the pan-os edl object) | False |
 | Collapse IPs | Whether to collapse IPs, and if so - to ranges or CIDRs. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -30,7 +31,7 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 ### Access the EDL Service by Instance Name (HTTPS)
 **The route will be open without security hardening and might expose you to network risks.**
 
-To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
+To access the EDL service by instance name, make sure ***Instance execute external*** is enabled.
 
 1. In Demisto, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
@@ -50,9 +51,9 @@ Updates values stored in the EDL (only avaialable On-Demand).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query used to retrieve indicators from the system. | Required | 
-| edl_size | The maximum number of entries in the EDL. If no value is provided, will use the value specified in the EDL Size parameter configured in the instance configuration. | Optional | 
-| print_indicators | Boolean | Required | 
+| query | The query used to retrieve indicators from the system. | Required |
+| edl_size | The maximum number of entries in the EDL. If no value is provided, will use the value specified in the EDL Size parameter configured in the instance configuration. | Optional |
+| print_indicators | Boolean | Required |
 | collapse_ips | Whether to collapse IPs, and if so - to ranges or CIDRs. | Optional |
 
 
