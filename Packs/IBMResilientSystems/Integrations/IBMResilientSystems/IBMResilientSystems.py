@@ -16,6 +16,7 @@ requests.packages.urllib3.disable_warnings()
 try:
     resilient.co3.LOG.disable(logging.ERROR)
 except:
+    # client with no co3 instance should pass this exception
     pass
 
 if not demisto.params()['proxy']:
