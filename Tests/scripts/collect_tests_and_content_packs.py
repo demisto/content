@@ -10,6 +10,7 @@ import json
 import glob
 import random
 import argparse
+from typing import Dict
 import demisto_sdk.commands.common.tools as tools
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -202,8 +203,9 @@ def get_tests(file_path):
         return data_dictionary.get('tests', [])
 
 
-def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set,
-                  conf):
+def collect_tests_and_content_packs(
+        script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf
+):
     """Collect tests for the affected script_ids,playbook_ids,integration_ids.
 
     :param script_ids: The ids of the affected scripts in your change set.
@@ -271,7 +273,22 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     # remove skipped integrations from the list
     missing_ids = missing_ids - set(skipped_integrations)
 
-    return test_ids, missing_ids, caught_missing_test
+    packs_to_install = set()
+    id_set_test_playbooks = id_set.get('TestPlaybooks', [])
+    for test_playbook in id_set_test_playbooks:
+        test_playbook_id = list(test_playbook.keys())[0]
+        test_playbook_object = test_playbook[test_playbook_id]
+        if test_playbook_id in tests_set:
+            test_playbook_pack = test_playbook_object.get('pack')
+            if test_playbook_pack:
+                print(
+                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install'
+                )
+                packs_to_install.add(test_playbook_pack)
+            else:
+                print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
+
+    return test_ids, missing_ids, caught_missing_test, packs_to_install
 
 
 def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
@@ -420,16 +437,19 @@ def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, con
     return missing_ids, tests_set
 
 
-def find_tests_for_modified_files(modified_files, conf, id_set):
+def find_tests_and_content_packs_for_modified_files(modified_files, conf, id_set):
     script_names = set([])
     playbook_names = set([])
     integration_ids = set([])
 
-    tests_set, catched_scripts, catched_playbooks = collect_changed_ids(integration_ids, playbook_names,
-                                                                        script_names, modified_files, id_set)
-    test_ids, missing_ids, caught_missing_test = collect_tests(script_names, playbook_names, integration_ids,
-                                                               catched_scripts, catched_playbooks, tests_set, id_set,
-                                                               conf)
+    tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
+        integration_ids, playbook_names, script_names, modified_files, id_set)
+
+    test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
+        script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
+
+    packs_to_install.update(test_packs_to_install)
+
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     missing_ids, tests_set = check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set)
@@ -443,7 +463,7 @@ def find_tests_for_modified_files(modified_files, conf, id_set):
         global _FAILED
         _FAILED = True
 
-    return tests_set
+    return tests_set, packs_to_install
 
 
 def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
@@ -469,6 +489,59 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
                 _FAILED = True
 
     return missing_ids
+
+
+def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playbook_names: set, script_names: set) -> set:
+    """Iterates all content entities in the ID set and extract the pack names for the modified ones.
+
+    Args:
+        id_set (Dict): Structure which holds all content entities to extract pack names from.
+        integration_ids (set): Set of integration IDs to get pack names for.
+        playbook_names (set): Set of playbook names to get pack names for.
+        script_names (set): Set of script names to get pack names for.
+
+    Returns:
+        set. Pack names to install.
+    """
+    packs_to_install = set()
+
+    id_set_integrations = id_set.get('integrations', [])
+    for integration in id_set_integrations:
+        integration_id = list(integration.keys())[0]
+        integration_object = integration[integration_id]
+        if integration_id in integration_ids:
+            integration_pack = integration_object.get('pack')
+            if integration_pack:
+                print(f'Found integration {integration_id} in pack {integration_pack} - adding to packs to install')
+                packs_to_install.add(integration_object.get('pack'))
+            else:
+                print_warning(f'Found integration {integration_id} without pack - not adding to packs to install')
+
+    id_set_playbooks = id_set.get('playbooks', [])
+    for playbook in id_set_playbooks:
+        playbook_object = list(playbook.values())[0]
+        playbook_name = playbook_object.get('name')
+        if playbook_name in playbook_names:
+            playbook_pack = playbook_object.get('pack')
+            if playbook_pack:
+                print(f'Found playbook {playbook_name} in pack {playbook_pack} - adding to packs to install')
+                packs_to_install.add(playbook_pack)
+            else:
+                print_warning(f'Found playbook {playbook_name} without pack - not adding to packs to install')
+
+    id_set_script = id_set.get('scripts', [])
+    for script in id_set_script:
+        script_id = list(script.keys())[0]
+        script_object = script[script_id]
+        if script_id in script_names:
+            script_pack = script_object.get('pack')
+            if script_pack:
+                print(f'Found script {script_id} in pack {script_pack} - adding to packs to install')
+                packs_to_install.add(script_object.get('pack'))
+            else:
+                print_warning(f'Found script {script_id} without pack - not adding to packs to install')
+
+    return packs_to_install
 
 
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set):
@@ -554,7 +627,9 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     if deprecated_commands_message:
         print_color(deprecated_commands_message, LOG_COLORS.YELLOW)
 
-    return tests_set, catched_scripts, catched_playbooks
+    packs_to_install = collect_content_packs_to_install(id_set, integration_ids, playbook_names, script_names)
+
+    return tests_set, catched_scripts, catched_playbooks, packs_to_install
 
 
 def exclude_deprecated_entities(script_set, script_names,
@@ -948,14 +1023,45 @@ def get_random_tests(tests_num, rand, conf=None, id_set=None, server_version='0'
     return tests
 
 
-def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
+def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
+    """Returns the content packs names in which given test playbooks are in.
+
+    Args:
+        tests (set): The names of the tests to find their content packs.
+        id_set (Dict): Structure which holds all content entities to extract pack names from.
+
+    Returns:
+        str. The content pack name in which the test playbook is in.
+    """
+    if not id_set:
+        with open("./Tests/id_set.json", 'r') as conf_file:
+            id_set = json.load(conf_file)
+
+    content_packs = set()
+
+    for test_playbook_object in id_set.get('TestPlaybooks', []):
+        test_playbook_name = list(test_playbook_object.keys())[0]
+        test_playbook_data = list(test_playbook_object.values())[0]
+        if test_playbook_name in tests:
+            pack_name = test_playbook_data.get('pack')
+            if pack_name:
+                content_packs.add(pack_name)
+                if len(tests) == len(content_packs):
+                    # we found all content packs for all tests we were looking for
+                    break
+
+    return content_packs
+
+
+def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
     """Create a test list that should run"""
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files(files_string)
 
     tests = set([])
+    packs_to_install = set([])
     if modified_files:
-        tests = find_tests_for_modified_files(modified_files, conf, id_set)
+        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files, conf, id_set)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -978,6 +1084,7 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
         rand = random.Random(branch_name)
         tests = get_random_tests(
             tests_num=RANDOM_TESTS_NUM, rand=rand, conf=conf, id_set=id_set, server_version=two_before_ga_ver)
+        packs_to_install = get_content_pack_name_of_test(tests, id_set)
         if changed_common:
             print_warning('Adding 3 random tests due to: {}'.format(','.join(changed_common)))
         elif sample_tests:  # Choosing 3 random tests for infrastructure testing
@@ -990,7 +1097,7 @@ def get_test_list(files_string, branch_name, two_before_ga_ver='0', conf=None, i
     if changed_common:
         tests.add('TestCommonPython')
 
-    return tests
+    return tests, packs_to_install
 
 
 def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set):
@@ -1035,7 +1142,9 @@ def create_test_file(is_nightly, skip_save=False):
         conf = load_tests_conf()
         with open("./Tests/id_set.json", 'r') as conf_file:
             id_set = json.load(conf_file)
-        tests = get_test_list(files_string, branch_name, two_before_ga, conf, id_set)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(
+            files_string, branch_name, two_before_ga, conf, id_set
+        )
         create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_set)
 
         tests_string = '\n'.join(tests)
@@ -1044,10 +1153,19 @@ def create_test_file(is_nightly, skip_save=False):
         else:
             print('No filter configured, running all tests')
 
+        packs_to_install_string = '\n'.join(packs_to_install)
+        if packs_to_install_string:
+            print('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
+        else:
+            print('Did not find content packs to install')
+
     if not skip_save:
         print("Creating filter_file.txt")
         with open("./Tests/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
+        print("Creating content_packs_to_install.txt")
+        with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
+            content_packs_to_install.write(packs_to_install_string)
 
 
 if __name__ == "__main__":
