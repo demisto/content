@@ -1,0 +1,50 @@
+commonfields:
+  id: PowerShell Remoting
+  version: -1
+name: PowerShell Remoting
+display: PowerShell Remoting
+category: Utilities
+description: |-
+  Use this integration in order to remote into another machine (windows/linux) using SSH, requires PowerShell core on both ends.
+  Installation steps needed on target machine can be found in Microsoft's official documentation:
+  https://docs.microsoft.com/en-us/powershell/scripting/learn/remoting/ssh-remoting-in-powershell-core?view=powershell-6
+configuration:
+- display: Domain/IP
+  name: hostname
+  defaultvalue: subdomain.example.com
+  type: 0
+  required: true
+  additionalinfo: Domain or IP of target machine
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+  additionalinfo: User name in target machine
+script:
+  script: ''
+  type: powershell
+  commands:
+  - name: pwsh-remoting-query
+    arguments:
+    - name: command
+      required: true
+      description: PowerShell command (can be single or multiple in order of execution)
+        to run on the target machine
+      isArray: true
+    outputs:
+    - contextPath: PowerShellSSH.Query
+      description: Object that contains data about the response of a command run in
+        target machine
+      type: unknown
+    - contextPath: PowerShellSSH.Query.Result
+      description: The result of the command run from target machine
+      type: string
+    - contextPath: PowerShellSSH.Query.Command
+      description: The command sent to target machine, used as ID of that query
+      type: string
+    description: Remote to target machine which has powershell core installed on it
+      and is set up for remoting
+    execution: true
+  dockerimage: demisto/powershell:6.2.3.5563
+  runonce: false
