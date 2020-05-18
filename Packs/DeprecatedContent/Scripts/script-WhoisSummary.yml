@@ -1,6 +1,6 @@
 commonfields:
   id: WhoisSummary
-  version: 1
+  version: -1
 name: WhoisSummary
 script: |-
   // A simple example script for parsing WHOIS data
