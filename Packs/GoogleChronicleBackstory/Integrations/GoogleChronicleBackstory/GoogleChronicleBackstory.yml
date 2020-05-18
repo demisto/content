@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Chronicle
+  id: Google Chronicle Backstory
   version: -1
 configuration:
 - display: User's Service Account JSON
