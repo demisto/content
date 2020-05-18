@@ -13,14 +13,27 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 2. Managing machines and performing actions on them.
 3. Blocking files and applications.
 
-## Configure Microsoft Defender Advanced Threat Protection on Cortex XSOAR
+## Required Permissions
+* AdvancedQuery.Read.All - Application
+* Alert.ReadWrite.All - Application
+* File.Read.All - Application
+* Ip.Read.All - Application
+* Machine.CollectForensics - Application
+* Machine.Isolate - Application
+* Machine.ReadWrite.All - Application
+* Machine.RestrictExecution - Application
+* Machine.Scan - Application
+* Machine.StopAndQuarantine - Application
+* Url.Read.All - Application
+* User.Read.All - Application
+
+## Configure Microsoft Defender Advanced Threat Protection on Demisto
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Microsoft Defender Advanced Threat Protection.
 3. Click __Add instance__ to create and configure a new integration instance.
-
-
+    
     | **Parameter** | **Description** | **Example** |
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
@@ -34,9 +47,19 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
     | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
     | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
+    | self-deployed | Use a self-deployed Azure Application. |  N/A |
 
 
 4. Click __Test__ to validate the URLs, token, and connection.
+
+## Use a Self-Deployed Azure Application
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+<br/>The Tenant ID, Client ID, and Client secret are required for the integration. When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).
+* ID - Client ID
+* Token - Tenant ID
+* Key - Client Secret
+
 ## Fetched Incidents Data
 1. id
 2. incidentId
@@ -104,8 +127,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. microsoft-atp-isolate-machine
 ---
 Isolates a machine from accessing external network.
+
 ##### Required Permissions
 Machine.Isolate	
+
 ##### Base Command
 
 `microsoft-atp-isolate-machine`
@@ -174,6 +199,7 @@ Remove a machine from isolation.
 
 ##### Required Permissions
 Machine.Isolate	
+
 ##### Base Command
 
 `microsoft-atp-unisolate-machine`
@@ -238,6 +264,9 @@ Machine.Isolate
 ### 3. microsoft-atp-get-machines
 ---
 Retrieves a collection of machines that has communicated with WDATP cloud within the last 30 days.
+
+##### Required Permissions
+Machine.ReadWrite.All	
 
 ##### Base Command
 
@@ -336,6 +365,9 @@ Retrieves a collection of machines that has communicated with WDATP cloud within
 ### 4. microsoft-atp-get-file-related-machines
 ---
 Gets a collection of machines related to a given file's SHA1 hash.
+
+##### Required Permissions
+Machine.ReadWrite.All
 
 ##### Base Command
 
@@ -441,6 +473,8 @@ Gets a collection of machines related to a given file's SHA1 hash.
 ---
 Gets a machine's details by its identity.
 
+##### Required Permissions
+Machine.ReadWrite.All
 
 ##### Base Command
 
@@ -516,8 +550,10 @@ Gets a machine's details by its identity.
 ### 6. microsoft-atp-run-antivirus-scan
 ---
 Initiates Microsoft Defender Antivirus scan on a machine.
+
 ##### Required Permissions
 Machine.Scan	
+
 ##### Base Command
 
 `microsoft-atp-run-antivirus-scan`
@@ -583,6 +619,9 @@ Machine.Scan
 ### 7. microsoft-atp-list-alerts
 ---
 Gets a list of alerts that are present on the system. Filtering can be done on a single argument only.
+
+##### Required Permissions
+Alert.ReadWrite.All	
 
 ##### Base Command
 
@@ -714,6 +753,9 @@ Gets a list of alerts that are present on the system. Filtering can be done on a
 ---
 Updates the properties of an alert entity.
 
+##### Required Permissions
+Alert.ReadWrite.All	
+
 ##### Base Command
 
 `microsoft-atp-update-alert`
@@ -776,9 +818,13 @@ Updates the properties of an alert entity.
 ##### Human Readable Output
 The alert da637200417169017725_183736971 has been updated successfully
 
+
 ### 9. microsoft-atp-advanced-hunting
 ---
 Runs programmatic queries in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). You can only run a query on data from the last 30 days. The maximum number of rows is 10,000. The number of executions is limited to 15 calls per minute, and 15 minutes of running time every hour, and 4 hours of running time a day.
+
+##### Required Permissions
+AdvancedQuery.Read.All	
 
 ##### Base Command
 
@@ -823,6 +869,9 @@ Runs programmatic queries in Microsoft Defender ATP Portal (https://securitycent
 ### 10. microsoft-atp-create-alert
 ---
 Creates a new alert entity using event data, as obtained from the Advanced Hunting.
+
+##### Required Permissions
+Alert.ReadWrite.All	
 
 ##### Base Command
 
@@ -924,6 +973,9 @@ Creates a new alert entity using event data, as obtained from the Advanced Hunti
 ---
 Retrieves the user associated to a specific alert.
 
+##### Required Permissions
+User.Read.All	
+
 ##### Base Command
 
 `microsoft-atp-get-alert-related-user`
@@ -989,6 +1041,9 @@ Retrieves the user associated to a specific alert.
 ### 12. microsoft-atp-get-alert-related-files
 ---
 Retrieves the files associated to a specific alert.
+
+##### Required Permissions
+File.Read.All	
 
 ##### Base Command
 
@@ -1081,6 +1136,9 @@ Retrieves the files associated to a specific alert.
 ---
 Retrieves the IP addresses associated to a specific alert.
 
+##### Required Permissions
+Ip.Read.All	
+
 ##### Base Command
 
 `microsoft-atp-get-alert-related-ips`
@@ -1117,9 +1175,13 @@ Retrieves the IP addresses associated to a specific alert.
 ##### Human Readable Output
 Alert da637200417169017725_183736971 Related IPs: []
 
+
 ### 14. microsoft-atp-get-alert-related-domains
 ---
 Retrieves the domains associated to a specific alert.
+
+##### Required Permissions
+URL.Read.All	
 
 ##### Base Command
 
@@ -1157,10 +1219,14 @@ Retrieves the domains associated to a specific alert.
 ##### Human Readable Output
 Alert da637175364995825348_1865170845 Related Domains: []
 
+
 ### 15. microsoft-atp-list-machine-actions-details
 ---
 Returns the machine's actions. If an action ID is set it will return the information on the specific action.
 Filtering can only be done on a single argument.
+
+##### Required Permissions
+Machine.ReadWrite.All
 
 ##### Base Command
 
@@ -1352,6 +1418,7 @@ Machine.CollectForensics
 ##### Human Readable Output
 Success. This link is valid for a very short time and should be used immediately for downloading the package to a local storagehttps:
 //userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=MIICYwYJKoZIhvcNAQcCoIICV
+
 
 ### 18. microsoft-atp-restrict-app-execution
 ---
@@ -1555,6 +1622,9 @@ Machine.StopAndQuarantine
 ---
 Retrieves a collection of investigations or retrieves specific investigation by its ID.
 
+##### Required Permissions
+Alert.ReadWrite.All	
+
 ##### Base Command
 
 `microsoft-atp-list-investigations`
@@ -1639,6 +1709,9 @@ Retrieves a collection of investigations or retrieves specific investigation by 
 ---
 Starts an automated investigation on a machine.
 
+##### Required Permissions
+Alert.ReadWrite.All	
+
 ##### Base Command
 
 `microsoft-atp-start-investigation`
@@ -1696,6 +1769,9 @@ Starts an automated investigation on a machine.
 ---
 Retrieves the statistics on the given domain.
 
+##### Required Permissions
+URL.Read.All
+	
 ##### Base Command
 
 `microsoft-atp-get-domain-statistics`
@@ -1744,6 +1820,9 @@ Retrieves the statistics on the given domain.
 ### 24. microsoft-atp-get-domain-alerts
 ---
 Retrieves a collection of alerts related to a given domain address.
+
+##### Required Permissions
+Alert.ReadWrite.All	
 
 ##### Base Command
 
@@ -1808,6 +1887,9 @@ Retrieves a collection of alerts related to a given domain address.
 ### 25. microsoft-atp-get-domain-machines
 ---
 Retrieves a collection of machines that have communicated with a given domain address.
+
+##### Required Permissions
+Machine.ReadWrite.All
 
 ##### Base Command
 
@@ -1891,6 +1973,9 @@ Retrieves a collection of machines that have communicated with a given domain ad
 ---
 Retrieves the statistics for the given file.
 
+##### Required Permissions
+File.Read.All	
+
 ##### Base Command
 
 `microsoft-atp-get-file-statistics`
@@ -1946,6 +2031,9 @@ Retrieves the statistics for the given file.
 ### 27. microsoft-atp-get-file-alerts
 ---
 Retrieves a collection of alerts related to a given file hash.
+
+##### Required Permissions
+Alert.ReadWrite.All	
 
 ##### Base Command
 
@@ -2066,6 +2154,9 @@ Retrieves a collection of alerts related to a given file hash.
 ---
 Retrieves the statistics for the given IP address.
 
+##### Required Permissions
+Ip.Read.All	
+
 ##### Base Command
 
 `microsoft-atp-get-ip-statistics`
@@ -2113,6 +2204,9 @@ Retrieves the statistics for the given IP address.
 ### 29. microsoft-atp-get-ip-alerts
 ---
 Retrieves a collection of alerts related to a given IP address.
+
+##### Required Permissions
+Alert.ReadWrite.All	
 
 ##### Base Command
 
@@ -2177,6 +2271,9 @@ Retrieves a collection of alerts related to a given IP address.
 ### 30. microsoft-atp-get-user-alerts
 ---
 Retrieves a collection of alerts related to a given user ID.
+
+##### Required Permissions
+Alert.ReadWrite.All	
 
 ##### Base Command
 
@@ -2352,9 +2449,13 @@ Retrieves a collection of alerts related to a given user ID.
 |---|---|---|---|---|---|---|---|
 | da637175364336494657_410871946 | Suspicious process injection observed | A process abnormally injected code into another process, As a result, unexpected code may be running in the target process memory. Injection is often used to hide malicious code execution within a trusted process. As a result, the target process may exhibit abnormal behaviors such as opening a listening port or connecting to a command and control server. | 7 | Medium | InProgress | DefenseEvasion | 4899036531e374137f63289c3267bad772c13fef |
 
+
 ### 31. microsoft-atp-get-user-machines
 ---
 Retrieves a collection of machines related to a given user ID.
+
+##### Required Permissions
+Machine.ReadWrite.All
 
 ##### Base Command
 
@@ -2459,6 +2560,9 @@ Retrieves a collection of machines related to a given user ID.
 ### 32. microsoft-atp-add-remove-machine-tag
 ---
 Adds or removes a tag on a specific Machine.
+
+##### Required Permissions
+Machine.ReadWrite.All
 
 ##### Base Command
 
