@@ -1,6 +1,6 @@
 commonfields:
   id: TriagePhishing
-  version: 1
+  version: -1
 name: TriagePhishing
 script: |-
   var results = []; // Collect all the results
