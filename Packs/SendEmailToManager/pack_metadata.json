@@ -1,6 +1,6 @@
 {
     "name": "Send Email To Manager",
-    "description": "Send an approval email to the manager of the employee with the given email\n  allowing the manager to reply directly into the incident",
+    "description": "Send an approval email to the manager of the employee with the given email allowing the manager to reply directly into the incident",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
