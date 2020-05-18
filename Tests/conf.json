@@ -2941,6 +2941,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
