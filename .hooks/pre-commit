@@ -16,7 +16,7 @@ if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
     DO_DEACTIVATE=1
 fi
 
-demisto-sdk validate -g
+demisto-sdk validate -g --skip-pack-release-notes
 RES=$?
 
 demisto-sdk secrets --ignore-entropy
