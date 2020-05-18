@@ -739,7 +739,7 @@ Channel renamed successfully.
 <p><strong>list my tasks [page x]</strong> - list the current tasks assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
 <p><strong>list closed incidents</strong> - list the closed incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
 <p><strong>new incident [details]</strong> - Create a new incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR, or the `Allow external users to create incidents via DM` parameter to be enabled.</p>
-<p><strong>mirror incident-id</strong> - mirror an incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>mirror [incident-id]</strong> - mirror an incident in Cortex XSOAR to a slack channel. Requires user permissions in Cortex XSOAR for the provided incident.</p>
 
 <h3>Notifications</h3>
 <p>The integration sends notifications as they are configured in the notification settings (User Preferences in Cortex XSOAR), and to the dedicated channel configured for incident notifications (according to the integration configuration).
