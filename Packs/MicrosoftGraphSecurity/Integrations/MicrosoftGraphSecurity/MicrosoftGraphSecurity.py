@@ -95,8 +95,7 @@ class MsGraphClient:
         return response
 
 
-def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter_param: str, providers_param: str) \
-        -> list:
+def create_filter_query(filter_param: str, providers_param: str):
     filter_query = ""
     if providers_param:
         providers_query = []
@@ -106,7 +105,13 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
         filter_query = (" or ".join(providers_query))
     if filter_param:  # overrides the providers query, if given
         filter_query = filter_param
+    return filter_query
 
+
+def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, providers: str) \
+        -> list:
+
+    filter_query = create_filter_query(filter, providers)
     severity_map = {'low': 1, 'medium': 2, 'high': 3, 'unknown': 0, 'informational': 0}
 
     last_run = demisto.getLastRun()
@@ -134,9 +139,9 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
             incident_time = incident.get('createdDateTime')
             if incident_time > last_incident_time and count < fetch_limit:
                 demisto_incidents.append({
-                    'name': incident.get('title'),
+                    'name': incident.get('title') + " - " + incident.get('id'),
                     'occurred': incident.get('createdDateTime'),
-                    'severity': severity_map.get(incident.get('severity', ''), 0),  # todo: check with Arseny
+                    'severity': severity_map.get(incident.get('severity', ''), 0),
                     'rawJSON': json.dumps(incident)
                 })
                 count += 1
@@ -471,6 +476,21 @@ def test_function(client: MsGraphClient, args):
             return_error(f'API call to MS Graph Security failed. Please check authentication related parameters.'
                          f' [{response.status_code}] - {demisto.get(data, "error.message")}')
 
+        params: dict = demisto.params()
+
+        if params.get('isFetch'):
+            fetch_time = params.get('fetch_time', '1 day')
+            fetch_providers = params.get('fetch_providers', '')
+            fetch_filter = params.get('fetch_filter', '')
+
+            filter_query = create_filter_query(fetch_filter, fetch_providers)
+            timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+            time_from = parse_date_range(fetch_time, date_format=timestamp_format)[0]
+            time_to = datetime.now().strftime(timestamp_format)
+
+            client.search_alerts(last_modified=None, severity=None, category=None, vendor=None, time_from=time_from,
+                                 time_to=time_to, filter_query=filter_query)['value']
+
         return 'ok', None, None
 
     except TypeError as ex:
@@ -510,7 +530,7 @@ def main():
             fetch_providers = params.get('fetch_providers', '')
             fetch_filter = params.get('fetch_filter', '')
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),
-                                        filter_param=fetch_filter, providers_param=fetch_providers)
+                                        filter=fetch_filter, providers=fetch_providers)
             demisto.incidents(incidents)
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
