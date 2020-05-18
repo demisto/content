@@ -1,0 +1,23 @@
+name: Demisto Pull Check
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+jobs:
+  docs_review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Documentation Review
+        id: check_docs
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          # Check that the docs-approved tag is here
+          DOC_APPROVED=$(echo "$GITHUB_CONTEXT" | jq -c '.event.pull_request.labels[] | select(.name | contains("docs-approved"))')
+          if [ -n "$DOC_APPROVED" ]; then
+            echo "Documentation Review - APPROVED. Tag found: $DOC_APPROVED"
+            exit 0
+          else
+            echo "Documentation Review - PENDING."
+            exit 1
+          fi
