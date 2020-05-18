@@ -1,0 +1,570 @@
+id: Breach notification - PII Check
+version: -1
+name: Breach notification - PII Check
+description: "This playbook processes a checklist to help an analyst discern whether\
+  \ the breached data contains any Personally Identifiable Information (PII) according\
+  \ to California law.\n\nDISCLAIMER: Please consult with your legal team before implementing\
+  \ this playbook.\n\n**Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 46265903-5ecc-4492-8489-0a9b23ddf0fa
+    type: start
+    task:
+      id: 46265903-5ecc-4492-8489-0a9b23ddf0fa
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": 85\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 2d185de3-111b-404a-8120-c1e262f9bc45
+    type: title
+    task:
+      id: 2d185de3-111b-404a-8120-c1e262f9bc45
+      version: -1
+      name: PII Classification Check
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+      - '5'
+      - '4'
+      - '15'
+      - '14'
+      - '21'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1200,\n    \"y\": 240\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 63ef7e9b-2885-4248-887a-f45b4748980e
+    type: condition
+    task:
+      id: 63ef7e9b-2885-4248-887a-f45b4748980e
+      version: -1
+      name: Does data contain medical information?
+      description: "Medical information is defined as information regarding an individual’s\
+        \ medical history, mental or physical condition, or medical treatment or diagnosis\
+        \ by a health care professional.\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      Yes:
+      - '22'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 80,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 368f5c6f-9c18-4afc-8c88-09e475c00649
+    type: condition
+    task:
+      id: 368f5c6f-9c18-4afc-8c88-09e475c00649
+      version: -1
+      name: Does data contain financial information?
+      description: "Account number or credit or debit card number, in combination\
+        \ with any required security code, access code, or password that would permit\
+        \ access to an individual’s financial accounts.\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      Yes:
+      - '24'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: f14bccb4-c4f1-46b5-8978-3109e24c1dc5
+    type: condition
+    task:
+      id: f14bccb4-c4f1-46b5-8978-3109e24c1dc5
+      version: -1
+      name: Does data contain health insurance information?
+      description: "Health insurance information means an individual’s health insurance\
+        \ policy number or subscriber identification number, any unique identifier\
+        \ used by a health insurer to identify the individual, or any information\
+        \ in an individual’s application and claims history, including any appeals\
+        \ records.\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      Yes:
+      - '23'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 66431d57-683f-46d7-83d8-ee7b683a894e
+    type: title
+    task:
+      id: 66431d57-683f-46d7-83d8-ee7b683a894e
+      version: -1
+      name: PII compromised
+      description: "Use the below definitions of PII to discern whether breached data\
+        \ has any PII.\n**PII:** Information that can be used on its own or with other\
+        \ information to identify, contact, or locate a single person, or to identify\
+        \ an individual in context.\n**US -NIST:** Information which can be used to\
+        \ distinguish or trace an individual's identity, such as their name, social\
+        \ security number, biometric records, etc. alone, or when combined with other\
+        \ personal or identifying information which is linked or linkable to a specific\
+        \ individual, such as date and place of birth, mother’s maiden name, etc.\n\
+        **Source:** The Deloitte document has an appendix table for PII."
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1170,\n    \"y\": 980\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 307e78b4-3917-47ae-8216-402732a07292
+    type: condition
+    task:
+      id: 307e78b4-3917-47ae-8216-402732a07292
+      version: -1
+      name: Does data contain unique identification number?
+      description: "Any of the following data pieces:  \n*Social security number\n\
+        *Driver’s license number\n*California identification card number\n*Tax identification\
+        \ number\n*Passport number\n*Military identification number,\n*Or other unique\
+        \ identification number issued on a government document commonly used to verify\
+        \ the identity of a specific individual.\n\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      Yes:
+      - '26'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1870,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: bd177033-8268-4c7b-8b90-05f5db22d2af
+    type: condition
+    task:
+      id: bd177033-8268-4c7b-8b90-05f5db22d2af
+      version: -1
+      name: Does data contain account information?
+      description: "Account number/username in combination with a password or security\
+        \ question and answer that would permit access to an online account.\n**Source:**\
+        \ http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      tags:
+      - AccountInformationBreached
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      Yes:
+      - '25'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1430,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: aa613ba6-502c-41a5-8d6b-8935d0be346a
+    type: regular
+    task:
+      id: aa613ba6-502c-41a5-8d6b-8935d0be346a
+      version: -1
+      name: Set Store PIICompromised Flag
+      description: Indicates that there was PII compromised.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      append: {}
+      key:
+        simple: PIICompromised
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1170,\n    \"y\": 1110\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '21':
+    id: '21'
+    taskid: c61ea960-4119-44ec-87a2-a60f3578bd9f
+    type: condition
+    task:
+      id: c61ea960-4119-44ec-87a2-a60f3578bd9f
+      version: -1
+      name: Does data contain unique biometric data?
+      description: "Unique biometric data generated from measurements or technical\
+        \ analysis of human body characteristics, such as a fingerprint, retina, or\
+        \ iris image, used to authenticate a specific individual. Unique biometric\
+        \ data does not include a physical or digital photograph, unless used or stored\
+        \ for facial recognition purposes.\n\n**Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82.\n"
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      Yes:
+      - '27'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 2320,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '22':
+    id: '22'
+    taskid: 7a3f6746-6a0d-4e75-8cdc-98853a2a506e
+    type: regular
+    task:
+      id: 7a3f6746-6a0d-4e75-8cdc-98853a2a506e
+      version: -1
+      name: Set Medical Information Breached flag
+      description: Store the fact that the breach contains PII type of medical information.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: MedicalInformationBreached
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 80,\n    \"y\": 625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Medical Information breached
+      output:
+        simple: 'True'
+  '23':
+    id: '23'
+    taskid: 277ace78-242e-43c6-81b0-253b6947b005
+    type: regular
+    task:
+      id: 277ace78-242e-43c6-81b0-253b6947b005
+      version: -1
+      name: Set Health Insurance Breached flag
+      description: Store the fact that the breach contains PII type of health insurance
+        information.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: HealthInsuranceBreached
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Health insurance breached
+      output:
+        simple: 'True'
+  '24':
+    id: '24'
+    taskid: 936ce505-799c-405a-8334-ee59028fd74a
+    type: regular
+    task:
+      id: 936ce505-799c-405a-8334-ee59028fd74a
+      version: -1
+      name: Set Financial Information Breached flag
+      description: Store the fact that the breach contains PII type of financial information.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: FinancialInformationBreached
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 970,\n    \"y\": 625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Financial information breached
+      output:
+        simple: 'True'
+  '25':
+    id: '25'
+    taskid: bde39e10-364c-41e9-800d-8cf54943f240
+    type: regular
+    task:
+      id: bde39e10-364c-41e9-800d-8cf54943f240
+      version: -1
+      name: Set Account Information Breached flag
+      description: Store the fact that the breach contains PII type of account information.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: AccountInformationBreached
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1430,\n    \"y\": 625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Account information breached
+      output:
+        simple: 'True'
+  '26':
+    id: '26'
+    taskid: 3f2163fb-a087-479e-899b-b5da17f75f66
+    type: regular
+    task:
+      id: 3f2163fb-a087-479e-899b-b5da17f75f66
+      version: -1
+      name: Set Unique Identification Number Breached flag
+      description: Store the fact that the breach contains PII type of unique identification
+        number.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: UniqueIdentificationNumberBreached
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1870,\n    \"y\": 625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Unique identification number breached
+      output:
+        simple: 'True'
+  '27':
+    id: '27'
+    taskid: 021d6828-21a7-4c4e-89c9-188246a86fea
+    type: regular
+    task:
+      id: 021d6828-21a7-4c4e-89c9-188246a86fea
+      version: -1
+      name: Set Unique Biometric Data Breached flag
+      description: Store the fact that the breach contains PII type of unique biometric
+        data.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: UniqueBiometricDataBreached
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 2330,\n    \"y\": 625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Unique biometric data breached
+      output:
+        simple: 'True'
+  '28':
+    id: '28'
+    taskid: c04af34d-83eb-4f13-8bbc-61da5ec2135d
+    type: title
+    task:
+      id: c04af34d-83eb-4f13-8bbc-61da5ec2135d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1170,\n    \"y\": 1300\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '29':
+    id: '29'
+    taskid: ff8853d9-c284-46ba-831d-7cd40d9c2f58
+    type: condition
+    task:
+      id: ff8853d9-c284-46ba-831d-7cd40d9c2f58
+      version: -1
+      name: Is there any other data that can be considered PII?
+      description: "Use the below definitions of PII to discern whether breached data\
+        \ has any PII.\n**PII:** Information that can be used on its own or with other\
+        \ information to identify, contact, or locate a single person, or to identify\
+        \ an individual in context.\n**US -NIST:** Information which can be used to\
+        \ distinguish or trace an individual's identity, such as their name, social\
+        \ security number, biometric records, etc. alone, or when combined with other\
+        \ personal or identifying information which is linked or linkable to a specific\
+        \ individual, such as date and place of birth, mother’s maiden name, etc.\n\
+        **Source:** The Deloitte document has an appendix table for PII."
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      No:
+      - '28'
+      Yes:
+      - '30'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 3080,\n    \"y\": 625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '30':
+    id: '30'
+    taskid: 11c8e13f-2e0a-4595-8fb1-07b8ae8dcef5
+    type: regular
+    task:
+      id: 11c8e13f-2e0a-4595-8fb1-07b8ae8dcef5
+      version: -1
+      name: Set Other PII Data Breached flag
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      append: {}
+      key:
+        simple: OtherPIIBreached
+      stringify: {}
+      value:
+        simple: 'True'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 2680,\n    \"y\": 800\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Other PII data breached
+      output:
+        simple: 'True'
+view: "{\n  \"linkLabelsPosition\": {\n    \"14_29_#default#\": 0.15,\n    \"15_29_#default#\"\
+  : 0.15,\n    \"21_29_#default#\": 0.26,\n    \"29_28_No\": 0.1,\n    \"29_30_Yes\"\
+  : 0.38,\n    \"3_29_#default#\": 0.1,\n    \"4_29_#default#\": 0.1,\n    \"5_29_#default#\"\
+  : 0.12\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1280,\n \
+  \     \"width\": 3380,\n      \"x\": 80,\n      \"y\": 85\n    }\n  }\n}"
+inputs: []
+outputs:
+- contextPath: PIICompromised
+  description: Store the fact that PII compromised.
+  type: boolean
+- contextPath: HealthInsuranceBreached
+  description: Store the fact that the breach contains PII type of health insurance
+    information.
+  type: unknown
+- contextPath: MedicalInformationBreached
+  description: Store the fact that the breach contains PII type of medical information.
+  type: unknown
+- contextPath: FinancialInformationBreached
+  description: Store the fact that the breach contains PII type of financial information.
+  type: unknown
+- contextPath: AccountInformationBreached
+  description: Store the fact that the breach contains PII type of account information.
+  type: unknown
+- contextPath: UniqueIdentificationNumberBreached
+  description: Store the fact that the breach contains PII type of unique identification
+    number.
+  type: unknown
+- contextPath: UniqueBiometricDataBreached
+  description: Store the fact that the breach contains PII type of unique biometric
+    data.
+  type: unknown
+sourceplaybookid: Breach Playbook - PII Check Playbook - California
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
