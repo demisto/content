@@ -1,5 +1,6 @@
 from CommonServerPython import *
-from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main
+from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main,\
+    preprocess_incidents_fields_list
 
 incident1 = {
     'id': 1,
@@ -34,11 +35,11 @@ def get_args():
 def test_build_query(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args)
     query = build_incidents_query("Extra part", "Phishing,Malware", "modified", "2019-01-10", "3 days ago",
-                                  "status,closeReason")
+                                  ["status", "closeReason"])
     assert query == '(Extra part) and (type:("Phishing" "Malware")) and (modified:>="2019-01-10T00:00:00") ' \
                     'and (modified:<"3 days ago") and (status:* and closeReason:*)'
     query = build_incidents_query("Extra part", "Phishing", "modified", "2019-01-10", "3 days ago",
-                                  "status")
+                                  ["status"])
     assert query == '(Extra part) and (type:("Phishing")) and (modified:>="2019-01-10T00:00:00") ' \
                     'and (modified:<"3 days ago") and (status:*)'
 
@@ -115,3 +116,8 @@ def test_main(mocker):
     args.pop('fromDate')
     entry = main()
     assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
+
+
+def test_preprocess_incidents_fields_list():
+    incidents_fields = ['incident.emailbody', ' incident.emailsbuject']
+    assert preprocess_incidents_fields_list(incidents_fields) == ['emailbody', 'emailsbuject']

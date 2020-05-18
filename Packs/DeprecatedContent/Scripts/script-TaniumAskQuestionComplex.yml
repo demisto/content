@@ -1,6 +1,6 @@
 commonfields:
   id: TaniumAskQuestionComplex
-  version: 1
+  version: -1
 name: TaniumAskQuestionComplex
 script: |-
   // An example script for asking a complex question with filter and select-filter
