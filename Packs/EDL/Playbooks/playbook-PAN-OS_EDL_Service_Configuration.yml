@@ -11,7 +11,10 @@ description: "This single run playbook enables Cotrex xSOAR built-in External Dy
   \ as well). \nit will sort the indicators to two EDLs, IP and URL if both indicators\
   \ types exist in the query or one EDL if there is a single indicator type that exists\
   \ in the query. \nIt will then create EDL Objects Directing to the indicator lists\
-  \ and firewall policy rules in PAN-OS. "
+  \ and firewall policy rules in PAN-OS. \n- It is recommended to configure a dedicated\
+  \ EDL Service instance for the usage of this playbook.\n- In case it is needed to\
+  \ edit or update the EDL query after this playbook run, use the panorama-edit-edl\
+  \ command and panorama integration to update the URL containing the indicator query syntax."
 starttaskid: "0"
 tasks:
   "0":
