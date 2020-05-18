@@ -42,7 +42,7 @@ class Client(BaseClient):
         return self._http_request('GET', url_suffix='', full_url=self._base_url, ok_codes=(200, 201, 206))
 
 
-def parse_response(response: dict) -> list:
+def parse_response(response: Tuple[List[Any], Dict[Any, Any]]) -> list:
     """Parse the objects retrieved from the feed.
 
     Returns:
@@ -52,15 +52,16 @@ def parse_response(response: dict) -> list:
     indicators_objects = [item for item in objects if item.get('type') == 'indicator']  # retrieve only indicators
 
     indicators = []
-    for indicator_object in indicators_objects:
-        pattern = indicator_object.get('pattern')
-        for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
-            if key in pattern:  # retrieve only Demisto indicator types
-                indicators.append({
-                    "value": indicator_object.get('name'),
-                    "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
-                    "rawJSON": indicator_object,
-                })
+    if indicators_objects:
+        for indicator_object in indicators_objects:
+            pattern = indicator_object.get('pattern')
+            for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
+                if key in pattern:  # retrieve only Demisto indicator types
+                    indicators.append({
+                        "value": indicator_object.get('name'),
+                        "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
+                        "rawJSON": indicator_object,
+                    })
 
     return indicators
 
@@ -103,7 +104,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, D
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
-    response = client.build_iterator()
+    response = client.get_indicators()
     indicators = parse_response(response)
     limited_indicators = indicators[:limit]
 
