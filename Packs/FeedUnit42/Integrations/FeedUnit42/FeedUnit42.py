@@ -33,7 +33,7 @@ class Client(BaseClient):
         super().__init__(base_url=f'{url}playbooks/collections/{collection}/objects/', verify=verify,
                          proxy=handle_proxy(), headers={'Authorization': f'Token {api_key}'})
 
-    def get_indicators(self) -> Tuple[List, Dict]:
+    def get_indicators(self) -> dict:
         """Retrieves all entries from the feed.
 
         Returns:
@@ -42,7 +42,7 @@ class Client(BaseClient):
         return self._http_request('GET', url_suffix='', full_url=self._base_url, ok_codes=(200, 201, 206))
 
 
-def parse_response(response: Tuple[List[Any], Dict[Any, Any]]) -> list:
+def parse_response(response: dict) -> list:
     """Parse the objects retrieved from the feed.
 
     Returns:
