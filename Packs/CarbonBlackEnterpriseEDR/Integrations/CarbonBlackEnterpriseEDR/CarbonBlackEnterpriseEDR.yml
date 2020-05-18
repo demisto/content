@@ -1118,6 +1118,99 @@ script:
     description: Remove report with report_id.
     execution: false
     name: cb-eedr-report-remove
+  - arguments:
+    - default: false
+      description: The report title.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The report description.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: The report tags.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: The report severity.
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      description: IOC's of type ipv4.
+      isArray: false
+      name: ipv4
+      required: false
+      secret: false
+    - default: false
+      description: 'The ioc query for the report, for example: (netconn_ipv4:2.2.2.2)'
+      isArray: false
+      name: ioc_query
+      required: false
+      secret: false
+    - default: false
+      description: 'The report timestamp. For example: 2020-01-19T09:16:16Z'
+      isArray: false
+      name: timestamp
+      required: true
+      secret: false
+    - default: false
+      description: IOC's of type ipv6.
+      isArray: false
+      name: ipv6
+      required: false
+      secret: false
+    - default: false
+      description: IOC's of type MD5.
+      isArray: false
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: IOC's of type DNS.
+      isArray: false
+      name: dns
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new watchlist report.
+    execution: false
+    name: cb-eedr-report-create
+    outputs:
+    - contextPath: CarbonBlackEEDR.Report.ID
+      description: The report ID.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.IOCs
+      description: The report IOC's
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Link
+      description: Report link.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Severity
+      description: Report severity.
+      type: Number
+    - contextPath: CarbonBlackEEDR.Report.Timestamp
+      description: The report timestamp.
+      type: Date
+    - contextPath: CarbonBlackEEDR.Report.Title
+      description: The report title.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Tags
+      description: Report tags.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Visibility
+      description: Report visibility.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Description
+      description: The report description.
+      type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true

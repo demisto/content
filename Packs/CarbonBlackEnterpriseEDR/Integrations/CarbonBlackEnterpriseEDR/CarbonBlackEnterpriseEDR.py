@@ -22,6 +22,14 @@ def convert_unix_to_timestamp(timestamp):
     return ''
 
 
+def convert_date_to_unix(timestamp):
+    """
+    Convert a given string with MM/DD/YYYY format to millis since epoch
+    """
+    d = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    return int(d.strftime("%S")) * 1000
+
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -305,18 +313,18 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_report_request(self, title: str, description: str, tags: Union[list, str], severity: int,
-                              iocs: dict) -> Dict:
+                              iocs: dict, timestamp: int) -> Dict:
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports'
 
         body = assign_params(
-            titls=title,
+            title=title,
             description=description,
             severity=severity,
-            iocs_v2=iocs,
-            tags=tags
+            iocs=iocs,
+            tags=tags,
+            timestamp=timestamp
         )
-
         return self._http_request('POST', suffix_url, json_data=body)
 
     def ignore_report_request(self, report_id: str) -> Dict:
@@ -816,30 +824,28 @@ def create_report_command(client: Client, args: dict) -> CommandResults:
     title = args.get('title')
     description = args.get('description')
     tags = argToList(args.get('tags'))
-    ioc_list = argToList(args.get('ioc_list'))
-    ioc_query = args.get('ioc_query')
-    severity = args.get('severity')
+    ipv4 = argToList(args.get('ipv4'))
+    ipv6 = argToList(args.get('ipv6'))
+    dns = argToList(args.get('dns'))
+    md5 = argToList(args.get('md5'))
+    ioc_query = argToList(args.get('ioc_query'))
+    severity = int(args.get('severity'))
+    timestamp = convert_date_to_unix(args.get('timestamp'))
     ioc_contents = []
-
-    if ioc_list:
-        match_type = 'equality'
-        values = ioc_list
-
-    elif ioc_query:
-        match_type = 'query'
-        values = ioc_query
-
     iocs = assign_params(
-        match_type=match_type,
-        values=values
+        ipv4=ipv4,
+        ipv6=ipv6,
+        dns=dns,
+        md5=md5,
+        query=ioc_query
     )
-
     headers = ['ID', 'Title', 'Timestamp', 'Description', 'Severity', 'Link', 'IOCs_v2', 'Tags', 'Visibility']
-    result = client.create_report_request(title, description, tags, severity, iocs)
+    result = client.create_report_request(title, description, tags, severity, iocs, timestamp)
 
     contents = {
         'ID': result.get('id'),
         'Timestamp': convert_unix_to_timestamp(result.get('timestamp')),
+        'Description': result.get('description'),
         'Title': result.get('title'),
         'Severity': result.get('severity'),
         'Tags': result.get('tags'),
@@ -850,6 +856,7 @@ def create_report_command(client: Client, args: dict) -> CommandResults:
     context = {
         'ID': result.get('id'),
         'Timestamp': convert_unix_to_timestamp(result.get('timestamp')),
+        'Description': result.get('description'),
         'Title': result.get('title'),
         'Severity': result.get('severity'),
         'Tags': result.get('tags'),
@@ -872,7 +879,7 @@ def create_report_command(client: Client, args: dict) -> CommandResults:
     ioc_output = tableToMarkdown(f'The IOCs for the report', ioc_contents, removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Report',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=context,
         readable_output=readable_output + ioc_output,
         raw_response=result
@@ -912,7 +919,7 @@ def remove_report_command(client: Client, args: dict) -> str:
     report_id = args.get('report_id')
     client.remove_report_request(report_id)
 
-    return f'The report "{report_id}"" was deleted successfully.'
+    return f'The report "{report_id}" was deleted successfully.'
 
 # def fetch_incidents(client, last_run, first_fetch_time):
 #     """
