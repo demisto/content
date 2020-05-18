@@ -1,0 +1,301 @@
+id: ExtractDomainFromEmailTest
+version: -1
+name: ExtractDomainFromEmailTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d3a38426-0668-4662-8a3c-e6326d1c97a8
+    type: start
+    task:
+      id: d3a38426-0668-4662-8a3c-e6326d1c97a8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: be513f35-161b-40d7-8b4c-8f1e1d509c6a
+    type: regular
+    task:
+      id: be513f35-161b-40d7-8b4c-8f1e1d509c6a
+      version: -1
+      name: Clean Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 5d18e553-13d0-42b1-884e-de8629474f82
+    type: regular
+    task:
+      id: 5d18e553-13d0-42b1-884e-de8629474f82
+      version: -1
+      name: Extract Domain from Email 2
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: Domain2=
+      input:
+        simple: JUSTAREASONABLEADDRESS@mail-out.nom.nom-mon.net
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 760430b4-4580-41d7-8a3c-ce9384a7e3f2
+    type: condition
+    task:
+      id: 760430b4-4580-41d7-8a3c-ce9384a7e3f2
+      version: -1
+      name: Test context Domain2
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain2}
+            iscontext: true
+          right:
+            value:
+              simple: nom-mon.net
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: b7d30f89-8de8-4a6e-8e74-d80d55ca1755
+    type: title
+    task:
+      id: b7d30f89-8de8-4a6e-8e74-d80d55ca1755
+      version: -1
+      name: Successfully Extracted All Domains
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: b4c9d4ba-ba80-4dc7-80d6-3520c7c109a1
+    type: regular
+    task:
+      id: b4c9d4ba-ba80-4dc7-80d6-3520c7c109a1
+      version: -1
+      name: Extract Domain from Email 3
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: Domain3=
+      input:
+        simple: example@lol_lol.lol.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: a9f8fa77-ef88-4759-8f89-653b1ad163b8
+    type: regular
+    task:
+      id: a9f8fa77-ef88-4759-8f89-653b1ad163b8
+      version: -1
+      name: Extract Domain from Email 1
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      extend-context:
+        simple: Domain1=
+      input:
+        simple: emojiemail@xn--i-7iq.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ae4652f1-133c-4e8f-8628-4468708344cf
+    type: condition
+    task:
+      id: ae4652f1-133c-4e8f-8628-4468708344cf
+      version: -1
+      name: Test context Domain3
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain3}
+            iscontext: true
+          right:
+            value:
+              simple: lol.com
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: de8cc310-834e-4306-898b-7eb731c78c1b
+    type: condition
+    task:
+      id: de8cc310-834e-4306-898b-7eb731c78c1b
+      version: -1
+      name: Test context Domain1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain1}
+            iscontext: true
+          right:
+            value:
+              simple: xn--i-7iq.com
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
