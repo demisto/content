@@ -68,6 +68,7 @@
         {
             "integrations": "GoogleKubernetesEngine",
             "playbookID": "GoogleKubernetesEngine_Test",
+            "timeout": 1200,
             "fromversion": "5.5.0"
         },
         {
