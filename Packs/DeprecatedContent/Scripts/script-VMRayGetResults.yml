@@ -1,5 +1,5 @@
 commonfields:
-  id: 9364c36f-b1d6-4233-88c2-75008b106c31
+  id: vmray_getResults
   version: -1
 name: vmray_getResults
 script: |-
