@@ -312,3 +312,5 @@ outputs:
 - contextPath: Severity
   description: The severity level associated with the highest indicator score.
   type: string
+tests:
+  - No tests
