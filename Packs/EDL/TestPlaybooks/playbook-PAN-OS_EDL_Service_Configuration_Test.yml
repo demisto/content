@@ -1,4 +1,4 @@
-description: ''
+description: 'EDL Service configuration Test'
 id: PAN-OS EDL Service Configuration Test
 version: -1
 fromversion: 5.5.0
