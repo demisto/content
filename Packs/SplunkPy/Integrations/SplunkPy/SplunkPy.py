@@ -573,7 +573,7 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(proxy):
+def splunk_edit_notable_event_command():
     baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
@@ -706,7 +706,7 @@ def main():
     if demisto.command() == 'splunk-submit-event':
         splunk_submit_event_command(service)
     if demisto.command() == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(proxy)
+        splunk_edit_notable_event_command()
     if demisto.command() == 'splunk-parse-raw':
         splunk_parse_raw_command()
     if demisto.command() == 'splunk-submit-event-hec':
