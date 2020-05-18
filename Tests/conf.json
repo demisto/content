@@ -2750,7 +2750,6 @@
     ],
     "skipped_tests": {
         "Test-IsMaliciousIndicatorFound": "Issue 24398",
-        "RedLockTest": "Issue 24600",
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
