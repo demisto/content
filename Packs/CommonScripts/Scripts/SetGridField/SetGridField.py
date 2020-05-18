@@ -83,19 +83,35 @@ def validate_entry_context(entry_context: Any, keys: List[str]):
 
     Raises:
         ValueError: If structure is not valid.
+        data_type (str): The type of information in the context path.
     """
     exception_msg = "Not valid entry context path - dict[str,str] or list[dict[str,str]]"
     if not isinstance(entry_context, list):
         raise ValueError(exception_msg)
 
+    data_type = 'dicts'
+
+    has_seen_dict = False
     for item in entry_context:
         if not isinstance(item, dict):
-            raise ValueError(exception_msg)
+            if not has_seen_dict:
+                break
+            else:
+                raise ValueError(exception_msg)
 
+        has_seen_dict = True
         for key, value in item.items():
             if key in keys:
                 if not isinstance(value, (str, int, float, bool)):
                     raise ValueError(exception_msg)
+
+    if not has_seen_dict:
+        data_type = 'list'
+        for item in entry_context:
+            if not isinstance(item, (str, int, float, bool)):
+                raise ValueError(exception_msg)
+
+    return data_type
 
 
 def build_grid(context_path: str, keys: List[str], columns: List[str]) -> pd.DataFrame:
@@ -117,10 +133,14 @@ def build_grid(context_path: str, keys: List[str], columns: List[str]) -> pd.Dat
     # Retrieve entry context data
     entry_context_data = demisto.dt(demisto.context(), context_path)
     # Validate entry context structure
-    validate_entry_context(entry_context_data, keys)
+    data_type = validate_entry_context(entry_context_data, keys)
     # Building new Grid
-    if len(entry_context_data) > 1:
-        # Handle entry context list option
+    if data_type == 'list':
+        # Handle entry context as list of value
+        table = pd.DataFrame(entry_context_data)
+        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
+    elif len(entry_context_data) > 1:
+        # Handle entry context as list of dicts
         entry_context_data = [filter_dict(item, keys, len(columns)) for item in entry_context_data]
         table = pd.DataFrame(entry_context_data)
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)

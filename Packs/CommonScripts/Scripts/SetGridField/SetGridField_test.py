@@ -27,7 +27,9 @@ def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dic
                          argvalues=[
                              ([{'a': 'val', 'b': 'val'}], ['a', 'b'], False),
                              ([{'a': [], 'b': 'val'}], ['a', 'b'], True),
-                             ([{'a': [], 'b': 'val'}], ['b'], False)
+                             ([{'a': [], 'b': 'val'}], ['b'], False),
+                             (['a', 'b', 1, False], ['b'], False),
+                             (['a', 'b', 1, False, []], ['*'], True),
                          ])
 def test_validate_entry_context(entry_context: dict, keys: list, raise_exception: bool):
     from SetGridField import validate_entry_context
@@ -44,6 +46,7 @@ def test_validate_entry_context(entry_context: dict, keys: list, raise_exception
                          argvalues=[
                              (["name", "value"], ["col1", "col2"], "context_entry_list.json", "expected_list_grid.json"),
                              (["*"], ["col1", "col2"], "context_entry_dict.json", "expected_dict_grid.json"),
+                             (["*"], ["col1"], "context_entry_list_of_values.json", "expected_list_of_values_grid.json"),
                          ])
 def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json: str, expected_json: str):
     import SetGridField
