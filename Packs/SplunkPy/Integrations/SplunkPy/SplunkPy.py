@@ -13,6 +13,8 @@ import requests
 import urllib3
 import io
 import re
+from httplib import IncompleteRead
+from tempfile import NamedTemporaryFile
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -502,12 +504,32 @@ def parse_time_to_minutes():
 
 def splunk_get_indexes_command(service):
     indexes = service.indexes  # type: ignore
-    indexesNames = []
-    for index in indexes:
-        index_json = {'name': index.name, 'count': index["totalEventCount"]}
-        indexesNames.append(index_json)
-    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames),
-                     'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
+    indexes_names = []
+    try:
+        for index in indexes:
+            index_json = {'name': index.name, 'count': index["totalEventCount"]}
+            indexes_names.append(index_json)
+    except IncompleteRead as e:
+        partial_xml_file = NamedTemporaryFile(delete=False)
+        partial_xml_file.write(str(e.partial))
+        partial_xml_file.close()
+        try:
+            tree = ET.iterparse(partial_xml_file.name)
+            for _, element in tree:
+                tag = element.tag
+                value = element.text
+                if tag == '{http://www.w3.org/2005/Atom}title' and value != 'indexes':
+                    indexes_names.append({
+                        'name': value
+                    })
+        except ET.ParseError:
+            pass
+    demisto.results({
+        'Type': 1,
+        'ContentsFormat': 'json',
+        'Contents': json.dumps(indexes_names),
+        'HumanReadable': tableToMarkdown('Splunk Indexes names', indexes_names)
+    })
 
 
 def splunk_submit_event_command(service):

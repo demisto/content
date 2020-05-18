@@ -243,45 +243,33 @@ def test_get_indexes(monkeypatch, mocker):
     class IndexIterable():
         def __iter__(self):
             raise IncompleteRead(
-                partial="""<?xml version="1.0" encoding="UTF-8"?>
-<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
-<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
-  <title>indexes</title>
-  <author>
-    <name>Splunk</name>
-  </author>
-  <link href="/services/data/indexes/_reload" rel="_reload"/>
-  <link href="/services/data/indexes/_acl" rel="_acl"/>
-  <opensearch:totalResults>444</opensearch:totalResults>
-  <opensearch:startIndex>0</opensearch:startIndex>
-  <s:messages/>
-  <entry>
-    <title>_audit</title>
-    <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="alternate"/>
-    <author>
-      <name>nobody</name>
-    </author>
-    <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="list"/>
-    <link href="/servicesNS/nobody/system/data/indexes/_audit/_reload" rel="_reload"/>
-    <content type="text/xml">
-      <s:dict>
-        <s:key name="archiver.enableDataArchive">0</s:key>
-      </s:dict>
-    </content>
-  </entry>
-  <entry>
-    <title>_internal</title>
-    <link href="/servicesNS/nobody/system/data/indexes/_internal" rel="alternate"/>
-    <author>
-      <name>nobody</name>
-    </author>
-    <link href="/servicesNS/nobody/system/data/indexes/_internal" rel="list"/>
-    <link href="/servicesNS/nobody/system/data/indexes/_internal/_reload" rel="_reload"/>
-    <content type="text/xml">
-      <s:dict>
-        <s:key name="archiver.enableDataArchive">0</s:key>
-        <s:key name="archiver.maxDataArchiveRetentionPeriod">0</s:key>""")
+                partial="""<?xml version="1.0" encoding="UTF-8"?> <!--This is to override browser formatting; see 
+                server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .--> <?xml-stylesheet type="text/xml" 
+                href="/static/atom.xsl"?> <feed xmlns="http://www.w3.org/2005/Atom" 
+                xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"> 
+                <title>indexes</title> <author> <name>Splunk</name> </author> <link 
+                href="/services/data/indexes/_reload" rel="_reload"/> <link href="/services/data/indexes/_acl" 
+                rel="_acl"/> <opensearch:totalResults>444</opensearch:totalResults> 
+                <opensearch:startIndex>0</opensearch:startIndex> <s:messages/> <entry> <title>_audit</title> <link 
+                href="/servicesNS/nobody/system/data/indexes/_audit" rel="alternate"/> <author> <name>nobody</name> 
+                </author> <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="list"/> <link 
+                href="/servicesNS/nobody/system/data/indexes/_audit/_reload" rel="_reload"/> <content 
+                type="text/xml"> <s:dict> <s:key name="archiver.enableDataArchive">0</s:key> </s:dict> </content> 
+                </entry> <entry> <title>_internal</title> <link 
+                href="/servicesNS/nobody/system/data/indexes/_internal" rel="alternate"/> <author> 
+                <name>nobody</name> </author> <link href="/servicesNS/nobody/system/data/indexes/_internal" 
+                rel="list"/> <link href="/servicesNS/nobody/system/data/indexes/_internal/_reload" rel="_reload"/> 
+                <content type="text/xml"> <s:dict> <s:key name="archiver.enableDataArchive">0</s:key> <s:key 
+                name="archiver.maxDataArchiveRetentionPeriod">0</s:key>""")
 
     monkeypatch.setattr(service, 'indexes', IndexIterable())
     splunk.splunk_get_indexes_command(service)
