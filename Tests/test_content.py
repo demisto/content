@@ -312,7 +312,8 @@ def run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, pla
     succeed = run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
                              test_options, slack, circle_ci, build_number, server_url, build_name,
                              prints_manager, thread_index=thread_index, is_mock_run=True)
-    proxy.stop()
+    proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
+    proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
         proxy.move_mock_file_to_repo(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
 
@@ -333,7 +334,7 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
                                           is_mock_run=True, thread_index=thread_index)
         # use results
-        proxy.stop()
+        proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
         if status == PB_Status.COMPLETED:
             succeed_message = 'PASS: {} succeed'.format(test_message)
             prints_manager.add_print_job(succeed_message, print_color, thread_index, LOG_COLORS.GREEN)
@@ -716,6 +717,15 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
         prints_manager.execute_thread_prints(thread_index)
         return
+
+    # turn off telemetry on the AMI instance
+    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
+    body, status_code, headers = demisto_client.generic_request_func(self=client, method='POST',
+                                                                     path='/telemetry?status=notelemetry')
+
+    if status_code != 200:
+        print_error('Request to turn off telemetry failed with status code "{}"\n{}'.format(status_code, body))
+        sys.exit(1)
 
     proxy = None
     if is_ami:

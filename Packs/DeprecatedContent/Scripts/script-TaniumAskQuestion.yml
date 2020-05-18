@@ -1,6 +1,6 @@
 commonfields:
   id: TaniumAskQuestion
-  version: 1
+  version: -1
 name: TaniumAskQuestion
 deprecated: true
 script: |-
