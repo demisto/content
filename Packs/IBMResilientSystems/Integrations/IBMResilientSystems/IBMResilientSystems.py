@@ -15,7 +15,7 @@ logging.basicConfig()
 requests.packages.urllib3.disable_warnings()
 try:
     resilient.co3.LOG.disable(logging.ERROR)
-except:
+except Exception:
     # client with no co3 instance should pass this exception
     pass
 
