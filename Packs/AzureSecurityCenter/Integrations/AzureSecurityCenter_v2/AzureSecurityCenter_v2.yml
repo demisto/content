@@ -33,6 +33,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use a self-deployed Azure Application
+  name: self_deployed
+  required: false
+  type: 8
 description: Unified security management and advanced threat protection across hybrid
   cloud workloads.
 display: Azure Security Center v2
