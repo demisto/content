@@ -361,7 +361,7 @@ view: |-
 inputs:
 - key: MailTo
   value:
-    simple: 
+    simple:
   required: true
   description: Email address to mail the report to.
 - key: ReportName
@@ -381,3 +381,5 @@ inputs:
   description: Query used to search for incidents. Default query will search for all
     incidents closed within the last hour.
 outputs: []
+tests:
+  - Send Investigation Summary Reports - Test
