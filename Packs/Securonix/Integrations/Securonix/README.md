@@ -1176,5 +1176,6 @@ Creates an incident. For more information about the required arguments, see the 
 | Users | Open | Policy | 30134 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | {url} |
 
 ## Limitations
-The `opened` argument for fetching and listing incidents is currently not filtering the only the opened incidents.
-This is an open issue on the vendor side, currently happening on SNYPR Versions 6.2, 6,3.
+  - The `opened` argument for fetching and listing incidents is currently not filtering the only the opened incidents.
+    This is an open issue on the vendor side, currently happening on SNYPR Versions 6.2, 6,3.
+  - Every *fetch incidents* only the 10 most recent incidents are going to be fetched.
