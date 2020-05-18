@@ -7,6 +7,11 @@
             "playbookID": "Mitre Attack List 10 Indicators Feed Test"
         },
         {
+            "integrations": "Unit42 Feed",
+            "playbookID": "Unit42 Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
