@@ -42,6 +42,17 @@ args:
   name: sort_by
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Set to 'false' to unpack nested elements.
+  isArray: false
+  name: skip_nested_elements
+  predefined:
+  - 'false'
+  - 'true'
+  required: false
+  secret: false
 comment: Creates a Grid table from items or key-value pairs.
 commonfields:
   id: SetGridField
