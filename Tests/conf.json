@@ -2749,6 +2749,7 @@
         }
     ],
     "skipped_tests": {
+        "AbuseIPDB Test": "Issue 22658",
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
