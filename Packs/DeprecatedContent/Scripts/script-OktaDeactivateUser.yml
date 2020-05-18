@@ -1,10 +1,10 @@
 commonfields:
-  id: 10cb3486-48f3-4d93-88af-b6be84ffd432
+  id: OktaDeactivateUser
   version: -1
-name: OktaGetGroups
+name: OktaDeactivateUser
 script: |2
 
-  resp = demisto.executeCommand("okta-get-groups", demisto.args())
+  resp = demisto.executeCommand("okta-deactivate-user", demisto.args())
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -20,15 +20,15 @@ type: python
 subtype: python2
 tags:
 - okta
-comment: Get all user groups
+comment: Deactivate user
 enabled: true
 args:
 - name: username
   required: true
   default: true
-  description: Username in Okta to get groups for
+  description: Username in Okta to deactivate
 scripttarget: 0
 deprecated: true
 dependson:
   must:
-  - okta-get-groups
+  - okta-deactivate-user
