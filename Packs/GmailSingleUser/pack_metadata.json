@@ -18,6 +18,11 @@
     "deprecated": false,
     "useCases": [],
     "keywords": [],
-    "dependencies": {},
+    "dependencies": {
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        }
+    },
     "displayedImages": []
 }
