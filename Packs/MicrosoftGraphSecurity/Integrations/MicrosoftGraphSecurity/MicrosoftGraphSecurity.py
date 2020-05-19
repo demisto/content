@@ -116,7 +116,6 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
     last_run = demisto.getLastRun()
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    now = datetime.now().strftime(timestamp_format)
     if not last_run:  # if first time running
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
@@ -149,8 +148,8 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
             last_incident_time = demisto_incidents[-1].get('occurred')
             new_last_run.update({'time': last_incident_time})
 
-    # if not demisto_incidents:
-    #     new_last_run.update({'time': now})
+    if not demisto_incidents:
+        new_last_run.update({'time': time_to})
     demisto.setLastRun(new_last_run)
     return demisto_incidents
 
