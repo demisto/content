@@ -116,7 +116,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
   - To enable calling capabilities on the Bot enter the same URL to the **Calling endpoints** section.
 14. From the left-side navigation pane, under Finish, click **Test and distribute**.
 15. To download the new bot file, which now includes App Details, click **Download**.
-16. Navigate to Store, and click **Upload a custom app > Upload for <yourOrganization>**, and select the ZIP file you downloaded.
+16. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
 
 ### Grant the Demisto Bot Permissions in Microsoft Graph
 
