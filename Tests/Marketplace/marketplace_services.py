@@ -441,7 +441,8 @@ class Pack(object):
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
             else:
-                raise Exception(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
+                print_warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
+                continue
 
         return dependencies_data_result
 
@@ -839,7 +840,8 @@ class Pack(object):
         finally:
             return task_status, user_metadata
 
-    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path):
+    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
+                        packs_dependencies_mapping):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -850,6 +852,7 @@ class Pack(object):
             public url.
             author_image (str): uploaded public gcs path to author image.
             index_folder_path (str): downloaded index folder directory path.
+            packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -859,6 +862,11 @@ class Pack(object):
 
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
+
+            # todo change this override late
+            user_metadata['dependencies'] = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
+            user_metadata['displayedImages'] = packs_dependencies_mapping.get(self._pack_name, {}).get(
+                'displayedImages', [])
 
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),

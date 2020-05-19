@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.constants import INTEGRATIONS_DIR, SCRIPTS_DIR,
     DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, INDICATOR_TYPES_DIR
 from demisto_sdk.commands.common.tools import print_error, print_warning, get_last_release_version, \
     filter_packagify_changes, is_file_path_in_pack, \
-    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
+    run_command, server_version_compare, old_get_release_notes_file_path, old_get_latest_release_notes_text, get_remote_file
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 
 CONTENT_LIB_PATH = "./"
@@ -109,9 +109,9 @@ class Content(object):  # pylint: disable=useless-object-inheritance
         :param data: object data
         :return: raw release notes or None in case of an error.
         """
-        release_note_path = get_release_notes_file_path(file_path)
+        release_note_path = old_get_release_notes_file_path(file_path)
 
-        return get_latest_release_notes_text(release_note_path)
+        return old_get_latest_release_notes_text(release_note_path)
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
@@ -178,7 +178,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
                     if ans is None:
                         print_error("Error:\n[{}] is missing releaseNotes entry, Please add it under {}".format(
-                            path, get_release_notes_file_path(path)))
+                            path, old_get_release_notes_file_path(path)))
                         self.is_missing_release_notes = True
                     elif ans:
                         new_count += 1
