@@ -6,7 +6,8 @@
 - Fixed an issue where the test module did not work as expected.
 - Added the *Fetch limit* parameter to the instance configuration, which specified the maximum number of results to fetch.
 - Added the *results_limit* argument to the ***search-tickets*** command, which specified the maximum number of results to return.
-
+- Improved ticket history parsing
+- Improved ticket links parsing
 
 
 ## [20.5.0] - 2020-05-12
