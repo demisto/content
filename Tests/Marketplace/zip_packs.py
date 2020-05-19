@@ -8,7 +8,7 @@ from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, 
     PACKS_FOLDER, IGNORED_PATHS, Metadata
 
 from Tests.Marketplace.upload_packs import init_storage_client, extract_packs_artifacts
-from demisto_sdk.commands.common.tools import print_error
+from demisto_sdk.commands.common.tools import print_error, LooseVersion
 
 
 def option_handler():
@@ -42,13 +42,11 @@ def zip_packs(storage_bucket, packs_artifacts_path, destination_path):
         pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack.name)
         blobs = list(storage_bucket.list_blobs(prefix=pack_path))
         if blobs:
-            for blob in blobs:
-                print(blob.name)
-            blob = blobs[0]
+            blob = get_latest_version_blob(blobs)
             download_path = os.path.join(destination_path, f"{pack.name}.zip")
             zipped_packs.append({pack.name: download_path})
             print(f'Downloading pack: {pack.name}')
-            blob.cache_control = "no-cache"  # index zip should never be cached in the memory, should be updated version
+            blob.cache_control = "no-cache"
             blob.reload()
             blob.download_to_filename(download_path)
 
@@ -70,6 +68,14 @@ def zip_packs(storage_bucket, packs_artifacts_path, destination_path):
             shutil.rmtree(file_)
         else:
             os.remove(file_)
+
+
+def get_latest_version_blob(blobs):
+    blobs = [b for b in blobs if b.name.endswith('.zip')]
+    blobs = sorted(blobs, key=lambda b: LooseVersion(os.path.basename(os.path.dirname(b.name))), reverse=True)
+    blob = blobs[0]
+
+    return blob
 
 
 def main():
