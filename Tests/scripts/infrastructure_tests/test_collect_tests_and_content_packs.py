@@ -116,7 +116,7 @@ class TestUtils(object):
 
     @staticmethod
     def mock_get_modified_files(mocker, modified_files_list, is_conf_json=False):
-        return mocker.patch('Tests.scripts.configure_tests.get_modified_files',
+        return mocker.patch('Tests.scripts.collect_tests_and_content_packs.get_modified_files',
                             return_value=create_get_modified_files_ret(
                                 modified_files_list=modified_files_list,
                                 is_conf_json=is_conf_json
@@ -501,8 +501,8 @@ def test_skipped_integration_should_not_be_tested(mocker):
     - ensure IntegrationA is skipped
     - ensure the validation not failing
     """
-    from Tests.scripts import configure_tests
-    configure_tests._FAILED = False  # reset the FAILED flag
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
     # Given
     # - conf.json file with IntegrationA is skipped
@@ -535,7 +535,7 @@ def test_skipped_integration_should_not_be_tested(mocker):
     assert 'integration_a' not in filtered_tests
 
     # - ensure the validation not failing
-    assert not configure_tests._FAILED
+    assert not collect_tests_and_content_packs._FAILED
 
 
 def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
@@ -550,8 +550,8 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
     Then
     - ensure the validation is failing
     """
-    from Tests.scripts import configure_tests
-    configure_tests._FAILED = False  # reset the FAILED flag
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
     try:
         # Given
@@ -584,7 +584,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
 
         # Then
         # - ensure the validation is failing
-        assert configure_tests._FAILED
+        assert collect_tests_and_content_packs._FAILED
     finally:
         # delete the mocked files
         TestUtils.delete_files([
@@ -592,7 +592,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         ])
 
         # reset _FAILED flag
-        configure_tests._FAILED = False
+        collect_tests_and_content_packs._FAILED = False
 
 
 def test_conf_has_modified(mocker):
@@ -606,8 +606,8 @@ def test_conf_has_modified(mocker):
     Then
     - ensure the validation not failing
     """
-    from Tests.scripts import configure_tests
-    configure_tests._FAILED = False  # reset the FAILED flag
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
     try:
         # Given
@@ -639,10 +639,10 @@ def test_conf_has_modified(mocker):
 
         # Then
         # - ensure the validation not failing
-        assert not configure_tests._FAILED
+        assert not collect_tests_and_content_packs._FAILED
     finally:
         # reset _FAILED flag
-        configure_tests._FAILED = False
+        collect_tests_and_content_packs._FAILED = False
 
 
 def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocker):
@@ -662,8 +662,8 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
     - ensure test_playbook_a will run/returned
     - ensure the validation not failing
     """
-    from Tests.scripts import configure_tests
-    configure_tests._FAILED = False  # reset the FAILED flag
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
     # Given
     # - integration_a exists
@@ -708,7 +708,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         assert 'test_playbook_a' in filtered_tests
 
         # - ensure the validation not failing
-        assert not configure_tests._FAILED
+        assert not collect_tests_and_content_packs._FAILED
     finally:
         # delete the mocked files
         TestUtils.delete_files([
@@ -717,7 +717,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         ])
 
         # reset _FAILED flag
-        configure_tests._FAILED = False
+        collect_tests_and_content_packs._FAILED = False
 
 
 class TestExtractMatchingObjectFromIdSet:
@@ -733,8 +733,8 @@ class TestExtractMatchingObjectFromIdSet:
         Then
         - ensure test_playbook_a will run/returned
         """
-        from Tests.scripts import configure_tests
-        configure_tests._FAILED = False  # reset the FAILED flag
+        from Tests.scripts import collect_tests_and_content_packs
+        collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
         # Given
         # - integration_a exists
@@ -770,7 +770,7 @@ class TestExtractMatchingObjectFromIdSet:
 
             # When
             # - filtering tests to run
-            filtered_tests = get_test_list(
+            filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
                 files_string='',
                 branch_name='dummy_branch',
                 two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -781,9 +781,10 @@ class TestExtractMatchingObjectFromIdSet:
             # Then
             # - ensure test_playbook_a will run/returned
             assert 'test_playbook_a' in filtered_tests
+            assert content_packs == set()
 
             # - ensure the validation not failing
-            assert not configure_tests._FAILED
+            assert not collect_tests_and_content_packs._FAILED
         finally:
             # delete the mocked files
             TestUtils.delete_files([
@@ -792,7 +793,7 @@ class TestExtractMatchingObjectFromIdSet:
             ])
 
             # reset _FAILED flag
-            configure_tests._FAILED = False
+            collect_tests_and_content_packs._FAILED = False
 
 
 def test_modified_integration_content_pack_is_collected(mocker):
