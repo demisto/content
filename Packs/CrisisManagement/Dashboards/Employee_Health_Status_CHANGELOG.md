@@ -1,2 +1,2 @@
 ## [Unreleased]
-The dashboard will no longer exist before version 6.0.
+This dashboard will be available from Cortex XSOAR v6.0.
