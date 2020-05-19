@@ -1211,6 +1211,286 @@ script:
     - contextPath: CarbonBlackEEDR.Report.Description
       description: The report description.
       type: String
+  - arguments:
+    - default: false
+      description: The report ID to update.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    - default: false
+      description: The report title
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The report description.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: The report tags.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: IOC of type ipv4.
+      isArray: false
+      name: ipv4
+      required: false
+      secret: false
+    - default: false
+      description: IOC of type ipv6.
+      isArray: false
+      name: ipv6
+      required: false
+      secret: false
+    - default: false
+      description: IOC of type DNS.
+      isArray: false
+      name: dns
+      required: false
+      secret: false
+    - default: false
+      description: IOC of type MD5.
+      isArray: false
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: 'Query IOC. For example: (netconn_ipv4:10.130.30.60)'
+      isArray: false
+      name: ioc_query
+      required: false
+      secret: false
+    - default: false
+      description: Report severity.
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      description: The report timestamp.
+      isArray: false
+      name: timestamp
+      required: true
+      secret: false
+    deprecated: false
+    description: Update report with report_id.
+    execution: false
+    name: cb-eedr-report-update
+    outputs:
+    - contextPath: CarbonBlackEEDR.Report.ID
+      description: The report ID.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.IOCs
+      description: The report IOC's
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Link
+      description: Report link.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Severity
+      description: Report severity.
+      type: Number
+    - contextPath: CarbonBlackEEDR.Report.Timestamp
+      description: The report timestamp.
+      type: Date
+    - contextPath: CarbonBlackEEDR.Report.Title
+      description: The report title.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Tags
+      description: Report tags.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Visibility
+      description: Report visibility.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Description
+      description: The report description.
+      type: String
+  - arguments:
+    - default: false
+      description: The requested SHA-256 hash to obtain information for.
+      isArray: false
+      name: sha256
+      required: true
+      secret: false
+    deprecated: false
+    description: Get an overview of the devices that executed the file.
+    execution: false
+    name: cb-eedr-file-device-summary
+    outputs:
+    - contextPath: CarbonBlackEEDR.File.first_seen_device_id
+      description: The Device ID of the device that first saw this file.
+      type: Number
+    - contextPath: CarbonBlackEEDR.File.first_seen_device_name
+      description: The name of the device that first saw this file.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.first_seen_device_timestamp
+      description: The time that this file was first seen, for this organization.
+      type: Date
+    - contextPath: CarbonBlackEEDR.File.last_seen_device_id
+      description: The Device ID of the device that most recently saw this file.
+      type: Number
+    - contextPath: CarbonBlackEEDR.File.last_seen_device_name
+      description: The name of the device that last saw this file.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.last_seen_device_timestamp
+      description: The time that this file was most recently seen, for this organization
+      type: Date
+    - contextPath: CarbonBlackEEDR.File.num_devices
+      description: The total number of devices, for this organization, that have observed
+        this file.
+      type: Number
+    - contextPath: CarbonBlackEEDR.File.sha256
+      description: The SHA-256 hash of the file.
+      type: String
+  - arguments:
+    - default: false
+      description: The requested SHA-256 hash to obtain metadata information.
+      isArray: false
+      name: sha256
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns all of the metadata for the specified binary identified by
+      the SHA-256 hash.
+    execution: false
+    name: cb-eedr-get-file-metadata
+    outputs:
+    - contextPath: CarbonBlackEEDR.File.file_size
+      description: The size of the actual file. This is the size of the file represented
+        by this hash.
+      type: Number
+    - contextPath: CarbonBlackEEDR.File.file_available
+      description: If true, the file is available for download.
+      type: Boolean
+    - contextPath: CarbonBlackEEDR.File.sha256
+      description: The SHA-256 hash of the file.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.product_version
+      description: Product version from FileVersionInformation.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.product_description
+      description: Product description from FileVersionInformation.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.lang_id
+      description: The Language ID value from the Windows VERSIONINFO resource.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.company_name
+      description: Company name from FileVersionInformation
+      type: String
+    - contextPath: CarbonBlackEEDR.File.internal_name
+      description: Internal name from FileVersionInformation.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.charset_id
+      description: The Character set ID value from the Windows VERSIONINFO resource.
+      type: Number
+    - contextPath: CarbonBlackEEDR.File.available_file_size
+      description: The size of the file, that is available for download. If the file
+        is unavailable the size will be zero.
+      type: Number
+    - contextPath: CarbonBlackEEDR.File.architecture
+      description: 'The set of architectures that this file was compiled for. This
+        may contain one or more of the following values: none, x86, amd64, and arm64.'
+      type: String
+    - contextPath: CarbonBlackEEDR.File.comments
+      description: Comments from FileVersionInformation.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.os_type
+      description: 'The OS that this file is designed for. This may contain one or
+        more of the following values: WINDOWS, ANDROID, MAC, IOS, LINUX, and OTHER'
+      type: String
+    - contextPath: CarbonBlackEEDR.File.original_filename
+      description: Original filename from FileVersionInformation.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.file_version
+      description: File version from FileVersionInformation.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.file_description
+      description: File description from FileVersionInformation.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.product_name
+      description: Product name from FileVersionInformation
+      type: String
+    - contextPath: CarbonBlackEEDR.File.md5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Company
+      description: The name of the company that released a binary.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.ProductName
+      description: The name of the product to which this file belongs.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+  - arguments:
+    - default: false
+      description: An array of SHA-256 hashes (limit 100)
+      isArray: false
+      name: sha256
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '300'
+      description: The number of seconds to make the download URLs available for.
+      isArray: false
+      name: expiration_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: The files are able to be downloaded via AWS S3 pre-signed URLs.
+    execution: false
+    name: cb-eedr-files-download
+    outputs:
+    - contextPath: CarbonBlackEEDR.File.found.sha256
+      description: SHA-256 hash of file that is available to be downloaded
+      type: String
+    - contextPath: CarbonBlackEEDR.File.found.url
+      description: An AWS S3 presigned URL for this file. Perform a GET on this URL
+        to download the file.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.not_found
+      description: The SHA-256 hashes that were not found.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.error
+      description: The SHA-256 hashes that had an intermittent error.
+      type: String
+  - arguments:
+    - default: false
+      description: The requested SHA-256 hash to obtain information for.
+      isArray: false
+      name: sha256
+      required: true
+      secret: false
+    deprecated: false
+    description: Return a summary of the observed file paths
+    execution: false
+    name: cb-eedr-file-paths
+    outputs:
+    - contextPath: CarbonBlackEEDR.File.file_path_count
+      description: The total number of unique file paths that have been observed,
+        by this organization, for this file.
+      type: Number
+    - contextPath: CarbonBlackEEDR.File.file_paths
+      description: The file path details.
+      type: String
+    - contextPath: CarbonBlackEEDR.File.sha256
+      description: The SHA-256 hash of the file.
+      type: Unknown
+    - contextPath: CarbonBlackEEDR.File.total_file_path_count
+      description: The total number of file paths that have been observed, by this
+        organization, for this file.
+      type: Number
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true

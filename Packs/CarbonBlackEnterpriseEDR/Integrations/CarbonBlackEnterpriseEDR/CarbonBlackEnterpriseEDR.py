@@ -22,12 +22,12 @@ def convert_unix_to_timestamp(timestamp):
     return ''
 
 
-def convert_date_to_unix(timestamp):
+def convert_date_to_unix(dstr):
     """
     Convert a given string with MM/DD/YYYY format to millis since epoch
     """
-    d = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
-    return int(d.strftime("%S")) * 1000
+    dt = datetime.strptime(dstr, '%Y-%m-%dT%H:%M:%SZ')
+    return dt.timestamp()
 
 
 class Client(BaseClient):
@@ -349,6 +349,44 @@ class Client(BaseClient):
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id}'
 
         return self._http_request('DELETE', suffix_url, resp_type='content')
+
+    def update_report_request(self, report_id: str, title: str, description: str, severity: int, iocs: dict,
+                              tags: Union[list, str], timestamp: int) -> Dict:
+
+        suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id}'
+        body = assign_params(
+            title=title,
+            description=description,
+            severity=severity,
+            iocs=iocs,
+            tags=tags,
+            timestamp=timestamp
+        )
+        return self._http_request('PUT', suffix_url, json_data=body)
+
+    def get_file_device_summary_request(self, sha256: str) -> Dict:
+
+        suffix_url = f'ubs/v1/orgs/{CB_ORG_KEY}/sha256/{sha256}/summary/device'
+        return self._http_request('GET', suffix_url)
+
+    def get_file_metadata_request(self, sha256: str) -> Dict:
+        suffix_url = f'ubs/v1/orgs/{CB_ORG_KEY}/sha256/{sha256}/metadata'
+        return self._http_request('GET', suffix_url)
+
+    def get_file_request(self, sha256: str, expiration_seconds: int) -> Dict:
+
+        suffix_url = f'/ubs/v1/orgs/{CB_ORG_KEY}/file/_download'
+        body = assign_params(
+            sha256=sha256,
+            expiration_seconds=expiration_seconds
+        )
+
+        return self._http_request('POST', suffix_url, json_data=body)
+
+    def get_file_path_request(self, sha256: str) -> Dict:
+
+        suffix_url = f'/ubs/v1/orgs/{CB_ORG_KEY}/sha256/{sha256}/summary/file_path'
+        return self._http_request('GET', suffix_url)
 
 
 def test_module(client):
@@ -865,7 +903,7 @@ def create_report_command(client: Client, args: dict) -> CommandResults:
         'Visibility': result.get('visibility')
     }
 
-    iocs = result.get('iocs_v2')
+    iocs = result.get('iocs_v2', {})
     for ioc in iocs:
         ioc_contents.append({
             'ID': ioc.get('id'),
@@ -920,6 +958,183 @@ def remove_report_command(client: Client, args: dict) -> str:
     client.remove_report_request(report_id)
 
     return f'The report "{report_id}" was deleted successfully.'
+
+
+def update_report_command(client: Client, args: dict) -> CommandResults:
+    report_id = args.get('report_id')
+    title = args.get('title')
+    description = args.get('description')
+    timestamp = convert_date_to_unix(args.get('timestamp'))
+    tags = argToList(args.get('tags'))
+    ipv4 = argToList(args.get('ipv4'))
+    ipv6 = argToList(args.get('ipv6'))
+    dns = argToList(args.get('dns'))
+    md5 = argToList(args.get('md5'))
+    ioc_query = argToList(args.get('ioc_query'))
+    severity = int(args.get('severity'))
+    ioc_contents = []
+
+    iocs = assign_params(
+        ipv4=ipv4,
+        ipv6=ipv6,
+        dns=dns,
+        md5=md5,
+        query=ioc_query
+    )
+
+    headers = ['ID', 'Title', 'Timestamp', 'Description', 'Severity', 'Link', 'IOCs_v2', 'Tags', 'Visibility']
+    result = client.update_report_request(report_id, title, description, severity, iocs, tags, timestamp)
+
+    contents = {
+        'ID': result.get('id'),
+        'Timestamp': convert_unix_to_timestamp(result.get('timestamp')),
+        'Description': result.get('description'),
+        'Title': result.get('title'),
+        'Severity': result.get('severity'),
+        'Tags': result.get('tags'),
+        'Link': result.get('link'),
+        'Visibility': result.get('visibility')
+    }
+
+    context = {
+        'ID': result.get('id'),
+        'Timestamp': convert_unix_to_timestamp(result.get('timestamp')),
+        'Description': result.get('description'),
+        'Title': result.get('title'),
+        'Severity': result.get('severity'),
+        'Tags': result.get('tags'),
+        'Link': result.get('link'),
+        'IOCs': result.get('iocs_v2'),
+        'Visibility': result.get('visibility')
+    }
+
+    iocs = result.get('iocs_v2', {})
+    for ioc in iocs:
+        ioc_contents.append({
+            'ID': ioc.get('id'),
+            'Match_type': ioc.get('match_type'),
+            'Values': ioc.get('values'),
+            'Field': ioc.get('field'),
+            'Link': ioc.get('link')
+        })
+
+    readable_output = tableToMarkdown(f'The report was updated successfully.', contents, headers, removeNull=True)
+    ioc_output = tableToMarkdown(f'The IOCs for the report', ioc_contents, removeNull=True)
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Report',
+        outputs_key_field='ID',
+        outputs=context,
+        readable_output=readable_output + ioc_output,
+        raw_response=result
+    )
+    return results
+
+
+def get_file_device_summary(client: Client, args: dict) -> CommandResults:
+
+    sha256 = args.get('sha256')
+    result = client.get_file_device_summary_request(sha256)
+    readable_output = tableToMarkdown('The file device summary', result)
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.File',
+        outputs_key_field='sha256',
+        outputs=result,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def get_file_metadata_command(client: Client, args: dict) -> CommandResults:
+    sha256 = args.get('sha256')
+    result = client.get_file_metadata_request(sha256)
+    contents = {
+        'SHA256': result.get('sha256'),
+        'file_size': result.get('file_size'),
+        'internal_name': result.get('internal_name'),
+        'original_filename': result.get('original_filename'),
+        'comments': result.get('comments'),
+        'os_type': result.get('os_type')
+    }
+    context = {
+        'sha256': result.get('sha256'),
+        'architecture': result.get('architecture'),
+        'available_file_size': result.get('available_file_size'),
+        'charset_id': result.get('charset_id'),
+        'comments': result.get('comments'),
+        'company_name': result.get('company_name'),
+        'file_available': result.get('file_available'),
+        'file_description': result.get('file_description'),
+        'file_size': result.get('file_size'),
+        'file_version': result.get('file_version'),
+        'internal_name': result.get('internal_name'),
+        'lang_id': result.get('lang_id'),
+        'md5': result.get('md5'),
+        'original_filename': result.get('original_filename'),
+        'os_type': result.get('os_type'),
+        'product_description': result.get('product_description'),
+        'product_name': result.get('product_name'),
+        'product_version': result.get('product_version')
+    }
+
+    file = Common.File(
+        md5=result.get('md5'),
+        sha256=sha256,
+        size=result.get('file_size'),
+        company=result.get('company_name'),
+        product_name=result.get('product_name')
+    )
+
+    readable_output = tableToMarkdown('The file metadata', contents)
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.File',
+        outputs_key_field='sha256',
+        outputs=context,
+        readable_output=readable_output,
+        raw_response=result,
+        indicators=[file]
+    )
+    return results
+
+
+def get_file_command(client: Client, args: dict) -> CommandResults:
+    sha256 = argToList(args.get('sha256'))
+    expiration_seconds = int(args.get('expiration_seconds'))
+
+    result = client.get_file_request(sha256, expiration_seconds)
+    contents = []
+
+    found_files = result.get('found', [])
+    for file_ in found_files:
+        contents.append({
+            'sha256': file_.get('sha256'),
+            'url': file_.get('url')
+        })
+
+    readable_output = tableToMarkdown('The file to download', contents)
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.File',
+        outputs_key_field='sha256',
+        outputs=result,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def get_file_path_command(client: Client, args: dict) -> CommandResults:
+    sha256 = args.get('sha256')
+
+    result = client.get_file_path_request(sha256)
+    readable_output = tableToMarkdown('The file path for the sha256', result)
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.File',
+        outputs_key_field='sha256',
+        outputs=result,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
 
 # def fetch_incidents(client, last_run, first_fetch_time):
 #     """
@@ -1083,6 +1298,21 @@ def main():
 
         elif demisto.command() == 'cb-eedr-report-remove':
             return_results(remove_report_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-report-update':
+            return_results(update_report_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-file-device-summary':
+            return_results(get_file_device_summary(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-get-file-metadata':
+            return_results(get_file_metadata_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-files-download':
+            return_results(get_file_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-file-paths':
+            return_results(get_file_path_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:
