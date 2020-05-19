@@ -1,38 +1,18 @@
 {
-    "name": "Slack",
-    "description": "Send messages and notifications to your Slack team.",
-    "support": "xsoar",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Messaging"
-    ],
-    "tags": [],
-    "created": "2020-03-15T17:02:40Z",
-    "updated": "2020-03-15T17:02:40Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [
-        "Slack"
-    ],
-    "price": "0",
-    "dependencies": {
-        "Syslog": {
-            "mandatory": false,
-            "display_name": "Syslog Sender"
-        },
-        "Active_Directory_Query": {
-            "mandatory": true,
-            "display_name": "Active Directory Query v2"
-        }
-    },
-    "displayedImages": [
-        "Syslog",
-        "Active_Directory_Query"
-    ]
+  "name": "Slack",
+  "description": "Send messages and notifications to your Slack team.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-15T17:02:40Z",
+  "categories": [
+    "Messaging"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "Slack"
+  ]
 }
