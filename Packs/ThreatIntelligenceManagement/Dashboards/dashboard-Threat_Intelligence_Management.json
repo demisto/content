@@ -14,6 +14,7 @@
 	},
 	"fromDateLicense": "0001-01-01T00:00:00Z",
 	"name": "Threat Intel Management",
+    "description": "",
 	"layout": [
 		{
 			"id": "a78dd890-36d0-11ea-bac2-cb1342f8efbb",
