@@ -41,7 +41,7 @@ def test_module(client):
     if response.status_code == 200:
         return "ok"
     else:
-        return "Failure"
+        return "Bad status from server: ({}) {}".format(response.status_code, response.text)
 
 
 def humio_query(client, args, headers):

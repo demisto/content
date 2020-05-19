@@ -58,7 +58,7 @@ Query the data from Humio
 
 
 #### Command Example
-```!humio-query repository=sandbox queryString="foo=bar"```
+```!humio-query repository=sandbox queryString="foo=bar" start=24h end=now isLive=false```
 
 #### Context Example
 ```
@@ -789,7 +789,7 @@ Get notifier from Humio by id
             "id": "BTkuj8QArhIFMh_L39FoN0tnyTUEXplc",
             "name": "Null Webhook",
             "properties": {
-                "bodyTemplate": "{\n  \"repository\": \"{repo_name}\",\n  \"timestamp\": \"{alert_triggered_timestamp}\",\n  \"alert\": {\n    \"name\": \"{alert_name}\",\n    \"description\": \"{alert_description}\",\n    \"query\": {\n      \"queryString\": \"{query_string} \",\n      \"end\": \"{query_time_end}\",\n      \"start\": \"{query_time_start}\"\n    },\n    \"notifierID\": \"{alert_notifier_id}\",\n    \"id\": \"{alert_id}\",\n    \"linkURL\": \"{url}\"\n  },\n  \"warnings\": \"{warnings}\",\n  \"events\": {events},\n  \"numberOfEvents\": {event_count}\n}",
+                "bodyTemplate": "BODY",
                 "headers": {
                     "Content-Type": "application/json"
                 },

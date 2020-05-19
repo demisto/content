@@ -123,7 +123,7 @@ script:
       description: Repository to use
     - name: id
       required: true
-      description: 'Id to poll for '
+      description: 'Id of the queryjob to poll for'
     outputs:
     - contextPath: Humio.Result
       description: Poll results
