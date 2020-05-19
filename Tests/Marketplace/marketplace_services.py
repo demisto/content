@@ -46,7 +46,8 @@ class GCPConfig(object):
                        "Whois",
                        "Phishing",
                        "CommonScripts",
-                       "CommonPlaybooks"]  # cores packs list
+                       "CommonPlaybooks",
+                       "CommonTypes"]  # cores packs list
 
 
 class Metadata(object):
