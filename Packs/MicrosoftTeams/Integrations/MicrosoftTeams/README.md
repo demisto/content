@@ -233,7 +233,7 @@ Mirrors the Demisto investigation to the specified Microsoft Teams channel.
 | autoclose | Whether to auto-close the channel when the incident is closed in Demisto. If "true", the channel will be auto-closed. Default is "true". | Optional | 
 | direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". | Optional | 
 | team | The team in which to mirror the Demisto investigation. If not specified, the default team configured in the integration parameters will be used. | Optional | 
-| channel_name | The name of the channel. The default is "incident-<incidentID>". | Optional | 
+| channel_name | The name of the channel. The default is "incident-INCIDENTID". | Optional | 
 
 
 ##### Context Output
