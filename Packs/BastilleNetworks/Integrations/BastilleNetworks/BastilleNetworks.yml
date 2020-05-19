@@ -55,6 +55,14 @@ configuration:
   - all
   required: true
   type: 16
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: RF monitoring for wireless intrusion detection and policy enforcement.
   Visit https://www.bastille.net for details.
 display: Bastille Networks

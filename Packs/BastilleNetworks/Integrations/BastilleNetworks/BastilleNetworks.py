@@ -319,6 +319,8 @@ def main():
 
     api_url = urljoin(demisto.params()['api_url'])
     api_key = demisto.params().get('api_key')
+    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not demisto.params().get('insecure', False)
 
     headers = {
         'Content-Type': 'application/json',
@@ -326,7 +328,7 @@ def main():
     }
 
     try:
-        client = Client(api_url, headers=headers)
+        client = Client(api_url, headers=headers, verify=verify_certificate, proxy=proxy)
 
         if demisto.command() == 'test-module':
             result = test_module(client)
