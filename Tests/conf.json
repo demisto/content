@@ -695,7 +695,8 @@
           "playbookID": "PAN-OS EDL Service Configuration Test",
           "integrations": ["Panorama", "EDL"],
           "instance_names": "palo_alto_firewall",
-          "fromversion": "5.5.0"
+          "fromversion": "5.5.0",
+          "timeout": 1000
       },
         {
             "playbookID": "Test_export_indicators_service",
