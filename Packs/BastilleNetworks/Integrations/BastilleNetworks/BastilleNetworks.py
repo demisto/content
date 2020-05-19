@@ -293,6 +293,7 @@ def fetch_incidents(client, last_run):
                                                  since=last_fetch_time)
 
     events = zone_events + device_events
+    current_fetch_time = last_fetch_time
 
     incidents = []
     for event in events:
@@ -305,7 +306,7 @@ def fetch_incidents(client, last_run):
         }
         incidents.append(incident)
 
-        if event_time > last_fetch_time:
+        if event_time > current_fetch_time:
             last_fetch_time = event_time
 
     next_run = {'last_fetch': last_fetch_time}
