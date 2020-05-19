@@ -1,3 +1,4 @@
+## [Unreleased]
 - Fixed an issue where Extended Details would not display the `Threat Category` and `Threat Category Confidence` fields.
 
 
