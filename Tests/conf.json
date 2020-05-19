@@ -2709,7 +2709,7 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Logzio",
+            "integrations": "Logz.io",
             "playbookID": "Logzio - Test",
             "fromversion": "5.0.0"
         },
