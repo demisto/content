@@ -1,7 +1,6 @@
 {
 	"id": "Threat Intelligence Management",
 	"version": -1,
-	"modified": "2020-03-16T09:58:47.497959016Z",
 	"fromDate": "0001-01-01T00:00:00Z",
 	"toDate": "0001-01-01T00:00:00Z",
 	"period": {
@@ -714,7 +713,6 @@
 			}
 		}
 	],
-	"system": false,
 	"fromVersion": "5.5.0",
 	"isPredefined": true
 }
