@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6b55c0b1-4b10-465f-8338-4fd9dffb90bd
+    taskid: 92db6856-64f1-43ae-8487-3dac84e4b321
     type: start
     task:
-      id: 6b55c0b1-4b10-465f-8338-4fd9dffb90bd
+      id: 92db6856-64f1-43ae-8487-3dac84e4b321
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 235,
           "y": 50
         }
       }
@@ -33,71 +33,26 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: a41292d1-3c6b-49ab-82ed-44457ea8d509
+    taskid: c111a353-42b1-47e2-84b8-a8891a7d0b11
     type: regular
     task:
-      id: a41292d1-3c6b-49ab-82ed-44457ea8d509
+      id: c111a353-42b1-47e2-84b8-a8891a7d0b11
       version: -1
-      name: create-ticket
-      description: Create a new ticket to the system.
-      script: '|||kace-ticket-create'
+      name: kenna-get-connectors
+      description: Returns all of your connectors
+      script: '|||kenna-get-connectors'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-    scriptarguments:
-      asset: {}
-      category: {}
-      custom_fields: {}
-      impact: {}
-      machine: {}
-      priority: {}
-      queue_id:
-        simple: "1"
-      status: {}
-      summary: {}
-      title:
-        simple: Test number 1
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 235,
           "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 7cce50ba-13c8-4f9c-8c90-1d6069771d14
-    type: regular
-    task:
-      id: 7cce50ba-13c8-4f9c-8c90-1d6069771d14
-      version: -1
-      name: tickets list
-      description: List of all tickets in the system.
-      script: '|||kace-tickets-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      custom_shaping: {}
-      limit: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
         }
       }
     note: false
@@ -107,109 +62,31 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: f61deb0c-4fd0-4cea-80b2-6ae427558582
-    type: condition
-    task:
-      id: f61deb0c-4fd0-4cea-80b2-6ae427558582
-      version: -1
-      name: validate new ticket
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: QuestKace
-                accessor: Ticket.Title
-                transformers:
-                - operator: LastArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: Test number 1
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 7aebed5b-9e83-41e9-84f1-1b151ce923c0
+    taskid: 1360028e-d41e-4227-8353-9cc2c2834a18
     type: regular
     task:
-      id: 7aebed5b-9e83-41e9-84f1-1b151ce923c0
+      id: 1360028e-d41e-4227-8353-9cc2c2834a18
       version: -1
-      name: delete ticket
-      description: Delete specific ticket by id.
-      script: '|||kace-ticket-delete'
+      name: kenna-search-vulnerabilities
+      description: Filtering vulnerabilities by those that Kenna recommends.
+      script: '|||kenna-search-vulnerabilities'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
-      ticket_id:
-        complex:
-          root: QuestKace
-          accessor: Ticket.ID
-          transformers:
-          - operator: LastArrayElement
+      id: {}
+      min-score: {}
+      status: {}
+      top-priority: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 460,
           "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: c2f0d048-81ff-46d7-82fb-fb5cb109e0fb
-    type: regular
-    task:
-      id: c2f0d048-81ff-46d7-82fb-fb5cb109e0fb
-      version: -1
-      name: tickets list
-      description: List of all tickets in the system.
-      script: '|||kace-tickets-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      custom_shaping: {}
-      limit: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1770
         }
       }
     note: false
@@ -219,41 +96,37 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f8017e6b-40f1-4b17-8418-e34994f85997
-    type: condition
+    taskid: 95784aa0-dce6-4fba-819e-6c6ddcd7ff6a
+    type: regular
     task:
-      id: f8017e6b-40f1-4b17-8418-e34994f85997
+      id: 95784aa0-dce6-4fba-819e-6c6ddcd7ff6a
       version: -1
-      name: validate deleted ticket
-      type: condition
-      iscommand: false
+      name: kenna-update-vulnerability
+      description: Update a single vulnerability's attributes by ID
+      script: '|||kenna-update-vulnerability'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "7"
+      '#none#':
+      - "18"
+    scriptarguments:
+      id:
+        complex:
+          root: Kenna
+          accessor: Vulnerabilities.ID
+          transformers:
+          - operator: FirstArrayElement
+      notes:
+        simple: Test Notes
+      status:
+        simple: open
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: QuestKace
-                accessor: Ticket.Title
-                transformers:
-                - operator: LastArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: Test number 1
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1945
+          "x": 572.5,
+          "y": 1770
         }
       }
     note: false
@@ -263,23 +136,36 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: bb9768e1-2802-436a-837a-977706277be7
-    type: title
+    taskid: 4c484f51-2074-4bec-8dec-be8336601659
+    type: condition
     task:
-      id: bb9768e1-2802-436a-837a-977706277be7
+      id: 4c484f51-2074-4bec-8dec-be8336601659
       version: -1
-      name: done
-      description: Executes test for all integration instances available and returns
-        a detailed table about failed integration instances
-      type: title
+      name: Connectors ID List Exists?
+      type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "30"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Kenna
+                accessor: ConnectorsList.ID
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2120
+          "x": 235,
+          "y": 370
         }
       }
     note: false
@@ -289,33 +175,21 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 8ef255b1-c1cb-4ca5-84de-6728f362e641
-    type: regular
+    taskid: 73cb1a02-2de5-4577-84fd-80e45c345bf0
+    type: title
     task:
-      id: 8ef255b1-c1cb-4ca5-84de-6728f362e641
+      id: 73cb1a02-2de5-4577-84fd-80e45c345bf0
       version: -1
-      name: delete context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      name: Done
+      type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1595
+          "x": 807.5,
+          "y": 3010
         }
       }
     note: false
@@ -325,103 +199,26 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: b3faf854-e28e-47a9-8c1b-f1fa15d47166
-    type: title
+    taskid: e8de4835-b6a6-4ce5-8378-8080a0534830
+    type: regular
     task:
-      id: b3faf854-e28e-47a9-8c1b-f1fa15d47166
+      id: e8de4835-b6a6-4ce5-8378-8080a0534830
       version: -1
       name: Failed
-      type: title
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      message:
+        simple: failed
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 0e0aa50e-48c0-4329-8602-c5a42468199b
-    type: regular
-    task:
-      id: 0e0aa50e-48c0-4329-8602-c5a42468199b
-      version: -1
-      name: update ticket
-      description: Update a ticket in the system.
-      script: '|||kace-ticket-update'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      asset: {}
-      category: {}
-      custom_fields: {}
-      impact: {}
-      machine: {}
-      priority: {}
-      status: {}
-      summary: {}
-      ticket_id:
-        complex:
-          root: QuestKace
-          accessor: Ticket.ID
-          transformers:
-          - operator: LastArrayElement
-      title:
-        simple: Test number 1 update
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: 2e04b9c4-539e-4446-895f-04d671225e15
-    type: regular
-    task:
-      id: 2e04b9c4-539e-4446-895f-04d671225e15
-      version: -1
-      name: delete context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 895
+          "y": 2995
         }
       }
     note: false
@@ -431,29 +228,37 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: f0e67e84-141f-4aef-8b6b-01ab5443d381
-    type: regular
+    taskid: a0c42b4d-cf9d-4040-88b3-591d1c56f65a
+    type: condition
     task:
-      id: f0e67e84-141f-4aef-8b6b-01ab5443d381
+      id: a0c42b4d-cf9d-4040-88b3-591d1c56f65a
       version: -1
-      name: tickets list
-      description: List of all tickets in the system.
-      script: '|||kace-tickets-list'
-      type: regular
-      iscommand: true
+      name: Fixes list contain?
+      type: condition
+      iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "13"
-    scriptarguments:
-      custom_shaping: {}
-      limit: {}
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Kenna.Fixes.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Kenna.Fixes.Assets.ID
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1070
+          "x": 347.5,
+          "y": 720
         }
       }
     note: false
@@ -463,20 +268,190 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: f48c3930-4b14-496a-8141-5d38d3f798f6
+    taskid: 69bbf3c5-aafb-42cf-88ff-61a819b1ee57
+    type: regular
+    task:
+      id: 69bbf3c5-aafb-42cf-88ff-61a819b1ee57
+      version: -1
+      name: kenna-search-assets-round1
+      description: Filtering assets by those that Kenna recommands
+      script: '|||kenna-search-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      hostname: {}
+      id: {}
+      ip-address: {}
+      min-score: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 347.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 9c4bdd35-a7c1-4e19-80db-7fe5f3520987
     type: condition
     task:
-      id: f48c3930-4b14-496a-8141-5d38d3f798f6
+      id: 9c4bdd35-a7c1-4e19-80db-7fe5f3520987
       version: -1
-      name: validate update ticket
+      name: Check Asset List
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+      - "9"
       "yes":
-      - "4"
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Kenna
+                accessor: Assets.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Kenna
+                accessor: Assets.IpAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 347.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 8095c4ee-2088-4b52-885c-5eeee8d50830
+    type: condition
+    task:
+      id: 8095c4ee-2088-4b52-885c-5eeee8d50830
+      version: -1
+      name: Check Search Vulnerabilities
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Kenna.Vulnerabilities.AssetID
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Kenna.Vulnerabilities.Connectors.ID
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 1adcca0f-457c-4515-8b7e-daff1021d69b
+    type: regular
+    task:
+      id: 1adcca0f-457c-4515-8b7e-daff1021d69b
+      version: -1
+      name: check vulnerabilities after update
+      description: Filtering vulnerabilities by those that Kenna recommends.
+      script: '|||kenna-search-vulnerabilities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      id:
+        complex:
+          root: Kenna
+          accessor: Vulnerabilities.ID
+          transformers:
+          - operator: FirstArrayElement
+      limit: {}
+      min-score: {}
+      status: {}
+      to_context: {}
+      top-priority: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 572.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 970b460a-9d51-4ab9-83c2-0b30d336a79f
+    type: condition
+    task:
+      id: 970b460a-9d51-4ab9-83c2-0b30d336a79f
+      version: -1
+      name: check status after update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -484,20 +459,254 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              complex:
-                root: QuestKace
-                accessor: Ticket.Title
-                transformers:
-                - operator: LastArrayElement
+              simple: Kenna.Vulnerabilities.Status
             iscontext: true
           right:
             value:
-              simple: Test number 1 update
+              simple: open
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 572.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: f5041d5f-bcc4-42d9-8745-992a349cede7
+    type: regular
+    task:
+      id: f5041d5f-bcc4-42d9-8745-992a349cede7
+      version: -1
+      name: kenna-add-tag
+      description: Add tag to Asset id
+      script: '|||kenna-add-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        complex:
+          root: Kenna
+          accessor: Assets.ID
+          transformers:
+          - operator: FirstArrayElement
+      tag:
+        simple: TestTag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
           "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 82150d5f-9af5-4e97-891c-7f62d76e49b2
+    type: regular
+    task:
+      id: 82150d5f-9af5-4e97-891c-7f62d76e49b2
+      version: -1
+      name: kenna-search-assets-round2
+      description: Filtering assets by those that Kenna recommands
+      script: '|||kenna-search-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      hostname: {}
+      id:
+        complex:
+          root: Kenna
+          accessor: Assets.ID
+          transformers:
+          - operator: FirstArrayElement
+      ip-address: {}
+      min-score: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 05e8e9e6-3a7f-47c6-8a12-20bf5ec2d7d5
+    type: condition
+    task:
+      id: 05e8e9e6-3a7f-47c6-8a12-20bf5ec2d7d5
+      version: -1
+      name: check tag addition
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: Kenna.Assets.Tags
+            iscontext: true
+          right:
+            value:
+              simple: TestTag
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: c88025e1-326c-43d0-8d4b-14e5cf30bf65
+    type: regular
+    task:
+      id: c88025e1-326c-43d0-8d4b-14e5cf30bf65
+      version: -1
+      name: kenna-delete-tag
+      description: Delete tags from specific Asset
+      script: '|||kenna-delete-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      id:
+        complex:
+          root: Kenna
+          accessor: Assets.ID
+          transformers:
+          - operator: FirstArrayElement
+      tag:
+        simple: TestTag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: ed77ec03-8d21-480f-8a00-f951d4c0257c
+    type: condition
+    task:
+      id: ed77ec03-8d21-480f-8a00-f951d4c0257c
+      version: -1
+      name: check tag deletion
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: Kenna
+                accessor: Assets.Tags
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: TestTag
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: ba1c4934-9518-4010-8854-19dd3e8c2834
+    type: regular
+    task:
+      id: ba1c4934-9518-4010-8854-19dd3e8c2834
+      version: -1
+      name: Kenna-search-fixes
+      description: Filters fixes by a given set of vulnerability and asset parameters
+        and returns the filtered fixes.
+      script: '|||kenna-search-fixes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id: {}
+      limit: {}
+      min-score: {}
+      status: {}
+      to_context: {}
+      top-priority: {}
+      vulnerabilities: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 347.5,
+          "y": 545
         }
       }
     note: false
@@ -507,11 +716,14 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "16_9_#default#": 0.54,
+      "27_9_#default#": 0.3
+    },
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 810,
+        "height": 3040,
+        "width": 1137.5,
         "x": 50,
         "y": 50
       }
