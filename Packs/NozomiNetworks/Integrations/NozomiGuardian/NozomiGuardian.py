@@ -94,7 +94,7 @@ def list_all_assets(client):
                     'MAC': item['mac_address'],
                     'Vendor': item['vendor'],
                     'OS': item['os'],
-                    'CaptureDevice': item ['capture_device']
+                    'CaptureDevice': item['capture_device']
                 })
 
         if not raws:
@@ -134,7 +134,7 @@ def find_ip_by_mac(client, args):
                     })
 
             if not raws:
-                return ("%s - Could not find any results for given query" % INTEGRATION_NAME)
+                return "%s - Could not find any results for given query" % INTEGRATION_NAME
 
             context_entry = {
                 "NozomiGuardian": {
@@ -142,7 +142,7 @@ def find_ip_by_mac(client, args):
                 }
             }
 
-            human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Mappings'],name=title)
+            human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Mappings'], name=title)
 
             return [human_readable, context_entry, raws]
 

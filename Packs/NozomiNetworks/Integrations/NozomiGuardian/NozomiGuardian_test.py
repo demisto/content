@@ -17,9 +17,7 @@ def test_search_by_query(requests_mock):
 
     client = Client(
         f'{NOZOMIGUARDIAN_URL}',
-        username='test',
-        password='test',
-        proxies=False
+        auth=('test', 'test')
     )
     args = {
         'query': 'links | where from match 192.168.10.2 | where protocol match ssh'
@@ -37,9 +35,7 @@ def test_list_all_assets(requests_mock):
 
     client = Client(
         f'{NOZOMIGUARDIAN_URL}',
-        username='test',
-        password='test',
-        proxies=False
+        auth=('test', 'test')
     )
     _, outputs, _ = list_all_assets(client)
     expected_output = list_all_assets_response
@@ -55,9 +51,7 @@ def test_find_ip_by_mac(requests_mock):
 
     client = Client(
         f'{NOZOMIGUARDIAN_URL}',
-        username='test',
-        password='test',
-        proxies=False
+        auth=('test', 'test')
     )
     args = {
         'mac': '00:0c:29:22:50:26'

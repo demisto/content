@@ -2603,6 +2603,11 @@
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Nozomi_Guardian",
+            "playbookID": "NozomiGuardian-Test",
+            "timeout" : 500
         }
     ],
     "skipped_tests": {
