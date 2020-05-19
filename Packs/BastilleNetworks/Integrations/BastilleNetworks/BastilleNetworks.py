@@ -270,10 +270,10 @@ def remove_device_tag_command(client, args):
     return result['status'], {}, result
 
 
-def fetch_incidents(client, last_run):
+def fetch_incidents(client, last_run, first_fetch_time):
     """ Callback to fetch incidents periodically """
 
-    last_fetch_time = last_run.get('last_fetch', datetime.utcnow().timestamp() - 60)
+    last_fetch_time = last_run.get('last_fetch', first_fetch_time)
 
     site, concentrator, map = get_site_params()
 
@@ -317,15 +317,19 @@ def fetch_incidents(client, last_run):
 def main():
     """ Parse and validate integration parameters """
 
-    api_url = urljoin(demisto.params()['api_url'])
-    api_key = demisto.params().get('api_key')
-    proxy = demisto.params().get('proxy', False)
-    verify_certificate = not demisto.params().get('insecure', False)
+    params = demisto.params()
+    api_url = urljoin(params['api_url'])
+    api_key = params.get('api_key')
+    proxy = params.get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
 
     headers = {
         'Content-Type': 'application/json',
         'x-api-key': api_key,
     }
+
+    first_fetch = dateparser.parse(params.get('first_fetch', '5 minutes'),
+                                   settings={'TIMEZONE': 'UTC'}).timestamp()
 
     try:
         client = Client(api_url, headers=headers, verify=verify_certificate, proxy=proxy)
@@ -338,6 +342,7 @@ def main():
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch,
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
