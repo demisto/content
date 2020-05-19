@@ -875,10 +875,15 @@ class Pack(object):
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
-            # todo change this override late
-            user_metadata['dependencies'] = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
-            user_metadata['displayedImages'] = packs_dependencies_mapping.get(self._pack_name, {}).get(
-                'displayedImages', [])
+            if 'dependencies' not in user_metadata:
+                user_metadata['dependencies'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('dependencies', {})
+                print(f"Adding auto generated dependencies for {self._pack_name} pack")
+
+            if 'displayedImages' not in user_metadata:
+                user_metadata['displayedImages'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('displayedImages', [])
+                print(f"Adding auto generated display images for {self._pack_name} pack")
 
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
