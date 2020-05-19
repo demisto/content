@@ -673,8 +673,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
         fetch_shaping = shaping_fetch(client, fetch_queue_id)
 
     parsed_last_time = datetime.strptime(new_last_run.get('last_fetch', ''), time_format)
-    filter_after_last_run = f'created gt {parsed_last_time}'
-    fetch_filter_for_query = f'{filter_after_last_run}'
+    fetch_filter_for_query = f'created gt {parsed_last_time}'
     if fetch_queue_id:
         queue_id_str = ';'.join(fetch_queue_id)
         filter_by_queue_id = f'hd_queue_id in {queue_id_str}'
@@ -687,13 +686,13 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_ru
     client.update_token()
     items: dict = client.tickets_list_request(fetch_shaping, fetch_filter_for_query)
     items: list = items.get('Tickets', [])
-    incidents, parsed_last_time = parse_incidents(items, fetch_limit, time_format, parsed_last_time)
-    parsed_last_time = parsed_last_time.strftime(time_format)
+    incidents, last_incident_time = parse_incidents(items, fetch_limit, time_format, parsed_last_time)
+    last_incident_time = last_incident_time.strftime(time_format)
     demisto.info(f"Fetching Incident has Finished\n"
                  f"Fetch limit was {fetch_limit}"
-                 f"Last fetch was on {str(parsed_last_time)}\n"
-                 f"Incidents list is {str(incidents)}")
-    demisto.setLastRun({'last_fetch': parsed_last_time})
+                 f"Last fetch was on {str(last_incident_time)}\n"
+                 f"Number of incidents was {len(incidents)}")
+    demisto.setLastRun({'last_fetch': last_incident_time})
     return incidents
 
 
@@ -828,7 +827,6 @@ def parse_incidents(items: list, fetch_limit: str, time_format: str, parsed_last
         incidents.append(incident)
         count += 1
         parsed_last_time = incident_created_time
-
     return incidents, parsed_last_time
 
 
