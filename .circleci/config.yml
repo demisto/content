@@ -127,14 +127,7 @@ jobs:
             find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
             [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
-
-            if [ "${CHECK_BACKWARD}" = "true" ] ;
-              then
-                 demisto-sdk validate -g --post-commit
-
-              else
-                 demisto-sdk validate -g --post-commit --no-backward-comp
-            fi
+            ./Tests/scripts/validate.sh
       - run:
           name: Secrets
           when: always
