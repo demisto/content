@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![default](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Default.png)
+![default](https://raw.githubusercontent.com/demisto/content/fb32f760304f6430237fee965ce834c3c1adcbda/Packs/DefaultPlaybook/doc_files/Default.png)
