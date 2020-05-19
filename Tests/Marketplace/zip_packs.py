@@ -41,8 +41,9 @@ def zip_packs(storage_bucket, packs_artifacts_path, destination_path):
     for pack in os.scandir(destination_path):
         pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack.name)
         blobs = list(storage_bucket.list_blobs(prefix=pack_path))
-        print(str(blobs))
         if blobs:
+            for blob in blobs:
+                print(blob.name)
             blob = blobs[0]
             download_path = os.path.join(destination_path, f"{pack.name}.zip")
             zipped_packs.append({pack.name: download_path})
