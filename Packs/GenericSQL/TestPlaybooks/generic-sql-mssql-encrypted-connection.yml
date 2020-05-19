@@ -1,5 +1,5 @@
-id: 8fe09eba-8482-41af-845f-218474e4d079
-version: 10
+id: generic-sql-mssql-encrypted-connection
+version: -1
 name: generic-sql-mssql-encrypted-connection
 starttaskid: "0"
 tasks:
