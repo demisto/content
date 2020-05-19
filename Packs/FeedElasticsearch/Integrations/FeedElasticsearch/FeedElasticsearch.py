@@ -348,4 +348,5 @@ def main():
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)))
 
 
-main()
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()
