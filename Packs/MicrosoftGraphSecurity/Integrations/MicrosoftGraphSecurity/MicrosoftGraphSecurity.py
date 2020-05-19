@@ -149,8 +149,8 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
             last_incident_time = demisto_incidents[-1].get('occurred')
             new_last_run.update({'time': last_incident_time})
 
-    if not demisto_incidents:
-        new_last_run.update({'time': now})
+    # if not demisto_incidents:
+    #     new_last_run.update({'time': now})
     demisto.setLastRun(new_last_run)
     return demisto_incidents
 
