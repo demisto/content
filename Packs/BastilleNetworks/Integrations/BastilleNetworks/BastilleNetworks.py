@@ -334,6 +334,7 @@ def main():
                                    settings={'TIMEZONE': 'UTC'}).timestamp()
 
     try:
+        handle_proxy()
         client = Client(api_url, headers=headers, verify=verify_certificate, proxy=proxy)
 
         if demisto.command() == 'test-module':
