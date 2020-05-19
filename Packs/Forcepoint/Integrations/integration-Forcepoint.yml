@@ -282,8 +282,12 @@ script:
         if (!args.categoryID && !args.categoryName) {
             throw "Please provide either the category name or it's ID.";
         }
-        var urls = args.urls ? args.urls.split(',') : undefined;
-        var ips = args.ips ? args.ips.split(',') : undefined;
+        if (args.urls){
+            var urls = Array.isArray(args.urls) ? args.urls: args.urls.split(',');
+        }
+        if (args.ips){
+            var ips = Array.isArray(args.ips) ? args.ips: args.ips.split(',');
+        }
         var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID)) : editAddressRequest(urls, ips, undefined, args.categoryName);
         var title = 'Forcepoint Category Details';
         var data = [
@@ -331,8 +335,12 @@ script:
         if (!args.categoryID && !args.categoryName) {
             throw "Please provide either the category name or it's ID.";
         }
-        var urls = args.urls ? args.urls.split(',') : undefined;
-        var ips = args.ips ? args.ips.split(',') : undefined;
+        if (args.urls){
+            var urls = Array.isArray(args.urls) ? args.urls: args.urls.split(',');
+        }
+        if (args.ips){
+            var ips = Array.isArray(args.ips) ? args.ips: args.ips.split(',');
+        }
         var res = args.categoryID ? editAddressRequest(urls, ips, parseInt(args.categoryID), undefined, true) : editAddressRequest(urls, ips, undefined, args.categoryName, true);
         var title = 'Forcepoint Delete Address From Category';
         var data = [
@@ -515,8 +523,10 @@ script:
     arguments:
     - name: urls
       description: 'Comma separated list of URL addresses to add. '
+      isArray: true
     - name: ips
       description: 'Comma separated list of IP address to add. '
+      isArray: true
     - name: categoryID
       description: The category ID. Leave blank if category name is provided.
     - name: categoryName
@@ -536,8 +546,10 @@ script:
     arguments:
     - name: categoryIDs
       description: Comma separated list of category IDs.
+      isArray: true
     - name: categoryNames
       description: Comma separated list of category names.
+      isArray: true
     outputs:
     - contextPath: Forcepoint.DeletedCategories.CategoryName
       description: Category name
@@ -556,8 +568,10 @@ script:
       description: The category ID.  Leave blank if category name is provided.
     - name: urls
       description: Comma separated list of URL address to remove.
+      isArray: true
     - name: ips
       description: Comma separated list of IP address to remove.
+      isArray: true
     - name: categoryName
       description: The category name.  Leave blank if category ID is provided.
     outputs:
@@ -571,3 +585,4 @@ script:
       description: Total IP addresses deleted from category.
     description: ' Remove URLs, IP addresses, and ranges from a specific API-managed
       category.  Refer to category either by it''s ID or by it''s name.'
+  runonce: false
