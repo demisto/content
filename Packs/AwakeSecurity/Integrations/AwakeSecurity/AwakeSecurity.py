@@ -119,7 +119,7 @@ def displayTable(contents, fields):
         return "Empty results"
 
 
-def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore):
+def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore, genericContext=None):
     machineReadable = {
         "AwakeSecurity": contents,
     }
@@ -129,6 +129,10 @@ def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore):
     if dbotScore is not None:
         machineReadable["DBotScore"] = dbotScore
         entryContext["DBotScore"] = dbotScore
+
+    if genericContext:
+        entryContext.update(genericContext)
+
     demisto.results({
         "Type": entryTypes['note'],
         "ContentsFormat": formats['json'],
@@ -239,7 +243,8 @@ def lookupDomain():
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["domain"] = lookup_key
-    returnResults(contents, "Domains", "domain", humanReadable, dbotScore)
+    genericContext = {"Domain": {"Name": lookup_key}}
+    returnResults(contents, "Domains", "domain", humanReadable, dbotScore, genericContext)
 
 
 def lookupEmail():
@@ -292,7 +297,8 @@ def lookupIp():
     # Our product scores devices rather than IP addresses.
     humanReadable = displayTable([contents], humanReadableFields)
     contents["ip"] = lookup_key
-    returnResults(contents, "IPs", "ip", humanReadable, dbotScore)
+    genericContext = {"IP": {"Address": lookup_key}}
+    returnResults(contents, "IPs", "ip", humanReadable, dbotScore, genericContext)
 
 
 def query(lookup_type):
