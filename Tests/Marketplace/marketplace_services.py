@@ -409,12 +409,9 @@ class Pack(object):
         pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
                                                    author=user_metadata.get('author', ''))
         pack_metadata['authorImage'] = author_image
-        pack_metadata['beta'] = get_valid_bool(user_metadata.get('beta', False))
-        pack_metadata['deprecated'] = get_valid_bool(user_metadata.get('deprecated', False))
         pack_metadata['certification'] = user_metadata.get('certification', Metadata.CERTIFIED)
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
-        pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
