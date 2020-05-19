@@ -2811,11 +2811,9 @@
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
         "AttackIQFireDrill": "Issue 24281",
-        "Nessus": "No instance",
         "MxToolBox": "No instance",
         "Traps": "Issue 24122",
         "Skyformation": "No instance, old partner",
-        "Pipl": "No instance",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
@@ -2905,8 +2903,25 @@
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
+        "AbuseIPDB": "Issue 22658",
 
-        "_comment": "~~~ OTHER ~~~",
+        "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Google Chronicle Backstory": "Issue 22720",
+        "XFE_v2": "Issue 22715",
+        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
+        "AlphaSOC Wisdom": "API key has expired",
+        "AWS - Athena - Beta": "Issue 19834",
+        "Lastline": "issue 20323",
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
+        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
+        "Ipstack": "reached out our monthly quota (08/03/2020)",
+
+        "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
+        "Zabbix": "Supported by external developer",
+        "SafeBreach v2": "it is a partner integration, no instance",
+
+
+         "_comment5": "~~~ OTHER ~~~",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
@@ -2918,21 +2933,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
-        "SafeBreach v2": "it is a partner integration, no instance",
-        "Cymulate": "Partner didn't provided test playbook",
-        "_comment4": "~~~ QUOTA ISSUES ~~~",
-        "Google Chronicle Backstory": "Issue 22720",
-        "XFE_v2": "Issue 22715",
-        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
-        "AlphaSOC Wisdom": "API key has expired",
-        "AWS - Athena - Beta": "Issue 19834",
-        "Lastline": "issue 20323",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
-        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        "Ipstack": "reached out our monthly quota (08/03/2020)",
-
-        "_comment2": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
-        "Zabbix": "Supported by external developer"
+        "Cymulate": "Partner didn't provided test playbook"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -2941,6 +2942,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
