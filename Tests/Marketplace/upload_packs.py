@@ -392,6 +392,22 @@ def _build_summary_table(packs_input_list):
     return table
 
 
+def load_json(file_path):
+    """ Reads and loads json file.
+
+    Args:
+        file_path (str): full path to json file.
+
+    Returns:
+        dict: loaded json file.
+
+    """
+    with open(file_path, 'r') as json_file:
+        result = json.load(json_file)
+
+    return result
+
+
 def print_packs_summary(packs_list):
     """Prints summary of packs uploaded to gcs.
 
@@ -443,6 +459,7 @@ def option_handler():
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
     parser.add_argument('--id_set_path', help="The full path of id_set.json", required=False)
+    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Comma separated list of target pack names. "
                               "Define `All` in order to store all available packs."),
@@ -474,6 +491,7 @@ def main():
     override_pack = option.override_pack
     signature_key = option.key_string
     id_set_path = option.id_set_path
+    packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
     storage_bash_path = option.storage_bash_path
     remove_test_playbooks = option.remove_test_playbooks
 
@@ -531,7 +549,8 @@ def main():
 
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
-                                           index_folder_path=index_folder_path)
+                                           index_folder_path=index_folder_path,
+                                           packs_dependencies_mapping=packs_dependencies_mapping)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()

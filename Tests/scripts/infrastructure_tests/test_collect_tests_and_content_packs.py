@@ -176,7 +176,7 @@ class TestUtils(object):
 class TestChangedPlaybook:
     TEST_ID = 'Calculate Severity - Standard - Test'
     # points at a real file. if that file changes path the test should fail
-    GIT_DIFF_RET = "M Packs/Legacy/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
+    GIT_DIFF_RET = "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
@@ -356,7 +356,7 @@ class TestChangedIntegrationAndPlaybook:
     TEST_ID = 'PagerDuty Test\nCalculate Severity - Standard - Test'
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py\n" \
-                   "M Packs/Legacy/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
+                   "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
