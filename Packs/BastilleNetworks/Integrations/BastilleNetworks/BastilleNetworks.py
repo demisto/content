@@ -304,9 +304,11 @@ def fetch_incidents(client, last_run, first_fetch_time):
                 DATE_FORMAT),
             'rawJSON': json.dumps(event),
         }
-        incidents.append(incident)
 
         if event_time > current_fetch_time:
+            incidents.append(incident)
+
+        if event_time > last_fetch_time:
             last_fetch_time = event_time
 
     next_run = {'last_fetch': last_fetch_time}
