@@ -81,22 +81,23 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def pack_displayed_items(cls):
-        return [
+        return {
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
-        ]
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+        }
 
     @classmethod
     def yml_supported_folders(cls):
-        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
+        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value}
 
     @classmethod
     def json_supported_folders(cls):
-        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
                 PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.REPORTS.value]
+                PackFolders.REPORTS.value, PackFolders.WIDGETS.value}
 
 
 class PackStatus(enum.Enum):
@@ -701,7 +702,10 @@ class Pack(object):
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
-                PackFolders.INDICATOR_TYPES.value: "reputation"
+                PackFolders.INDICATOR_TYPES.value: "reputation",
+                PackFolders.LAYOUTS.value: "layout",
+                PackFolders.CLASSIFIERS.value: "classifier",
+                PackFolders.WIDGETS.value: "widget"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -804,6 +808,21 @@ class Pack(object):
                             'details': content_item.get('details', ""),
                             'reputationScriptName': content_item.get('reputationScriptName', ""),
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
+                        })
+                    elif current_directory == PackFolders.LAYOUTS.value:
+                        folder_collected_items.append({
+                            'typeId': content_item.get('typeId', ""),
+                            'kind': content_item.get('kind', ""),
+                            'version': 'v2' if 'tabs' in content_item.get('layout', {}) else 'v1'
+                        })
+                    elif current_directory == PackFolders.CLASSIFIERS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name') or content_item.get('id', ""),
+                            'description': content_item.get('description', '')
+                        })
+                    elif current_directory == PackFolders.WIDGETS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', "")
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
