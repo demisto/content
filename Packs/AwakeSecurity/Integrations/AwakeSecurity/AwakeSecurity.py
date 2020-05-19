@@ -1,3 +1,4 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
@@ -11,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS '''
 handle_proxy()
 params = demisto.params()
-server = params["server"]
+server = params["server"].rstrip('/')
 prefix = server + "/awakeapi/v1"
 verify = not params.get('unsecure', False)
 credentials = params["credentials"]
@@ -19,14 +20,50 @@ identifier = credentials["identifier"]
 password = credentials["password"]
 suspicious_threshold = params["suspicious_threshold"]
 malicious_threshold = params["malicious_threshold"]
-authTokenRequest = {
-    "loginUsername": identifier,
-    "loginPassword": password
-}
-authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest, verify=verify)
-authToken = authTokenResponse.json()["token"]["value"]
+
+
+def get_authtoken():
+    headers = {
+        "Content-Type": "application/json"
+    }
+    authTokenRequest_v1 = {
+        "loginUsername": identifier,
+        "loginPassword": password
+    }
+
+    authTokenRequest_v2 = {
+        "username": {
+            "username": identifier
+        },
+        "plaintextPassword": {
+            "value": password
+        }
+    }
+    authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest_v1, verify=verify, headers=headers)
+    if authTokenResponse.status_code == 200:
+        return authTokenResponse.json()["token"]["value"]
+
+    else:
+        error_string = "######## First Attempt of authtoken failed with error code {}\n reason: {}\n content: {}".format(
+            authTokenResponse.status_code, authTokenResponse.reason, authTokenResponse.content)
+        demisto.debug(error_string)
+        authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest_v2, verify=verify,
+                                          headers=headers)
+        if authTokenResponse.status_code == 200:
+            return authTokenResponse.json()["token"]["value"]
+
+        else:
+            error_string = "######## Second Attempt of authtoken failed with error code {}\n reason: {}\n content: {}".format(
+                authTokenResponse.status_code, authTokenResponse.reason, authTokenResponse.content)
+            demisto.debug(error_string)
+            raise DemistoException("Authtoken could not be fetched - check the given credentials.")
+
+
+authToken = get_authtoken()
 headers = {
-    "Authentication": ("access " + authToken)
+    "Authentication": ("access " + authToken),
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, '
+                  'like Gecko) Chrome/76.0.3809.132 Safari/537.36'
 }
 command = demisto.command()
 args = demisto.args()
@@ -82,20 +119,16 @@ def displayTable(contents, fields):
         return "Empty results"
 
 
-def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore, genericContext=None):
+def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore):
     machineReadable = {
         "AwakeSecurity": contents,
     }
     entryContext = {
-        ("AwakeSecurity." + outerKey + "(val." + innerKey + "===obj." + innerKey + ")"): contents,
+        ("AwakeSecurity." + outerKey + "(val." + innerKey + "== obj." + innerKey + ")"): contents,
     }
     if dbotScore is not None:
         machineReadable["DBotScore"] = dbotScore
         entryContext["DBotScore"] = dbotScore
-
-    if genericContext:
-        entryContext.update(genericContext)
-
     demisto.results({
         "Type": entryTypes['note'],
         "ContentsFormat": formats['json'],
@@ -206,8 +239,7 @@ def lookupDomain():
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["domain"] = lookup_key
-    genericContext = {"Domain": {"Name": lookup_key}}
-    returnResults(contents, "Domains", "domain", humanReadable, dbotScore, genericContext)
+    returnResults(contents, "Domains", "domain", humanReadable, dbotScore)
 
 
 def lookupEmail():
@@ -260,8 +292,7 @@ def lookupIp():
     # Our product scores devices rather than IP addresses.
     humanReadable = displayTable([contents], humanReadableFields)
     contents["ip"] = lookup_key
-    genericContext = {"IP": {"Address": lookup_key}}
-    returnResults(contents, "IPs", "ip", humanReadable, dbotScore, genericContext)
+    returnResults(contents, "IPs", "ip", humanReadable, dbotScore)
 
 
 def query(lookup_type):
@@ -310,7 +341,7 @@ def queryActivities():
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
         content["query"] = q
-    returnResults(contents, "Activities", "query", humanReadable, None)
+    returnResults(contents, "Activities", "activityId", humanReadable, None)
 
 
 def queryDevices():
@@ -331,7 +362,7 @@ def queryDevices():
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
         content["query"] = q
-    returnResults(contents, "Devices", "query", humanReadable, None)
+    returnResults(contents, "Devices", "deviceId", humanReadable, None)
 
 
 def queryDomains():
@@ -353,7 +384,7 @@ def queryDomains():
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
         content["query"] = q
-    returnResults(contents, "Domains", "query", humanReadable, None)
+    returnResults(contents, "Domains", "name", humanReadable, None)
 
 
 def pcapDownload():
