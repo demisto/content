@@ -489,7 +489,7 @@ script:
         var md = '## Falcon Host Threat Graph Summary\n';
         var ec = {};
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec = {"CrowdStrikeHost.ThreatGraphSummary": res.obj.resources};
+            ec = {"CrowdStrikeHost.ThreatGraphSummary(val.id == obj.id)": res.obj.resources};
             md += tableToMarkdown('', res.obj.resources)
         } else {
             md += 'No result found';
@@ -504,12 +504,12 @@ script:
     }
 
     function threatGraphProcesses() {
-        var ids = argToList(args.id);
+        var ids = argToList(args.process_id);
         var res = doReq('GET', 'threatgraph/combined/processes/summary/v1', {ids: ids});
         var md = '## Falcon Host Threat Graph Processess Summary\n';
         var ec = {};
         if (res.obj.resources && res.obj.resources.length > 0) {
-            ec = {"CrowdStrikeHost.ThreatGraphProcessess": res.obj.resources};
+            ec = {"CrowdStrikeHost.ThreatGraphProcessess(val.id == obj.id)": res.obj.resources};
             md += tableToMarkdown('', res.obj.resources)
         } else {
             md += 'No result found';
@@ -523,7 +523,7 @@ script:
         };
     }
     function threatGraphDetections() {
-        var ids = argToList(args.id);
+        var ids = argToList(args.detection_id);
         var res = doReq('GET', 'threatgraph/combined/detections/summary/v1', {ids: ids});
         var md = '## Falcon Host Threat Graph Detections Summary\n';
         var ec = {};
@@ -1128,28 +1128,98 @@ script:
       description: Crowd Strike threar grpah ID.
       isArray: true
     outputs:
-    - contextPath: CrowdStrikeHost.ThreatGraphSummary
-      description: Threat graph Summary.
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.customer_id
+      description: Customer ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.device_id
+      description: Device ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.edges
+      description: Summary edges.
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.id
+      description: Threat graph ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.object_id
+      description: Object ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.properties
+      description: Threat graph properties.
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.scope
+      description: Threat graph scope.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.timestamp
+      description: Timestamp.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphSummary.vertex_type
+      description: Threat graph vertex type.
+      type: string
     description: Gets the details of Threat Graph Summary.
   - name: cs-threatgraph-processes
     arguments:
-    - name: id
+    - name: process_id
       required: true
       description: ID of the threat graph processes.
       isArray: true
     outputs:
-    - contextPath: CrowdStrikeHost.ThreatGraphProcesses
-      description: Threat graph Processes.
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.customer_id
+      description: Customer ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.device_id
+      description: Device ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.edges
+      description: Threat graph edges.
+      type: unknown
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.id
+      description: Process ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.object_id
+      description: Object ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.properties
+      description: Threat graph properties.
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.scope
+      description: Threat graph scope.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.timestamp
+      description: Timestamp.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphProcesses.vertex_type
+      description: Threat graph vertex type.
+      type: string
     description: Gets the Summary of Threat Graph Processes.
   - name: cs-threatgraph-detections
     arguments:
-    - name: id
+    - name: detection_id
       required: true
       description: ID of  threat graph detection.
       isArray: true
     outputs:
-    - contextPath: CrowdStrikeHost.ThreatGraphDetections
-      description: Threat graph detections
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.customer_id
+      description: Customer ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.device_id
+      description: Device ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.edges
+      description: Threat graph edges.
+      type: unknown
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.id
+      description: Detection ID.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.object_id
+      description: Object ID.
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.properties
+      description: Threat graph properties.
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.scope
+      description: Threat graph scope.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.timestamp
+      description: Timestamp.
+      type: string
+    - contextPath: CrowdStrikeHost.ThreatGraphDetections.vertex_type
+      description: Threat graph vertex type.
+      type: string
     description: Gets the Child Process Threat Graph Detections.
   runonce: false
 tests:
