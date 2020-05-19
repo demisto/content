@@ -474,3 +474,5 @@ outputs:
 - contextPath: Severity
   description: The output severity
   type: string
+tests:
+  - No tests
