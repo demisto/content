@@ -13,16 +13,19 @@ The web server for the integration runs within a long-running Docker container. 
  - It's important that the port is opened for outside communication and that the port is not being used, meaning that no service is listening on it. Therefore, the default port, 443, should not be used.
  - For additional security, we recommend placing the Teams integration webserver behind a reverse proxy (such as NGINX).
  - By default, the web server that the integration starts provides services in HTTP. For communication to be in HTTPS you need to provide a certificate and private key in the following format:
+ 
  ```
- `-----BEGIN CERTIFICATE-----`
- `...`
- `-----END CERTIFICATE-----`
+ -----BEGIN CERTIFICATE-----
+ ...
+ -----END CERTIFICATE-----
 ```
- ```
- `-----BEGIN PRIVATE KEY-----`
- `...`
- `-----END PRIVATE KEY-----`
+
 ```
+ -----BEGIN PRIVATE KEY-----
+ ...
+ -----END PRIVATE KEY-----
+```
+
  - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
  
 ## Setup Examples
