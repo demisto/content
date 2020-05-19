@@ -1,31 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-'''IMPORTS'''
 
-import base64
-import os
-import requests
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from datetime import datetime
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-
-PARAMS = demisto.params()
-USE_SSL = not demisto.params().get('unsecure')
-TENANT_ID = PARAMS.get('tenant_id')
-AUTH_AND_TOKEN_URL = PARAMS.get('auth_id', '').split('@')
-AUTH_ID = AUTH_AND_TOKEN_URL[0]
-ENC_KEY = PARAMS.get('enc_key')
-if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-else:
-    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
-HOST = PARAMS.get('host', 'https://management.azure.com')
-SERVER = HOST[:-1] if HOST.endswith('/') else HOST
 API_VERSION = '2018-06-01'
-SUBSCRIPTION_ID = demisto.args().get('subscription_id') or demisto.params().get('subscription_id')
-BASE_URL = None
 APP_NAME = 'ms-azure-compute'
 
 # Image options to be used in the create_vm_command
@@ -105,13 +86,6 @@ PROVISIONING_STATE_TO_ERRORS = {
     'failed': FAILED_ERR
 }
 
-'''SETUP'''
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-handle_proxy()
-
-
 '''HELPER FUNCTIONS'''
 
 
@@ -165,166 +139,6 @@ def screen_errors(error_message, *args, **kwargs):
     return updated_error_message
 
 
-def validate_provisioning_state(args):
-    """
-    Ensure that the provisioning state of a VM is 'Succeeded'
-
-    For all provisioning states other than 'Succeeded', this method will raise an
-    exception with an informative error message.
-
-    parameter: (dict) args
-        The command arguments passed to either the `azure-vm-start-instance` or
-        `azure-vm-poweroff-instance` commands
-
-    returns:
-        None
-    """
-    response = get_vm(args)
-    # Retrieve relevant properties for checking provisioning state and returning
-    # informative error messages if necessary
-    vm_name = response.get('name')
-    properties = response.get('properties')
-    provisioning_state = properties.get('provisioningState')
-    statuses = properties.get('instanceView', {}).get('statuses')
-
-    # Check if the current ProvisioningState of the VM allows for executing this command
-    if provisioning_state.lower() == 'failed':
-        for status in statuses:
-            status_code = status.get('code')
-            if 'provisioningstate/failed' in status_code.lower():
-                message = status.get('message')
-                err_msg = PROVISIONING_STATE_TO_ERRORS.get('failed')
-                raise Exception(err_msg.format(vm_name, status_code, message))  # type: ignore
-        # In the case that the microsoft API changes and the status code is no longer
-        # relevant, preventing the above exception with its detailed error message from
-        # being raised, then raise the below exception with a more general error message
-        err_msg = 'Cannot execute this command because the ProvisioningState of the VM is \'Failed\'.'
-        raise Exception(err_msg)
-    elif provisioning_state.lower() in PROVISIONING_STATE_TO_ERRORS.keys():
-        err_msg = PROVISIONING_STATE_TO_ERRORS.get(provisioning_state.lower())
-        raise Exception(err_msg)
-
-
-def epoch_seconds(d=None):
-    """
-    Return the number of seconds for given date. If no date, return current.
-
-    parameter: (date) d
-        The date to convert to seconds
-
-    returns:
-        The date in seconds
-    """
-    if not d:
-        d = datetime.utcnow()
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
-
-
-def get_encrypted(content: str, key: str) -> str:
-    """
-
-    Args:
-        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
-            the tenant id
-        key (str): encryption key from Demistobot
-
-    Returns:
-        encrypted timestamp:content
-    """
-    def create_nonce() -> bytes:
-        return os.urandom(12)
-
-    def encrypt(string: str, enc_key: str) -> bytes:
-        """
-
-        Args:
-            enc_key (str):
-            string (str):
-
-        Returns:
-            bytes:
-        """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct)
-    now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
-    return encrypted
-
-
-def get_access_token():
-    integration_context = demisto.getIntegrationContext()
-    access_token = integration_context.get('access_token')
-    valid_until = integration_context.get('valid_until')
-    calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
-    brand_name = calling_context.get('IntegrationBrand', '')
-    instance_name = calling_context.get('IntegrationInstance', '')
-    if access_token and valid_until:
-        if epoch_seconds() < valid_until:
-            return access_token
-    headers = {'Accept': 'application/json'}
-    headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
-    headers['X-Branch-Name'] = CONTENT_BRANCH_NAME
-    headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
-
-    dbot_response = requests.post(
-        TOKEN_RETRIEVAL_URL,
-        headers=headers,
-        data=json.dumps({
-            'app_name': APP_NAME,
-            'registration_id': AUTH_ID,
-            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
-        }),
-        verify=USE_SSL
-    )
-    if dbot_response.status_code not in {200, 201}:
-        msg = 'Error in authentication. Try checking the credentials you entered.'
-        try:
-            demisto.info('Authentication failure from server: {} {} {}'.format(
-                dbot_response.status_code, dbot_response.reason, dbot_response.text))
-            err_response = dbot_response.json()
-            server_msg = err_response.get('message')
-            if not server_msg:
-                title = err_response.get('title')
-                detail = err_response.get('detail')
-                if title:
-                    server_msg = f'{title}. {detail}'
-            if server_msg:
-                msg += ' Server message: {}'.format(server_msg)
-        except Exception as ex:
-            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
-        raise Exception(msg)
-    try:
-        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
-        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
-        parsed_response = dbot_response.json()
-    except ValueError:
-        raise Exception(
-            'There was a problem in retrieving an updated access token.\n'
-            'The response from the Demistobot server did not contain the expected content.'
-        )
-    access_token = parsed_response.get('access_token')
-    expires_in = parsed_response.get('expires_in', 3595)
-    time_now = epoch_seconds()
-    time_buffer = 5  # seconds by which to shorten the validity period
-    if expires_in - time_buffer > 0:
-        # err on the side of caution with a slightly shorter access token validity period
-        expires_in = expires_in - time_buffer
-
-    demisto.setIntegrationContext({
-        'access_token': access_token,
-        'valid_until': time_now + expires_in
-    })
-    return access_token
-
-
 def assign_image_attributes(image):
     """
     Retrieve image properties determined by the chosen image
@@ -345,7 +159,7 @@ def assign_image_attributes(image):
     return sku, publisher, offer, version
 
 
-def create_vm_parameters(args):
+def create_vm_parameters(args, subscription_id):
     """
     Construct the VM object
 
@@ -373,8 +187,8 @@ def create_vm_parameters(args):
     admin_username = args.get('admin_username')
     admin_password = args.get('admin_password')
     nic_name = args.get('nic_name')
-    full_nic_id = '/subscriptions/' + SUBSCRIPTION_ID + '/resourceGroups/'  # type: ignore
-    full_nic_id += resource_group + '/providers/Microsoft.Network/networkInterfaces/' + nic_name
+    full_nic_id = f"/subscriptions/{subscription_id}/resourceGroups/"  # type: ignore
+    full_nic_id += f"{resource_group}/providers/Microsoft.Network/networkInterfaces/{nic_name}"
 
     if not image and not (sku and publisher and version and offer):
         err_msg = 'You must enter a value for the \'os_image\' argument '
@@ -429,108 +243,140 @@ def create_vm_parameters(args):
     return vm
 
 
-def http_request(method, url_suffix=None, data=None, headers=None,
-                 params=None, codes=None, full_url=None, j_son=None):
+class MsGraphClient:
     """
-    A wrapper for requests lib to send our requests and handle requests and responses better
+      Microsoft Graph Client enables authorized access to Create and Manage Azure Virtual Machines.
+      """
 
-    parameter: (string) method
-        A string denoting the http request method to use.
-        Can be 'GET', 'POST, 'PUT', 'DELETE', etc.
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes, server,
+                 subscription_id):
 
-    parameter: (string) url_suffix
-        The API endpoint that determines which data we are trying to access/create/update
-        in our call to the API
+        self.ms_client = MicrosoftClient(
+            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
+            proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes)
+        self.server = server
+        self.subscription_id = subscription_id
 
-    parameter: (dict) data
-        The key/value pairs to be form-encoded
+    def list_resource_groups(self):
+        parameters = {'api-version': '2018-05-01'}
+        return self.ms_client.http_request(method='GET', params=parameters, url_suffix='')
 
-    parameter: (dict) headers
-        The headers to use with the request
+    def list_subscriptions(self):
+        parameters = {'api-version': '2017-05-10'}
+        url = self.server + '/subscriptions'
+        return self.ms_client.http_request(method='GET', full_url=url, params=parameters, url_suffix='')
 
-    parameter: (dict) params
-        The parameters to use with this request
+    def list_vms(self, resource_group):
+        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines"
 
-    parameter: (set) codes
-        The set of status codes against which the status code of the response should be checked
+        parameters = {'api-version': API_VERSION}
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
 
-    parameter: (string) full_url
-        The full url to make a request to. Only necessary in the case that you need to make
-        an API request to an endpoint which differs in its base url from the majority of
-        the API calls in the integration
+    def get_vm(self, resource_group, vm_name):
+        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
+        parameters = {'$expand': 'instanceView', 'api-version': API_VERSION}
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
 
-    parameter: (dict) j_son
-        A JSON serializable Python object to send in the body of the request
+    def create_vm(self, args):
+        # Retrieve relevant command argument
+        resource_group = args.get('resource_group')
+        vm_name = args.get('virtual_machine_name')
 
-    returns:
-        JSON Response Object
-    """
-    token = get_access_token()
-    if not headers:
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    try:
-        url = full_url if full_url else None
-        if not url:
-            url = BASE_URL + url_suffix if url_suffix else BASE_URL
-        r = requests.request(
-            method,
-            url,
-            headers=headers,
-            data=data,
-            params=params,
-            verify=USE_SSL,
-            json=j_son
-        )
-        green_codes = codes if codes else {200, 201, 202, 204}
-        if r.status_code not in green_codes:
-            if r.status_code in {401, 403}:
-                err_msg = ('Permission error in API call to Azure Compute Integration, make sure the application'
-                           ' has access to the relevant resources.')
-            else:
-                err_msg = 'Error in API call to Azure Compute Integration [{}] - {}'.format(r.status_code, r.reason)
-                err = r.json().get('error')
-                if err:
-                    err_msg1 = '\nError code: {}\nError message: {}'.format(err.get('code'), err.get('message'))
-                    err_msg += err_msg1
+        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
+        parameters = {'api-version': API_VERSION}
+
+        # Construct VM object utilizing parameters passed as command arguments
+        payload = create_vm_parameters(args, self.subscription_id)
+        return self.ms_client.http_request(method='PUT', url_suffix=url_suffix, params=parameters, json_data=payload)
+
+    def delete_vm(self, resource_group, vm_name):
+        # Construct endpoint URI suffix (for de-allocation of compute resources)
+        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/deallocate"
+        parameters = {'api-version': API_VERSION}
+
+        # Call API to deallocate compute resources
+        self.ms_client.http_request(method='POST', url_suffix=url_suffix, params=parameters, resp_type="response")
+
+        # Construct endpoint URI suffix (for deletion)
+        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
+        parameters = {'api-version': API_VERSION}
+
+        # Call API to delete
+        return self.ms_client.http_request(
+            method='DELETE', url_suffix=url_suffix, params=parameters, resp_type="response")
+
+    def start_vm(self, resource_group, vm_name):
+        # Retrieve relevant command arguments
+        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/start"
+        parameters = {'api-version': API_VERSION}
+
+        # Call API
+        return self.ms_client.http_request(
+            method='POST', url_suffix=url_suffix, params=parameters, resp_type="response")
+
+    def poweroff_vm(self, resource_group, vm_name):
+        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/powerOff"
+        parameters = {'api-version': API_VERSION}
+
+        return self.ms_client.http_request(
+            method='POST', url_suffix=url_suffix, params=parameters, resp_type="response")
+
+    def validate_provisioning_state(self, resource_group, vm_name):
+        """
+        Ensure that the provisioning state of a VM is 'Succeeded'
+
+        For all provisioning states other than 'Succeeded', this method will raise an
+        exception with an informative error message.
+
+        parameter: (dict) args
+            The command arguments passed to either the `azure-vm-start-instance` or
+            `azure-vm-poweroff-instance` commands
+
+        returns:
+            None
+        """
+        response = self.get_vm(resource_group, vm_name)
+        # Retrieve relevant properties for checking provisioning state and returning
+        # informative error messages if necessary
+
+        properties = response.get('properties')
+        provisioning_state = properties.get('provisioningState')
+        statuses = properties.get('instanceView', {}).get('statuses')
+
+        # Check if the current ProvisioningState of the VM allows for executing this command
+        if provisioning_state.lower() == 'failed':
+            for status in statuses:
+                status_code = status.get('code')
+                if 'provisioningstate/failed' in status_code.lower():
+                    message = status.get('message')
+                    err_msg = PROVISIONING_STATE_TO_ERRORS.get('failed')
+                    raise Exception(err_msg.format(vm_name, status_code, message))  # type: ignore
+            # In the case that the microsoft API changes and the status code is no longer
+            # relevant, preventing the above exception with its detailed error message from
+            # being raised, then raise the below exception with a more general error message
+            err_msg = 'Cannot execute this command because the ProvisioningState of the VM is \'Failed\'.'
             raise Exception(err_msg)
-        response = json.loads(r.content)
-    except ValueError:
-        response = r.content
-
-    return response
+        elif provisioning_state.lower() in PROVISIONING_STATE_TO_ERRORS.keys():
+            err_msg = PROVISIONING_STATE_TO_ERRORS.get(provisioning_state.lower())
+            raise Exception(err_msg)
 
 
-'''MAIN FUNCTIONS / API CALLS'''
+def test_module(client: MsGraphClient, args: dict):
+    # Implicitly will test tenant, enc_token and subscription_id
+    client.list_resource_groups()
+    return 'ok', None, None
 
-# <---------- Test Module ----------> #
-
-
-def test_module():
-    # Implicitly will test TENANT_ID, TOKEN and SUBSCRIPTION_ID
-    list_resource_groups()
-    demisto.results('ok')
 
 # <-------- Resource Groups --------> #
 
-
-def list_resource_groups():
-    parameters = {'api-version': '2018-05-01'}
-    response = http_request('GET', params=parameters, codes={200})
-    return response
-
-
-def list_resource_groups_command():
+def list_resource_groups_command(client: MsGraphClient, args: dict):
     """
     List all Resource Groups belonging to your Azure subscription
 
     returns:
         Resource-Group Objects
     """
-    response = list_resource_groups()
+    response = client.list_resource_groups()
     # Retrieve relevant properties to return to context
     value = response.get('value')
     resource_groups = []
@@ -546,34 +392,19 @@ def list_resource_groups_command():
     title = 'List of Resource Groups'
     human_readable = tableToMarkdown(title, resource_groups, removeNull=True)
     entry_context = {'Azure.ResourceGroup(val.Name && val.Name === obj.Name)': resource_groups}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['text'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': entry_context
-    })
+    return human_readable, entry_context, response
 
 
 # <-------- Subscriptions --------> #
 
-
-def list_subscriptions():
-    parameters = {'api-version': '2017-05-10'}
-    url = SERVER + '/subscriptions'
-    response = http_request('GET', full_url=url, params=parameters, codes={200})
-    return response
-
-
-def list_subscriptions_command():
+def list_subscriptions_command(client: MsGraphClient, args: dict):
     """
     List all subscriptions for this application
 
     returns:
         Subscription Objects
     """
-    response = list_subscriptions()
+    response = client.list_subscriptions()
     # Retrieve relevant properties to return to context
     value = response.get('value')
     subscriptions = []
@@ -588,28 +419,12 @@ def list_subscriptions_command():
     title = 'List of Subscriptions'
     human_readable = tableToMarkdown(title, subscriptions, removeNull=True)
     entry_context = {'Azure.Subscription(val.ID && val.ID === obj.ID)': subscriptions}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['text'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': entry_context
-    })
+    return human_readable, entry_context, response
 
 
 # <-------- Virtual Machines --------> #
 
-def list_vms(resource_group):
-    # Construct endpoint URI suffix
-    url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines'
-    parameters = {'api-version': API_VERSION}
-    # Call API
-    response = http_request('GET', url_endpoint, params=parameters, codes={200})
-    return response
-
-
-def list_vms_command():
+def list_vms_command(client: MsGraphClient, args: dict):
     """
     List the VM instances in the specified Resource Group
 
@@ -619,8 +434,8 @@ def list_vms_command():
     returns:
         Virtual Machine Objects
     """
-    resource_group = demisto.args().get('resource_group')
-    response = list_vms(resource_group)
+    resource_group = args.get('resource_group')
+    response = client.list_vms(resource_group)
 
     vm_objects_list = response.get('value')
 
@@ -649,32 +464,10 @@ def list_vms_command():
     table_headers = ['Name', 'ID', 'Size', 'OS', 'Location', 'ProvisioningState', 'ResourceGroup']
     human_readable = tableToMarkdown(title, vms, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vms}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['text'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': entry_context
-    })
+    return human_readable, entry_context, response
 
 
-def get_vm(args):
-    # Retrieve relevant command arguments
-    resource_group = args.get('resource_group')
-    vm_name = args.get('virtual_machine_name')
-
-    # Construct endpoint URI suffix
-    url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name
-    parameters = {'$expand': 'instanceView', 'api-version': API_VERSION}
-
-    # Call API
-    response = http_request('GET', url_endpoint, params=parameters, codes={200})
-
-    return response
-
-
-def get_vm_command():
+def get_vm_command(client: MsGraphClient, args: dict):
     """
     Get the properties of a specified Virtual Machine
 
@@ -687,11 +480,13 @@ def get_vm_command():
     returns:
         Virtual Machine Object
     """
-    args = demisto.args()
-    response = get_vm(args)
+    resource_group = args.get('resource_group')
+    vm_name = args.get('virtual_machine_name')
+
+    response = client.get_vm(resource_group, vm_name)
 
     # Retrieve relevant properties to return to context
-    vm_name = response.get('name').lower()
+    vm_name = vm_name.lower()  # type: ignore
     properties = response.get('properties')
     os_disk = properties.get('storageProfile', {}).get('osDisk')
     datadisk = os_disk.get('diskSizeGB', 'NA')
@@ -722,35 +517,10 @@ def get_vm_command():
     table_headers = ['Name', 'ID', 'Size', 'OS', 'ProvisioningState', 'Location', 'PowerState']
     human_readable = tableToMarkdown(title, vm, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': entry_context
-    })
+    return human_readable, entry_context, response
 
 
-def create_vm(args):
-    # Retrieve relevant command arguments
-    resource_group = args.get('resource_group')
-    vm_name = args.get('virtual_machine_name')
-
-    # Construct endpoint URI suffix
-    url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name
-    parameters = {'api-version': API_VERSION}
-
-    # Construct VM object utilizing parameters passed as command arguments
-    payload = create_vm_parameters(args)
-
-    # Call API
-    response = http_request('PUT', url_endpoint, params=parameters, j_son=payload)
-
-    return response
-
-
-def create_vm_command():
+def create_vm_command(client: MsGraphClient, args: dict):
     """
     Create a virtual machine instance with the specified OS image
 
@@ -794,8 +564,7 @@ def create_vm_command():
     returns:
         Virtual Machine Object
     """
-    args = demisto.args()
-    response = create_vm(args)
+    response = client.create_vm(args)
 
     # Retrieve relevant properties to return to context
     vm_name = response.get('name').lower()
@@ -820,39 +589,10 @@ def create_vm_command():
     title = 'Created Virtual Machine "{}"'.format(vm_name)
     human_readable = tableToMarkdown(title, vm, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': entry_context
-    })
+    return human_readable, entry_context, response
 
 
-def delete_vm(args):
-    # Retrieve relevant command arguments
-    resource_group = args.get('resource_group')
-    vm_name = args.get('virtual_machine_name')
-
-    # Construct endpoint URI suffix (for de-allocation of compute resources)
-    url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name + '/deallocate'
-    parameters = {'api-version': API_VERSION}
-
-    # Call API to deallocate compute resources
-    http_request('POST', url_endpoint, params=parameters, codes={200, 202})
-
-    # Construct endpoint URI suffix (for deletion)
-    url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name
-    parameters = {'api-version': API_VERSION}
-
-    # Call API to delete
-    response = http_request('DELETE', url_endpoint, params=parameters, codes={200, 202, 204})
-
-    return response
-
-
-def delete_vm_command():
+def delete_vm_command(client: MsGraphClient, args: dict):
     """
     Delete a specified Virtual Machine
 
@@ -865,28 +605,15 @@ def delete_vm_command():
     returns:
         Success message to the war room
     """
-    args = demisto.args()
-    delete_vm(args)
-    success_msg = '"{}" VM Deletion Successfully Initiated'.format(args.get('virtual_machine_name'))
-    demisto.results(success_msg)
-
-
-def start_vm(args):
-    # Retrieve relevant command arguments
     resource_group = args.get('resource_group')
     vm_name = args.get('virtual_machine_name')
 
-    # Construct endpoint URI suffix
-    url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name + '/start'
-    parameters = {'api-version': API_VERSION}
-
-    # Call API
-    response = http_request('POST', url_endpoint, params=parameters, codes={202})
-
-    return response
+    client.delete_vm(resource_group, vm_name)
+    success_msg = '"{}" VM Deletion Successfully Initiated'.format(vm_name)
+    return success_msg, None, None
 
 
-def start_vm_command():
+def start_vm_command(client: MsGraphClient, args: dict):
     """
     Power-on a specified Virtual Machine
 
@@ -899,14 +626,14 @@ def start_vm_command():
     returns:
         Virtual Machine Object
     """
-    args = demisto.args()
-    vm_name = args.get('virtual_machine_name').lower()
+    resource_group = args.get('resource_group')
+    vm_name = args.get('virtual_machine_name')
 
     # Raise an exception if the VM isn't in the proper provisioning state
-    validate_provisioning_state(args)
+    client.validate_provisioning_state(resource_group, vm_name)
 
-    start_vm(args)
-
+    client.start_vm(resource_group, vm_name)
+    vm_name = vm_name.lower()   # type: ignore
     vm = {
         'Name': vm_name,
         'ResourceGroup': args.get('resource_group'),
@@ -916,32 +643,11 @@ def start_vm_command():
     title = 'Power-on of Virtual Machine "{}" Successfully Initiated'.format(vm_name)
     human_readable = tableToMarkdown(title, vm, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': vm,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': entry_context
-    })
+
+    return human_readable, entry_context, vm
 
 
-def poweroff_vm(args):
-    # Retrieve relevant command arguments
-    resource_group = args.get('resource_group')
-    vm_name = args.get('virtual_machine_name')
-
-    # Construct endpoint URI suffix
-    url_endpoint = resource_group + '/providers/Microsoft.Compute/virtualMachines/' + vm_name + '/powerOff'
-    parameters = {'api-version': API_VERSION}
-
-    # Call API
-    response = http_request('POST', url_endpoint, params=parameters, codes={202})
-
-    return response
-
-
-def poweroff_vm_command():
+def poweroff_vm_command(client: MsGraphClient, args: dict):
     """
     Power-off a specified Virtual Machine
 
@@ -954,14 +660,15 @@ def poweroff_vm_command():
     returns:
         Virtual Machine Object
     """
-    args = demisto.args()
-    vm_name = args.get('virtual_machine_name').lower()
+    resource_group = args.get('resource_group')
+    vm_name = args.get('virtual_machine_name')
 
     # Raise an exception if the VM isn't in the proper provisioning state
-    validate_provisioning_state(args)
+    client.validate_provisioning_state(resource_group, vm_name)
 
-    poweroff_vm(args)
+    client.poweroff_vm(resource_group, vm_name)
 
+    vm_name = vm_name.lower()   # type: ignore
     vm = {
         'Name': vm_name,
         'ResourceGroup': args.get('resource_group'),
@@ -971,42 +678,59 @@ def poweroff_vm_command():
     title = 'Power-off of Virtual Machine "{}" Successfully Initiated'.format(vm_name)
     human_readable = tableToMarkdown(title, vm, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': vm,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': entry_context
-    })
+
+    return human_readable, entry_context, vm
 
 
-'''COMMAND SWITCHBOARD'''
+def main():
+    params: dict = demisto.params()
+    server = params.get('host', 'https://management.azure.com').rstrip('/')
+    tenant = params.get('tenant_id')
+    auth_and_token_url = params.get('auth_id')
+    enc_key = params.get('enc_key')
+    verify = not params.get('unsecure', False)
+    subscription_id = demisto.args().get('subscription_id') or demisto.params().get('subscription_id')
+    proxy: bool = params.get('proxy', False)
+    self_deployed: bool = params.get('self_deployed', False)
+    ok_codes = (200, 201, 202, 204)
 
-commands = {
-    'azure-vm-list-instances': list_vms_command,
-    'azure-vm-get-instance-details': get_vm_command,
-    'azure-vm-start-instance': start_vm_command,
-    'azure-vm-poweroff-instance': poweroff_vm_command,
-    'azure-vm-create-instance': create_vm_command,
-    'azure-vm-delete-instance': delete_vm_command,
-    'azure-list-resource-groups': list_resource_groups_command,
-    'azure-list-subscriptions': list_subscriptions_command
-}
+    commands = {
+        'test-module': test_module,
+        'azure-vm-list-instances': list_vms_command,
+        'azure-vm-get-instance-details': get_vm_command,
+        'azure-vm-start-instance': start_vm_command,
+        'azure-vm-poweroff-instance': poweroff_vm_command,
+        'azure-vm-create-instance': create_vm_command,
+        'azure-vm-delete-instance': delete_vm_command,
+        'azure-list-resource-groups': list_resource_groups_command,
+        'azure-list-subscriptions': list_subscriptions_command
+    }
 
-'''EXECUTION'''
+    '''EXECUTION'''
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
 
-try:
-    # Initial setup
-    if not SUBSCRIPTION_ID:
-        return_error('A subscription ID must be provided.')
-    BASE_URL = SERVER + '/subscriptions/' + SUBSCRIPTION_ID + '/resourceGroups/'
+    try:
+        # Initial setup
+        if not subscription_id:
+            return_error('A subscription ID must be provided.')
+        base_url = f"{server}/subscriptions/{subscription_id}/resourceGroups/"
 
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() in commands.keys():
-        commands[demisto.command()]()
+        client = MsGraphClient(
+            base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME,
+            verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server,
+            subscription_id=subscription_id)
 
-except Exception as e:
-    screened_error_message = screen_errors(str(e), TENANT_ID)
-    return_error(screened_error_message)
+        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+
+    except Exception as e:
+        screened_error_message = screen_errors(str(e), tenant)
+        return_error(screened_error_message)
+
+
+from MicrosoftApiModule import *  # noqa: E402
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()
