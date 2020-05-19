@@ -1,49 +1,74 @@
 id: forcepoint test
 version: -1
 name: forcepoint test
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: b3e76235-b461-46d2-80aa-c53a64d18b7c
+  "0":
+    id: "0"
+    taskid: e65b21ec-c1fb-404e-8bd8-2003e36f11e6
     type: start
     task:
-      id: b3e76235-b461-46d2-80aa-c53a64d18b7c
+      id: e65b21ec-c1fb-404e-8bd8-2003e36f11e6
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
-  '1':
-    id: '1'
-    taskid: c45723e1-b428-41da-89ad-7e11c82c390e
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a5a05f1d-ac1e-4b00-885f-d17739c10f9b
     type: regular
     task:
-      id: c45723e1-b428-41da-89ad-7e11c82c390e
+      id: a5a05f1d-ac1e-4b00-885f-d17739c10f9b
       version: -1
       name: Delete Context
       description: 'Deletes previous context '
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
-      all: yes
-      key: ''
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
-  '2':
-    id: '2'
-    taskid: d28c1a0a-18eb-429c-803c-b9fa04bdf384
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1761af03-4d2e-4ff6-825c-467ecfb15549
     type: regular
     task:
-      id: d28c1a0a-18eb-429c-803c-b9fa04bdf384
+      id: 1761af03-4d2e-4ff6-825c-467ecfb15549
       version: -1
       name: Add new 'TEST' category
       description: Will Add new API-managed category.
@@ -53,18 +78,31 @@ tasks:
       brand: Forcepoint
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
-      categoryDescription: ''
-      categoryName: NEW TEST CATEGORY
-      parent: ''
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
-  '3':
-    id: '3'
-    taskid: 8ac94280-84c1-465f-88da-a48ac24c5eaa
+      categoryDescription: {}
+      categoryName:
+        simple: NEW TEST CATEGORY
+      parent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c7b2a8d7-3f6b-41af-8acc-f7faf6307b1b
     type: regular
     task:
-      id: 8ac94280-84c1-465f-88da-a48ac24c5eaa
+      id: c7b2a8d7-3f6b-41af-8acc-f7faf6307b1b
       version: -1
       name: Get new category details
       description: Query by category name
@@ -74,41 +112,69 @@ tasks:
       brand: Forcepoint
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
-      categoryId: ''
-      categoryName: ${Forcepoint.AddCategory.CategoryName}
-      extend-context: ''
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
-  '4':
-    id: '4'
-    taskid: 8d9036f8-48b8-44fb-84e2-2ac5fe0a0d0a
+      categoryId: {}
+      categoryName:
+        simple: ${Forcepoint.AddCategory.CategoryName}
+      extend-context: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6d06cdab-aab2-4d44-8b8e-82ff0d8db139
     type: regular
     task:
-      id: 8d9036f8-48b8-44fb-84e2-2ac5fe0a0d0a
+      id: 6d06cdab-aab2-4d44-8b8e-82ff0d8db139
       version: -1
       name: Add URLs to 'TEST' category
-      description: "Using the ID associated with the new category.\nAdd 'https://test.com',\
-        \ 'http://dem.com' to category URL list."
+      description: |-
+        Using the ID associated with the new category.
+        Add 'https://test.com', 'http://dem.com' to category URL list.
       script: Forcepoint|||fp-add-address-to-category
       type: regular
       iscommand: true
       brand: Forcepoint
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
-      categoryName: ${Forcepoint.CategoryDetails.CategoryName}
-      ips: ''
-      urls: https://test.com,http://dem.com
-      categoryID: ''
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
-  '5':
-    id: '5'
-    taskid: 1bd3107e-0132-4560-8b91-6a71ad091ca3
+      categoryID: {}
+      categoryName:
+        simple: ${Forcepoint.CategoryDetails.CategoryName}
+      ips: {}
+      urls:
+        simple: https://test.com,http://dem.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 69c7eb99-8e54-42a9-840e-28435cb5e579
     type: regular
     task:
-      id: 1bd3107e-0132-4560-8b91-6a71ad091ca3
+      id: 69c7eb99-8e54-42a9-840e-28435cb5e579
       version: -1
       name: Delete URL from 'TEST' category
       description: Delete https://test.com from the category URL list
@@ -118,19 +184,33 @@ tasks:
       brand: Forcepoint
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
-      categoryName: ''
-      ips: ''
-      urls: https://test.com
-      categoryID: ${Forcepoint.CategoryDetails.CategoryID}
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
-  '6':
-    id: '6'
-    taskid: cc9e9986-06e7-4986-86a0-cc90cbcada96
+      categoryID:
+        simple: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryName: {}
+      ips: {}
+      urls:
+        simple: https://test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2c7ccf7c-2f1e-43ae-89a2-8375575aef74
     type: regular
     task:
-      id: cc9e9986-06e7-4986-86a0-cc90cbcada96
+      id: 2c7ccf7c-2f1e-43ae-89a2-8375575aef74
       version: -1
       name: Get 'TEST' category details after alterations
       script: Forcepoint|||fp-get-category-detailes
@@ -140,17 +220,30 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+      - "14"
     scriptarguments:
-      categoryId: ${Forcepoint.CategoryDetails.CategoryID}
-      categoryName: ''
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
-  '8':
-    id: '8'
-    taskid: ece37b21-c90b-4240-8681-98c7f46bb12f
+      categoryId:
+        simple: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e265c9ba-ef5e-473d-852c-e680ee948a8b
     type: regular
     task:
-      id: ece37b21-c90b-4240-8681-98c7f46bb12f
+      id: e265c9ba-ef5e-473d-852c-e680ee948a8b
       version: -1
       name: Delete 'TEST' category
       description: Using the category ID
@@ -159,12 +252,250 @@ tasks:
       iscommand: true
       brand: Forcepoint
     scriptarguments:
-      categoryIDs: ${Forcepoint.CategoryDetails.CategoryID}
-      categoryNames: ''
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1290,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+      categoryIDs:
+        simple: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryNames: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 08532f9c-3c23-4382-8d4e-17cd76a4d11e
+    type: regular
+    task:
+      id: 08532f9c-3c23-4382-8d4e-17cd76a4d11e
+      version: -1
+      name: Set urls
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL
+      value:
+        simple: '["https://www.1.com","https://www.2.com","https://www.3.com","https://www.4.com","https://www.5.com","https://www.6.com","https://www.7.com","https://www.8.com","https://www.9.com","https://www.10.com"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 44d7ba13-30c5-45fd-88d3-722e417861c0
+    type: regular
+    task:
+      id: 44d7ba13-30c5-45fd-88d3-722e417861c0
+      version: -1
+      name: Try to add 10 URLs in one command
+      description: |-
+        Using the ID associated with the new category.
+        Add 'https://test.com', 'http://dem.com' to category URL list.
+      script: Forcepoint|||fp-add-address-to-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      categoryID: {}
+      categoryName:
+        simple: ${Forcepoint.CategoryDetails.CategoryName}
+      ips: {}
+      urls:
+        simple: ${URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 0c043dc4-9d94-4bf2-8cba-16c3df4b0aad
+    type: condition
+    task:
+      id: 0c043dc4-9d94-4bf2-8cba-16c3df4b0aad
+      version: -1
+      name: Checking if add 10 URLS in one command?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Forcepoint.AddAddressToCategory.Totals.AddedURLs
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a86a93e2-f868-414c-865f-5cef64dfaad6
+    type: regular
+    task:
+      id: a86a93e2-f868-414c-865f-5cef64dfaad6
+      version: -1
+      name: try to delete 10 URL in one command
+      description: Delete https://test.com from the category URL list
+      script: Forcepoint|||fp-delete-address-from-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      categoryID:
+        simple: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryName: {}
+      ips: {}
+      urls:
+        simple: ${URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: eed34fb1-d0f2-46e1-8ecc-2d08ede726e4
+    type: condition
+    task:
+      id: eed34fb1-d0f2-46e1-8ecc-2d08ede726e4
+      version: -1
+      name: Checking if deleted 10 URLs in one command?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Forcepoint.DeleteAddressesFromCategory.Totals.DeletedURLs
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 67aaaf6b-5b3f-43f5-825d-9beb07576403
+    type: title
+    task:
+      id: 67aaaf6b-5b3f-43f5-825d-9beb07576403
+      version: -1
+      name: Test run commands with array
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2360,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
+outputs: []
 fromversion: 5.0.0
 description: ''
