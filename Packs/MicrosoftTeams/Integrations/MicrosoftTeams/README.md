@@ -143,7 +143,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Name | The integration instance name.<br>If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
+| Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
 | bot_id | Bot ID | True |
 | bot_password | Bot Password | True |
 | team | Default team - team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter | True |
