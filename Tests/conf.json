@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "BastilleNetworks",
+            "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
         },
         {
