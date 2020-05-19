@@ -7,24 +7,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
+* QRadar
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* appendIndicatorField
 * qradar-update-reference-set-value
+* appendIndicatorField
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| QRadarBlackListDomainReferenceSetName | The name of the QRadar black list Domain reference set to insert the data to. |  |  | Optional |
-|  |  |  |  | Optional |
-| QRadarWhiteListDomainReferenceSetName | The name of the QRadar white list Domain reference set to insert the data in to. |  |  | Optional |
-| QRadarWatchListDomainReferenceSetName | The name of the QRadar watch list Domain reference set to insert the data in to. |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| QRadarBlackListDomainReferenceSetName | The name of the QRadar black list Domain reference set to insert the data to. |  | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| QRadarWhiteListDomainReferenceSetName | The name of the QRadar white list Domain reference set to insert the data in to. |  | Optional |
+| QRadarWatchListDomainReferenceSetName | The name of the QRadar watch list Domain reference set to insert the data in to. |  | Optional |
 
 ## Playbook Outputs
 ---
