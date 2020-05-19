@@ -259,11 +259,14 @@ class FeedIndicatorType(object):
 
 
 def auto_detect_indicator_type(indicator_value):
-    """Infer the type of the indicator.
-    Args:
-        indicator_value(str): The indicator whose type we want to check.
-    Returns:
-        str. The type of the indicator.
+    """
+      Infer the type of the indicator.
+
+      :type indicator_value: ``str``
+      :param indicator_value: The indicator whose type we want to check. (required)
+
+      :return: The type of the indicator.
+      :rtype: ``str``
     """
     if re.match(ipv4cidrRegex, indicator_value):
         return FeedIndicatorType.CIDR
