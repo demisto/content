@@ -487,8 +487,14 @@ def test_function(client: MsGraphClient, args):
             time_from = parse_date_range(fetch_time, date_format=timestamp_format)[0]
             time_to = datetime.now().strftime(timestamp_format)
 
-            client.search_alerts(last_modified=None, severity=None, category=None, vendor=None, time_from=time_from,
-                                 time_to=time_to, filter_query=filter_query)['value']
+            try:
+                client.search_alerts(last_modified=None, severity=None, category=None, vendor=None, time_from=time_from,
+                                     time_to=time_to, filter_query=filter_query)['value']
+            except Exception as e:
+                if 'Invalid ODATA query filter' in e.args[0]:
+                    raise DemistoException("Wrong filter format, correct usage: {property} eq '{property-value}'\n\n" +
+                                           e.args[0])
+                raise e
 
         return 'ok', None, None
 
