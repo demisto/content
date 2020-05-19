@@ -4,7 +4,7 @@
     "type": "classification",
     "description": "Classifies phishing email messages.",
 	"version": -1,
-	"defaultIncidentType": "",
+	"defaultIncidentType": "Phishing",
 	"transformer": {
 		"simple": "brand",
 		"complex": null

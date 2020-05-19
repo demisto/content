@@ -4,15 +4,11 @@
     "type": "classification",
     "id": "Cortex XDR - IR",
     "description": "Classifies Cortex XDR incidents.",
-	"custom": true,
-	"brandName": "Cortex XDR - IR",
 	"defaultIncidentType": "",
-	"custom": true,
 	"keyTypeMap": {
 		"PortScan": "Cortex XDR Port Scan",
 		"XDR Incident": "Cortex XDR Incident"
 	},
-	"sortValues": null,
 	"transformer": {
 		"complex": {
 			"accessor": "",
@@ -35,6 +31,5 @@
 		},
 		"simple": ""
 	},
-	"unclassifiedCases": {},
 	"version": -1
 }

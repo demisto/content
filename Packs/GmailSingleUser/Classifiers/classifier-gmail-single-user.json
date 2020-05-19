@@ -4,7 +4,7 @@
     "type": "classification",
     "description": "Classifies Gmail phishing email messages.",
 	"version": -1,
-	"defaultIncidentType": "",
+	"defaultIncidentType": "Phishing",
 	"transformer": {
 		"simple": "Type",
 		"complex": null

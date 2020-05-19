@@ -84,5 +84,5 @@ script:
 fromversion: 5.0.0
 tests:
   - No tests
-defaultClassifier: Smokescreen IllusionBLACK
-defaultMapperIn: Smokescreen IllusionBLACK-mapper
+defaultClassifier: Sixgill
+defaultMapperIn: Sixgill-mapper
