@@ -1,20 +1,15 @@
 from __future__ import print_function
 import os
-import re
 import sys
-import abc
 import json
 import datetime
 import argparse
-import requests
-import yaml
 
-from demisto_sdk.commands.common.constants import INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, \
-    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, INDICATOR_TYPES_DIR
-from demisto_sdk.commands.common.tools import print_error, print_warning, get_last_release_version, \
-    filter_packagify_changes, is_file_path_in_pack, \
-    run_command, server_version_compare, old_get_release_notes_file_path, old_get_latest_release_notes_text, get_remote_file
-from demisto_sdk.commands.validate.file_validator import FilesValidator
+from demisto_sdk.commands.common.tools import print_error, get_pack_name, run_command
+
+
+PACKS_DIR = 'Packs'
+PACK_METADATA = 'pack_metadata.json'
 
 
 def get_all_modified_release_note_files(git_sha1):
@@ -35,7 +30,50 @@ def get_all_modified_release_note_files(git_sha1):
         sys.exit(1)
 
 
+def get_pack_name_from_metdata(file_path):
+    pack_dir = get_pack_name(file_path)
+    pack_metadata_path = os.path.join(PACKS_DIR, pack_dir, PACK_METADATA)
+    with open(pack_metadata_path, 'r') as json_file:
+        pack_metadata = json.load(json_file)
+        pack_name = pack_metadata.get('name')
+    return pack_name
 
-def generate_release_notes_summary():
-    pass
 
+def get_release_notes_dict(release_notes_files):
+    release_notes_dict = {}
+    for file_path in release_notes_files:
+        with open(file_path, 'r') as rn:
+            pack_name = get_pack_name_from_metdata(file_path)
+            release_notes_dict[pack_name] = release_notes_dict.get(pack_name, '') + rn.read()
+    return release_notes_dict
+
+
+def generate_release_notes_summary(release_notes_dict, version, asset_id):
+    release_notes = f'## Cortex XSOAR Content Release Notes for version {version} ({asset_id})\n'
+    current_date = datetime.now().strftime("%d %B %Y")
+    release_notes += f'##### Published on {current_date}\n'
+
+    for pack_name, pack_release_notes in sorted(release_notes_dict.items()):
+        release_notes += f'### {pack_name}\n{pack_release_notes}\n'
+
+    with open('release-notes.md', 'w') as outfile:
+        outfile.write(release_notes)
+
+
+
+def main():
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('version', help='Release version')
+    arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
+    arg_parser.add_argument('asset_id', help='Asset ID')
+    # arg_parser.add_argument('--github-token', help='Github token')
+    args = arg_parser.parse_args()
+
+    release_notes_files = get_all_modified_release_note_files(args.git_sha1)
+    release_notes_dict = get_release_notes_dict(release_notes_files)
+    generate_release_notes_summary(release_notes_dict, args.version, args.asset_id)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
