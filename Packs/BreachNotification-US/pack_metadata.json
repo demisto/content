@@ -1,9 +1,9 @@
 {
-    "name": "Breach Notification - US",
+    "name": "US - Breach Notification",
     "description": "This pack performs a PII classification check and helps with the required notification process in case of a data breach in the United States.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
+    "author": "soar",
     "url": "",
     "email": "",
     "categories": [],
@@ -22,7 +22,8 @@
         "Breach",
         "Breach Notification",
         "PII",
-        "Compliance"
+        "Compliance",
+        "Personal Information"
     ],
     "dependencies": {}
 }

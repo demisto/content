@@ -1,11 +1,11 @@
 {
-    "TypeName": "Breach Notification",
+    "TypeName": "US Breach Notification",
     "kind": "details",
     "layout": {
         "TypeName": "",
-        "id": "Breach Notification",
+        "id": "US Breach Notification",
         "kind": "details",
-        "modified": "2020-05-07T12:59:24.319873836Z",
+        "modified": "2020-05-20T09:23:07.03466325Z",
         "name": "",
         "system": false,
         "tabs": [
@@ -15,7 +15,7 @@
                 "name": "Data Breach Information",
                 "sections": [
                     {
-                        "description": "The California law defines a \"personal data breach\" as:\n\"A person or business that conducts business in California, and that owns or licenses computerized data that includes personal information, shall disclose a breach of the security of the system following discovery or notification of the breach in the security of the data to a resident of California (1) whose unencrypted personal information was, or is reasonably believed to have been, acquired by an unauthorized person, or, (2) whose encrypted personal information was, or is reasonably believed to have been, acquired by an unauthorized person and the encryption key or security credential was, or is reasonably believed to have been, acquired by an unauthorized person and the person or business that owns or licenses the encrypted information has a reasonable belief that the encryption key or security credential could render that personal information readable or usable. The disclosure shall be made in the most expedient time possible and without unreasonable delay, consistent with the legitimate needs of law enforcement, as provided in subdivision (c), or any measures necessary to determine the scope of the breach and restore the reasonable integrity of the data system. - http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82.",
+                        "description": "All 50 US states, Washington, DC, and most US territories (including Puerto Rico, Guam, and the Virgin Islands) have passed breach notification laws that require notifying state residents and the Attorney General in case of personally identifiable information (PII) security breach.\nA security breach involving personal information, such as Social Security numbers and other government identifiers, credit card and financial account numbers, health or medical information, insurance ID, tax ID, birthdate, as well as online account credentials, digital signatures and/or biometrics.",
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
@@ -23,18 +23,10 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "sectorofaffectedparty",
-                                "height": 24,
-                                "id": "b390b0b0-d878-11e9-b030-ad5c55d12ecb",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "sizenumberofemployees",
                                 "height": 24,
                                 "id": "b88bde00-d878-11e9-b030-ad5c55d12ecb",
-                                "index": 1,
+                                "index": 0,
                                 "startCol": 0
                             },
                             {
@@ -42,7 +34,7 @@
                                 "fieldId": "datetimeofthebreach",
                                 "height": 24,
                                 "id": "cb336910-d878-11e9-b030-ad5c55d12ecb",
-                                "index": 2,
+                                "index": 1,
                                 "startCol": 0
                             },
                             {
@@ -50,7 +42,7 @@
                                 "fieldId": "occurred",
                                 "height": 24,
                                 "id": "69fe3900-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 3,
+                                "index": 2,
                                 "startCol": 0
                             },
                             {
@@ -59,7 +51,7 @@
                                 "fieldId": "approximatenumberofaffecteddatasubjects",
                                 "height": 24,
                                 "id": "6e9f5f70-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 4,
+                                "index": 3,
                                 "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "startCol": 0
                             },
@@ -69,13 +61,23 @@
                                 "fieldId": "isthedatasubjecttodpia",
                                 "height": 24,
                                 "id": "91d8b4f0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 4,
+                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "residentnotificationoption",
+                                "height": 24,
+                                "id": "1e2a9780-95d2-11ea-ac31-39f1fe85d04e",
                                 "index": 5,
                                 "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "measurestomitigate",
                                 "height": 24,
                                 "id": "9c0c8dc0-d881-11e9-b030-ad5c55d12ecb",
@@ -130,6 +132,16 @@
                                 "height": 24,
                                 "id": "86c9e570-d881-11e9-b030-ad5c55d12ecb",
                                 "index": 5,
+                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "piidatatype",
+                                "height": 24,
+                                "id": "f7f49920-99c9-11ea-9e17-5dc3e5f41e56",
+                                "index": 6,
                                 "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "startCol": 2
                             }
@@ -203,35 +215,6 @@
                         "y": 0
                     },
                     {
-                        "description": "Affected individuals contact information. Used in case the breach is causing high risk to individuals.",
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "sfmcsjvzpo-9d8332c0-d882-11e9-b030-ad5c55d12ecb",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "affectedindividualscontactinformation",
-                                "height": 110,
-                                "id": "bbf05a30-d882-11e9-b030-ad5c55d12ecb",
-                                "index": 0,
-                                "listId": "sfmcsjvzpo-9d8332c0-d882-11e9-b030-ad5c55d12ecb",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Affected Individuals Contact Information",
-                        "static": false,
-                        "w": 2,
-                        "x": 1,
-                        "y": 4
-                    },
-                    {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
@@ -290,7 +273,7 @@
                                 "fieldId": "otherpiidatabreached",
                                 "height": 24,
                                 "id": "818ab9f0-904f-11ea-8355-67a9bcbc519c",
-                                "index": 6,
+                                "index": 7,
                                 "startCol": 0
                             }
                         ],
@@ -348,6 +331,62 @@
                         "minW": 1,
                         "moved": false,
                         "name": "Contact Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-088e1080-943f-11ea-8a99-d7b88973db45",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_attachment",
+                                "height": 55,
+                                "id": "0880f121-943f-11ea-8a99-d7b88973db45",
+                                "index": 1,
+                                "isVisible": true,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Attachments",
+                        "static": false,
+                        "type": "",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-4cae4bf0-947f-11ea-b67b-e1b3c6a3210f",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "residentsemailaddress",
+                                "height": 110,
+                                "id": "bcc0d0b0-951b-11ea-8eff-eb5773da5358",
+                                "index": 0,
+                                "listId": "sfmcsjvzpo-4cae4bf0-947f-11ea-b67b-e1b3c6a3210f",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Residents Email Address",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -628,10 +667,10 @@
                 "type": "canvas"
             }
         ],
-        "typeId": "Breach Notification",
+        "typeId": "US Breach Notification",
         "version": -1
     },
-    "typeId": "Breach Notification",
+    "typeId": "US Breach Notification",
     "version": -1,
     "fromVersion": "5.0.0"
 }
