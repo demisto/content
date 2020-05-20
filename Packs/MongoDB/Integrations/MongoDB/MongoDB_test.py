@@ -176,4 +176,7 @@ def test_query(mocker):
     client = Client(['aaaaa'], 'a', 'b', 'd')
     mocker.patch.object(Client, 'get_collection', return_value=MockedQuery)
     readable_outputs, outputs, raw_response = search_query(client, 'a', '{}', '50')
-    assert all(isinstance(obj, str) for obj in raw_response)
+    time = raw_response[0]['time']
+    _id = raw_response[0]['_id']
+    assert isinstance(_id, str)
+    assert isinstance(time, str)
