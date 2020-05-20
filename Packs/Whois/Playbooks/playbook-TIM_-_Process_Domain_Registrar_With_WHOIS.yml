@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.5.0
 name: TIM - Process Domain Registrar With WHOIS
 description: This playbook runs the whois enrichment on domain indicators provided
-  by an indicator query such as "type:Domain". The playbook than compares the domains
+  by an indicator query such as "type:Domain". The playbook then compares the domain
   registrars against the Cortex XSOAR list provided in the inputs.
 starttaskid: "0"
 tasks:
@@ -101,7 +101,7 @@ tasks:
     task:
       id: f90a2267-1595-40d6-87a6-8e25335c3ea2
       version: -1
-      name: Run Whois on indicators
+      name: Run whois on indicators
       description: Provides data enrichment for domains.
       script: Whois1|||whois
       type: regular
@@ -136,7 +136,7 @@ tasks:
       version: -1
       name: FilterByList
       description: Checks whether the specified item is in a list. The default list
-        is the Demisto Indicators Whitelist.
+        is the Cortex XSOAR Indicators Whitelist.
       scriptName: FilterByList1
       type: regular
       iscommand: false
@@ -213,9 +213,9 @@ tasks:
     task:
       id: 061481f3-9fc5-4689-8288-1c00aec0c05d
       version: -1
-      name: Set non approved domains
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+      name: Set not-approved domains
+      description: Domains whose registrar does not appear in the list defined in inputs.
+        ApprovedRegistrarsListName context key are added to NonApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -305,8 +305,7 @@ tasks:
       id: 08277e99-e1e6-49c1-8ddb-bdc9ce072a2d
       version: -1
       name: Set domains without Whois results
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+      description: Domains with no registrar information are added to NonApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -356,8 +355,8 @@ tasks:
       id: c7a3c947-cfdf-4656-8245-cfbff77ca48e
       version: -1
       name: Set domains by approved registrars
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+      description: Domains whose registrar appears in the list defined in inputs.ApprovedRegistrarsListName context
+        key are added to ApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -596,7 +595,7 @@ inputs:
 - key: ApprovedRegistrarsListName
   value: {}
   required: false
-  description: This Cortex XSoar list name that contains the approved registrars.
+  description: The Cortex XSOAR list name that contains the approved registrars.
   playbookInputQuery: null
 outputs:
 - contextPath: NonApprovedDomains
