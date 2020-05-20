@@ -46,11 +46,16 @@ def test_validate_entry_context(entry_context: dict, keys: list, raise_exception
 
 @pytest.mark.parametrize(argnames="keys, columns, dt_response_json, expected_json, skip_nested",
                          argvalues=[
-                             (["name", "value"], ["col1", "col2"], "context_entry_list.json", "expected_list_grid.json", True),
+                             (["name", "value"], ["col1", "col2"], "context_entry_list.json", "expected_list_grid.json",
+                              True),
                              (["*"], ["col1", "col2"], "context_entry_dict.json", "expected_dict_grid.json", True),
-                             (["*"], ["col1"], "context_entry_list_of_values.json", "expected_list_of_values_grid.json", True),
+                             (["*"], ["col1"], "context_entry_list_of_values.json", "expected_list_of_values_grid.json",
+                              True),
+                             (["*"], ["col1", "col2"], "context_entry_dict_with_elements.json",
+                              "expected_dict_with_elements_grid.json", False),
                          ])
-def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json: str, expected_json: str, skip_nested: bool):
+def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json: str, expected_json: str,
+                    skip_nested: bool):
     import SetGridField
     import json
     import pandas as pd
