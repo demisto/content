@@ -5,14 +5,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 This playbook does not use any sub-playbooks.
-
+e
 ### Integrations
 * Builtin
 
 ### Scripts
 * AssignAnalystToIncident
 * Exists
-* SearchIncidents
+* SearchIncidentsV2
 
 ### Commands
 * extrahop-track-ticket
