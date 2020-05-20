@@ -20,7 +20,8 @@ FIELD_TYPE_DICT = {1: 'Text', 2: 'Numeric', 3: 'Date', 4: 'Values List', 6: 'Tra
 
 def get_token_soap_request(user, password, instance):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
            f'            <userName>{user}</userName>' + \
@@ -33,7 +34,8 @@ def get_token_soap_request(user, password, instance):
 
 def terminate_session_soap_request(token):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
+           ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <TerminateSession xmlns="http://archer-tech.com/webservices/">' + \
            f'            <sessionToken>{token}</sessionToken>' + \
@@ -44,7 +46,8 @@ def terminate_session_soap_request(token):
 
 def get_reports_soap_request(token):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <GetReports xmlns="http://archer-tech.com/webservices/">' + \
            f'            <sessionToken>{token}</sessionToken>' + \
@@ -55,7 +58,8 @@ def get_reports_soap_request(token):
 
 def get_statistic_search_report_soap_request(token, report_guid, max_results):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
+           ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <ExecuteStatisticSearchByReport xmlns="http://archer-tech.com/webservices/">' + \
            f'            <sessionToken>{token}</sessionToken>' + \
@@ -68,7 +72,8 @@ def get_statistic_search_report_soap_request(token, report_guid, max_results):
 
 def get_search_options_soap_request(token, report_guid):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <GetSearchOptionsByGuid xmlns="http://archer-tech.com/webservices/">' + \
            f'            <sessionToken>{token}</sessionToken>' + \
@@ -80,7 +85,8 @@ def get_search_options_soap_request(token, report_guid):
 
 def get_value_list_soap_request(token, field_id):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <GetValueListForField xmlns="http://archer-tech.com/webservices/">' + \
            f'            <sessionToken>{token}</sessionToken>' + \
@@ -92,7 +98,8 @@ def get_value_list_soap_request(token, field_id):
 
 def get_user_info_soap_request(token, username, domain):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <LookupDomainUserId xmlns="http://archer-tech.com/webservices/">' + \
            f'            <sessionToken>{token}</sessionToken>' + \
@@ -124,18 +131,6 @@ SOAP_COMMANDS = {'archer-get-reports':
                       'soapBody': get_user_info_soap_request,
                       'outputPath': 'response.Envelope.Body.LookupDomainUserIdResponse.LookupDomainUserIdResult'}
                  }
-
-
-def extract_from_xml(xml, path):
-    xml = json.loads(xml2json(xml))
-    path = path.split('.')
-
-    for item in path:
-        if xml.get(item):
-            xml = xml[item]
-            continue
-        return ''
-    return xml
 
 
 class Client(BaseClient):
@@ -228,38 +223,6 @@ class Client(BaseClient):
             return levels
         return []
 
-    def generate_field(self, field_id, field_data, value):
-        field_type = field_data['Type']
-
-        if field_type:
-            return {'Type': field_type,
-                    'Value': value,
-                    'FieldId': field_id}
-        if field_type == 4:
-            return {'Type': field_type,
-                    'Value': {'ValuesListIds': [int(value)]},
-                    'FieldId': field_id}
-        if field_type == 7:
-            return {'Type': field_type,
-                    'Value': [{'Name': value, "URL": value}],
-                    'FieldId': field_id}
-
-    def generate_field_contents(self, fields_values, level_fields):
-        fields_values = json.loads(fields_values)
-
-        field_content = {}
-        for field_name in fields_values.keys():
-            field_data = None
-            for _id, field in level_fields.items():
-                if field.get('Name') == field_name:
-                    field_data = field
-                    break
-
-            if field_data:
-                field_content[_id] = self.generate_field(_id, field_data, fields_values[field_name])
-
-        return field_content
-
     def get_sub_form_id(self, app_id, field_id, value_for_sub_form):
         level_data = self.get_level_by_app_id(app_id)[0]
         body = {'Content': {'LevelId': level_data['level'],
@@ -267,6 +230,72 @@ class Client(BaseClient):
                 'SubformFieldId': field_id}
 
         res = self.do_request('Post', f'rsaarcher/api/core/content', data=body)
+
+
+def extract_from_xml(xml, path):
+    xml = json.loads(xml2json(xml))
+    path = path.split('.')
+
+    for item in path:
+        if xml.get(item):
+            xml = xml[item]
+            continue
+        return ''
+    return xml
+
+
+def generate_field_contents(fields_values, level_fields):
+    fields_values = json.loads(fields_values)
+
+    field_content = {}
+    for field_name in fields_values.keys():
+        field_data = None
+
+        for _id, field in level_fields.items():
+            if field.get('Name') == field_name:
+                field_data = field
+                break
+
+        if field_data:
+            field_content[_id] = generate_field(_id, field_data, fields_values[field_name])
+    return field_content
+
+
+def generate_field(field_id, field_data, value):
+    field_type = field_data['Type']
+
+    if field_type:
+        return {'Type': field_type,
+                'Value': value,
+                'FieldId': field_id}
+    if field_type == 4:
+        return {'Type': field_type,
+                'Value': {'ValuesListIds': [int(value)]},
+                'FieldId': field_id}
+    if field_type == 7:
+        return {'Type': field_type,
+                'Value': [{'Name': value, "URL": value}],
+                'FieldId': field_id}
+
+
+def get_errors_from_res(res):
+    if isinstance(res, dict) and res.get('ValidationMessages'):
+        messages = []
+        for message in res.get('ValidationMessages'):
+            messages.append(message.get('ResourcedMessage'))
+        return '\n'.join(messages)
+
+
+def get_file(entry_id):
+    get_file_path_res = demisto.getFilePath(entry_id)
+    file_path = get_file_path_res["path"]
+    file_name = get_file_path_res["name"]
+    with open(file_path, 'rb') as fopen:
+        file_bytes = fopen.read()
+
+    file_bytes = base64.b64encode(file_bytes)
+    return file_name, file_bytes.decode('utf-8')
+
 
 def test_module(client: Client) -> str:
     return 'ok' if client.do_request('GET', 'rsaarcher/api/core/system/application') else 'Connection failed.'
@@ -280,6 +309,10 @@ def search_applications_command(client: Client, args: Dict[str, str]) -> Tuple[s
          endpoint_url = f'rsaarcher/api/core/system/application/{app_id}'
 
     res = client.do_request('GET', endpoint_url)
+
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
 
     if isinstance(res, dict):
         res = [res]
@@ -300,7 +333,7 @@ def search_applications_command(client: Client, args: Dict[str, str]) -> Tuple[s
             f'Archer.Applications(val.Id && val.Id == obj.Id)':
             applications
         }
-    return markdown, context, res
+    return_outputs(markdown, context, res)
 
 
 def get_application_fields_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -317,19 +350,28 @@ def get_application_fields_command(client: Client, args: Dict[str, str]) -> Tupl
                            'FieldType': FIELD_TYPE_DICT.get(field_type, 'Unknown'),
                            'FieldName': field_obj.get('Name'),
                            'LevelID': field_obj.get('LevelId')})
+        else:
+            errors = get_errors_from_res(field)
+            if errors:
+                return_error(errors)
 
     markdown = tableToMarkdown('archer-get-application-fields', fields)
     context: dict = {
             f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
             fields
         }
-    return markdown, context, res
+    return_outputs(markdown, context, res)
 
 
 def get_field_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     field_id = args.get('field-id')
 
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
+
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
+
     field = {}
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         field_obj = res['RequestedObject']
@@ -345,7 +387,7 @@ def get_field_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, 
         f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
             field
     }
-    return markdown, context, res
+    return_outputs(markdown, context, res)
 
 
 def get_mapping_by_level_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -365,13 +407,17 @@ def get_mapping_by_level_command(client: Client, args: Dict[str, str]) -> Tuple[
             items.append({'Name': item_obj.get('Name'),
                           'Type': item_type,
                           'levelId': item_obj.get('LevelId')})
+        else:
+            errors = get_errors_from_res(item)
+            if errors:
+                return_error(errors)
 
     markdown = tableToMarkdown('archer-get-mapping-by-level', items)
     context: dict = {
             f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
             items
         }
-    return markdown, context, res
+    return_outputs(markdown, context, res)
 
 
 def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -379,11 +425,9 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     app_id = args.get('application-id')
     res = client.do_request('GET', f'rsaarcher/api/core/content/{record_id}')
 
-    if res.get('ValidationMessages'):
-        messages = []
-        for message in res.get('ValidationMessages'):
-            messages.append(message.get('ResourcedMessage'))
-        return messages, {}, res
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
 
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         content_obj = res.get('RequestedObject')
@@ -396,13 +440,14 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
         record = {}
         for _id, field in content_obj.get('FieldContents').items():
             field_data = level_fields.get(str(_id))
-            field_value = field.get('Value')
-            if isinstance(field_value, dict):
-                if field_data.get('Type') == 4:
-                    field_value = str(field_value.get('ValuesListIds'))
-                if field_data.get('Type') == 8:
-                    field_value = str(field_value.get('UserList'))
-            if field_value and field_data.get('Name'):
+            field_type = field_data.get('Type')
+
+            if field_type == 19:
+                field_value = field.get('IpAddressBytes')
+            else:
+                field_value = field.get('Value')
+
+            if field_value:
                 record[field_data.get('Name')] = field_value
 
         record['Id'] = content_obj.get('Id')
@@ -412,7 +457,7 @@ def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
             f'Archer.Record(val.Id && val.Id == obj.Id)':
                 record
         }
-        return markdown, context, res
+        return_outputs(markdown, context, res)
 
 
 def create_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -420,21 +465,19 @@ def create_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
     fields_values = args.get('fields-to-values')
 
     level_data = client.get_level_by_app_id(app_id)[0]
-    field_contents = client.generate_field_contents(fields_values, level_data['mapping'])
+    field_contents = generate_field_contents(fields_values, level_data['mapping'])
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
     print(json.dumps(body))
     res = client.do_request('Post', f'rsaarcher/api/core/content', data=body)
 
-    if res.get('ValidationMessages'):
-        messages = []
-        for message in res.get('ValidationMessages'):
-            messages.append(message.get('ResourcedMessage'))
-        return messages, {}, res
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
 
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         rec_id = res['RequestedObject']['Id']
-        return f'Record created successfully, record id: {rec_id}', {}, res
+        return_outputs(f'Record created successfully, record id: {rec_id}', {}, res)
 
 
 def delete_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -443,7 +486,7 @@ def delete_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
     if res.get('IsSuccessful'):
         return f'Record {record_id} deleted successfully', {}, res
 
-    return 'delete record failed', {}, res
+    return_error('Delete record failed')
 
 
 def update_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -451,21 +494,19 @@ def update_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
     record_id = args.get('record-id')
     fields_values = args.get('fields-to-values')
     level_data = client.get_level_by_app_id(app_id)[0]
-    field_contents = client.generate_field_contents(fields_values,  level_data['mapping'])
+    field_contents = generate_field_contents(fields_values,  level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId':  level_data['level'], 'FieldContents': field_contents}}
     res = client.do_request('Put', f'rsaarcher/api/core/content', data=body)
 
-    if res.get('ValidationMessages'):
-        messages = []
-        for message in res.get('ValidationMessages'):
-            messages.append(message.get('ResourcedMessage'))
-        return messages, {}, res
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
 
     if res.get('IsSuccessful'):
-        return f'Record {record_id} updated successfully', {}, res
-    else:
-        return 'update failed', {}, res
+        return_outputs(f'Record {record_id} updated successfully', {}, res)
+
+    return_error('Update record failed')
 
 
 def execute_statistics_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -475,10 +516,10 @@ def execute_statistics_command(client: Client, args: Dict[str, str]) -> Tuple[st
                                  report_guid=report_guid, max_results=max_results)
     if res:
         res = json.loads(xml2json(res))
-    return res, {}, {}
+    return_outputs(res, {}, {})
 
 
-def get_reports(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_reports_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     res = client.do_soap_request('archer-get-reports')
     res = json.loads(xml2json(res))
     ec = res.get('ReportValues').get('ReportValue')
@@ -486,27 +527,29 @@ def get_reports(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     context: dict = {
         f'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
     }
-    return ec, context, {}
+    return_outputs(ec, context, {})
 
 
-def search_options(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def search_options_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     report_guid = args.get('report-guid')
     res = client.do_soap_request('archer-get-search-options-by-guid', report_guid=report_guid)
-    try:
-        res = json.loads(xml2json(res))
-    except Exception as e:
-        print('')
-    return res, {}, {}
+    res = json.loads(xml2json(res))
+    return_outputs(res, {}, {})
 
 
-def reset_cache(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def reset_cache_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     demisto.setIntegrationContext({})
-    return '', {}, ''
+    return_outputs('', {}, '')
 
 
-def get_value_list(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_value_list_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     field_id = args.get('field-id')
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
+
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
+
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         list_id = res['RequestedObject']['RelatedValuesListId']
         values_list_res = client.do_request('GET', f'rsaarcher/api/core/system/valueslistvalue/valueslist/{list_id}')
@@ -524,20 +567,51 @@ def get_value_list(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                 f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
                     field_data
             }
-            return markdown, context, values_list_res
+            return_outputs(markdown, context, values_list_res)
 
 
-
-def get_user_id(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_user_id_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     user_info = args.get('user-info')
     user_info = user_info.split('/')
     res = client.do_soap_request('archer-get-user-id',
                                      domain=user_info[0].lower(), username=user_info[1].lower())
-    try:
-        res = json.loads(xml2json(res))
-    except Exception as e:
-        print('')
-    return res, {}, {}
+    res = json.loads(xml2json(res))
+
+    return_outputs(res, {}, {})
+
+
+def upload_file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    entry_id = args.get('entry-id')
+    file_name, file_bytes = get_file(entry_id)
+    body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
+
+    res = client.do_request('POST', 'rsaarcher/api/core/content/attachment', data=body)
+
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
+
+    if res.get('RequestedObject') and res.get('IsSuccessful'):
+        attachment_id = res['RequestedObject'].get('Id')
+        return_outputs(f'File uploaded succsessfully, attachment ID: {attachment_id}', {}, res)
+
+    return_error('Upload file failed')
+
+
+def download_file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    attachment_id = args.get('attachment-id')
+    res = client.do_request('GET', f'rsaarcher/api/core/content/attachment/{attachment_id}')
+
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
+
+    if res.get('RequestedObject') and res.get('IsSuccessful'):
+        content = base64.b64decode(res['RequestedObject'].get('AttachmentBytes'))
+        filename = res['RequestedObject'].get('AttachmentName')
+        return demisto.results(fileResult(filename, content))
+
+    return_error('File downloading failed', outputs=res)
 
 
 def main():
@@ -560,11 +634,13 @@ def main():
         'archer-delete-record': delete_record_command,
         'archer-update-record': update_record_command,
         'archer-execute-statistic-search-by-report': execute_statistics_command,
-        'archer-get-reports': get_reports,
-        'archer-get-search-options-by-guid': search_options,
-        'archer-reset-cache': reset_cache,
-        'archer-get-valuelist': get_value_list,
-        'archer-get-user-id': get_user_id
+        'archer-get-reports': get_reports_command,
+        'archer-get-search-options-by-guid': search_options_command,
+        'archer-reset-cache': reset_cache_command,
+        'archer-get-valuelist': get_value_list_command,
+        'archer-get-user-id': get_user_id_command,
+        'archer-upload-file': upload_file_command,
+        'archer-get-file': download_file_command
     }
 
     command = demisto.command()
@@ -574,7 +650,7 @@ def main():
         if command == 'test-module':
             demisto.results(test_module(client))
         elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return commands[command](client, demisto.args())
         else:
             return_error('Command not found.')
     except Exception as e:

@@ -183,6 +183,24 @@ script:
     deprecated: false
     execution: false
     name: archer-get-user-id
+  - arguments:
+    - default: false
+      isArray: false
+      name: entry-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-upload-file
+  - arguments:
+    - default: false
+      isArray: false
+      name: attachment-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-get-file
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
