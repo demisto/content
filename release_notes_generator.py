@@ -10,13 +10,15 @@ from demisto_sdk.commands.common.tools import print_error, get_pack_name, run_co
 
 IGNORE_RN = '-'
 PACKS_DIR = 'Packs'
+DATE_FORMAT = '%d %B %Y'
 PACK_METADATA = 'pack_metadata.json'
-RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
+PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
+RELEASE_NOTES_FILE = 'release-notes-test.md'
 
 
 def get_all_modified_release_note_files(git_sha1):
     try:
-        diff_cmd = f"git diff --diff-filter=AM --name-only {git_sha1} {RN_FILES_FORMAT}"
+        diff_cmd = 'git diff --diff-filter=AM --name-only {} {}'.format(git_sha1, PACKS_RN_FILES_FORMAT)
         diff_result = run_command(diff_cmd, exit_on_error=False)
         release_notes_files = list(filter(None, diff_result.split('\n')))
         return release_notes_files
@@ -49,20 +51,20 @@ def get_release_notes_dict(release_notes_files):
             if release_note and release_note.strip() != IGNORE_RN:
                 pack_name = get_pack_name_from_metdata(file_path)
                 release_notes_dict[pack_name] = release_notes_dict.get(pack_name, '') + release_note
+                print('Adding release note {} in pack {}...'.format(file_path, pack_name))
     return release_notes_dict
 
 
 def generate_release_notes_summary(release_notes_dict, version, asset_id):
     release_notes = f'## Cortex XSOAR Content Release Notes for version {version} ({asset_id})\n'
-    current_date = datetime.now().strftime("%d %B %Y")
+    current_date = datetime.now().strftime(DATE_FORMAT)
     release_notes += f'##### Published on {current_date}\n'
 
     for pack_name, pack_release_notes in sorted(release_notes_dict.items()):
         release_notes += f'### {pack_name}\n{pack_release_notes}\n'
 
-    with open('release-notes.md', 'w') as outfile:
+    with open(RELEASE_NOTES_FILE, 'w') as outfile:
         outfile.write(release_notes)
-
 
 
 def main():
