@@ -12,11 +12,11 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
     <li>Go to the Azure Portal UI.</li>
     <li>Go to Subscriptions, and then Access Control (IAM).</li>
     <li>Click Add.</li>
-    <li>Select a role that includes the following permissions:</li>
+    <li>Select a role that includes the following permissions:
     <ul>
       <li>Microsoft.Compute/virtualMachines/*</li>
       <li>Microsoft.Network/networkInterfaces/read</li>
-    </ul>
+    </ul> </li>
     <li>Select the Azure Secruity Center application.</li>
   </ul>
 </li>
@@ -37,12 +37,22 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
    <li><strong>Default Subscription ID</strong></li>
    <li><strong>Use system proxy</strong></li>
    <li><strong>Trust any certificate (not secure)</strong></li>
+   <li><strong>Use a self-deployed Azure Application</strong></li>
     </ul>
   </li>
   <li>
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
 </ol>
+
+<h2>Use a Self-Deployed Azure Application</h2>
+<p>To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">Microsoft documentation</a></p>
+<p>The Tenant ID, Client ID, and Client secret are required for the integration.
+When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).
+<p>ID - Client ID<br>
+Token - Tenant ID<br>
+Key - Client Secret</p></p>
+
 <div class="cl-preview-section">
   <h2 id="commands">Commands</h2>
 </div>
