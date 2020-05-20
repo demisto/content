@@ -23,7 +23,7 @@ def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dic
                                      max_keys=max_keys)
 
 
-@pytest.mark.parametrize(argnames="entry_context, keys, raise_exception, skip_nested",
+@pytest.mark.parametrize(argnames="entry_context, keys, raise_exception, unpack_nested",
                          argvalues=[
                              ([{'a': 'val', 'b': 'val'}], ['a', 'b'], False, False),
                              ([{'a': [], 'b': 'val'}], ['a', 'b'], True, False),
@@ -31,17 +31,17 @@ def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dic
                              (['a', 'b', 1, False], ['b'], False, False),
                              (['a', 'b', 1, False, []], ['*'], True, False),
                          ])
-def test_validate_entry_context(entry_context: dict, keys: list, raise_exception: bool, skip_nested: bool):
+def test_validate_entry_context(entry_context: dict, keys: list, raise_exception: bool, unpack_nested: bool):
     from SetGridField import validate_entry_context
     if raise_exception:
         with pytest.raises(ValueError):
             validate_entry_context(entry_context=entry_context,
                                    keys=keys,
-                                   unpack_nested_elements=skip_nested)
+                                   unpack_nested_elements=unpack_nested)
     else:
         validate_entry_context(entry_context=entry_context,
                                keys=keys,
-                               unpack_nested_elements=skip_nested)
+                               unpack_nested_elements=unpack_nested)
 
 
 @pytest.mark.parametrize(argnames="keys, columns, dt_response_json, expected_json, unpack_nested",
