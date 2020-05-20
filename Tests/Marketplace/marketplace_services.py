@@ -31,23 +31,7 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    CORE_PACKS_LIST = [BASE_PACK,
-                       "Rasterize",
-                       "DemistoRESTAPI",
-                       "DemistoLocking",
-                       "ImageOCR",
-                       "WhereIsTheEgg",
-                       "FeedAutofocus",
-                       "AutoFocus",
-                       "UrlScan",
-                       "Active_Directory_Query",
-                       "FeedTAXII",
-                       "VirusTotal",
-                       "Whois",
-                       "Phishing",
-                       "CommonScripts",
-                       "CommonPlaybooks",
-                       "CommonTypes"]  # cores packs list
+    CORE_PACKS_LIST = [BASE_PACK]  # cores packs list
 
 
 class Metadata(object):
@@ -82,23 +66,22 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def pack_displayed_items(cls):
-        return {
+        return [
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
-            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
-        }
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
+        ]
 
     @classmethod
     def yml_supported_folders(cls):
-        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value}
+        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
 
     @classmethod
     def json_supported_folders(cls):
-        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
                 PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.REPORTS.value, PackFolders.WIDGETS.value}
+                PackFolders.REPORTS.value]
 
 
 class PackStatus(enum.Enum):
