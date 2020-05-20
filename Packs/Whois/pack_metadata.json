@@ -1,21 +1,16 @@
 {
-    "name": "Whois",
-    "description": "This pack Provides data enrichment for domains.",
-    "support": "Cortex XSOAR",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [],
-    "created": "2020-03-31T17:09:43Z",
-    "updated": "2020-03-31T17:09:43Z",
-    "beta": false,
-    "deprecated": false,
-    "useCases": [],
-    "keywords": [],
-    "price": "0",
-    "dependencies": {}
+  "name": "Whois",
+  "description": "This pack Provides data enrichment for domains.",
+  "support": "Cortex XSOAR",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-31T17:09:43Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
 }
