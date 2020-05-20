@@ -46,6 +46,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "IllusiveNetworks",
+            "playbookID": "IllusiveNetworks-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
