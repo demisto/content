@@ -256,8 +256,8 @@ def requests_handler(url, message, **kwargs):
             **kwargs
         )
     except requests.exceptions.RequestException as response:
+        # Propagate HTTP errors via the returned response message
         demisto.debug('Got exception while using requests handler - {}'.format(str(response)))
-        pass  # Propagate HTTP errors via the returned response message
     return {
         'status': response.status_code,
         'reason': response.reason,
