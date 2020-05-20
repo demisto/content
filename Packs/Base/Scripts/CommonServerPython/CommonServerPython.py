@@ -29,11 +29,6 @@ try:
 except Exception:
     pass
 
-try:
-    import tldextract
-except Exception:
-    pass
-
 
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
@@ -268,6 +263,12 @@ def auto_detect_indicator_type(indicator_value):
       :return: The type of the indicator.
       :rtype: ``str``
     """
+    try:
+        import tldextract
+    except Exception:
+        raise Exception("Missing tldextract module, In order to use the auto detect function please use a docker"
+                        " image with it installed such as: demisto/jmespath:1.0.0.6980")
+
     if re.match(ipv4cidrRegex, indicator_value):
         return FeedIndicatorType.CIDR
 
