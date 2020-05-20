@@ -19,7 +19,9 @@ def option_handler():
     """
     parser = argparse.ArgumentParser(description="Zip packs from a GCP bucket.")
     # disable-secrets-detection-start
-    parser.add_argument('-d', '--destination_path', help="Full path of folder to zip the packs", required=True)
+    parser.add_argument('-a', '--artifacts_path', help="Path of the CircleCI artifacts to save the zip file in",
+                        required=False)
+    parser.add_argument('-z', '--zip_path', help="Full path of folder to zip packs in", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-br', '--branch_name', help="Name of the branch", required=False)
     parser.add_argument('-n', '--circle_build', help="Number of the circle build", required=False)
@@ -124,7 +126,8 @@ def get_latest_version_blob(blobs):
 def main():
     option = option_handler()
     storage_bucket_name = option.bucket_name
-    destination_path = option.destination_path
+    zip_path = option.zip_path
+    artifacts_path = option.artifacts_path
     service_account = option.service_account
     circle_build = option.circle_build
     branch_name = option.branch_name
@@ -141,20 +144,24 @@ def main():
     zipped_packs = []
     success = True
     try:
-        zipped_packs = download_packs_from_gcp(destination_path, storage_bucket, circle_build, branch_name)
+        zipped_packs = download_packs_from_gcp(zip_path, storage_bucket, circle_build, branch_name)
     except Exception as e:
         print_error(f'Failed downloading packs: {e}')
         success = False
 
     if zipped_packs:
-        success = zip_packs(zipped_packs, destination_path)
+        success = zip_packs(zipped_packs, zip_path)
 
     if success:
         print_success('Successfully zipped packs.')
     else:
         print_error('Failed zipping packs.')
 
-    cleanup(destination_path)
+    cleanup(zip_path)
+
+    if artifacts_path:
+        # Save in the artifacts
+        shutil.copy(os.path.join(zip_path, ARTIFACT_NAME), os.path.join(artifacts_path, ARTIFACT_NAME))
 
 
 if __name__ == '__main__':
