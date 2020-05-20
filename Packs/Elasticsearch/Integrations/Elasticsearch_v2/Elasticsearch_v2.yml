@@ -1,7 +1,7 @@
 category: Database
 commonfields:
   id: Elasticsearch v2
-  version: -1
+  version: 0
 configuration:
 - display: Server URL
   name: url
