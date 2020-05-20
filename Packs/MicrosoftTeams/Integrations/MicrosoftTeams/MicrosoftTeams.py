@@ -1592,6 +1592,8 @@ def long_running_loop():
         certificate_path = str()
         private_key_path = str()
 
+        server = None
+
         try:
             port_mapping: str = PARAMS.get('longRunningPort', '')
             port: int
