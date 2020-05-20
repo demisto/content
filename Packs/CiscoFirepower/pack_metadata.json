@@ -1,30 +1,16 @@
 {
-    "name": "CiscoFirepower",
-    "description": "Use the CiscoFirepower integration for unified management of firewalls, application control",
-    "support": "xsoar",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "",
-    "email": "",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [],
-    "created": "2020-03-30T09:36:20Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "price": 0,
-    "dependencies": {
-        "Base": {
-            "mandatory": true,
-            "minVersion": "1.0.0",
-            "name": "Base",
-            "certification": "certified",
-            "author": "Cortex XSOAR"
-          }
-    }
+  "name": "CiscoFirepower",
+  "description": "Use the CiscoFirepower integration for unified management of firewalls, application control",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-30T09:36:20Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
 }
