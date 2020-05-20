@@ -265,6 +265,7 @@ def auto_detect_indicator_type(indicator_value):
     """
     try:
         import tldextract
+        no_cache_extract = tldextract.TLDExtract(cache_file=False)
     except Exception:
         raise Exception("Missing tldextract module, In order to use the auto detect function please use a docker"
                         " image with it installed such as: demisto/jmespath:1.0.0.6980")
@@ -300,7 +301,7 @@ def auto_detect_indicator_type(indicator_value):
         return FeedIndicatorType.CVE
 
     try:
-        if tldextract.extract(indicator_value).suffix:
+        if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
                 return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain
