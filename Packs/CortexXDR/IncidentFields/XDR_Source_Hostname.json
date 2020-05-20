@@ -9,7 +9,7 @@
 	"cliName": "sourcehostname",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "The hostname that performed the port scan.",
 	"editForm": true,
