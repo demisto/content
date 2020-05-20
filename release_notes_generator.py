@@ -2,21 +2,23 @@ from __future__ import print_function
 import os
 import sys
 import json
-import datetime
 import argparse
 
+from datetime import datetime
 from demisto_sdk.commands.common.tools import print_error, get_pack_name, run_command
 
 
+IGNORE_RN = '-'
 PACKS_DIR = 'Packs'
 PACK_METADATA = 'pack_metadata.json'
+RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
 
 
 def get_all_modified_release_note_files(git_sha1):
     try:
-        diff_cmd = f'git diff --name-only {git_sha1} \'*/ReleaseNotes/*.md\' --diff-filter=AM'
+        diff_cmd = f"git diff --diff-filter=AM --name-only {git_sha1} {RN_FILES_FORMAT}"
         diff_result = run_command(diff_cmd, exit_on_error=False)
-        release_notes_files = diff_result.split('\n')
+        release_notes_files = list(filter(None, diff_result.split('\n')))
         return release_notes_files
 
     except RuntimeError:
@@ -43,8 +45,10 @@ def get_release_notes_dict(release_notes_files):
     release_notes_dict = {}
     for file_path in release_notes_files:
         with open(file_path, 'r') as rn:
-            pack_name = get_pack_name_from_metdata(file_path)
-            release_notes_dict[pack_name] = release_notes_dict.get(pack_name, '') + rn.read()
+            release_note = rn.read()
+            if release_note and release_note.strip() != IGNORE_RN:
+                pack_name = get_pack_name_from_metdata(file_path)
+                release_notes_dict[pack_name] = release_notes_dict.get(pack_name, '') + release_note
     return release_notes_dict
 
 
