@@ -5,6 +5,7 @@ import json
 import argparse
 
 from datetime import datetime
+from distutils.version import LooseVersion
 from demisto_sdk.commands.common.tools import print_error, get_pack_name, run_command
 
 
@@ -43,25 +44,36 @@ def get_pack_name_from_metdata(file_path):
     return pack_name
 
 
+def get_pack_version_from_path(file_path):
+    # example: from filepath `<path>/1_0_1.md`, the next line will produce `1.0.1`
+    pack_version = os.path.basename(os.path.splitext(file_path)[0]).replace('_', '.')
+    return pack_version
+
+
 def get_release_notes_dict(release_notes_files):
     release_notes_dict = {}
     for file_path in release_notes_files:
+        pack_version = get_pack_version_from_path(file_path)
         with open(file_path, 'r') as rn:
             release_note = rn.read()
             if release_note and release_note.strip() != IGNORE_RN:
                 pack_name = get_pack_name_from_metdata(file_path)
-                release_notes_dict[pack_name] = release_notes_dict.get(pack_name, '') + release_note
-                print('Adding release note {} in pack {}...'.format(file_path, pack_name))
+                release_notes_dict.setdefault(pack_name, {})[pack_version] = release_note
+                print('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
+            else:
+                print('Ignoring release notes for pack {} {}...'.format(pack_name, pack_version))
     return release_notes_dict
 
 
 def generate_release_notes_summary(release_notes_dict, version, asset_id):
-    release_notes = f'## Cortex XSOAR Content Release Notes for version {version} ({asset_id})\n'
+    release_notes = '## Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
     current_date = datetime.now().strftime(DATE_FORMAT)
-    release_notes += f'##### Published on {current_date}\n'
+    release_notes += '##### Published on {}\n'.format(current_date)
 
-    for pack_name, pack_release_notes in sorted(release_notes_dict.items()):
-        release_notes += f'### {pack_name}\n{pack_release_notes}\n'
+    for pack_name, pack_versions_dict in sorted(release_notes_dict.items()):
+        for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
+                                                       key=lambda pack_item: LooseVersion(pack_item[0])):
+            release_notes += '### {} {}\n{}\n'.format(pack_name, pack_version, pack_release_notes)
 
     with open(RELEASE_NOTES_FILE, 'w') as outfile:
         outfile.write(release_notes)
