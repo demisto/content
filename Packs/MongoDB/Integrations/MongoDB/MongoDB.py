@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 from json import JSONDecodeError
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Any
 
 from bson.objectid import ObjectId
 from pymongo import MongoClient
@@ -83,14 +83,14 @@ class Client:
         return entry
 
     @classmethod
-    def datetime_to_str(cls, obj):
+    def datetime_to_str(cls, obj: Any) -> Any:
         """ Converts any object with date value of type datetime to str
 
         Args:
             obj: The object contains possible date values.
 
         Returns:
-            All Dates from type datetime converted to str in this format - %Y-%m-%dT%H:%M:%S.000Z\
+            All Dates from type datetime converted to str in this format - %Y-%m-%dT%H:%M:%S.000Z
 
         Examples:
             >>> Client.datetime_to_str(datetime.strptime('2020-05-19T09:05:28.000Z', '%Y-%m-%dT%H:%M:%S.000Z'))
@@ -120,14 +120,16 @@ class Client:
         collection_object = self.get_collection(collection)
         if update_one:
             raw = collection_object.update_one(filter, update)
-        raw = collection_object.update_many(filter, update)
+        else:
+            raw = collection_object.update_many(filter, update)
         return self.datetime_to_str(raw)
 
     def delete_entry(self, collection, filter, delete_one) -> DeleteResult:
         collection_object = self.get_collection(collection)
         if delete_one:
             raw = collection_object.delete_one(filter)
-        raw = collection_object.delete_many(filter)
+        else:
+            raw = collection_object.delete_many(filter)
         return self.datetime_to_str(raw)
 
     def create_collection(self, collection) -> Collection:
@@ -167,7 +169,7 @@ def convert_id_to_object_id(
     return _convert(entries)
 
 
-def convert_str_to_datetime(entries):
+def convert_str_to_datetime(entries: dict) -> dict:
     """ Converts list or dict with date values of type str to Datetime.
 
     Args:
@@ -291,16 +293,16 @@ def insert_entry_command(
         raise DemistoException('The `entry` argument is not a valid json.')
 
 
-def validate_json_objects(json):
+def validate_json_objects(json_obj: Union[dict, list]) -> Union[dict, list]:
     """ Validate that all objects in the json are according to MongoDB convention.
 
     Args:
-        json: The json to send to MongoDB
+        json_obj: The json to send to MongoDB
 
     Returns:
         valid json according to MongoDB convention.
     """
-    valid_mongodb_json = convert_str_to_datetime(convert_id_to_object_id(json))
+    valid_mongodb_json = convert_str_to_datetime(convert_id_to_object_id(json_obj))
     return valid_mongodb_json
 
 

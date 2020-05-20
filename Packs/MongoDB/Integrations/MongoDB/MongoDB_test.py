@@ -67,26 +67,86 @@ class TestDatetimeToStr:
     datetime_str = '2020-05-19T09:05:28.000Z'
 
     def test_datetime_to_str_dict(self):
+        """
+        Given:
+            dict containing datetime object
+
+        When:
+            converting datetimes to strs
+
+        Then:
+            validate the value is a string.
+        """
         raw = Client.datetime_to_str({'time': self.datetime_obj})
         assert self.datetime_str == raw['time']
 
     def test_datetime_to_str_list(self):
+        """
+        Given:
+            list containing datetime object
+
+        When:
+            converting datetimes to strs
+
+        Then:
+            validate the value is a string.
+        """
         raw = Client.datetime_to_str([self.datetime_obj])
         assert [self.datetime_str] == raw
 
     def test_datetime_to_str_str(self):
+        """
+        Given:
+            datetime object
+
+        When:
+            converting datetimes to strs
+
+        Then:
+            validate the value is a string.
+        """
         raw = Client.datetime_to_str(self.datetime_obj)
         assert self.datetime_str == raw
 
     def test_datetime_to_str_dict_no_datetime(self):
+        """
+        Given:
+            dict containing 5 (int)
+
+        When:
+            converting datetimes to strs
+
+        Then:
+            validate the value returned is 5
+        """
         raw = Client.datetime_to_str({'time': 5})
         assert 5 == raw['time']
 
     def test_datetime_to_str_list_no_datetime(self):
+        """
+        Given:
+            list containing an int (5) object
+
+        When:
+            converting datetimes to strs
+
+        Then:
+            validate the value returned is 5.
+        """
         raw = Client.datetime_to_str([5])
         assert [5] == raw
 
     def test_datetime_to_str_str_no_datetime(self):
+        """
+        Given:
+            'str'
+
+        When:
+            converting datetimes to strs
+
+        Then:
+            validate the value returned is 'str'.
+        """
         raw = Client.datetime_to_str('str')
         assert 'str' == raw
 
@@ -103,7 +163,17 @@ class MockedQuery:
 
 
 def test_query(mocker):
+    """
+    Given:
+        Object with datetime and object id in it
+
+    When:
+        Quering object
+
+    Then:
+        validate all objects returned are strs.
+    """
     client = Client(['aaaaa'], 'a', 'b', 'd')
     mocker.patch.object(Client, 'get_collection', return_value=MockedQuery)
     readable_outputs, outputs, raw_response = search_query(client, 'a', '{}', '50')
-    assert all(not isinstance(obj, datetime) for obj in raw_response)
+    assert all(isinstance(obj, str) for obj in raw_response)
