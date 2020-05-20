@@ -1,7 +1,7 @@
-id: TIM - Process Indicators Exclusion By Related Incidents
+id: TIM - Indicators Exclusion By Related Incidents
 version: -1
 fromversion: 6.0.0
-name: TIM - Process Indicators Exclusion By Related Incidents
+name: TIM - Indicators Exclusion By Related Incidents
 description: This playbooks allows to filter indicators according to the number of
   incidents the indicator is related to. The indicator query will be "investigationsCount:>=X"
   where X is the number of related incidents to the indicator the user would like
