@@ -37,6 +37,19 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Fetch limit
+  hidden: false
+  name: fetch_limit
+  required: false
+  type: 0
 description: VMware Carbon Black Enterprise EDR is an advanced threat hunting and
   incident response solution delivering continuous visibility for top security operations
   centers (SOCs) and incident response (IR) teams.
@@ -1450,7 +1463,7 @@ script:
     deprecated: false
     description: The files are able to be downloaded via AWS S3 pre-signed URLs.
     execution: false
-    name: cb-eedr-files-download
+    name: cb-eedr-files-download-link-get
     outputs:
     - contextPath: CarbonBlackEEDR.File.found.sha256
       description: SHA-256 hash of file that is available to be downloaded
