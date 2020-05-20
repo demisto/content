@@ -70,4 +70,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Impossible_Traveller](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Impossible_Traveler.png)
+![Impossible_Traveller](https://raw.githubusercontent.com/demisto/content/3ea4e5a689c3aef028b01e8960588a6861a54c4e/Packs/ImpossibleTraveler/doc_files/Impossible_Traveler.png)
