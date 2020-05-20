@@ -59,14 +59,14 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The ID of the alert to update.
+      description: The ID of the alert to update. Get the ID from list_alerts command.
       isArray: false
       name: alert_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Workflow state to filter on. Allowed values
+      description: Workflow state to filter on.
       isArray: false
       name: state
       predefined:
@@ -111,7 +111,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Device to perform action on.
+      description: Device to perform action on. Get the ID from the devices-list command.
+        Support comma seperated values.
       isArray: false
       name: device_id
       required: true
@@ -122,7 +123,8 @@ script:
     name: cb-eedr-device-quarantine
   - arguments:
     - default: false
-      description: Device to perform action on.
+      description: Device to perform action on. Get the ID from the devices-list command.
+        Support comma seperated values.
       isArray: true
       name: device_id
       required: true
@@ -133,7 +135,8 @@ script:
     name: cb-eedr-device-unquarantine
   - arguments:
     - default: false
-      description: The device ID.
+      description: The device ID. Get the ID from the devices-list command. Support
+        comma seperated values.
       isArray: false
       name: device_id
       required: true
@@ -144,7 +147,8 @@ script:
     name: cb-eedr-device-background-scan-stop
   - arguments:
     - default: false
-      description: The device ID.
+      description: The device ID. Get the ID from the devices-list command. Support
+        comma seperated values.
       isArray: false
       name: device_id
       required: true
@@ -155,7 +159,8 @@ script:
     name: cb-eedr-device-background-scan
   - arguments:
     - default: false
-      description: The device ID.
+      description: The device ID. Get the ID from the devices-list command. Support
+        comma seperated values.
       isArray: false
       name: device_id
       required: true
@@ -166,7 +171,8 @@ script:
     name: cb-eedr-device-bypass
   - arguments:
     - default: false
-      description: The device ID.
+      description: The device ID. Get the ID from the devices-list command. Support
+        comma seperated values.
       isArray: false
       name: device_id
       required: true
@@ -177,7 +183,8 @@ script:
     name: cb-eedr-device-unbypass
   - arguments:
     - default: false
-      description: The device ID.
+      description: The device ID. Get the ID from the devices-list command. Support
+        comma seperated values.
       isArray: false
       name: device_id
       required: true
@@ -194,19 +201,35 @@ script:
     name: cb-eedr-device-policy-update
   - arguments:
     - default: false
-      description: The device ID. Supports comma seperated values
+      description: The device ID. Supports comma seperated values.
       isArray: false
       name: device_id
       required: false
       secret: false
-    - default: false
-      description: The device status. Supports comma seperated values
+    - auto: PREDEFINED
+      default: false
+      description: The device status. Supports comma seperated values.
       isArray: false
       name: status
+      predefined:
+      - PENDING
+      - REGISTERED
+      - UNINSTALLED
+      - DEREGISTERED
+      - ACTIVE
+      - INACTIVE
+      - ERROR
+      - ' ALL'
+      - BYPASS_ON
+      - BYPASS
+      - QUARANTINE
+      - SENSOR_OUTOFDATE
+      - DELETED
+      - LIVE
       required: false
       secret: false
     - default: false
-      description: Device operation system. Supports comma seperated values
+      description: Device operation system. Supports comma seperated values.
       isArray: false
       name: device_os
       required: false
@@ -230,15 +253,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: The policy ID. Supports comma seperated values
+      description: The policy ID. Supports comma seperated values.
       isArray: false
       name: policy_id
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Device target priority. Supports comma seperated values
       isArray: false
       name: target_priority
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - MISSION_CRITICAL
       required: false
       secret: false
     - default: false
@@ -436,91 +465,91 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Device OS version. '
+      description: Device OS version. Support comma seperated values.
       isArray: false
       name: device_os_version
       required: false
       secret: false
     - default: false
-      description: The policy ID.
+      description: The policy ID. Support comma seperated values.
       isArray: false
       name: policy_id
       required: false
       secret: false
     - default: false
-      description: Alert tag/s.
+      description: Alert tags. Support comma seperated values.
       isArray: false
       name: alert_tag
       required: false
       secret: false
     - default: false
-      description: Alert ID.
+      description: Alert ID. Support comma seperated values.
       isArray: false
       name: alert_id
       required: false
       secret: false
     - default: false
-      description: Device username.
+      description: Device username. Support comma seperated values.
       isArray: false
       name: device_username
       required: false
       secret: false
     - default: false
-      description: Device ID.
+      description: Device ID. Support comma seperated values.
       isArray: false
       name: device_id
       required: false
       secret: false
     - default: false
-      description: Device OS.
+      description: Device OS. Support comma seperated values.
       isArray: false
       name: device_os
       required: false
       secret: false
     - default: false
-      description: Process SHA256
+      description: Process SHA256. Support comma seperated values.
       isArray: false
       name: process_sha256
       required: false
       secret: false
     - default: false
-      description: Policy name.
+      description: Policy name. Support comma seperated values.
       isArray: false
       name: policy_name
       required: false
       secret: false
     - default: false
-      description: Alert reputation.
+      description: Alert reputation. Support comma seperated values.
       isArray: false
       name: reputation
       required: false
       secret: false
     - default: false
-      description: Alert type.
+      description: Alert type. Support comma seperated values.
       isArray: false
       name: alert_type
       required: false
       secret: false
     - default: false
-      description: Alert category.
+      description: Alert category. Support comma seperated values.
       isArray: false
       name: alert_category
       required: false
       secret: false
     - default: false
-      description: Alert workflow.
+      description: Alert workflow. Support comma seperated values.
       isArray: false
       name: workflow
       required: false
       secret: false
     - default: false
-      description: Device name.
+      description: Device name. Support comma seperated values.
       isArray: false
       name: device_name
       required: false
       secret: false
     - default: false
-      description: Process name.
+      description: Process name. Support comma seperated values.
       isArray: false
       name: process_name
       required: false
@@ -742,7 +771,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The watchlist ID.
+      description: The watchlist ID. Get the ID from the watchlist-list command.
       isArray: false
       name: watchlist_id
       required: true
@@ -778,7 +807,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The watchlist ID.
+      description: The watchlist ID. Get the ID from the watchlist-list command.
       isArray: false
       name: watchlist_id
       required: true
@@ -789,7 +818,7 @@ script:
     name: cb-eedr-watchlist-alerts-status
   - arguments:
     - default: false
-      description: The watchlist ID.
+      description: The watchlist ID. Get the ID from the watchlist-list command.
       isArray: false
       name: watchlist_id
       required: true
@@ -800,7 +829,7 @@ script:
     name: cb-eedr-watchlist-alerts-enable
   - arguments:
     - default: false
-      description: The watchlist ID.
+      description: The watchlist ID. Get the ID from the watchlist-list command.
       isArray: false
       name: watchlist_id
       required: true
@@ -843,7 +872,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The report ids for creating the watchlist.
+      description: The report ids for creating the watchlist. Support comma seperated
+        values.
       isArray: false
       name: report_ids
       required: false
@@ -894,7 +924,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The watchlist ID to remove.
+      description: The watchlist ID to remove. Get the ID from the watchlist-list
+        command.
       isArray: false
       name: watchlist_id
       required: true
@@ -943,7 +974,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Watchlist report ID.
+      description: Watchlist report ID. Support comma seperated values.
       isArray: false
       name: report_ids
       required: false
@@ -995,7 +1026,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The report ID.
+      description: The report ID. Get the ID from the watchlist-list command.
       isArray: false
       name: report_id
       required: true
@@ -1034,7 +1065,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Report ID.
+      description: Report ID. Get the ID from the watchlist-list command.
       isArray: false
       name: report_id
       required: true
@@ -1051,7 +1082,7 @@ script:
     name: cb-eedr-ioc-ignore-status
   - arguments:
     - default: false
-      description: Report ID.
+      description: Report ID. Get the ID from the watchlist-list command.
       isArray: false
       name: report_id
       required: true
@@ -1069,7 +1100,7 @@ script:
     name: cb-eedr-ioc-ignore
   - arguments:
     - default: false
-      description: Report ID.
+      description: Report ID. Get the ID from the watchlist-list command.
       isArray: false
       name: report_id
       required: true
@@ -1087,7 +1118,7 @@ script:
     name: cb-eedr-ioc-reactivate
   - arguments:
     - default: false
-      description: The report ID.
+      description: The report ID. Get the ID from the watchlist-list command.
       isArray: false
       name: report_id
       required: true
@@ -1099,7 +1130,7 @@ script:
     name: cb-eedr-report-ignore
   - arguments:
     - default: false
-      description: The report ID.
+      description: The report ID. Get the ID from the watchlist-list command.
       isArray: false
       name: report_id
       required: true
@@ -1111,7 +1142,7 @@ script:
     name: cb-eedr-report-reactivate
   - arguments:
     - default: false
-      description: The report ID.
+      description: The report ID. Get the ID from the watchlist-list command.
       isArray: false
       name: report_id
       required: true
@@ -1122,7 +1153,7 @@ script:
     name: cb-eedr-report-ignore-status
   - arguments:
     - default: false
-      description: The report ID to remove.
+      description: The report ID to remove. Get the ID from the watchlist-list command.
       isArray: false
       name: report_id
       required: true
@@ -1145,7 +1176,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The report tags.
+      description: The report tags. Support comma seperated values.
       isArray: false
       name: tags
       required: false
@@ -1157,13 +1188,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: IOC's of type ipv4.
+      description: IOC's of type ipv4. Support comma seperated values.
       isArray: false
       name: ipv4
       required: false
       secret: false
     - default: false
-      description: 'The ioc query for the report, for example: (netconn_ipv4:2.2.2.2)'
+      description: 'The ioc query for the report, for example: (netconn_ipv4:2.2.2.2).
+        Support comma seperated values.'
       isArray: false
       name: ioc_query
       required: false
@@ -1175,19 +1207,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: IOC's of type ipv6.
+      description: IOC's of type ipv6. Support comma seperated values.
       isArray: false
       name: ipv6
       required: false
       secret: false
     - default: false
-      description: IOC's of type MD5.
+      description: IOC's of type MD5. Support comma seperated values.
       isArray: false
       name: md5
       required: false
       secret: false
     - default: false
-      description: IOC's of type DNS.
+      description: IOC's of type DNS. Support comma seperated values.
       isArray: false
       name: dns
       required: false
@@ -1244,37 +1276,38 @@ script:
       required: true
       secret: false
     - default: false
-      description: The report tags.
+      description: The report tags. Support comma seperated values.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: IOC of type ipv4.
+      description: IOC of type ipv4. Support comma seperated values.
       isArray: false
       name: ipv4
       required: false
       secret: false
     - default: false
-      description: IOC of type ipv6.
+      description: IOC of type ipv6. Support comma seperated values.
       isArray: false
       name: ipv6
       required: false
       secret: false
     - default: false
-      description: IOC of type DNS.
+      description: IOC of type DNS. Support comma seperated values.
       isArray: false
       name: dns
       required: false
       secret: false
     - default: false
-      description: IOC of type MD5.
+      description: IOC of type MD5. Support comma seperated values.
       isArray: false
       name: md5
       required: false
       secret: false
     - default: false
-      description: 'Query IOC. For example: (netconn_ipv4:10.130.30.60)'
+      description: 'Query IOC. For example: (netconn_ipv4:10.130.30.60). Support comma
+        seperated values.'
       isArray: false
       name: ioc_query
       required: false
@@ -1448,7 +1481,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: An array of SHA-256 hashes (limit 100)
+      description: An array of SHA-256 hashes (limit 100). Support comma seperated
+        values.
       isArray: false
       name: sha256
       required: true
@@ -1480,7 +1514,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The requested SHA-256 hash to obtain information for.
+      description: The requested SHA-256 hash to obtain information for. Support comma
+        seperated values.
       isArray: false
       name: sha256
       required: true

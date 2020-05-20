@@ -355,7 +355,7 @@ class Client(BaseClient):
         suffix_url = f'ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/metadata'
         return self._http_request('GET', suffix_url)
 
-    def get_file_request(self, sha256: str, expiration_seconds: int) -> Dict:
+    def get_file_request(self, sha256: List, expiration_seconds: int) -> Dict:
 
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/file/_download'
         body = assign_params(
