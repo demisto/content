@@ -10,7 +10,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 def datetime_to_iso(d):
-        return d.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+    return d.strftime('%Y-%m-%dT%H:%M:%S.000Z')
 
 
 class Client(BaseClient):
@@ -851,7 +851,7 @@ def create_report_command(client: Client, args: Dict) -> CommandResults:
     md5 = argToList(args.get('md5'))
     ioc_query = argToList(args.get('ioc_query'))
     severity = int(args.get('severity'))
-    timestamp = date_to_timestamp(args.get('timestamp'))/1000
+    timestamp = date_to_timestamp(args.get('timestamp')) / 1000
     ioc_contents = []
     iocs = assign_params(
         ipv4=ipv4,
@@ -947,7 +947,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
     report_id = args.get('report_id')
     title = args.get('title')
     description = args.get('description')
-    timestamp = date_to_timestamp(args.get('timestamp'))/1000
+    timestamp = date_to_timestamp(args.get('timestamp')) / 1000
     tags = argToList(args.get('tags'))
     ipv4 = argToList(args.get('ipv4'))
     ipv6 = argToList(args.get('ipv6'))
@@ -1118,6 +1118,18 @@ def get_file_path_command(client: Client, args: Dict) -> CommandResults:
         raw_response=result
     )
     return results
+
+
+def url_to_file():
+    """
+    Convert a url to file for detonation
+    """
+    urls = argToList(demisto.getArg('urls'))
+    files = []
+    for i in range(len(urls)):
+        fileEntry = fileResult('url_' + str(i + 1), '[InternetShortcut]\nURL=' + str(urls[i]))
+        files.append(fileEntry)
+    demisto.results(files)
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
@@ -1292,6 +1304,9 @@ def main():
 
         elif demisto.command() == 'cb-eedr-file-paths':
             return_results(get_file_path_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-file-download-to-xsoar':
+
 
     # Log exceptions
     except Exception as e:
