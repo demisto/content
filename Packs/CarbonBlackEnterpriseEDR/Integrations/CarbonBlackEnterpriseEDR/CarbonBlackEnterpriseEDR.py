@@ -9,7 +9,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 requests.packages.urllib3.disable_warnings()
 
 # GLOBALS
-CB_ORG_KEY = demisto.params().get('organization_key')
+CB_ORG_KEY: str
 
 
 def convert_unix_to_timestamp(timestamp):
@@ -1183,8 +1183,10 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    global CB_ORG_KEY
     cb_custom_key = demisto.params().get('custom_key')
     cb_custom_id = demisto.params().get('custom_id')
+    CB_ORG_KEY = demisto.params().get('organization_key')
     token = f'{cb_custom_key}/{cb_custom_id}'
     # get the service API url
     base_url = demisto.params().get('url')
