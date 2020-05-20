@@ -578,6 +578,23 @@ jobs:
           destination: artifacts
           when: always
       - run:
+          name: Upload zipped packs to the artifacts folder
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            GCS_PATH=$(mktemp)
+            echo $GCS_MARKET_KEY > $GCS_PATH
+            python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -d $CIRCLE_ARTIFACTS -s $GCS_PATH -n $CIRCLE_BUILD_NUM
+            rm $GCS_PATH
+          when: on_success
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
+      - run:
           name: Store Artifacts to GCS
           command: ./Tests/scripts/upload_artifacts.sh
           when: always
