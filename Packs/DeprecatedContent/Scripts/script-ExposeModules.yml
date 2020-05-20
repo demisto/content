@@ -12,7 +12,7 @@ tags:
 - Utility
 system: true
 deprecated: true
-args:
+args: []
 outputs:
 - contextPath: ConfiguredModules.instance
   description: The instance name of the configured module

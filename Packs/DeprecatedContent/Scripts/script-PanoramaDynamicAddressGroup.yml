@@ -1,6 +1,6 @@
 commonfields:
   id: PanoramaDynamicAddressGroup
-  version: 12
+  version: -1
 name: PanoramaDynamicAddressGroup
 script: |-
   var req =
