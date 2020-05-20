@@ -32,7 +32,7 @@ args:
 - default: false
   defaultValue: '*'
   description: Keys to retrieve from items (limited when item
-    list to columns amount) - Key will not be columns correlated.
+    list to columns amount) - Key will not be columns correlated. Default is all keys.
   isArray: true
   name: keys
   required: false
