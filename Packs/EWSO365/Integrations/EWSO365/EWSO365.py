@@ -59,7 +59,7 @@ warnings.filterwarnings("ignore")
 
 """ Constants """
 
-APP_NAME = "ews365"
+APP_NAME = "EWSO365"
 
 # move results
 MOVED_TO_MAILBOX = "movedToMailbox"

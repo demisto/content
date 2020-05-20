@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: EWS365
+  id: EWSO365
   version: -1
 configuration:
 - display: Application (client) ID
@@ -77,8 +77,8 @@ configuration:
   required: false
   type: 8
 description: Exchange Web Services and Office 365 (mail)
-display: EWS365
-name: EWS365
+display: EWSO365
+name: EWSO365
 script:
   commands:
   - arguments:
@@ -261,7 +261,7 @@ script:
     description: Searches over multiple mailboxes or all Exchange mailboxes. Use either
       the mailbox-search-scope command or the email-addresses command to search specific
       mailboxes. This command requires eDiscovery permissions to the Exchange Server.
-      For more information, see the EWS365 integration documentation.
+      For more information, see the EWSO365 integration documentation.
     execution: false
     name: ews-search-mailboxes
     outputs:

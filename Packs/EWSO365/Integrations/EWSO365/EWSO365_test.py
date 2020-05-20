@@ -1,4 +1,4 @@
-from demisto_sdk.commands.init.templates.EWS365.EWS365 import Client, say_hello_command,\
+from demisto_sdk.commands.init.templates.EWSO365.EWSO365 import Client, say_hello_command,\
     say_hello_over_http_command
 
 
