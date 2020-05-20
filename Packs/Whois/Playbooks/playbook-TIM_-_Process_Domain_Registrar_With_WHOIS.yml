@@ -9,15 +9,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7a672deb-4ed1-43d6-82f2-64e2c0cc6193
+    taskid: 22c564e6-c75c-4709-8fb4-473d3d61807e
     type: start
     task:
-      id: 7a672deb-4ed1-43d6-82f2-64e2c0cc6193
+      id: 22c564e6-c75c-4709-8fb4-473d3d61807e
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -36,16 +35,15 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 8048c6d6-6c8c-407c-8b55-36b3f73b13d4
+    taskid: e8b6a799-2a22-4d66-84fa-66696bc91f35
     type: condition
     task:
-      id: 8048c6d6-6c8c-407c-8b55-36b3f73b13d4
+      id: e8b6a799-2a22-4d66-84fa-66696bc91f35
       version: -1
       name: Are there query results?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "2"
@@ -74,16 +72,15 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 7e169b90-e980-4c8b-8a93-4a630659f913
+    taskid: a01e20f3-29f5-4ab4-83ad-454ab189ba87
     type: title
     task:
-      id: 7e169b90-e980-4c8b-8a93-4a630659f913
+      id: a01e20f3-29f5-4ab4-83ad-454ab189ba87
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -99,17 +96,17 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 350b22cc-315f-4b48-817e-726095a219b4
+    taskid: f90a2267-1595-40d6-87a6-8e25335c3ea2
     type: regular
     task:
-      id: 350b22cc-315f-4b48-817e-726095a219b4
+      id: f90a2267-1595-40d6-87a6-8e25335c3ea2
       version: -1
       name: Run Whois on indicators
       description: Provides data enrichment for domains.
-      script: Whois|||whois
+      script: Whois1|||whois
       type: regular
       iscommand: true
-      brand: Whois
+      brand: Whois1
     nexttasks:
       '#none#':
       - "4"
@@ -121,7 +118,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -680,
+          "x": -860,
           "y": 420
         }
       }
@@ -132,22 +129,22 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 3860a6ad-8729-4705-800f-c94bbe14a950
+    taskid: b40a8c3f-0302-4ae7-8874-b1580268f1df
     type: regular
     task:
-      id: 3860a6ad-8729-4705-800f-c94bbe14a950
+      id: b40a8c3f-0302-4ae7-8874-b1580268f1df
       version: -1
       name: FilterByList
       description: Checks whether the specified item is in a list. The default list
         is the Demisto Indicators Whitelist.
-      scriptName: FilterByList
+      scriptName: FilterByList1
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
-      - "20"
+      - "23"
+      - "24"
     scriptarguments:
       delimiter:
         simple: ;
@@ -163,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 600
+          "x": -70,
+          "y": 630
         }
       }
     note: false
@@ -174,19 +171,18 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 651a2341-edc5-4db3-815f-e3fdc225d1f6
+    taskid: 3b71315c-73ff-4b78-887a-eb33d3d55e27
     type: condition
     task:
-      id: 651a2341-edc5-4db3-815f-e3fdc225d1f6
+      id: 3b71315c-73ff-4b78-887a-eb33d3d55e27
       version: -1
       name: Is there an approved registrars list?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "8"
+      - "21"
       "yes":
       - "3"
     separatecontext: false
@@ -212,10 +208,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 35ac5711-94b3-4539-8fdd-ccb32efaea81
+    taskid: 061481f3-9fc5-4689-8288-1c00aec0c05d
     type: regular
     task:
-      id: 35ac5711-94b3-4539-8fdd-ccb32efaea81
+      id: 061481f3-9fc5-4689-8288-1c00aec0c05d
       version: -1
       name: Set non approved domains
       description: Checks if the specified value exists in context. If the value exists,
@@ -252,8 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 410
+          "x": 730,
+          "y": 1010
         }
       }
     note: false
@@ -263,38 +259,37 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: fc969d33-7b21-4e5c-8596-2f97f80f56ee
+    taskid: 91c48fed-e49e-4486-85b5-ca787571d27b
     type: condition
     task:
-      id: fc969d33-7b21-4e5c-8596-2f97f80f56ee
+      id: 91c48fed-e49e-4486-85b5-ca787571d27b
       version: -1
       name: Are there domains without Whois query results?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "2"
       "yes":
-      - "14"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: startWith
+      - - operator: isNotEqualString
           left:
             value:
-              simple: Domain.Whois.Raw
+              simple: Domain.Whois.QueryResult
             iscontext: true
           right:
             value:
-              simple: NOT FOUND
+              simple: "true"
     view: |-
       {
         "position": {
-          "x": -680,
-          "y": 850
+          "x": -860,
+          "y": 630
         }
       }
     note: false
@@ -304,10 +299,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: e8b0b40f-4494-4666-80f4-13735cec57c7
+    taskid: 08277e99-e1e6-49c1-8ddb-bdc9ce072a2d
     type: regular
     task:
-      id: e8b0b40f-4494-4666-80f4-13735cec57c7
+      id: 08277e99-e1e6-49c1-8ddb-bdc9ce072a2d
       version: -1
       name: Set domains without Whois results
       description: Checks if the specified value exists in context. If the value exists,
@@ -329,14 +324,14 @@ tasks:
         complex:
           root: Domain
           filters:
-          - - operator: startWith
+          - - operator: isNotEqualString
               left:
                 value:
-                  simple: Domain.Whois.Raw
+                  simple: Domain.Whois.QueryResult
                 iscontext: true
               right:
                 value:
-                  simple: NOT FOUND
+                  simple: "true"
           accessor: Whois.QueryValue
           transformers:
           - operator: uniq
@@ -344,8 +339,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -870,
-          "y": 1020
+          "x": -990,
+          "y": 1010
         }
       }
     note: false
@@ -355,10 +350,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: de3fe8c1-0e6f-4b1f-8ce6-a6094751cf05
+    taskid: c7a3c947-cfdf-4656-8245-cfbff77ca48e
     type: regular
     task:
-      id: de3fe8c1-0e6f-4b1f-8ce6-a6094751cf05
+      id: c7a3c947-cfdf-4656-8245-cfbff77ca48e
       version: -1
       name: Set domains by approved registrars
       description: Checks if the specified value exists in context. If the value exists,
@@ -396,8 +391,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
-          "y": 850
+          "x": -290,
+          "y": 1010
         }
       }
     note: false
@@ -407,10 +402,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: ba8ca90e-af1e-44a0-88ad-81e0200494a2
+    taskid: 371bb257-dce3-46c7-8bf0-c0273a94472c
     type: regular
     task:
-      id: ba8ca90e-af1e-44a0-88ad-81e0200494a2
+      id: 371bb257-dce3-46c7-8bf0-c0273a94472c
       version: -1
       name: Set domains by non approved registrars
       description: Checks if the specified value exists in context. If the value exists,
@@ -448,8 +443,116 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 850
+          "x": 180,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: beeb8248-9272-45fb-8874-30d2e06bf64a
+    type: title
+    task:
+      id: beeb8248-9272-45fb-8874-30d2e06bf64a
+      version: -1
+      name: No registrar list provided
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: e3ac3676-405c-4fad-8bfd-8374fa33356b
+    type: title
+    task:
+      id: e3ac3676-405c-4fad-8bfd-8374fa33356b
+      version: -1
+      name: Domain not found by Whois
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -990,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 31c23415-0ec9-4f59-81fa-b221094cb371
+    type: title
+    task:
+      id: 31c23415-0ec9-4f59-81fa-b221094cb371
+      version: -1
+      name: Domain registrar in approved list
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: a2907802-7f62-49de-886a-f23ee2148b5a
+    type: title
+    task:
+      id: a2907802-7f62-49de-886a-f23ee2148b5a
+      version: -1
+      name: Domain registrar not in approved list
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 880
         }
       }
     note: false
@@ -463,8 +566,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1345,
-        "width": 1970,
-        "x": -870,
+        "width": 2100,
+        "x": -990,
         "y": -80
       }
     }
