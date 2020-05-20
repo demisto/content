@@ -416,3 +416,5 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+tests:
+  - No test - tests exist for sub playbooks
