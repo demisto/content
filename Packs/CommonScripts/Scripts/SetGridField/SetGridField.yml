@@ -45,10 +45,10 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'true'
-  description: Set to 'false' to unpack nested elements.
+  defaultValue: 'false'
+  description: Set to 'true' to unpack nested elements.
   isArray: false
-  name: skip_nested_elements
+  name: unpack_nested_elements
   predefined:
   - 'false'
   - 'true'

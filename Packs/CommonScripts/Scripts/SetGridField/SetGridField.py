@@ -106,7 +106,7 @@ def get_current_table(grid_id: str) -> List[Dict[Any, Any]]:
         grid_id: Grid ID to retrieve data from.
 
     Returns:
-        list: Exsiting grid data.
+        list: Existing grid data.
     """
     current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
     if current_table is None:
@@ -115,29 +115,34 @@ def get_current_table(grid_id: str) -> List[Dict[Any, Any]]:
     return pd.DataFrame(current_table)
 
 
-def validate_entry_context(entry_context: Any, keys: List[str], skip_nested_elements: bool):
-    """ Validate entry context structure is valid should be:
-            1. List[Dict[str, str]
+def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_elements: bool):
+    """ Validate entry context structure is valid, should be:
+        - For unpack_nested_elements==False:
+            1. List[Dict[str, str]]
             2. List[str/bool/int/float]
             3. Dict[str, str] - for developer it will be in first index of a list.
+        - For unpack_nested_elements==True:
+            1. Dict[str, Any]
 
     Args:
         entry_context: Entry context to validate
         keys: keys to collect data from
-        skip_nested_elements: False for unpacking nested elements, True otherwise.
+        unpack_nested_elements: True for unpacking nested elements, False otherwise.
 
     Raises:
         ValueError: If structure is not valid.
         data_type (str): The type of information in the context path.
     """
-    exception_msg = "Not valid entry context path - dict[Any,Any]"
-    if not skip_nested_elements:
+    exception_msg = "When unpack_nested_elements argument is set to True, the context object for the path should be " \
+                    "of type dict"
+    if unpack_nested_elements:
         if not isinstance(entry_context, dict):
             raise ValueError(exception_msg)
         else:
             return
 
-    exception_msg = "Not valid entry context path - dict[str,str] or list[dict[str,str]] or List[str/bool/int/float]"
+    exception_msg = "The context object for the specified path should be of one of the following types:" \
+                    " dict[str,str] or list[dict[str,str]] or List[str/bool/int/float]"
     if not isinstance(entry_context, (list, dict)):
         raise ValueError(exception_msg)
 
@@ -169,11 +174,10 @@ def validate_entry_context(entry_context: Any, keys: List[str], skip_nested_elem
     return data_type
 
 
-def build_grid(context_path: str, keys: List[str], columns: List[str], skip_nested_elements: bool) -> pd.DataFrame:
+def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_nested_elements: bool) -> pd.DataFrame:
     """ Build new DateFrame from current context retrieved by DT.
-        There is 3 cases:
-            1. DT returns dict (list including 1 item only)- In this case we will insert it in the table as key,
-            value each row.
+        There are 3 cases:
+            1. DT returns dict - In this case we will insert it in the table as key, value in each row.
             2. DT returns list - In this case each entry in the list will represent a row.
             3. DT return unknown obj (str..) - return empty list.
 
@@ -181,7 +185,7 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], skip_nest
         context_path: DT context path.
         keys: Keys to be included
         columns: Grid columns name.
-        skip_nested_elements: False for unpacking nested elements, True otherwise.
+        unpack_nested_elements: True for unpacking nested elements, False otherwise.
 
     Returns:
         pd.DataFrame: New Table include data from Entry Context
@@ -189,9 +193,10 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], skip_nest
     # Retrieve entry context data
     entry_context_data = demisto.dt(demisto.context(), context_path)
     # Validate entry context structure
-    data_type = validate_entry_context(entry_context_data, keys, skip_nested_elements)
+    data_type = validate_entry_context(entry_context_data, keys, unpack_nested_elements)
     # Building new Grid
-    if not skip_nested_elements:
+    if unpack_nested_elements:
+        # Handle entry context as dict, with unpacking of nested elements
         table = pd.DataFrame(unpack_all_data_from_dict(entry_context_data, keys, columns))
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif data_type == 'list':
@@ -204,7 +209,7 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], skip_nest
         table = pd.DataFrame(entry_context_data)
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
     elif isinstance(entry_context_data, dict):
-        # Handle entry context key-value option
+        # Handle entry context key-value of primitive types option
         entry_context_data = filter_dict(entry_context_data, keys).items()
         table = pd.DataFrame(entry_context_data, columns=columns[:2])
     else:
@@ -214,15 +219,17 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], skip_nest
 
 
 def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns: List[str], overwrite: bool,
-                       sort_by: str, skip_nested_elements: bool) \
+                       sort_by: str, unpack_nested_elements: bool) \
         -> List[Dict[Any, Any]]:
     """ Build Grid in one of the 3 options:
-            1. Context_path contain list of dicts, e.g. [{'a': 1, 'b': 2}, {'a': 1, 'b': 2}]
-            2. Context_path contain dict (key value pairs), e.g. {'a': 1, 'b': 2}
+            1. Context_path contains list of dicts where values are of primitive types (str, int, float, bool),
+                e.g. [{'a': 1, 'b': 2}, {'a': 1, 'b': 2}]
+            2. Context_path contains dict (key value pairs), e.g. {'a': 1, 'b': 2}
+            3. Context_path contains dict where values can be non-primitive types,
+            e.g. {'a': 1, 'b': [1, 2, 3], 'c': {'1': 1, '2': 2}}
 
         Warnings:
             1. The automation can't validate that the columns name correct.
-            2. The automation knows how to handle only list or dict primitive python objects (str, inf, float values)
 
         Args:
             grid_id: Grid ID to modify.
@@ -231,7 +238,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
             columns: Name of the columns in the must be equal.
             overwrite: True if to overwrite existing data else False.
             sort_by: Name of the column to sort by.
-            skip_nested_elements: False for unpacking nested elements, True otherwise.
+            unpack_nested_elements: True for unpacking nested elements, False otherwise.
 
         Returns:
             list: Table representation for the Grid.
@@ -244,7 +251,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     new_table: pd.DataFrame = build_grid(context_path=context_path,
                                          keys=keys,
                                          columns=columns,
-                                         skip_nested_elements=skip_nested_elements)
+                                         unpack_nested_elements=unpack_nested_elements)
     # Merge tabels if not specified to overwrite.
     if not overwrite:
         new_table = pd.concat([new_table, old_table])
@@ -266,7 +273,7 @@ def main():
                                    overwrite=demisto.getArg('overwrite').lower() == 'true',
                                    columns=argToList(demisto.getArg('columns')),
                                    sort_by=demisto.getArg('sort_by'),
-                                   skip_nested_elements=demisto.getArg('skip_nested_elements') == 'true')
+                                   unpack_nested_elements=demisto.getArg('unpack_nested_elements') == 'true')
         # Execute automation 'setIncident` which change the Context data in the incident
         demisto.executeCommand("setIncident",
                                {
