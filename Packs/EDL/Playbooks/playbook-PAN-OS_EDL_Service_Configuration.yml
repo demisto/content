@@ -2,16 +2,15 @@ id: PAN-OS EDL Service Configuration
 version: -1
 fromversion: 5.5.0
 name: PAN-OS EDL Service Configuration
-description: "This single run playbook enables Cotrex xSOAR built-in External Dynamic\
-  \ List (EDL) as a service for the system indicators, configures PAN-OS EDL Objects,\
-  \ and equivalent firewall policy rules.\nThe EDLs will continuously update upon\
-  \ each indicator that will match the query syntax inputted in the playbook\n(in\
-  \ order to validate which indicators the query applied it is needed to enter the\
-  \ query syntax to the from indicator tab at the top of the playbook inputs window\
-  \ as well). \nit will sort the indicators to two EDLs, IP and URL if both indicators\
-  \ types exist in the query or one EDL if there is a single indicator type that exists\
-  \ in the query. \nIt will then create EDL Objects Directing to the indicator lists\
-  \ and firewall policy rules in PAN-OS. \n- It is recommended to configure a dedicated\
+description: "This single-run playbook enables Cortex XSOAR built-in External Dynamic\
+  \ List (EDL) as a service for the system indicators, configures PAN-OS EDL Objects\
+  \ and the respective firewall policy rules.\nThe EDLs will continuously update for\
+  \ each indicator that matches the query syntax inputted in the playbook\n(in\
+  \ order to validate to which indicators the query applied, you need to enter the\
+  \ query syntax from the indicator tab at the top of the playbook inputs window\
+  \ as well). \nIf both the IP and URL indicator types exist in the query, it sorts the indicators into two EDLs, IP and URL.
+    If only one indicator type exists in the query, only one EDL is created. \nThe playbook then creates 
+    EDL objects directing to the indicator lists and firewall policy rules in PAN-OS. \n- It is recommended to configure a dedicated\
   \ EDL Service instance for the usage of this playbook.\n- In case it is needed to\
   \ edit or update the EDL query after this playbook run, use the panorama-edit-edl\
   \ command and panorama integration to update the URL containing the indicator query syntax."
@@ -1581,30 +1580,30 @@ inputs:
   value:
     simple: Demisto Remediation - IP EDL
   required: false
-  description: Set A name for the EDL object that will be configured on pan-os, the
-    value will be used to set the rule name as well.
+  description: Set a name for the EDL object that will be configured on pan-os. This
+    value is used to set the rule name as well.
   playbookInputQuery:
 - key: url-edl-object-name
   value:
     simple: Demisto Remediation - URL EDL
   required: false
-  description: Set A name for the EDL object that will be configured on pan-os, the
-    value will be used to set the rule name as well.
+  description: Set a name for the EDL object that will be configured on pan-os. This
+    value is used to set the rule name as well.
   playbookInputQuery:
 - key: EDLServiceURL
   value: {}
   required: false
-  description: "EDL Service provides serval access methods to the EDL Instance, by\
-    \ default it is using a unique port, configured in EDL Service integration, and\
-    \ an HTTP session. it is possible to either configure a certificate for the default\
-    \ option or to access the EDL by Instance name, which is HTTPS by default.\nPlease\
+  description: "The EDL service provides serval access methods to the EDL instance. By\
+    \ default, it uses a unique port, configured in the EDL Service integration, and\
+    \ an HTTP session. It is possible to either configure a certificate for the default\
+    \ option or to access the EDL by instance name, which is HTTPS by default.\nPlease\
     \ refer to the EDL Service integration tip for more information.\nEDLServiceURL\
-    \ input Examples: \n  1. if not configured with a certificate -  http://demisto_address\n\
-    \  2. if configured with a certificate - https://demisto_address\n\n* depending\
-    \ on the access method to the EDL, The full URL of the EDL is constructed from\
-    \ this input, and by InstanceName OR by InstacePort and IndicatorQuery. the playbook\
-    \ will identify which access method is used from the playbook inputs and will\
-    \ craft the correct URL address.\nFULL constructed URL examples:\n1. by port \
+    \ input Examples: \n  1. if not configured with a certificate -  http://cortex-xsoar_address\n\
+    \  2. if configured with a certificate - https://cortex-xsoar_address\n\n* Depending\
+    \ on the access method to the EDL, the full URL of the EDL is constructed from\
+    \ this input, and by InstanceName OR by InstacePort and IndicatorQuery. The playbook\
+    \ identifies which access method is used from the playbook inputs and crafts\
+    \ the correct URL address.\nFull constructed URL examples:\n1. by port \
     \ - \n${EDLServiceURL}:${InstancePort}/${IndicatorQuery}\n2. By Instance Name\
     \ - \n${EDLServiceURL}:${InstanceName}/${IndicatorQuery}\n "
   playbookInputQuery:
@@ -1612,7 +1611,7 @@ inputs:
   value: {}
   required: false
   description: "Name of the instance as configured in EDL Service integration. \n\
-    Only needed when accessing EDL Service by instance name,\nPlease refer to the\
+    Only needed when accessing EDL Service by instance name.\nRefer to the\
     \ EDL Service integration tip for more information."
   playbookInputQuery:
 - key: InstancePort
@@ -1620,16 +1619,16 @@ inputs:
   required: false
   description: |-
     Instance name port as configured in EDL Service integration.
-    Only needed when accessing EDL Service by URL and Port,
-    Please refer to the EDL Service integration tip for more information.
+    Only needed when accessing EDL Service by URL and Port.
+    Refer to the EDL Service integration tip for more information.
   playbookInputQuery:
 - key: IndicatorQuery
   value: {}
   required: false
   description: |-
-    The query to run to create its EDL.
-    when no query entered, EDLs will contain all IP and URL indicators.
-    The query should also be entered in from indicators tab(top of this input window) so the playbook will be able to query and validate the indicator types so it will create only the relevant EDL objects and rules.
+    The query to run to create the EDL.
+    When no query is entered, EDLs will contain all IP and URL indicators.
+    The query should be inserted in the indicators tab(top of this input window) so the playbook can query and validate the indicator types and create only the relevant EDL objects and rules.
   playbookInputQuery:
 - key: AutoCommit
   value:
