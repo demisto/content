@@ -411,7 +411,7 @@ tasks:
       public: {}
       timeout: {}
       url:
-        simple: https://www.batticaloa.mc.gov.lk/
+        simple: https://www.google.com
     separatecontext: false
     view: |-
       {
