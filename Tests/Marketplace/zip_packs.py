@@ -3,7 +3,7 @@ import os
 import shutil
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client,\
-    CORE_PACKS, GCPConfig, IGNORED_FILES, PACKS_FULL_PATH
+    CORE_PACKS, GCPConfig, IGNORED_FILES, PACKS_FULL_PATH, Pack
 
 from demisto_sdk.commands.common.tools import print_error, print_success, LooseVersion
 
@@ -78,14 +78,16 @@ def download_packs_from_gcp(storage_bucket, destination_path, circle_build, bran
         zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
     zipped_packs = []
-    for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-        if pack.name in IGNORED_FILES + CORE_PACKS:
+    for pack_dir in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
+        if pack_dir.name in IGNORED_FILES + CORE_PACKS:
             continue
+        pack = Pack(pack_dir.name, pack_dir.path)
         # Search for the pack in the bucket
-        blobs = list(storage_bucket.list_blobs(prefix=os.path.join(GCPConfig.STORAGE_BASE_PATH, branch_name,
-                                                                   circle_build, pack.name)))
+        pack_prefix = os.path.join(GCPConfig.STORAGE_BASE_PATH, branch_name, circle_build, pack.name,
+                                   pack.latest_version)
+        blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
         if blobs:
-            blob = get_latest_version_blob(blobs)
+            blob = get_pack_zip_from_blob(blobs)
             download_path = os.path.join(destination_path, f"{pack.name}.zip")
             zipped_packs.append({pack.name: download_path})
             print(f'Downloading pack from GCP: {pack.name}')
@@ -108,17 +110,16 @@ def cleanup(destination_path):
             os.remove(file_)
 
 
-def get_latest_version_blob(blobs):
+def get_pack_zip_from_blob(blobs):
     """
-    Returns the zip blob of the latest version among the pack blobs.
+    Returns the zip pack from a list of blobs in a pack.
     Args:
-        blobs: The zip blobs of a specific pack.
+        blobs: The zip blob of a specific pack.
 
     Returns:
-        blob: The zip blob of the latest version of the pack.
+        blob: The zip blob of the pack.
     """
     blobs = [b for b in blobs if b.name.endswith('.zip')]
-    blobs = sorted(blobs, key=lambda b: LooseVersion(os.path.basename(os.path.dirname(b.name))), reverse=True)
     blob = blobs[0]
 
     return blob
