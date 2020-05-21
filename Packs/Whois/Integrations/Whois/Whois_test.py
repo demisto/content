@@ -76,6 +76,11 @@ TEST_QUERY_RESULT_INPUT = [
         False
     ),
     (
+        {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
+         'raw': ['No match for "BLABLA43213422342AS.COM".>>> Last update of whois database: 2020-05-20T08:39:17Z <<<']},
+        "BLABLA43213422342AS.COM", False
+    ),
+    (
         {'status': ['clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)'],
          'updated_date': [datetime.datetime(2019, 9, 9, 8, 39, 4)],
          'contacts': {'admin': {'country': 'US', 'state': 'CA', 'name': 'Google LLC'},
