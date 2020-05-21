@@ -137,7 +137,7 @@ tasks:
       name: FilterByList
       description: Checks whether the specified item is in a list. The default list
         is the Cortex XSOAR Indicators Whitelist.
-      scriptName: FilterByList1
+      scriptName: FilterByList
       type: regular
       iscommand: false
       brand: ""
@@ -147,7 +147,7 @@ tasks:
       - "24"
     scriptarguments:
       delimiter:
-        simple: ;
+        simple: ${inputs.RegistrarListDelimiter}
       ignorecase:
         simple: "yes"
       listname:
@@ -596,6 +596,13 @@ inputs:
   value: {}
   required: false
   description: The Cortex XSOAR list name that contains the approved registrars.
+- key: RegistrarListDelimiter
+  value: {}
+  required: false
+  description: |-
+    A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration.
+    Default value is ','
+    Keep In mind that many registrars contain the "," character in their name.
   playbookInputQuery: null
 outputs:
 - contextPath: NonApprovedDomains
