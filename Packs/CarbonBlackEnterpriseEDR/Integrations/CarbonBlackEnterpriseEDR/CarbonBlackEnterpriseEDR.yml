@@ -805,6 +805,9 @@ script:
     - contextPath: CarbonBlackEEDR.Watchlist.description
       description: Watchlist description.
       type: String
+    - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
+      description: Is the alerts enabled for the watchlists
+      type: Boolean
   - arguments:
     - default: false
       description: The watchlist ID. Get the ID from the watchlist-list command.
