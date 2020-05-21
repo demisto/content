@@ -38,7 +38,7 @@ def create_dependencies_data_structure(response_data, dependants_ids, dependenci
         checked_packs (set): Required dependants that were already found.
     """
 
-    next_call_dependants_ids = []
+    next_call_dependants_ids = set([])
 
     for dependency in response_data:
         # empty currentVersion field indicates the pack isn't installed yet
