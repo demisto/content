@@ -244,7 +244,7 @@ def search_query(
     # test if query is a valid json
     try:
         query_json = validate_json_objects(json.loads(query))
-        raw_response = client.query(collection, query_json, int(limit))
+        raw_response = client.query(collection, query_json, int(limit))  # type: ignore
     except JSONDecodeError:
         raise DemistoException('The `query` argument is not a valid json.')
     if raw_response:
@@ -302,7 +302,7 @@ def validate_json_objects(json_obj: Union[dict, list]) -> Union[dict, list]:
     Returns:
         valid json according to MongoDB convention.
     """
-    valid_mongodb_json = convert_str_to_datetime(convert_id_to_object_id(json_obj))
+    valid_mongodb_json = convert_str_to_datetime(convert_id_to_object_id(json_obj))  # type: ignore
     return valid_mongodb_json
 
 
