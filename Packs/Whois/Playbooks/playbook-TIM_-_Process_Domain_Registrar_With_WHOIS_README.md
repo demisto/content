@@ -35,4 +35,6 @@ Cortex XSOAR recommends that you select a different delimiter. |  | Optional |
 | NonApprovedDomains | Domains for which the registrar isn't approved. | string |
 | ApprovedDomains | Domains for which the registrar is approved. | string |
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/883f89fdd8ab1c85fced632d513abcf28d0ec155/Packs/Whois/doc_files/TIM_-_Process_Domain_Registrar_With_WHOIS.png)
