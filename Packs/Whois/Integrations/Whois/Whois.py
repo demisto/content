@@ -8274,10 +8274,15 @@ def get_domain_from_query(query):
     return domain
 
 
+def is_good_query_result(raw_result):
+    """ Good result is one where the raw_result does not contains `NOT FOUND` or `No match` """
+    return 'NOT FOUND' not in raw_result and 'No match' not in raw_result
+
+
 def create_outputs(whois_result, domain, query=None):
     md = {'Name': domain}
     ec = {'Name': domain,
-          'QueryResult': 'NOT FOUND' not in str(whois_result.get('raw', 'NOT FOUND'))}
+          'QueryResult': is_good_query_result(str(whois_result.get('raw', 'NOT FOUND')))}
     standard_ec = {}  # type:dict
     standard_ec['WHOIS'] = {}
     if 'status' in whois_result:
