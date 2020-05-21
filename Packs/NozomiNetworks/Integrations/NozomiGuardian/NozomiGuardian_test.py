@@ -41,7 +41,7 @@ def test_list_all_assets(requests_mock):
     expected_output = list_all_assets_response
 
     assert expected_output.get('result')[0].get('capture_device') == \
-           outputs.get('NozomiGuardian').get('Assets')[0]['CaptureDevice']
+        outputs.get('NozomiGuardian').get('Assets')[0]['CaptureDevice']
 
 
 def test_find_ip_by_mac(requests_mock):
