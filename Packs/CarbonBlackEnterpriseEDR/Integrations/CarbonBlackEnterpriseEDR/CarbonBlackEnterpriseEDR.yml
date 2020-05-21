@@ -1595,3 +1595,4 @@ script:
   type: python
 tests:
   - Carbon Black Enterprise EDR Test
+fromversion: 5.0.0
