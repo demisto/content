@@ -688,11 +688,11 @@ script:
     - name: normalized_indicator_score
       description: Intel score of the indicator
       isArray: true
-      defaultValue: 0,1,2,3
+      defaultValue: -1,0,1,2,3
     - name: priority_event_score
       description: Score of email submission
       isArray: true
-      defaultValue: 0,1,2,3
+      defaultValue: -1,0,1,2,3
     - name: from_time
       description: Start of time window (defaults to 24 hours ago) (YYYY-MM-DD HH:MM:SS)
     - name: to_time
