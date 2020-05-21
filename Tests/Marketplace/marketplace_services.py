@@ -214,7 +214,6 @@ class Pack(object):
         self._current_version = current_version_value
 
     @property
-    @property
     def hidden(self):
         """ bool: internal content field for preventing pack from being displayed.
         """

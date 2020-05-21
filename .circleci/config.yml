@@ -582,7 +582,7 @@ jobs:
           destination: artifacts
           when: always
       - run:
-          name: Upload zipped packs to the artifacts folder
+          name: Zip packs from GCS
           command: |
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
