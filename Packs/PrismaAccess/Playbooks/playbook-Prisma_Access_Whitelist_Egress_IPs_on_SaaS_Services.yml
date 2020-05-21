@@ -7,15 +7,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: aa1a3fba-8ef4-4c29-8c6e-516e657e03cb
+    taskid: f4b26174-2f46-41d8-89e9-11e7fc95f44f
     type: start
     task:
-      id: aa1a3fba-8ef4-4c29-8c6e-516e657e03cb
+      id: f4b26174-2f46-41d8-89e9-11e7fc95f44f
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -34,16 +34,16 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 81cb5852-b5f9-4cd5-8ffb-58af2534ddba
+    taskid: 9e9cb365-93c9-4710-8357-3245dfd771cb
     type: condition
     task:
-      id: 81cb5852-b5f9-4cd5-8ffb-58af2534ddba
+      id: 9e9cb365-93c9-4710-8357-3245dfd771cb
       version: -1
       name: Is Prisma Access integration enabled?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "34"
@@ -94,16 +94,16 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: f76c403a-a599-46ce-8e6d-4b5fe75319a5
+    taskid: a8e6a350-b336-46ea-8f39-e2a7f899b4bd
     type: title
     task:
-      id: f76c403a-a599-46ce-8e6d-4b5fe75319a5
+      id: a8e6a350-b336-46ea-8f39-e2a7f899b4bd
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -119,13 +119,13 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 98ca16b2-e6b5-49a6-88e7-6de69200df94
+    taskid: ca97b365-4686-4fe9-8092-3ca0e087c4c8
     type: playbook
     task:
-      id: 98ca16b2-e6b5-49a6-88e7-6de69200df94
+      id: ca97b365-4686-4fe9-8092-3ca0e087c4c8
       version: -1
       name: IP Whitelist - AWS Security Group
-      description: ""
+      description: Sync a list of IP addresses to an AWS Security Group.
       playbookName: IP Whitelist - AWS Security Group
       type: playbook
       iscommand: false
@@ -159,13 +159,13 @@ tasks:
     quietmode: 2
   "36":
     id: "36"
-    taskid: 08285a8e-9b30-456c-8563-e690c7907cb8
+    taskid: c2cb4e00-5f83-4c65-8b39-94b217bd7e63
     type: playbook
     task:
-      id: 08285a8e-9b30-456c-8563-e690c7907cb8
+      id: c2cb4e00-5f83-4c65-8b39-94b217bd7e63
       version: -1
       name: IP Whitelist - GCP Firewall
-      description: ""
+      description: Set a list of IP addresses in GCP firewall.
       playbookName: IP Whitelist - GCP Firewall
       type: playbook
       iscommand: false
@@ -199,10 +199,10 @@ tasks:
     quietmode: 2
   "40":
     id: "40"
-    taskid: 92b4a48f-be9d-40f9-8970-0883b0e6d0a6
+    taskid: 00411c25-e47d-40fa-8435-1f92993284df
     type: regular
     task:
-      id: 92b4a48f-be9d-40f9-8970-0883b0e6d0a6
+      id: 00411c25-e47d-40fa-8435-1f92993284df
       version: -1
       name: Prisma Access Egress IP Feed - Get IPs
       description: Gets indicators from the feed.
@@ -214,6 +214,7 @@ tasks:
       '#none#':
       - "35"
       - "36"
+      - "41"
     scriptarguments:
       limit:
         simple: "1000"
@@ -221,7 +222,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
+          "x": 532.5,
           "y": 560
         }
       }
@@ -229,14 +230,59 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 2
+  "41":
+    id: "41"
+    taskid: 133c5abd-6df4-4ee2-82e0-69cc1d01ee2b
+    type: playbook
+    task:
+      id: 133c5abd-6df4-4ee2-82e0-69cc1d01ee2b
+      version: -1
+      name: IP Whitelist - Okta Zone
+      description: "Sync a list of IP addresses to the Okta Network Zone with the\
+        \ given ID. \nExisting IPs in the Okta Zone which are not in the input list\
+        \ will be removed and the indicator will be untagged on XSOAR.\nIDs can be\
+        \ retrieved  using !okta-list-zones. This playbook supports CIDR notation\
+        \ only (1.1.1.1/32) and not range notation (1.1.1.1-1.1.1.1)"
+      playbookName: IP Whitelist - Okta Zone
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      IP:
+        simple: ${PrismaAccess.Egress.IP(["Cambodia","Argentina"].indexOf(val.Zone)>=0).Address}
+      IndicatorTagName:
+        simple: Prisma_Access_Okta_Zone
+      ZoneID: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 875,
-        "width": 1100,
+        "width": 1540,
         "x": 40,
         "y": 200
       }
@@ -250,7 +296,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -258,13 +304,12 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 outputs: []
-quiet: true
 fromversion: 5.5.0
 tests:
 - No tests
