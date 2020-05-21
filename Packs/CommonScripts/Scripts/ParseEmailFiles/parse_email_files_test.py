@@ -301,6 +301,17 @@ def test_eml_utf_text(mocker):
 
 
 def test_eml_utf_text_with_bom(mocker):
+    '''Scenario: Parse an eml file that is UTF-8 Unicode (with BOM) text
+
+    Given
+    - A UTF-8 encoded eml file with BOM
+
+    When
+    - Executing ParseEmailFiles automation on the uploaded eml file
+
+    Then
+    - Ensure eml email file is properly parsed
+    '''
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -317,7 +328,7 @@ def test_eml_utf_text_with_bom(mocker):
                 {
                     'Type': entryTypes['file'],
                     'FileMetadata': {
-                        'info': 'RFC 822 mail text, UTF-8 Unicode (with BOM) text, ' \
+                        'info': 'RFC 822 mail text, UTF-8 Unicode (with BOM) text, '
                                 'with very long lines, with CRLF line terminators'
                     }
                 }
