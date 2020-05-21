@@ -1,6 +1,5 @@
 import json
 
-
 NOZOMIGUARDIAN_URL = 'https://test.com'
 
 
