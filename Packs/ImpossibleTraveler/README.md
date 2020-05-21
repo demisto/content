@@ -37,6 +37,9 @@ Some integrations that can provide this information are:
 
 
 ##### Best Practices & Suggestions
-- best practice
+- We recommend enabling the Rasterize integration to see the image of the supposed travel that the user has done.
+- Having managers set for users in Active Directory enhances this playbook in the way that the manager can be contacted for approval or disapproval of certain travels.
+- The `MaxMilesPerHourAllowed` playbook input, which sets the allowed MPH limit, was set to 600 by default, as this is a reasonable speed to travel at when flying abroad. However, this number may not necessarily reflect employee habits in your organization. Consider changing this number.
 
 ##### Visualization
+![Impossible_Traveller](https://raw.githubusercontent.com/demisto/content/3ea4e5a689c3aef028b01e8960588a6861a54c4e/Packs/ImpossibleTraveler/doc_files/Impossible_Traveler.png)
