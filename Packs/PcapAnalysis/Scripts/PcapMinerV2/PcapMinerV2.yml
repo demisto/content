@@ -100,9 +100,11 @@ args:
   name: packets_to_analyze
   required: false
   secret: false
-comment: PcapMIner V2 allows to parse pcap files by displaying the all of the relevant
-  data within including ip addresses, ports, flows, specific protocol breakdown, searching
-  by regex, decrypting encrypted  traffic and more.
+comment: |-
+  PcapMIner V2 allows to parse pcap files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
+  This automation takes about a minute to process 20,000 packets (which is approximatly 10MB). If you want to mine large files you can either:
+  a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
+  b) Copy the automation and change the `default timeout` parameter to match your needs.
 commonfields:
   id: PcapMinerV2
   version: -1
@@ -409,17 +411,17 @@ outputs:
   type: String
 script: '-'
 system: false
-timeout: '0'
-type: python
-dockerimage: demisto/pcap-http-extractor:1.0.0.4873
-runas: DBotWeakRole
-runonce: false
-subtype: python3
-fromversion: 5.0.0
 tags:
 - pcap
 - mine
 - file
 - Utility
+timeout: '0'
+type: python
+dockerimage: demisto/pcap-http-extractor:1.0.0.4873
+runas: DBotWeakRole
+runonce: false
 tests:
 - No tests (auto formatted)
+subtype: python3
+fromversion: 5.0.0

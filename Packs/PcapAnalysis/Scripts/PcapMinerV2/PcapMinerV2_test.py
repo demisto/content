@@ -51,7 +51,6 @@ def test_add_to_data(main_data, data_to_add, future_id, wanted_output):
 
 
 def test_mine_pcap():
-    import os
     file_path = '../../../../TestData/smb-on-windows-10.pcapng'
     wpa_password = ""
     conversation_number_to_display = 15

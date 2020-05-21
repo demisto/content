@@ -440,7 +440,7 @@ class PCAP():
         """
         custom_parameters = None
         if rsa_key_file_path:
-            custom_parameters = {'-o': f'''uat:rsa_keys:"{rsa_key_file_path}",""'''}
+            custom_parameters = {'-o': f'uat:rsa_keys:"{rsa_key_file_path}",""'}
         try:
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
                                       decryption_key=wpa_password, encryption_type='WPA-PWD', keep_packets=False,
