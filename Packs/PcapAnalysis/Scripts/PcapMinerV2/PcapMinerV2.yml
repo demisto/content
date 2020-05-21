@@ -417,6 +417,9 @@ runonce: false
 subtype: python3
 fromversion: 5.0.0
 tags:
--
+  - pcap
+  - mine
+  - file
+  - Utility
 tests:
 - No tests (auto formatted)

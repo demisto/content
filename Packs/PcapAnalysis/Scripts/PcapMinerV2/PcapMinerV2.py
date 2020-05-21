@@ -5,8 +5,7 @@ import pyshark
 import re
 from typing import Dict, Any
 import traceback
-import pickle
-import codecs
+
 
 '''GLOBAL VARS'''
 BAD_CHARS = ['[', ']', '>', '<', "'", ' Layer', ' ', '{', '}']
@@ -104,43 +103,6 @@ class PCAP():
             self.telnet_commands = set()  # type: set
         if homemade_regex:
             self.reg_homemade = re.compile(self.homemade_regex)
-
-    @logger
-    def repopulate_pcap_class(self) -> None:
-        """
-        If script is called with `iterate` parameter then it is called in a playbook and will run again and again (has
-        to be defined in the playbook to rerun) until the whole PCAP is analyzed.
-        The data after each iteration will be kept in context and this method will take it from context and repopulate
-        the pcap class according to the saved data.
-        """
-        context = demisto.context()
-        pcap_saved_data = ''  # type: ignore
-        pcap_results = context.get('PcapResults')
-        if not pcap_results:
-            return
-        if isinstance(pcap_results, dict):
-            if pcap_results.get('EntryID') == self.entry_id:
-                pcap_saved_data = pcap_results.get('temp_data')  # type: ignore
-        else:
-            for pcap_analysis in pcap_results:
-                if pcap_analysis.get('EntryID') == self.entry_id:
-                    pcap_saved_data = pcap_analysis.get('temp_data')
-                    break
-        if not pcap_saved_data:
-            # The entry id was not found. This means that this is the first run of the loop.
-            return
-
-        # repopulate data
-
-        self.__dict__.update(pickle.loads(codecs.decode(pcap_saved_data.encode(), "base64")))  # type: ignore
-
-    @logger
-    def save_pcap_to_context(self, mined_packets):
-        pickled_str = codecs.encode(pickle.dumps(self.__dict__), "base64").decode()  # type: ignore
-        pcap_saved_data = {'EntryID': self.entry_id,
-                           'temp_data': pickled_str}
-        ec = {'PcapResults(val.EntryID == obj.EntryID)': pcap_saved_data}
-        return_outputs(f'Analyzed {mined_packets} packets', ec, {})
 
     @logger
     def extract_dns(self, packet):
@@ -462,7 +424,7 @@ class PCAP():
 
     @logger
     def mine(self, file_path: str, wpa_password: str, rsa_key_file_path: str, is_flows: bool, is_reg_extract: bool,
-             pcap_filter: str, pcap_filter_new_file_path: str, num_of_packets_to_mine=None) -> int:
+             pcap_filter: str, pcap_filter_new_file_path: str) -> int:
         """
         The main function of the script. Mines the PCAP.
 
@@ -474,7 +436,6 @@ class PCAP():
             is_reg_extract: Whether to extract regexes from the PCAP.
             pcap_filter: A filter to apply on the PCAP. Same filter syntax as in Wireshark
             pcap_filter_new_file_path: The new path to save the filtered PCAP in
-            num_of_packets_to_mine: The number of packets to analyze. Usually meant for iteration over script.
 
         """
         custom_parameters = None
@@ -488,8 +449,6 @@ class PCAP():
             for packet in cap:
                 j += 1
 
-                if num_of_packets_to_mine and j == num_of_packets_to_mine:
-                    break
                 self.last_packet = int(packet.number)
                 self.last_layer.add(packet.layers[-1].layer_name)
 
@@ -781,32 +740,12 @@ def main():
         temp = demisto.uniqueFile()
         pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
 
-    # `iterate` argument and `loop packet size` are arguments used in order to enable looping over large PCAPs
-    iterate = args.get('iterate', 'False') == 'True'
-    packets_to_analyze = int(args.get('packets_to_analyze', 0))
-
-    if iterate and not packets_to_analyze:
-        return_error('In order to iterate over this pcap please specify the iteration size in `packets_to_analyze.'
-                     ' These parameters are meant for playbook use.Hello hello')
-
     try:
         pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips, entry_id)
-        if iterate:
-            pcap.repopulate_pcap_class()
-            if pcap.last_packet > 0:
-                if pcap_filter:
-                    pcap_filter += f' && frame.number>{pcap.last_packet}'
-                else:
-                    pcap_filter = f'frame.number>{pcap.last_packet}'
         mined_packets = pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
-                                  pcap_filter_new_file_path, packets_to_analyze)
-
-        if iterate and mined_packets == packets_to_analyze:
-            pcap.save_pcap_to_context(mined_packets)
-
-        else:
-            hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
-            return_outputs(hr, ec, raw)
+                                  pcap_filter_new_file_path)
+        hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
+        return_outputs(hr, ec, raw)
 
     except Exception as e:
         return_error(f'Unexpected error: {str(e)}', error=traceback.format_exc())
