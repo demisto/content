@@ -1,14 +1,16 @@
 import argparse
 import os
+from concurrent.futures import ThreadPoolExecutor
 import shutil
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client,\
-    CORE_PACKS, GCPConfig, IGNORED_FILES, PACKS_FULL_PATH, Pack
+    CORE_PACKS, GCPConfig, IGNORED_FILES, PACKS_FULL_PATH
 
-from demisto_sdk.commands.common.tools import print_error, print_success, LooseVersion
+from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion
 
 ARTIFACT_NAME = 'zipped_packs.zip'
 ARTIFACT_PATH = '/home/circleci/project/artifacts'
+MAX_THREADS = 4
 
 
 def option_handler():
@@ -67,7 +69,8 @@ def zip_packs(packs, destination_path):
 
 def download_packs_from_gcp(storage_bucket, destination_path, circle_build, branch_name):
     """
-    Iterates over the Packs directory in the content repository and downloads each pack (if found) from a GCP bucket.
+    Iterates over the Packs directory in the content repository and downloads each pack (if found) from a GCP bucket
+    in parallel.
     Args:
         storage_bucket: The GCP bucket to download from.
         destination_path: The path to download the packs to.
@@ -78,22 +81,28 @@ def download_packs_from_gcp(storage_bucket, destination_path, circle_build, bran
         zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
     zipped_packs = []
-    for pack_dir in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-        if pack_dir.name in IGNORED_FILES + CORE_PACKS:
-            continue
-        pack = Pack(pack_dir.name, pack_dir.path)
-        # Search for the pack in the bucket
-        pack_prefix = os.path.join(GCPConfig.STORAGE_BASE_PATH, branch_name, circle_build, pack.name,
-                                   pack.latest_version)
-        blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
-        if blobs:
-            blob = get_pack_zip_from_blob(blobs)
-            download_path = os.path.join(destination_path, f"{pack.name}.zip")
-            zipped_packs.append({pack.name: download_path})
-            print(f'Downloading pack from GCP: {pack.name}')
-            blob.download_to_filename(download_path)
+    with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
+        for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
+            if pack.name in IGNORED_FILES + CORE_PACKS:
+                continue
+            # Search for the pack in the bucket
+            pack_prefix = os.path.join(GCPConfig.STORAGE_BASE_PATH, branch_name, circle_build, pack.name)
+            blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
+            if blobs:
+                blob = get_latest_pack_zip_from_blob(pack.name, blobs)
+                if not blob:
+                    print_warning(f'Failed to get the zip of the pack {pack.name} from GCP')
+                    continue
+                download_path = os.path.join(destination_path, f"{pack.name}.zip")
+                zipped_packs.append({pack.name: download_path})
+                print(f'Downloading pack from GCP: {pack.name}')
+                executor_submit(executor, download_path, blob)
 
     return zipped_packs
+
+
+def executor_submit(executor, download_path, blob):
+    executor.submit(blob.download_to_filename, download_path)
 
 
 def cleanup(destination_path):
@@ -110,17 +119,21 @@ def cleanup(destination_path):
             os.remove(file_)
 
 
-def get_pack_zip_from_blob(blobs):
+def get_latest_pack_zip_from_blob(pack, blobs):
     """
-    Returns the zip pack from a list of blobs in a pack.
+    Returns the latest zip of a pack from a list of blobs.
     Args:
-        blobs: The zip blob of a specific pack.
+        pack: The pack name
+        blobs: The blob list
 
     Returns:
-        blob: The zip blob of the pack.
+        blob: The zip blob of the pack with the latest version.
     """
-    blobs = [b for b in blobs if b.name.endswith('.zip')]
-    blob = blobs[0]
+    blob = None
+    blobs = [b for b in blobs if os.path.splitext(os.path.basename(b.name))[0] == pack and b.name.endswith('.zip')]
+    if blobs:
+        blobs = sorted(blobs, key=lambda b: LooseVersion(os.path.basename(os.path.dirname(b.name))), reverse=True)
+        blob = blobs[0]
 
     return blob
 
