@@ -742,7 +742,7 @@ def main():
 
     try:
         pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips, entry_id)
-        mined_packets = pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
+        pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
                                   pcap_filter_new_file_path)
         hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
         return_outputs(hr, ec, raw)
