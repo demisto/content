@@ -20,12 +20,7 @@ API_URL = demisto.params()['api_url'].rstrip('/')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    os.environ.pop('HTTP_PROXY', None)
-    os.environ.pop('HTTPS_PROXY', None)
-    os.environ.pop('http_proxy', None)
-    os.environ.pop('https_proxy', None)
+handle_proxy()
 
 ''' HELPER FUNCTIONS '''
 
@@ -185,7 +180,7 @@ def ip_command():
     res = http_request('GET', f'/shodan/host/{ip}')
 
     if not res:
-        demisto.results('No information available for that IP.')
+        demisto.results('No information available for the given IP.')
     else:
         hostnames = res.get('hostnames')
         hostname = hostnames[0] if hostnames else ''  # It's a list, only if it exists and not empty we take the first value
