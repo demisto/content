@@ -1,23 +1,18 @@
 {
-    "name": "Symantec Data Loss Prevention (Beta)",
-    "description": "Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.",
-    "support": "xsoar",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [
-        "Symantec Data Loss Prevention (Beta)"
-    ],
-    "created": "2020-04-14T00:00:00Z",
-    "updated": "2020-03-14T00:00:00Z",
-    "beta": true,
-    "deprecated": false,
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {},
-    "displayedImages": []
+  "name": "Symantec Data Loss Prevention (Beta)",
+  "description": "Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [
+    "Symantec Data Loss Prevention (Beta)"
+  ],
+  "useCases": [],
+  "keywords": []
 }
