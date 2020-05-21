@@ -1,10 +1,13 @@
-import json
 import copy
+import json
 import os
-from ruamel.yaml import YAML
-from Tests.scripts.configure_tests import get_test_list, get_modified_files, RANDOM_TESTS_NUM, TestConf, \
-    create_filter_envs_file
+
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
+from ruamel.yaml import YAML
+
+from Tests.scripts.collect_tests_and_content_packs import (
+    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files,
+    get_test_list_and_content_packs_to_install, collect_content_packs_to_install)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
@@ -24,7 +27,7 @@ class TestUtils(object):
             ryaml.dump(data, f)
 
     @staticmethod
-    def create_integration(name, with_commands=None):
+    def create_integration(name, with_commands=None, pack=""):
         mock_integration = demisto_sdk_tools.get_yaml(
             'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration.yml')
 
@@ -49,7 +52,8 @@ class TestUtils(object):
                     "fromversion": "4.1.0",
                     "toversion": "5.4.9",
                     "file_path": save_path,
-                    "commands": commands
+                    "commands": commands,
+                    "pack": pack
                 }
             }
         }
@@ -112,7 +116,7 @@ class TestUtils(object):
 
     @staticmethod
     def mock_get_modified_files(mocker, modified_files_list, is_conf_json=False):
-        return mocker.patch('Tests.scripts.configure_tests.get_modified_files',
+        return mocker.patch('Tests.scripts.collect_tests_and_content_packs.get_modified_files',
                             return_value=create_get_modified_files_ret(
                                 modified_files_list=modified_files_list,
                                 is_conf_json=is_conf_json
@@ -175,9 +179,10 @@ class TestChangedPlaybook:
     GIT_DIFF_RET = "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
+        assert content_packs == set()
 
 
 class TestChangedTestPlaybook:
@@ -186,9 +191,10 @@ class TestChangedTestPlaybook:
     GIT_DIFF_RET = "M Packs/EWS/TestPlaybooks/playbook-EWSv2_empty_attachment_test.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
+        assert content_packs == set()
 
     def test_changed_runnable_test__mocked_get_modified_files(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
@@ -196,10 +202,11 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__integration_fromversion(self, mocker):
         """
@@ -209,7 +216,7 @@ class TestChangedTestPlaybook:
             - one_before_ga is '4.1.0'
             - ga is '4.5.0'
         When:
-            - running get_test_list
+            - running get_test_list_and_content_packs_to_install
             - running create_filter_envs_file
         Then:
             - Create test list with fake_test_playbook
@@ -223,9 +230,10 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
         create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:
@@ -244,7 +252,7 @@ class TestChangedTestPlaybook:
             - one_before_ga is '4.0.1'
             - ga is '4.1.0'
         When:
-            - running get_test_list
+            - running get_test_list_and_content_packs_to_install
             - running create_filter_envs_file
         Then:
             - Create test list with fake_test_playbook
@@ -258,10 +266,11 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
         create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:
@@ -278,10 +287,11 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
     def test_changed_runnable_test__playbook_fromversion(self, mocker):
         # future_playbook_1 is toversion 99.99.99 in conf file
@@ -289,30 +299,33 @@ class TestChangedTestPlaybook:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/future_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('99.99.99', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('99.99.99', get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__skipped_test(self, mocker):
         test_id = 'skipped_integration_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/skipped_integration_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__skipped_integration(self, mocker):
         test_id = 'skipped_test_playbook_1'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/skipped_test_playbook_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestChangedIntegration:
@@ -321,9 +334,10 @@ class TestChangedIntegration:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_1'
@@ -331,10 +345,11 @@ class TestChangedIntegration:
         file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_integrations/past_integration_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestChangedIntegrationAndPlaybook:
@@ -344,9 +359,10 @@ class TestChangedIntegrationAndPlaybook:
                    "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
+        assert content_packs == set()
 
 
 class TestChangedScript:
@@ -355,9 +371,10 @@ class TestChangedScript:
     GIT_DIFF_RET = "M Packs/CommonScripts/Scripts/ExtractIndicatorsFromTextFile/ExtractIndicatorsFromTextFile.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
+        assert content_packs == set()
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_2'
@@ -365,10 +382,11 @@ class TestChangedScript:
         file_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/past_script_1.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[file_path],
                                                                modified_tests_list=[test_path])
-        filterd_tests = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.0.0', get_modified_files_ret, mocker)
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestSampleTesting:
@@ -376,9 +394,10 @@ class TestSampleTesting:
     GIT_DIFF_RET = "M Tests/scripts/integration-test.yml"
 
     def test_sample_tests(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) == RANDOM_TESTS_NUM
+        assert content_packs == set()
 
     def test_sample_tests__with_test(self, mocker):
         """
@@ -393,9 +412,10 @@ class TestSampleTesting:
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/past_test_playbook_2.yml'
         get_modified_files_ret = create_get_modified_files_ret(modified_tests_list=[test_path],
                                                                sample_tests=['test'])
-        filterd_tests = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
-                                           get_modified_files_ret=get_modified_files_ret)
+        filterd_tests, content_packs = get_mock_test_list(mocker=mocker, git_diff_ret=self.GIT_DIFF_RET,
+                                                          get_modified_files_ret=get_modified_files_ret)
         assert len(filterd_tests) == 1
+        assert content_packs == set()
 
 
 class TestChangedCommonTesting:
@@ -404,9 +424,10 @@ class TestChangedCommonTesting:
     GIT_DIFF_RET = "M Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"
 
     def test_all_tests(self):
-        filterd_tests = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
+        assert content_packs == set()
 
 
 class TestPackageFilesModified:
@@ -429,9 +450,10 @@ class TestNoChange:
     def test_no_change(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
         get_modified_files_ret = create_get_modified_files_ret()
-        filterd_tests = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
+        filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
+        assert content_packs == set()
 
 
 def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
@@ -456,10 +478,14 @@ TWO_BEFORE_GA_VERSION = '4.5.0'
 def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_ret=None, mocker=None, git_diff_ret=''):
     branch_name = 'BranchA'
     if get_modified_files_ret is not None:
-        mocker.patch('Tests.scripts.configure_tests.get_modified_files', return_value=get_modified_files_ret)
-
-    tests = get_test_list(git_diff_ret, branch_name, two_before_ga, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF))
-    return tests
+        mocker.patch(
+            'Tests.scripts.collect_tests_and_content_packs.get_modified_files',
+            return_value=get_modified_files_ret
+        )
+    tests, content_packs = get_test_list_and_content_packs_to_install(
+        git_diff_ret, branch_name, two_before_ga, id_set=MOCK_ID_SET, conf=TestConf(MOCK_CONF)
+    )
+    return tests, content_packs
 
 
 def test_skipped_integration_should_not_be_tested(mocker):
@@ -475,8 +501,8 @@ def test_skipped_integration_should_not_be_tested(mocker):
     - ensure IntegrationA is skipped
     - ensure the validation not failing
     """
-    from Tests.scripts import configure_tests
-    configure_tests._FAILED = False  # reset the FAILED flag
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
     # Given
     # - conf.json file with IntegrationA is skipped
@@ -496,7 +522,7 @@ def test_skipped_integration_should_not_be_tested(mocker):
 
     # When
     # - filtering tests to run
-    filtered_tests = get_test_list(
+    filtered_tests = get_test_list_and_content_packs_to_install(
         files_string='',
         branch_name='dummy_branch',
         two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -509,7 +535,7 @@ def test_skipped_integration_should_not_be_tested(mocker):
     assert 'integration_a' not in filtered_tests
 
     # - ensure the validation not failing
-    assert not configure_tests._FAILED
+    assert not collect_tests_and_content_packs._FAILED
 
 
 def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
@@ -524,8 +550,8 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
     Then
     - ensure the validation is failing
     """
-    from Tests.scripts import configure_tests
-    configure_tests._FAILED = False  # reset the FAILED flag
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
     try:
         # Given
@@ -548,7 +574,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
 
         # When
         # - filtering tests to run
-        get_test_list(
+        get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
             two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -558,7 +584,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
 
         # Then
         # - ensure the validation is failing
-        assert configure_tests._FAILED
+        assert collect_tests_and_content_packs._FAILED
     finally:
         # delete the mocked files
         TestUtils.delete_files([
@@ -566,7 +592,7 @@ def test_integration_has_no_test_playbook_should_fail_on_validation(mocker):
         ])
 
         # reset _FAILED flag
-        configure_tests._FAILED = False
+        collect_tests_and_content_packs._FAILED = False
 
 
 def test_conf_has_modified(mocker):
@@ -580,8 +606,8 @@ def test_conf_has_modified(mocker):
     Then
     - ensure the validation not failing
     """
-    from Tests.scripts import configure_tests
-    configure_tests._FAILED = False  # reset the FAILED flag
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
     try:
         # Given
@@ -602,7 +628,8 @@ def test_conf_has_modified(mocker):
 
         # When
         # - filtering tests to run
-        get_test_list(
+
+        get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
             two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -612,10 +639,10 @@ def test_conf_has_modified(mocker):
 
         # Then
         # - ensure the validation not failing
-        assert not configure_tests._FAILED
+        assert not collect_tests_and_content_packs._FAILED
     finally:
         # reset _FAILED flag
-        configure_tests._FAILED = False
+        collect_tests_and_content_packs._FAILED = False
 
 
 def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocker):
@@ -635,8 +662,8 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
     - ensure test_playbook_a will run/returned
     - ensure the validation not failing
     """
-    from Tests.scripts import configure_tests
-    configure_tests._FAILED = False  # reset the FAILED flag
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
     # Given
     # - integration_a exists
@@ -668,7 +695,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
 
         # When
         # - filtering tests to run
-        filtered_tests = get_test_list(
+        filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
             files_string='',
             branch_name='dummy_branch',
             two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -681,7 +708,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         assert 'test_playbook_a' in filtered_tests
 
         # - ensure the validation not failing
-        assert not configure_tests._FAILED
+        assert not collect_tests_and_content_packs._FAILED
     finally:
         # delete the mocked files
         TestUtils.delete_files([
@@ -690,7 +717,7 @@ def test_dont_fail_integration_on_no_tests_if_it_has_test_playbook_in_conf(mocke
         ])
 
         # reset _FAILED flag
-        configure_tests._FAILED = False
+        collect_tests_and_content_packs._FAILED = False
 
 
 class TestExtractMatchingObjectFromIdSet:
@@ -706,8 +733,8 @@ class TestExtractMatchingObjectFromIdSet:
         Then
         - ensure test_playbook_a will run/returned
         """
-        from Tests.scripts import configure_tests
-        configure_tests._FAILED = False  # reset the FAILED flag
+        from Tests.scripts import collect_tests_and_content_packs
+        collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
         # Given
         # - integration_a exists
@@ -743,7 +770,7 @@ class TestExtractMatchingObjectFromIdSet:
 
             # When
             # - filtering tests to run
-            filtered_tests = get_test_list(
+            filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
                 files_string='',
                 branch_name='dummy_branch',
                 two_before_ga_ver=TWO_BEFORE_GA_VERSION,
@@ -754,9 +781,10 @@ class TestExtractMatchingObjectFromIdSet:
             # Then
             # - ensure test_playbook_a will run/returned
             assert 'test_playbook_a' in filtered_tests
+            assert content_packs == set()
 
             # - ensure the validation not failing
-            assert not configure_tests._FAILED
+            assert not collect_tests_and_content_packs._FAILED
         finally:
             # delete the mocked files
             TestUtils.delete_files([
@@ -765,4 +793,109 @@ class TestExtractMatchingObjectFromIdSet:
             ])
 
             # reset _FAILED flag
-            configure_tests._FAILED = False
+            collect_tests_and_content_packs._FAILED = False
+
+
+def test_modified_integration_content_pack_is_collected(mocker):
+    """
+    Given
+    - Modified integration named GreatIntegration which is in pack named GreatPack.
+
+    When
+    - Collecting content packs to install.
+
+    Then
+    - Ensure the content pack GreatPack is collected.
+    - Ensure the collection runs successfully.
+    """
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
+
+    pack_name = "GreatPack"
+    integration_name = "GreatIntegration"
+    test_name = "GreatTest"
+    fake_integration = TestUtils.create_integration(
+        name=integration_name, with_commands=["great-command"], pack=pack_name
+    )
+    fake_test_playbook = TestUtils.create_test_playbook(name=test_name, with_scripts=["FetchFromInstance"])
+
+    try:
+        TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
+        fake_id_set = TestUtils.create_id_set(
+            with_integration=fake_integration["id_set"],
+            with_test_playbook=fake_test_playbook["id_set"]
+        )
+
+        fake_conf = TestUtils.create_tests_conf(
+            with_test_configuration={
+                "integrations": integration_name,
+                "playbookID": test_name
+            }
+        )
+
+        filtered_tests, content_packs = get_test_list_and_content_packs_to_install(
+            files_string="",
+            branch_name="dummy-branch",
+            two_before_ga_ver=TWO_BEFORE_GA_VERSION,
+            conf=fake_conf,
+            id_set=fake_id_set
+        )
+
+        assert content_packs == {pack_name}
+        assert not collect_tests_and_content_packs._FAILED
+    finally:
+        TestUtils.delete_files([
+            fake_integration["path"]
+        ])
+
+        collect_tests_and_content_packs._FAILED = False
+
+
+def test_collect_content_packs_to_install(mocker):
+    """
+    Given
+    - ID set of content entities
+    - Set of integration IDs which contain integration named GreatIntegration which is in pack named GreatPack.
+    - Set of script names which contain script named fake-script which is in pack named FakePack.
+    - Set of playbook names which contain playbook named fake-playbook which is in pack named FakePack.
+
+    When
+    - Collecting content packs to install - running `collect_content_packs_to_install()`.
+
+    Then
+    - Ensure the content packs GreatPack and FakePack are collected.
+    - Ensure the collection runs successfully.
+    """
+    from Tests.scripts import collect_tests_and_content_packs
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
+
+    great_pack_name = "GreatPack"
+    great_integration_name = "GreatIntegration"
+    great_test_name = "GreatTest"
+    fake_integration = TestUtils.create_integration(
+        name=great_integration_name, with_commands=["great-command"], pack=great_pack_name
+    )
+    fake_test_playbook = TestUtils.create_test_playbook(name=great_test_name, with_scripts=["FetchFromInstance"])
+
+    try:
+        TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
+        fake_id_set = TestUtils.create_id_set(
+            with_integration=fake_integration["id_set"],
+            with_test_playbook=fake_test_playbook["id_set"]
+        )
+
+        content_packs_to_install = collect_content_packs_to_install(
+            id_set=fake_id_set,
+            integration_ids={great_integration_name},
+            playbook_names={"fake_playbook"},
+            script_names={"fake-script"}
+        )
+
+        assert content_packs_to_install == {great_pack_name, "FakePack"}
+        assert not collect_tests_and_content_packs._FAILED
+    finally:
+        TestUtils.delete_files([
+            fake_integration["path"]
+        ])
+
+        collect_tests_and_content_packs._FAILED = False
