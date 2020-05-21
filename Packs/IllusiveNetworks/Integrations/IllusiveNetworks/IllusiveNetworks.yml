@@ -35,7 +35,8 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- display: Fetch only incidents with forensics
+- defaultvalue: ALL
+  display: Fetch only incidents with forensics
   hidden: false
   name: has_forensics
   options:
