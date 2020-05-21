@@ -222,7 +222,7 @@ class Client(BaseClient):
     def delete_watchlist_request(self, watchlist_id: str) -> None:
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
-        return self._http_request('DELETE', suffix_url, resp_type='content')
+        self._http_request('DELETE', suffix_url, resp_type='content')
 
     def watchlist_alert_status_request(self, watchlist_id: str) -> Dict:
 
@@ -237,7 +237,7 @@ class Client(BaseClient):
     def disable_watchlist_alert_request(self, watchlist_id: str) -> None:
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
-        return self._http_request('DELETE', suffix_url, resp_type='content')
+        self._http_request('DELETE', suffix_url, resp_type='content')
 
     def create_watchlist_request(self, watchlist_name: str, description: str, tags_enabled: bool, alerts_enabled: bool,
                                  report_ids: List, classifier: Dict) -> Dict:
@@ -255,7 +255,7 @@ class Client(BaseClient):
         return self._http_request('POST', suffix_url, json_data=body)
 
     def update_watchlist_request(self, watchlist_id: str, watchlist_name: str, description: str, tags_enabled: bool,
-                                 alerts_enabled: bool, report_ids: Union[list, str], classifier: Dict) -> Dict:
+                                 alerts_enabled: bool, report_ids: List, classifier: Dict) -> Dict:
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         body = assign_params(
@@ -266,7 +266,6 @@ class Client(BaseClient):
             report_ids=report_ids,
             classifier=classifier
         )
-
         return self._http_request('PUT', suffix_url, json_data=body)
 
     def get_ignore_ioc_status_request(self, report_id: str, ioc_id: str) -> Dict:
@@ -285,7 +284,7 @@ class Client(BaseClient):
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id})/iocs/{ioc_id}/ignore'
 
-        return self._http_request('DELETE', suffix_url, resp_type='content')
+        self._http_request('DELETE', suffix_url, resp_type='content')
 
     def get_report_request(self, report_id: str) -> Dict:
 
@@ -293,7 +292,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', suffix_url)
 
-    def create_report_request(self, title: str, description: str, tags: Union[list, str], severity: int,
+    def create_report_request(self, title: str, description: str, tags: List, severity: int,
                               iocs: Dict, timestamp: int) -> Dict:
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports'
@@ -332,7 +331,7 @@ class Client(BaseClient):
         self._http_request('DELETE', suffix_url, resp_type='content')
 
     def update_report_request(self, report_id: str, title: str, description: str, severity: int, iocs: Dict,
-                              tags: Union[list, str], timestamp: int) -> Dict:
+                              tags: List, timestamp: int) -> Dict:
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
         body = assign_params(
@@ -650,7 +649,7 @@ def get_watchlist_by_id_command(client: Client, args: Dict) -> CommandResults:
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Watchlist',
         outputs_key_field='id',
-        outputs=contents,
+        outputs=result,
         readable_output=readable_output,
         raw_response=result
     )
@@ -738,10 +737,10 @@ def update_watchlist_command(client: Client, args: Dict) -> CommandResults:
     tags_enabled = args.get('tags_enabled')
     alerts_enabled = args.get('alerts_enabled')
     report_ids = argToList(args.get('report_ids'))
-    classifier = {
-        'key': args.get('classifier_key'),
-        'value': args.get('classifier_value')
-    }
+    classifier = assign_params(
+        key=args.get('classifier_key'),
+        value=args.get('classifier_value')
+    )
 
     if classifier and report_ids:
         raise Exception('Please specify report or classifier but not both.')
@@ -804,14 +803,15 @@ def get_report_command(client: Client, args: Dict) -> CommandResults:
     }
 
     iocs = result.get('iocs_v2', [])
-    for ioc in iocs:
-        ioc_contents.append({
-            'ID': ioc.get('id'),
-            'Match_type': ioc.get('match_type'),
-            'Values': ioc.get('values'),
-            'Field': ioc.get('field'),
-            'Link': ioc.get('link')
-        })
+    if iocs:
+        for ioc in iocs:
+            ioc_contents.append({
+                'ID': ioc.get('id'),
+                'Match_type': ioc.get('match_type'),
+                'Values': ioc.get('values'),
+                'Field': ioc.get('field'),
+                'Link': ioc.get('link')
+            })
 
     readable_output = tableToMarkdown(f'Report "{report_id}" information', contents, headers, removeNull=True)
     ioc_output = tableToMarkdown(f'The IOCs for the report', ioc_contents, removeNull=True)
@@ -964,14 +964,14 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
     report_id = args.get('report_id')
     title = args.get('title')
     description = args.get('description')
-    timestamp = date_to_timestamp(args.get('timestamp')) / 1000
+    timestamp = date_to_timestamp(args.get('timestamp')) / 100
     tags = argToList(args.get('tags'))
     ipv4 = argToList(args.get('ipv4'))
     ipv6 = argToList(args.get('ipv6'))
     dns = argToList(args.get('dns'))
     md5 = argToList(args.get('md5'))
     ioc_query = argToList(args.get('ioc_query'))
-    severity = int(args.get('severity'))
+    severity = args.get('severity')
     ioc_contents = []
 
     iocs = assign_params(

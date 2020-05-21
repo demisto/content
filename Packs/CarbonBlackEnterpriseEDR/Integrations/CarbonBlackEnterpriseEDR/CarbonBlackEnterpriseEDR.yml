@@ -805,7 +805,7 @@ script:
     - contextPath: CarbonBlackEEDR.Watchlist.description
       description: Watchlist description.
       type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
+    - contextPath: CarbonBlackEEDR.Watchlist.Aaerts_enabled
       description: Is the alerts enabled for the watchlists
       type: Boolean
   - arguments:
@@ -1204,7 +1204,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The report timestamp. For example: 2020-01-19T09:16:16Z'
+      description: 'The report timestamp. For example: 2020-01-19T09:16:16'
       isArray: false
       name: timestamp
       required: true
@@ -1319,7 +1319,7 @@ script:
       description: Report severity.
       isArray: false
       name: severity
-      required: false
+      required: true
       secret: false
     - default: false
       description: The report timestamp.
@@ -1593,3 +1593,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+  - Carbon Black Enterprise EDR Test

@@ -2554,6 +2554,10 @@
             "playbookID": "illuminate Integration Test"
         },
         {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR Test"
+        },
+        {
             "integrations": "illuminate",
             "playbookID": "illuminate Integration Demonstration - Test"
         },
