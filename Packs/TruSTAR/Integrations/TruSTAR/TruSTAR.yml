@@ -629,9 +629,9 @@ script:
     - name: priority_event_score
       description: Score of email submission
       isArray: true
-      defaultValue: 0,1,2,3
+      defaultValue: -1,0,1,2,3
     - name: from_time
-      description: Start of time window (defaults to 7 days ago) (YYYY-MM-DD HH:MM:SS)
+      description: Start of time window (defaults to 1 day ago) (YYYY-MM-DD HH:MM:SS)
     - name: to_time
       description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
     - name: status
@@ -664,6 +664,10 @@ script:
     - contextPath: TruSTAR.PhishingSubmission.context.normalizedIndicatorScore
       description: Indicator score
       type: number
+    - contextPath: TruSTAR.PhishingSubmission.context.originalIndicatorScore.name
+      description: Original Indicator score name
+    - contextPath: TruSTAR.PhishingSubmission.context.originalIndicatorScore.value
+      description: Original Indicator score value
     description: Fetches all phishing submissions that fit the given criteria
   - name: trustar-set-triage-status
     arguments:
@@ -690,7 +694,7 @@ script:
       isArray: true
       defaultValue: 0,1,2,3
     - name: from_time
-      description: Start of time window (defaults to 7 days ago) (YYYY-MM-DD HH:MM:SS)
+      description: Start of time window (defaults to 1 day ago) (YYYY-MM-DD HH:MM:SS)
     - name: to_time
       description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
     - name: status
@@ -705,32 +709,20 @@ script:
       isArray: true
       defaultValue: UNRESOLVED,CONFIRMED,IGNORED
     outputs:
-    - contextPath: TruSTAR.PhishingIndicator.File.Name
-      description: File name
+    - contextPath: TruSTAR.PhishingIndicator.indicatorType
+      description: Indicator Type
       type: string
-    - contextPath: TruSTAR.PhishingIndicator.File.MD5
-      description: File MD5
+    - contextPath: TruSTAR.PhishingIndicator.normalizedIndicatorScore
+      description: Indicator normalized score
+    - contextPath: TruSTAR.PhishingIndicator.originalIndicatorScore.name
+      description: Indicator original score name
+    - contextPath: TruSTAR.PhishingIndicator.originalIndicatorScore.value
+      description: Indicator original score value
+    - contextPath: TruSTAR.PhishingIndicator.sourceKey
+      description: Indicator source key
       type: string
-    - contextPath: TruSTAR.PhishingIndicator.File.SHA1
-      description: File SHA1
-      type: string
-    - contextPath: TruSTAR.PhishingIndicator.File.SHA256
-      description: File SHA256
-      type: string
-    - contextPath: TruSTAR.PhishingIndicator.URL.Address
-      description: URL address
-      type: string
-    - contextPath: TruSTAR.PhishingIndicator.IP.Address
-      description: IP address
-      type: string
-    - contextPath: TruSTAR.PhishingIndicator.Account.Email.Address
-      description: Email address
-      type: string
-    - contextPath: TruSTAR.PhishingIndicator.RegistryKey.Path
-      description: Registry key path
-      type: string
-    - contextPath: TruSTAR.PhishingIndicator.CVE.ID
-      description: CVE ID
+    - contextPath: TruSTAR.PhishingIndicator.value
+      description: Indicator value
       type: string
     description: Get phishing indicators that match the given criteria.
   dockerimage45: demisto/trustar:latest

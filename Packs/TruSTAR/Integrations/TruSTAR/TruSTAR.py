@@ -90,6 +90,12 @@ def translate_triage_submission(submissions):
     return submission_dicts, ec
 
 
+def translate_phishing_indicators(indicators):
+    indicator_dicts = [i.to_dict(remove_nones=True) for i in indicators]
+    ec = {'TruSTAR.PhishingIndicator(val.value == obj.value)': indicator_dicts}
+    return indicator_dicts, ec
+
+
 def translate_specific_indicators(ts_indicators, specific_types):
     res = []
     for indicator in ts_indicators:
@@ -665,7 +671,7 @@ def get_all_phishing_indicators(priority_event_score,
             'from_time': date_to_unix(from_time) if from_time else None,
             'to_time': date_to_unix(to_time) if to_time else None}
     response = ts.get_phishing_indicators_page(**args)
-    indicators, ec = translate_indicators(response.items, 'TruSTAR.PhishingIndicator')
+    indicators, ec = translate_phishing_indicators(response.items)
     if indicators:
         title = 'TruSTAR phishing indicators'
         entry = {
