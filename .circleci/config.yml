@@ -8,7 +8,7 @@ jobs:
     environment:
       CONTENT_VERSION: "20.5.1"
       SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "1ac60fc841b4fbd1afeb3c44713532960f1c1ebb" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "3d4b0f826752ae0555051966303a825051d2596c" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -140,7 +140,7 @@ jobs:
 
             demisto-sdk secrets --post-commit --ignore-entropy
       - run:
-          name: Configure Test Filter
+          name: Collect Test List And Content Packs
           when: always
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
@@ -150,7 +150,7 @@ jobs:
             fi
 
             [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-            python3 ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
+            python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
       - run:
           name: Spell Checks
           command: |
@@ -211,6 +211,16 @@ jobs:
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
+      - run:
+          name: Prepare Content Packs For Testing
+          when: always
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            ./Tests/scripts/prepare_content_packs_for_testing.sh
       - run:
           name: Calculate Packs Dependencies
           when: always
