@@ -255,7 +255,7 @@ def requests_handler(url, message, **kwargs):
             verify=VERIFY_CERTIFICATE,
             **kwargs
         )
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.HTTPError as e:
         # Propagate HTTP errors via the returned response message
         response = e.response
         demisto.debug('Got exception while using requests handler - {}'.format(str(e)))
