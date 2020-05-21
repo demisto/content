@@ -20,7 +20,7 @@
     "keywords": [],
     "dependencies": {
         "Phishing": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Phishing"
         }
     },
