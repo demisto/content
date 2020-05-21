@@ -33,12 +33,12 @@ def create_dependencies_data_structure(response_data, dependants_ids, dependenci
 
     Args:
         response_data (dict): The GET /search/dependencies response data.
-        dependants_ids (set): A list of the dependant packs IDs.
+        dependants_ids (list): A list of the dependant packs IDs.
         dependencies_data (list): The dependencies data structure to be created.
-        checked_packs (set): Required dependants that were already found.
+        checked_packs (list): Required dependants that were already found.
     """
 
-    next_call_dependants_ids = set([])
+    next_call_dependants_ids = []
 
     for dependency in response_data:
         # empty currentVersion field indicates the pack isn't installed yet
@@ -48,14 +48,13 @@ def create_dependencies_data_structure(response_data, dependants_ids, dependenci
         dependants = dependency.get('dependants', {})
         for dependant in dependants.keys():
             is_required = dependants[dependant].get('level', '') == 'required'
-            if dependant in dependants_ids and is_required:
+            if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
                 dependencies_data.append({
                     'id': dependency.get('id'),
                     'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion')
                 })
-                if dependency.get('id') not in checked_packs:
-                    next_call_dependants_ids.add(dependency.get('id'))
-                    checked_packs.add(dependency.get('id'))
+                next_call_dependants_ids.append(dependency.get('id'))
+                checked_packs.append(dependency.get('id'))
 
     if next_call_dependants_ids:
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
@@ -85,7 +84,7 @@ def get_pack_dependencies(client, prints_manager, pack_data):
 
         if 200 <= status_code < 300:
             dependencies_data = []
-            dependants_ids = set([pack_id])
+            dependants_ids = [pack_id]
             reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
             create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
             dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
