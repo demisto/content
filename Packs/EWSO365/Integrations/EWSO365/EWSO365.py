@@ -30,6 +30,7 @@ from exchangelib.errors import (
     ErrorInvalidPropertyRequest,
     ErrorIrresolvableConflict,
     MalformedResponseError,
+    ErrorNameResolutionMultipleResults,
 )
 from exchangelib.items import Item, Message, Contact
 from exchangelib.services.common import EWSService, EWSAccountService
@@ -49,6 +50,7 @@ from exchangelib import (
     ItemAttachment,
     OAUTH2,
     OAuth2AuthorizationCodeCredentials,
+    Identity,
 )
 from oauthlib.oauth2 import OAuth2Token
 from exchangelib.version import EXCHANGE_O365
@@ -84,7 +86,7 @@ MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
 
 # context paths
-CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(
+CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} === obj.{0} || (val.{1} && obj.{1} && val.{1} === obj.{1}))".format(
     ITEM_ID, MESSAGE_ID
 )
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(
@@ -186,6 +188,8 @@ class EWSClient:
             client_secret=self.client_secret,
             access_token=oauth2_token,
         )
+        # need to add identity for protocol OAuth header
+        self.credentials.identity = Identity(upn=self.account_email)
         config_args = {
             "credentials": credentials,
             "auth_type": OAUTH2,
@@ -304,7 +308,7 @@ class MarkAsJunk(EWSAccountService):
         )
         for element in elements:
             if isinstance(element, ResponseMessageError):
-                return element.message
+                return str(element)
         return "Success"
 
     def get_payload(self, item_id, move_item):
@@ -323,25 +327,25 @@ class MarkAsJunk(EWSAccountService):
 
 class GetSearchableMailboxes(EWSService):
     SERVICE_NAME = "GetSearchableMailboxes"
-    element_container_name = f"{MNS}SearchableMailboxes"
+    element_container_name = f"{{{MNS}}}SearchableMailboxes"
 
     @staticmethod
     def parse_element(element):
         return {
-            MAILBOX: element.find(f"{TNS}PrimarySmtpAddress").text
-            if element.find(f"{TNS}PrimarySmtpAddress") is not None
+            MAILBOX: element.find(f"{{{TNS}}}PrimarySmtpAddress").text
+            if element.find(f"{{{TNS}}}PrimarySmtpAddress") is not None
             else None,
-            MAILBOX_ID: element.find(f"{TNS}ReferenceId").text
-            if element.find(f"{TNS}ReferenceId") is not None
+            MAILBOX_ID: element.find(f"{{{TNS}}}ReferenceId").text
+            if element.find(f"{{{TNS}}}ReferenceId") is not None
             else None,
-            "displayName": element.find(f"{TNS}DisplayName").text
-            if element.find(f"{TNS}DisplayName") is not None
+            "displayName": element.find(f"{{{TNS}}}DisplayName").text
+            if element.find(f"{{{TNS}}}DisplayName") is not None
             else None,
-            "isExternal": element.find(f"{TNS}IsExternalMailbox").text
-            if element.find(f"{TNS}IsExternalMailbox") is not None
+            "isExternal": element.find(f"{{{TNS}}}IsExternalMailbox").text
+            if element.find(f"{{{TNS}}}IsExternalMailbox") is not None
             else None,
-            "externalEmailAddress": element.find(f"{TNS}ExternalEmailAddress").text
-            if element.find(f"{TNS}ExternalEmailAddress") is not None
+            "externalEmailAddress": element.find(f"{{{TNS}}}ExternalEmailAddress").text
+            if element.find(f"{{{TNS}}}ExternalEmailAddress") is not None
             else None,
         }
 
@@ -356,36 +360,36 @@ class GetSearchableMailboxes(EWSService):
 
 class SearchMailboxes(EWSService):
     SERVICE_NAME = "SearchMailboxes"
-    element_container_name = f"{MNS}SearchMailboxesResult/{TNS}Items"
+    element_container_name = f"{{{MNS}}}SearchMailboxesResult/{{{TNS}}}Items"
 
     @staticmethod
     def parse_element(element):
-        to_recipients = element.find(f"{TNS}ToRecipients")
+        to_recipients = element.find(f"{{{TNS}}}ToRecipients")
         if to_recipients:
             to_recipients = [x.text if x is not None else None for x in to_recipients]
 
         result = {
-            ITEM_ID: element.find(f"{TNS}Id").attrib["Id"]
-            if element.find(f"{TNS}Id") is not None
+            ITEM_ID: element.find(f"{{{TNS}}}Id").attrib["Id"]
+            if element.find(f"{{{TNS}}}Id") is not None
             else None,
-            MAILBOX: element.find(f"{TNS}Mailbox/{TNS}PrimarySmtpAddress").text
-            if element.find(f"{TNS}Mailbox/{TNS}PrimarySmtpAddress") is not None
+            MAILBOX: element.find(f"{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress").text
+            if element.find(f"{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress") is not None
             else None,
-            "subject": element.find(f"{TNS}Subject").text
-            if element.find(f"{TNS}Subject") is not None
+            "subject": element.find(f"{{{TNS}}}Subject").text
+            if element.find(f"{{{TNS}}}Subject") is not None
             else None,
             "toRecipients": to_recipients,
-            "sender": element.find(f"{TNS}Sender").text
-            if element.find(f"{TNS}Sender") is not None
+            "sender": element.find(f"{{{TNS}}}Sender").text
+            if element.find(f"{{{TNS}}}Sender") is not None
             else None,
-            "hasAttachments": element.find(f"{TNS}HasAttachment").text
-            if element.find(f"{TNS}HasAttachment") is not None
+            "hasAttachments": element.find(f"{{{TNS}}}HasAttachment").text
+            if element.find(f"{{{TNS}}}HasAttachment") is not None
             else None,
-            "datetimeSent": element.find(f"{TNS}SentTime").text
-            if element.find(f"{TNS}SentTime") is not None
+            "datetimeSent": element.find(f"{{{TNS}}}SentTime").text
+            if element.find(f"{{{TNS}}}SentTime") is not None
             else None,
-            "datetimeReceived": element.find(f"{TNS}ReceivedTime").text
-            if element.find(f"{TNS}ReceivedTime") is not None
+            "datetimeReceived": element.find(f"{{{TNS}}}ReceivedTime").text
+            if element.find(f"{{{TNS}}}ReceivedTime") is not None
             else None,
         }
 
@@ -418,19 +422,21 @@ class SearchMailboxes(EWSService):
 
 class ExpandGroup(EWSService):
     SERVICE_NAME = "ExpandDL"
-    element_container_name = f"{MNS}DLExpansion"
+    element_container_name = f"{{{MNS}}}DLExpansion"
+    ERRORS_TO_CATCH_IN_RESPONSE = ErrorNameResolutionNoResults
+    WARNINGS_TO_IGNORE_IN_RESPONSE = ErrorNameResolutionMultipleResults
 
     @staticmethod
     def parse_element(element):
         return {
-            MAILBOX: element.find(f"{TNS}EmailAddress").text
-            if element.find(f"{TNS}EmailAddress") is not None
+            MAILBOX: element.find(f"{{{TNS}}}EmailAddress").text
+            if element.find(f"{{{TNS}}}EmailAddress") is not None
             else None,
-            "displayName": element.find(f"{TNS}Name").text
-            if element.find(f"{TNS}Name") is not None
+            "displayName": element.find(f"{{{TNS}}}Name").text
+            if element.find(f"{{{TNS}}}Name") is not None
             else None,
-            "mailboxType": element.find(f"{TNS}MailboxType").text
-            if element.find(f"{TNS}MailboxType") is not None
+            "mailboxType": element.find(f"{{{TNS}}}MailboxType").text
+            if element.find(f"{{{TNS}}}MailboxType") is not None
             else None,
         }
 
@@ -740,6 +746,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
     for field, value in item._field_vals():
         if type(value) in [str, str, int, float, bool, Body, HTMLBody, None]:
             raw_dict[field] = value
+    raw_dict["id"] = item.id
     if getattr(item, "attachments", None):
         raw_dict["attachments"] = [
             parse_attachment_as_dict(item.id, x) for x in item.attachments
@@ -808,8 +815,8 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         ]
 
         if "id" in raw_dict:
-            new_dict["item_id"] = raw_dict["id"]
-            fields_list.append("item_id")
+            new_dict["itemId"] = raw_dict["id"]
+            fields_list.append("itemId")
 
         for field in fields_list:
             if field in raw_dict:

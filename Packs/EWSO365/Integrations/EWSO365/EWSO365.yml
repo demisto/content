@@ -3,16 +3,19 @@ commonfields:
   id: EWSO365
   version: -1
 configuration:
-- display: Application (client) ID
+- display: ID / Application ID
+  additionalinfo: ID can be received from the admin consent - see Detailed Instructions.
   name: client_id
   required: true
   type: 0
-- display: Application (client) Secret
-  name: client_secret
+- display:  Token / Tenant ID
+  additionalinfo: Token can be received from the admin consent - see Detailed Instructions.
+  name: tenant_id
   required: true
   type: 4
-- display: Tenant ID
-  name: tenant_id
+- display: Key / Application Secret
+  additionalinfo: Key can be received from the admin consent - see Detailed Instructions.
+  name: client_secret
   required: true
   type: 4
 - display: Email address from which to fetch incidents
@@ -1109,7 +1112,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/py3ews:1.0.0.7971
+  dockerimage: demisto/py3ews:1.0.0.7974
   feed: false
   isfetch: true
   longRunning: false
