@@ -631,7 +631,7 @@ script:
       isArray: true
       defaultValue: -1,0,1,2,3
     - name: from_time
-      description: Start of time window (defaults to 1 day ago) (YYYY-MM-DD HH:MM:SS)
+      description: Start of time window (defaults to 24 hours ago) (YYYY-MM-DD HH:MM:SS)
     - name: to_time
       description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
     - name: status
@@ -694,7 +694,7 @@ script:
       isArray: true
       defaultValue: 0,1,2,3
     - name: from_time
-      description: Start of time window (defaults to 1 day ago) (YYYY-MM-DD HH:MM:SS)
+      description: Start of time window (defaults to 24 hours ago) (YYYY-MM-DD HH:MM:SS)
     - name: to_time
       description: End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS)
     - name: status
