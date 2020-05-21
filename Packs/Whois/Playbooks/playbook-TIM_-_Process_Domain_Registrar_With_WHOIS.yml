@@ -600,9 +600,9 @@ inputs:
   value: {}
   required: false
   description: |-
-    A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration.
-    Default value is ','
-    Keep In mind that many registrars contain the "," character in their name.
+    A one-character string used to delimit fields. This must match the value that you defined in the list separator server configuration.  
+    The default value is a comma, however, as registrars might contain the "," character in their name, 
+    Cortex XSOAR recommends that you select a different delimiter.
   playbookInputQuery: null
 outputs:
 - contextPath: NonApprovedDomains
