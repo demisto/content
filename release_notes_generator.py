@@ -18,6 +18,14 @@ RELEASE_NOTES_FILE = 'packs-release-notes.md'
 
 
 def get_all_modified_release_note_files(git_sha1):
+    """ Gets all the existing modified/added file paths in the format */ReleaseNotes/*.md.
+
+    Args:
+        git_sha1 (str): The branch to make the diff with.
+
+    Returns:
+        (list) A list of the new/modified release notes file paths.
+    """
     try:
         diff_cmd = 'git diff --diff-filter=AM --name-only {} {}'.format(git_sha1, PACKS_RN_FILES_FORMAT)
         diff_result = run_command(diff_cmd, exit_on_error=False)
@@ -51,6 +59,14 @@ def get_pack_version_from_path(file_path):
 
 
 def get_release_notes_dict(release_notes_files):
+    """ Gets a dictionary that holds the new/modified release notes content.
+
+    Args:
+        release_notes_files (list): A list of the new/modified release notes file paths.
+
+    Returns:
+        (dict) A mapping from pack names to dictionaries of pack versions to release notes.
+    """
     release_notes_dict = {}
     for file_path in release_notes_files:
         pack_version = get_pack_version_from_path(file_path)
@@ -66,6 +82,13 @@ def get_release_notes_dict(release_notes_files):
 
 
 def generate_release_notes_summary(release_notes_dict, version, asset_id):
+    """ Creates a release notes summary markdown file.
+
+    Args:
+        release_notes_dict (dict): A mapping from pack names to dictionaries of pack versions to release notes.
+        version (str): Content version.
+        asset_id (str): The asset ID.
+    """
     release_notes = '## Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
     current_date = datetime.now().strftime(DATE_FORMAT)
     release_notes += '##### Published on {}\n'.format(current_date)
@@ -84,7 +107,6 @@ def main():
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
     arg_parser.add_argument('asset_id', help='Asset ID')
-    # arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
 
     release_notes_files = get_all_modified_release_note_files(args.git_sha1)
