@@ -701,11 +701,12 @@ def main():
         'verify': VERIFY_CERTIFICATE
     }
 
-    if proxy:
-        connection_args['handler'] = handler(proxy)
-
     if use_requests_handler:
+        handle_proxy()
         connection_args['handler'] = requests_handler
+
+    elif proxy:
+        connection_args['handler'] = handler(proxy)
 
     try:
         service = client.connect(**connection_args)
