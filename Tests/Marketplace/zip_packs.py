@@ -9,7 +9,6 @@ from Tests.Marketplace.marketplace_services import init_storage_client,\
 from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion
 
 ARTIFACT_NAME = 'zipped_packs.zip'
-ARTIFACT_PATH = '/home/circleci/project/artifacts'
 MAX_THREADS = 4
 
 
@@ -46,25 +45,13 @@ def zip_packs(packs, destination_path):
     Args:
         packs: The packs to zip
         destination_path: The destination path to zip the packs in.
-
-    Returns:
-        success: Whether the operation succeeded.
     """
 
-    success = True
-    zf = ZipFile(os.path.join(destination_path, ARTIFACT_NAME), mode='w')
-    try:
+    with ZipFile(os.path.join(destination_path, ARTIFACT_NAME), mode='w') as zf:
         for zip_pack in packs:
             for name, path in zip_pack.items():
                 print(f'Zipping {path}')
                 zf.write(path, f"{name}.zip")
-    except Exception as e:
-        print_error(f'Failed adding packs to the zip file: {e}')
-        success = False
-    finally:
-        zf.close()
-
-    return success
 
 
 def download_packs_from_gcp(storage_bucket, destination_path, circle_build, branch_name):
@@ -97,6 +84,8 @@ def download_packs_from_gcp(storage_bucket, destination_path, circle_build, bran
                 zipped_packs.append({pack.name: download_path})
                 print(f'Downloading pack from GCP: {pack.name}')
                 executor_submit(executor, download_path, blob)
+            else:
+                print_warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
 
     return zipped_packs
 
@@ -165,7 +154,11 @@ def main():
         success = False
 
     if zipped_packs:
-        success = zip_packs(zipped_packs, zip_path)
+        try:
+            zip_packs(zipped_packs, zip_path)
+        except Exception as e:
+            print_error(f'Failed zipping packs: {e}')
+            success = False
 
     if success:
         print_success('Successfully zipped packs.')
