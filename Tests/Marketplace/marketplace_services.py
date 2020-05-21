@@ -394,14 +394,11 @@ class Pack(object):
         pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
                                                    author=user_metadata.get('author', ''))
         pack_metadata['authorImage'] = author_image
-        pack_metadata['beta'] = get_valid_bool(user_metadata.get('beta', False))
-        pack_metadata['deprecated'] = get_valid_bool(user_metadata.get('deprecated', False))
         pack_metadata['certification'] = user_metadata.get('certification', Metadata.CERTIFIED)
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
-        pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
+        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
@@ -689,7 +686,10 @@ class Pack(object):
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
-                PackFolders.INDICATOR_TYPES.value: "reputation"
+                PackFolders.INDICATOR_TYPES.value: "reputation",
+                PackFolders.LAYOUTS.value: "layout",
+                PackFolders.CLASSIFIERS.value: "classifier",
+                PackFolders.WIDGETS.value: "widget"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -793,6 +793,21 @@ class Pack(object):
                             'reputationScriptName': content_item.get('reputationScriptName', ""),
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
+                    elif current_directory == PackFolders.LAYOUTS.value:
+                        folder_collected_items.append({
+                            'typeId': content_item.get('typeId', ""),
+                            'kind': content_item.get('kind', ""),
+                            'version': 'v2' if 'tabs' in content_item.get('layout', {}) else 'v1'
+                        })
+                    elif current_directory == PackFolders.CLASSIFIERS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name') or content_item.get('id', ""),
+                            'description': content_item.get('description', '')
+                        })
+                    elif current_directory == PackFolders.WIDGETS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', "")
+                        })
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
@@ -863,10 +878,15 @@ class Pack(object):
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
-            # todo change this override late
-            user_metadata['dependencies'] = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
-            user_metadata['displayedImages'] = packs_dependencies_mapping.get(self._pack_name, {}).get(
-                'displayedImages', [])
+            if 'dependencies' not in user_metadata:
+                user_metadata['dependencies'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('dependencies', {})
+                print(f"Adding auto generated dependencies for {self._pack_name} pack")
+
+            if 'displayedImages' not in user_metadata:
+                user_metadata['displayedImages'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('displayedImages', [])
+                print(f"Adding auto generated display images for {self._pack_name} pack")
 
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
