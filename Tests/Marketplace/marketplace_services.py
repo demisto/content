@@ -398,7 +398,7 @@ class Pack(object):
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
+        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
