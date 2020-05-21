@@ -83,7 +83,7 @@ def execute_command(command, args=None):
 def test_get_incident_by_keys(mocker):
     similar_incident_keys = {u'testint': 1111}
     time_field = 'created'
-    incident_time = '2020 - 05 - 19T21: 36:53.193257495Z'
+    incident_time = '2020-05-19T21:36:53.193257495Z'
     incident_id = 9
     hours_back = 72.0
     ignore_closed = True
