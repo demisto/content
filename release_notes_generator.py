@@ -14,7 +14,7 @@ PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
 PACK_METADATA = 'pack_metadata.json'
 PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
-RELEASE_NOTES_FILE = 'release-notes-test.md'
+RELEASE_NOTES_FILE = 'packs-release-notes.md'
 
 
 def get_all_modified_release_note_files(git_sha1):
