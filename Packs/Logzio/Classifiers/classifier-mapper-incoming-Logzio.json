@@ -1,12 +1,9 @@
 {
     "defaultIncidentType": "Logz.io Alert",
-    "id": "Logz.io",
-    "type": "classification",
-    "name": "Logz.io Classifier",
-    "description": "Classifies Logz.io alerts.",
-    "keyTypeMap": {
-        "Logz.Io": "Logz.io Alert"
-    },
+    "id": "Logz.io-mappper",
+    "type": "mapper-incoming",
+    "name": "Logz.io Mapper",
+    "description": "Maps incoming Logz.io alert fields..",
     "mapping": {
         "Logz.io Alert": {
             "dontMapEventToLabels": false,
@@ -33,10 +30,6 @@
                 }
             }
         }
-    },
-    "transformer": {
-        "complex": null,
-        "simple": "datasource"
     },
     "version": -1,
     "fromVersion": "6.0.0"
