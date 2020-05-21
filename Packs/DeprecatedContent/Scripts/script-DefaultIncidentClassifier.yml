@@ -25,6 +25,7 @@ tags:
 - ingestion
 comment: Classify an incident from mail.
 system: true
+deprecated: true
 args:
 - name: splunkSender
   description: Email address from which Splunk sends emails to our mail listener
