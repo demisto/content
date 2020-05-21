@@ -1246,6 +1246,24 @@
             "memory_threshold": 200
         },
         {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPy-Test-V2",
+            "memory_threshold": 500,
+            "instance_names": "use_python_requests_handler"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "Splunk-Test",
+            "memory_threshold": 500,
+            "instance_names": "use_python_requests_handler"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPySearch_Test",
+            "memory_threshold": 200,
+            "instance_names": "use_python_requests_handler"
+        },
+        {
             "integrations": "McAfee NSM",
             "playbookID": "McAfeeNSMTest",
             "timeout": 400,
