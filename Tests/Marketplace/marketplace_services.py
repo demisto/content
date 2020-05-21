@@ -20,6 +20,7 @@ CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full 
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
+CORE_PACKS = ['Base', 'CommonScripts', 'CommonPlaybooks', 'D2']
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 
 

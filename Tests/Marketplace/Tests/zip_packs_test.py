@@ -54,7 +54,8 @@ class TestZipPacks:
         """
         packs = [
             TestZipPacks.FakeDirEntry('Slack', 'Packs/Slack'),
-            TestZipPacks.FakeDirEntry('ApiModules', 'Packs/ApiModules')
+            TestZipPacks.FakeDirEntry('ApiModules', 'Packs/ApiModules'),
+            TestZipPacks.FakeDirEntry('Base', 'Packs/Base')
         ]
 
         bucket = TestZipPacks.FakeBucket()

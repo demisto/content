@@ -2,7 +2,8 @@ import argparse
 import os
 import shutil
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client, PACKS_FULL_PATH, GCPConfig, IGNORED_FILES
+from Tests.Marketplace.marketplace_services import init_storage_client,\
+    CORE_PACKS, GCPConfig, IGNORED_FILES, PACKS_FULL_PATH
 
 from demisto_sdk.commands.common.tools import print_error, print_success, LooseVersion
 
@@ -78,7 +79,7 @@ def download_packs_from_gcp(storage_bucket, destination_path, circle_build, bran
     """
     zipped_packs = []
     for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-        if pack.name in IGNORED_FILES:
+        if pack.name in IGNORED_FILES + CORE_PACKS:
             continue
         # Search for the pack in the bucket
         blobs = list(storage_bucket.list_blobs(prefix=os.path.join(GCPConfig.STORAGE_BASE_PATH, branch_name,
@@ -144,7 +145,7 @@ def main():
     zipped_packs = []
     success = True
     try:
-        zipped_packs = download_packs_from_gcp(zip_path, storage_bucket, circle_build, branch_name)
+        zipped_packs = download_packs_from_gcp(storage_bucket, zip_path, circle_build, branch_name)
     except Exception as e:
         print_error(f'Failed downloading packs: {e}')
         success = False
