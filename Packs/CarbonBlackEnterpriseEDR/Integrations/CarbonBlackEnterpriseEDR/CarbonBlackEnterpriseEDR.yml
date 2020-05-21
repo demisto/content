@@ -1467,21 +1467,6 @@ script:
     - contextPath: CarbonBlackEEDR.File.md5
       description: The MD5 hash of the file.
       type: String
-    - contextPath: File.Company
-      description: The name of the company that released a binary.
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
-    - contextPath: File.ProductName
-      description: The name of the product to which this file belongs.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Size
-      description: The size of the file in bytes.
-      type: Number
   - arguments:
     - default: false
       description: An array of SHA-256 hashes (limit 100). Support comma seperated
@@ -1594,5 +1579,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - Carbon Black Enterprise EDR Test
+- Carbon Black Enterprise EDR Test
 fromversion: 5.0.0

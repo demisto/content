@@ -1079,22 +1079,13 @@ def get_file_metadata_command(client: Client, args: Dict) -> CommandResults:
         'product_version': result.get('product_version')
     }
 
-    file = Common.File(
-        md5=result.get('md5'),
-        sha256=sha256,
-        size=result.get('file_size'),
-        company=result.get('company_name'),
-        product_name=result.get('product_name')
-    )
-
     readable_output = tableToMarkdown('The file metadata', contents)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.File',
         outputs_key_field='sha256',
         outputs=context,
         readable_output=readable_output,
-        raw_response=result,
-        indicators=[file]
+        raw_response=result
     )
     return results
 
