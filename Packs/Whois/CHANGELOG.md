@@ -1,2 +1,1 @@
 ## [Unreleased]
-Added new playbook.
