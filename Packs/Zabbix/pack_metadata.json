@@ -1,24 +1,18 @@
 {
-    "name": "Zabbix",
-    "description": "Allow integration with Zabbix api.",
-    "support": "developer",
-    "serverMinVersion": "4.5.0",
-    "currentVersion": "1.0.0",
-    "author": "Henrique Caires",
-    "url": "https://github.com/HenriqueCaires",
-    "email": "henrique@caires.net.br",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [],
-    "created": "2020-04-22T09:00:00Z",
-    "updated": "2020-04-22T09:00:00Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "",
-    "useCases": [],
-    "keywords": ["Zabbix"],
-    "price": 0,
-    "dependencies": {},
-    "displayedImages": []
+  "name": "Zabbix",
+  "description": "Allow integration with Zabbix api.",
+  "support": "developer",
+  "currentVersion": "1.0.0",
+  "author": "Henrique Caires",
+  "url": "https://github.com/HenriqueCaires",
+  "email": "henrique@caires.net.br",
+  "created": "2020-04-22T09:00:00Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "Zabbix"
+  ]
 }
