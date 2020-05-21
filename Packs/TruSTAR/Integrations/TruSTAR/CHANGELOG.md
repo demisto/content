@@ -1,6 +1,6 @@
 ## [Unreleased]
-- Updated docker image
-- Removed duplicated values on context
+Breaking changes:
+- `normalized_triage_score` argument replaced by `priority_event_score` in `trustar-get-phishing-submissions` command
 
 ## [20.5.0] - 2020-05-12
 -
