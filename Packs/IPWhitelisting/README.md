@@ -4,3 +4,4 @@ Playbooks to enable access to Cloud and SaaS services by updating whitelists of 
 
  - GCP Firewall
  - AWS Security Group
+ - Okta Network Zone

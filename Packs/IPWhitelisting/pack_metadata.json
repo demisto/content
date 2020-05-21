@@ -14,10 +14,11 @@
         "NetworkSecurity",
         "Whitelist",
         "Cloud",
-        "PrismaAccess"
+        "PrismaAccess",
+        "Okta"
     ],
     "created": "2020-04-22T06:05:52Z",
-    "updated": "2020-04-22T06:05:52Z",
+    "updated": "2020-05-20T06:05:52Z",
     "beta": false,
     "deprecated": false,
     "certification": "certified",
