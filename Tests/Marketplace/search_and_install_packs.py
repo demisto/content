@@ -54,8 +54,8 @@ def create_dependencies_data_structure(response_data, dependants_ids, dependenci
                     'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion')
                 })
                 if dependency.get('id') not in checked_packs:
-                    next_call_dependants_ids.append(dependency.get('id'))
-                    checked_packs.append(dependency.get('id'))
+                    next_call_dependants_ids.add(dependency.get('id'))
+                    checked_packs.add(dependency.get('id'))
 
     if next_call_dependants_ids:
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
