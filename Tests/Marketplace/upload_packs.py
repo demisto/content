@@ -8,8 +8,8 @@ import prettytable
 import glob
 from datetime import datetime
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, \
-    PACKS_FOLDER, IGNORED_PATHS, Metadata
+from Tests.Marketplace.marketplace_services import init_storage_client,  Pack, PackStatus, GCPConfig, PACKS_FULL_PATH,\
+    IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
