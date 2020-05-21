@@ -4,11 +4,12 @@ Retrieve Prisma Access Egress IP for specific geographic Zones and populate in s
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* IP Whitelist - GCP Firewall
 * IP Whitelist - AWS Security Group
+* IP Whitelist - Okta Zone
+* IP Whitelist - GCP Firewall
 
 ### Integrations
-This playbook does not use any integrations.
+* PrismaAccessEgressIPFeed
 
 ### Scripts
 This playbook does not use any scripts.
@@ -19,12 +20,12 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
 
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/c20427ed8dde64841a1249b5d7c44e8773df2b72/Packs/PrismaAccess/doc_files/Prisma_Access_Whitelist_Egress_IPs_on_SaaS_Services.png)
+<!-- Playbook PNG image comes here -->
