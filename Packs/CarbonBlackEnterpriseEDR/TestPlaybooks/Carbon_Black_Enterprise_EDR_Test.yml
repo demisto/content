@@ -1,5 +1,5 @@
 id: Carbon Black Enterprise EDR Test
-version: 17
+version: -1
 contentitemfields:
   propagationLabels:
   - all
