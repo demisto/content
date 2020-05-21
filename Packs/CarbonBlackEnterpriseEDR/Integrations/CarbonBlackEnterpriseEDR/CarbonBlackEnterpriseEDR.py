@@ -1320,7 +1320,6 @@ def main():
         elif demisto.command() == 'cb-eedr-file-download-to-xsoar':
             demisto.results(download_file_to_xsoar_command(client, demisto.args()))
 
-
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
