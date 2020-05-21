@@ -590,7 +590,7 @@ jobs:
             echo $GCS_MARKET_KEY > $GCS_PATH
             python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
             rm $GCS_PATH
-          when: on_success
+          when: always
       - store_artifacts:
           path: artifacts
           destination: artifacts
