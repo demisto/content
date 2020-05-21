@@ -132,4 +132,4 @@
 <p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-SafeBreach_mceclip5.png"></p>
 <hr>
 <h2>Demisto-SafeBreach Demo</h2>
-<p><iframe src="https://www.youtube.com/embed/rBCGEpkH8y4?rel=0" width="560" height="315" frameborder="0" allowfullscreen=""></iframe></p>
+<p><iframe src="https://www.youtube.com/watch?v=Wb7q5Gbd2qo&feature=youtu.be" width="560" height="315" frameborder="0" allowfullscreen=""></iframe></p>
