@@ -7,6 +7,7 @@ Breaking changes:
 Non Breaking changes:
 - Fixed `from_time` description on `trustar-get-phishing-indicators` and `trustar-get-phishing-submissions` to '24 hours ago'
 - Added -1 to list of default values in `priority_event_score` on `trustar-get-phishing-submissions`
+- Added -1 to list of default values in `priority_event_score` and `normalized_indicator_score` on `trustar-get-phishing-indicators`
 
 ## [20.5.0] - 2020-05-12
 -
