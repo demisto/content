@@ -306,7 +306,6 @@ class Client(BaseClient):
             tags=tags,
             timestamp=timestamp
         )
-        print(body)
         return self._http_request('POST', suffix_url, json_data=body)
 
     def ignore_report_request(self, report_id: str) -> Dict:
@@ -319,7 +318,7 @@ class Client(BaseClient):
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
 
-        return self._http_request('DELETE', suffix_url, resp_type='content')
+        self._http_request('DELETE', suffix_url, resp_type='content')
 
     def get_report_ignore_status_request(self, report_id: str) -> Dict:
 
@@ -330,7 +329,7 @@ class Client(BaseClient):
 
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
 
-        return self._http_request('DELETE', suffix_url, resp_type='content')
+        self._http_request('DELETE', suffix_url, resp_type='content')
 
     def update_report_request(self, report_id: str, title: str, description: str, severity: int, iocs: Dict,
                               tags: Union[list, str], timestamp: int) -> Dict:
@@ -369,6 +368,24 @@ class Client(BaseClient):
 
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/file_path'
         return self._http_request('GET', suffix_url)
+
+    def get_download_file_content_values(self, download_link: str) -> Dict:
+        """Create a request to receive file content from link.
+
+        Args:
+            download_link (str): Link to the desired Azure file.
+
+        Returns:
+            Dict. Content of values section in the Azure downloaded file.
+        """
+        file_download_response = self._http_request(
+            method='GET',
+            full_url=download_link,
+            url_suffix='',
+            stream=True
+        )
+
+        return file_download_response.get('values')
 
 
 def test_module(client):
@@ -1120,16 +1137,11 @@ def get_file_path_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def url_to_file():
-    """
-    Convert a url to file for detonation
-    """
-    urls = argToList(demisto.getArg('urls'))
-    files = []
-    for i in range(len(urls)):
-        fileEntry = fileResult('url_' + str(i + 1), '[InternetShortcut]\nURL=' + str(urls[i]))
-        files.append(fileEntry)
-    demisto.results(files)
+def download_file_to_xsoar_command(client: Client, args: Dict):
+    download_link = args.get('download_link')
+
+    result = client.get_download_file_content_values(download_link)
+    return result
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
@@ -1306,6 +1318,7 @@ def main():
             return_results(get_file_path_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-file-download-to-xsoar':
+            demisto.results(download_file_to_xsoar_command(client, demisto.args()))
 
 
     # Log exceptions
