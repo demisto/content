@@ -16,6 +16,6 @@
         "Email",
         "Spam"
     ],
-    "useCases": [],
+    "useCases": ["Phishing"],
     "keywords": []
 }
