@@ -1,0 +1,384 @@
+id: Prisma Access - Connection Health Check
+version: -1
+name: Prisma Access - Connection Health Check
+description: |-
+  Use Prisma Access integration to run SSH CLI commands and query the connection states for all tunnels. If any tunnels are down - sends a slack message to the #netops channel.
+
+  Can be run as a job or triggered from incoming event to confirm an initial suspicion (such as a tunnel log from Cortex Data Lake) to validate that there is actually still an issue before calling in engineers.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 178ef7b6-9883-4d72-87f1-552831e2998e
+    type: start
+    task:
+      id: 178ef7b6-9883-4d72-87f1-552831e2998e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 607.5,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 63ee4a95-5502-4559-888c-b9db5e4078db
+    type: regular
+    task:
+      id: 63ee4a95-5502-4559-888c-b9db5e4078db
+      version: -1
+      name: Prisma Access - Get Service Connection Status
+      script: '|||prisma-access-query'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit: {}
+      query:
+        simple: action getServiceConnectionRegionalStat
+      querystring:
+        simple: query action getServiceConnectionRegionalStat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d3bac10a-bc2b-4663-8ab9-a5bc9dd93c83
+    type: regular
+    task:
+      id: d3bac10a-bc2b-4663-8ab9-a5bc9dd93c83
+      version: -1
+      name: Prisma Access - Get Firewall Status
+      script: '|||prisma-access-query'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      query:
+        simple: action getFWaaSRegionalStat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c5ef9d40-3bc0-4888-8780-59e4b44cbd9d
+    type: condition
+    task:
+      id: c5ef9d40-3bc0-4888-8780-59e4b44cbd9d
+      version: -1
+      name: Any tunnels down?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: PrismaAccess.QueryResults.Status.value
+            iscontext: true
+          right:
+            value:
+              simple: OK
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5bdbd75e-ac46-4824-83c8-91af11efffbf
+    type: regular
+    task:
+      id: 5bdbd75e-ac46-4824-83c8-91af11efffbf
+      version: -1
+      name: Slack - Send Alert
+      description: Sends a message to a user, group, or channel.
+      script: SlackV2|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      blocks: {}
+      channel:
+        simple: netops
+      entry: {}
+      ignoreAddURL: {}
+      message:
+        simple: Prisma Access - Tunnel Down
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a99768c3-0a8d-49b7-8872-51a6222cbefd
+    type: regular
+    task:
+      id: a99768c3-0a8d-49b7-8872-51a6222cbefd
+      version: -1
+      name: Close incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 83778b88-6030-4579-88e3-3614b58e504f
+    type: condition
+    task:
+      id: 83778b88-6030-4579-88e3-3614b58e504f
+      version: -1
+      name: Is Prisma Access Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Prisma Access
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Prisma Access
+    view: |-
+      {
+        "position": {
+          "x": 607.5,
+          "y": 35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: fc8bd1c8-ba05-4daa-871d-6336916fb9f0
+    type: title
+    task:
+      id: fc8bd1c8-ba05-4daa-871d-6336916fb9f0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 88992f90-9164-4dc9-8982-e574a28879aa
+    type: title
+    task:
+      id: 88992f90-9164-4dc9-8982-e574a28879aa
+      version: -1
+      name: Query Prisma Access
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 8bea80c0-59c0-487f-8a6f-05b74f4df71b
+    type: regular
+    task:
+      id: 8bea80c0-59c0-487f-8a6f-05b74f4df71b
+      version: -1
+      name: Remediate tunnel issue
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.55,
+      "3_5_#default#": 0.5,
+      "6_7_#default#": 0.14,
+      "6_8_yes": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1675,
+        "width": 1220,
+        "x": 50,
+        "y": -110
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
