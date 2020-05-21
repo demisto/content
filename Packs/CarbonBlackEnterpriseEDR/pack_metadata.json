@@ -1,6 +1,6 @@
 {
     "name": "Carbon_Black_Cloud_Enterprise_EDR",
-    "description": "",
+    "description": "Advanced threat hunting and incident response solution.",
     "support": "demisto",
     "currentVersion": "1.0.0",
     "author": "Demisto",
