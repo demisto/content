@@ -1830,6 +1830,37 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  - name: okta-list-zones
+    arguments: []
+    outputs:
+    - contextPath: Okta.Zone
+      description: Okta Zone objects
+    description: Get an Okta Zone object
+  - name: okta-update-zone
+    arguments:
+    - name: zoneID
+      required: true
+      description: Zone ID to update e.g. nzoqsmcx1qWYJ6wYF0h7
+    - name: zoneName
+      description: Update the Zone Name
+    - name: gatewayIPs
+      description: Update Gateway IPs - CIDR (1.1.0.0/16) or single IP (2.2.2.2)
+      isArray: true
+    - name: proxyIPs
+      description: Update Proxy IPs - CIDR (1.1.0.0/16) or single IP (2.2.2.2)
+      isArray: true
+    outputs:
+    - contextPath: Okta.Zone
+      description: Okta Zone object that was updated
+    description: Update an Okta Zone
+  - name: okta-get-zone
+    arguments:
+    - name: zoneID
+      required: true
+    outputs:
+    - contextPath: Okta.Zone
+      description: Okta Zone object
+    description: Get a Zone by its ID
   runonce: false
   script: '-'
   subtype: python3
