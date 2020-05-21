@@ -24,6 +24,7 @@ SERVER = 'https://expander.expanse.co'
 VERIFY_CERTIFICATES = not demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
 BEHAVIOR_ENABLED = demisto.params().get('behavior', False)
+MINIMUM_SEVERITY = demisto.params().get('minimum_severity', 'WARNING')
 BASE_URL = SERVER
 EXPOSURE_EVENT_TYPES = "ON_PREM_EXPOSURE_APPEARANCE,ON_PREM_EXPOSURE_REAPPEARANCE"
 API_ENDPOINTS = {
@@ -166,22 +167,23 @@ def parse_events(events):
     """
     incidents = []
     for event in events['data']:
-        incident = {
-            'name': "{type} on {ip}:{port}/{protocol}".format(
-                type=event['payload']['exposureType'],
-                ip=event['payload']['ip'],
-                protocol=event['payload']['portProtocol'],
-                port=event['payload']['port']
-            ),
-            'occurred': event['eventTime'],
-            'rawJSON': json.dumps(event),
-            'type': 'Expanse Appearance',
-            'CustomFields': {
-                'expanserawjsonevent': json.dumps(event)
-            },
-            'severity': EXPOSURE_SEVERITY_MAPPING[event['payload']['severity']]
-        }
-        incidents.append(incident)
+        if EXPOSURE_SEVERITY_MAPPING[event['payload']['severity']] >= EXPOSURE_SEVERITY_MAPPING[MINIMUM_SEVERITY]:
+            incident = {
+                'name': "{type} on {ip}:{port}/{protocol}".format(
+                    type=event['payload']['exposureType'],
+                    ip=event['payload']['ip'],
+                    protocol=event['payload']['portProtocol'],
+                    port=event['payload']['port']
+                ),
+                'occurred': event['eventTime'],
+                'rawJSON': json.dumps(event),
+                'type': 'Expanse Appearance',
+                'CustomFields': {
+                    'expanserawjsonevent': json.dumps(event)
+                },
+                'severity': EXPOSURE_SEVERITY_MAPPING[event['payload']['severity']]
+            }
+            incidents.append(incident)
     return incidents
 
 
