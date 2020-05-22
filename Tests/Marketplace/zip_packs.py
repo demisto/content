@@ -3,13 +3,13 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client,\
-    CORE_PACKS, GCPConfig, IGNORED_FILES, PACKS_FULL_PATH
+from Tests.Marketplace.marketplace_services import init_storage_client, CORE_PACKS, IGNORED_FILES, PACKS_FULL_PATH
 
 from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion
 
 ARTIFACT_NAME = 'zipped_packs.zip'
 MAX_THREADS = 4
+GCP_PATH = 'content/builds'
 
 
 def option_handler():
@@ -73,7 +73,7 @@ def download_packs_from_gcp(storage_bucket, destination_path, circle_build, bran
             if pack.name in IGNORED_FILES + CORE_PACKS:
                 continue
             # Search for the pack in the bucket
-            pack_prefix = os.path.join(GCPConfig.STORAGE_BASE_PATH, branch_name, circle_build, pack.name)
+            pack_prefix = os.path.join(GCP_PATH, branch_name, circle_build, pack.name)
             blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
             if blobs:
                 blob = get_latest_pack_zip_from_blob(pack.name, blobs)
@@ -160,16 +160,18 @@ def main():
             print_error(f'Failed zipping packs: {e}')
             success = False
 
-    if success:
-        print_success('Successfully zipped packs.')
+        if success:
+            print_success('Successfully zipped packs.')
+        else:
+            print_error('Failed zipping packs.')
+
+        cleanup(zip_path)
+
+        if artifacts_path:
+            # Save in the artifacts
+            shutil.copy(os.path.join(zip_path, ARTIFACT_NAME), os.path.join(artifacts_path, ARTIFACT_NAME))
     else:
-        print_error('Failed zipping packs.')
-
-    cleanup(zip_path)
-
-    if artifacts_path:
-        # Save in the artifacts
-        shutil.copy(os.path.join(zip_path, ARTIFACT_NAME), os.path.join(artifacts_path, ARTIFACT_NAME))
+        print_warning('Did not find any packs to zip.')
 
 
 if __name__ == '__main__':
