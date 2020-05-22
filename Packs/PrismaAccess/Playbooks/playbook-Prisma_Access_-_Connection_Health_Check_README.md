@@ -28,4 +28,4 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/44148aecb246da472a5cd17e2920fc4f918a2cc9/Packs/PrismaAccess/doc_files/Prisma_Access_Tunnel_Health.png)
