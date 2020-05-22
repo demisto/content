@@ -35,4 +35,4 @@ This playbook does not use any integrations.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/8d73e1dad4ba0f299d87526fac1b85e1a76792a7/Packs/IPWhitelisting/doc_files/IP_Whitelist_-_Okta_Zone.png)
