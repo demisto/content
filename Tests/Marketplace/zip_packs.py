@@ -50,7 +50,7 @@ def zip_packs(packs, destination_path):
     with ZipFile(os.path.join(destination_path, ARTIFACT_NAME), mode='w') as zf:
         for zip_pack in packs:
             for name, path in zip_pack.items():
-                print(f'Zipping {path}')
+                print(f'Adding {name} to the zip file')
                 zf.write(path, f"{name}.zip")
 
 
