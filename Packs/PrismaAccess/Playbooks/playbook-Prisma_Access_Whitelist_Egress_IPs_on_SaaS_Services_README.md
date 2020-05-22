@@ -28,4 +28,4 @@ This playbook does not use any scripts.
 ---
 There are no outputs for this playbook.
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://user-images.githubusercontent.com/3792355/82538410-92989580-9b00-11ea-9234-dc15fbd6253b.png)
