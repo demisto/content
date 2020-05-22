@@ -1825,11 +1825,6 @@ script:
       https://developer.okta.com/docs/reference/api/users/#user-sessions
     execution: false
     name: okta-clear-user-sessions
-  dockerimage: demisto/python3:3.8.2.6981
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   - name: okta-list-zones
     arguments: []
     outputs:
@@ -1857,10 +1852,16 @@ script:
     arguments:
     - name: zoneID
       required: true
+      description: Zone ID to get e.g. nzoqsmcx1qWYJ6wYF0h7
     outputs:
     - contextPath: Okta.Zone
       description: Okta Zone object
     description: Get a Zone by its ID
+  dockerimage: demisto/python3:3.8.2.6981
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
