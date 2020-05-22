@@ -3,7 +3,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client, CORE_PACKS, IGNORED_FILES, PACKS_FULL_PATH
+from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig, IGNORED_FILES, PACKS_FULL_PATH
 
 from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion
 
@@ -70,7 +70,7 @@ def download_packs_from_gcp(storage_bucket, destination_path, circle_build, bran
     zipped_packs = []
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-            if pack.name in IGNORED_FILES + CORE_PACKS:
+            if pack.name in IGNORED_FILES + GCPConfig.CORE_PACKS_LIST:
                 continue
             # Search for the pack in the bucket
             pack_prefix = os.path.join(GCP_PATH, branch_name, circle_build, pack.name)
