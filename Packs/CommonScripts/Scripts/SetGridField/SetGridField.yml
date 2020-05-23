@@ -31,8 +31,7 @@ args:
   secret: false
 - default: false
   defaultValue: '*'
-  description: Keys to retrieve from items (limited when item
-    list to columns amount) - Key will not be columns correlated. Default is all keys.
+  description: Keys to retrieve from items. Keys will not be columns correlated. Default is all keys. **Note**: when the amount of values exceeds the amount columns, it truncates the last values that are outside the range for table
   isArray: true
   name: keys
   required: false
