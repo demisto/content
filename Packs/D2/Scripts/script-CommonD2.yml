@@ -1,6 +1,6 @@
 commonfields:
   id: CommonD2
-  version: 1
+  version: -1
 name: CommonD2
 script: |-
   // Common functions script

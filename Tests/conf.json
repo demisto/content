@@ -2715,6 +2715,11 @@
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "Logz.io",
+            "playbookID": "Logzio - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
         },
@@ -2795,7 +2800,6 @@
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
         "Cofense Triage Test": "Creds only works on demo4",
-        "Recorded Future Test": "Issue 18922",
         "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
@@ -2816,6 +2820,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "ArcSight Logger": "Issue 24303",
         "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
         "Traps": "Issue 24122",
