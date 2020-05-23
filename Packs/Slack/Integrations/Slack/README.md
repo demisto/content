@@ -733,13 +733,13 @@ Channel renamed successfully.
 </p>
 <h2>Additional Information</h2>
 <h3>Direct messages</h3>
-<p>You may send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
-<p><strong>list incidents [page x]</strong> - list the current incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
-<p><strong>list my incidents [page x]</strong> - list the current incidents assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
-<p><strong>list my tasks [page x]</strong> - list the current tasks assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
-<p><strong>list closed incidents</strong> - list the closed incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
-<p><strong>new incident [details]</strong> - Create a new incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR, or the `Allow external users to create incidents via DM` parameter to be enabled.</p>
-<p><strong>mirror [incident-id]</strong> - mirror an incident in Cortex XSOAR to a slack channel. Requires user permissions in Cortex XSOAR for the provided incident.</p>
+<p>You can send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
+<p><strong>list incidents [page x]</strong> - lists the current incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list my incidents [page x]</strong> - lists the current incidents assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list my tasks [page x]</strong> - lists the current tasks assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list closed incidents</strong> - lists the closed incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>new incident [details]</strong> - creates a new incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR, or that the `Allow external users to create incidents via DM` parameter is enabled.</p>
+<p><strong>mirror [incident-id]</strong> - mirrors an incident in Cortex XSOAR to a Slack channel. Requires user permissions in Cortex XSOAR for the specified incident.</p>
 
 <h3>Notifications</h3>
 <p>The integration sends notifications as they are configured in the notification settings (User Preferences in Cortex XSOAR), and to the dedicated channel configured for incident notifications (according to the integration configuration).
