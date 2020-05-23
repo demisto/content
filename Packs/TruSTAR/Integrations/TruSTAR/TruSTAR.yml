@@ -666,8 +666,10 @@ script:
       type: number
     - contextPath: TruSTAR.PhishingSubmission.context.originalIndicatorScore.name
       description: Original Indicator score name
+      type: string
     - contextPath: TruSTAR.PhishingSubmission.context.originalIndicatorScore.value
       description: Original Indicator score value
+      type: string
     description: Fetches all phishing submissions that fit the given criteria
   - name: trustar-set-triage-status
     arguments:
@@ -714,10 +716,13 @@ script:
       type: string
     - contextPath: TruSTAR.PhishingIndicator.normalizedIndicatorScore
       description: Indicator normalized score
+      type: number
     - contextPath: TruSTAR.PhishingIndicator.originalIndicatorScore.name
       description: Indicator original score name
+      type: string
     - contextPath: TruSTAR.PhishingIndicator.originalIndicatorScore.value
       description: Indicator original score value
+      type: string
     - contextPath: TruSTAR.PhishingIndicator.sourceKey
       description: Indicator source key
       type: string
