@@ -2770,6 +2770,10 @@
             "integrations": "GCP Whitelist Feed",
             "playbookID": "GCPWhitelist_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Bonusly",
+            "playbookID": "Bonusly-Test"
         }
     ],
     "skipped_tests": {
