@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: BetweenHours
 fromversion: 5.0.0
-comment: Whether value is within an hour range.
+comment: Checks whether the given value is within the specified time (hour) range.
 script: ''
 type: python
 tags:
@@ -13,13 +13,13 @@ enabled: true
 args:
 - name: value
   required: true
-  description: Value to check
+  description: The value to check.
 - name: begin_time
   required: true
-  description: Format is HH:MM:SS
+  description: The start time range in the format HH:MM:SS.
 - name: end_time
   required: true
-  description: Format is HH:MM:SS
+  description: The end time range in the format HH:MM:SS.
 scripttarget: 0
 subtype: python3
 runonce: false
