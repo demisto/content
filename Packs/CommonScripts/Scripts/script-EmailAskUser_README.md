@@ -35,3 +35,10 @@ Asks a user a question via email and process the reply directly into the investi
 ## Outputs
 ---
 There are no outputs for this script.
+
+
+## Prerequisites
+---
+Requires an instance of one of the email integrations: Gmail, MS grpah mail, EWS, POP3, Mail sender .
+
+
