@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: BetweenDates
 fromversion: 5.0.0
-comment: Whether value is within a date range.
+comment: Checks whether the given value is within the specified date range.
 script: ''
 type: python
 tags:
@@ -13,13 +13,13 @@ enabled: true
 args:
 - name: value
   required: true
-  description: Value to check
+  description: The value to check.
 - name: begin_date
   required: true
-  description: Lower date range
+  description: The start date range.
 - name: end_date
   required: true
-  description: Upper date range
+  description: The end date range.
 scripttarget: 0
 subtype: python3
 runonce: false
