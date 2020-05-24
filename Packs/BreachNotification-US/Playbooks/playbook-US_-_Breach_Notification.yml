@@ -1,8 +1,8 @@
 id: US - Breach Notification
 version: -1
 name: US - Breach Notification
-description: This playbook triggers by a breach notification incident and then will
-  proceed to the breach notification playbook for the required state.
+description: This playbook is triggered by a breach notification incident and then 
+  proceeds to the breach notification playbook for the relevant state.
 starttaskid: "0"
 tasks:
   "0":
@@ -380,7 +380,7 @@ tasks:
       id: 2f4afee3-2006-47cc-8681-b94c034cf46a
       version: -1
       name: Close investigation
-      description: commands.local.cmd.close.inv
+      description: Closes the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -624,7 +624,7 @@ tasks:
       id: 53287163-23ae-4d34-8b48-06ee441508c8
       version: -1
       name: Close investigation
-      description: commands.local.cmd.close.inv
+      description: Closes the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -755,7 +755,7 @@ tasks:
       id: 075d3bc0-03e3-4484-80f3-70a365b7e8c6
       version: -1
       name: Close investigation
-      description: commands.local.cmd.close.inv
+      description: Closes the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
