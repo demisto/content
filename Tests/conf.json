@@ -2930,7 +2930,6 @@
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
-        "AbuseIPDB": "Issue 22658",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Google Chronicle Backstory": "Issue 22720",
