@@ -32,9 +32,9 @@ def test_validator():
     validator = Validator()
 
     assert validator.validate_ip("", "1.2.3.4")
-    assert validator.validate_ip("", "292.17.120.107k") is False
+    assert validator.validate_ip("", "292.17.120.107") is False
 
-    assert validator.validate_email("", "aaaa@bbbb.com")
+    assert validator.validate_email("", "someemail@domain.com")
     assert validator.validate_email("", "erezdcom") is False
     assert validator.validate_email("", "erez@demisto") is False
 
