@@ -1,0 +1,16 @@
+{
+    "defaultIncidentType": "Digital Guardian Security Event",
+    "id": "DigitalGuardian",
+    "type": "classification",
+    "name": "Digital Guardian Classifier",
+    "description": "Classifies Digital Guardian events.",
+    "keyTypeMap": {
+        "Digital Guardian": "Digital Guardian Security Event"
+    },
+    "transformer": {
+        "complex": null,
+        "simple": "Vendor Product"
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

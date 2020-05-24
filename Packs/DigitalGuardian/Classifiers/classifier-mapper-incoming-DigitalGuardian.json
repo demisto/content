@@ -1,11 +1,9 @@
 {
-    "brandName": "Digital Guardian",
-    "custom": true,
-    "defaultIncidentType": "",
-    "id": "a72d8fbe-5039-4eae-82ed-baf91af13d2c",
-    "keyTypeMap": {
-        "Digital Guardian": "Digital Guardian Security Event"
-    },
+    "defaultIncidentType": "Digital Guardian Security Event",
+    "id": "DigitalGuardian-mapper",
+    "type": "mapper-incoming",
+    "name": "Digital Guardian Mapper",
+    "description": "Maps incoming Digital Guardian event fields",
     "mapping": {
         "Digital Guardian Security Event": {
             "dontMapEventToLabels": false,
@@ -105,12 +103,6 @@
             }
         }
     },
-    "transformer": {
-        "complex": null,
-        "simple": "Vendor Product"
-    },
-    "unclassifiedCases": {},
     "version": -1,
-    "fromVersion": "5.0.0",
-    "toVersion": "5.9.0"
+    "fromVersion": "6.0.0"
 }
