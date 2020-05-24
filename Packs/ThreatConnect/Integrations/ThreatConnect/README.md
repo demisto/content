@@ -198,9 +198,9 @@
 <h5>Command Example</h5>
 <pre>!ip ip=7.77.7.7</pre>
 <h5>Context Example</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50242697-cfc09b80-03d3-11e9-9615-35fc485fa84c_1_Search_for_an_IP_indicator.png" alt="50242697-cfc09b80-03d3-11e9-9615-35fc485fa84c_1_Search_for_an_IP_indicator.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50242697-cfc09b80-03d3-11e9-9615-35fc485fa84c_1_Search_for_an_IP_indicator.png" alt="50242697-cfc09b80-03d3-11e9-9615-35fc485fa84c_1_Search_for_an_IP_indicator.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50281763-2e7c2880-0459-11e9-88ea-ed6532e56bad_1_Human_Readable_Output.png" alt="50281763-2e7c2880-0459-11e9-88ea-ed6532e56bad_1_Human_Readable_Output.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281763-2e7c2880-0459-11e9-88ea-ed6532e56bad_1_Human_Readable_Output.png" alt="50281763-2e7c2880-0459-11e9-88ea-ed6532e56bad_1_Human_Readable_Output.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -339,9 +339,9 @@
 <h5>Command Example</h5>
 <pre>!url url=https://a.co.il</pre>
 <h5>Context Example</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png" alt="50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png" alt="50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png" alt="50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png" alt="50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -503,9 +503,9 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50275319-bd804500-0447-11e9-927f-3e272f74bb60.png" alt="50275319-bd804500-0447-11e9-927f-3e272f74bb60.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50275319-bd804500-0447-11e9-927f-3e272f74bb60.png" alt="50275319-bd804500-0447-11e9-927f-3e272f74bb60.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50281206-64201200-0457-11e9-8b72-4db2d9aadb0a.png" alt="50281206-64201200-0457-11e9-8b72-4db2d9aadb0a.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281206-64201200-0457-11e9-8b72-4db2d9aadb0a.png" alt="50281206-64201200-0457-11e9-8b72-4db2d9aadb0a.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -748,9 +748,9 @@
 <h5>Command Example</h5>
 <pre>!tc-indicators limit=5</pre>
 <h5>Context Example</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50281877-96327380-0459-11e9-8c94-a1136e0949a7.png" alt="50281877-96327380-0459-11e9-8c94-a1136e0949a7.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281877-96327380-0459-11e9-8c94-a1136e0949a7.png" alt="50281877-96327380-0459-11e9-8c94-a1136e0949a7.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50281832-6edba680-0459-11e9-8ac2-e0f00b97db98.png" alt="50281832-6edba680-0459-11e9-8ac2-e0f00b97db98.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281832-6edba680-0459-11e9-8ac2-e0f00b97db98.png" alt="50281832-6edba680-0459-11e9-8ac2-e0f00b97db98.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -819,7 +819,7 @@
 <h5>Command Example</h5>
 <pre>!tc-get-tags</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50281926-c37f2180-0459-11e9-83bb-8d6abeb79d48.png" alt="50281926-c37f2180-0459-11e9-83bb-8d6abeb79d48.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281926-c37f2180-0459-11e9-83bb-8d6abeb79d48.png" alt="50281926-c37f2180-0459-11e9-83bb-8d6abeb79d48.png"></p>
 <h3 id="h_0762aaab-f5de-45c2-939f-954166a60794">7. Add a tag to an existing indicator</h3>
 <hr>
 <p>Adds a tag to an existing indicator.</p>
@@ -856,7 +856,7 @@
 <h5>Command Example</h5>
 <pre>!tc-tag-indicator indicator=7.77.7.7 tag=NewTagName</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50282035-18bb3300-045a-11e9-9a51-1bc93a3b7df0_7_Tag_an_existing_indicator_Human_Readable_Output.png" alt="50282035-18bb3300-045a-11e9-9a51-1bc93a3b7df0_7_Tag_an_existing_indicator_Human_Readable_Output.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50282035-18bb3300-045a-11e9-9a51-1bc93a3b7df0_7_Tag_an_existing_indicator_Human_Readable_Output.png" alt="50282035-18bb3300-045a-11e9-9a51-1bc93a3b7df0_7_Tag_an_existing_indicator_Human_Readable_Output.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -1065,7 +1065,7 @@
 <h5>Command Example</h5>
 <pre>!tc-get-indicator indicator=7.77.7.7</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png" alt="50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png" alt="50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -1269,7 +1269,7 @@
 <h5>Command Example</h5>
 <pre>!tc-get-indicators-by-tag tag=NewTagName</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50281832-6edba680-0459-11e9-8ac2-e0f00b97db98_9_Get_all_indicators_with_a_specific_tag_Human_Readable.png" alt="50281832-6edba680-0459-11e9-8ac2-e0f00b97db98_9_Get_all_indicators_with_a_specific_tag_Human_Readable.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281832-6edba680-0459-11e9-8ac2-e0f00b97db98_9_Get_all_indicators_with_a_specific_tag_Human_Readable.png" alt="50281832-6edba680-0459-11e9-8ac2-e0f00b97db98_9_Get_all_indicators_with_a_specific_tag_Human_Readable.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -1463,7 +1463,7 @@
 <h5>Command Example</h5>
 <pre>!tc-add-indicator indicator="9.9.4.4" rating="2" confidence="87"</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663.png" alt="50282140-78b1d980-045a-11e9-995b-a9fc2595b663.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663.png" alt="50282140-78b1d980-045a-11e9-995b-a9fc2595b663.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -1967,7 +1967,7 @@
 <h5>Command Example</h5>
 <pre>!domain domain=com-mapsfinder.info</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/ThreatConnect_45597328-339d8780-b9d3-11e8-8f72-94a09c8c75ee.png" alt="45597328-339d8780-b9d3-11e8-8f72-94a09c8c75ee.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_45597328-339d8780-b9d3-11e8-8f72-94a09c8c75ee.png" alt="45597328-339d8780-b9d3-11e8-8f72-94a09c8c75ee.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
