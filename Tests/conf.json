@@ -2798,7 +2798,6 @@
         "PhishLabsIOC TestPlaybook": "integration bug (23926)",
         "Symantec Deepsight Test": "Issue 22971",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
-        "Cloaken-Test": "Issue 20036",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
