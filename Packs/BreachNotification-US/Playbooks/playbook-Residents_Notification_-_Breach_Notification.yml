@@ -1,7 +1,7 @@
 id: Residents Notification - Breach Notification
 version: -1
 name: Residents Notification - Breach Notification
-description: This playbook triggers by a breach notification playbook and responsible
+description: This playbook is triggered by a breach notification playbook and is responsible
   for the resident notification process.
 starttaskid: "0"
 tasks:
@@ -39,8 +39,8 @@ tasks:
       version: -1
       name: Assemble a list of all the affected subjects
       description: |-
-        Assemble a list of all California residents their data breached.
-        File upload - Upload a file with the list of the affected individual’s to the incident
+        Assemble a list of all residents whose data has been breached.
+        File upload - Upload a file with the list of the affected individuals to the incident
         or
         Update the grid manually - Update the affected individual’s information grid in the incident.
       type: regular
@@ -68,7 +68,7 @@ tasks:
       id: b158a85a-b12a-4ba4-8b54-5e4b91a20667
       version: -1
       name: Extract Email Addresses
-      description: commands.local.cmd.extract.indicators
+      description: Extracts the emails from the file uploaded in the Upload a file with residents email task.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -154,7 +154,7 @@ tasks:
     task:
       id: 9bab3f78-ee44-44c9-8e5b-3dcc14dd14b5
       version: -1
-      name: Is the file exist?
+      name: Does the file exist?
       type: condition
       iscommand: false
       brand: ""
@@ -191,7 +191,7 @@ tasks:
       id: 8be256c5-0499-480b-89c3-2443510d03d5
       version: -1
       name: Wait for the file to upload
-      description: Sleeps for 20 seconds
+      description: Sleeps for 20 seconds to allow the file to upload before proceeding to the next stage of the playbook.
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -267,8 +267,8 @@ tasks:
       id: 2e9cbc24-d360-4308-8693-5bb2080ad20d
       version: -1
       name: Notify residents
-      description: Sends a notification email to the email addresses extracted from
-        the file uploaded using EWS.
+      description: Sends a notification email using EWS to the email addresses extracted from
+        the file uploaded in the Upload a file with residents email task.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -327,7 +327,7 @@ tasks:
       id: ff04fe08-c052-42ec-8dab-6a66528019bd
       version: -1
       name: Send notification manually
-      description: It is required to notify the data subjects about the breach.
+      description: You are required to notify the data subjects about the breach.
       type: regular
       iscommand: false
       brand: ""
@@ -375,7 +375,7 @@ tasks:
     task:
       id: 1c7db06f-dc57-4186-8e2d-62e914279443
       version: -1
-      name: Is the cost of reaching out to residents less than $250,000 OR are less
+      name: Is the cost of reaching out to residents less than $250,000, OR are less
         than 500,000 residents impacted?
       description: |-
         If these conditions are met, the organization can request a substitute notification.
@@ -470,7 +470,7 @@ tasks:
       id: 8b8196c7-5a44-475b-83d0-3424c87b5267
       version: -1
       name: Set substitute notification flag
-      description: Sets a value into the context with the given context key
+      description: Sets a flag indicating that an alternative method of notification is being used.
       scriptName: Set
       type: regular
       iscommand: false
@@ -508,7 +508,7 @@ tasks:
       id: cde5260f-c8dd-4730-8701-515f8a7484ff
       version: -1
       name: Set e-mail notification flag
-      description: Sets a value into the context with the given context key
+      description: Sets a flag indicating that affected residents are being notified by email.
       scriptName: Set
       type: regular
       iscommand: false
@@ -545,8 +545,8 @@ tasks:
     task:
       id: d08183b1-4d4d-41db-8038-2de21af2cb9e
       version: -1
-      name: Add Residents email to grid
-      description: Creates a Grid table from items or key-value pairs.
+      name: Add residents' emails to grid
+      description: Creates a Grid table of residents and their respective email addresses.
       scriptName: SetGridField2
       type: regular
       iscommand: false
@@ -613,8 +613,8 @@ tasks:
     task:
       id: f4956d91-fece-4590-8233-88a98884d259
       version: -1
-      name: Upload a file with the residents email
-      description: Upload a file with the affected resident's email address
+      name: Upload a file with the residents' emails
+      description: Upload a file with the affected residents' email addresses.
       type: regular
       iscommand: false
       brand: ""
