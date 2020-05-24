@@ -610,6 +610,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                              playbook_names, updated_script_names, updated_playbook_names, catched_scripts,
                              catched_playbooks, tests_set)
 
+    print('bla' + str(integration_ids))
     integration_to_command, deprecated_commands_message = get_integration_commands(integration_ids, integration_set)
     for integration_id, integration_commands in integration_to_command.items():
         enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
