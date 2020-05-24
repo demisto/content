@@ -2,7 +2,7 @@ id: New York - Breach Notification
 version: -1
 name: New York - Breach Notification
 description: "This playbook helps an analyst determine if the breached data meets\
-  \ the criteria for breach notification according to New York law, and, if necessary,\
+  \ the criteria for breach notification according to New York State law, and, if necessary,\
   \ follows through with the notification procedures. \n\nDISCLAIMER: Please consult\
   \ with your legal team before implementing this playbook.\n\n**Sources:** \nhttps://ag.ny.gov/internet/data-breach\n\
   https://www.dos.ny.gov/consumerprotection/pdf/infosecbreach03.pdf\nhttps://www.nysenate.gov/legislation/laws/GBS/899-AA"
@@ -421,7 +421,7 @@ tasks:
       version: -1
       name: Upload and submit the report to New York attorney general
       description: |-
-        The Attorney General’s office, the NYS Department of State's Division of Consumer Protection and the NYS Office of Cyber Security & Critical Infrastructure Coordination of the timing, content and distribution of the notices and approximate number of affected persons.  Breached entities may provide notice online to all three entities through the Attorney Generals.
+        The Information Security Breach and Notification Act requires that the state entity or business notify the Attorney General’s office, the NYS Department of State's Division of Consumer Protection and the NYS Office of Cyber Security & Critical Infrastructure Coordination of the timing, content and distribution of the notices and approximate number of affected persons.  Breached entities may provide notice online to all three entities through the Attorney Generals.
         Submit the report to https://formsnym.ag.ny.gov/OAGOnlineSubmissionForm/faces/OAGSBHome
 
         **Source: https://ag.ny.gov/internet/data-breach.
@@ -476,7 +476,7 @@ tasks:
       id: e94a88d1-0b4c-41e5-8bfe-d8755ad39651
       version: -1
       name: Get new report from DPO
-      description: manual task - ask user to send new report
+      description: manual task - ask user to send a new report
       type: regular
       iscommand: false
       brand: ""
@@ -604,7 +604,7 @@ tasks:
 
           Please specify if you approve sending the data breach report to the Attorney General's office.
 
-           To approve sending the data breach report generated from Cortex XSOAR, click Yes.
+          To approve sending the data breach report generated from Cortex XSOAR, click Yes.
 
           To decline sending the data breach report generated from Cortex XSOAR, click No.
           If you decline to send the report, please generate a new report and forward it to your SOC team.
@@ -807,8 +807,8 @@ tasks:
       name: Does breach contain New York resident information?
       description: |-
         New York breach notification laws come into effect only if data of New York residents has been breached.
-        If yes, continue the investigation.
-        If no, decide on a further course of action.
+        If data of New York residents has been breached, continue the investigation.
+        If not, decide on a further course of action.
       type: condition
       iscommand: false
       brand: ""
@@ -987,7 +987,7 @@ tasks:
       id: 55214d65-e142-4735-8b4c-6ed0f82765a9
       version: -1
       name: Update incident with DPO answers
-      description: commands.local.cmd.set.incident
+      description: Collects the answers provided by the DPO in the Notify DPO of suspected data breach data collection task and adds them to the context.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1483,7 +1483,7 @@ tasks:
       id: 3e7fb49f-465c-4f72-8ff0-8fcc551b80da
       version: -1
       name: Set PII wasn't compromised flag
-      description: Sets a value into the context with the given context key
+      description: Store the fact that PII was not compromised.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1545,7 +1545,7 @@ tasks:
       version: -1
       name: Send report to consumer reporting agencies
       description: |-
-        Consumer reporting agencies if more than 5,000 New York residents are to be notified. The contact information for the three nationwide consumer reporting agencies is as follows:
+        If more than 5,000 New York residents are to be notified, consumer reporting agencies must be notified too. The contact information for the three nationwide consumer reporting agencies is as follows:
 
         - EQUIFAX
         Equifax:
