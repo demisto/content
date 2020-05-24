@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue where integer valued incidents where raising an error.
+Fixed an issue where incidents with numbered keys raised an error.
 
 ## [20.5.0] - 2020-05-12
 -
