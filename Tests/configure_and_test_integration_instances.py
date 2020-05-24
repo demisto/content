@@ -6,6 +6,7 @@ import re
 import uuid
 import json
 import ast
+import subprocess
 import sys
 import demisto_client
 from time import sleep
@@ -663,10 +664,12 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     # make request to update server configs
     data = {
         'data': {
-            'marketplace.gcp.path': 'content/builds/{}/{}'.format(branch_name, ci_build_number),
             'content.pack.verify': 'false',
-            'marketplace.initial.sync.delay': 0,
-            'marketplace.bootstrap.bypass.url': 'https://storage.googleapis.com/marketplace-ci-build'
+            'marketplace.initial.sync.delay': '0',
+            'marketplace.bootstrap.bypass.url':
+                'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
+                    branch_name, ci_build_number
+                )
         },
         'version': -1
     }
@@ -710,7 +713,18 @@ def main():
     testing_server = servers[0]  # test integration instances only on a single server
     client = demisto_client.configure(base_url=testing_server, username=username, password=password,
                                       verify_ssl=False)
+
     set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
+    print('Restarting servers to apply GCS server config ...')
+    ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
+                 '"sudo systemctl restart demisto"'
+    for server in servers:
+        try:
+            subprocess.check_output(
+                ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
+        except subprocess.CalledProcessError as exc:
+            print(exc.output)
+    print('Done restarting servers.')
 
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
