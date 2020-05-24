@@ -73,6 +73,12 @@ class McAfeeESMClient(BaseClient):
         return 'ok', {}, {}
 
     def __username_and_id(self, user_name: str = None, user_id: str = None) -> Dict:
+        """
+
+        :param user_name: the user name for search (the user id)
+        :param user_id: the user id for search (the user name)
+        :return: {"name": <user name>, "id": <user id>}
+        """
         if user_name:
             if user_name.lower() == 'me':
                 user_name = self.__user_name
@@ -97,6 +103,12 @@ class McAfeeESMClient(BaseClient):
         return {}
 
     def __org_and_id(self, org_name: str = None, org_id: str = None) -> Dict:
+        """
+
+        :param org_name: the org name for search (the org id)
+        :param org_id: the org id for search (the org name)
+        :return: {"name": <org name>, "id": <org id>}
+        """
         if not org_id:
             if not org_name:
                 org_name = 'None'
@@ -115,6 +127,12 @@ class McAfeeESMClient(BaseClient):
         return {}
 
     def __status_and_id(self, status_name: str = None, status_id: str = None) -> Dict:
+        """
+
+        :param status_name: the status name for search (the status id)
+        :param status_id: the status id for search (the status name)
+        :return: {"name": <status name>, "id": <status id>}
+        """
         if not status_id:
             looking_for = status_name if status_name else 'Open'
             looking_in = 'name'
@@ -657,6 +675,14 @@ def convert_time_format(current_time: str,
                         difference: int = 0,
                         to_demisto: bool = True,
                         mcafee_format: str = '%Y/%m/%d %H:%M:%S') -> str:
+    """
+
+    :param current_time: the current_time
+    :param difference: the difference (e.g. time zone)
+    :param to_demisto: true if we want change the time zone from McAfee ESM time to demisto (e.g. UTC)
+    :param mcafee_format: the standard format in McAfee Machine
+    :return: the new format
+    """
     if not current_time.endswith('(GMT)'):
         if not to_demisto and not current_time.endswith('Z'):
             current_time += 'Z'
@@ -673,6 +699,14 @@ def convert_time_format(current_time: str,
 
 def set_query_times(since: str = None, start_time: str = None, end_time: str = None, difference: int = 0) -> \
         Tuple[Optional[str], Optional[str], Optional[str]]:
+    """
+    checks all time args
+    :param since: since from args
+    :param start_time: start_time from args
+    :param end_time: end_time from args
+    :param difference: the difference (e.g. time zone)
+    :return: the args in the machine time and after validation
+    """
     if not since:
         since = 'CUSTOM'
     elif start_time or end_time:
@@ -691,6 +725,13 @@ def set_query_times(since: str = None, start_time: str = None, end_time: str = N
 
 
 def list_times_set(list_to_set: List, indexes: List, difference: int = 0) -> List:
+    """
+
+    :param list_to_set: the raw list
+    :param indexes: a list of the indexes for time fields
+    :param difference: the difference (e.g. time zone)
+    :return: the data list with utc times
+    """
     for i in indexes:
         if list_to_set[i]:
             list_to_set[i] = time_format(list_to_set[i], difference=difference)
@@ -698,6 +739,12 @@ def list_times_set(list_to_set: List, indexes: List, difference: int = 0) -> Lis
 
 
 def dict_times_set(dict_to_set: Dict, difference: int = 0) -> Dict:
+    """
+
+    :param dict_to_set: the raw dict
+    :param difference: the difference (e.g. time zone)
+    :return: the data dict with utc times
+    """
     for field in dict_to_set.keys():
         if dict_to_set[field]:
             if 'time' in field.lower() or 'date' in field.lower():
@@ -712,6 +759,11 @@ def dict_times_set(dict_to_set: Dict, difference: int = 0) -> Dict:
 
 
 def time_fields(field_list: List[Dict]) -> list:
+    """
+
+    :param field_list: the list of fields for a given query
+    :return: all fields (names only) that have a time value
+    """
     indexes_list = []
     for i in range(len(field_list)):
         if 'time' in field_list[i]['name'].lower() or 'date' in field_list[i]['name'].lower():
@@ -720,6 +772,12 @@ def time_fields(field_list: List[Dict]) -> list:
 
 
 def table_times_set(table_to_set: Dict, difference: int = 0) -> Dict:
+    """
+
+    :param table_to_set: the raw event/ alarm
+    :param difference: the difference (e.g. time zone)
+    :return: the event/ alarm with utc time
+    """
     indexes_list = time_fields(table_to_set['columns'])
     for dict_ in table_to_set['rows']:
         dict_['values'] = list_times_set(dict_.get('values'), indexes_list, difference)
@@ -727,6 +785,11 @@ def table_times_set(table_to_set: Dict, difference: int = 0) -> Dict:
 
 
 def search_readable_outputs(table: Dict) -> str:
+    """
+
+    :param table: the raw data for a search
+    :return: md format table
+    """
     if 'columns' in table and 'rows' in table:
         line_1 = line_2 = '|'
         for header in table.get('columns', []):
