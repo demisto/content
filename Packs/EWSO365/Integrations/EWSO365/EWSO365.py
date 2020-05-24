@@ -1389,18 +1389,27 @@ def recover_soft_delete_item(
     is_public = client.is_default_folder(target_folder_path, is_public)
     target_folder = client.get_folder_by_path(target_folder_path, account, is_public)
     recovered_messages = []
-    if type(message_ids) != list:
-        message_ids = message_ids.split(",")
+    message_ids = argToList(message_ids)
+
     items_to_recover = account.recoverable_items_deletions.filter(  # pylint: disable=E1101
         message_id__in=message_ids
     ).all()  # pylint: disable=E1101
-    if len(items_to_recover) != len(message_ids):
-        raise Exception("Some message ids are missing in recoverable items directory")
+
+    recovered_items = set()
     for item in items_to_recover:
+        recovered_items.add(item)
+    if len(recovered_items) != len(message_ids):
+        missing_items = set(message_ids).difference(recovered_items)
+        raise Exception(
+            f"Some message ids are missing in recoverable items directory: {missing_items}"
+        )
+
+    for item in recovered_items:
         item.move(target_folder)
         recovered_messages.append(
             {ITEM_ID: item.id, MESSAGE_ID: item.message_id, ACTION: "recovered"}
         )
+
     readable_output = tableToMarkdown("Recovered messages", recovered_messages)
     output = {CONTEXT_UPDATE_EWS_ITEM: recovered_messages}
     return readable_output, output, recovered_messages
