@@ -47,7 +47,10 @@ class GCPConfig(object):
                        "Phishing",
                        "CommonScripts",
                        "CommonPlaybooks",
-                       "CommonTypes"]  # cores packs list
+                       "CommonTypes",
+                       "TIM_Processing",
+                       "TIM_SIEM"
+                       ]  # cores packs list
 
 
 class Metadata(object):
@@ -82,23 +85,22 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def pack_displayed_items(cls):
-        return {
+        return [
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
-            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
-        }
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
+        ]
 
     @classmethod
     def yml_supported_folders(cls):
-        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value}
+        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
 
     @classmethod
     def json_supported_folders(cls):
-        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
                 PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.REPORTS.value, PackFolders.WIDGETS.value}
+                PackFolders.REPORTS.value]
 
 
 class PackStatus(enum.Enum):
@@ -415,7 +417,7 @@ class Pack(object):
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
+        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
