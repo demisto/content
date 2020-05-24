@@ -2768,7 +2768,7 @@
         },
         {
             "integrations": "Zabbix",
-            "playbookID": "Zabbix"
+            "playbookID": "Zabbix - Test"
         },
         {
             "integrations": "GCP Whitelist Feed",
