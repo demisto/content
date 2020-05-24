@@ -544,11 +544,22 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
     return packs_to_install
 
 
+def get_api_module_integrations(changed_api_modules, integration_set):
+    integration_ids_to_test = set([])
+    for integration in integration_set:
+        if integration.get('api_modules', '') in changed_api_modules:
+            integration_ids_to_test.add(get_script_or_integration_id(integration.get('file_path')))
+
+    return  integration_ids_to_test
+
+
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set):
+    print ('modifies:' + modified_files)
     tests_set = set([])
     updated_script_names = set([])
     updated_playbook_names = set([])
     catched_scripts, catched_playbooks = set([]), set([])
+    changed_api_modules = set([])
 
     script_to_version = {}
     playbook_to_version = {}
@@ -574,6 +585,10 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
 
+        elif checked_type(file_path, API_MODULE_REGEXES):
+            api_module_name = get_script_or_integration_id(file_path)
+            changed_api_modules.add(api_module_name)
+
     if not id_set:
         with open("./Tests/id_set.json", 'r') as conf_file:
             id_set = json.load(conf_file)
@@ -581,6 +596,10 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
+
+    if changed_api_modules:
+        integration_ids_to_test = get_api_module_integrations(changed_api_modules, integration_set)
+        integration_ids.union(integration_ids_to_test)
 
     deprecated_msgs = exclude_deprecated_entities(script_set, script_names,
                                                   playbook_set, playbook_names,
@@ -1058,6 +1077,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files(files_string)
 
+    print('modified:' + str(modified_files))
     tests = set([])
     packs_to_install = set([])
     if modified_files:
@@ -1132,6 +1152,7 @@ def create_test_file(is_nightly, skip_save=False):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
+        print('files_string:' + files_string)
         with open('./Tests/ami_builds.json', 'r') as ami_builds:
             # get versions to check if tests are runnable on those envs
             ami_builds = json.load(ami_builds)
