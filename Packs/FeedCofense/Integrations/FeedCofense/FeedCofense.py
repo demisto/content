@@ -194,7 +194,8 @@ def test_module(client: Client) -> Tuple[str, dict, dict]:
     Returns:
         str -- "ok" if succeeded, else raises a error.
     """
-    client.build_iterator()
+    for _ in client.build_iterator():
+        return "ok", {}, {}
     return "ok", {}, {}
 
 

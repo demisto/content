@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+Fixed a bug where the 'test' button always returned a positive 
+answer.
 
 ## [20.3.4] - 2020-03-30
 -
