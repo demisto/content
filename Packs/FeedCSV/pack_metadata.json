@@ -1,27 +1,19 @@
 {
-    "name": "CSV Feed",
-    "description": "Indicators feed from a CSV file",
-    "support": "xsoar",
-    "serverMinVersion": "5.5.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [],
-    "created": "2020-03-09T16:04:45Z",
-    "updated": "2020-03-09T16:04:45Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [
-        "CSV",
-        "Feed"
-    ],
-    "price": 0,
-    "dependencies": {},
-    "displayedImages": []
+  "name": "CSV Feed",
+  "description": "Indicators feed from a CSV file",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-09T16:04:45Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": [
+    "CSV",
+    "Feed"
+  ]
 }
