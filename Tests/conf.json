@@ -1233,17 +1233,38 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2",
-            "memory_threshold": 500
+            "memory_threshold": 500,
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test",
-            "memory_threshold": 500
+            "memory_threshold": 500,
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test",
-            "memory_threshold": 200
+            "memory_threshold": 200,
+            "instance_names": "use_default_handler"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPy-Test-V2",
+            "memory_threshold": 500,
+            "instance_names": "use_python_requests_handler"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "Splunk-Test",
+            "memory_threshold": 500,
+            "instance_names": "use_python_requests_handler"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPySearch_Test",
+            "memory_threshold": 200,
+            "instance_names": "use_python_requests_handler"
         },
         {
             "integrations": "McAfee NSM",
@@ -2491,7 +2512,8 @@
             "integrations": "SplunkPy",
             "playbookID": "Splunk Indicator Hunting Test",
             "fromversion": "5.0.0",
-            "memory_threshold": 500
+            "memory_threshold": 500,
+            "instance_names": "use_default_handler"
         },
         {
             "integrations": "BPA",
