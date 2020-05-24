@@ -1018,7 +1018,7 @@ tasks:
       id: d6b1f61f-0c3e-4db7-831a-19c72ffd452d
       version: -1
       name: Update incident with DPO answers
-      description: commands.local.cmd.set.incident
+      description: Collects the answers provided by the DPO in the Notify DPO of suspected data breach data collection task and adds them to the context.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1496,7 +1496,7 @@ tasks:
       id: b9e0320f-ae77-4b1a-8a95-a5824b0326fc
       version: -1
       name: Set PII wasn't compromised flag
-      description: Sets a value into the context with the given context key
+      description: Store the fact that PII was not compromised.
       scriptName: Set
       type: regular
       iscommand: false
