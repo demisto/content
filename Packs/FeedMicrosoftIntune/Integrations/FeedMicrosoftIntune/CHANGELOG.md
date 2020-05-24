@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added IPv4 and CIDR indicators to the feed.
 
 ## [20.5.0] - 2020-05-12
 Set the default value for the *bypass exclusion list* parameter to "true".
