@@ -300,6 +300,56 @@ def test_eml_utf_text(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Test UTF Email'
 
 
+def test_eml_utf_text_with_bom(mocker):
+    '''Scenario: Parse an eml file that is UTF-8 Unicode (with BOM) text
+
+    Given
+    - A UTF-8 encoded eml file with BOM
+
+    When
+    - Executing ParseEmailFiles automation on the uploaded eml file
+
+    Then
+    - Ensure eml email file is properly parsed
+    '''
+    def executeCommand(name, args=None):
+        if name == 'getFilePath':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'Contents': {
+                        'path': 'test_data/utf_8_with_bom.eml',
+                        'name': 'utf_8_with_bom.eml'
+                    }
+                }
+            ]
+        elif name == 'getEntry':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'RFC 822 mail text, UTF-8 Unicode (with BOM) text, '
+                                'with very long lines, with CRLF line terminators'
+                    }
+                }
+            ]
+        else:
+            raise ValueError('Unimplemented command called: {}'.format(name))
+
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Test UTF Email'
+
+
 def test_email_with_special_character(mocker):
     def executeCommand(name, args=None):
         if name == 'getFilePath':
