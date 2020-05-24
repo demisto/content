@@ -193,7 +193,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Bastille.DeviceEvent.first_seen.time_s
+              simple: Bastille.DeviceEvent.first_seen.time
             iscontext: true
       - - operator: isNotEmpty
           left:
