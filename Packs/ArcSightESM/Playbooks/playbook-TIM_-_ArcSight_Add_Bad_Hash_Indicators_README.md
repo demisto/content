@@ -7,7 +7,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
 * ArcSight ESM v2
 
 ### Scripts
@@ -20,15 +19,15 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| ArcSightMd5ActiveListID | ID of the Md5 hash ActiveList resource as it appears in ArcSight. |  |  | Optional |
-| ArcsightMd5ValueFieldName | The name of the Active List field to insert the Md5 hash value to. |  |  | Optional |
-| ArcSightSha1ActiveListID | ID of the Sha1 hash ActiveList resource as it appears in ArcSight. |  |  | Optional |
-| ArcsightSha1ValueFieldName | The name of the Active List field to insert the Sha1 hash value to. |  |  | Optional |
-| ArcSightSha256ActiveListID | ID of the Sha256 hash Active List resource as appears in ArcSight. |  |  | Optional |
-|  |  |  |  | Optional |
-| ArcsightSha256ValueFieldName | The name of the Active List field to insert the Sha256 hash value to. |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| ArcSightMd5ActiveListID | ID of the Md5 hash ActiveList resource as it appears in ArcSight. |  | Optional |
+| ArcsightMd5ValueFieldName | The name of the Active List field to insert the Md5 hash value to. |  | Optional |
+| ArcSightSha1ActiveListID | ID of the Sha1 hash ActiveList resource as it appears in ArcSight. |  | Optional |
+| ArcsightSha1ValueFieldName | The name of the Active List field to insert the Sha1 hash value to. |  | Optional |
+| ArcSightSha256ActiveListID | ID of the Sha256 hash Active List resource as appears in ArcSight. |  | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| ArcsightSha256ValueFieldName | The name of the Active List field to insert the Sha256 hash value to. |  | Optional |
 
 ## Playbook Outputs
 ---
