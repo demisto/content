@@ -118,9 +118,9 @@ def get_current_table(grid_id: str) -> List[Dict[Any, Any]]:
 def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_elements: bool):
     """ Validate entry context structure is valid, should be:
         - For unpack_nested_elements==False:
-            1. List[Dict[str, str]]
+            1. List[Dict[str, str/bool/int/float]]
             2. List[str/bool/int/float]
-            3. Dict[str, str] - for developer it will be in first index of a list.
+            3. Dict[str, str/bool/int/float] - for developer it will be in first index of a list.
         - For unpack_nested_elements==True:
             1. Dict[str, Any]
 
