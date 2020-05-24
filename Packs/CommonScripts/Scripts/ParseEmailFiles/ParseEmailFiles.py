@@ -3416,7 +3416,7 @@ def unfold(s):
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
 
-def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3):
+def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
     global ENCODINGS_TYPES
     global IS_NESTED_EML
 
@@ -3428,6 +3428,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         file_data = emlFile.read()
         if b64:
             file_data = b64decode(file_data)
+        if bom:
+            # decode bytes taking into account BOM and re-encode to utf-8
+            file_data = file_data.decode("utf-8-sig").encode("utf-8")
 
         parser = HeaderParser()
         headers = parser.parsestr(file_data)
@@ -3665,8 +3668,14 @@ def main():
             email_data, attached_emails = handle_msg(file_path, file_name, parse_only_headers, max_depth)
             output = create_email_output(email_data, attached_emails)
 
-        elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower or 'multipart/signed' in file_type_lower:
-            email_data, attached_emails = handle_eml(file_path, False, file_name, parse_only_headers, max_depth)
+        elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower or 'multipart/signed' \
+                in file_type_lower:
+            if 'unicode (with bom) text' in file_type_lower:
+                email_data, attached_emails = handle_eml(
+                    file_path, False, file_name, parse_only_headers, max_depth, bom=True
+                )
+            else:
+                email_data, attached_emails = handle_eml(file_path, False, file_name, parse_only_headers, max_depth)
             output = create_email_output(email_data, attached_emails)
 
         elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower
