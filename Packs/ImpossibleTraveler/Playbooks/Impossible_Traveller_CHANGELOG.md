@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.5.0] - 2020-05-12
   - Simplified the process that gets details of the user's manager.
