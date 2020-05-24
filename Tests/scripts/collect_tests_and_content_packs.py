@@ -545,12 +545,16 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
 
 
 def get_api_module_integrations(changed_api_modules, integration_set):
+    integration_to_version = {}
     integration_ids_to_test = set([])
     for integration in integration_set:
         if list(integration.values())[0].get('api_modules', '') in changed_api_modules:
-            integration_ids_to_test.add(get_script_or_integration_id(list(integration.values())[0].get('file_path')))
+            file_path = list(integration.values())[0].get('file_path')
+            integration_id = get_script_or_integration_id(file_path)
+            integration_ids_to_test.add(integration_id)
+            integration_to_version[integration_id] = (get_from_version(file_path), get_to_version(file_path))
 
-    return integration_ids_to_test
+    return integration_ids_to_test, integration_to_version
 
 
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set):
@@ -597,10 +601,10 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     integration_set = id_set['integrations']
 
     if changed_api_modules:
-        integration_ids_to_test = get_api_module_integrations(changed_api_modules, integration_set)
+        integration_ids_to_test, integration_to_version_to_add = get_api_module_integrations(changed_api_modules, integration_set)
         integration_ids = integration_ids.union(integration_ids_to_test)
+        integration_to_version = {**integration_to_version, **integration_to_version_to_add}
 
-    print(str(integration_ids))
     deprecated_msgs = exclude_deprecated_entities(script_set, script_names,
                                                   playbook_set, playbook_names,
                                                   integration_set, integration_ids)
@@ -610,7 +614,6 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                              playbook_names, updated_script_names, updated_playbook_names, catched_scripts,
                              catched_playbooks, tests_set)
 
-    print('bla' + str(integration_ids))
     integration_to_command, deprecated_commands_message = get_integration_commands(integration_ids, integration_set)
     for integration_id, integration_commands in integration_to_command.items():
         enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
