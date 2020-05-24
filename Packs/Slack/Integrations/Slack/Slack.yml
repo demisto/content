@@ -55,7 +55,7 @@ configuration:
   required: false
   type: 8
   hidden: true
-- display: Bot display name in Slack (Demisto Integration by default)
+- display: Bot display name in Slack (Palo Alto Networks XSOAR (formerly Demisto) by default)
   name: bot_name
   required: false
   type: 0
