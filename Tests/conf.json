@@ -582,6 +582,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql-mssql-encrypted-connection",
+            "instance_names": "Microsoft SQL instance using encrypted connection",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
