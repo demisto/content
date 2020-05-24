@@ -27,31 +27,37 @@ def get_pack_data_from_results(search_results, pack_display_name):
     return {}
 
 
-def create_dependencies_data_structure(response_data, pack_id):
-    """ Creates the pack's dependencies data structure for the installation requests (only required and uninstalled).
+def create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, checked_packs):
+    """ Recursively creates the packs' dependencies data structure for the installation requests
+    (only required and uninstalled).
 
     Args:
-        response_data (dict): The configured client to use.
-        pack_id (str): The pack ID.
-
-    Returns:
-        (tuple): The dependencies data structure, and a string of the dependencies ids.
+        response_data (dict): The GET /search/dependencies response data.
+        dependants_ids (list): A list of the dependant packs IDs.
+        dependencies_data (list): The dependencies data structure to be created.
+        checked_packs (list): Required dependants that were already found.
     """
-    dependencies_data = []
 
-    if response_data and response_data.get('dependencies'):
-        for dependency in response_data.get('dependencies'):
-            is_required = dependency.get('dependants', {}).get(pack_id, {}).get('level', '') == 'required'
-            # empty currentVersion field implies the pack isn't installed yet
-            if not dependency.get('currentVersion') and is_required:
+    next_call_dependants_ids = []
+
+    for dependency in response_data:
+        # empty currentVersion field indicates the pack isn't installed yet
+        if dependency.get('currentVersion'):
+            continue
+
+        dependants = dependency.get('dependants', {})
+        for dependant in dependants.keys():
+            is_required = dependants[dependant].get('level', '') == 'required'
+            if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
                 dependencies_data.append({
                     'id': dependency.get('id'),
                     'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion')
                 })
+                next_call_dependants_ids.append(dependency.get('id'))
+                checked_packs.append(dependency.get('id'))
 
-    dependencies_str = ', '.join(dependency['id'] for dependency in dependencies_data)
-
-    return dependencies_data, dependencies_str
+    if next_call_dependants_ids:
+        create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
 
 def get_pack_dependencies(client, prints_manager, pack_data):
@@ -77,8 +83,11 @@ def get_pack_dependencies(client, prints_manager, pack_data):
         )
 
         if 200 <= status_code < 300:
-            dependencies_data, dependencies_str = create_dependencies_data_structure(ast.literal_eval(response_data),
-                                                                                     pack_id)
+            dependencies_data = []
+            dependants_ids = [pack_id]
+            reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
+            create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
+            dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
             if dependencies_data:
                 message = 'Found the following dependencies for pack {}:\n{}\n'.format(pack_id, dependencies_str)
                 prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
