@@ -8,7 +8,7 @@
 <li>Log in to the SafeBreach Management platform.</li>
 <li>Type <em>console</em> to access the SafeBreach CLI.</li>
 <li>In the SafeBreach CLI window, type <code>plugins add demisto --url &lt;<em>demistoServerUrl</em>&gt; --apiKey &lt;<em>apiKey</em>&gt;</code>.<br>
-<table style="height: 20px;" border="2" width="655" cellpadding="6">
+<table border="2" width="655" cellpadding="6">
 <tbody>
 <tr>
 <td style="width: 324px;"><strong>Argument</strong></td>
@@ -58,7 +58,7 @@
 <li>Log in to the SafeBreach Management platform.</li>
 <li>Type <em>console</em> to access the SafeBreach CLI.</li>
 <li>In the SafeBreach CLI window, type config apikeys add --name &lt;<em>apiKeyName</em>&gt;<br> Type a meaningful name for the API key.<br> <strong>Example output</strong><br>
-<table style="height: 20px; width: 649px;" border="2" cellpadding="6">
+<table border="2" cellpadding="6">
 <tbody>
 <tr>
 <td style="width: 201px;"><strong>id</strong></td>
