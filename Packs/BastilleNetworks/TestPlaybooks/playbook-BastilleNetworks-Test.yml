@@ -198,7 +198,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Bastille.DeviceEvent.last_seen.time_s
+              simple: Bastille.DeviceEvent.last_seen.time
             iscontext: true
     view: |-
       {
