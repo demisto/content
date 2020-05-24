@@ -423,32 +423,24 @@ class PCAP():
         return md, ec, general_context
 
     @logger
-    def mine(self, file_path: str, wpa_password: str, rsa_key_file_path: str, is_flows: bool, is_reg_extract: bool,
-             pcap_filter: str, pcap_filter_new_file_path: str) -> int:
+    def mine(self, file_path: str, wpa_password: str, is_flows: bool, is_reg_extract: bool, pcap_filter: str,
+             pcap_filter_new_file_path: str) -> None:
         """
         The main function of the script. Mines the PCAP.
 
         Args:
             file_path: The PCAP's file path.
             wpa_password: The wpa password for the decryption
-            rsa_key_file_path: The file path of the RSA key.
             is_flows: Whether to extract flows.
             is_reg_extract: Whether to extract regexes from the PCAP.
             pcap_filter: A filter to apply on the PCAP. Same filter syntax as in Wireshark
             pcap_filter_new_file_path: The new path to save the filtered PCAP in
 
         """
-        custom_parameters = None
-        if rsa_key_file_path:
-            custom_parameters = {'-o': f'uat:rsa_keys:"{rsa_key_file_path}",""'}
         try:
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
-                                      decryption_key=wpa_password, encryption_type='WPA-PWD', keep_packets=False,
-                                      custom_parameters=custom_parameters)
-            j = 0
+                                      decryption_key=wpa_password, encryption_type='WPA-PWD', keep_packets=False)
             for packet in cap:
-                j += 1
-
                 self.last_packet = int(packet.number)
                 self.last_layer.add(packet.layers[-1].layer_name)
 
@@ -550,12 +542,11 @@ class PCAP():
 
                 self.extract_context_from_packet(packet, layers, is_reg_extract)
 
-            cap.close()
-            return j
-
         except pyshark.capture.capture.TSharkCrashException:
             raise ValueError("Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file, "
                              "the filter is of the correct syntax and that the rsa key is added correctly.")
+        finally:
+            cap.close()
 
 
 '''HELPER FUNCTIONS'''
@@ -721,10 +712,6 @@ def main():
     file_path = demisto.getFilePath(entry_id).get('path')
 
     wpa_password = args.get('wpa_password', '')
-    rsa_decrypt_key_entry_id = args.get('rsa_decrypt_key_entry_id', '')
-    rsa_key_file_path = None
-    if rsa_decrypt_key_entry_id:
-        rsa_key_file_path = demisto.getFilePath(rsa_decrypt_key_entry_id).get('path')
 
     conversation_number_to_display = int(args.get('convs_to_display', '15'))
     extracted_protocols = argToList(args.get('protocol_output', ''))
@@ -742,8 +729,8 @@ def main():
 
     try:
         pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips, entry_id)
-        pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
-                                  pcap_filter_new_file_path)
+        pcap.mine(file_path, wpa_password, is_flows, is_reg_extract, pcap_filter,
+                  pcap_filter_new_file_path)
         hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
         return_outputs(hr, ec, raw)
 
