@@ -547,14 +547,13 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
 def get_api_module_integrations(changed_api_modules, integration_set):
     integration_ids_to_test = set([])
     for integration in integration_set:
-        if integration.get('api_modules', '') in changed_api_modules:
-            integration_ids_to_test.add(get_script_or_integration_id(integration.get('file_path')))
+        if list(integration.values())[0].get('api_modules', '') in changed_api_modules:
+            integration_ids_to_test.add(get_script_or_integration_id(list(integration.values())[0].get('file_path')))
 
-    return  integration_ids_to_test
+    return integration_ids_to_test
 
 
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set):
-    print ('modifies:' + modified_files)
     tests_set = set([])
     updated_script_names = set([])
     updated_playbook_names = set([])
@@ -585,7 +584,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
 
-        elif checked_type(file_path, API_MODULE_REGEXES):
+        if checked_type(file_path, API_MODULE_REGEXES):
             api_module_name = get_script_or_integration_id(file_path)
             changed_api_modules.add(api_module_name)
 
@@ -599,8 +598,9 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
 
     if changed_api_modules:
         integration_ids_to_test = get_api_module_integrations(changed_api_modules, integration_set)
-        integration_ids.union(integration_ids_to_test)
+        integration_ids = integration_ids.union(integration_ids_to_test)
 
+    print(str(integration_ids))
     deprecated_msgs = exclude_deprecated_entities(script_set, script_names,
                                                   playbook_set, playbook_names,
                                                   integration_set, integration_ids)
@@ -1152,7 +1152,6 @@ def create_test_file(is_nightly, skip_save=False):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        print('files_string:' + files_string)
         with open('./Tests/ami_builds.json', 'r') as ami_builds:
             # get versions to check if tests are runnable on those envs
             ami_builds = json.load(ami_builds)
