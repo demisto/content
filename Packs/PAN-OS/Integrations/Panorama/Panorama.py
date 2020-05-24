@@ -3368,7 +3368,7 @@ def panorama_create_edl_command():
     Create an edl object
     """
     edl_name = demisto.args().get('name')
-    url = demisto.args().get('url')
+    url = demisto.args().get('url').replace(' ', '%20')
     type_ = demisto.args().get('type')
     recurring = demisto.args().get('recurring')
     certificate_profile = demisto.args().get('certificate_profile')

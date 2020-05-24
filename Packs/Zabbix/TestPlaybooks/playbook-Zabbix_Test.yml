@@ -1,31 +1,35 @@
-id: Zabbix
+id: Zabbix - Test
 version: -1
-name: Zabbix
+name: Zabbix - Test
 fromversion: 4.5.0
-starttaskid: '0'
-description: Run test-module
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 69b932fb-e047-4c83-8bd0-42d197c52913
     type: start
     task:
       id: 69b932fb-e047-4c83-8bd0-42d197c52913
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 32665f69-95a5-4cd8-85e3-0bef554aebe9
     type: regular
     task:
@@ -38,14 +42,27 @@ tasks:
       iscommand: true
       brand: Zabbix
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 275,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)

@@ -1242,3 +1242,4 @@ script:
 hidden: false
 tests:
 - No test
+fromversion: 4.1.0
