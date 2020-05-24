@@ -66,7 +66,6 @@ def test_mine_pcap():
     pcap.mine(file_path, wpa_password, is_flows, is_reg_extract, pcap_filter, pcap_filter_new_file_path)
     hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
     assert raw['EntryID'] == 'entry_id'
-    assert raw['StartTime'] == 'Sun Oct 16 11:07:57 2016'
     assert raw['Packets'] == 1000
     assert len(ec['PcapResultsDNS']) == 80
     assert len(ec['PcapResultsSMB2']) == 7
