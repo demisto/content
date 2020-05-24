@@ -9,7 +9,7 @@ import urllib3
 from dateutil.parser import parse
 from typing import Optional, Pattern, Dict, Any, Tuple, Union
 
-# disable insecure warnings sdf
+# disable insecure warnings
 urllib3.disable_warnings()
 
 
