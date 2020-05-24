@@ -9,7 +9,7 @@ description: "This single-run playbook enables Cortex XSOAR built-in External Dy
   \ order to validate to which indicators the query applied, you need to enter the\
   \ query syntax from the indicator tab at the top of the playbook inputs window\
   \ as well). \nIf both the IP and URL indicator types exist in the query, it sorts the indicators into two EDLs, IP and URL.
-    If only one indicator type exists in the query, only one EDL is created. \nThe playbook then creates 
+    If only one indicator type exists in the query, only one EDL is created. \nThe playbook then creates
     EDL objects directing to the indicator lists and firewall policy rules in PAN-OS. \n- It is recommended to configure a dedicated\
   \ EDL Service instance for the usage of this playbook.\n- In case it is needed to\
   \ edit or update the EDL query after this playbook run, use the panorama-edit-edl\
@@ -1713,4 +1713,4 @@ outputs:
   description: Name of theEDL.
 quiet: true
 tests:
-- PAN-OS EDL Service Configuration Test
+- No test
