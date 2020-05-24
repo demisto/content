@@ -13,7 +13,7 @@ from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, \
     PACKS_FOLDER, IGNORED_PATHS, Metadata
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS
+from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
 def get_modified_packs(specific_packs=""):
@@ -284,7 +284,6 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
     """
     if not id_set_local_path:
         print("Skipping upload of id set to gcs.")
-        return
 
     id_set_gcs_path = os.path.join(GCPConfig.STORAGE_CONTENT_PATH, 'id_set.json')
     blob = storage_bucket.blob(id_set_gcs_path)
@@ -472,6 +471,10 @@ def option_handler():
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.",
+                        required=False)
+    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+                        help='Should remove test playbooks from content packs or not.', default=True)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -489,13 +492,20 @@ def main():
     signature_key = option.key_string
     id_set_path = option.id_set_path
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
+    storage_bash_path = option.storage_bash_path
+    remove_test_playbooks = option.remove_test_playbooks
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
+    if storage_bash_path:
+        GCPConfig.STORAGE_BASE_PATH = storage_bash_path
+
     # download and extract index from public bucket
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_folder_path, index_blob = download_and_extract_index(
+        storage_bucket, extract_destination_path
+    )
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
@@ -552,12 +562,13 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.remove_unwanted_files()
+        task_status = pack.remove_unwanted_files(remove_test_playbooks)
         if not task_status:
             pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
             pack.cleanup()
             continue
 
+        # if should_sign_pack:
         task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name
