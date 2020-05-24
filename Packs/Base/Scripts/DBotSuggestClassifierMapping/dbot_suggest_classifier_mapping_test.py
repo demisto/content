@@ -3,11 +3,18 @@ import pytest
 import DBotSuggestClassifierMapping
 from DBotSuggestClassifierMapping import *
 
+all_incident_fields = []
+
 
 @pytest.fixture(autouse=True)
 def setup(mocker):
-    DBotSuggestClassifierMapping.aliasing_map, DBotSuggestClassifierMapping.aliases_terms_map = get_aliasing(
-        DBotSuggestClassifierMapping.siem_fields)
+    global all_incident_fields
+    DBotSuggestClassifierMapping.ALIASING_MAP, DBotSuggestClassifierMapping.ALIASING_TERMS_MAP = get_aliasing(
+        DBotSuggestClassifierMapping.SIEM_FIELDS)
+    for siem_field in SIEM_FIELDS:
+        machine_name = siem_field.replace(" ", "").lower()
+        all_incident_fields.append({INCIDENT_FIELD_NAME: siem_field, INCIDENT_FIELD_MACHINE_NAME: machine_name})
+    init()
 
 
 def test_date_validator():
@@ -80,6 +87,9 @@ def test_string_utils():
     assert camel_case_split("justoneword") == ['justoneword']
     assert camel_case_split("Justoneword") == ['Justoneword']
 
+    assert jaccard_similarity_for_string_terms("word1 word2 word1", "word1") == 0.5
+    assert jaccard_similarity_for_string_terms("word1 word2 word1", "word2  word1") == 1
+
 
 def test_flatten_json():
     map1 = {
@@ -106,16 +116,16 @@ def test_flatten_json():
 
 
 def test_suggest_field():
-    assert 'src ip' in DBotSuggestClassifierMapping.aliasing_map
-    assert 'source ip' in DBotSuggestClassifierMapping.aliasing_map
-    assert 'source address' in DBotSuggestClassifierMapping.aliasing_map
-    assert get_candidates("src ip") == ['src', 'src ip']
+    assert 'src ip' in DBotSuggestClassifierMapping.ALIASING_MAP
+    assert 'source ip' in DBotSuggestClassifierMapping.ALIASING_MAP
+    assert 'source address' in DBotSuggestClassifierMapping.ALIASING_MAP
+    assert get_candidates("src ip") == ['src ip', 'src']
     assert suggest_field_with_alias("src ip", "1.2.3.4") == ('Source IP', 'src ip')
 
 
 def test_normilize():
-    DBotSuggestClassifierMapping.all_possible_terms = ['address', 'network']
-    DBotSuggestClassifierMapping.all_possible_terms_set = set(DBotSuggestClassifierMapping.all_possible_terms)
+    DBotSuggestClassifierMapping.ALL_POSSIBLE_TERMS = ['address', 'network']
+    DBotSuggestClassifierMapping.ALL_POSSIBLE_TERMS_SET = set(DBotSuggestClassifierMapping.ALL_POSSIBLE_TERMS)
     assert normilize("Source IP") == ["source", "ip"]
     assert normilize("Dest IP") == ["dest", "ip"]
     assert normilize("Dest Addresses") == ["dest", "address"]
@@ -135,6 +145,14 @@ def test_combine_mappers():
     combine_mappers(original, new, []) == original
     new['d'] = 4
     combine_mappers(original, new, []) == {'a': 1, 'b': 2, 'c': 3, 'd': 4}
+
+
+def test_get_most_relevant_match_for_field():
+    cnt = Counter({'value 1': 2, 'value 2': 2, "value 3": 3})
+
+    get_most_relevant_match_for_field("value 3", cnt) == "value 3"
+    get_most_relevant_match_for_field("2 value", cnt) == "value 2"
+    get_most_relevant_match_for_field("value", cnt) == "value 3"
 
 
 def test_main_qradar(mocker):
@@ -162,7 +180,7 @@ def test_main_arcsight(mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
 
-    assert 'Consequence Severity' == get_complex_value_key(mapper['severity']['complex'])
+    assert 'Event-Severity' == get_complex_value_key(mapper['severity']['complex'])
     assert 'Name' == get_complex_value_key(mapper['name']['complex'])
     assert 'Event-File Path' == get_complex_value_key(mapper['File Path']['complex'])
     assert 'Event-File Name' == get_complex_value_key(mapper['File Name']['complex'])
@@ -171,7 +189,7 @@ def test_main_arcsight(mocker):
     assert 'Event-Source Address' == get_complex_value_key(mapper['Source IP']['complex'])
     assert 'Event-Attacker Geo Country Code' == get_complex_value_key(mapper['Country']['complex'])
     assert 'Event-Source Host Name' == get_complex_value_key(mapper['Hostname']['complex'])
-    assert 'Create Time' == get_complex_value_key(mapper['occurred']['complex'])
+    assert 'Event-Start Time' == get_complex_value_key(mapper['occurred']['complex'])
     assert 'Event-Agent ID' == get_complex_value_key(mapper['Agent ID']['complex'])
 
 
@@ -186,3 +204,22 @@ def test_main_splunk(mocker):
     assert 'Name' == get_complex_value_key(mapper['name']['complex'])
     assert 'severity' == get_complex_value_key(mapper['severity']['complex'])
     assert 'rule_description' == get_complex_value_key(mapper['details']['complex'])
+
+
+def test_main_outgoing(mocker):
+    incidents = json.load(open('TestData/outgoing.json'))
+    fields = []
+    for siem_field in SIEM_FIELDS:
+        machine_name = siem_field.replace(" ", "").lower()
+        fields.append({INCIDENT_FIELD_NAME: siem_field, INCIDENT_FIELD_MACHINE_NAME: machine_name})
+    args = {
+        'incidentSamples': incidents,
+        'incidentSamplesType': 'outgoingSamples',
+        'incidentFields': all_incident_fields,
+    }
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mapper = main()
+
+    assert 'severity' == get_complex_value_key(mapper['user_priority'])
+    assert 'category' == get_complex_value_key(mapper['category'])
+    assert 'severity' == get_complex_value_key(mapper['user_priority'])

@@ -1,17 +1,23 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
+import itertools
 import numbers
 import re
 import socket
-from datetime import datetime, timedelta
-
-import itertools
 from collections import Counter
 from collections import OrderedDict
+from datetime import datetime, timedelta
 
-siem_fields = {'Account ID': {'aliases': ['accountid', 'account id'],
+INCIDENT_FIELD_NAME = "name"
+INCIDENT_FIELD_MACHINE_NAME = "cliName"
+
+SAMPLES_INCOMING = 'incomingSamples'
+SAMPLES_SCHEME = 'scheme'
+SAMPLES_OUTGOING = 'outgoingSamples'
+
+COUNT_KEYWORD = "count"
+
+SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                               'validators': []},
                'Account Name': {'aliases': ['accountname', 'account name'],
                                 'validators': ['validate_alphanumeric_with_common_punct']},
@@ -201,7 +207,8 @@ siem_fields = {'Account ID': {'aliases': ['accountid', 'account id'],
                            'validators': ['validate_alphanumeric_with_common_punct']},
                'name': {'aliases': ['name', 'Name', 'alert name', 'event name', 'rule name', 'title'],
                         'validators': ['validate_alphanumeric_with_common_punct', 'extact_name_math']},
-               'occurred': {'aliases': ['occurred', 'occured', 'occurred time', 'event at', 'event time', 'start time',
+               'occurred': {'aliases': ['occurred', 'occured', 'occurred time', 'event start time', 'event at',
+                                        'event time', 'start time',
                                         'create time', 'timestamp', 'unix time', 'click time'],
                             'validators': ['validate_date']},
 
@@ -320,7 +327,7 @@ class Validator:
             return self.validate_regex(self.NUMBER_REGEX, value, json_field_name=None)
 
     def validate_not_count(self, field_name, value):
-        is_count = "count" in field_name.lower() and self.validate_number(field_name, value)
+        is_count = COUNT_KEYWORD in field_name.lower() and self.validate_number(field_name, value)
         return not is_count
 
     def validate_sha256(self, field_name, value, json_field_name=None):
@@ -388,7 +395,7 @@ def lemma_word(word):
     for suffix in suffix_mapping:
         if word.endswith(suffix):
             candidate = word[:-len(suffix)] + suffix_mapping[suffix]
-            if candidate in all_possible_terms_set or candidate.lower() in all_possible_terms_set:
+            if candidate in ALL_POSSIBLE_TERMS_SET or candidate.lower() in ALL_POSSIBLE_TERMS_SET:
                 return candidate.lower()
     return word.lower()
 
@@ -442,35 +449,34 @@ def normilize(value):
 
 
 def validate_value_with_validator(alias, value, json_field_name=None):
-    field_name = aliasing_map[alias]
-    validators = siem_fields[field_name]['validators']  # type: ignore
+    field_name = ALIASING_MAP[alias]
+    validators = SIEM_FIELDS[field_name]['validators']  # type: ignore
     validators = [v for v in validators if v]
     if len(validators) == 0:
         return True
     validator_results = []
     for validator_name in validators:
-        validator_results.append(validator.validate(validator_name, alias, value, json_field_name))
+        validator_results.append(VALIDATOR.validate(validator_name, alias, value, json_field_name))
     return all(validator_results)
 
 
 def get_candidates(json_field_name):
     json_field_terms = normilize(json_field_name)
-    aliases_terms = aliases_terms_map.items()
+    aliases_terms = ALIASING_TERMS_MAP.items()
     match_terms = map(lambda x: x[0],
                       filter(lambda alias_terms: is_sublist_of_list(alias_terms[1], json_field_terms), aliases_terms))
-    return match_terms
+    return sorted(match_terms, reverse=True, key=number_of_terms)
 
 
 def suggest_field_with_alias(json_field_name, json_field_value=None):
     norm_json_field_name = " ".join(normilize(json_field_name))
     candidates = get_candidates(json_field_name)
-    candidates = sorted(candidates, reverse=True, key=number_of_terms)
     if json_field_value is not None:
         candidates = filter(lambda c: validate_value_with_validator(c, json_field_value, norm_json_field_name),
                             candidates)
     if len(candidates) > 0:
         alias = candidates[0]
-        return aliasing_map[alias], alias
+        return ALIASING_MAP[alias], alias
     return None, None
 
 
@@ -493,7 +499,7 @@ def is_value_substring_of_one_values(value, all_values):
 
 
 def get_alias_index(field_name, alias):
-    return siem_fields[field_name]['aliases'].index(alias)  # type: ignore
+    return SIEM_FIELDS[field_name]['aliases'].index(alias)  # type: ignore
 
 
 def get_most_relevant(field_name, field_mappings):
@@ -503,25 +509,52 @@ def get_most_relevant(field_name, field_mappings):
 
 def match_for_incident(incident_to_match):
     flat_incident, more_than_one_field_items = flatten_json(incident_to_match)
-    incident = {}
-    all_values_none = all([v is None or v == "" for v in flat_incident.values()])
-    for k, v in flat_incident.items():
-        if v is not None and validator.validate_not_count(k, v) \
-                and not is_value_substring_of_one_values(k, more_than_one_field_items):
-            incident[k] = v
-        # if all the values are empty it's probably a scheme
-        elif all_values_none:
-            incident[k] = v
+    incident = {k: v for k, v in flat_incident.items()
+                if not is_value_substring_of_one_values(k, more_than_one_field_items)}
+    if SCHEME_ONLY:
+        incident = {k: v for k, v in incident.items() if not k.endswith(COUNT_KEYWORD)}
+    else:
+        incident = {k: v for k, v in incident.items() if v is not None and VALIDATOR.validate_not_count(k, v)}
 
     mapping = {}  # type: ignore
     for json_field_name, json_field_value in incident.items():
-        if json_field_value or all_values_none:
+        if SCHEME_ONLY or json_field_value:
             suggestion, alias = suggest_field_with_alias(json_field_name, json_field_value)
             if suggestion:
                 if suggestion not in mapping:
                     mapping[suggestion] = []
                 mapping[suggestion].append((json_field_name, alias))
     return {k: get_most_relevant(k, v)[0] for k, v in mapping.items()}
+
+
+def jaccard_similarity(list1, list2):
+    intersection = len(list(set(list1).intersection(list2)))
+    union = (len(list1) + len(list2)) - intersection
+    return float(intersection) / union
+
+
+def jaccard_similarity_for_string_terms(str1, str2):
+    return jaccard_similarity(normilize(str1), normilize(str2))
+
+
+def get_most_relevant_match_for_field(field_name, cnt):
+    # return exact match
+    if field_name in cnt:
+        return field_name
+
+    suggestions_with_jaccard_score = [(suggestion, jaccard_similarity_for_string_terms(field_name, suggestion)) for
+                                      suggestion in cnt.keys()]
+    suggestions_with_jaccard_score = sorted(suggestions_with_jaccard_score, key=lambda x: x[1], reverse=True)
+
+    # check for extact terms
+    if suggestions_with_jaccard_score[0][1] == 1:
+        return suggestions_with_jaccard_score[0][0]
+
+    # if we have only scheme or all the values are the same
+    if SCHEME_ONLY or len(set(cnt.values())) == 1:
+        return suggestions_with_jaccard_score[0][0]
+
+    return cnt.most_common()[0][0]
 
 
 def match_for_incidents(incidents_to_match):
@@ -553,6 +586,19 @@ def format_value_to_mapper(json_field):
     return res
 
 
+def format_incident_field_to_mapper(incident_field_name, field_name_to_machine_name):
+    res = {
+        "simple": "",
+        "complex": {
+            "root": field_name_to_machine_name[incident_field_name],
+            "accessor": "",
+            "filters": [],
+            "transformers": []
+        }
+    }
+    return res
+
+
 def verify_non_empty_values_in_incidents(expression, incidents):
     for incident in incidents:
         res = demisto.dt(incident, expression)
@@ -562,6 +608,8 @@ def verify_non_empty_values_in_incidents(expression, incidents):
 
 
 def get_complex_value_key(complex_value):
+    if 'complex' in complex_value:
+        complex_value = complex_value['complex']
     readable_value = complex_value.get('root')
     if complex_value.get('accessor'):
         readable_value += "." + complex_value.get('accessor')
@@ -587,15 +635,37 @@ def parse_incident_sample(sample):
     return incident
 
 
-validator = Validator()
-aliasing_map, aliases_terms_map = {}, {}
-all_possible_terms = []  # type: List[str]
-all_possible_terms_set = set()
+SCHEME_ONLY = False
+VALIDATOR = Validator()
+ALIASING_MAP, ALIASING_TERMS_MAP, FIELD_NAME_TO_CLI_NAME = {}, {}, {}
+ALL_POSSIBLE_TERMS_SET = set()
+
+
+def init():
+    global SCHEME_ONLY, VALIDATOR, \
+        ALIASING_MAP, ALIASING_TERMS_MAP, \
+        ALL_POSSIBLE_TERMS_SET, SIEM_FIELDS, FIELD_NAME_TO_CLI_NAME
+
+    SCHEME_ONLY = demisto.args().get('incidentSamplesType') in [SAMPLES_OUTGOING, SAMPLES_SCHEME]
+
+    fields = demisto.args().get('incidentFields', {})
+    if fields and len(fields) > 0:
+        fields_names = map(lambda x: x['name'], fields)
+        SIEM_FIELDS = filter_by_dict_by_keys(SIEM_FIELDS, fields_names)
+
+    FIELD_NAME_TO_CLI_NAME = {field[INCIDENT_FIELD_NAME]: field[INCIDENT_FIELD_MACHINE_NAME] for field in fields}
+
+    ALIASING_MAP, ALIASING_TERMS_MAP = get_aliasing(SIEM_FIELDS)
+
+    terms = []  # type: List[str]
+    for field in SIEM_FIELDS.values():
+        for alias in field['aliases']:  # type: ignore
+            terms += alias.split(" ")
+    ALL_POSSIBLE_TERMS_SET = set(terms)
 
 
 def main():
-    global siem_fields, aliasing_map, aliases_terms_map, all_possible_terms, all_possible_terms_set
-
+    init()
     incidents_samples = demisto.args().get('incidentSamples')
     if incidents_samples:
         if isinstance(incidents_samples, basestring):
@@ -604,23 +674,16 @@ def main():
     else:
         return_error("Could not parse incident samples")
 
-    fields = demisto.args().get('incidentFields')
-    if fields and len(fields) > 0:
-        fields_names = map(lambda x: x['name'], fields)
-        siem_fields = filter_by_dict_by_keys(siem_fields, fields_names)
-
-    aliasing_map, aliases_terms_map = get_aliasing(siem_fields)
-    for field in siem_fields.values():
-        for alias in field['aliases']:  # type: ignore
-            all_possible_terms += alias.split(" ")
-    all_possible_terms_set = set(all_possible_terms)
-
     original_mapper = demisto.args().get('currentMapper')
     if type(original_mapper) is not dict or len(original_mapper) == 0:
         original_mapper = None
 
     matches = match_for_incidents(incidents)
-    mapper = {k: format_value_to_mapper(v) for k, v in matches.items()}
+    if demisto.args().get('incidentSamplesType') == SAMPLES_OUTGOING:
+        mapper = {v: format_incident_field_to_mapper(k, FIELD_NAME_TO_CLI_NAME) for k, v in matches.items() if
+                  k in FIELD_NAME_TO_CLI_NAME}
+    else:
+        mapper = {k: format_value_to_mapper(v) for k, v in matches.items()}
     mapper = combine_mappers(original_mapper, mapper, incidents)
 
     return mapper
