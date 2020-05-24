@@ -17,7 +17,7 @@
     "updated": "2020-05-06T18:47:57Z",
     "beta": false,
     "deprecated": false,
-    "useCases": [],
+    "useCases": ["Breach Notification"],
     "keywords": [
         "Breach",
         "Breach Notification",
