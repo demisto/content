@@ -50,6 +50,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "IllusiveNetworks",
+            "playbookID": "IllusiveNetworks-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
@@ -2956,6 +2961,7 @@
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
+        "IllusiveNetworks": "supported by partner",
         "Digital Guardian": "partner integration",
 
 
