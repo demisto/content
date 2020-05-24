@@ -48,7 +48,7 @@
 </ul>
 </li>
 </ol>
-<p class="wysiwyg-indent3"><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-McAfee-MAR_McAfee_Active_Response.png" alt="McAfee_Active_Response.png"></p>
+<p class="wysiwyg-indent3"><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-McAfee-MAR_McAfee_Active_Response.png" alt="McAfee_Active_Response.png"></p>
 <div class="cl-preview-section">
 <h2 id="configure-mcafee-active-response-on-demisto">Configure McAfee Active Response on Demisto</h2>
 </div>
