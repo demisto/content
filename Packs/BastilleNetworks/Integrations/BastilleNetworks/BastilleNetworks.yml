@@ -292,7 +292,7 @@ script:
     - contextPath: Bastille.ZoneEvent.device_info.name
       description: Name associated with device in the deployment
       type: String
-    - contextPath: Bastille.ZoneEvent.first_seen.time_s
+    - contextPath: Bastille.ZoneEvent.first_seen.time
       description: Event first seen timestamp
       type: Number
     - contextPath: Bastille.ZoneEvent.first_seen.position
