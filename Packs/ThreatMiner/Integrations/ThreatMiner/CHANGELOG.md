@@ -1,2 +1,2 @@
 ## [Unreleased]
--
+Fixed a bug in the **ip** command when searching for IP address that has no report in Threat Miner. 

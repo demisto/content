@@ -227,7 +227,7 @@ def get_ip_whois_rawdata(ip_address):
     whois_rawdata = response.get('results', [])
     if len(whois_rawdata) > 0:
         return whois_rawdata[0]
-    return []
+    return {}
 
 
 def get_ip_whois(whois_rawdata, ip_address):
@@ -365,11 +365,11 @@ def ip_command(max_returned_array_size):
         'Address': ip_address,
         'Whois': {
             'Address': ip_address,
-            'Reverse': threat_miner_raw_results['raw_whois']['reverse_name'],
-            'Bgp': threat_miner_raw_results['raw_whois']['bgp_prefix'],
-            'Country': threat_miner_raw_results['raw_whois']['cc'],
-            'ASN': threat_miner_raw_results['raw_whois']['asn'],
-            'Org': threat_miner_raw_results['raw_whois']['org_name']
+            'Reverse': threat_miner_raw_results['raw_whois'].get('reverse_name'),
+            'Bgp': threat_miner_raw_results['raw_whois'].get('bgp_prefix'),
+            'Country': threat_miner_raw_results['raw_whois'].get('cc'),
+            'ASN': threat_miner_raw_results['raw_whois'].get('asn'),
+            'Org': threat_miner_raw_results['raw_whois'].get('org_name')
         },
         'PassiveDNS': passiveDns,
         'MD5': md5s,
