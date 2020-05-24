@@ -80,4 +80,6 @@ allow/deny/drop
 | --- | --- | --- |
 | Panorama.EDL.Name | Name of theEDL. | unknown |
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![PAN-OS_EDL_Service_Configuration](https://raw.githubusercontent.com/demisto/content/master/Packs/EDL/doc_files/PAN-OS_EDL_Service_Configuration.png)
