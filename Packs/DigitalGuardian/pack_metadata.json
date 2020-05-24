@@ -1,0 +1,18 @@
+{
+    "name": "Digital Guardian",
+    "description": "Digital Guardian ARC Watchlist Integration",
+    "support": "partner",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Digital Guardian",
+    "url": "https://digitalguardian.com",
+    "email": "support@digitalguardian.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+    ],
+    "created": "2020-03-23T16:06:49Z",
+    "useCases": [],
+    "keywords": []
+}

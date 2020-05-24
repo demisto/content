@@ -47,7 +47,8 @@ configuration:
   name: timestamp_field
   required: false
   type: 0
-- display: ServiceNow ticket column to be set as the incident name, default is the incident number
+- display: ServiceNow ticket column to be set as the incident name, default is the
+    incident number
   hidden: false
   name: incident_name
   required: false
@@ -2041,8 +2042,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a tag to a ticket. The tag will be visible in the label_entry
-      table and can be retrieved using the "!servicenow-query-table table_name=label_entry
+    description: Adds a tag to a ticket. The added tag entry will be visible in the
+      label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry
       fields=title,table,sys_id,id_display,id_type" command.
     execution: false
     name: servicenow-add-tag
