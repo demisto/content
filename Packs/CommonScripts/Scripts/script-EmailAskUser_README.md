@@ -39,6 +39,6 @@ There are no outputs for this script.
 
 ## Prerequisites
 ---
-Requires an instance of one of the email integrations: Gmail, MS grpah mail, EWS, POP3, Mail sender .
+Requires an instance of one of the email integrations: Gmail, MS Graph Mail, EWS, POP3, or Mail Sender.
 
 
