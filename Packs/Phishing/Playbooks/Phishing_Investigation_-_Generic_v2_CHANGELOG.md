@@ -1,8 +1,6 @@
 ## [Unreleased]
--
-
-## [20.5.0] - 2020-05-12
-The playbook now uses Block Indicators - Generic v2 to block malicious indicators (off by default).
+- The playbook now uses Block Indicators - Generic v2 to block malicious indicators (off by default).
+- Replaced the deprecated SendEmail automation with the send-mail command. 
 
 ## [20.4.1] - 2020-04-29
 - Added the *OnCall* input to assign only users that are on shift.
