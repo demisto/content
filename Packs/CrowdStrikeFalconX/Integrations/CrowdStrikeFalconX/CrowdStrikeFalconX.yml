@@ -1,4 +1,4 @@
-category: Authentication
+category: Forensics & Malware Analysis
 commonfields:
   id: CrowdStrike FalconX
   version: -1
@@ -11,9 +11,13 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Fully automated malware analysis.
 display: CrowdStrike FalconX
-name: CrowdStrikeFalconX
+name: CrowdStrike FalconX
 script:
   commands:
   - arguments:
@@ -602,3 +606,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+  tests:
+    - No test - no instance

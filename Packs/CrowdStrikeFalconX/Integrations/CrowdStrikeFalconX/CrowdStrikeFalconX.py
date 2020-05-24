@@ -1,4 +1,6 @@
-from typing import Dict, Callable, Tuple, Any
+from typing import Dict, Callable, Tuple, Any, Union
+
+from requests import Response
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -34,25 +36,22 @@ class Client(BaseClient):
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
     """
 
-    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool):
-        super().__init__(base_url=server_url, verify=use_ssl)
+    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool):
+        super().__init__(base_url=server_url, verify=use_ssl, proxy=proxy)
         self._username = username
         self._password = password
         self.token = self._generate_token()
+        self._headers={'Authorization': 'bearer ' + self.token}
 
     def cs_falconx_http_req(self, method, url_suffix, content_type=None, data=None, json_data=None, param=None):
-        headers = {
-            'Authorization': 'bearer ' + self.token,
-        }
         if content_type:
-            headers['Content-Type'] = content_type
-        return self._http_request(method, url_suffix, headers=headers, data=data, json_data=json_data, params=param)
+            self._headers['Content-Type'] = content_type
+        return self._http_request(method, url_suffix, data=data, json_data=json_data, params=param)
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
         :return: valid token
         """
-
         body = {
             'client_id': self._username,
             'client_secret': self._password
@@ -65,6 +64,229 @@ class Client(BaseClient):
         }
         token_res = self._http_request('POST', '/oauth2/token', data=body, headers=headers)
         return token_res.get('access_token')
+
+    def upload_file(
+            self,
+            file: str,
+            file_name: str,
+            is_confidential: str = "true",
+            comment: str = ""
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param file: content of the uploaded sample in binary format
+        :param file_name: name of the file
+        :param is_confidential: defines visibility of this file in Falcon MalQuery, either via the API or the Falcon console
+        :param comment: a descriptive comment to identify the file for other users
+        :return: http response
+        """
+        url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
+        data = open(file, 'rb').read()
+        self._headers['Content-Type'] = 'application/octet-stream'
+        return self._http_request("POST", url_suffix, data=data)
+
+    def send_uploaded_file_to_sandbox_analysis(
+            self,
+            sha256: str,
+            environment_id: int,
+            action_script: str,
+            command_line: str,
+            document_password: str,
+            enable_tor: str,
+            submit_name: str,
+            system_date: str,
+            system_time: str
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param sha256: SHA256 ID of the sample, which is a SHA256 hash value
+        :param environment_id: specifies the sandbox environment used for analysis
+        :param action_script: runtime script for sandbox analysis
+        :param command_line: command line script passed to the submitted file at runtime
+        :param document_password: auto-filled for Adobe or Office files that prompt for a password
+        :param enable_tor: if true, sandbox analysis routes network traffic via TOR
+        :param submit_name: name of the malware sample that’s used for file type detection and analysis
+        :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
+        :param system_time: set a custom time in the format HH:mm for the sandbox environment.
+        :return: http response
+        """
+        url_suffix = "/falconx/entities/submissions/v1"
+        body = {
+            "sandbox": [
+                {
+                    "sha256": sha256,
+                    "environment_id": convert_environment_id_string_to_int(environment_id),
+                    "action_script": action_script,
+                    "command_line": command_line,
+                    "document_password": document_password,
+                    "enable_tor": enable_tor == "true",
+                    "submit_name": submit_name,
+                    "system_date": system_date,
+                    "system_time": system_time
+                }
+            ]
+        }
+        self._headers['Content-Type'] = 'application/json'
+        return self._http_request("POST", url_suffix, json_data=body)
+
+    def send_url_to_sandbox_analysis(
+            self,
+            url: str,
+            environment_id: int,
+            action_script: str,
+            command_line: str,
+            document_password: str,
+            enable_tor: str,
+            submit_name: str,
+            system_date: str,
+            system_time: str
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param url: a web page or file URL. It can be HTTP(S) or FTP.
+        :param environment_id: specifies the sandbox environment used for analysis
+        :param action_script: runtime script for sandbox analysis
+        :param command_line: command line script passed to the submitted file at runtime
+        :param document_password: auto-filled for Adobe or Office files that prompt for a password
+        :param enable_tor: if true, sandbox analysis routes network traffic via TOR
+        :param submit_name: name of the malware sample that’s used for file type detection and analysis
+        :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
+        :param system_time: set a custom time in the format HH:mm for the sandbox environment.
+        :return: http response
+        """
+        url_suffix = "/falconx/entities/submissions/v1"
+        body = {
+            "sandbox": [
+                {
+                    "url": url,
+                    "environment_id": convert_environment_id_string_to_int(environment_id),
+                    "action_script": action_script,
+                    "command_line": command_line,
+                    "document_password": document_password,
+                    "enable_tor": enable_tor == "true",
+                    "submit_name": submit_name,
+                    "system_date": system_date,
+                    "system_time": system_time
+                }
+            ]
+        }
+        self._headers['Content-Type'] = 'application/json'
+        return self._http_request("POST", url_suffix, json_data=body)
+
+    def get_full_report(
+            self,
+            ids: list
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param ids: ids of a submitted malware samples.
+        :return: http response
+        """
+        url_suffix = f"/falconx/entities/reports/v1?ids={id}"
+        params = {
+            "ids": ids
+        }
+        return self._http_request("Get", url_suffix, param=params)
+
+    def get_report_summary(
+            self,
+            ids: list
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param ids: ids of a submitted malware samples.
+        :return: http response
+        """
+        url_suffix = f"/falconx/entities/report-summaries/v1?ids={id}"
+        params = {
+            "ids": ids
+        }
+        return self._http_request("Get", url_suffix, param=params)
+
+    def get_analysis_status(
+            self,
+            ids: list
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param ids: ids of a submitted malware samples.
+        :return: http response
+        """
+        url_suffix = f"/falconx/entities/submissions/v1?ids={ids}"
+        params = {
+            "ids": ids
+        }
+        return self._http_request("Get", url_suffix, param=params)
+
+    def download_ioc(
+            self,
+            id: str,
+            name: str,
+            accept_encoding: str
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
+        :param name: the name given to your downloaded file
+        :param accept_encoding: format used to compress your downloaded file
+        :return: http response
+        """
+        url_suffix = f"/falconx/entities/artifacts/v1?id={id}&name={name}&Accept-Encoding={accept_encoding}"
+        params = {
+            "ids": id,
+            "name": name,
+            "Accept-Encoding": accept_encoding,
+        }
+        return self._http_request("Get", url_suffix, param=params)
+
+    def check_quota_status(
+            self
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :return: http response
+        """
+        url_suffix = f"/falconx/entities/submissions/v1?ids="
+        return self._http_request("Get", url_suffix)
+
+    def find_sandbox_reports(
+            self,
+            limit: int,
+            filter: str,
+            offset: str,
+            sort: str ,
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param limit: maximum number of report IDs to return
+        :param filter: optional filter and sort criteria in the form of an FQL query
+        :param offset: the offset to start retrieving reports from.
+        :param sort: sort order: asc or desc
+        :return: http response
+        """
+        url_suffix = f"/falconx/queries/reports/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
+        params = {
+            "filter": filter,
+            "offset": offset,
+            "limit": limit,
+            "sort": sort,
+        }
+        return self._http_request("Get", url_suffix, param=params)
+
+    def find_submission_id(
+            self,
+            limit: int,
+            filter: str,
+            offset: str,
+            sort: str,
+    ) -> Union[dict, str, Response]:
+        """Creating the needed arguments for the http request
+        :param limit: maximum number of report IDs to return
+        :param filter: optional filter and sort criteria in the form of an FQL query
+        :param offset: the offset to start retrieving reports from.
+        :param sort: sort order: asc or desc
+        :return: http response
+        """
+        url_suffix = f"/falconx/queries/submissions/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
+
+        params = {
+            "filter": filter,
+            "offset": offset,
+            "limit": limit,
+            "sort": sort,
+        }
+        return self._http_request("Get", url_suffix, param=params)
 
 
 def add_outputs_from_dict(
@@ -138,7 +360,7 @@ def parse_outputs(
 
     merged_dicts = {**meta_group_outputs, **quota_group_outputs, **resources_group_outputs, **sandbox_group_outputs}
 
-    return {f'csfalconx.resource(val.id === obj.id)': merged_dicts}
+    return {f'csfalconx.resource(val.resource === obj.resource)': merged_dicts}
 
 
 def test_module(client):
@@ -152,7 +374,7 @@ def test_module(client):
     _, _, output = check_quota_status_command(client)
     total = output.get("meta").get("quota").get("total")
     used = output.get("meta").get("quota").get("used")
-    if total == used:
+    if total >= used:
         return_error(f"Quota limitation has been reached: {used}")
     return 'ok', {}, []
 
@@ -172,11 +394,7 @@ def upload_file_command(
     :param comment: a descriptive comment to identify the file for other users
     :return: Demisto outputs
     """
-
-    url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
-    data = open(file, 'rb').read()
-
-    response = client.cs_falconx_http_req("POST", url_suffix, content_type='application/octet-stream', data=data)
+    response = client.upload_file(file, file_name, is_confidential, comment)
 
     resources_fields = ["file_name", "sha256"]
     entry_context = parse_outputs(response, resources_fields=resources_fields)
@@ -209,25 +427,9 @@ def send_uploaded_file_to_sandbox_analysis_command(
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
     :return: Demisto outputs
     """
-
-    url_suffix = "/falconx/entities/submissions/v1"
-    body = {
-        "sandbox": [
-            {
-                "sha256": sha256,
-                "environment_id": convert_environment_id_string_to_int(environment_id),
-                "action_script": action_script,
-                "command_line": command_line,
-                "document_password": document_password,
-                "enable_tor": enable_tor == "true",
-                "submit_name": submit_name,
-                "system_date": system_date,
-                "system_time": system_time
-            }
-        ]
-    }
-
-    response = client.cs_falconx_http_req("POST", url_suffix, content_type='application/json', json_data=body)
+    response = client.send_uploaded_file_to_sandbox_analysis(sha256, environment_id, action_script, command_line,
+                                                             document_password, enable_tor, submit_name, system_date,
+                                                             system_time)
 
     sandbox_fields = ["environment_id", "sha256"]
     resource_fields = ['id', 'state', 'created_timestamp', 'created_timestamp']
@@ -261,24 +463,8 @@ def send_url_to_sandbox_analysis_command(
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
     :return: Demisto outputs
     """
-
-    url_suffix = "/falconx/entities/submissions/v1"
-    body = {
-        "sandbox": [
-            {
-                "url": url,
-                "environment_id": convert_environment_id_string_to_int(environment_id),
-                "action_script": action_script,
-                "command_line": command_line,
-                "document_password": document_password,
-                "enable_tor": enable_tor == "true",
-                "submit_name": submit_name,
-                "system_date": system_date,
-                "system_time": system_time
-            }
-        ]
-    }
-    response = client.cs_falconx_http_req("POST", url_suffix, content_type='application/json', json_data=body)
+    response = client.send_url_to_sandbox_analysis(url, environment_id, action_script, command_line, document_password,
+                                                   enable_tor, submit_name, system_date, system_time)
 
     resources_fields = ['id', 'state', 'created_timestamp']
     sandbox_fields = ["environment_id", "sha256"]
@@ -296,12 +482,7 @@ def get_full_report_command(
     :param ids: ids of a submitted malware samples.
     :return: Demisto outputs
     """
-
-    url_suffix = f"/falconx/entities/reports/v1?ids={id}"
-    params = {
-        "ids": ids
-    }
-    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
+    response = client. get_full_report(ids)
 
     resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
                         "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
@@ -310,7 +491,7 @@ def get_full_report_command(
                         "ioc_report_broad_maec_artifact_id"]
 
     sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                     "filetyp", "filesize", "sha256"]
+                      "filetyp", "filesize", "sha256"]
     entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
 
     return response, entry_context, response
@@ -325,12 +506,7 @@ def get_report_summary_command(
     :param ids: ids of a submitted malware samples.
     :return: Demisto outputs
     """
-
-    url_suffix = f"/falconx/entities/report-summaries/v1?ids={id}"
-    params = {
-        "ids": ids
-    }
-    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
+    response = client.get_report_summary(ids)
 
     resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
                         "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
@@ -354,12 +530,7 @@ def get_analysis_status_command(
     :param ids: ids of a submitted malware samples.
     :return: Demisto outputs
     """
-
-    url_suffix = f"/falconx/entities/submissions/v1?ids={ids}"
-    params = {
-        "ids": ids
-    }
-    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
+    response = client.get_analysis_status(ids)
 
     resources_fields = ['id', 'state', 'created_timestamp']
     sandbox_fields = ["environment_id", "sha256"]
@@ -381,15 +552,8 @@ def download_ioc_command(
     :param accept_encoding: format used to compress your downloaded file
     :return: Demisto outputs
     """
-
-    url_suffix = f"/falconx/entities/artifacts/v1?id={id}&name={name}&Accept-Encoding={accept_encoding}"
-    params = {
-        "ids": id,
-        "name": name,
-        "Accept-Encoding": accept_encoding,
-    }
-    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
-    return response, {}, response # there is an issue with the entry context here
+    response = client.download_ioc(id, name, accept_encoding)
+    return response, response, response
 
 
 def check_quota_status_command(
@@ -399,10 +563,7 @@ def check_quota_status_command(
     :param client: the client object with an access token
     :return: Demisto outputs
     """
-
-    url_suffix = f"/falconx/entities/submissions/v1?ids="
-
-    response = client.cs_falconx_http_req("Get", url_suffix)
+    response = client.check_quota_status()
 
     quota_fields = ['total', 'used', 'in_progress']
     entry_context = parse_outputs(response, quota_fields=quota_fields)
@@ -445,8 +606,8 @@ def find_sandbox_reports_command(
 def find_submission_id_command(
         client: Client,
         limit: int = 50,
-        offset: str = "",
         filter: str = "",
+        offset: str = "",
         sort: str = "",
 ) -> Tuple[str, dict, dict]:
     """Find submission IDs for uploaded files by providing an FQL filter and paging details.
@@ -457,16 +618,7 @@ def find_submission_id_command(
     :param sort: sort order: asc or desc
     :return: Demisto outputs
     """
-
-    url_suffix = f"/falconx/queries/submissions/v1?filter={filter}&offset={offset}&limit{limit}=&sort={sort}"
-
-    params = {
-        "filter": filter,
-        "offset": offset,
-        "limit": limit,
-        "sort": sort,
-    }
-    response = client.cs_falconx_http_req("Get", url_suffix, param=params)
+    response = client.find_submission_id(limit, filter, offset, sort)
 
     resources_fields = ['id']
     entry_context = parse_outputs(response, resources_fields=resources_fields)
@@ -478,13 +630,14 @@ def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-    use_ssl = params.get('insecure', False)
+    use_ssl = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     url = "https://api.crowdstrike.com/"
 
     try:
         command = demisto.command()
         LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
-        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl)
+        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,

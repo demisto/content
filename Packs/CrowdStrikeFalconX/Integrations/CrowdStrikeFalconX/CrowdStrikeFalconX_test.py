@@ -1,5 +1,5 @@
 from CrowdStrikeFalconX import Client, test_module,\
-    upload_file_command, send_uploaded_file_to_sendbox_analysis_command, send_url_to_sandbox_analysis_command,\
+    upload_file_command, send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
     get_full_report_command, get_report_summary_command, get_analysis_status_command, download_ioc_command, \
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command
 import pytest
@@ -392,7 +392,7 @@ FIND_SUBMISSION_ID_CONTEXT = {
 
 @pytest.mark.parametrize('command, args, http_response, context', [
     (upload_file_command, UPLOAD_FILE_ARGS, UPLOAD_FILE_HTTP_RESPONSE, UPLOAD_FILE_CONTEXT),
-    (send_uploaded_file_to_sendbox_analysis_command, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT),
+    (send_uploaded_file_to_sandbox_analysis_command, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT),
     (send_url_to_sandbox_analysis_command, SEND_URL_TO_SANDBOX_ANALYSIS_ARGS, SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT),
     (get_full_report_command, GET_FULL_REPORT_ARGS, GET_FULL_REPORT_HTTP_RESPONSE, get_full_report_context),
     (get_report_summary_command, GET_REPORT_SUMMARY_ARGS, GET_REPORT_SUMMARY_HTTP_RESPONSE, GET_REPORT_SUMMARY_CONTEXT),
@@ -414,10 +414,10 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
     - validate the expected_result and the created context
     """
     mocker.patch.object(Client, '_generate_token')
-    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345")
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False
+                    , proxy=False)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
 
     _, outputs, _ = command(client, **args)
-
     assert outputs == context

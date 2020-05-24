@@ -1,13 +1,13 @@
 {
-    "name": "## FILL OUT MANUALLY ##",
-    "description": "## FILL OUT MANUALLY ##",
-    "support": "demisto",
-    "serverMinVersion": "## FILL OUT MANUALLY #",
+    "name": "CrowdStrike FalconX",
+    "description": "Fully automated malware analysis",
+    "support": "xsoar",
+    "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.0",
-    "author": "demisto",
-    "url": "https://www.demisto.com",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
+    "categories": ["Forensics & Malware Analysis"],
     "tags": [],
     "created": "2020-04-04T17:46:55Z",
     "updated": "2020-04-04T17:46:55Z",
@@ -16,6 +16,6 @@
     "certification": "certified",
     "useCases": [],
     "keywords": [],
-    "price": "0",
+    "price": 0,
     "dependencies": {}
 }
