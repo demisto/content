@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+  - Removed the *panos_compatible* parameter. All indicators exported by this integrations will be PAN-OS compatible.
+  - Added request parameters that are passed in the URL.
 
 ## [20.5.0] - 2020-05-12
   - Removed `Long Running Instance` from instance configuration.
