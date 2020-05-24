@@ -89,14 +89,14 @@ def generate_release_notes_summary(release_notes_dict, version, asset_id):
         version (str): Content version.
         asset_id (str): The asset ID.
     """
-    release_notes = '## Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
+    release_notes = '# Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
     current_date = datetime.now().strftime(DATE_FORMAT)
     release_notes += '##### Published on {}\n'.format(current_date)
 
     for pack_name, pack_versions_dict in sorted(release_notes_dict.items()):
         for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
                                                        key=lambda pack_item: LooseVersion(pack_item[0])):
-            release_notes += '### {} {}\n{}\n'.format(pack_name, pack_version, pack_release_notes)
+            release_notes += '## {} Pack v{}\n{}\n---\n'.format(pack_name, pack_version, pack_release_notes)
 
     with open(RELEASE_NOTES_FILE, 'w') as outfile:
         outfile.write(release_notes)
