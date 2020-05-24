@@ -1081,7 +1081,6 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files(files_string)
 
-    print('modified:' + str(modified_files))
     tests = set([])
     packs_to_install = set([])
     if modified_files:
