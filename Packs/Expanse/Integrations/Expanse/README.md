@@ -22,6 +22,7 @@ This integration was integrated and tested with Expanse Events API v1, Assets AP
     * __Use system proxy settings__
     * __How many events to pull from Expander per run__
     * __How many days to pull past events on first run__
+    * __Minimum severity of Expanse Exposure to create an incident for__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---

@@ -7,11 +7,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
+This playbook does not use any integrations.
 
 ### Scripts
-* SetAndHandleEmpty
 * FilterByList
+* SetAndHandleEmpty
 
 ### Commands
 * appendIndicatorField
@@ -19,10 +19,10 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
-| BusinessPartnersUrlListName | A Cortex XSOAR list containing business partner url values. Url Indicators that appear in the list are tagged as business partners. |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| BusinessPartnersUrlListName | A Cortex XSOAR list containing business partner url values. Url Indicators that appear in the list are tagged as business partners. |  | Optional |
 
 ## Playbook Outputs
 ---
