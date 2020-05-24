@@ -177,7 +177,7 @@ script:
     - contextPath: Bastille.DeviceEvent.device_info.name
       description: Name associated with device in the deployment
       type: String
-    - contextPath: Bastille.DeviceEvent.first_seen.time_s
+    - contextPath: Bastille.DeviceEvent.first_seen.time
       description: Event first seen timestamp
       type: Number
     - contextPath: Bastille.DeviceEvent.first_seen.position
