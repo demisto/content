@@ -183,7 +183,7 @@ script:
     - contextPath: Bastille.DeviceEvent.first_seen.position
       description: Event first seen coordinates
       type: Unknown
-    - contextPath: Bastille.DeviceEvent.last_seen.time_s
+    - contextPath: Bastille.DeviceEvent.last_seen.time
       description: Event last seen timestamp
       type: Number
     - contextPath: Bastille.DeviceEvent.last_seen.position
