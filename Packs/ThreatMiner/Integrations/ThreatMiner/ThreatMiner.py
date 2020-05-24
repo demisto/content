@@ -1,7 +1,3 @@
-import datetime
-import json
-import time
-
 import requests
 
 import demistomock as demisto
@@ -145,7 +141,7 @@ def create_domain_command_markdown(domain, context):
                               context['MD5'], ['hashes'])
         threat_miner_found_results = True
 
-    if threat_miner_found_results == False:
+    if not threat_miner_found_results:
         md += 'No results found'
 
     return md
@@ -320,7 +316,7 @@ def create_ip_command_markdown(ip_address, context):
         md += tableToMarkdown("{} SSLs".format(ip_address), context['SSL'], ['SSL'])
         threat_miner_found_results = True
 
-    if threat_miner_found_results == False:
+    if not threat_miner_found_results:
         md += 'No results found'
 
     return md
@@ -652,7 +648,7 @@ def create_file_command_markdown(hashed_file, File_context):
                               File_context['AV'], ['Name', 'Detection'])
         threat_miner_found_results = True
 
-    if threat_miner_found_results == False:
+    if not threat_miner_found_results:
         md += 'No results found'
 
     return md
