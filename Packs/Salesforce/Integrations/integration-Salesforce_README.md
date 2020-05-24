@@ -1637,15 +1637,15 @@
 <ul>
 <li>
 <p>This error indicates that there is a problem with the credentials or the IP connection to the app (see step 6-7 in Credentials walkthrough below).</p>
- <img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-Salesforce_mceclip1.png" width="308" height="123"><br><br>
+ <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip1.png" width="308" height="123"><br><br>
 </li>
-<li>This error indicates a problem in the Costumer Key:<br><br> <img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-Salesforce_mceclip2.png" width="282" height="113"><br><br>
+<li>This error indicates a problem in the Costumer Key:<br><br> <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip2.png" width="282" height="113"><br><br>
 </li>
-<li>This error indicates a problem in the Costumer Secret:<br><br> <img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-Salesforce_mceclip3.png" width="282" height="111"><br> </li>
+<li>This error indicates a problem in the Costumer Secret:<br><br> <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip3.png" width="282" height="111"><br> </li>
 </ul>
 <h3 id="h_5753070501321535544438325">Credentials walkthrough:</h3>
-<p> 1. Open <strong>Setup</strong>.<br><br> <img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-Salesforce_mceclip4.png" width="206" height="136"></p>
-<p>2. Go to the App manager on the left side menu (use Quick Find for faster search).<br> <img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-Salesforce_mceclip5.png" width="238" height="108"></p>
+<p> 1. Open <strong>Setup</strong>.<br><br> <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip4.png" width="206" height="136"></p>
+<p>2. Go to the App manager on the left side menu (use Quick Find for faster search).<br> <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip5.png" width="238" height="108"></p>
 <p>3. Click “New Connected App” on the right side of the screen.</p>
 <p>4. Fill in the form as follows:</p>
 <ul>
@@ -1659,6 +1659,6 @@
 </ul>
 <p>5. Click “Save” at the bottom of the form.</p>
 <p>6. In the information page on the APP that you will be forwarded to locate “<strong>API (Enable OAuth Settings)</strong>” and copy the consumer key and secret to the integration instance configuration.</p>
-<p>6. Go to “Manage Connected Apps”.<br><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-Salesforce_mceclip6.png" width="165" height="162"></p>
+<p>6. Go to “Manage Connected Apps”.<br><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip6.png" width="165" height="162"></p>
 <p>7. Edit the new application and under “OAuth Policies” enable all IP address.</p>
-<p> <img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-Salesforce_mceclip7.png" width="486" height="37"> </p>
+<p> <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip7.png" width="486" height="37"> </p>
