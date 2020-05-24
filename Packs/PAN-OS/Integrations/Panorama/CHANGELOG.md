@@ -2,7 +2,7 @@
 - Added the option to list predefined applications in PAN-OS 9.X in the ***panorama-get-applications*** command using the argument *predefined*.
 - Fixed an issue where listing custom applications in PAN-OS 9.X using the ***panorama-get-applications***  command did not work properly.
 - Fixed an issue where running the ***panorama-get-url-category*** command multiple times, displayed previous results in the war room.
-
+- Replaced the spaces in the URL context output of the **!panorama-create-edl** command to `%20`.   
 
 ## [20.5.0] - 2020-05-12
 - Fixed an issue where commands resulting with an empty list would raise an error instead of a warning.
