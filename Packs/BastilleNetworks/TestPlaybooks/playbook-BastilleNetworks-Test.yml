@@ -348,7 +348,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Bastille.ZoneEvent.first_seen.time_s
+              simple: Bastille.ZoneEvent.first_seen.time
             iscontext: true
       - - operator: isNotEmpty
           left:
