@@ -6,16 +6,6 @@ display: APIVoid
 category: Data Enrichment & Threat Intelligence
 description: APIVoid wraps up a number of services such as ipvoid & urlvoid
 configuration:
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: ''
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ''
-  type: 8
-  required: false
 - display: API KEY
   name: apikey
   defaultvalue: ''
@@ -51,6 +41,16 @@ configuration:
   - suspicious
   - bad
   additionalinfo: Consider the indicator malicious if either "suspicious" or "bad"
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ''
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ''
+  type: 8
+  required: false
 script:
   script: ''
   type: python
