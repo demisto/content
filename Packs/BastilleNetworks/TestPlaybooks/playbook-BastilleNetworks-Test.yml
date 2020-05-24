@@ -353,7 +353,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Bastille.ZoneEvent.last_seen.time_s
+              simple: Bastille.ZoneEvent.last_seen.time
             iscontext: true
     view: |-
       {
