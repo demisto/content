@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: CrowdStrikeFalconX
+  id: CrowdStrike FalconX
   version: -1
 configuration:
 - display: Username
@@ -12,7 +12,7 @@ configuration:
   required: false
   type: 8
 description: Fully automated malware analysis.
-display: CrowdStrikeFalconX
+display: CrowdStrike FalconX
 name: CrowdStrikeFalconX
 script:
   commands:

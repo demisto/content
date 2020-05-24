@@ -4,12 +4,12 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import json
 import requests
 import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
 
 def convert_environment_id_string_to_int(environment_id: str) -> int:
     """
@@ -36,7 +36,6 @@ class Client(BaseClient):
 
     def __init__(self, server_url: str, username: str, password: str, use_ssl: bool):
         super().__init__(base_url=server_url, verify=use_ssl)
-        self._base_url = server_url
         self._username = username
         self._password = password
         self.token = self._generate_token()
@@ -95,7 +94,7 @@ def parse_outputs(
         meta_fields: list = [],
         quota_fields: list = [],
         resources_fields: list = [],
-        sandbox_filds: list = []
+        sandbox_fields: list = []
 ) -> Dict[str, dict]:
     """Parse group data as received from CrowdStrike FalconX API into Demisto's conventions
     the output from the API is a dict that contains the keys: meta, resources and errors
@@ -106,7 +105,7 @@ def parse_outputs(
     :param meta_fields: the wanted params that appear in the mate section
     :param quota_fields: the wanted params that appear in the quota section
     :param resources_fields: the wanted params that appear in the resources section
-    :param sandbox_filds: the wanted params that appear in the sandbox section
+    :param sandbox_fields: the wanted params that appear in the sandbox section
     :return: a dict based on api_res with the wanted params only
     """
     if api_res.get("errors"):
@@ -132,14 +131,14 @@ def parse_outputs(
 
             if api_res_resources and api_res_resources.get("sandbox"):
                 api_res_sandbox = api_res_resources.get("sandbox")[0]
-                sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, sandbox_filds)
+                sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, sandbox_fields)
         else:
             # the resources section is a list of strings
             resources_group_outputs = {"resources": api_res.get("resources")}
 
     merged_dicts = {**meta_group_outputs, **quota_group_outputs, **resources_group_outputs, **sandbox_group_outputs}
 
-    return {f'csfalconx.resource(val.resource === obj.resource)': merged_dicts}
+    return {f'csfalconx.resource(val.id === obj.id)': merged_dicts}
 
 
 def test_module(client):
@@ -154,7 +153,7 @@ def test_module(client):
     total = output.get("meta").get("quota").get("total")
     used = output.get("meta").get("quota").get("used")
     if total == used:
-        return_error(f"Currently using all the optional quota: {used}")
+        return_error(f"Quota limitation has been reached: {used}")
     return 'ok', {}, []
 
 
@@ -185,7 +184,7 @@ def upload_file_command(
     return response, entry_context, response
 
 
-def send_uploaded_file_to_sendbox_analysis_command(
+def send_uploaded_file_to_sandbox_analysis_command(
         client: Client,
         sha256: str,
         environment_id: int,
@@ -230,9 +229,9 @@ def send_uploaded_file_to_sendbox_analysis_command(
 
     response = client.cs_falconx_http_req("POST", url_suffix, content_type='application/json', json_data=body)
 
-    sandbox_filds = ["environment_id", "sha256"]
+    sandbox_fields = ["environment_id", "sha256"]
     resource_fields = ['id', 'state', 'created_timestamp', 'created_timestamp']
-    entry_context = parse_outputs(response, sandbox_filds=sandbox_filds, resources_fields=resource_fields)
+    entry_context = parse_outputs(response, sandbox_fields=sandbox_fields, resources_fields=resource_fields)
 
     return response, entry_context, response
 
@@ -282,8 +281,8 @@ def send_url_to_sandbox_analysis_command(
     response = client.cs_falconx_http_req("POST", url_suffix, content_type='application/json', json_data=body)
 
     resources_fields = ['id', 'state', 'created_timestamp']
-    sandbox_filds = ["environment_id", "sha256"]
-    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_filds=sandbox_filds)
+    sandbox_fields = ["environment_id", "sha256"]
+    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
 
     return response, entry_context, response
 
@@ -310,9 +309,9 @@ def get_full_report_command(
                         "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
                         "ioc_report_broad_maec_artifact_id"]
 
-    sandbox_filds = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
+    sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
                      "filetyp", "filesize", "sha256"]
-    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_filds=sandbox_filds)
+    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
 
     return response, entry_context, response
 
@@ -339,9 +338,9 @@ def get_report_summary_command(
                         "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
                         "ioc_report_broad_maec_artifact_id"]
 
-    sandbox_filds = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
+    sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
                      "filetyp", "filesize", "sha256"]
-    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_filds=sandbox_filds)
+    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
 
     return response, entry_context, response
 
@@ -363,8 +362,8 @@ def get_analysis_status_command(
     response = client.cs_falconx_http_req("Get", url_suffix, param=params)
 
     resources_fields = ['id', 'state', 'created_timestamp']
-    sandbox_filds = ["environment_id", "sha256"]
-    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_filds=sandbox_filds)
+    sandbox_fields = ["environment_id", "sha256"]
+    entry_context = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
 
     return response, entry_context, response
 
@@ -489,7 +488,7 @@ def main():
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,
-            'cs-fx-detonate-uploaded-file': send_uploaded_file_to_sendbox_analysis_command,
+            'cs-fx-detonate-uploaded-file': send_uploaded_file_to_sandbox_analysis_command,
             'cs-fx-detonate-url': send_url_to_sandbox_analysis_command,
             'cs-fx-get-full-report': get_full_report_command,
             'cs-fx-get-report-summary': get_report_summary_command,
@@ -509,3 +508,4 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+
