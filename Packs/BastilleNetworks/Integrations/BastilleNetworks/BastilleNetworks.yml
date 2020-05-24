@@ -298,7 +298,7 @@ script:
     - contextPath: Bastille.ZoneEvent.first_seen.position
       description: Event first seen coordinates
       type: Unknown
-    - contextPath: Bastille.ZoneEvent.last_seen.time_s
+    - contextPath: Bastille.ZoneEvent.last_seen.time
       description: Event last seen timestamp
       type: Number
     - contextPath: Bastille.ZoneEvent.last_seen.position
