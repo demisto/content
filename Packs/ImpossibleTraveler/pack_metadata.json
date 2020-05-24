@@ -1,71 +1,16 @@
 {
-    "name": "Impossible Traveler",
-    "description": "Investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler).",
-    "support": "xsoar",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "",
-    "email": "",
-    "categories": [
-        "Forensics & Malware Analysis"
-    ],
-    "tags": [],
-    "created": "2020-03-09T17:08:23Z",
-    "updated": "2020-03-09T17:08:23Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "price": 0,
-    "dependencies": {
-        "Active_Directory_Query": {
-            "mandatory": true,
-            "display_name": "Active Directory Query v2"
-        },
-        "Expanse": {
-            "mandatory": false,
-            "display_name": "Expanse"
-        },
-        "CalculateTimeDifference": {
-            "mandatory": false,
-            "display_name": "Calculate Time Difference"
-        },
-        "ipinfo": {
-            "mandatory": false,
-            "display_name": "ipinfo"
-        },
-        "CalculateGeoDistance": {
-            "mandatory": false,
-            "display_name": "Calculate Geo Distance"
-        },
-        "Ipstack": {
-            "mandatory": false,
-            "display_name": "Ipstack"
-        },
-        "XForceExchange": {
-            "mandatory": false,
-            "display_name": "IBM X-Force Exchange (v2)"
-        },
-        "Zscaler": {
-            "mandatory": false,
-            "display_name": "Zscaler"
-        },
-        "rasterize": {
-            "mandatory": true,
-            "display_name": "Rasterize"
-        }
-    },
-    "displayedImages": [
-        "Active_Directory_Query",
-        "Expanse",
-        "CalculateTimeDifference",
-        "ipinfo",
-        "CalculateGeoDistance",
-        "Ipstack",
-        "XForceExchange",
-        "Zscaler",
-        "rasterize"
-    ]
+  "name": "Impossible Traveler",
+  "description": "Investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler).",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-03-09T17:08:23Z",
+  "categories": [
+    "Forensics & Malware Analysis"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
 }

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Added support for filtering incident creation by Expanse Exposure severity level.
 
 ## [20.5.0] - 2020-05-12
 - Added support for the ***expanse-get-exposures*** command.
