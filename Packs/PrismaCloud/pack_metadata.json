@@ -1,7 +1,7 @@
 {
     "name": "Prisma Cloud",
     "description": "Prisma Cloud Related Content",
-    "support": "demisto",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "",
