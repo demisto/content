@@ -156,8 +156,6 @@ script:
     name: digitalguardian-remove-componentlist-entry
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
-  defaultClassifier: DigitalGuardian
-  defaultMapperIn: DigitalGuardian-mapper
   isfetch: true
   longRunning: false
   longRunningPort: false
