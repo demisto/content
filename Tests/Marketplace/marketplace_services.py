@@ -31,7 +31,26 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    CORE_PACKS_LIST = [BASE_PACK]  # cores packs list
+    CORE_PACKS_LIST = [BASE_PACK,
+                       "Rasterize",
+                       "DemistoRESTAPI",
+                       "DemistoLocking",
+                       "ImageOCR",
+                       "WhereIsTheEgg",
+                       "FeedAutofocus",
+                       "AutoFocus",
+                       "UrlScan",
+                       "Active_Directory_Query",
+                       "FeedTAXII",
+                       "VirusTotal",
+                       "Whois",
+                       "Phishing",
+                       "CommonScripts",
+                       "CommonPlaybooks",
+                       "CommonTypes",
+                       "TIM_Processing",
+                       "TIM_SIEM"
+                       ]  # cores packs list
 
 
 class Metadata(object):
@@ -398,7 +417,7 @@ class Pack(object):
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
+        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
