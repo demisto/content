@@ -2,7 +2,7 @@
     "name": "Compliance",
     "description": "This pack contains essential incidents fields for compliance packs.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
@@ -28,6 +28,7 @@
         "US",
         "Notification",
         "Breach notification",
-        "Data breach"],
+        "Data breach"
+    ],
     "dependencies": {}
 }
