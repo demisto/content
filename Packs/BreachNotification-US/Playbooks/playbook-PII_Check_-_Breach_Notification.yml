@@ -2,7 +2,7 @@ id: PII Check - Breach Notification
 version: -1
 name: PII Check - Breach Notification
 description: |-
-  The playbook checks for all various types of PII, however, each state determines what is considered PII and requires notification.
+  The playbook checks for all various types of PII, however, each state determines what is considered PII, and which PII requires notification.
 
   DISCLAIMER: Please consult with your legal team before implementing this playbook.
 
