@@ -2515,6 +2515,11 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "DigitalGuardian-Test",
+            "integrations": "Digital Guardian",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SplunkPy",
             "playbookID": "Splunk Indicator Hunting Test",
             "fromversion": "5.0.0",
@@ -2948,6 +2953,7 @@
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
+        "Digital Guardian": "partner integration",
 
 
          "_comment5": "~~~ OTHER ~~~",
