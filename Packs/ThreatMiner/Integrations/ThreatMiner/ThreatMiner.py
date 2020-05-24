@@ -261,7 +261,7 @@ def get_ip_URI(threatminer_results_as_array, max_returned_array_size):
     uri_counter = 0
     URIs = []
 
-    for uri in threatminer_results_as_array['raw_ip_uris']:
+    for _ in threatminer_results_as_array['raw_ip_uris']:
         if max_returned_array_size == -1 or uri_counter < max_returned_array_size:
             URIs.append({
                 'Address': threatminer_results_as_array['raw_ip_uris'][uri_counter]['uri'],
@@ -424,7 +424,7 @@ def get_file_http(file_http_raw_data, max_returned_array_size):
     http_traffic_counter = 0
     http_traffics_info = []
 
-    for http_traffic in http_traffics:
+    for _ in http_traffics:
         if max_returned_array_size == -1 or http_traffic_counter < max_returned_array_size:
             http_traffics_info.append({
                 'Domain': http_traffics[http_traffic_counter]['domain'],
@@ -674,7 +674,6 @@ try:
             demisto.results('ok')
         else:
             demisto.results('test failed')
-        pass
 
     if demisto.params().get('limit_results').lower() == 'all':
         max_array_size = -1
