@@ -31,10 +31,10 @@ def test_date_validator():
 def test_validator():
     validator = Validator()
 
-    assert validator.validate_ip("", "21.17.120.107")
-    assert validator.validate_ip("", "292.17.120.107") is False
+    assert validator.validate_ip("", "1.2.3.4")
+    assert validator.validate_ip("", "292.17.120.107k") is False
 
-    assert validator.validate_email("", "erezd@emisto.com")
+    assert validator.validate_email("", "aaaa@bbbb.com")
     assert validator.validate_email("", "erezdcom") is False
     assert validator.validate_email("", "erez@demisto") is False
 
@@ -53,7 +53,7 @@ def test_validator():
     assert validator.validate_mac("", "AA:BB:CC:DD:EE:FF".lower())
     assert validator.validate_mac("", "AA:BB:CC:DD:EE:") is False
 
-    assert validator.validate_alphanumeric_with_common_punct("", "erez harush -is_ok sda '\"sd' ")
+    assert validator.validate_alphanumeric_with_common_punct("", "erez harkush -is_ok sda '\"sd' ")
     assert validator.validate_alphanumeric_with_common_punct("", "erez!!") is False
 
     assert validator.validate_hostname("", "hostName-Erez")
