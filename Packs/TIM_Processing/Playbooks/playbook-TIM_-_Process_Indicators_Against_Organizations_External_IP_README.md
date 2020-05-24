@@ -7,11 +7,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
+This playbook does not use any integrations.
 
 ### Scripts
-* SetAndHandleEmpty
 * FilterByList
+* SetAndHandleEmpty
 
 ### Commands
 * appendIndicatorField
@@ -19,18 +19,18 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
-| OrganizationsExternalIPListName | A Cortex XSOAR list containing the organization&\#x27;s External IP address values. IP Indicators that appear in the list are tagged as organizations external ip. | {} |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| OrganizationsExternalIPListName | A Cortex XSOAR list containing the organization's External IP address values. IP Indicators that appear in the list are tagged as organizations external ip. |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| OrganizationExternalIP | IP addresses that are found in the  organization&\#x27;s external IP list. | string |
-| NotOrganizationExternalIP | IP addresses that are not found in the organization&\#x27;s external IP list. | string |
+| OrganizationExternalIP | IP addresses that are found in the  organization's external IP list. | string |
+| NotOrganizationExternalIP | IP addresses that are not found in the organization's external IP list. | string |
 
 ## Playbook Image
 ---
