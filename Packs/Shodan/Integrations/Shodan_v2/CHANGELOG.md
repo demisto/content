@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where searching for an IP address without information raised an error. 
 
 ## [20.5.0] - 2020-05-12
 -
