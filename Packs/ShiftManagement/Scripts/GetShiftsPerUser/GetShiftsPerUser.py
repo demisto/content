@@ -1,6 +1,4 @@
-import operator
-from functools import reduce
-from typing import Dict, List
+from typing import Dict
 
 import demistomock as demisto
 from CommonServerPython import *
