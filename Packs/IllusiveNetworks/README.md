@@ -1,0 +1,2 @@
+The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.
+This integration was integrated and tested with version 126 of Illusive Networks

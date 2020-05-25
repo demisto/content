@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Fixed an issue where Extended Details would not display the `Threat Category` and `Threat Category Confidence` fields.
 
 
 ## [20.5.0] - 2020-05-12
