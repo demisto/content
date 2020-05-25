@@ -112,9 +112,12 @@ script:
     - name: arguments
       description: Additional Arguments
     outputs:
-    - contextPath: Humio.Job
-      description: Query Job outputs
-      type: Unknown
+    - contextPath: Humio.Job.queryOnView
+      description: Query Job query abstract syntax tree
+      type: String
+    - contextPath: Humio.Job.id
+      description: Query Job id
+      type: String
     description: Issue a query job to Humio
   - name: humio-poll
     arguments:
@@ -125,9 +128,6 @@ script:
       required: true
       description: 'Id of the queryjob to poll for'
     outputs:
-    - contextPath: Humio.Result
-      description: Poll results
-      type: Unknown
     - contextPath: Humio.Result.cancelled
       description: If it was cancelled
       type: Unknown
