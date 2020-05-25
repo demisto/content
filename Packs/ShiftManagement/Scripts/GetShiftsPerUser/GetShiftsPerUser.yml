@@ -1,0 +1,23 @@
+args:
+  - default: false
+    description: The user id for the shift (eg. johndoe)
+    isArray: false
+    name: userId
+    required: true
+    secret: false
+comment: Retrieves number of on-call hours per user.
+commonfields:
+  id: GetShiftsPerUser
+  version: -1
+enabled: false
+name: GetShiftsPerUser
+script: '-'
+tags:
+- Shift Management
+- widget
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.2.6981
+fromversion: 5.5.0
