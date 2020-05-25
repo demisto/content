@@ -1,0 +1,34 @@
+{
+    "name": "Compliance",
+    "description": "This pack contains essential incidents fields for compliance packs.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "categories": [],
+    "tags": [
+        "Compliance",
+        "Breach",
+        "GDPR",
+        "US",
+        "Notification",
+        "Breach notification",
+        "Data breach"
+    ],
+    "created": "2020-05-10T10:50:52Z",
+    "updated": "2020-05-10T10:50:52Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [
+        "Compliance",
+        "Breach",
+        "GDPR",
+        "US",
+        "Notification",
+        "Breach notification",
+        "Data breach"
+    ],
+    "dependencies": {}
+}
