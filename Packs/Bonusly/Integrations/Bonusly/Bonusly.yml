@@ -1,0 +1,659 @@
+category: Utilities
+commonfields:
+  id: Bonusly
+  version: -1
+configuration:
+- defaultvalue: https://bonus.ly/api/v1/
+  display: Server URL (e.g. https://bonus.ly/api/v1/)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Enter the name of the specific bonusly application if required.
+  hidden: false
+  name: application_name
+  required: false
+  type: 0
+- defaultvalue: '20'
+  display: Limit the number of bonuses to fetch (Default 20)
+  hidden: false
+  name: limit
+  required: false
+  type: 0
+- display: Filter to receive only bonuses that match either a giver or receiver with
+    this email. (person@somewhere.com)
+  hidden: false
+  name: user_email
+  required: false
+  type: 0
+- display: Filter based on a hashtag like %23teamwork
+  hidden: false
+  name: hashtag
+  required: false
+  type: 0
+- defaultvalue: '1'
+  display: Start fetching from X days ago (defaults to 1 day)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: Bonusly
+name: Bonusly
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '20'
+      description: 'Number of bonuses to retrieve (min: 1, max: 100) Default: 20.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Example: 2015-10-28T21:26:50Z'
+      isArray: false
+      name: start-time
+      required: false
+      secret: false
+    - default: false
+      description: 'Example: 2015-10-28T21:26:50Z'
+      isArray: false
+      name: end-time
+      required: false
+      secret: false
+    - default: false
+      description: Filter by email address of the person giving the bonusly
+      isArray: false
+      name: giver-email
+      required: false
+      secret: false
+    - default: false
+      description: Filter by email address of the person receiving the bonusly
+      isArray: false
+      name: receiver-email
+      required: false
+      secret: false
+    - default: false
+      description: Filter to retrieve bonuses that have either giver or reciever with
+        this email
+      isArray: false
+      name: user-email
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter to get a list of bonusers by a hashtag Example: %23teamwork'
+      isArray: false
+      name: hashtag
+      required: false
+      secret: false
+    - default: false
+      description: 'Includes any children responses to the bonusly '
+      isArray: false
+      name: include-children
+      required: false
+      secret: false
+    - default: false
+      description: If Admin API key you can list private bonuses
+      isArray: false
+      name: show-private-bonuses
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of bonuses based on a filter
+    execution: false
+    name: bonusly-list-bonuses
+    outputs:
+    - contextPath: Bonusly.Bonus.id
+      description: ID of the bonusly bonus and can be used to gather further information
+        on the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.created_at
+      description: 'Date created IE: 2015-10-28T21:26:50Z'
+      type: Date
+    - contextPath: Bonusly.Bonus.reason
+      description: 'Description of bonus given like For signing up for the world''s
+        favorite employee recognition solution! #problem-solving'
+      type: String
+    - contextPath: Bonusly.Bonus.reason_html
+      description: HTML representation of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.amount
+      description: Number amount of the bonus
+      type: Number
+    - contextPath: Bonusly.Bonus.amount_with_currency
+      description: Amount with the points of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.value
+      description: 'A hash tag like #problem-solving'
+      type: String
+    - contextPath: Bonusly.Bonus.giver.id
+      description: ID of the person giving the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.short_name
+      description: Persons short name who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.display_name
+      description: Display name for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.username
+      description: Username for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.email
+      description: Email of the person who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.path
+      description: URL path for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.full_pic_url
+      description: Full picture URL for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.profile_pic_url
+      description: Profile Picture of the person who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.first_name
+      description: First name for the giver of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.last_name
+      description: Last name for the giver of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.last_active_at
+      description: Last time giver was active when available
+      type: Unknown
+    - contextPath: Bonusly.Bonus.giver.external_unique_id
+      description: Unique ID for the giver externally
+      type: String
+    - contextPath: Bonusly.Bonus.giver.budget_boost
+      description: Whether there is a boost given for the bonus
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.user_mode
+      description: Mode of the giver user
+      type: String
+    - contextPath: Bonusly.Bonus.giver.country
+      description: Country of where the giver resides
+      type: String
+    - contextPath: Bonusly.Bonus.giver.time_zone
+      description: Timezone for the giver America/Los_Angeles
+      type: String
+    - contextPath: Bonusly.Bonus.giver.*custom_property_name*
+      description: Any custom properties given
+      type: String
+    - contextPath: Bonusly.Bonus.giver.can_give
+      description: Whether the giver can give
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.earning_balance
+      description: Balance earning available
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.earning_balance_with_currency
+      description: Earning balance with currency
+      type: String
+    - contextPath: Bonusly.Bonus.giver.lifetime_earnings
+      description: Lifetime earnings of giver overall
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.lifetime_earnings_with_currency
+      description: Lifetime earnings of giver with currency
+      type: String
+    - contextPath: Bonusly.Bonus.giver.can_receive
+      description: Wether giver can receive or not
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.giving_balance
+      description: Number of balance available to give
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.giving_balance_with_currency
+      description: Currency or points of giver balance
+      type: String
+    - contextPath: Bonusly.Bonus.giver.status
+      description: Status like archived
+      type: String
+    - contextPath: Bonusly.Bonus.receiver
+      description: Unknown
+      type: Unknown
+    - contextPath: Bonusly.Bonus.child_count
+      description: Cound of the child add on bonuses
+      type: Number
+    - contextPath: Bonusly.Bonus.via
+      description: Where the bonus came from like web etc
+      type: String
+    - contextPath: Bonusly.Bonus.family_amount
+      description: Amount family has
+      type: Number
+  - arguments:
+    - default: false
+      description: The email address of the person giving the bonus like myemail@email.com
+      isArray: false
+      name: giver-email
+      required: true
+      secret: false
+    - default: false
+      description: "\n+10 @george and @john for #execution with that customer #collaboration\
+        \ with the team, and #integrity on the known vulnerabilities to the application.\
+        \ \n\n+10 @francesco because he is fast and detailed\n"
+      isArray: false
+      name: reason
+      required: true
+      secret: false
+    - default: false
+      description: 'Allows you to associate to a parent bonus based on what you have
+        created before. Example: 24abcdef1234567890abcdef'
+      isArray: false
+      name: parent-bonus-id
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a bonusly bonus
+    execution: false
+    name: bonusly-create-bonus
+    outputs:
+    - contextPath: Bonusly.Bonus.id
+      description: ID of the bonusly bonus and can be used to gather further information
+        on the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.created_at
+      description: 'Date created IE: 2015-10-28T21:26:50Z'
+      type: Date
+    - contextPath: Bonusly.Bonus.reason
+      description: 'Description of bonus given like For signing up for the world''s
+        favorite employee recognition solution! #problem-solving'
+      type: String
+    - contextPath: Bonusly.Bonus.reason_html
+      description: HTML representation of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.amount
+      description: Number amount of the bonus
+      type: Number
+    - contextPath: Bonusly.Bonus.amount_with_currency
+      description: Amount with the points of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.value
+      description: 'A hash tag like #problem-solving'
+      type: String
+    - contextPath: Bonusly.Bonus.giver.id
+      description: ID of the person giving the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.short_name
+      description: Persons short name who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.display_name
+      description: Display name for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.username
+      description: Username for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.email
+      description: Email of the person who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.path
+      description: URL path for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.full_pic_url
+      description: Full picture URL for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.profile_pic_url
+      description: Profile Picture of the person who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.first_name
+      description: First name for the giver of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.last_name
+      description: Last name for the giver of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.last_active_at
+      description: Last time giver was active when available
+      type: Unknown
+    - contextPath: Bonusly.Bonus.giver.external_unique_id
+      description: Unique ID for the giver externally
+      type: String
+    - contextPath: Bonusly.Bonus.giver.budget_boost
+      description: Whether there is a boost given for the bonus
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.user_mode
+      description: Mode of the giver user
+      type: String
+    - contextPath: Bonusly.Bonus.giver.country
+      description: Country of where the giver resides
+      type: String
+    - contextPath: Bonusly.Bonus.giver.time_zone
+      description: Timezone for the giver America/Los_Angeles
+      type: String
+    - contextPath: Bonusly.Bonus.giver.*custom_property_name*
+      description: Any custom properties given
+      type: String
+    - contextPath: Bonusly.Bonus.giver.can_give
+      description: Whether the giver can give
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.earning_balance
+      description: Balance earning available
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.earning_balance_with_currency
+      description: Earning balance with currency
+      type: String
+    - contextPath: Bonusly.Bonus.giver.lifetime_earnings
+      description: Lifetime earnings of giver overall
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.lifetime_earnings_with_currency
+      description: Lifetime earnings of giver with currency
+      type: String
+    - contextPath: Bonusly.Bonus.giver.can_receive
+      description: Wether giver can receive or not
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.giving_balance
+      description: Number of balance available to give
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.giving_balance_with_currency
+      description: Currency or points of giver balance
+      type: String
+    - contextPath: Bonusly.Bonus.giver.status
+      description: Status like archived
+      type: String
+    - contextPath: Bonusly.Bonus.receiver
+      description: Unknown
+      type: Unknown
+    - contextPath: Bonusly.Bonus.child_count
+      description: Cound of the child add on bonuses
+      type: Number
+    - contextPath: Bonusly.Bonus.via
+      description: Where the bonus came from like web etc
+      type: String
+    - contextPath: Bonusly.Bonus.family_amount
+      description: Amount family has
+      type: Number
+  - arguments:
+    - default: false
+      description: 'Id of bonus that you want to fetch '
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a bonusly based on an ID
+    execution: false
+    name: bonusly-get-bonus
+    outputs:
+    - contextPath: Bonusly.Bonus.id
+      description: ID of the bonusly bonus and can be used to gather further information
+        on the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.created_at
+      description: 'Date created IE: 2015-10-28T21:26:50Z'
+      type: Date
+    - contextPath: Bonusly.Bonus.reason
+      description: 'Description of bonus given like For signing up for the world''s
+        favorite employee recognition solution! #problem-solving'
+      type: String
+    - contextPath: Bonusly.Bonus.reason_html
+      description: HTML representation of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.amount
+      description: Number amount of the bonus
+      type: Number
+    - contextPath: Bonusly.Bonus.amount_with_currency
+      description: Amount with the points of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.value
+      description: 'A hash tag like #problem-solving'
+      type: String
+    - contextPath: Bonusly.Bonus.giver.id
+      description: ID of the person giving the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.short_name
+      description: Persons short name who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.display_name
+      description: Display name for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.username
+      description: Username for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.email
+      description: Email of the person who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.path
+      description: URL path for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.full_pic_url
+      description: Full picture URL for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.profile_pic_url
+      description: Profile Picture of the person who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.first_name
+      description: First name for the giver of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.last_name
+      description: Last name for the giver of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.last_active_at
+      description: Last time giver was active when available
+      type: Unknown
+    - contextPath: Bonusly.Bonus.giver.external_unique_id
+      description: Unique ID for the giver externally
+      type: String
+    - contextPath: Bonusly.Bonus.giver.budget_boost
+      description: Whether there is a boost given for the bonus
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.user_mode
+      description: Mode of the giver user
+      type: String
+    - contextPath: Bonusly.Bonus.giver.country
+      description: Country of where the giver resides
+      type: String
+    - contextPath: Bonusly.Bonus.giver.time_zone
+      description: Timezone for the giver America/Los_Angeles
+      type: String
+    - contextPath: Bonusly.Bonus.giver.*custom_property_name*
+      description: Any custom properties given
+      type: String
+    - contextPath: Bonusly.Bonus.giver.can_give
+      description: Whether the giver can give
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.earning_balance
+      description: Balance earning available
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.earning_balance_with_currency
+      description: Earning balance with currency
+      type: String
+    - contextPath: Bonusly.Bonus.giver.lifetime_earnings
+      description: Lifetime earnings of giver overall
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.lifetime_earnings_with_currency
+      description: Lifetime earnings of giver with currency
+      type: String
+    - contextPath: Bonusly.Bonus.giver.can_receive
+      description: Wether giver can receive or not
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.giving_balance
+      description: Number of balance available to give
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.giving_balance_with_currency
+      description: Currency or points of giver balance
+      type: String
+    - contextPath: Bonusly.Bonus.giver.status
+      description: Status like archived
+      type: String
+    - contextPath: Bonusly.Bonus.receiver
+      description: Unknown
+      type: Unknown
+    - contextPath: Bonusly.Bonus.child_count
+      description: Cound of the child add on bonuses
+      type: Number
+    - contextPath: Bonusly.Bonus.via
+      description: Where the bonus came from like web etc
+      type: String
+    - contextPath: Bonusly.Bonus.family_amount
+      description: Amount family has
+      type: Number
+  - arguments:
+    - default: false
+      description: 'Id to update '
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: 'Example +10 @francesco @bumblebee for #integrity #collaboration
+        #execution'
+      isArray: false
+      name: reason
+      required: true
+      secret: false
+    deprecated: false
+    description: Update a bonus to bonusly
+    execution: false
+    name: bonusly-update-bonus
+    outputs:
+    - contextPath: Bonusly.Bonus.id
+      description: ID of the bonusly bonus and can be used to gather further information
+        on the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.created_at
+      description: 'Date created IE: 2015-10-28T21:26:50Z'
+      type: Date
+    - contextPath: Bonusly.Bonus.reason
+      description: 'Description of bonus given like For signing up for the world''s
+        favorite employee recognition solution! #problem-solving'
+      type: String
+    - contextPath: Bonusly.Bonus.reason_html
+      description: HTML representation of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.amount
+      description: Number amount of the bonus
+      type: Number
+    - contextPath: Bonusly.Bonus.amount_with_currency
+      description: Amount with the points of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.value
+      description: 'A hash tag like #problem-solving'
+      type: String
+    - contextPath: Bonusly.Bonus.giver.id
+      description: ID of the person giving the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.short_name
+      description: Persons short name who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.display_name
+      description: Display name for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.username
+      description: Username for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.email
+      description: Email of the person who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.path
+      description: URL path for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.full_pic_url
+      description: Full picture URL for who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.profile_pic_url
+      description: Profile Picture of the person who gave the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.first_name
+      description: First name for the giver of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.last_name
+      description: Last name for the giver of the bonus
+      type: String
+    - contextPath: Bonusly.Bonus.giver.last_active_at
+      description: Last time giver was active when available
+      type: Unknown
+    - contextPath: Bonusly.Bonus.giver.external_unique_id
+      description: Unique ID for the giver externally
+      type: String
+    - contextPath: Bonusly.Bonus.giver.budget_boost
+      description: Whether there is a boost given for the bonus
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.user_mode
+      description: Mode of the giver user
+      type: String
+    - contextPath: Bonusly.Bonus.giver.country
+      description: Country of where the giver resides
+      type: String
+    - contextPath: Bonusly.Bonus.giver.time_zone
+      description: Timezone for the giver America/Los_Angeles
+      type: String
+    - contextPath: Bonusly.Bonus.giver.*custom_property_name*
+      description: Any custom properties given
+      type: String
+    - contextPath: Bonusly.Bonus.giver.can_give
+      description: Whether the giver can give
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.earning_balance
+      description: Balance earning available
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.earning_balance_with_currency
+      description: Earning balance with currency
+      type: String
+    - contextPath: Bonusly.Bonus.giver.lifetime_earnings
+      description: Lifetime earnings of giver overall
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.lifetime_earnings_with_currency
+      description: Lifetime earnings of giver with currency
+      type: String
+    - contextPath: Bonusly.Bonus.giver.can_receive
+      description: Wether giver can receive or not
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.giving_balance
+      description: Number of balance available to give
+      type: Number
+    - contextPath: Bonusly.Bonus.giver.giving_balance_with_currency
+      description: Currency or points of giver balance
+      type: String
+    - contextPath: Bonusly.Bonus.giver.status
+      description: Status like archived
+      type: String
+    - contextPath: Bonusly.Bonus.receiver
+      description: Unknown
+      type: Unknown
+    - contextPath: Bonusly.Bonus.child_count
+      description: Cound of the child add on bonuses
+      type: Number
+    - contextPath: Bonusly.Bonus.via
+      description: Where the bonus came from like web etc
+      type: String
+    - contextPath: Bonusly.Bonus.family_amount
+      description: Amount family has
+      type: Number
+  - arguments:
+    - default: false
+      description: Delete a bonus based on an ID like 24abcdef1234567890abcdef
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a bonus based on an ID like 24abcdef1234567890abcdef
+    execution: false
+    name: bonusly-delete-bonus
+    outputs:
+    - contextPath: Bonusly.Bonus.message
+      description: Message of result if deleted successfully
+      type: Unknown
+  dockerimage: demisto/python3:3.8.2.8159
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

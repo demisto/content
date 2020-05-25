@@ -2793,6 +2793,10 @@
             "integrations": "Endace",
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Bonusly",
+            "playbookID": "Bonusly-Test"
         }
     ],
     "skipped_tests": {
