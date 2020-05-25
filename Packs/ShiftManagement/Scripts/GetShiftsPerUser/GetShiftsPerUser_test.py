@@ -7,8 +7,10 @@ ROLES = [
     {
         'name': 'Shift1',
         'shifts': [
-            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3, 'toHour': 12, 'toMinute': 0},
-            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6, 'toHour': 20, 'toMinute': 0}
+            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3,
+             'toHour': 12, 'toMinute': 0},
+            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6,
+             'toHour': 20, 'toMinute': 0}
         ]
     },
     {
@@ -18,9 +20,12 @@ ROLES = [
     {
         'name': 'Shift2',
         'shifts': [
-            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3, 'toHour': 12, 'toMinute': 0},
-            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6, 'toHour': 20, 'toMinute': 0},
-            {'fromDay': 1, 'fromHour': 3, 'fromMinute': 0, 'toDay': 4, 'toHour': 6, 'toMinute': 0}
+            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3,
+             'toHour': 12, 'toMinute': 0},
+            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6,
+             'toHour': 20, 'toMinute': 0},
+            {'fromDay': 1, 'fromHour': 3, 'fromMinute': 0, 'toDay': 4,
+             'toHour': 6, 'toMinute': 0}
         ]
     }
 ]
@@ -84,8 +89,9 @@ def test_get_shifts_per_user(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert json.loads(results[0]) == [
-        [{'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3, 'toHour': 12,
-         'toMinute': 0},
-        {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6,
-         'toHour': 20, 'toMinute': 0}]
+        [{'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3,
+          'toHour': 12,
+          'toMinute': 0},
+         {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6,
+          'toHour': 20, 'toMinute': 0}]
     ]
