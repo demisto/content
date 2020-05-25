@@ -50,6 +50,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "IllusiveNetworks",
+            "playbookID": "IllusiveNetworks-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0"
@@ -2794,7 +2799,6 @@
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "SNDBOX_Test": "Issue 24349",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
@@ -2893,7 +2897,6 @@
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
-        "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
         "Check Point": "Issue 18643",
         "Preempt": "Issue 20268",
@@ -2956,6 +2959,7 @@
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
+        "IllusiveNetworks": "supported by partner",
         "Digital Guardian": "partner integration",
 
 
@@ -2980,6 +2984,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
