@@ -2,6 +2,7 @@ import argparse
 import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
+import sys
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_FILES, PACKS_FULL_PATH
 
@@ -210,6 +211,7 @@ def main():
                 shutil.copy(os.path.join(zip_path, ARTIFACT_NAME), os.path.join(artifacts_path, ARTIFACT_NAME))
         else:
             print_error('Failed zipping packs.')
+            sys.exit(1)
     else:
         print_warning('Did not find any packs to zip.')
 
