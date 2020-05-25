@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Bastille Networks",
+            "playbookID": "BastilleNetworks-Test"
+        },
+        {
             "integrations": "Unit42 Feed",
             "playbookID": "Unit42 Feed - Test",
             "fromversion": "5.5.0"
@@ -48,6 +52,11 @@
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
             "timeout": 1000,
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "IllusiveNetworks",
+            "playbookID": "IllusiveNetworks-Test",
             "fromversion": "5.0.0"
         },
         {
@@ -584,6 +593,12 @@
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql-mssql-encrypted-connection",
+            "instance_names": "Microsoft SQL instance using encrypted connection",
             "fromversion": "5.0.0"
         },
         {
@@ -2514,6 +2529,11 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "DigitalGuardian-Test",
+            "integrations": "Digital Guardian",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SplunkPy",
             "playbookID": "Splunk Indicator Hunting Test",
             "fromversion": "5.0.0",
@@ -2767,7 +2787,7 @@
         },
         {
             "integrations": "Zabbix",
-            "playbookID": "Zabbix"
+            "playbookID": "Zabbix - Test"
         },
         {
             "integrations": "GCP Whitelist Feed",
@@ -2784,17 +2804,13 @@
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "CreateIndicatorFromSTIXTest": "Issue 24345",
-        "SNDBOX_Test": "Issue 24349",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
-        "Test-Shodan_v2": "Issue 23370",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "PhishLabsIOC TestPlaybook": "integration bug (23926)",
         "Symantec Deepsight Test": "Issue 22971",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
-        "Cloaken-Test": "Issue 20036",
         "test_MsGraphFiles": "Issue 22853 ",
         "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
@@ -2886,8 +2902,6 @@
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
-        "ProtectWise": "Issue 20486",
-        "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
         "Check Point": "Issue 18643",
         "Preempt": "Issue 20268",
@@ -2950,6 +2964,8 @@
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
+        "IllusiveNetworks": "supported by partner",
+        "Digital Guardian": "partner integration",
 
 
          "_comment5": "~~~ OTHER ~~~",
@@ -2973,6 +2989,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
