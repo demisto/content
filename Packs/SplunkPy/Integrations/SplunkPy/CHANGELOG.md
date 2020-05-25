@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+Added support for HTTPS handler, which uses tbhe Python **requests** library. 
 
 ## [20.4.0] - 2020-04-14
 -
