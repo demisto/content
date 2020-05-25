@@ -1,20 +1,21 @@
+fromversion: 5.5.0
 category: Messaging
 commonfields:
   id: EWSO365
   version: -1
 configuration:
-- display: ID / Application ID
-  additionalinfo: ID can be received from the admin consent - see Detailed Instructions.
+- additionalinfo: ID can be received from the admin consent - see Detailed Instructions.
+  display: ID / Application ID
   name: client_id
   required: true
-  type: 0
-- display:  Token / Tenant ID
-  additionalinfo: Token can be received from the admin consent - see Detailed Instructions.
+  type: 4
+- additionalinfo: Token can be received from the admin consent - see Detailed Instructions.
+  display: Token / Tenant ID
   name: tenant_id
   required: true
   type: 4
-- display: Key / Application Secret
-  additionalinfo: Key can be received from the admin consent - see Detailed Instructions.
+- additionalinfo: Key can be received from the admin consent - see Detailed Instructions.
+  display: Key / Application Secret
   name: client_secret
   required: true
   type: 4
@@ -38,37 +39,37 @@ configuration:
   name: impersonation
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Fetch incidents
   name: isFetch
-  required: false
-  type: 8
-- display: Mark fetched emails as read
-  name: mark_as_read
   required: false
   type: 8
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- display: Trust any certificate (not secure)
-  name: insecure
+- display: Mark fetched emails as read
+  name: mark_as_read
   required: false
   type: 8
-- defaultvalue: '120'
-  display: Timeout (in seconds) for HTTP requests to Exchange Server
-  name: request_timeout
-  required: false
-  type: 0
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
   required: false
   type: 0
+- defaultvalue: '120'
+  display: Timeout (in seconds) for HTTP requests to Exchange Server
+  name: request_timeout
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 - defaultvalue: 'false'
   display: Run as a separate process (protects against memory depletion)
   name: separate_process
@@ -80,7 +81,7 @@ configuration:
   required: false
   type: 8
 description: Exchange Web Services and Office 365 (mail)
-display: EWSO365
+display: EWS O365
 name: EWSO365
 script:
   commands:

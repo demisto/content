@@ -1,0 +1,833 @@
+id: EWS_O365_test
+version: -1
+name: EWS_O365_test
+fromversion: 5.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98c49d4e-f3c3-4916-852b-20075e193f76
+    type: start
+    task:
+      id: 98c49d4e-f3c3-4916-852b-20075e193f76
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3d470a3f-7615-4a25-8375-01ef2590225a
+    type: regular
+    task:
+      id: 3d470a3f-7615-4a25-8375-01ef2590225a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 92224974-9498-446c-8f35-40b331da98d0
+    type: regular
+    task:
+      id: 92224974-9498-446c-8f35-40b331da98d0
+      version: -1
+      name: ews-get-attachment
+      script: '|||ews-get-attachment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attachment-ids: {}
+      item-id:
+        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAAAAAEMAADj9X3Q04QOTYf/bBd1+UDZAAAHclB6AAA=
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a35f7cc0-2da0-4ccc-8268-cb5d39dad9aa
+    type: condition
+    task:
+      id: a35f7cc0-2da0-4ccc-8268-cb5d39dad9aa
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.FileAttachments.attachmentId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.FileAttachments.attachmentName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.FileAttachments.attachmentSHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: cb263e04-0d87-46ed-84c6-a21991e8a5ca
+    type: regular
+    task:
+      id: cb263e04-0d87-46ed-84c6-a21991e8a5ca
+      version: -1
+      name: ews-get-searchable-mailboxes
+      script: '|||ews-get-searchable-mailboxes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 47891d37-c534-47d1-84d5-9aa871bde3f3
+    type: condition
+    task:
+      id: 47891d37-c534-47d1-84d5-9aa871bde3f3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Mailboxes.mailbox
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Mailboxes.mailboxId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Mailboxes.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Mailboxes.isExternal
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: bd94b13d-8fb2-42a5-89ee-802a47fa05c9
+    type: regular
+    task:
+      id: bd94b13d-8fb2-42a5-89ee-802a47fa05c9
+      version: -1
+      name: ews-search-mailbox
+      script: '|||ews-search-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      folder-path: {}
+      is-public: {}
+      limit: {}
+      message-id: {}
+      query:
+        simple: move me
+      selected-fields: {}
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e049ed37-6570-4361-8a34-87777a02dec7
+    type: condition
+    task:
+      id: e049ed37-6570-4361-8a34-87777a02dec7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.itemId
+            iscontext: true
+          right:
+            value:
+              simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAAAAAEMAADj9X3Q04QOTYf/bBd1+UDZAAAHclB4AAA=
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: bb75fc6c-42e9-4357-8e85-7c7322e79ed4
+    type: regular
+    task:
+      id: bb75fc6c-42e9-4357-8e85-7c7322e79ed4
+      version: -1
+      name: ews-get-contacts
+      script: '|||ews-get-contacts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 840b54c4-d2d2-4fdf-87d0-5be453c33ae2
+    type: condition
+    task:
+      id: 840b54c4-d2d2-4fdf-87d0-5be453c33ae2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Email.EwsContacts.emailAddresses.[0]
+            iscontext: true
+          right:
+            value:
+              simple: avishai@demistodev.onmicrosoft.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 12d9c346-ae8b-48a3-8ba3-c47693a15c5b
+    type: regular
+    task:
+      id: 12d9c346-ae8b-48a3-8ba3-c47693a15c5b
+      version: -1
+      name: ews-get-out-of-office
+      script: '|||ews-get-out-of-office'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      target-mailbox:
+        simple: avishai@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 74804078-6b30-4e52-82b5-21622bc7fb32
+    type: condition
+    task:
+      id: 74804078-6b30-4e52-82b5-21622bc7fb32
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Email.OutOfOffice.state
+            iscontext: true
+          right:
+            value:
+              simple: Disabled
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 7f752adf-b386-42da-88f4-8915c63c6fb4
+    type: regular
+    task:
+      id: 7f752adf-b386-42da-88f4-8915c63c6fb4
+      version: -1
+      name: ews-find-folders
+      script: '|||ews-find-folders'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: cacbd6a4-090a-46b2-8118-4b51a7f9552c
+    type: condition
+    task:
+      id: cacbd6a4-090a-46b2-8118-4b51a7f9552c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.unreadCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.changeKey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.childrenFolderCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 0717ee67-75a3-4e3f-8157-e28bdb4d7965
+    type: regular
+    task:
+      id: 0717ee67-75a3-4e3f-8157-e28bdb4d7965
+      version: -1
+      name: ews-get-items-from-folder
+      script: '|||ews-get-items-from-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      folder-path:
+        simple: AllItems
+      get-internal-item: {}
+      is-public: {}
+      limit:
+        simple: "5"
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: d46ce9f6-de32-4215-89a6-7cf4a1bc354f
+    type: regular
+    task:
+      id: d46ce9f6-de32-4215-89a6-7cf4a1bc354f
+      version: -1
+      name: ews-get-items
+      script: '|||ews-get-items'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      item-ids:
+        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAAAAAEMAADj9X3Q04QOTYf/bBd1+UDZAAAHclBzAAA=
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 0852b725-1a18-4c56-8a8b-efdf54fea2a9
+    type: condition
+    task:
+      id: 0852b725-1a18-4c56-8a8b-efdf54fea2a9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.itemId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.datetimeReceived
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.datetimeSent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.headers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.sender
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.toRecipients
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.receivedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.messageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Items.isRead
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Email.HeadersMap
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: fb66430a-183e-493e-8509-9a895cd1c722
+    type: regular
+    task:
+      id: fb66430a-183e-493e-8509-9a895cd1c722
+      version: -1
+      name: ews-get-folder
+      script: '|||ews-get-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: d94f6b01-7d11-4081-879c-02aaac8e00fd
+    type: condition
+    task:
+      id: d94f6b01-7d11-4081-879c-02aaac8e00fd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.changeKey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.childrenFolderCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EWS.Folders.unreadCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: b370fa27-f34e-45f2-85c8-b38d13c3eb42
+    type: regular
+    task:
+      id: b370fa27-f34e-45f2-85c8-b38d13c3eb42
+      version: -1
+      name: ews-expand-group
+      script: '|||ews-expand-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      email-address:
+        simple: testgroup-1@demistodev.onmicrosoft.com
+      recursive-expansion: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: ccf8a0a2-f661-48fd-8eb2-5276ac828e81
+    type: title
+    task:
+      id: ccf8a0a2-f661-48fd-8eb2-5276ac828e81
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3535,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

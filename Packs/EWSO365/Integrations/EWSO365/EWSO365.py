@@ -351,16 +351,16 @@ class GetSearchableMailboxes(EWSService):
 
     def call(self):
         elements = self._get_elements(payload=self.get_payload())
-        return [self.parse_element(x) for x in elements]
+        return [self.parse_element(x) for x in elements if x.find(f"{{{TNS}}}ReferenceId").text]
 
     def get_payload(self):
-        element = create_element(f"m:{self.SERVICE_NAME}",)
+        element = create_element(f"m:{self.SERVICE_NAME}")
         return element
 
 
 class SearchMailboxes(EWSService):
-    SERVICE_NAME = "SearchMailboxes"
     element_container_name = f"{{{MNS}}}SearchMailboxesResult/{{{TNS}}}Items"
+    SERVICE_NAME = 'SearchMailboxes'
 
     @staticmethod
     def parse_element(element):
@@ -410,7 +410,8 @@ class SearchMailboxes(EWSService):
         add_xml_child(mailbox_query_element, "t:Query", query)
         mailboxes_scopes = []
         for mailbox in mailboxes:
-            mailboxes_scopes.append(get_mailbox_search_scope(mailbox))
+            if mailbox:
+                mailboxes_scopes.append(get_mailbox_search_scope(mailbox))
         add_xml_child(mailbox_query_element, "t:MailboxSearchScopes", mailboxes_scopes)
 
         element = create_element(f"m:{self.SERVICE_NAME}")
@@ -423,8 +424,6 @@ class SearchMailboxes(EWSService):
 class ExpandGroup(EWSService):
     SERVICE_NAME = "ExpandDL"
     element_container_name = f"{{{MNS}}}DLExpansion"
-    ERRORS_TO_CATCH_IN_RESPONSE = ErrorNameResolutionNoResults
-    WARNINGS_TO_IGNORE_IN_RESPONSE = ErrorNameResolutionMultipleResults
 
     @staticmethod
     def parse_element(element):
@@ -623,7 +622,7 @@ def get_expanded_group(client: EWSClient, email_address, recursive_expansion=Fal
 
 def get_searchable_mailboxes(client: EWSClient):
     searchable_mailboxes = GetSearchableMailboxes(protocol=client.protocol).call()
-    readable_output = tableToMarkdown("Searchable mailboxes", searchable_mailboxes)
+    readable_output = tableToMarkdown("Searchable mailboxes", searchable_mailboxes, headers=['displayName', 'mailbox'])
     output = {"EWS.Mailboxes": searchable_mailboxes}
     return readable_output, output, searchable_mailboxes
 
@@ -672,7 +671,7 @@ def search_mailboxes(
         search_results = search_results[:limit]
     except TransportError as e:
         if "ItemCount>0<" in str(e):
-            return "No results for search query: " + filter
+            return "No results for search query: " + filter,
         else:
             raise e
 
@@ -1561,7 +1560,7 @@ def get_items_from_folder(
         "Items in folder " + folder_path, items_result, headers=hm_headers
     )
     output = {CONTEXT_UPDATE_EWS_ITEM: items_result}
-    return readable_output, output, items
+    return readable_output, output, items_result
 
 
 def get_items(client: EWSClient, item_ids, target_mailbox=None):
@@ -1685,7 +1684,7 @@ def test_module(client: EWSClient):
                 "get all the folders structure that the user has permissions to"
             )
 
-    demisto.results("ok")
+    return 'ok'
 
 
 def sub_main():
@@ -1726,7 +1725,7 @@ def sub_main():
         # system commands:
         if command == "test-module":
             is_test_module = True
-            test_module(client)
+            demisto.results(test_module(client))
         elif command == "fetch-incidents":
             incidents = fetch_emails_as_incidents(client)
             demisto.incidents(incidents)
