@@ -11,6 +11,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS33 '''
+y = '1'
 
 BASE_URL = demisto.params()['url']
 API_KEY = demisto.params().get('token')
