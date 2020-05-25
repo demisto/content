@@ -36,10 +36,32 @@ class Client:
         return res
 
 
-def test_module(client):
+def test_module(client, headers=None):
     response = client.http_request("GET", "/api/v1/status")
+    headers = {} if headers is None else headers
     if response.status_code == 200:
-        return "ok"
+        try:
+            resp = response.json()
+        except:
+            return "Could connect to server, but got unexpected response: {}".format(response.text)
+        
+        if resp["status"].lower() == "ok":
+            incidentquery = demisto.params().get("queryParameter")
+            incidentrepo = demisto.params().get("queryRepository")
+            if incidentquery is not None and incidentrepo is not None:
+                args = {
+                    "queryString": incidentquery,
+                    "repository": incidentrepo,
+                    "start": "1m",
+                    "end": "now",
+                    "isLive": "false",
+                    "timeZoneOffsetMinutes": 0
+                }
+                humio_query(client, args, headers)
+                return "ok"
+            else:
+                return "ok"
+        
     else:
         return "Bad status from server: ({}) {}".format(response.status_code, response.text)
 
@@ -50,7 +72,7 @@ def humio_query(client, args, headers):
     data["start"] = args.get("start")
     data["end"] = args.get("end")
     data["isLive"] = args.get("isLive").lower() in ["true", "1", "t", "y", "yes"]
-    data["timeZoneOffsetMinutes"] = int(args.get("timeZoneOffsetMinutes"))
+    data["timeZoneOffsetMinutes"] = int(args.get("timeZoneOffsetMinutes", 0))
     if args.get("arguments"):
         data["arguments"] = args.get("arguments")
     url = "/api/v1/repositories/" + args.get("repository") + "/query"
@@ -378,7 +400,7 @@ def main():
             "humio-get-notifier-by-id": humio_get_notifier_by_id,
         }
         if command == "test-module":
-            results = test_module(client)
+            results = test_module(client, headers)
             return_outputs(results)
         elif demisto.command() == "fetch-incidents":
             demisto.incidents(fetch_incidents(client, headers))
