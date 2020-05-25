@@ -9,7 +9,7 @@ from demisto_sdk.commands.common.tools import print_error, print_success, print_
 
 ARTIFACT_NAME = 'zipped_packs.zip'
 MAX_THREADS = 4
-GCP_PATH = 'content/builds'
+BUILD_GCP_PATH = 'content/builds'
 
 
 def option_handler():
@@ -22,6 +22,8 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Zip packs from a GCP bucket.")
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="Path of the CircleCI artifacts to save the zip file in",
+                        required=False)
+    parser.add_argument('-gp', '--gcp_path', help="Path of the content packs in the GCP bucket",
                         required=False)
     parser.add_argument('-z', '--zip_path', help="Full path of folder to zip packs in", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
@@ -54,12 +56,13 @@ def zip_packs(packs, destination_path):
                 zf.write(path, f"{name}.zip")
 
 
-def download_packs_from_gcp(storage_bucket, destination_path, circle_build, branch_name):
+def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name):
     """
     Iterates over the Packs directory in the content repository and downloads each pack (if found) from a GCP bucket
     in parallel.
     Args:
         storage_bucket: The GCP bucket to download from.
+        gcp_path: The path of the packs in the GCP bucket.
         destination_path: The path to download the packs to.
         branch_name: The branch name of the build.
         circle_build: The number of the circle ci build.
@@ -70,10 +73,10 @@ def download_packs_from_gcp(storage_bucket, destination_path, circle_build, bran
     zipped_packs = []
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-            if pack.name in IGNORED_FILES + GCPConfig.CORE_PACKS_LIST:
+            if pack.name in IGNORED_FILES:
                 continue
             # Search for the pack in the bucket
-            pack_prefix = os.path.join(GCP_PATH, branch_name, circle_build, pack.name)
+            pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
             blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
             if blobs:
                 blob = get_latest_pack_zip_from_blob(pack.name, blobs)
@@ -135,6 +138,7 @@ def main():
     service_account = option.service_account
     circle_build = option.circle_build
     branch_name = option.branch_name
+    gcp_path = option.gcp_path
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -145,10 +149,13 @@ def main():
         circle_build = ''
         branch_name = ''
 
+    if not gcp_path:
+        gcp_path = BUILD_GCP_PATH
+
     zipped_packs = []
     success = True
     try:
-        zipped_packs = download_packs_from_gcp(storage_bucket, zip_path, circle_build, branch_name)
+        zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
     except Exception as e:
         print_error(f'Failed downloading packs: {e}')
         success = False

@@ -59,7 +59,6 @@ class TestZipPacks:
             TestZipPacks.FakeDirEntry('Slack', 'Packs/Slack'),
             TestZipPacks.FakeDirEntry('SlackFake', 'Packs/SlackFake'),
             TestZipPacks.FakeDirEntry('ApiModules', 'Packs/ApiModules'),
-            TestZipPacks.FakeDirEntry('Base', 'Packs/Base')
         ]
 
         bucket = TestZipPacks.FakeBucket()
@@ -68,7 +67,7 @@ class TestZipPacks:
         mocker.patch.object(bucket, 'list_blobs', side_effect=TestZipPacks.FakeBucket.list_blobs)
         mocker.patch.object(zip_packs, 'executor_submit')
 
-        zipped_packs = download_packs_from_gcp(bucket, 'path', '', '')
+        zipped_packs = download_packs_from_gcp(bucket, zip_packs.BUILD_GCP_PATH, 'path', '', '')
 
         assert bucket.list_blobs.call_count == 2
         assert zip_packs.executor_submit.call_count == 1
@@ -84,8 +83,7 @@ class TestZipPacks:
 
         packs = [{'Slack': 'path/Slack.zip'}]
 
-        success = zip_packs(packs, 'oklol')
+        zip_packs(packs, 'oklol')
 
         assert ZipFile.write.call_args[0][0] == 'path/Slack.zip'
         assert ZipFile.write.call_args[0][1] == 'Slack.zip'
-        assert success is True
