@@ -1,0 +1,1052 @@
+id: Bonusly-Test
+name: Bonusly-Test
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: bonusly-list-bonuses
+      description: ''
+      script: '|||bonusly-list-bonuses'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.reason_html
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.amount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.amount_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.short_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.full_pic_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.profile_pic_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.last_active_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.external_unique_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.budget_boost
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.user_mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.*custom_property_name*
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.can_give
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.earning_balance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.earning_balance_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.lifetime_earnings
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.lifetime_earnings_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.can_receive
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.giving_balance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.giving_balance_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.receiver
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.child_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.via
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.family_amount
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: bonusly-create-bonus
+      description: ''
+      script: '|||bonusly-create-bonus'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.reason_html
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.amount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.amount_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.short_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.full_pic_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.profile_pic_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.last_active_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.external_unique_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.budget_boost
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.user_mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.*custom_property_name*
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.can_give
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.earning_balance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.earning_balance_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.lifetime_earnings
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.lifetime_earnings_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.can_receive
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.giving_balance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.giving_balance_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.receiver
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.child_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.via
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.family_amount
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: bonusly-get-bonus
+      description: ''
+      script: '|||bonusly-get-bonus'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.reason_html
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.amount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.amount_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.short_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.full_pic_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.profile_pic_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.last_active_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.external_unique_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.budget_boost
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.user_mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.*custom_property_name*
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.can_give
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.earning_balance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.earning_balance_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.lifetime_earnings
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.lifetime_earnings_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.can_receive
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.giving_balance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.giving_balance_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.receiver
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.child_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.via
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.family_amount
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: bonusly-update-bonus
+      description: ''
+      script: '|||bonusly-update-bonus'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.reason_html
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.amount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.amount_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.short_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.full_pic_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.profile_pic_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.last_active_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.external_unique_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.budget_boost
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.user_mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.*custom_property_name*
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.can_give
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.earning_balance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.earning_balance_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.lifetime_earnings
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.lifetime_earnings_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.can_receive
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.giving_balance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.giving_balance_with_currency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.giver.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.receiver
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.child_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.via
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.family_amount
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: bonusly-delete-bonus
+      description: ''
+      script: '|||bonusly-delete-bonus'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bonusly.Bonus.message
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '12'
+    type: title
+    task:
+      id: '12'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
