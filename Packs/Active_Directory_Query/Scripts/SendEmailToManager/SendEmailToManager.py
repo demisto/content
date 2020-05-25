@@ -14,8 +14,8 @@ if not email:
 managerAttrubute = demisto.get(demisto.args(), 'manager')
 if not managerAttrubute:
     managerAttrubute = 'manager'
-res = demisto.executeCommand('AdSearch', {'filter': r'(&(objectClass=user)(mail=' + email + '))',
-                                          'attributes': 'displayname,' + managerAttrubute})
+res = demisto.executeCommand('ad-search', {'filter': r'(&(objectClass=user)(mail=' + email + '))',
+                                           'attributes': 'displayname,' + managerAttrubute})
 if isError(res[0]):
     demisto.results(res)
     sys.exit(0)
@@ -25,7 +25,7 @@ if not managerDN:
     demisto.results('Unable to get manager email')
     sys.exit(0)
 filterstr = r'(&(objectClass=User)(distinguishedName=' + managerDN + '))'
-res = demisto.executeCommand('AdSearch', {'filter': filterstr, 'attributes': 'displayname,mail'})
+res = demisto.executeCommand('ad-search', {'filter': filterstr, 'attributes': 'displayname,mail'})
 if isError(res[0]):
     demisto.results(res)
     sys.exit(0)
