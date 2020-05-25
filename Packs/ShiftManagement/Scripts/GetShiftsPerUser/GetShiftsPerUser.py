@@ -24,7 +24,6 @@ def main():
         return_error(
             f'Failed to get roles: {str(get_error(get_roles_response))}')
 
-    shifts_per_user: Dict[str, int] = {}
     get_users_response: List = demisto.executeCommand('getUsers', {})
     if is_error(get_users_response):
         return_error(
