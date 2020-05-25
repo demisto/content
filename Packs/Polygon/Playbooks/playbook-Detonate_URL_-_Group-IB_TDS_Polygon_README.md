@@ -82,3 +82,6 @@ This playbook does not use any integrations.
 | Polygon.Analysis.Domain | unknown | The information about Domain indicators | 
 | Polygon.Analysis.RegistryKey | unknown | The information about registry keys which were modified during the analysis | 
 | Polygon.Analysis.Process | unknown | The information about processes started during the analysis | 
+
+## Playbook Image
+![Polygon Detonate URL](https://github.com/demisto/content/raw/Polygon-Initial/docs/images/playbooks/Detonate_URL_-_Group-IB_TDS_Polygon.png)
