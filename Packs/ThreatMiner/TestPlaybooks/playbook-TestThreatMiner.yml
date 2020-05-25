@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: aeeb6964-95a7-41df-89ba-191bfd7a164c
+    taskid: 93190d0d-d5e5-4783-8d33-b6e1cd4eeeae
     type: start
     task:
-      id: aeeb6964-95a7-41df-89ba-191bfd7a164c
+      id: 93190d0d-d5e5-4783-8d33-b6e1cd4eeeae
       version: -1
       name: ""
       iscommand: false
@@ -20,18 +20,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 8cfc374e-496d-47fc-8c37-2584f6962d95
+    taskid: caef15a4-d9c0-48e7-87f9-627196d74614
     type: regular
     task:
-      id: 8cfc374e-496d-47fc-8c37-2584f6962d95
+      id: caef15a4-d9c0-48e7-87f9-627196d74614
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -53,18 +56,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 240
+          "x": 50,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 7a6879f9-5217-4c58-8910-6a83809e13e9
+    taskid: e2654bf1-7589-4516-868b-cd11af433b2c
     type: regular
     task:
-      id: 7a6879f9-5217-4c58-8910-6a83809e13e9
+      id: e2654bf1-7589-4516-868b-cd11af433b2c
       version: -1
       name: ip
       description: Retrieve data from ThreatMiner about a specified IP address.
@@ -83,18 +89,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 420
+          "x": 50,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 2eab30ce-c645-4e7d-81cf-cf5ea3758ac5
+    taskid: e666c49b-d5f0-4658-8e95-2d7eb02c25b7
     type: condition
     task:
-      id: 2eab30ce-c645-4e7d-81cf-cf5ea3758ac5
+      id: e666c49b-d5f0-4658-8e95-2d7eb02c25b7
       version: -1
       name: Verify ip results
       type: condition
@@ -138,18 +147,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 620
+          "x": 50,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 3e6de61c-8f79-43e5-889c-ea27a2fd3811
+    taskid: 5cf40890-6748-4992-89aa-94f1f67db593
     type: title
     task:
-      id: 3e6de61c-8f79-43e5-889c-ea27a2fd3811
+      id: 5cf40890-6748-4992-89aa-94f1f67db593
       version: -1
       name: Success
       type: title
@@ -162,18 +174,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 820
+          "x": 50,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: ec31ad7d-4a1c-4be4-80f5-a8703e190729
+    taskid: e02aa887-a992-4257-8c38-cca6bd43b0f4
     type: regular
     task:
-      id: ec31ad7d-4a1c-4be4-80f5-a8703e190729
+      id: e02aa887-a992-4257-8c38-cca6bd43b0f4
       version: -1
       name: domain command
       description: Retrieve data from ThreatMiner about a specified IP address.
@@ -197,18 +212,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1120
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 5ec3499f-32ff-4cd2-84e8-724a284ad8e2
+    taskid: c52db194-0ddb-4885-8f2c-97193bb715c3
     type: regular
     task:
-      id: 5ec3499f-32ff-4cd2-84e8-724a284ad8e2
+      id: c52db194-0ddb-4885-8f2c-97193bb715c3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -230,18 +248,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 950
+          "x": 50,
+          "y": 865
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 400f4eaa-9535-4695-8ddf-5d72bbf2b272
+    taskid: dd81c97b-16a1-4e45-8fa8-d6350087d8e5
     type: condition
     task:
-      id: 400f4eaa-9535-4695-8ddf-5d72bbf2b272
+      id: dd81c97b-16a1-4e45-8fa8-d6350087d8e5
       version: -1
       name: Verify domain results
       description: |2+
@@ -282,18 +303,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1310
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 938683af-7da1-4989-8430-e37364e35d42
+    taskid: 626042a5-9779-473d-8437-7ac4c303313f
     type: title
     task:
-      id: 938683af-7da1-4989-8430-e37364e35d42
+      id: 626042a5-9779-473d-8437-7ac4c303313f
       version: -1
       name: Success
       type: title
@@ -306,18 +330,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1500
+          "x": 50,
+          "y": 1390
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 2799400c-51bc-47e7-8506-9c2fd1ed801e
+    taskid: 847ce4d6-e89b-46df-8ed0-0b266ac02ba1
     type: regular
     task:
-      id: 2799400c-51bc-47e7-8506-9c2fd1ed801e
+      id: 847ce4d6-e89b-46df-8ed0-0b266ac02ba1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -339,18 +366,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1680
+          "x": 50,
+          "y": 1535
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 02608ad1-8e2e-4a77-8845-33732447ad3c
+    taskid: f6217024-a71f-41d1-86ac-d7a27eac7cb6
     type: regular
     task:
-      id: 02608ad1-8e2e-4a77-8845-33732447ad3c
+      id: f6217024-a71f-41d1-86ac-d7a27eac7cb6
       version: -1
       name: file
       description: Retrieve data from ThreatMiner about a specified file.
@@ -369,18 +399,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1860
+          "x": 50,
+          "y": 1710
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 544d1b37-0ff4-4ab2-810b-45b9aa7631ef
+    taskid: f6f253e6-84c1-4ce1-8619-7e734d132021
     type: condition
     task:
-      id: 544d1b37-0ff4-4ab2-810b-45b9aa7631ef
+      id: f6f253e6-84c1-4ce1-8619-7e734d132021
       version: -1
       name: Verify File(Samples)
       description: Verify File(Sample) Metadata, HTTP Traffic, Hosts, Mutants
@@ -389,7 +422,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -428,18 +461,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2030
+          "x": 50,
+          "y": 1885
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: bfa02101-7f31-4b4a-84a7-aa86c907216d
+    taskid: e83a3ed4-db86-40a7-8c90-a27fa6764f24
     type: title
     task:
-      id: bfa02101-7f31-4b4a-84a7-aa86c907216d
+      id: e83a3ed4-db86-40a7-8c90-a27fa6764f24
       version: -1
       name: Success
       type: title
@@ -449,20 +485,61 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2240
+          "x": 50,
+          "y": 2235
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 822c70ef-4a8e-4168-8467-47e1228752b4
+    type: regular
+    task:
+      id: 822c70ef-4a8e-4168-8467-47e1228752b4
+      version: -1
+      name: Search for IP with no reports
+      description: Retrieves data from ThreatMiner about a specified IP address.
+      script: ThreatMiner|||ip
+      type: regular
+      iscommand: true
+      brand: ThreatMiner
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 35.24.216.211
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2255,
+        "height": 2250,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
