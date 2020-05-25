@@ -66,7 +66,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Workflow state on which to filter.
+      description: Workflow state to update.
       isArray: false
       name: state
       predefined:
@@ -81,7 +81,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Description or justification for the change.
+      description: Description of the changes done in the workflow state.
       isArray: false
       name: remediation_state
       required: false
@@ -111,8 +111,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The devices on which to perform the action. Get the ID from the devices-list command.
-        Supports comma-separated values.
+      description: The devices on which to perform the action. Get the ID from the
+        devices-list command. Supports comma-separated values.
       isArray: false
       name: device_id
       required: true
@@ -123,8 +123,8 @@ script:
     name: cb-eedr-device-quarantine
   - arguments:
     - default: false
-      description: The devices on which to perform the action. Get the ID from the devices-list command.
-        Supports comma-separated values.
+      description: The devices on which to perform the action. Get the ID from the
+        devices-list command. Supports comma-separated values.
       isArray: true
       name: device_id
       required: true
@@ -450,7 +450,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Whether to group results. Can be "true" or "false". The default is "true".
+      description: Whether to group results. Can be "true" or "false". The default
+        is "true".
       isArray: false
       name: group_results
       predefined:
@@ -540,6 +541,8 @@ script:
       description: Alert workflow. Supports comma-separated values.
       isArray: false
       name: workflow
+      predefined:
+      - ''
       required: false
       secret: false
     - default: false
@@ -557,7 +560,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: severity
-      description: Field by which to sort the results. Can be "first_event_time", "last_event_time", "severity", or "target_value".
+      description: Field by which to sort the results. Can be "first_event_time",
+        "last_event_time", "severity", or "target_value".
       isArray: false
       name: sort_field
       predefined:
@@ -570,7 +574,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: DESC
-      description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending). The default is "DESC".
+      description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
+        The default is "DESC".
       isArray: false
       name: sort_order
       predefined:
@@ -816,7 +821,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the alert status for the watchlist with given watchlist ID.
+    description: Retrieves the alert status for the watchlist with given watchlist
+      ID.
     execution: false
     name: cb-eedr-watchlist-alerts-status
   - arguments:
@@ -914,13 +920,13 @@ script:
       description: Watchlist created timestamp.
       type: Date
     - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
-      description: Whether alerts are enabled in the watchlist. 
+      description: Whether alerts are enabled in the watchlist.
       type: Boolean
     - contextPath: CarbonBlackEEDR.Watchlist.ID
       description: Watchlist ID.
       type: String
     - contextPath: CarbonBlackEEDR.Watchlist.Tags_enabled
-      description: Whether tags are enabled in the watchlist. 
+      description: Whether tags are enabled in the watchlist.
       type: Boolean
     - contextPath: CarbonBlackEEDR.Watchlist.Description
       description: Watchlist description.
@@ -995,8 +1001,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates the specified watchlist. This will update the tags and
-      alert status as well as any reports or classifiers attached to the watchlist.
+    description: Updates the specified watchlist. This will update the tags and alert
+      status as well as any reports or classifiers attached to the watchlist.
     execution: false
     name: cb-eedr-watchlist-update
     outputs:
@@ -1016,13 +1022,13 @@ script:
       description: Watchlist created timestamp.
       type: Date
     - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
-      description: Whether alerts are enabled in the watchlist. 
+      description: Whether alerts are enabled in the watchlist.
       type: Boolean
     - contextPath: CarbonBlackEEDR.Watchlist.ID
       description: Watchlist ID.
       type: String
     - contextPath: CarbonBlackEEDR.Watchlist.Tags_enabled
-      description: Whether tags are enabled in the watchlist. 
+      description: Whether tags are enabled in the watchlist.
       type: Boolean
     - contextPath: CarbonBlackEEDR.Watchlist.Description
       description: Watchlist description.
@@ -1309,7 +1315,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Query IOC. For example: (netconn_ipv4:2.2.2.2). Supports comma-separated values.'
+      description: 'Query IOC. For example: (netconn_ipv4:2.2.2.2). Supports comma-separated
+        values.'
       isArray: false
       name: ioc_query
       required: false
@@ -1476,7 +1483,8 @@ script:
       secret: false
     - default: false
       defaultValue: '300'
-      description: The number of seconds to make the download URLs available for. The default is 300.
+      description: The number of seconds to make the download URLs available for.
+        The default is 300.
       isArray: false
       name: expiration_seconds
       required: false
@@ -1501,7 +1509,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The requested SHA256 hash to obtain information for. Supports comma-separated values.
+      description: The requested SHA256 hash to obtain information for. Supports comma-separated
+        values.
       isArray: false
       name: sha256
       required: true

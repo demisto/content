@@ -9,10 +9,6 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 requests.packages.urllib3.disable_warnings()
 
 
-def datetime_to_iso(d):
-    return d.strftime('%Y-%m-%dT%H:%M:%S.000Z')
-
-
 class Client(BaseClient):
     def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool, token=None, cb_org_key=None):
         self.token = token
@@ -502,6 +498,11 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
         'start': args.get('start_time'),
         'end': args.get('end_time')
     }
+    if args.get('start_time') and not args.get('end_time'):
+        last_contact_time = {
+            'start': args.get('start_time'),
+            'end': datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        }
     ad_group_id = argToList(args.get('ad_group_id'))
     policy_id = argToList(args.get('policy_id'))
     target_priority = argToList(args.get('target_priority'))
@@ -663,9 +664,9 @@ def watchlist_alert_status_command(client: Client, args: Dict) -> str:
     result = client.watchlist_alert_status_request(watchlist_id)
 
     if not result.get('alert'):
-        return f'Watchlist {watchlist_id} alert status is false'
+        return f'Watchlist {watchlist_id} alert status is Off'
     else:
-        return f'Watchlist {watchlist_id} alert status is true'
+        return f'Watchlist {watchlist_id} alert status is On'
 
 
 def enable_watchlist_alert_command(client: Client, args: Dict) -> str:
@@ -950,9 +951,9 @@ def get_report_ignore_status_command(client: Client, args: Dict) -> str:
     result = client.get_report_ignore_status_request(report_id)
 
     if not result.get('ignored'):
-        return f'ignore status for report with report_id "{report_id}" is false.'
+        return f'ignore status for report with report_id "{report_id}" is disabled.'
     else:
-        return f'ignore status for report with report_id "{report_id}" is true.'
+        return f'ignore status for report with report_id "{report_id}" is enabled.'
 
 
 def remove_report_command(client: Client, args: Dict) -> str:
@@ -1152,7 +1153,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         sort_order='ASC',
         create_time=assign_params(
             start=last_fetched_alert_create_time,
-            end=datetime_to_iso(datetime.now())
+            end=datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
         ),
         limit=fetch_limit,
     )
@@ -1164,14 +1165,14 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             # got an alert we already fetched, skipping it
             continue
 
-        alert_create_date = alert.get('CreateTime')
+        alert_create_date = alert.get('create_time')
         incident = {
             'name': f'Carbon Black Enterprise EDR alert {alert_id}',
             'occurred': alert_create_date,
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        latest_alert_create_date = alert_create_date
+        latest_alert_create_date = date_to_timestamp(datetime.strptime(alert_create_date, '%Y-%m-%dT%H:%M:%S.%fZ')) + 1
         latest_alert_id = alert_id
 
     return incidents, \
@@ -1315,7 +1316,11 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        err_msg = str(e)
+        if 'MALFORMED_JSON' in err_msg:
+            return_error(f'Failed to execute {demisto.command()} command. \nError: One or more of the arguments are '
+                         f'invalid. Make sure that all arguments are correct.')
+        return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
