@@ -145,7 +145,7 @@ class TestZipPacks:
             TestPlaybooks should not be removed
         """
         files = ['README.md', 'changelog.json', 'metadata.json', 'ReleaseNotes/1_0_1.md',
-                 'Playbooks/playbook-oylo.yml',  'Scripts/script-TaniumAskQuestion.yml',
+                 'Playbooks/playbook-oylo.yml', 'Scripts/script-TaniumAskQuestion.yml',
                  'Integrations/integration-shtak.yml']
         mocker.patch.object(ZipFile, '__init__', return_value=None)
         mocker.patch.object(ZipFile, 'namelist', return_value=files)
@@ -154,13 +154,3 @@ class TestZipPacks:
         remove_test_playbooks_if_exist('dest', [{'name': 'path'}])
 
         assert ZipFile.extractall.call_count == 0
-
-
-
-
-
-
-
-
-
-
