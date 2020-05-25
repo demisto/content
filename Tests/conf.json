@@ -2799,7 +2799,6 @@
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "SNDBOX_Test": "Issue 24349",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
@@ -2985,6 +2984,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
