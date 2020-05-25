@@ -43,8 +43,8 @@ else
   echo "Finished updating content packs successfully."
 fi
 
-echo "Normalizing images paths to build bucket ..."
-python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
-echo "Finished normalizing images paths successfully."
+#echo "Normalizing images paths to build bucket ..."
+#python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
+#echo "Finished normalizing images paths successfully."
 
 echo "Finished preparing content packs for testing successfully."
