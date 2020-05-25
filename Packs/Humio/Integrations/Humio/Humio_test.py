@@ -130,7 +130,10 @@ def test_humio_poll(requests_mock):
     args = {"id": "testid", "repository": "sandbox"}
 
     _, outputs, _ = humio_poll(client, args, headers)
-    assert outputs["Humio.Result(val.job_id == obj.job_id)"]["events"] == mock_response["events"]
+    assert (
+        outputs["Humio.Result(val.job_id == obj.job_id)"]["events"]
+        == mock_response["events"]
+    )
 
 
 def test_humio_list_alerts(requests_mock):

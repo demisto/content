@@ -42,9 +42,11 @@ def test_module(client, headers=None):
     if response.status_code == 200:
         try:
             resp = response.json()
-        except:
-            return "Could connect to server, but got unexpected response: {}".format(response.text)
-        
+        except Exception:
+            return "Could connect to server, but got unexpected response: {}".format(
+                response.text
+            )
+
         if resp["status"].lower() == "ok":
             incidentquery = demisto.params().get("queryParameter")
             incidentrepo = demisto.params().get("queryRepository")
@@ -55,15 +57,17 @@ def test_module(client, headers=None):
                     "start": "1m",
                     "end": "now",
                     "isLive": "false",
-                    "timeZoneOffsetMinutes": 0
+                    "timeZoneOffsetMinutes": 0,
                 }
                 humio_query(client, args, headers)
                 return "ok"
             else:
                 return "ok"
-        
+
     else:
-        return "Bad status from server: ({}) {}".format(response.status_code, response.text)
+        return "Bad status from server: ({}) {}".format(
+            response.status_code, response.text
+        )
 
 
 def humio_query(client, args, headers):
@@ -84,11 +88,7 @@ def humio_query(client, args, headers):
         outputs = {"Humio.Query": [result]}
         return markdown, outputs, result
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_query_job(client, args, headers):
@@ -109,11 +109,7 @@ def humio_query_job(client, args, headers):
         outputs = {"Humio.Job": result}
         return markdown, outputs, result
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_poll(client, args, headers):
@@ -137,11 +133,7 @@ def humio_poll(client, args, headers):
     elif response.status_code == 404:
         raise ValueError(response.text)
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_delete_job(client, args, headers):
@@ -159,11 +151,7 @@ def humio_delete_job(client, args, headers):
     elif response.status_code == 404:
         raise ValueError(response.text)
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_list_alerts(client, args, headers):
@@ -177,11 +165,7 @@ def humio_list_alerts(client, args, headers):
         outputs = {"Humio.Alert(val.id == obj.id)": result}
         return markdown, outputs, result
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_get_alert_by_id(client, args, headers):
@@ -197,11 +181,7 @@ def humio_get_alert_by_id(client, args, headers):
         outputs = {"Humio.Alert(val.id == obj.id)": result}
         return markdown, outputs, result
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_create_alert(client, args, headers):
@@ -235,11 +215,7 @@ def humio_create_alert(client, args, headers):
         outputs = {"Humio.Alert(val.id == obj.id)": result}
         return markdown, outputs, result
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_delete_alert(client, args, headers):
@@ -250,11 +226,7 @@ def humio_delete_alert(client, args, headers):
     if response.status_code == 204:
         return ("Command executed. Status code " + str(response), None, None)
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_list_notifiers(client, args, headers):
@@ -268,11 +240,7 @@ def humio_list_notifiers(client, args, headers):
         outputs = {"Humio.Notifier(val.id == obj.id)": result}
         return markdown, outputs, result
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def humio_get_notifier_by_id(client, args, headers):
@@ -293,11 +261,7 @@ def humio_get_notifier_by_id(client, args, headers):
         outputs = {"Humio.Notifier(val.id == obj.id)": result}
         return markdown, outputs, result
     else:
-        raise ValueError(
-            "Error:"
-            + " response from server was: "
-            + str(response.text)
-        )
+        raise ValueError("Error:" + " response from server was: " + str(response.text))
 
 
 def fetch_incidents(client, headers):
@@ -307,43 +271,43 @@ def fetch_incidents(client, headers):
     lastrun = demisto.getLastRun()
     url = "/api/v1/repositories/" + incidentrepo + "/query"
     headers["Accept"] = "application/json"
-    try:
-        if lastrun["time"]:
-            data = {}
-            data["queryString"] = incidentquery
-            data["start"] = int(lastrun["time"]) * 1000
-            data["end"] = "now"
-            data["isLive"] = False
-            data["timeZoneOffsetMinutes"] = int(
-                demisto.params().get("queryTimeZoneOffsetMinutes")
-            )
-            response = client.http_request("POST", url, data, headers)
-            if response.status_code == 200:
-                demisto.setLastRun({"time": int(datetime.now().timestamp())})
-                return form_incindents(response.json())
-            else:
-                raise ValueError(
-                    "Error in fetching incidents. Error from server was: "
-                    + str(response)
-                )
-    except Exception:
-        data = {}
-        data["queryString"] = incidentquery
-        data["start"] = timestampfrom
-        data["end"] = "now"
-        data["isLive"] = False
-        data["timeZoneOffsetMinutes"] = int(
+
+    # set maximum of 50 returned events (this is idempotent)
+    incidentquery = incidentquery + "| head(50)"
+
+    backup_ts = int(datetime.now().timestamp()) * 1000
+    last_run_time = lastrun.get("time")
+    data = {
+        "queryString": incidentquery,
+        "end": "now",
+        "isLive": False,
+        "timeZoneOffsetMinutes": int(
             demisto.params().get("queryTimeZoneOffsetMinutes")
+        ),
+    }
+
+    if last_run_time is None:
+        # First run
+        data["start"] = timestampfrom
+        max_ts = 0
+    else:
+        data["start"] = int(last_run_time)
+        max_ts = int(last_run_time)
+
+    response = client.http_request("POST", url, data, headers)
+    if response.status_code == 200:
+        response_data = response.json()
+        for result in response_data:
+            ts = int(result.get("@timestamp", backup_ts))
+            if ts > max_ts:
+                max_ts = ts
+        max_ts += 1
+        demisto.setLastRun({"time": max_ts})
+        return form_incindents(response_data)
+    else:
+        raise ValueError(
+            "Error in fetching incidents. Error from server was: " + str(response.text)
         )
-        response = client.http_request("POST", url, data, headers)
-        if response.status_code == 200:
-            demisto.setLastRun({"time": int(datetime.now().timestamp())})
-            return form_incindents(response.json())
-        else:
-            raise ValueError(
-                "Error in fetching incidents. Error from server was: "
-                + str(response.text)
-            )
 
 
 def create_incident_from_humioquery(incident):
