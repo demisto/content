@@ -1,4 +1,5 @@
-from Tests.Marketplace.zip_packs import download_packs_from_gcp, get_latest_pack_zip_from_blob, zip_packs
+from Tests.Marketplace.zip_packs import download_packs_from_gcp, get_latest_pack_zip_from_blob, zip_packs,\
+    remove_test_playbooks_if_exist
 
 
 class TestZipPacks:
@@ -75,15 +76,91 @@ class TestZipPacks:
         assert zipped_packs == [{'Slack': 'path/Slack.zip'}]
 
     def test_zip_packs(self, mocker):
+        """
+        Given:
+            Packs zips in the zip folder
+
+        When:
+            Zipping into zip of zips
+
+        Then:
+            Zip the packs correctly
+        """
         from zipfile import ZipFile
 
         mocker.patch.object(ZipFile, '__init__', return_value=None)
         mocker.patch.object(ZipFile, 'write')
         mocker.patch.object(ZipFile, 'close')
-
         packs = [{'Slack': 'path/Slack.zip'}]
 
         zip_packs(packs, 'oklol')
 
         assert ZipFile.write.call_args[0][0] == 'path/Slack.zip'
         assert ZipFile.write.call_args[0][1] == 'Slack.zip'
+
+    def test_remove_test_playbooks_if_exist(self, mocker):
+        from zipfile import ZipFile
+        import shutil
+        """
+        Given:
+            Removing test playbooks from packs
+
+        When:
+            Zipping packs
+
+        Then:
+            The zip should be without TestPlaybooks
+        """
+        files = ['README.md', 'changelog.json', 'metadata.json', 'ReleaseNotes/1_0_1.md',
+                 'Playbooks/playbook-oylo.yml', 'TestPlaybooks/playbook-oylo.yml',
+                 'Scripts/script-TaniumAskQuestion.yml', 'Integrations/integration-shtak.yml']
+        mocker.patch.object(ZipFile, '__init__', return_value=None)
+        mocker.patch.object(ZipFile, 'write')
+        mocker.patch.object(ZipFile, 'close')
+        mocker.patch.object(ZipFile, 'namelist', return_value=files)
+        mocker.patch.object(ZipFile, 'extractall')
+        mocker.patch('os.remove')
+        mocker.patch('shutil.make_archive')
+        mocker.patch('os.mkdir')
+
+        remove_test_playbooks_if_exist('dest', [{'name': 'path'}])
+
+        extract_args = ZipFile.extractall.call_args[1]['members']
+        archive_args = shutil.make_archive.call_args[0]
+
+        assert list(extract_args) == [file_ for file_ in files if 'TestPlaybooks' not in file_]
+        assert archive_args[0] == 'dest/name'
+
+    def test_remove_test_playbooks_if_exist_no_test_playbooks(self, mocker):
+        from zipfile import ZipFile
+
+        """
+        Given:
+            Removing test playbooks from packs
+
+        When:
+            Zipping packs, the pack doesn't have TestPlaybooks
+
+        Then:
+            TestPlaybooks should not be removed
+        """
+        files = ['README.md', 'changelog.json', 'metadata.json', 'ReleaseNotes/1_0_1.md',
+                 'Playbooks/playbook-oylo.yml',  'Scripts/script-TaniumAskQuestion.yml',
+                 'Integrations/integration-shtak.yml']
+        mocker.patch.object(ZipFile, '__init__', return_value=None)
+        mocker.patch.object(ZipFile, 'namelist', return_value=files)
+        mocker.patch.object(ZipFile, 'extractall')
+
+        remove_test_playbooks_if_exist('dest', [{'name': 'path'}])
+
+        assert ZipFile.extractall.call_count == 0
+
+
+
+
+
+
+
+
+
+

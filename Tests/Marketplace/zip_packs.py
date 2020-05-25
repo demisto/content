@@ -5,7 +5,7 @@ import shutil
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_FILES, PACKS_FULL_PATH
 
-from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion
+from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion, str2bool
 
 ARTIFACT_NAME = 'zipped_packs.zip'
 MAX_THREADS = 4
@@ -37,6 +37,8 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
+    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+                        help='Whether to remove test playbooks from content packs or not.', default=True)
 
     return parser.parse_args()
 
@@ -53,7 +55,33 @@ def zip_packs(packs, destination_path):
         for zip_pack in packs:
             for name, path in zip_pack.items():
                 print(f'Adding {name} to the zip file')
-                zf.write(path, f"{name}.zip")
+                zf.write(path, f'{name}.zip')
+
+
+def remove_test_playbooks_if_exist(zips_path, packs):
+    """
+    If a pack has test playbooks, the function extracts the pack, removes the test playbooks and zips the pack again.
+    Args:
+        zips_path: The path where the pack zips are.
+        packs: The packs name and path.
+    """
+    for zip_pack in packs:
+        for name, path in zip_pack.items():
+            remove = False
+            with ZipFile(path, mode='r') as pack_zip:
+                zip_contents = pack_zip.namelist()
+                dir_names = [os.path.basename(os.path.dirname(content)) for content in zip_contents]
+                if 'TestPlaybooks' in dir_names:
+                    remove = True
+                    print(f'Removing TestPlaybooks from the pack {name}')
+                    new_path = os.path.join(zips_path, name)
+                    os.mkdir(new_path)
+                    pack_zip.extractall(path=new_path,
+                                        members=(member for member in zip_contents if 'TestPlaybooks' not in member))
+            if remove:
+                # Remove the current pack zip
+                os.remove(path)
+                shutil.make_archive(new_path, 'zip', new_path)
 
 
 def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name):
@@ -139,6 +167,7 @@ def main():
     circle_build = option.circle_build
     branch_name = option.branch_name
     gcp_path = option.gcp_path
+    remove_test_playbooks = option.remove_test_playbooks
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -160,7 +189,14 @@ def main():
         print_error(f'Failed downloading packs: {e}')
         success = False
 
-    if zipped_packs:
+    if remove_test_playbooks:
+        try:
+            remove_test_playbooks_if_exist(zip_path, zipped_packs)
+        except Exception as e:
+            print_error(f'Failed removing test playbooks from packs: {e}')
+            success = False
+
+    if zipped_packs and success:
         try:
             zip_packs(zipped_packs, zip_path)
         except Exception as e:
@@ -169,16 +205,15 @@ def main():
 
         if success:
             print_success('Successfully zipped packs.')
+            if artifacts_path:
+                # Save in the artifacts
+                shutil.copy(os.path.join(zip_path, ARTIFACT_NAME), os.path.join(artifacts_path, ARTIFACT_NAME))
         else:
             print_error('Failed zipping packs.')
-
-        cleanup(zip_path)
-
-        if artifacts_path:
-            # Save in the artifacts
-            shutil.copy(os.path.join(zip_path, ARTIFACT_NAME), os.path.join(artifacts_path, ARTIFACT_NAME))
     else:
         print_warning('Did not find any packs to zip.')
+
+    cleanup(zip_path)
 
 
 if __name__ == '__main__':
