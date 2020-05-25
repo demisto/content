@@ -1,0 +1,484 @@
+id: BastilleNetworks-Test
+version: -1
+name: BastilleNetworks-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6655ad87-b8cf-48c0-899b-2d7489aee70f
+    type: start
+    task:
+      id: 6655ad87-b8cf-48c0-899b-2d7489aee70f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b1c22d67-dc56-4eab-8b69-95eb8c6b9de5
+    type: regular
+    task:
+      id: b1c22d67-dc56-4eab-8b69-95eb8c6b9de5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9e2319d7-7abe-496f-8985-dd3f7a298735
+    type: regular
+    task:
+      id: 9e2319d7-7abe-496f-8985-dd3f7a298735
+      version: -1
+      name: bastille-get-device-events
+      script: '|||bastille-get-device-events'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      concentrator: {}
+      event_id: {}
+      limit:
+        simple: "1"
+      map: {}
+      protocol: {}
+      since: {}
+      site: {}
+      tags: {}
+      transmitter_id: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 320968f9-0965-44ba-87ba-8f714d12ff50
+    type: condition
+    task:
+      id: 320968f9-0965-44ba-87ba-8f714d12ff50
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.event_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Bastille.DeviceEvent.event_type
+            iscontext: true
+          right:
+            value:
+              simple: device_event
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.time_s
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.area.site_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.area.concentrator_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.area.map_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.emitter.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.emitter.transmitter_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.emitter.network.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.device_info.manufacturer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.device_info.user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.device_info.model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.device_info.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.first_seen.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.DeviceEvent.last_seen.time
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: cc673c04-d995-4fc2-82cb-1d7540421679
+    type: regular
+    task:
+      id: cc673c04-d995-4fc2-82cb-1d7540421679
+      version: -1
+      name: bastille-get-zone-events
+      script: '|||bastille-get-zone-events'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      concentrator: {}
+      event_id: {}
+      limit:
+        simple: "1"
+      map: {}
+      protocol: {}
+      since: {}
+      site: {}
+      tags: {}
+      until: {}
+      zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 133f4dd4-ad46-4eea-8a3b-8ed7960f16f6
+    type: condition
+    task:
+      id: 133f4dd4-ad46-4eea-8a3b-8ed7960f16f6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.event_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Bastille.ZoneEvent.event_type
+            iscontext: true
+          right:
+            value:
+              simple: zone_event
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.time_s
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.zone_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.area.site_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.area.concentrator_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.area.map_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.emitter.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.emitter.transmitter_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.emitter.network.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.device_info.manufacturer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.device_info.user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.device_info.model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.device_info.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.first_seen.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bastille.ZoneEvent.last_seen.time
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 67b95a83-ad4a-47b3-8f09-7b946ffb4725
+    type: regular
+    task:
+      id: 67b95a83-ad4a-47b3-8f09-7b946ffb4725
+      version: -1
+      name: bastille-add-device-tag
+      script: '|||bastille-add-device-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      concentrator:
+        simple: c1
+      map:
+        simple: m1
+      site:
+        simple: s1
+      tag:
+        simple: some-tag
+      transmitter_id:
+        simple: vzw:1100:249:6f4d
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3925a0a5-8d02-41d0-84e2-c62bcbd8557a
+    type: title
+    task:
+      id: 3925a0a5-8d02-41d0-84e2-c62bcbd8557a
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d4418da6-c1e2-4d22-80d0-8d98fff3c9bb
+    type: regular
+    task:
+      id: d4418da6-c1e2-4d22-80d0-8d98fff3c9bb
+      version: -1
+      name: bastille-remove-device-tag
+      description: Command to remove tag from an existing device
+      script: '|||bastille-remove-device-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      tag:
+        simple: some-tag
+      transmitter_id:
+        simple: vzw:1100:249:6f4d
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1595,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''
