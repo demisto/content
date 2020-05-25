@@ -13,6 +13,10 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_ENDPOINT = 'https://endpoint.apivoid.com'
+GOOD = 10
+SUSPICIOUS = 30
+BAD = 60
+MALICIOUS = 'suspicious'
 
 
 class Client(BaseClient):
@@ -20,13 +24,9 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-    def __init__(self, base_url, apikey, verify, proxy, good, suspicious, bad, malicious):
+    def __init__(self, base_url, apikey, verify, proxy):
         self.apikey = apikey
         super().__init__(base_url, verify=verify, proxy=proxy)
-        self.good = good
-        self.suspicious = suspicious
-        self.bad = bad
-        self.malicious = malicious
 
     def test(self):
 
@@ -134,14 +134,14 @@ def indicator_context(client, indicator, indicator_context_path, indicator_value
     if engines != 0:
         detection_rate = (detections / engines) * 100
 
-        if detection_rate < client.good:
+        if detection_rate < GOOD:
             dbot_score = 1
-        if detection_rate > client.suspicious:
+        if detection_rate > SUSPICIOUS:
             dbot_score = 2
-        if detection_rate > client.bad:
+        if detection_rate > BAD:
             dbot_score = 3
 
-    if (client.malicious == "suspicious" and dbot_score >= 2) or (client.malicious == "bad" and dbot_score == 3):
+    if (MALICIOUS == "suspicious" and dbot_score >= 2) or (MALICIOUS == "bad" and dbot_score == 3):
         indicator['Malicious'] = {
             'Vendor': 'APIVoid',
             'Description': f"Detection rate of {indicator['PositiveDetections']}/{indicator['DetectionEngines']}"
@@ -256,7 +256,7 @@ def url_command(client, args, reputation_only):
     if report:
         report['url'] = url
 
-        engines = len(report.get('domain_blacklist', {}).get('engines', 0))
+        engines = len(report.get('domain_blacklist', {}).get('engines', []))
         detections = report.get('domain_blacklist', {}).get('detections', 0)
 
         # URL Information
@@ -542,7 +542,7 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-
+    global GOOD, SUSPICIOUS, BAD, MALICIOUS
     params = demisto.params()
     # get the service API url (This is static for this service)
     base_url = API_ENDPOINT
@@ -550,12 +550,12 @@ def main():
     apikey = params.get('apikey', None)
 
     verify_certificate = not params.get('insecure', False)
-
     proxy = params.get('proxy', False)
-    good = int(params.get('good', 10))
-    suspicious = int(params.get('suspicious', 30))
-    bad = int(params.get('bad', 60))
-    malicious = params.get('malicious', 'suspicious')
+
+    GOOD = int(params.get('good', 10))
+    SUSPICIOUS = int(params.get('suspicious', 30))
+    BAD = int(params.get('bad', 60))
+    MALICIOUS = params.get('malicious', 'suspicious')
     command = demisto.command()
 
     LOG(f'Command being called is {demisto.command()}')
@@ -565,10 +565,6 @@ def main():
             apikey,
             verify_certificate,
             proxy,
-            good,
-            suspicious,
-            bad,
-            malicious
         )
 
         args = demisto.args()
