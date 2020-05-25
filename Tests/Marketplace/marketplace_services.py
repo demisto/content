@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import fnmatch
+import re
 import shutil
 import yaml
 import enum
@@ -647,6 +648,7 @@ class Pack(object):
 
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
+                            changelog_lines = re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
                         version_changelog = {'releaseNotes': changelog_lines,
                                              'displayName': latest_release_notes,
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
