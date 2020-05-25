@@ -2793,6 +2793,11 @@
             "integrations": "Endace",
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Deep Instinct",
+            "playbookID": "DeepInstinct-Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
