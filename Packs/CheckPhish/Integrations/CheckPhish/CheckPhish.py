@@ -10,7 +10,7 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS22 '''
+''' GLOBALS/PARAMS33 '''
 
 BASE_URL = demisto.params()['url']
 API_KEY = demisto.params().get('token')
