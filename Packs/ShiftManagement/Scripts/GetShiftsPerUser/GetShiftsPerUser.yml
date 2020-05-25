@@ -3,7 +3,7 @@ args:
     description: The user id for the shift (eg. johndoe)
     isArray: false
     name: userId
-    required: true
+    required: false
     secret: false
 comment: Retrieves number of on-call hours per user.
 commonfields:
