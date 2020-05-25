@@ -732,6 +732,13 @@ Channel renamed successfully.
 
 </p>
 <h2>Additional Information</h2>
+<h3>Changing the name of the Cortex XSOAR App</h3>
+<p>Changing the name and icon in direct messages is possible using the integration configuration settings (parameters). In order to change the name of the application itself, do the following:</p>
+<ul>
+<li>Go to the app in the Apps section in slack<img alt="" src="https://user-images.githubusercontent.com/35098543/82789163-8bf87e00-9e72-11ea-92c8-c6b39f827e30.png"/></li>
+<li>Go to the About section in the app and click on Settings: <img alt="" src="https://user-images.githubusercontent.com/35098543/82789573-307ac000-9e73-11ea-9f48-43e46a0f4fde.png"/></li>
+<li>Scroll down and click on the pencil icon to change the name. <img alt="" src="https://user-images.githubusercontent.com/35098543/82789710-70da3e00-9e73-11ea-89c2-2efc11202889.png"/></li>
+</ul>
 <h3>Direct messages</h3>
 <p>You can send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
 <p><strong>list incidents [page x]</strong> - lists the current incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
