@@ -139,6 +139,8 @@ jobs:
             fi
 
             demisto-sdk secrets --post-commit --ignore-entropy
+
+            echo -e ${BLACKLIST_KEY} | gpg --import
       - run:
           name: Collect Test List And Content Packs
           when: always
