@@ -2796,7 +2796,7 @@
         },
         {
             "integrations": "Deep Instinct",
-            "playbookID": "DeepInstinct-Test",
+            "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
         }
     ],
