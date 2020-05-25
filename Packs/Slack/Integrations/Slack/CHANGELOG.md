@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added details about direct messages to the README.
+Added details about direct messages and changing the app name to the README.
 
 ## [20.5.0] - 2020-05-12
 - Removed `Long Running Instance` from instance configuration.
