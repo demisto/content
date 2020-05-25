@@ -41,13 +41,28 @@ def main():
         demisto.results([])
 
     roles = get_roles_response[0]['Contents']
-    shifts_of_user = [r.get("shifts") for r in roles if
-                      r.get("shifts", False) and r.get("name") in user_roles]
-    if len(shifts_of_user) == 0:
+    rshifts_of_user = [r.get("name") for r in roles if
+                       r.get("shifts", False) and r.get("name") in user_roles]
+    if len(rshifts_of_user) == 0:
         demisto.error(f'Failed to find shifts for user: {str(user_id)}')
         demisto.results([])
 
-    demisto.results(json.dumps(shifts_of_user))
+    roles_per_shift = demisto.executeCommand('GetRolesPerShift', {})
+    if is_error(roles_per_shift):
+        return_error(
+            f'Failed to get roles and shifts: {str(get_error(roles_per_shift))}')
+
+    # demisto.results(json.dumps(roles_per_shift))
+
+    roles_per_shift_md = roles_per_shift[0].get("Contents")
+    for rshift in rshifts_of_user:
+        roles_per_shift_md = roles_per_shift_md.replace(rshift,
+                                                        "You have a shift here")
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': roles_per_shift_md})
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
