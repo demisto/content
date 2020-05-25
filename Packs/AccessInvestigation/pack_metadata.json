@@ -11,6 +11,6 @@
         "Network Security"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": ["Access Investigation"],
     "keywords": []
 }
