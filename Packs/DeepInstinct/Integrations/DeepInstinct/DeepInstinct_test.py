@@ -1,5 +1,5 @@
 import json
-from DeepInstinct import DeepInstinct
+import DeepInstinct
 import demistomock as demisto
 
 params = {
