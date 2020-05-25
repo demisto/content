@@ -786,45 +786,47 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         incident_created_time = int(alert.get('created', '0'))
         incident_created_time_ms = incident_created_time * 1000
 
-        # If no name is present it will throw an exception
-        incident_name = alert['name']
+        if incident_created_time > last_fetch:  # to prevent duplicates
 
-        # INTEGRATION DEVELOPER TIP
-        # The incident dict is initialized with a few mandatory fields:
-        # name: the incident name
-        # occurred: the time on when the incident occurred, in ISO8601 format
-        # we use timestamp_to_datestring() from CommonServerPython.py to
-        # handle the conversion.
-        # rawJSON: everything else is packed in a string via json.dumps()
-        # and is included in rawJSON. It will be used later for classification
-        # and mapping inside XSOAR.
-        # severity: it's not mandatory, but is recommended. It must be
-        # converted to XSOAR specific severity (int 1 to 4)
-        # Note that there are other fields commented out here. You can do some
-        # mapping of fields (either out of the box fields, like "details" and
-        # "type") or custom fields (like "helloworldid") directly here in the
-        # code, or they can be handled in the classification and mapping phase.
-        # In either case customers can override them. We leave the values
-        # commented out here, but you can use them if you want.
-        incident = {
-            'name': incident_name,
-            # 'details': alert['name'],
-            'occurred': timestamp_to_datestring(incident_created_time_ms),
-            'rawJSON': json.dumps(alert),
-            # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
-            'severity': convert_to_demisto_severity(alert.get('severity', 'Low')),
-            # 'CustomFields': {  # Map specific XSOAR Custom Fields
-            #     'helloworldid': alert.get('alert_id'),
-            #     'helloworldstatus': alert.get('alert_status'),
-            #     'helloworldtype': alert.get('alert_type')
-            # }
-        }
+            # If no name is present it will throw an exception
+            incident_name = alert['name']
 
-        incidents.append(incident)
+            # INTEGRATION DEVELOPER TIP
+            # The incident dict is initialized with a few mandatory fields:
+            # name: the incident name
+            # occurred: the time on when the incident occurred, in ISO8601 format
+            # we use timestamp_to_datestring() from CommonServerPython.py to
+            # handle the conversion.
+            # rawJSON: everything else is packed in a string via json.dumps()
+            # and is included in rawJSON. It will be used later for classification
+            # and mapping inside XSOAR.
+            # severity: it's not mandatory, but is recommended. It must be
+            # converted to XSOAR specific severity (int 1 to 4)
+            # Note that there are other fields commented out here. You can do some
+            # mapping of fields (either out of the box fields, like "details" and
+            # "type") or custom fields (like "helloworldid") directly here in the
+            # code, or they can be handled in the classification and mapping phase.
+            # In either case customers can override them. We leave the values
+            # commented out here, but you can use them if you want.
+            incident = {
+                'name': incident_name,
+                # 'details': alert['name'],
+                'occurred': timestamp_to_datestring(incident_created_time_ms),
+                'rawJSON': json.dumps(alert),
+                # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
+                'severity': convert_to_demisto_severity(alert.get('severity', 'Low')),
+                # 'CustomFields': {  # Map specific XSOAR Custom Fields
+                #     'helloworldid': alert.get('alert_id'),
+                #     'helloworldstatus': alert.get('alert_status'),
+                #     'helloworldtype': alert.get('alert_type')
+                # }
+            }
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
+            incidents.append(incident)
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_created_time > latest_created_time:
+                latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time}
