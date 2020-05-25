@@ -3,7 +3,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig, IGNORED_FILES, PACKS_FULL_PATH
+from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_FILES, PACKS_FULL_PATH
 
 from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion
 
