@@ -1,0 +1,7 @@
+!polygon-upload-file file_id=3@61
+!polygon-upload-url url=http://reqw.xyz/pik.zip
+!polygon-analysis-info tds_analysis_id=F2118597
+!polygon-report-export tds_analysis_id=F2118597
+!polygon-video-export tds_analysis_id=F2118597
+!polygon-pcap-export tds_analysis_id=F2118597
+!file file=eb57446af5846faa28a726a8b7d43ce5a7fcbd55
