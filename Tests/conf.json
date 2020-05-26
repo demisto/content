@@ -831,9 +831,9 @@
             "playbookID": "URL Enrichment - Generic v2 - Test",
             "integrations": [
                 "Rasterize",
-                "VirusTotal"
+                "VirusTotal - Private API"
             ],
-            "instance_names": "virus_total_general",
+            "instance_names": "virus_total_private_api_general",
             "timeout": 500,
             "pid_threshold": 12
         },
@@ -2800,6 +2800,7 @@
         }
     ],
     "skipped_tests": {
+        "VirusTotal - Private API": "Issue 22638",
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
