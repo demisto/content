@@ -1,0 +1,114 @@
+commonfields:
+  id: XSOAR Mirroring
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    propagationLabels:
+    - all
+    - mirror
+name: XSOAR Mirroring
+display: XSOAR Mirroring
+category: Utilities
+description: 'Allows mirroring of XSOAR incidents between different XSOAR instances/tenants.'
+configuration:
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: XSOAR Server URL
+  name: url
+  defaultvalue: https://127.0.0.1
+  type: 0
+  required: true
+  additionalinfo: The server URL of the other XSOAR server
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+  additionalinfo: API key to access the server
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: "100"
+  type: 0
+  required: false
+- display: Fetch only incidents that match the query
+  name: query
+  type: 0
+  required: false
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Entry Categories
+  name: categories
+  defaultvalue: notes,chats
+  type: 0
+  required: false
+  additionalinfo: Which entries to retrieve from remote XSOAR
+- display: Entry tags
+  name: tags
+  type: 0
+  required: false
+  additionalinfo: Retrieve only entries with these tags
+script:
+  script: ''
+  type: python
+  commands:
+  - name: xsoar-search-incidents
+    arguments:
+    - name: query
+      description: Which incidents to retrieve
+      defaultValue: -status:closed -category:job
+    - name: start_time
+      description: from when to search
+      defaultValue: 3 days
+    - name: max_results
+      description: How many incidents to bring
+      defaultValue: "10"
+    - name: columns
+      description: Which columns to display
+      defaultValue: id,name,type,status,severity,owner,occured
+    description: Search remote XSOAR for incidents
+  - name: xsoar-get-incident
+    arguments:
+    - name: id
+      required: true
+      description: The remote incident id
+    - name: from_date
+      description: Retrieve entries that were created after last_update
+      defaultValue: 3 days
+    - name: categories
+      description: Retrieve only the entries of these categories
+      defaultValue: chats,notes
+    - name: tags
+      description: Retrieve only the entries tagged with these tags
+    - name: max_results
+      description: Max number of entries to retrieve
+      defaultValue: "10"
+    description: Retrieve incident and entries from remote XSOAR
+  dockerimage: demisto/python3:3.8.2.6981
+  isfetch: true
+  runonce: false
+  subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
