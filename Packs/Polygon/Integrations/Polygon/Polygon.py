@@ -241,7 +241,7 @@ def drop_prefix(id_with_prefix):
 
 
 def serialize_report_info(report, analysis_type):
-    res =  {
+    res = {
         "Verdict": "Malicious" if report["info"]["verdict"] else "Benign",
         "Probability": "{:.2f}%".format(report["info"]["probability"]),
         "Families": ", ".join(report["info"]["families"]),
@@ -270,11 +270,11 @@ def serialize_analysis_info(info, analysis_type):
     }
     if analysis_type == FILE_TYPE:
         res.update({
-        'Name': info["original_filename"],
-        'Size': info['file_size'],
-        'MD5': info['md5'],
-        'SHA1': info['sha1'],
-        'SHA256': info['sha256'],
+            'Name': info["original_filename"],
+            'Size': info['file_size'],
+            'MD5': info['md5'],
+            'SHA1': info['sha1'],
+            'SHA256': info['sha256'],
         })
     return res
 
@@ -290,6 +290,7 @@ def get_human_readable_analysis_info(analysis_info):
 def get_main_indicator(report, analysis_type):
     score = Common.DBotScore.GOOD
     malicious = None
+    result = None
     if report["info"]["verdict"]:
         score = Common.DBotScore.BAD
         malicious = "Verdict probability: {}%".format(
@@ -610,7 +611,7 @@ def main():
         }
 
         if command == 'test-module':
-            return_results(test_module())
+            return_results(test_module(client))
         elif command in commands:
             commands[command](client, demisto.args())
 
