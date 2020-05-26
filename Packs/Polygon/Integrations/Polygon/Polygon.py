@@ -366,7 +366,7 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        doamin_ids.append(domain)
+        domain_ids.append(domain)
     for host in network['hosts'] + [h[0] for h in network['dead_hosts']]:
         ip = Common.IP(
             ip=host,
