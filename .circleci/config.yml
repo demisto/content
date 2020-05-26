@@ -605,3 +605,15 @@ workflows:
     jobs:
       - build:
           context: instances_test_env
+  nightly:
+    triggers:
+      - schedule:
+          # should trigger every day at 9 PM UTC (12 AM Israel Time)
+          cron: "0 21 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build:
+          context: nightly_env
