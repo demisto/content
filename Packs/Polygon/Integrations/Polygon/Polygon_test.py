@@ -3,7 +3,6 @@ import pytest
 
 from Polygon import demisto, Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \
     HASH_REPUTATION
-from pprint import pprint
 
 
 with open("test_data/mocked_data.json", "r") as f:

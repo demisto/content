@@ -572,7 +572,7 @@ def file_command(client, args):
 
 
 def test_module(client):
-    res = client.get_attach()
+    client.get_attach()
     return 'ok'
 
 
