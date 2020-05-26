@@ -267,7 +267,7 @@ def auto_detect_indicator_type(indicator_value):
         import tldextract
     except Exception:
         raise Exception("Missing tldextract module, In order to use the auto detect function please use a docker"
-                        " image with it installed such as: demisto/jmespath:1.0.0.6980")
+                        " image with it installed such as: demisto/jmespath")
 
     if re.match(ipv4cidrRegex, indicator_value):
         return FeedIndicatorType.CIDR
