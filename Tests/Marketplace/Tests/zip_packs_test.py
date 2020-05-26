@@ -200,7 +200,3 @@ class TestZipPacks:
             "changelog.json": "g123",
             "metadata.json": "h123"
         }
-
-
-
-

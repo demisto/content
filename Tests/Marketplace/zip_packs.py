@@ -81,7 +81,6 @@ def remove_test_playbooks_if_exist(zips_path, packs):
                     pack_zip.extractall(path=new_path,
                                         members=(member for member in zip_contents if 'TestPlaybooks' not in member))
                     remove_test_playbooks_from_signatures(new_path, zip_contents)
-
             if remove:
                 # Remove the current pack zip
                 os.remove(path)
