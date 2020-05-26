@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added **fetch-incidents** functionality.
 
 
 ## [20.4.1] - 2020-04-29
