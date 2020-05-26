@@ -4,6 +4,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import requests
 from io import StringIO
+from typing import List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -351,9 +352,7 @@ def get_packages_indicators(report):
 
 
 def get_network_indicators(report):
-    domain_ids = []
-    ip_ids = []
-    url_ids = []
+    ids: List[Common.Indicator] = []
     network = report['network']
     for dns in network['dns']:
         domain = Common.Domain(
@@ -366,7 +365,7 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        domain_ids.append(domain)
+        ids.append(domain)
     for host in network['hosts'] + [h[0] for h in network['dead_hosts']]:
         ip = Common.IP(
             ip=host,
@@ -377,7 +376,7 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ip_ids.append(ip)
+        ids.append(ip)
     for http in network['http']:
         url = Common.URL(
             url=http['uri'],
@@ -388,15 +387,13 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        url_ids.append(url)
+        ids.append(url)
 
-    ids = domain_ids + ip_ids + url_ids  # should be type: List[Common.Indicator]
     return ids
 
 
 def get_monitor_indicators(report):
-    process_ids = []
-    regkey_ids = []
+    ids: List[Common.Indicator] = []
     for p in report['goo_monitor']['processes']:
         process = Process(
             name=p['basename'],
@@ -406,16 +403,15 @@ def get_monitor_indicators(report):
             end_time=p['exited_at'],
             path=p['filename'],
         )
-        process_ids.append(process)
+        ids.append(process)
         for regkey in p['regkeys']:
             if regkey['action'] == 'regkey_written':
                 reg = RegistryKey(
                     path=regkey['ioc'],
                     value=str(regkey['value'])
                 )
-                regkey_ids.append(reg)
+                ids.append(reg)
 
-    ids = process_ids + regkey_ids  # should be type: List[Common.Indicator]
     return ids
 
 
