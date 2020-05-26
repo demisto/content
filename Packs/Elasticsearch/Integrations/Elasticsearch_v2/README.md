@@ -184,7 +184,7 @@
 <h5>Command Example</h5>
 <pre>!es-search query="Date:* AND name:incident" index=users fields=name,nums sort-field=Date sort-order=desc size=2</pre>
 <h5>Human Readable Output</h5>
-<p> <img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/Elasticsearch_v2_1.png" alt="1.png"></p>
+<p> <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Elasticsearch_v2_1.png" alt="1.png"></p>
 <h3 id="h_b54d5b7b-35d1-44f5-a347-e1079bf0bc98">2. Search an index</h3>
 <!-- <hr> -->
 <p>Searches an index.</p>
@@ -324,6 +324,6 @@
 <h5>Command Example</h5>
 <pre>!search query="Date:* AND name:incident" index=users fields=name,nums sort-field=Date sort-order=desc size=2</pre>
 <h5>Human Readable Output</h5>
-<p> <img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/Elasticsearch_v2_1.png" alt="1.png"></p>
+<p> <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Elasticsearch_v2_1.png" alt="1.png"></p>
 <h2>Troubleshooting</h2>
 <p>For more information about the correct time format, see <a href="http://strftime.org/" target="_self">http://strftime.org/</a>.</p>
