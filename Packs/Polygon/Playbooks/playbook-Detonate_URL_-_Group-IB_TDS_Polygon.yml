@@ -147,10 +147,6 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description:
-        simple: TDS Polygon Report Archive
-      customfields: {}
     timertriggers: []
     ignoreworker: false
   "14":
@@ -191,10 +187,6 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description:
-        simple: Short info from TDS Polygon report
-      customfields: {}
     timertriggers: []
     ignoreworker: false
   "15":

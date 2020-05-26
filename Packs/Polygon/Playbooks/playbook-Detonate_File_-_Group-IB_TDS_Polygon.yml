@@ -1,5 +1,5 @@
-id: 6b96cff0-47ff-4896-8bea-c052146d9792
-version: 102
+id: Detonate File - Group-IB TDS Polygon
+version: -1
 name: Detonate File - Group-IB TDS Polygon
 description: 'Detonate file using Group-IB TDS Polygon integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
@@ -22,6 +22,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -81,6 +82,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -187,10 +189,6 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description:
-        simple: TDS Polygon Report Archive
-      customfields: {}
     timertriggers: []
     ignoreworker: false
   "14":
@@ -231,10 +229,6 @@ tasks:
         }
       }
     note: false
-    evidencedata:
-      description:
-        simple: Short info from TDS Polygon report
-      customfields: {}
     timertriggers: []
     ignoreworker: false
   "15":
@@ -519,3 +513,6 @@ outputs:
     analysis
 - contextPath: Polygon.Analysis.Process
   description: The information about processes started during the analysis
+fromversion: 5.0.0
+tests:
+- No tests
