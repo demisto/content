@@ -5,8 +5,10 @@ ROLES = [
     {
         'name': 'Shift1',
         'shifts': [
-            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3, 'toHour': 12, 'toMinute': 0},
-            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6, 'toHour': 20, 'toMinute': 0}
+            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3,
+             'toHour': 12, 'toMinute': 0},
+            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6,
+             'toHour': 20, 'toMinute': 0}
         ]
     },
     {
@@ -16,9 +18,12 @@ ROLES = [
     {
         'name': 'Shift2',
         'shifts': [
-            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3, 'toHour': 12, 'toMinute': 0},
-            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6, 'toHour': 20, 'toMinute': 0},
-            {'fromDay': 1, 'fromHour': 3, 'fromMinute': 0, 'toDay': 4, 'toHour': 6, 'toMinute': 0}
+            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3,
+             'toHour': 12, 'toMinute': 0},
+            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6,
+             'toHour': 20, 'toMinute': 0},
+            {'fromDay': 1, 'fromHour': 3, 'fromMinute': 0, 'toDay': 4,
+             'toHour': 6, 'toMinute': 0}
         ]
     }
 ]
@@ -72,8 +77,10 @@ ROLES_SHIFT_MD = """### Roles Per Shift
 | __21:00 - 22:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
 | __22:00 - 23:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
 | __23:00 - 24:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
-"""
-ROLES_SHIFT = [{"ModuleName": "CustomScripts", "Brand": "Scripts", "Category": "automation", "ID": "", "Version": 0, "Type": 1, "Contents": ROLES_SHIFT_MD}]
+""" # noqa E501
+ROLES_SHIFT = [{"ModuleName": "CustomScripts", "Brand": "Scripts",
+                "Category": "automation", "ID": "", "Version": 0, "Type": 1,
+                "Contents": ROLES_SHIFT_MD}]
 
 GET_ROLES_RESPONSE = [{
     'Type': 1,
