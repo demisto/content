@@ -368,14 +368,6 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def get_download_file_content_values(self, download_link: str = None) -> Dict:
-        """Create a request to receive file content from link.
-
-        Args:
-            download_link (str): Link to the desired Azure file.
-
-        Returns:
-            Dict. Content of values section in the Azure downloaded file.
-        """
         file_download_response = self._http_request(
             method='GET',
             full_url=download_link,
@@ -383,7 +375,7 @@ class Client(BaseClient):
             stream=True
         )
 
-        return file_download_response.get('values')
+        return file_download_response
 
 
 def test_module(client):
@@ -427,7 +419,7 @@ def alert_list_command(client: Client, args: Dict) -> Union[CommandResults, str]
     sort_order = args.get('sort_order')
     limit = args.get('limit')
     contents = []
-    headers = ['AlertID', 'CreateTime', 'DeviceName', 'DeviceOS', 'PolicyName', 'ProcessName', 'Type', 'WorkflowState']
+    headers = ['AlertID', 'CreateTime', 'DeviceID', 'DeviceName', 'DeviceOS', 'PolicyName', 'ProcessName', 'Type', 'WorkflowState']
 
     result = client.search_alerts_request(group_results, minimum_severity, create_time,
                                           device_os_version, policy_id, alert_tag, alert_id, device_username,
@@ -442,6 +434,7 @@ def alert_list_command(client: Client, args: Dict) -> Union[CommandResults, str]
         contents.append({
             'AlertID': alert.get('id'),
             'CreateTime': alert.get('create_time'),
+            'DeviceID': alert.get('device_id'),
             'DeviceName': alert.get('device_name'),
             'DeviceOS': alert.get('device_os'),
             'PolicyName': alert.get('policy_name'),
@@ -612,7 +605,7 @@ def list_watchlists_command(client: Client) -> Union[CommandResults, str]:
             'Description': watchlist.get('description'),
             'Tags_enabled': watchlist.get('tags_enabled'),
             'Alerts_enabled': watchlist.get('alerts_enabled'),
-            'create_timestamp': timestamp_to_datestring(watchlist.get('create_timestamp')),
+            'create_timestamp': timestamp_to_datestring(watchlist.get('create_timestamp') * 1000),
             'Last_update_timestamp': timestamp_to_datestring(watchlist.get('last_update_timestamp')),
             'Report_ids': watchlist.get('report_ids'),
             'Classifier': watchlist.get('classifier')
@@ -1094,6 +1087,7 @@ def get_file_metadata_command(client: Client, args: Dict) -> CommandResults:
 def get_file_command(client: Client, args: Dict) -> CommandResults:
     sha256 = argToList(args.get('sha256'))
     expiration_seconds = args.get('expiration_seconds')
+    download_to_xsoar = args.get('download_to_xsoar')
 
     result = client.get_file_request(sha256, expiration_seconds)
     contents = []
@@ -1104,6 +1098,9 @@ def get_file_command(client: Client, args: Dict) -> CommandResults:
             'sha256': file_.get('sha256'),
             'url': file_.get('url')
         })
+
+        if download_to_xsoar:
+            result = client.get_download_file_content_values(file_.get('url'))
 
     readable_output = tableToMarkdown('The file to download', contents)
     results = CommandResults(
@@ -1135,7 +1132,8 @@ def download_file_to_xsoar_command(client: Client, args: Dict):
     download_link = args.get('download_link')
 
     result = client.get_download_file_content_values(download_link)
-    return result
+
+    return fileResult('file_results.zip', bytes)
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
