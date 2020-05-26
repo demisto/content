@@ -1,15 +1,41 @@
-import demistomock as demisto
 from CommonServerPython import *
 
-from typing import List, Dict
-from io import BytesIO
-from PIL import Image
-from datetime import datetime
-import functools
-import json
+'''IMPORTS'''
+import requests
+from typing import Any, List, Dict
 
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
+''' GLOBALS '''
+BASE_URL = demisto.getParam('host').rstrip('/') + '/api/public/v1'  # type: str
+TOKEN = demisto.getParam('token')  # type: str
+USER = demisto.getParam('user')  # type: str
+USE_SSL = not demisto.params().get('insecure', False)  # type: bool
+
+HEADERS = {
+    "Authorization": f"Token token={USER}:{TOKEN}",
+    "Accept": "application/json"
+}  # type: dict
 DEFAULT_TIME_RANGE = '7 days'  # type: str
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # type: str
+
+CATEGORIES = {
+    1: 'Non-Malicious',
+    2: 'Spam',
+    3: 'Crimeware',
+    4: 'Advanced Threats',
+    5: 'Phishing Simulation'
+}
+
+# Severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
+CATEGORIES_SEVERITY = {
+    1: 1,  # non malicious -> low
+    2: 0,  # spam -> unknown
+    3: 2,  # crimeware -> medium
+    4: 2,  # advanced threats -> medium
+    5: 1  # phishing simulation -> low
+}
 
 TERSE_FIELDS = [
     'id',
@@ -25,167 +51,11 @@ TERSE_FIELDS = [
     'category_id',
     'match_priority',
     'tags',
-    'email_attachments',
+    'email_attachments'
 ]
 
 
-class TriageInstance:
-    def __init__(self, *, host, token, user, disable_tls_verification=False):
-        self.host = host
-        self.token = token
-        self.user = user
-        self.disable_tls_verification = disable_tls_verification
-
-    def request(self, endpoint, params=None, body=None, raw_response=False):
-        """
-        Make a request to the configured Triage instance and return the result.
-        """
-        # TODO automatic rate-limiting
-        response = requests.get(
-            self.api_url(endpoint),
-            headers={
-                "Authorization": f"Token token={self.user}:{self.token}",
-                "Accept": "application/json",
-            },
-            params=params,
-            data=body,
-            verify=not self.disable_tls_verification,
-        )
-
-        if not response.ok:
-            return return_error(
-                f"Call to Cofense Triage failed ({response.status_code}): {response.text}"
-            )
-
-        if response.status_code == 206:
-            # 206 indicates Partial Content. The reason will be in the warning header.
-            demisto.debug(str(response.headers))
-
-        if raw_response:
-            # TODO refactor to get rid of this?
-            return response
-
-        if not response.text or response.text == "[]":
-            return {}
-
-        try:
-            return response.json()
-        except json.decoder.JSONDecodeError as ex:
-            demisto.debug(str(ex))
-            return return_error(
-                f"Could not parse result from Cofense Triage ({response.status_code})"
-            )
-
-    def api_url(self, endpoint):
-        """Return a full URL for the configured Triage host and the specified endpoint"""
-
-        endpoint = endpoint.lstrip("/")
-        return f"{self.host}/api/public/v1/{endpoint}"
-
-
-class TriageReport:
-    """Class representing a Triage report by an end-user of a suspicious message"""
-
-    def __init__(self, attrs):
-        self.attrs = attrs
-
-    @property
-    def id(self):
-        return self.attrs["id"]
-
-    @property
-    def date(self):
-        return self.attrs.get("created_at")
-
-    @property
-    def category_name(self):
-        return {
-            1: 'Non-Malicious',
-            2: 'Spam',
-            3: 'Crimeware',
-            4: 'Advanced Threats',
-            5: 'Phishing Simulation',
-            # TODO is this still complete?
-        }.get(self.attrs["category_id"], "Unknown")
-
-    @property
-    def severity(self):
-        # Demisto's severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
-        return {
-            1: 1,  # non malicious -> low
-            2: 0,  # spam -> unknown
-            3: 2,  # crimeware -> medium
-            4: 2,  # advanced threats -> medium
-            5: 1,  # phishing simulation -> low
-        }.get(self.attrs["category_id"], 0)
-
-    @property
-    def report_body(self):
-        return self.attrs.get("report_body")
-
-    @property  # type: ignore
-    @functools.lru_cache()
-    def reporter(self):
-        return TriageReporter(self.attrs["reporter_id"])
-
-    @property
-    def terse_attrs(self):
-        return {key: self.attrs[key] for key in self.attrs.keys() & TERSE_FIELDS}
-
-    def to_json(self):
-        """Flatten the Reporter object to a set of `reporter_` prefixed attributes"""
-        return json.dumps(
-            {
-                **self.attrs,
-                **{f"reporter_{k}": v for k, v in self.reporter.attrs.items()},  # type: ignore
-            }
-        )
-
-    @property  # type: ignore
-    @functools.lru_cache()
-    def attachment(self):
-        # TODO case-insensitive?
-        if "HTML" in self.report_body:
-            html_attachment = fileResult(
-                filename=f"{self.id}-report.html", data=self.report_body.encode()
-            )
-            attachment = {
-                "path": html_attachment.get("FileID"),
-                "name": html_attachment.get("FileName"),
-            }
-            return attachment
-
-        return None
-
-    @classmethod
-    def fetch(cls, report_id):
-        return cls(TRIAGE_INSTANCE.request(f"reports/{report_id}")[0])
-
-
-class TriageReporter:
-    """Class representing an end user who has reported a suspicious message"""
-
-    def __init__(self, reporter_id):
-        """Fetch data for the first matching reporter from Triage"""
-        matching_reporters = TRIAGE_INSTANCE.request(f"reporters/{reporter_id}")
-
-        if matching_reporters:
-            self.attrs = matching_reporters[0]
-        else:
-            self.attrs = {}
-
-    def exists(self):
-        return bool(self.attrs)
-
-
-TRIAGE_INSTANCE = TriageInstance(
-    host=demisto.getParam('host').rstrip('/'),
-    token=demisto.getParam('token'),
-    user=demisto.getParam('user'),
-    disable_tls_verification=demisto.params().get('insecure', False),
-)
-
-
+# HELPER FUNCTIONS #
 def snake_to_camel_keys(snake_list: List[Dict]) -> List[Dict]:
     def snake_to_camel(snake_str) -> str:
         if snake_str == 'id':
@@ -193,80 +63,133 @@ def snake_to_camel_keys(snake_list: List[Dict]) -> List[Dict]:
         components = snake_str.split('_')
         return ''.join(x.title() for x in components)
 
-    return [
-        {snake_to_camel(k): v for k, v in snake_d.items()} for snake_d in snake_list
-    ]
+    return [{snake_to_camel(k): v for k, v in snake_d.items()} for snake_d in snake_list]
 
 
 def split_snake(string: str) -> str:
     return string.replace("_", " ").title()
 
 
-def parse_triage_date(date: str):
-    return datetime.strptime(date, TIME_FORMAT)
+# MAIN FUNCTIONS #
+def http_request(url_suffix: str, params=None, body=None, raw_response=False) -> Any:
+    """
+    Generic request to Cofense Triage. Client applications can make 25 requests to Cofense Triage
+    within a five-minute interval using the Cofense Triage API.
+    """
+    response = requests.get(
+        BASE_URL + url_suffix,
+        headers=HEADERS,
+        params=params,
+        data=body,
+        verify=USE_SSL,
+    )
+    try:
+        if not response.ok:
+            return_error(f'Call to Cofense Triage failed [{response.status_code}] - [{response.text}]')
+
+        elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
+            demisto.debug(str(response.headers))
+
+        if raw_response:
+            return response
+        data = response.json() if response.text and response.text != '[]' else {}  # type: Any
+        return data
+
+    except TypeError as ex:
+        demisto.debug(str(ex))
+        return_error(f'Error in API call to Cofense Triage, could not parse result [{response.status_code}]')
+        return {}
+
+
+def get_fetch_response():
+    start_date, _ = parse_date_range(demisto.getParam('date_range'), date_format=TIME_FORMAT)
+    max_fetch = int(demisto.getParam('max_fetch'))  # type: int
+    params = {
+        'category_id': demisto.getParam('category_id'),
+        'match_priority': demisto.getParam('match_priority'),
+        'tags': demisto.getParam('tags'),
+        'start_date': start_date,
+    }
+
+    # running the API command
+    response = http_request(
+        '/processed_reports',
+        params=params,
+    )
+
+    return response, max_fetch
 
 
 def test_function() -> None:
     try:
-        response = TRIAGE_INSTANCE.request("processed_reports")
+        response = requests.get(
+            BASE_URL + '/processed_reports',
+            headers=HEADERS,
+            params="",
+            verify=USE_SSL,
+        )
 
-        if response:
+        if response.ok:
+            # test fetching mechanism
+            if demisto.params().get('isFetch'):
+                get_fetch_response()
+
             demisto.results('ok')
-        else:
-            return_error(
-                "API call to Cofense Triage failed. Please check Server URL, or authentication "
-                "related parameters.Status Code: {response.status_code} Reason: {response.reason}"
-                f" [{response.status_code}] - {response.reason}"
-            )
+
     except Exception as ex:
         demisto.debug(str(ex))
-        return_error(repr(ex))
+        return_error(f'API call to Cofense Triage failed, please check URL, or integration parameters.')
 
 
 def fetch_reports() -> None:
-    """Fetch up to `max_reports` reports since the last time the command was run. TODO date_range"""
-    start_date, _ = parse_date_range(
-        demisto.getParam('date_range'), date_format=TIME_FORMAT
-    )
-    max_fetch = int(demisto.getParam('max_fetch'))
+    # parameters importing
+    reports, max_fetch = get_fetch_response()
 
-    triage_response = TRIAGE_INSTANCE.request(
-        "processed_reports",
-        params={
-            "category_id": demisto.getParam("category_id"),
-            "match_priority": demisto.getParam("match_priority"),
-            "tags": demisto.getParam("tags"),
-            "start_date": start_date,
-        },
-    )
+    # loading last_run
+    last_run = json.loads(demisto.getLastRun().get('value', '{}'))
+    already_fetched = last_run.get('already_fetched', [])
 
-    already_fetched = set(json.loads(demisto.getLastRun().get("reports_fetched", "[]")))
-
-    triage_reports = [
-        TriageReport(report)
-        for report in triage_response
-        if report["id"] not in already_fetched
-    ]
-
+    # parsing outputs
     incidents = []
-    for report in triage_reports:
-        incident = {
-            'name': f"cofense triage report {report.id}: {report.category_name}",
-            'occurred': report.date,
-            'rawJSON': report.to_json(),
-            'severity': report.severity,
-        }
+    for report in reports:
+        if report.get('id') not in already_fetched:
+            category_id, report_id = report.get('category_id'), report['id']
+            report_body = report.pop('report_body')
+            incident = {
+                'name': f"cofense triage report {report_id}: {CATEGORIES.get(category_id, 'Unknown')}",
+                'occurred': report.get('created_at'),
+                'rawJSON': json.dumps(report),
+                'severity': CATEGORIES_SEVERITY.get(category_id, 0)
+            }
 
-        if report.attachment:
-            incident['attachment'] = [report.attachment]
+            # load HTML attachment into the incident
+            attachment = load_attachment(report_body, report_id)
+            if attachment:
+                incident['attachment'] = attachment
+            else:
+                # attachment is not HTML file, keep it as plain text
+                report['report_body'] = report_body
+                incident['rawJSON'] = json.dumps(report)
 
-        incidents.append(incident)
-        already_fetched.add(report.id)
-        if len(incidents) >= max_fetch:
-            break
+            incidents.append(incident)
+            already_fetched.append(report_id)
+            if len(incidents) >= max_fetch:
+                break
 
     demisto.incidents(incidents)
-    demisto.setLastRun({"reports_fetched": json.dumps(list(already_fetched))})
+    last_run = {'already_fetched': already_fetched}
+    demisto.setLastRun({'value': json.dumps(last_run)})
+
+
+def load_attachment(report_body: Any, report_id: int) -> list:
+    if report_body and 'HTML' in report_body:
+        html_attachment = fileResult(filename=f'{report_id}-report.html', data=report_body.encode())
+        attachment = {
+            'path': html_attachment.get('FileID'),
+            'name': html_attachment.get('FileName')
+        }
+        return [attachment]
+    return []
 
 
 def search_reports_command() -> None:
@@ -301,39 +224,28 @@ def search_reports_command() -> None:
 
 def search_reports(subject=None, url=None, file_hash=None, reported_at=None, created_at=None, reporter=None,
                    verbose=False, max_matches=30) -> list:
-    # TODO move to new TriageReportQuery (or similar) class
     params = {'start_date': datetime.strftime(reported_at, TIME_FORMAT)}
-    reports = TRIAGE_INSTANCE.request("processed_reports", params=params)
+    reports = http_request(url_suffix='/processed_reports', params=params)
+
+    if not isinstance(reports, list):
+        reports = [reports]
+
+    reporters = []  # type: list
+    if reporter:
+        reporters = get_all_reporters(time_frame=min(reported_at, created_at))
 
     matches = []
 
     for report in reports:
-        if subject and subject != report.get('report_subject'):
-            # TODO do we really want to do exact string match here? not case-insensitive substring?
+        if subject and subject != report.get('subject'):
             continue
-        if url and url not in [email_url["url"] for email_url in report["email_urls"]]:
+        if url and url != report.get('url'):
             continue
-        if (
-            created_at
-            and 'created_at' in report
-            and created_at >= parse_triage_date(report['created_at'])
-        ):
+        if created_at and 'created_at' in report and created_at >= datetime.strptime(report['created_at'], TIME_FORMAT):
             continue
-        if (
-            file_hash
-            and file_hash
-            not in [
-                attachment["email_attachment_payload"]["md5"]
-                for attachment in report["email_attachments"]
-            ]
-            and file_hash
-            not in [
-                attachment["email_attachment_payload"]["sha256"]
-                for attachment in report["email_attachments"]
-            ]
-        ):
+        if file_hash and file_hash != report.get('md5') and file_hash != report.get('sha256'):
             continue
-        if reporter and int(reporter) != report.get('reporter_id'):
+        if reporter and int(reporter) != report.get('reporter_id') and reporter not in reporters:
             continue
 
         if not verbose:
@@ -348,7 +260,7 @@ def search_reports(subject=None, url=None, file_hash=None, reported_at=None, cre
 
 
 def get_all_reporters(time_frame) -> list:
-    res = TRIAGE_INSTANCE.request("reporters", params={'start_date': time_frame})
+    res = http_request(f'/reporters', params={'start_date': time_frame})
     if not isinstance(res, list):
         res = [res]
     reporters = [reporter.get('email') for reporter in res]
@@ -357,29 +269,25 @@ def get_all_reporters(time_frame) -> list:
 
 
 def get_reporter_command() -> None:
-    reporter_id = demisto.getArg('reporter_id')
+    # arguments importing
+    reporter_id = demisto.getArg('reporter_id')  # type: str
 
-    reporter = TriageReporter(reporter_id)
+    # running the API command
+    res = get_reporter(reporter_id)
 
-    if not reporter.exists():
-        return return_outputs(
-            readable_output="Could not find reporter with matching ID",
-            outputs=reporter_id,
-        )
+    # parsing outputs
+    ec = {'Cofense.Reporter(val.ID && val.ID == obj.ID)': {'ID': reporter_id, 'Email': res}}
+    hr = f'Reporter: {res}' if res else 'Could not find reporter with matching ID'
+    return_outputs(readable_output=hr, outputs=ec)
 
-    demisto.results(
-        {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["markdown"],
-            "Contents": reporter.attrs,
-            "HumanReadable": tableToMarkdown(
-                "Reporter Results:",
-                reporter.attrs,
-                headerTransform=split_snake,
-                removeNull=True
-            ),
-        }
-    )
+
+def get_reporter(reporter_id) -> str:
+    res = http_request(url_suffix=f'/reporters/{reporter_id}')
+    if not isinstance(res, list):
+        res = [res]
+    reporter = res[0].get('email')
+
+    return reporter
 
 
 def get_attachment_command() -> None:
@@ -387,7 +295,8 @@ def get_attachment_command() -> None:
     attachment_id = demisto.getArg('attachment_id')  # type: str
     file_name = demisto.getArg('file_name') or attachment_id  # type: str
 
-    res = TRIAGE_INSTANCE.request(f'attachment/{attachment_id}', raw_response=True)
+    # running the command
+    res = get_attachment(attachment_id)
 
     # parsing outputs
     context_data = {'ID': attachment_id}
@@ -401,116 +310,53 @@ def get_attachment_command() -> None:
     })
 
 
+def get_attachment(attachment_id):
+    response = http_request(f'/attachment/{attachment_id}', params={'attachment_id': attachment_id}, raw_response=True)
+    if not response.ok:
+        return_error(f'Call to Cofense Triage failed [{response.status_code}]')
+    else:
+        return response
+
+
 def get_report_by_id_command() -> None:
+    # arguments importing
     report_id = int(demisto.getArg('report_id'))  # type: int
     verbose = demisto.getArg('verbose') == "true"
 
-    report = TriageReport.fetch(report_id)
+    # running the command
+    res = get_report_by_id(report_id)[0]
 
-    if not report:
-        return return_error('Could not find report with matching ID')
+    # parsing outputs
+    if not verbose:
+        # extract only relevant fields
+        res = {k: res[k] for k in res.keys() & TERSE_FIELDS}
 
-    if verbose:
-        report_attrs = report.attrs
+    # get the report body, and create html file if necessary
+    if res:
+        parse_report_body(res)
+        res['reporter'] = get_reporter(res.get('reporter_id'))  # enrich: id -> email
+        hr = tableToMarkdown("Report Summary:", res, headerTransform=split_snake, removeNull=True)
+        ec = {'Cofense.Report(val.ID && val.ID == obj.ID)': snake_to_camel_keys([res])}
+        return_outputs(readable_output=hr, outputs=ec)
+
     else:
-        report_attrs = report.terse_attrs
+        return_error('Could not find report with matching ID')
 
-    if report.attachment:
-        demisto.results(
-            {
-                **report.attachment,
-                **{"HumanReadable": "### Cofense HTML Report:\nHTML report download request has been completed"},
-            }
+
+def parse_report_body(report) -> None:
+    if 'report_body' in report and 'HTML' in report['report_body']:
+        attachment = fileResult(
+            filename=f'{report.get("id")}-report.html',
+            data=report.get('report_body').encode(),
         )
-        del report_attrs["report_body"]
-
-    hr = tableToMarkdown("Report Summary:", report_attrs, headerTransform=split_snake, removeNull=True)
-    ec = {'Cofense.Report(val.ID && val.ID == obj.ID)': snake_to_camel_keys([report_attrs])}
-    return_outputs(readable_output=hr, outputs=ec)
+        attachment['HumanReadable'] = '### Cofense HTML Report:\nHTML report download request has been completed'
+        demisto.results(attachment)
+        del report['report_body']
 
 
-def get_threat_indicators_command() -> None:
-    results = TRIAGE_INSTANCE.request(
-        "triage_threat_indicators",
-        params={
-            "type": demisto.getArg("type"),
-            "level": demisto.getArg("level"),
-            "start_date": demisto.getArg("start_date"),
-            "end_date": demisto.getArg("end_date"),
-            "page": demisto.getArg("page"),
-            "per_page": demisto.getArg("per_page"),
-        },
-    )
-
-    if not results:
-        return return_outputs("no results were found.", {})
-
-    demisto.results(
-        {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["markdown"],
-            "Contents": results if results else "no results were found",
-            "HumanReadable": tableToMarkdown(
-                "Threat Indicators:",
-                results,
-                headerTransform=split_snake,
-                removeNull=True,
-            ),
-            "EntryContext": {
-                "cofense.threatindicators(val.id && val.id == obj.id)": snake_to_camel_keys(
-                    results
-                )
-            },
-        }
-    )
-
-
-def get_report_png_by_id_command() -> None:
-    report_id = int(demisto.getArg('report_id'))  # type: int
-    set_white_bg = demisto.args().get('set_white_bg', 'False') == 'True'  # type: bool
-
-    orig_png = get_report_png_by_id(report_id)
-
-    if set_white_bg:
-        inbuf = BytesIO()
-        inbuf.write(orig_png)
-        inbuf.seek(0)
-
-        image = Image.open(inbuf)
-        canvas = Image.new(
-            'RGBA', image.size, (255, 255, 255, 255)
-        )  # Empty canvas colour (r,g,b,a)
-        canvas.paste(
-            image, mask=image
-        )  # Paste the image onto the canvas, using it's alpha channel as mask
-
-        outbuf = BytesIO()
-        canvas.save(outbuf, format="PNG")
-        outbuf.seek(0)
-
-        imgdata = outbuf.getvalue()
-    else:
-        imgdata = orig_png
-
-    cf_file = fileResult(
-        "cofense_report_{}.png".format(report_id), imgdata, entryTypes["image"]
-    )
-    demisto.results(
-        {
-            "Type": entryTypes["image"],
-            "ContentsFormat": formats["text"],
-            "Contents": "Cofense: PNG of Report {}".format(report_id),
-            "File": cf_file.get("File"),
-            "FileID": cf_file.get("FileID"),
-        }
-    )
-
-
-def get_report_png_by_id(report_id):
-    """Fetch and return the PNG file associated with the specified report_id"""
-    return TRIAGE_INSTANCE.request(
-        f"reports/{report_id}.png", raw_response=True
-    ).content
+def get_report_by_id(report_id):
+    response = http_request(url_suffix=f'/reports/{report_id}', params={'report_id': report_id})
+    return response
 
 
 try:
@@ -534,12 +380,6 @@ try:
 
     elif demisto.command() == 'cofense-get-report-by-id':
         get_report_by_id_command()
-
-    elif demisto.command() == 'cofense-get-report-png-by-id':
-        get_report_png_by_id_command()
-
-    elif demisto.command() == 'cofense-get-threat-indicators':
-        get_threat_indicators_command()
 
 except Exception as e:
     return_error(str(e))
