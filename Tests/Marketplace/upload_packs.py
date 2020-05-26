@@ -48,7 +48,7 @@ def get_modified_packs(target_packs):
         print(f"Number of modified packs is: {len(modified_packs)}")
         # return only modified packs between two commits
         return modified_packs
-    elif target_packs:
+    elif target_packs and isinstance(target_packs, str):
         modified_packs = {p.strip() for p in target_packs.split(',')}
         print(f"Number of selected packs to upload is: {len(modified_packs)}")
         # return only packs from csv list
@@ -530,7 +530,7 @@ def main():
     storage_bucket_name = option.bucket_name
     private_bucket_name = option.private_bucket_name
     service_account = option.service_account
-    target_packs = option.pack_names
+    target_packs = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_pack = option.override_pack
     signature_key = option.key_string
