@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 Fixed an issue where using `\\` caused a parsing error.
 
 
