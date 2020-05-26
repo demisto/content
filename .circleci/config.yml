@@ -141,6 +141,14 @@ jobs:
             demisto-sdk secrets --post-commit --ignore-entropy
 
             echo -e ${BLACKLIST_KEY} | gpg --import
+            for secret in $(gpg --no-tty --passphrase "${BLACKLIST_PASS}" --pinentry-mode loopback --decrypt blacklist_test)
+              do
+                if [ "$(grep -Ril "azure" ./ | wc -l)" -gt 0 ]
+                  then
+                    echo "Blacklisted object found in repo - please remove it"
+                    break
+                  fi
+              done
       - run:
           name: Collect Test List And Content Packs
           when: always
