@@ -1118,6 +1118,7 @@ def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_se
 def create_test_file(is_nightly, skip_save=False):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
+    packs_to_install_string = ''
     if not is_nightly:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)

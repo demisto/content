@@ -32,7 +32,7 @@
       <li><strong>Allow external users to create incidents via DM</strong></li>
       <li><strong>Use system proxy settings</strong></li>
       <li><strong>Trust any certificate (not secure)</strong></li>
-      <li><strong>Bot display name in Slack (Demisto Integration by default)</strong></li>
+      <li><strong>Bot display name in Slack (Cortex XSOAR by default)</strong></li>
       <li><strong>Bot icon in Slack - Image URL (Demisto icon by default)</strong></li>
       <li><strong>Maximum time to wait for a rate limited call in seconds - 60 by default</strong></li>
       <li><strong>Number of objects to return in each paginated call - 200 by default</strong></li>
