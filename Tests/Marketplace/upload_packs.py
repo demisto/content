@@ -201,9 +201,16 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
         return task_status
 
 
-def clean_non_existing_packs(private_packs, index_folder_path, storage_bucket):
-    """
-    #todo
+def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
+    """ Detects packs that are not part of content repo or from private packs bucket.
+
+    In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
+
+    Args:
+        index_folder_path (str): full path to downloaded index folder.
+        private_packs (list): priced packs from private bucket.
+        storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
+
     """
     public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
     private_packs_names = {p.get('id', '') for p in private_packs}
@@ -213,20 +220,23 @@ def clean_non_existing_packs(private_packs, index_folder_path, storage_bucket):
                            entry.name not in valid_packs_names and entry.is_dir()}
 
     if invalid_packs_names:
-        print_warning(f"Detected {len(invalid_packs_names)} non existing packs inside index, starting cleanup.")
+        try:
+            print_warning(f"Detected {len(invalid_packs_names)} non existing packs inside index, starting cleanup.")
 
-        for invalid_pack in invalid_packs_names:
-            invalid_pack_name = invalid_pack[0]
-            invalid_pack_path = invalid_pack[1]
+            for invalid_pack in invalid_packs_names:
+                invalid_pack_name = invalid_pack[0]
+                invalid_pack_path = invalid_pack[1]
 
-            shutil.rmtree(invalid_pack_path)
-            print_warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
+                shutil.rmtree(invalid_pack_path)
+                print_warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
+                # important to add trailing slash at the end of path in order to avoid packs with same prefix
+                invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, invalid_pack_name, "")  # by design
 
-            invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, "AbuseDB")
-
-            for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
-                print_warning("Boom")
-                invalid_blob.delete()
+                for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
+                    print_warning(f"Deleted invalid {invalid_pack_name} pack under url {invalid_blob.public_url}")
+                    invalid_blob.delete()  # delete invalid pack in gcs
+        except Exception as e:
+            print_error(f"Failed to cleanup non existing packs. Additional info:\n {e}")
 
     else:
         print(f"No invalid packs detected inside {GCPConfig.INDEX_NAME} folder")
@@ -554,7 +564,7 @@ def main():
         private_packs = []
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(private_packs, index_folder_path, storage_bucket)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
 
     # starting iteration over packs
     for pack in packs_list:
@@ -645,8 +655,7 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # finished iteration over content packs
-    # todo uncomment
-    # upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
+    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
     # upload core packs json to bucket
     upload_core_packs_config(storage_bucket, packs_list)
