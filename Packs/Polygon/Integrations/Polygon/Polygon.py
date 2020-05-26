@@ -4,7 +4,6 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import requests
 from io import StringIO
-from typing import List, Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -291,7 +290,6 @@ def get_human_readable_analysis_info(analysis_info):
 def get_main_indicator(report, analysis_type):
     score = Common.DBotScore.GOOD
     malicious = None
-    result = None
     if report["info"]["verdict"]:
         score = Common.DBotScore.BAD
         malicious = "Verdict probability: {}%".format(
@@ -304,7 +302,7 @@ def get_main_indicator(report, analysis_type):
         if signatures:
             malicious += ", iocs: {}".format(", ".join(signatures))
     if analysis_type == FILE_TYPE:
-        result = Common.File(
+        return Common.File(
             name=report["target"]["file"]["name"],
             file_type=report["target"]["file"]["type"],
             md5=report["target"]["file"]["md5"],
@@ -319,7 +317,7 @@ def get_main_indicator(report, analysis_type):
             )
         )
     else:
-        result = Common.URL(
+        return Common.URL(
             url=report['target']['url'],
             dbot_score=Common.DBotScore(
                 indicator=report['target']['url'],
@@ -329,8 +327,6 @@ def get_main_indicator(report, analysis_type):
                 malicious_description=malicious
             )
         )
-
-    return result
 
 
 def get_packages_indicators(report):
@@ -355,8 +351,9 @@ def get_packages_indicators(report):
 
 
 def get_network_indicators(report):
-    ids: Union[List[Common.IP], List[Common.Domain], List[Common.URL]]
-    ids = []
+    domain_ids = []
+    ip_ids = []
+    url_ids = []
     network = report['network']
     for dns in network['dns']:
         domain = Common.Domain(
@@ -369,7 +366,7 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(domain)
+        doamin_ids.append(domain)
     for host in network['hosts'] + [h[0] for h in network['dead_hosts']]:
         ip = Common.IP(
             ip=host,
@@ -380,7 +377,7 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(ip)
+        ip_ids.append(ip)
     for http in network['http']:
         url = Common.URL(
             url=http['uri'],
@@ -391,14 +388,14 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(url)
+        url_ids.append(url)
 
-    return ids
+    return domain_ids + ip_ids + url_ids
 
 
 def get_monitor_indicators(report):
-    ids: Union[List[Process], List[RegistryKey]]
-    ids = []
+    process_ids = []
+    regkey_ids = []
     for p in report['goo_monitor']['processes']:
         process = Process(
             name=p['basename'],
@@ -408,16 +405,16 @@ def get_monitor_indicators(report):
             end_time=p['exited_at'],
             path=p['filename'],
         )
-        ids.append(process)
+        process_ids.append(process)
         for regkey in p['regkeys']:
             if regkey['action'] == 'regkey_written':
                 reg = RegistryKey(
                     path=regkey['ioc'],
                     value=str(regkey['value'])
                 )
-                ids.append(reg)
+                regkey_ids.append(reg)
 
-    return ids
+    return process_ids + regkey_ids
 
 
 def get_report_indicators(report, analysis_type):
