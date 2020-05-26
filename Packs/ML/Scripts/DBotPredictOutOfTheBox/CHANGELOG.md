@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 Added the option to map automation output to out-of-the-box incidents fields.
 
 ## [20.4.0] - 2020-04-14
