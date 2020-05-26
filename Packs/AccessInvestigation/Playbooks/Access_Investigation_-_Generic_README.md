@@ -59,4 +59,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Access_Investigation_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Access_Investigation_Generic.png)
+![Access_Investigation_Generic](https://raw.githubusercontent.com/demisto/content/aaa6f19f2884ea1237e3b6aeecf9abda3666abc7/Packs/AccessInvestigation/doc_files/Access_Investigation_Generic.png)
