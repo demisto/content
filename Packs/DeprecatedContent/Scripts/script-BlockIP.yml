@@ -41,6 +41,7 @@ tags:
 - panorama
 comment: Blocks IP in configured firewall
 enabled: true
+deprecated: true
 args:
 - name: ip
   required: true
