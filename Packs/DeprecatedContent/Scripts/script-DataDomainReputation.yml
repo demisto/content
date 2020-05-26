@@ -81,6 +81,7 @@ comment: Evaluate reputation of a URL and Domain and return a score between 0 an
   3 (0 - unknown, 1 - known good, 2 - suspicious, 3 - known bad). If the indicator
   reputation was manually set, the manual value will be returned.
 enabled: true
+deprecated: true
 args:
 - name: input
   required: true
