@@ -212,16 +212,6 @@ jobs:
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
       - run:
-          name: Prepare Content Packs For Testing
-          when: always
-          command: |
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-            fi
-            ./Tests/scripts/prepare_content_packs_for_testing.sh
-      - run:
           name: Calculate Packs Dependencies
           when: always
           command: |
@@ -231,6 +221,16 @@ jobs:
                 exit 0
             fi
             python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+      - run:
+          name: Prepare Content Packs For Testing
+          when: always
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            ./Tests/scripts/prepare_content_packs_for_testing.sh
       - run:
           name: Run Unit Testing and Lint
           when: always

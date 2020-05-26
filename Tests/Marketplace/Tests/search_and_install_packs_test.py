@@ -1,6 +1,6 @@
 import demisto_client
+import Tests.Marketplace.search_and_install_packs as script
 from Tests.test_content import ParallelPrintsManager
-from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
@@ -91,6 +91,14 @@ def mocked_generic_request_func(self, path, method, body, accept):
     return None, None, None
 
 
+def mocked_get_pack_display_name(pack_id):
+    if pack_id == 'HelloWorld':
+        return 'HelloWorld'
+    elif pack_id == 'AzureSentinel':
+        return 'AzureSentinel'
+    return ''
+
+
 class MockConfiguration:
     def __init__(self):
         self.host = None
@@ -126,17 +134,17 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     client = MockClient()
 
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
+    mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
     prints_manager = ParallelPrintsManager(1)
 
-    installed_packs = search_and_install_packs_and_their_dependencies(good_pack_ids,
-                                                                      client,
-                                                                      prints_manager)
+    installed_packs = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
+                                                                             client,
+                                                                             prints_manager)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
-    assert len(installed_packs) == 3
 
-    installed_packs = search_and_install_packs_and_their_dependencies(bad_pack_ids,
-                                                                      client,
-                                                                      prints_manager)
-    assert len(installed_packs) == 0
+    installed_packs = script.search_and_install_packs_and_their_dependencies(bad_pack_ids,
+                                                                             client,
+                                                                             prints_manager)
+    assert bad_pack_ids[0] not in installed_packs

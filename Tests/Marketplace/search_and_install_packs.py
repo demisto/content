@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import os
 import ast
 import json
 import demisto_client
@@ -8,8 +9,9 @@ from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threa
 
 
 def get_pack_display_name(pack_id):
-    if pack_id:
-        with open('./Packs/{}/pack_metadata.json'.format(pack_id), 'r') as json_file:
+    metadata_path = './Packs/{}/pack_metadata.json'.format(pack_id)
+    if pack_id and os.path.isfile(metadata_path):
+        with open(metadata_path, 'r') as json_file:
             pack_metadata = json.load(json_file)
         return pack_metadata.get('name')
     return ''
@@ -201,28 +203,30 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         lock (Lock): A lock object.
     """
     pack_display_name = get_pack_display_name(pack_id)
-    pack_data = search_pack(client, prints_manager, pack_display_name)
 
-    if pack_data:
-        dependencies = get_pack_dependencies(client, prints_manager, pack_data)
+    if pack_display_name:
+        pack_data = search_pack(client, prints_manager, pack_display_name)
 
-        current_packs_to_install = [pack_data]
-        current_packs_to_install.extend(dependencies)
+        if pack_data:
+            dependencies = get_pack_dependencies(client, prints_manager, pack_data)
 
-        lock.acquire()
-        for pack in current_packs_to_install:
-            if pack['id'] not in packs_to_install:
-                packs_to_install.append(pack['id'])
-                installation_request_body.append(pack)
-        lock.release()
+            current_packs_to_install = [pack_data]
+            current_packs_to_install.extend(dependencies)
+
+            lock.acquire()
+            for pack in current_packs_to_install:
+                if pack['id'] not in packs_to_install:
+                    packs_to_install.append(pack['id'])
+                    installation_request_body.append(pack)
+            lock.release()
 
 
-def add_base_pack_to_installation_request(installation_request_body):
-    with open('./Packs/Base/pack_metadata.json', 'r') as json_file:
+def add_pack_to_installation_request(pack_id, installation_request_body):
+    with open('./Packs/{}/pack_metadata.json'.format(pack_id), 'r') as json_file:
         pack_metadata = json.load(json_file)
         version = pack_metadata.get('currentVersion')
         installation_request_body.append({
-            'id': 'Base',
+            'id': pack_id,
             'version': version
         })
 
@@ -239,9 +243,10 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     lock = Lock()
     threads_list = []
 
-    packs_to_install = []  # we save here all the packs we want to install, to avoid duplications
+    packs_to_install = ['Base', 'DeveloperTools']  # we save all the packs we want to install, to avoid duplications
     installation_request_body = []  # the packs to install, in the request format
-    add_base_pack_to_installation_request(installation_request_body)
+    for pack_id in packs_to_install:
+        add_pack_to_installation_request(pack_id, installation_request_body)
 
     host = client.api_client.configuration.host
     msg = 'Starting to search and install packs in server: {}\n'.format(host)
