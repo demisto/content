@@ -54,7 +54,7 @@ def get_modified_packs(target_packs):
         # return only packs from csv list
         return modified_packs
     else:
-        print_error(f"Not correct usage of flag -p. Please check help section of {__file__} script.")
+        print_error("Not correct usage of flag -p. Please check help section of upload packs script.")
         sys.exit(1)
 
 
@@ -222,12 +222,12 @@ def clean_non_existing_packs(private_packs, index_folder_path, storage_bucket):
             shutil.rmtree(invalid_pack_path)
             print_warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
 
-            invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, invalid_pack_name)
-            # invalid_pack_blob = [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path, max_results=1)]
-            invalid_pack_blob = storage_bucket.blob(invalid_pack_gcs_path)
+            invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, "AbuseDB")
 
-            if invalid_pack_blob.exists():
-                invalid_pack_blob.delete()
+            for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
+                print_warning("Boom")
+                invalid_blob.delete()
+
     else:
         print(f"No invalid packs detected inside {GCPConfig.INDEX_NAME} folder")
 
@@ -645,6 +645,7 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # finished iteration over content packs
+    # todo uncomment
     # upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
     # upload core packs json to bucket
