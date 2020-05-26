@@ -4,6 +4,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import requests
 from io import StringIO
+from typing import List, Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -354,6 +355,7 @@ def get_packages_indicators(report):
 
 
 def get_network_indicators(report):
+    ids: Union[List[Common.IP], List[Common.Domain], List[Common.URL]]
     ids = []
     network = report['network']
     for dns in network['dns']:
@@ -395,6 +397,7 @@ def get_network_indicators(report):
 
 
 def get_monitor_indicators(report):
+    ids: Union[List[Process], List[RegistryKey]]
     ids = []
     for p in report['goo_monitor']['processes']:
         process = Process(
