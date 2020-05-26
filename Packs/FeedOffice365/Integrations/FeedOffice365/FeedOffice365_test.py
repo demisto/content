@@ -29,7 +29,7 @@ def test_commands(command, args, response, length, mocker):
         "Region": 'Worldwide',
         "Service": 'Any'
     }
-    client = Client([url_dict], False, False)
+    client = Client(urls_list=[url_dict], insecure=False)
     mocker.patch.object(client, 'build_iterator', return_value=response)
     human_readable, indicators_ec, raw_json = command(client, args)
     indicators = raw_json.get('raw_response')
