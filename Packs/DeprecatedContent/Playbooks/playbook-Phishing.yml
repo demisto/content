@@ -815,3 +815,5 @@ view: |-
       }
     }
   }
+tests:
+  - no test

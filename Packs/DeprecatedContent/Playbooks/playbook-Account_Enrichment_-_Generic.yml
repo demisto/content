@@ -344,3 +344,5 @@ outputs:
 - contextPath: Account.Manager
   description: The Account's manager
   type: string
+tests:
+  - no test
