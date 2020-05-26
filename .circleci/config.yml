@@ -609,7 +609,7 @@ workflows:
     triggers:
       - schedule:
           # should trigger every day at 9 PM UTC (12 AM Israel Time)
-          cron: "0 21 * * *"
+          cron: "0 0 * * *"
           filters:
             branches:
               only:
