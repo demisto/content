@@ -1,4 +1,6 @@
-This playbook assists in processing an incident after it occurs and facilitates the lessons learned stage.
+This playbook assists in processing an incident after it occurs and facilitates the lessons learned stage,
+as described in the ‘Handling an Incident’ section of NIST - Computer Security Incident Handling Guide.
+https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r2.pdf
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
