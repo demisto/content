@@ -221,7 +221,7 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
 
     if invalid_packs_names:
         try:
-            print_warning(f"Detected {len(invalid_packs_names)} non existing packs inside index, starting cleanup.")
+            print_warning(f"Detected {len(invalid_packs_names)} non existing pack inside index, starting cleanup.")
 
             for invalid_pack in invalid_packs_names:
                 invalid_pack_name = invalid_pack[0]
