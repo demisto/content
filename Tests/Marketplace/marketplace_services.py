@@ -312,6 +312,10 @@ class Pack(object):
         return pack_integration_images
 
     @staticmethod
+    def _clean_release_notes(changelog_lines):
+        return re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
+
+    @staticmethod
     def _parse_pack_dependencies(first_level_dependencies, all_level_pack_dependencies_data):
         """ Parses user defined dependencies and returns dictionary with relevant data about each dependency pack.
 
@@ -648,7 +652,7 @@ class Pack(object):
 
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
-                            changelog_lines = re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
+                            changelog_lines = self._clean_release_notes(changelog_lines)
                         version_changelog = {'releaseNotes': changelog_lines,
                                              'displayName': latest_release_notes,
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
