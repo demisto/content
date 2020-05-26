@@ -302,7 +302,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List devidces based on the search query.
+    description: List devices based on the search query.
     execution: false
     name: cb-eedr-devices-list
     outputs:

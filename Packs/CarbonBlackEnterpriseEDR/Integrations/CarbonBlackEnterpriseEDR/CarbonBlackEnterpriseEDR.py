@@ -515,12 +515,12 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
             'TargetPriority': device.get('target_priority')
         })
 
-    endpoint = Common.Endpoint(
-        id=device.get('id'),
-        os=device.get('os'),
-        mac_address=device.get('mac_address'),
-        os_version=device.get('os_version')
-    )
+    # endpoint = Common.Endpoint(
+    #     id=device.get('id'),
+    #     os=device.get('os'),
+    #     mac_address=device.get('mac_address'),
+    #     os_version=device.get('os_version')
+    # )
 
     readable_output = tableToMarkdown('Devices list results', contents)
     results = CommandResults(
@@ -529,7 +529,7 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
         outputs=devices,
         readable_output=readable_output,
         raw_response=result,
-        indicators=[endpoint]
+        # indicators=[endpoint]
     )
     return results
 
@@ -605,7 +605,7 @@ def list_watchlists_command(client: Client) -> Union[CommandResults, str]:
             'Tags_enabled': watchlist.get('tags_enabled'),
             'Alerts_enabled': watchlist.get('alerts_enabled'),
             'create_timestamp': timestamp_to_datestring(watchlist.get('create_timestamp') * 1000),
-            'Last_update_timestamp': timestamp_to_datestring(watchlist.get('last_update_timestamp')),
+            'Last_update_timestamp': timestamp_to_datestring(watchlist.get('last_update_timestamp') * 1000),
             'Report_ids': watchlist.get('report_ids'),
             'Classifier': watchlist.get('classifier')
         })
@@ -701,7 +701,7 @@ def create_watchlist_command(client: Client, args: Dict) -> CommandResults:
         'Description': result.get('description'),
         'Tags_enabled': result.get('tags_enabled'),
         'Alerts_enabled': result.get('alerts_enabled'),
-        'Create_timestamp': timestamp_to_datestring(result.get('create_timestamp')),
+        'Create_timestamp': timestamp_to_datestring(result.get('create_timestamp') * 1000),
         'Report_ids': result.get('report_ids'),
         'Classifier': result.get('classifier')
     }
@@ -751,7 +751,7 @@ def update_watchlist_command(client: Client, args: Dict) -> CommandResults:
         'Description': result.get('description'),
         'Tags_enabled': result.get('tags_enabled'),
         'Alerts_enabled': result.get('alerts_enabled'),
-        'Create_timestamp': timestamp_to_datestring(result.get('create_timestamp')),
+        'Create_timestamp': timestamp_to_datestring(result.get('create_timestamp') * 1000),
         'Report_ids': result.get('report_ids'),
         'Classifier': result.get('classifier')
     }
@@ -982,7 +982,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
 
     contents = {
         'ID': result.get('id'),
-        'Timestamp': timestamp_to_datestring(result.get('timestamp')),
+        'Timestamp': timestamp_to_datestring(result.get('timestamp') * 1000),
         'Description': result.get('description'),
         'Title': result.get('title'),
         'Severity': result.get('severity'),
@@ -993,7 +993,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
 
     context = {
         'ID': result.get('id'),
-        'Timestamp': timestamp_to_datestring(result.get('timestamp')),
+        'Timestamp': timestamp_to_datestring(result.get('timestamp') * 1000),
         'Description': result.get('description'),
         'Title': result.get('title'),
         'Severity': result.get('severity'),
