@@ -1,3 +1,5 @@
+import zipfile
+from io import BytesIO
 from typing import Union, Dict, Optional, Any, Tuple, List
 
 import demistomock as demisto
@@ -367,7 +369,7 @@ class Client(BaseClient):
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/file_path'
         return self._http_request('GET', suffix_url)
 
-    def get_download_file_content_values(self, download_link: str = None) -> Dict:
+    def get_download_file(self, download_link: str = None) -> Dict:
         file_download_response = self._http_request(
             method='GET',
             full_url=download_link,
@@ -1099,8 +1101,9 @@ def get_file_command(client: Client, args: Dict) -> CommandResults:
             'url': file_.get('url')
         })
 
-        if download_to_xsoar:
-            result = client.get_download_file_content_values(file_.get('url'))
+        if download_to_xsoar == 'true':
+            request = requests.get(file_.get('url'))
+            demisto.results(fileResult('result.zip', request.content))
 
     readable_output = tableToMarkdown('The file to download', contents)
     results = CommandResults(
@@ -1126,14 +1129,6 @@ def get_file_path_command(client: Client, args: Dict) -> CommandResults:
         raw_response=result
     )
     return results
-
-
-def download_file_to_xsoar_command(client: Client, args: Dict):
-    download_link = args.get('download_link')
-
-    result = client.get_download_file_content_values(download_link)
-
-    return fileResult('file_results.zip', bytes)
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
@@ -1308,9 +1303,6 @@ def main():
 
         elif demisto.command() == 'cb-eedr-file-paths':
             return_results(get_file_path_command(client, demisto.args()))
-
-        elif demisto.command() == 'cb-eedr-file-download-to-xsoar':
-            demisto.results(download_file_to_xsoar_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:

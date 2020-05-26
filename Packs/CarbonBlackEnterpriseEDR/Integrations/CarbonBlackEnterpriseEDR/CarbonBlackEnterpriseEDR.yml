@@ -1489,6 +1489,17 @@ script:
       name: expiration_seconds
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Download the file to XSOAR.
+      isArray: false
+      name: download_to_xsoar
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: The files are able to be downloaded via AWS S3 pre-signed URLs.
     execution: false
@@ -1534,48 +1545,6 @@ script:
       description: The total number of file paths that have been observed, by this
         organization, for this file.
       type: Number
-  - arguments:
-    - default: false
-      description: The file link to download.
-      isArray: false
-      name: download_link
-      required: true
-      secret: false
-    deprecated: false
-    description: Download file to Cortex xsoar.
-    execution: false
-    name: cb-eedr-file-download-to-xsoar
-    outputs:
-    - contextPath: File.Size
-      description: The size of the file in bytes.
-      type: Number
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.SHA512
-      description: The SHA512 hash of the file.
-      type: String
-    - contextPath: File.Name
-      description: The full file name.
-      type: String
-    - contextPath: File.SSDeep
-      description: The ssdeep hash of the file.
-      type: String
-    - contextPath: File.EntryID
-      description: The ID for locating the file in the War Room.
-      type: String
-    - contextPath: File.Info
-      description: The file information.
-      type: String
-    - contextPath: File.Type
-      description: The file type, as determined by libmagic.
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
