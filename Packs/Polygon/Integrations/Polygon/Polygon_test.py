@@ -1,5 +1,4 @@
 import json
-import pytest
 
 from Polygon import demisto, Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \
     HASH_REPUTATION
