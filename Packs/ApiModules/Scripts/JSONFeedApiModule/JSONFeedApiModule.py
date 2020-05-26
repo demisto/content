@@ -3,7 +3,6 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import urllib3
 import jmespath
-import tldextract
 from typing import List, Dict, Union, Optional
 
 # disable insecure warnings
