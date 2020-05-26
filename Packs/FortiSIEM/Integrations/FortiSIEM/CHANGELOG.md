@@ -1,4 +1,5 @@
 ## [Unreleased]
+Fixed an issue where authenticating wasn't successful.
 
 
 ## [20.5.0] - 2020-05-12
