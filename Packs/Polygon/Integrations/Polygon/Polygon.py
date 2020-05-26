@@ -390,7 +390,8 @@ def get_network_indicators(report):
         )
         url_ids.append(url)
 
-    return domain_ids + ip_ids + url_ids
+    ids = domain_ids + ip_ids + url_ids  # should be type: List[Common.Indicator]
+    return ids
 
 
 def get_monitor_indicators(report):
@@ -414,7 +415,8 @@ def get_monitor_indicators(report):
                 )
                 regkey_ids.append(reg)
 
-    return process_ids + regkey_ids
+    ids = process_ids + regkey_ids  # should be type: List[Common.Indicator]
+    return ids
 
 
 def get_report_indicators(report, analysis_type):
