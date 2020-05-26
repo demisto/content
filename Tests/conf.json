@@ -2800,7 +2800,7 @@
         }
     ],
     "skipped_tests": {
-        "VirusTotal - Private API": "Issue 22638",
+        "virusTotalPrivateAPI-test-playbook": "Issue #24967",
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
