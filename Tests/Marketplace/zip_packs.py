@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
@@ -79,10 +80,33 @@ def remove_test_playbooks_if_exist(zips_path, packs):
                     os.mkdir(new_path)
                     pack_zip.extractall(path=new_path,
                                         members=(member for member in zip_contents if 'TestPlaybooks' not in member))
+                    remove_test_playbooks_from_signatures(new_path, zip_contents)
+
             if remove:
                 # Remove the current pack zip
                 os.remove(path)
                 shutil.make_archive(new_path, 'zip', new_path)
+
+
+def remove_test_playbooks_from_signatures(path, filenames):
+    """
+    Remove the test playbook entries from the signatures file
+    Args:
+        path: The path of the pack
+        filenames: The names of the files in the pack
+
+    """
+    signature_file_path = os.path.join(path, 'signatures.sf')
+    test_playbooks = [file_ for file_ in filenames if 'TestPlaybooks' in file_]
+    if os.path.isfile(signature_file_path):
+        with open(signature_file_path, 'r') as signature_file:
+            signature = json.load(signature_file)
+            for test_playbook in test_playbooks:
+                del signature[test_playbook]
+        with open(signature_file_path, 'w') as signature_file:
+            json.dump(signature, signature_file)
+    else:
+        print_warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
 def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name):
@@ -103,6 +127,8 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
             if pack.name in IGNORED_FILES:
+                continue
+            if pack.name != 'VirusTotal':
                 continue
             # Search for the pack in the bucket
             pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)

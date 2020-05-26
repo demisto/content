@@ -1,5 +1,5 @@
 from Tests.Marketplace.zip_packs import download_packs_from_gcp, get_latest_pack_zip_from_blob, zip_packs,\
-    remove_test_playbooks_if_exist
+    remove_test_playbooks_if_exist, remove_test_playbooks_from_signatures
 
 
 class TestZipPacks:
@@ -154,3 +154,53 @@ class TestZipPacks:
         remove_test_playbooks_if_exist('dest', [{'name': 'path'}])
 
         assert ZipFile.extractall.call_count == 0
+
+    def test_remove_test_playbooks_from_signatures(self, mocker):
+        import json
+        from unittest.mock import mock_open
+        """
+        Given:
+            Removing test playbooks from packs
+
+        When:
+            Zipping packs
+
+        Then:
+            Signatures should be updated to have no test playbooks
+        """
+
+        files = ['Integrations/integration-VirusTotal_5.5.yml', 'changelog.json', 'metadata.json',
+                 'ReleaseNotes/1_0_1.md', 'TestPlaybooks/playbook-VirusTotal_detonate_file.yml', 'README.md',
+                 'Scripts/script-TaniumAskQuestion.yml', 'Playbooks/playbook-Detonate_File-VirusTotal.yml',
+                 'Integrations/integration-shtak.yml', 'TestPlaybooks/playbook-VirusTotal_preferred_vendors_test.yml',
+                 "TestPlaybooks/playbook-virusTotal-test.yml"]
+
+        sigs = json.dumps({
+            "Integrations/integration-VirusTotal_5.5.yml": "a123",
+            "Playbooks/playbook-Detonate_File-VirusTotal.yml": "b123",
+            "README.md": "c123",
+            "TestPlaybooks/playbook-VirusTotal_detonate_file.yml": "d123",
+            "TestPlaybooks/playbook-VirusTotal_preferred_vendors_test.yml": "e123",
+            "TestPlaybooks/playbook-virusTotal-test.yml": "f123",
+            "changelog.json": "g123",
+            "metadata.json": "h123"
+        })
+
+        mocker.patch('os.path.isfile', return_value=True)
+        mocker.patch('builtins.open', mock_open(read_data=sigs))
+        mocker.patch.object(json, 'dump')
+
+        remove_test_playbooks_from_signatures('path', files)
+        dump_args = json.dump.call_args[0][0]
+
+        assert dump_args == {
+            "Integrations/integration-VirusTotal_5.5.yml": "a123",
+            "Playbooks/playbook-Detonate_File-VirusTotal.yml": "b123",
+            "README.md": "c123",
+            "changelog.json": "g123",
+            "metadata.json": "h123"
+        }
+
+
+
+
