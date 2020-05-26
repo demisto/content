@@ -184,8 +184,8 @@ class Client:
             return self._http_request(
                 method='get',
                 url_suffix=URL_FILE_EXPORT.format(tds_analysis_id,
-                                                file["analgin_result"]["commit"],
-                                                file["analgin_result"]["reports"][0]["id"]),
+                                                  file["analgin_result"]["commit"],
+                                                  file["analgin_result"]["reports"][0]["id"]),
                 decode=False
             )
         raise ValueError("No reports found")
