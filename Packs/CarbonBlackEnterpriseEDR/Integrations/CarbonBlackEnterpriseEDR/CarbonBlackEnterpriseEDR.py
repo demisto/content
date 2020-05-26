@@ -1,5 +1,3 @@
-import zipfile
-from io import BytesIO
 from typing import Union, Dict, Optional, Any, Tuple, List
 
 import demistomock as demisto
@@ -369,16 +367,6 @@ class Client(BaseClient):
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/file_path'
         return self._http_request('GET', suffix_url)
 
-    def get_download_file(self, download_link: str = None) -> Dict:
-        file_download_response = self._http_request(
-            method='GET',
-            full_url=download_link,
-            url_suffix='',
-            stream=True
-        )
-
-        return file_download_response
-
 
 def test_module(client):
     """
@@ -421,7 +409,8 @@ def alert_list_command(client: Client, args: Dict) -> Union[CommandResults, str]
     sort_order = args.get('sort_order')
     limit = args.get('limit')
     contents = []
-    headers = ['AlertID', 'CreateTime', 'DeviceID', 'DeviceName', 'DeviceOS', 'PolicyName', 'ProcessName', 'Type', 'WorkflowState']
+    headers = ['AlertID', 'CreateTime', 'DeviceID', 'DeviceName', 'DeviceOS', 'PolicyName', 'ProcessName', 'Type',
+               'WorkflowState']
 
     result = client.search_alerts_request(group_results, minimum_severity, create_time,
                                           device_os_version, policy_id, alert_tag, alert_id, device_username,
@@ -465,7 +454,7 @@ def alert_workflow_update_command(client: Client, args: Dict) -> CommandResults:
 
     result = client.alert_workflow_update_request(alert_id, state, comment, remediation_state)
 
-    readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', result)
+    readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', result, removeNull=True)
     outputs = {
         'AlertID': alert_id,
         'State': result.get('state'),
@@ -526,13 +515,21 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
             'TargetPriority': device.get('target_priority')
         })
 
+    endpoint = Common.Endpoint(
+        id=device.get('id'),
+        os=device.get('os'),
+        mac_address=device.get('mac_address'),
+        os_version=device.get('os_version')
+    )
+
     readable_output = tableToMarkdown('Devices list results', contents)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Device',
         outputs_key_field='id',
         outputs=devices,
         readable_output=readable_output,
-        raw_response=result
+        raw_response=result,
+        indicator=[endpoint]
     )
     return results
 
