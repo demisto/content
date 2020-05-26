@@ -19,7 +19,7 @@ class TestModifiedPacks:
                                        "Packs/Pack1/Integrations/Integration1/CHANGELOG.md\n"
                                        "Packs/Pack2/pack_metadata.json\n")
         mocker.patch('Tests.Marketplace.upload_packs.run_command', return_value=modified_packs_return_value)
-        modified_packs = get_modified_packs()
+        modified_packs = get_modified_packs(target_packs="modified")
 
         assert modified_packs == {"Pack1", "Pack2"}
 # disable-secrets-detection-end
