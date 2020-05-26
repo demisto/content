@@ -1,5 +1,6 @@
 TDS Polygon is a Malware Detonation & Research platform designed for deep dynamic analysis and enhanced indicators extraction. TDS Polygon analyzes submitted files and urls and extracts deep IOCs that appear when malicious code is triggered and executed. Polygon could be used either for application-level tasks (like smtp-based mail filtering) and analytical purposes (files/urls analysis for verdict, report and indicators).
 This integration was integrated and tested with version 3.1 of Group-IB TDS Polygon
+
 ## Configure Group-IB TDS Polygon on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
