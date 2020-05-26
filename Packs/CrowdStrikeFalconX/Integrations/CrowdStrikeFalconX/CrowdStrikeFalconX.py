@@ -8,6 +8,7 @@ from CommonServerUserPython import *
 
 import requests
 import traceback
+import shutil
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -74,10 +75,13 @@ class Client(BaseClient):
         :param comment: a descriptive comment to identify the file for other users
         :return: http response
         """
+        shutil.copy(demisto.getFilePath(file)['path'],
+                    demisto.getFilePath(file)['name'])
+        f = open(demisto.getFilePath(file)['name'], 'rb')
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
-        data = open(file, 'rb').read()
+        #data = open(file, 'rb').read()
         self._headers['Content-Type'] = 'application/octet-stream'
-        return self._http_request("POST", url_suffix, data=data)
+        return self._http_request("POST", url_suffix, files={'file': f})
 
     def send_uploaded_file_to_sandbox_analysis(
             self,
