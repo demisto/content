@@ -1357,10 +1357,6 @@
             "nightly": true
         },
         {
-            "playbookID": "TestSafeBreach",
-            "integrations": "SafeBreach"
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test",
             "timeout": 500
@@ -2978,7 +2974,6 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
-        "SafeBreach": "pending rewrite",
         "Cymulate": "Partner didn't provided test playbook"
     },
     "nightly_integrations": [
@@ -3043,7 +3038,6 @@
         "Microsoft Graph Calendar": "Test direct access to oproxy",
         "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
-        "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
