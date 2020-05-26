@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+from typing import List
+
 
 def main():
     user_id = demisto.args().get('userId', False)
