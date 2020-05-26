@@ -650,7 +650,7 @@ def main():
         if command in commands:
             return_outputs(*commands[command](client, **demisto.args()))
         else:
-            raise NotImplementedError(f'{command} is not an existing CrowdStrikeFalconX command')
+            raise NotImplementedError(f'{command} is not an existing CrowdStrike Falcon X command')
     except Exception as err:
         return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
 
