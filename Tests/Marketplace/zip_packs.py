@@ -127,8 +127,6 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
             if pack.name in IGNORED_FILES:
                 continue
-            if pack.name != 'VirusTotal':
-                continue
             # Search for the pack in the bucket
             pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
             blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
