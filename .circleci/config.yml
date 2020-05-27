@@ -148,7 +148,7 @@ jobs:
             echo allow-loopback-pinentry >> ~/.gnupg/gpg-agent.conf
             echo RELOADAGENT | gpg-connect-agent
             echo -e ${BLACKLIST_KEY} | gpg --import
-            for secret in $(echo $BLACKLIST_PASS | gpg --no-tty --passphrase-fd 0 --pinentry-mode loopback --decrypt Tests/scripts/blacklist_test)
+            for secret in $(echo $BLACKLIST_PASS | gpg --batch --yes --no-tty --passphrase-fd 0 --pinentry-mode loopback --decrypt Tests/scripts/blacklist_test)
               do
                 if [ "$(grep -Ril $secret ./ | wc -l)" -gt 0 ]
                   then
