@@ -144,7 +144,7 @@ def update_alert_command():
     alert_id = args.get('alertID')
     update_params = {}
     # adding the possible params for update
-    possible_params = ['new_comment', 'tags', 'publish_time', 'resolved', 'snooze_settings', 'merit', 'assigned_to']
+    possible_params = ['new_comment', 'tags', 'publish_time', 'snooze_settings', 'merit', 'assigned_to']
     for param in possible_params:
         current_param = args.get(param, False)
         if current_param:
@@ -154,6 +154,8 @@ def update_alert_command():
         update_params['resolved_user'] = {
             'username': username
         }
+    update_params['resolved'] = args.get('resolved') == 'true'
+
 
     alert_data = update_alert(alert_id, update_params)
 

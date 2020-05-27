@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue in which the ***resolved*** argument of the **sw-update-alert** was not handled appropriately.
 
 
 ## [20.4.0] - 2020-04-14
