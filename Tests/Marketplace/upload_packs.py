@@ -213,7 +213,7 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
 
     """
     if not os.environ.get('CI') or os.environ.get('CIRCLE_BRANCH') != 'master' \
-            and storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
+            or storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
         print("Skipping cleanup of packs in gcs.")
         return
 
