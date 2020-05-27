@@ -1,5 +1,5 @@
 id: c41bda9e-4d49-4700-8688-e5da23a4bce3
-version: 41
+version: 43
 name: Cortex_XDR_-_quarantine_file
 starttaskid: "0"
 tasks:
@@ -200,20 +200,17 @@ view: |-
   }
 inputs:
 - key: file_hash
-  value:
-    simple: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
+  value: {}
   required: true
   description: The file’s hash. Hash must be a valid SHA256.
   playbookInputQuery: null
 - key: file_path
-  value:
-    simple: /home/ec2-user/test_file.txt
+  value: {}
   required: true
   description: the path for the selected file.
   playbookInputQuery: null
 - key: endpoint_id
-  value:
-    simple: ea303670c76e4ad09600c8b346f7c804
+  value: {}
   required: true
   description: Here you provide the endpoint id which is the file's location in the
     system.
