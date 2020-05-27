@@ -10,7 +10,7 @@
     "categories": [
         "Utilities"
     ],
-    "tags": ["Stolen Device","Lost Device"],
+    "tags": [],
     "useCases": ["Stolen Device","Lost Device"],
     "keywords": ["Stolen Device","Lost Device"]
 }

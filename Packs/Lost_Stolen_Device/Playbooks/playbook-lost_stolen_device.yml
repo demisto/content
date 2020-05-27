@@ -3,9 +3,7 @@ version: -1
 fromversion: 2.5.0
 name: Lost / Stolen Device Playbook
 description: |-
-  This manual playbook handles a lost or stolen device incident. It will guide the analyst through various steps to validate the type and the content on the device and the required steps for the response and remediation process. Initial incident details should be the name of the reporting person, or ID of the SIEM alert/incident, and description of the lost device.
-  Labels:
-   - User: the owner of the device
+  This manual playbook handles an incident for a lost or stolen device. It guides the analyst through various steps to validate the type of device and its contents, and the required steps for response and remediation. Initial incident details should be the name of the reporting person or ID of the SIEM alert/incident, and description of the lost device.
 starttaskid: "0"
 tasks:
   "0":
