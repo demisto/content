@@ -1,0 +1,78 @@
+category: Authentication
+commonfields:
+  id: Workday
+  version: -1
+configuration:
+- defaultvalue: https://wd5-impl-services1.workday.com/ccx/service
+  display: Server URL (e.g. https://example.net)
+  name: base_url
+  required: true
+  type: 0
+- display: Username
+  name: username
+  required: true
+  type: 9
+- display: Password
+  name: password
+  required: true
+  type: 4
+- display: Tenant name
+  name: tenant_name
+  required: true
+  type: 4
+- display: Token
+  name: token
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Workday offers enterprise-level software solutions for financial management, human resources, and planning.
+display: Workday
+name: Workday
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Employee ID of the worker for which to get information.
+      isArray: false
+      name: employee_id
+      required: false
+      secret: false
+    - default: 50
+      description: The maximum number of results to return.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    - default: '1'
+      description: The page from which to get the employees data.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: '3'
+      description: <FILL HERE>
+      isArray: false
+      name: managers
+      required: false
+      secret: false
+    deprecated: false
+    description: List workers command - Returns information for specified workers.
+    execution: false
+    name: workday-list-workers
+    outputs:
+    - contextPath: Workday.Worker.id
+      description: Worker ID.
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.7.4.2245
