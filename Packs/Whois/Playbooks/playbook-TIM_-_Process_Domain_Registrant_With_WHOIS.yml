@@ -622,9 +622,9 @@ outputs:
 - contextPath: ApprovedDomains
   description: Domains for which the registrant is approved.
   type: string
-  - contextPath: DomainsNotResolvedByWhois
-    description: Domains which Whois wasn't able to resolve.
-    type: string
+- contextPath: DomainsNotResolvedByWhois
+  description: Domains which Whois wasn't able to resolve.
+  type: string
 quiet: true
 tests:
 - No test
