@@ -424,8 +424,8 @@ Gets a list all configured network objects.
 ### Network Objects
 |ID|Name|Host|Description|
 |---|---|---|---|
-| ASA_Demo_NObj_1190 | ASA_Demo_NObj_1190 | kind: IPv4Address<br>value: 1.1.1.1 </br>|  |
-| CiscoASA | CiscoASA | kind: IPv4Address<br>value:8.8.8.8.</br> | Cisco ASA |
+| ASA_Demo_NObj_1190 | ASA_Demo_NObj_1190 | kind: IPv4Address<br/>value: 1.1.1.1 |  |
+| CiscoASA | CiscoASA | kind: IPv4Address<br/>value:8.8.8.8. | Cisco ASA |
 ### 8. cisco-asa-create-network-object
 ---
 Creates network object.
@@ -474,7 +474,7 @@ Creates network object.
 ### Network Objects
 |ID|Name|Host|Description|
 |---|---|---|---|
-| Object | Object | kind: IPv4Address<br>value: 1.1.1.1 </br>|  |"
+| Object | Object | kind: IPv4Address<br/>value: 1.1.1.1 |  |"
 
 ### 9. cisco-asa-list-interfaces
 ---
