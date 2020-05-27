@@ -6,7 +6,7 @@ VMware Carbon Black Enterprise EDR is an advanced threat hunting and incident re
 ## Configure Carbon Black Enterprise EDR on Demisto
 ---
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to __Settings__ \> __Integrations__ \> __Servers & Services__.
 2. Search for Carbon Black Enterprise EDR.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
@@ -18,7 +18,7 @@ VMware Carbon Black Enterprise EDR is an advanced threat hunting and incident re
     * __Incident type__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)__
+    * __First fetch timestamp (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)__
     * __Fetch limit__
 4. Click __Test__ to validate the URLs, token, and connection.
 
