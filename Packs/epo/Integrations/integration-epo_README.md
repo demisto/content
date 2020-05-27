@@ -16,7 +16,7 @@ This integration was integrated and tested with McAfee ePO v5.3.2.
 4.  Click **Test** to validate the URLs, credentials, and connection.
 
 ## Permissions
-McAfee ePO has a highly flexible and powerful permissions system. The permissions required for the user used by the integration depend on what operations you will want to perform. The api user should have the same permissions a regular user would have to access the data via the ui. It is possible to view the exact permissions needed for a specific command by running the `!epo-help` command. The `!epo-help` command's output will include help information for the specied command including required permissions.
+McAfee ePO has a highly flexible and powerful permissions system. The permissions required for the user used by the integration depend on what operations you will want to perform. The api user should have the same permissions a regular user would have to access the data via the ui. It is possible to view the exact permissions needed for a specific command by running the `!epo-help` command. The `!epo-help` command's output will include help information for the specific command including required permissions.
 
 Example outputs: 
 * `!epo-help command="repository.findPackages"`:
