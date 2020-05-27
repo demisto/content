@@ -88,7 +88,7 @@ class Client(BaseClient):
     def devices_list_request(self, device_id: List = None, status: List = None, device_os: List = None,
                              last_contact_time: Dict[str, Optional[Any]] = None, ad_group_id: List = None,
                              policy_id: List = None, target_priority: List = None, limit: int = None,
-                             sort_field: str = None, sort_order: str = None) -> dict:
+                             sort_field: str = None, sort_order: str = None) -> Dict:
 
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/devices/_search'
 
@@ -494,6 +494,7 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
     sort_field = args.get('sort_field', '')
     sort_order = args.get('sort_order')
     contents = []
+    headers = ['ID', 'Name', 'OS', 'PolicyName', 'Quarantined', 'status', 'TargetPriority']
 
     result = client.devices_list_request(device_id, status, device_os, last_contact_time, ad_group_id, policy_id,
                                          target_priority, limit, sort_field, sort_order)
@@ -515,21 +516,21 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
             'TargetPriority': device.get('target_priority')
         })
 
-    # endpoint = Common.Endpoint(
-    #     id=device.get('id'),
-    #     os=device.get('os'),
-    #     mac_address=device.get('mac_address'),
-    #     os_version=device.get('os_version')
-    # )
+    endpoint = Common.Endpoint(
+        id=device.get('id'),
+        os=device.get('os'),
+        mac_address=device.get('mac_address'),
+        os_version=device.get('os_version')
+    )
 
-    readable_output = tableToMarkdown('Devices list results', contents)
+    readable_output = tableToMarkdown('Devices list results', contents, removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Device',
         outputs_key_field='id',
         outputs=devices,
         readable_output=readable_output,
         raw_response=result,
-        # indicators=[endpoint]
+        indicators=[endpoint]
     )
     return results
 

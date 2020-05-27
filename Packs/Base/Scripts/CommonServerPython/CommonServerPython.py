@@ -2381,7 +2381,7 @@ class Common(object):
 
     class Endpoint(Indicator):
         """ ignore docstring
-        Endpoint indicator - https://demisto.pan.dev/docs/integrations/context-standards#endpoint
+        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
         """
         CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
 
@@ -2408,7 +2408,7 @@ class Common(object):
             }
 
             if self.hostname:
-                endpoint_context['Hosname'] = self.hostname
+                endpoint_context['Hostname'] = self.hostname
 
             if self.ip_address:
                 endpoint_context['IPAddress'] = self.ip_address

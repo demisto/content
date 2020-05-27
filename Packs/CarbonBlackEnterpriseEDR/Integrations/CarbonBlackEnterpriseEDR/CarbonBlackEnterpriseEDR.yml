@@ -59,7 +59,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The ID of the alert to update. Get the ID from list_alerts command.
+      description: The ID of the alert to update. Get the ID from list-alerts command.
       isArray: false
       name: alert_id
       required: true
