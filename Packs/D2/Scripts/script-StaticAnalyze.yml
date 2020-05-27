@@ -22,5 +22,7 @@ tags:
 comment: For phishing incidents, iterate on all attachments and run PE dump on each
 system: true
 scripttarget: 0
-dependson: {}
+dependson:
+  must:
+  - D2PEDump
 timeout: 0s
