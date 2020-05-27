@@ -385,8 +385,8 @@ script:
         let endpointTranslatedData = mapObjFunction(endpointDataMap)(processes);
         let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
         let context = {
-            'Process(val.CbID==obj.CbID)': createContext(processTranslatedData)
-            'File(val.Name==obj.Name)': createContext(fileTranslatedData)
+            'Process(val.CbID==obj.CbID)': createContext(processTranslatedData),
+            'File(val.Name==obj.Name)': createContext(fileTranslatedData),
             'Endpoint(val.Hostname==obj.Hostname)': createContext(endpointTranslatedData)
         };
         return {
