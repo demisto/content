@@ -20,50 +20,14 @@ identifier = credentials["identifier"]
 password = credentials["password"]
 suspicious_threshold = params["suspicious_threshold"]
 malicious_threshold = params["malicious_threshold"]
-
-
-def get_authtoken():
-    headers = {
-        "Content-Type": "application/json"
-    }
-    authTokenRequest_v1 = {
-        "loginUsername": identifier,
-        "loginPassword": password
-    }
-
-    authTokenRequest_v2 = {
-        "username": {
-            "username": identifier
-        },
-        "plaintextPassword": {
-            "value": password
-        }
-    }
-    authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest_v1, verify=verify, headers=headers)
-    if authTokenResponse.status_code == 200:
-        return authTokenResponse.json()["token"]["value"]
-
-    else:
-        error_string = "######## First Attempt of authtoken failed with error code {}\n reason: {}\n content: {}".format(
-            authTokenResponse.status_code, authTokenResponse.reason, authTokenResponse.content)
-        demisto.debug(error_string)
-        authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest_v2, verify=verify,
-                                          headers=headers)
-        if authTokenResponse.status_code == 200:
-            return authTokenResponse.json()["token"]["value"]
-
-        else:
-            error_string = "######## Second Attempt of authtoken failed with error code {}\n reason: {}\n content: {}".format(
-                authTokenResponse.status_code, authTokenResponse.reason, authTokenResponse.content)
-            demisto.debug(error_string)
-            raise DemistoException("Authtoken could not be fetched - check the given credentials.")
-
-
-authToken = get_authtoken()
+authTokenRequest = {
+    "loginUsername": identifier,
+    "loginPassword": password
+}
+authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest, verify=verify)
+authToken = authTokenResponse.json()["token"]["value"]
 headers = {
-    "Authentication": ("access " + authToken),
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, '
-                  'like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+    "Authentication": ("access " + authToken)
 }
 command = demisto.command()
 args = demisto.args()
