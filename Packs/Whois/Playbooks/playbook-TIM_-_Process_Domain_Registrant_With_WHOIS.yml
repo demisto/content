@@ -1,5 +1,5 @@
-id: 719ae595-c887-4bd7-89ec-a7fc3d67e96d
-version: 9
+id: TIM - Process Domain Registrant With Whois
+version: -1
 name: TIM - Process Domain Registrant With Whois
 description: This playbook runs the whois enrichment on domain indicators provided
   by an indicator query such as "type:Domain". The playbook then compares the domain
