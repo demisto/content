@@ -1,56 +1,311 @@
-category: Authentication
+category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CheckPoint_FW
+  id: CheckPoint
   version: -1
 configuration:
-- defaultvalue: https://example.net
-  display: Server URL (e.g. https://example.net)
-  name: url
+- defaultvalue: 8.8.8.8
+  display: Server URL (e.g. https://example.net or 8.8.8.8)
+  name: server
   required: true
   type: 0
-- display: Username
-  name: credentials
+- defaultvalue: '4434'
+  display: Server Port (e.g. 4434)
+  name: port
+  required: true
+  type: 0
+- display: Administrator user name.
+  name: username
+  required: true
+  type: 0
+- display: Administrator password
+  name: passworda
   required: true
   type: 9
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Incident type
   name: incidentType
   required: false
-  type: 13
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
+  hidden: false
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
-display: CheckPoint_FW
-name: CheckPoint_FW
+description: Read information and to send commands to the Check Point Firewall server.
+display: CheckPoint Firewall - V2
+name: CheckPoint
 script:
   commands:
   - arguments:
     - default: false
-      description: The name of whom you want to say hello to.
+      defaultValue: '50'
+      description: The maximal number of returned results.
       isArray: false
-      name: name
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of the results to initially skip.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: standard
+      description: The level of detail for some of the fields in the response can
+        vary from showing only the UID value of the object to a fully detailed representation
+        of the object.
+      isArray: false
+      name: details_level
       required: false
       secret: false
     deprecated: false
-    description: Hello command - prints hello to anyone
+    description: Show all host objects
     execution: false
-    name: helloworld-say-hello
+    name: checkpoint-host-list
     outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
+    - contextPath: checkpoint.host.from
+      description: From which element number the query was done
+      type: Number
+    - contextPath: checkpoint.host.to
+      description: To which element number the query was done.
+      type: Unknown
+    - contextPath: checkpoint.host.total
+      description: Total number of elements returned by the query.
+      type: Unknown
+    - contextPath: checkpoint.host.object-name
       type: String
-  isfetch: true
+    - contextPath: checkpoint.host.object-uid
+      type: String
+    - contextPath: checkpoint.host.object-type
+      type: String
+  - arguments:
+    - default: false
+      description: object unique identifier (uid) or name
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
+    description: get all data of a given host
+    execution: false
+    name: checkpoint-host-get
+    outputs:
+    - contextPath: checkpoint.host.name
+      description: host name
+      type: Unknown
+    - contextPath: checkpoint.host.uid
+      type: String
+    - contextPath: checkpoint.host.type
+      type: Unknown
+    - contextPath: checkpoint.host.domain-name
+      type: String
+    - contextPath: checkpoint.host.domain-uid
+      type: String
+    - contextPath: checkpoint.host.ipv4-address
+      type: String
+    - contextPath: checkpoint.host.ipv6-address
+      type: String
+    - contextPath: checkpoint.host.read-only
+      type: Boolean
+    - contextPath: checkpoint.host.Meta-info-creation-time
+      type: Unknown
+    - contextPath: checkpoint.host.Meta-info-creator
+      type: String
+    - contextPath: checkpoint.host.Meta-info-last-modifier
+      type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: checkpoint-host-add
+  - arguments:
+    - default: false
+      description: Object unique identifier or name
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: 'IPv4 or IPv6 address. '
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: New name of the object.
+      isArray: false
+      name: new_name
+      required: false
+      secret: false
+    - default: false
+      description: Comments string.
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'True'
+      description: Apply changes ignoring warnings.
+      isArray: false
+      name: ignore_warnings
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'False'
+      description: |-
+        Apply changes ignoring errors. You won't be able to publish such a changes.
+        If ignore-warnings flag was omitted - warnings will also be ignored.
+      isArray: false
+      name: ignore_errors
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: checkpoint-host-update
+    outputs:
+    - type: Unknown
+  - arguments:
+    - default: false
+      description: uid or name.
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: checkpoint-host-delete
+    outputs:
+    - contextPath: checkpoint.host.message
+      description: Operation status.
+      type: String
+  - arguments:
+    - default: false
+      description: the command to execute
+      isArray: false
+      name: command
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: checkpoint-command
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximal number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of the results to initially skip.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Show a list of all groups
+    execution: false
+    name: checkpoint-group-list
+  - deprecated: false
+    description: Get all data of a given group
+    execution: false
+    name: checkpoint-group-get
+  - deprecated: false
+    description: add a group
+    execution: false
+    name: checkpoint-group-add
+  - deprecated: false
+    description: update group object
+    execution: false
+    name: checkpoint-group-update
+  - deprecated: false
+    description: delete a group object
+    execution: false
+    name: checkpoint-group-delete
+  - arguments:
+    - default: false
+      description: Get all data for a given address range
+      isArray: false
+      name: checkpoint-address-range-get
+      required: false
+      secret: false
+    - default: false
+      description: The maximal number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List all address range objects
+    execution: false
+    name: checkpoint-address-range-list
+  - deprecated: false
+    description: Add address range object
+    execution: false
+    name: checkpoint-address-range-add
+  - deprecated: false
+    description: Update an address range object
+    execution: false
+    name: checkpoint-address-range-update
+  - deprecated: false
+    description: Delete a gicen address range
+    execution: false
+    name: checkpoint-address-range-delete
+  - arguments:
+    - default: false
+      description: The maximal number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List all threat indicators
+    execution: false
+    name: checkpoint-threat-indicator-list
+  - deprecated: false
+    description: Get data for a given list indicator
+    execution: false
+    name: checkpoint-threat-indicator-get
+  - deprecated: false
+    description: Add a threat indicator
+    execution: false
+    name: checkpoint-threat-indicator-add
+  - arguments:
+    - default: false
+      description: Delete a given threat indicator
+      isArray: false
+      name: checkpoint-threat-indicator-delete
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a given indicator
+    execution: false
+    name: checkpoint-threat-indicator-update
+  - deprecated: false
+    description: Get all date of a given address range object
+    execution: false
+    name: checkpoint-address-range-get
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.7.4.2245
+  type: python
