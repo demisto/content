@@ -1816,4 +1816,11 @@ def test_auto_detect_indicator_type(indicator_value, indicatory_type):
         Then
         -  Run the auto_detect_indicator_type and validate that the indicator type the function returns is as expected.
     """
-    assert auto_detect_indicator_type(indicator_value) == indicatory_type
+    if sys.version_info.major == 3 and sys.version_info.minor == 8:
+        assert auto_detect_indicator_type(indicator_value) == indicatory_type
+    else:
+        try:
+            auto_detect_indicator_type(indicator_value)
+        except Exception as e:
+            assert str(e) == "Missing tldextract module, In order to use the auto detect function please use a docker" \
+                        " image with it installed such as: demisto/jmespath"
