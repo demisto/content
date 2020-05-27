@@ -808,7 +808,7 @@ class Client(BaseClient):
             url_suffix='/quarantine/status/',
             json_data={'request_data': request_data}
         )
-        return reply.get('reply')[0]  # TODO: is the a way to get more then one response?
+        return reply.get('reply')[0]
 
 
 def get_incidents_command(client, args):
@@ -1451,12 +1451,12 @@ def blacklist_files_command(client, args):
     comment = args.get('comment')
 
     client.blacklist_files(hash_list=hash_list, comment=comment)
-    markdown_data = [{'file_hash': file_hash} for file_hash in hash_list]
+    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
 
     return (
-        tableToMarkdown('Blacklist Files', markdown_data, headers=['file_hash'], headerTransform=pascalToSpace),
+        tableToMarkdown('Blacklist Files', markdown_data, headers=['fileHash'], headerTransform=pascalToSpace),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.blacklist(val.id == obj.id)': hash_list
+            f'{INTEGRATION_CONTEXT_BRAND}.blackList.fileHash(val.fileHash == obj.fileHash)': hash_list
         },
         argToList(hash_list)
     )
@@ -1467,12 +1467,12 @@ def whitelist_files_command(client, args):
     comment = args.get('comment')
 
     client.whitelist_files(hash_list=hash_list, comment=comment)
-    markdown_data = [{'file_hash': file_hash} for file_hash in hash_list]
+    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
 
     return (
-        tableToMarkdown('Whitelist Files', markdown_data, ['file_hash'],  headerTransform=pascalToSpace),
+        tableToMarkdown('Whitelist Files', markdown_data, ['fileHash'],  headerTransform=pascalToSpace),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.whitelist(val.id == obj.id)': hash_list
+            f'{INTEGRATION_CONTEXT_BRAND}.whiteList.fileHash(val.fileHash == obj.fileHash)': hash_list
         },
         argToList(hash_list)
     )
@@ -1490,7 +1490,7 @@ def quarantine_files_command(client, args):
     )
 
     output = {
-            'endpointIds': endpoint_id_list,
+            'endpointIdList': endpoint_id_list,
             'filePath': file_path,
             'fileHash': file_hash,
             'actionId': reply.get("action_id")
@@ -1519,7 +1519,7 @@ def restore_file_command(client, args):
     return (
         tableToMarkdown('Restore files', {'Action Id': action_id}, ['Action Id']),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.restoredFiles(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.restoredFiles.actionId(val.actionId == obj.actionId)': action_id
         },
         action_id
     )
@@ -1586,7 +1586,7 @@ def endpoint_scan_command(client, args):
     return (
         tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan.actionId(val.id == obj.id)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan.actionId(val.actionId == obj.actionId)': action_id
         },
         reply
     )
