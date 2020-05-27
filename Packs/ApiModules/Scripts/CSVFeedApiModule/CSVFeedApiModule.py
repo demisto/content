@@ -187,9 +187,7 @@ def determine_indicator_type(indicator_type, default_indicator_type, value):
         indicator_type = default_indicator_type
     elif not indicator_type and not default_indicator_type:
         indicator_type = auto_detect_indicator_type(value)
-    demisto.info(f"value {value}  and indicator type is {indicator_type}")
     return indicator_type
-s
 
 def module_test_command(client: Client, args):
     client.build_iterator()
@@ -237,13 +235,11 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
 
 
 def fetch_indicators_command(client: Client, default_indicator_type: str, **kwargs):
-    demisto.info(f"fetch fuc")
     iterator = client.build_iterator(**kwargs)
     indicators = []
     config = client.feed_url_to_config or {}
     for url_to_reader in iterator:
         for url, reader in url_to_reader.items():
-            demisto.info(f"url {str(url)} andr eader {str(reader)}")
             mapping = config.get(url, {}).get('mapping', {})
             for item in reader:
                 raw_json = dict(item)
@@ -253,9 +249,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                 if value:
                     raw_json['value'] = value
                     conf_indicator_type = config.get(url, {}).get('indicator_type')
-                    demisto.info(f"conf indicator type {conf_indicator_type}")
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, value)
-                    demisto.info(f"indicator_type {indicator_type}")
                     raw_json['type'] = indicator_type
                     indicator = {
                         'value': value,
@@ -264,7 +258,6 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                         'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
                     }
                     indicators.append(indicator)
-    demisto.info(f"indicators {indicators}")
     return indicators
 
 
@@ -283,7 +276,6 @@ def feed_main(feed_name, params=None, prefix=''):
     handle_proxy()
     client = Client(**params)
     command = demisto.command()
-    demisto.info(f"command {command}")
     if command != 'fetch-indicators':
         demisto.info('Command being called is {}'.format(command))
     if prefix and not prefix.endswith('-'):
