@@ -379,7 +379,7 @@ script:
         let processDataMap = processData;
         let fileDataMap = processDataForFileContext;
         let endpointDataMap = processDataForEndpointContext;
-        let headers = dataMap.map(cn => cn.to);
+        let headers = processDataMap.map(cn => cn.to);
         let processTranslatedData = mapObjFunction(processDataMap)(processes);
         let fileTranslatedData = mapObjFunction(fileDataMap)(processes);
         let endpointTranslatedData = mapObjFunction(endpointDataMap)(processes);
