@@ -603,7 +603,7 @@ inputs:
 - key: ApprovedRegistrantListName
   value: {}
   required: false
-  description: The Cortex XSOAR list name that contains the approved registrars.  A
+  description: The Cortex XSOAR list name that contains the approved registrants.  A
     registrant is the company or entity  that owns the domain.
   playbookInputQuery: null
 - key: RegistrarListDelimiter
