@@ -141,17 +141,19 @@ jobs:
             demisto-sdk secrets --post-commit --ignore-entropy
 
             mkdir ~/.gnupg/
+            find ~/.gnupg -type d -exec chmod 700 {} \;
+            find ~/.gnupg -type f -exec chmod 600 {} \;
             echo use-agent >> ~/.gnupg/gpg.conf
             echo pinentry-mode loopback >> ~/.gnupg/gpg.conf
             echo allow-loopback-pinentry >> ~/.gnupg/gpg-agent.conf
             echo RELOADAGENT | gpg-connect-agent
             echo -e ${BLACKLIST_KEY} | gpg --import
-            for secret in $(gpg --no-tty --passphrase "${BLACKLIST_PASS}" --pinentry-mode loopback --decrypt blacklist_test)
+            for secret in $(gpg --no-tty --passphrase "${BLACKLIST_PASS}" --pinentry-mode loopback --decrypt Tests/scripts/blacklist_test)
               do
                 if [ "$(grep -Ril $secret ./ | wc -l)" -gt 0 ]
                   then
                     echo "Blacklisted object found in repo - please remove it"
-                    break
+                    exit 0
                   fi
               done
       - run:
