@@ -592,32 +592,75 @@ def get_ticket_history_by_id(ticket_id, history_id):
 
     suffix_url = 'ticket/{}/history/id/{}'.format(ticket_id, history_id)
     raw_history = http_request('GET', suffix_url)
+    return parse_history_response(raw_history.content)
 
-    return raw_history
+
+def parse_history_response(raw_history):
+    # type: (str) -> dict
+    """
+    Parses raw history string into dict
+    Example input:
+        RT/4.4.2 200 Ok
+
+        # 24/24 (id/80/total)
+
+        id: 80
+        Ticket: 5
+        TimeTaken: 0
+        Type: Create
+        Field:
+        OldValue:
+        NewValue: some new value
+        Data:
+        Description: Ticket created by root
+        Content: Some
+        Multi line
+        Content
+        Creator: root
+        Created: 2018-07-09 11:25:59
+        Attachments:
+    Example output:
+        {'ID': '80',
+         'Ticket': '5',
+         'TimeTaken': '0',
+         'Type': 'Create',
+         'Field': '',
+         'OldValue': '',
+         'NewValue': 'some new value',
+         'Data': '',
+         'Description': 'Ticket created by root',
+         'Content': 'Some\nMulti line\nContent',
+         'Creator': 'root',
+         'Created': '2018-07-09 11:25:59',
+         'Attachments': ''}
+
+    Args:
+        raw_history: The raw ticket history string response
+
+    Returns:
+        A pasred dict with keys and values
+    """
+    keys = re.findall(r'^([a-z|A-Z]+):', raw_history, flags=re.MULTILINE)
+    values = re.split(r'\n[a-z|A-Z]+:', raw_history)[1:]
+    if len(keys) != len(values):
+        return {}
+    current_history_context = {key.upper() if key == 'id' else key: value.strip() for key, value in zip(keys, values)}
+    return current_history_context
 
 
 def get_ticket_history(ticket_id):
     suffix_url = 'ticket/{}/history'.format(ticket_id)
     raw_history = http_request('GET', suffix_url)
     history_context = []
-    headers = ['ID', 'Created', 'Creator', 'Description']
+    headers = ['ID', 'Created', 'Creator', 'Description', 'Content']
     data = raw_history.text.split('\n')
     data = data[4:]
     for line in data:
-        split_line = line.split(': ')
-        current_raw_ticket_history = get_ticket_history_by_id(ticket_id, split_line[0]).content
-        current_raw_ticket_history = current_raw_ticket_history.split('\n')
-        current_raw_ticket_history = current_raw_ticket_history[4:]
-        id_ticket = current_raw_ticket_history[0].upper()
-        current_raw_ticket_history[0] = id_ticket
-        current_history_context = {}
-        for entity in current_raw_ticket_history:
-            if ': ' in entity:
-                header, content = entity.split(': ', 1)
-                if header in {'ID', 'Content', 'Created', 'Creator', 'Description', 'NewValue'}:
-                    current_history_context[header] = content
-        if current_history_context:
-            history_context.append(current_history_context)
+        history_id = line.split(': ')[0]
+        if not history_id:
+            continue
+        history_response = get_ticket_history_by_id(ticket_id, history_id)
+        history_context.append(history_response)
     return history_context, headers
 
 
@@ -647,7 +690,7 @@ def get_ticket_history_command():
 def get_ticket():
     ticket_id = demisto.args().get('ticket-id')
     raw_ticket = get_ticket_request(ticket_id)
-    if not raw_ticket:
+    if not raw_ticket or 'Ticket {} does not exist'.format(ticket_id) in raw_ticket.text:
         return_error('Failed to get ticket, possibly does not exist.')
     ticket_context = []
     data = raw_ticket.content.split('\n')
@@ -657,46 +700,39 @@ def get_ticket():
         split_line = line.split(': ')
         if len(split_line) == 2:
             current_ticket[split_line[0]] = split_line[1]
-            ticket = {
-                'ID': ticket_string_to_id(current_ticket['id']),
-                'Subject': current_ticket.get('Subject'),
-                'State': current_ticket.get('Status'),
-                'Creator': current_ticket.get('Creator'),
-                'Created': current_ticket.get('Created'),
-                'Priority': current_ticket.get('Priority'),
-                'InitialPriority': current_ticket.get('InitialPriority'),
-                'FinalPriority': current_ticket.get('FinalPriority'),
-                'Queue': current_ticket.get('Queue'),
-                'Owner': current_ticket.get('Owner')
-            }
+    ticket = {
+        'ID': ticket_string_to_id(current_ticket['id']),
+        'Subject': current_ticket.get('Subject'),
+        'State': current_ticket.get('Status'),
+        'Creator': current_ticket.get('Creator'),
+        'Created': current_ticket.get('Created'),
+        'Priority': current_ticket.get('Priority'),
+        'InitialPriority': current_ticket.get('InitialPriority'),
+        'FinalPriority': current_ticket.get('FinalPriority'),
+        'Queue': current_ticket.get('Queue'),
+        'Owner': current_ticket.get('Owner')
+    }
 
-        for key in data:  # Adding ticket custom fields to outputs
-            if key.startswith('CF.'):
-                split_key = key.split(':')
-                if split_key[0]:
-                    custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ',
-                                                                                          '')  # Regex and removing white spaces
-                    ticket[custom_field_regex] = split_key[1]
-
-        if ticket:
-            ticket_context.append(ticket)
+    for key in data:  # Adding ticket custom fields to outputs
+        if key.startswith('CF.'):
+            split_key = key.split(':')
+            if split_key[0]:
+                custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ',
+                                                                                      '')  # Regex and removing white spaces
+                ticket[custom_field_regex] = split_key[1]
 
     suffix_url = 'ticket/{}/links/show'.format(ticket_id)
     raw_links = http_request('GET', suffix_url)
-    if raw_links:
-        links = []
-        for raw_link in raw_links:
-            link_id = raw_link.rsplit('/', 3)[-2]
-            links.append({
-                'ID': link_id
-            })
-        ticket['LinkedTo'] = links
+    links = parse_ticket_links(raw_links.text)
+    ticket['LinkedTo'] = links
+
+    ticket_context.append(ticket)
     ec = {
         'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket
     }
     title = 'RTIR ticket {}'.format(ticket_id)
     headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority',
-               'FinalPriority']
+               'FinalPriority', 'LinkedTo']
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': ticket_context,
@@ -705,6 +741,30 @@ def get_ticket():
         'HumanReadable': tableToMarkdown(title, ticket, headers, removeNull=True),
         'EntryContext': ec
     })
+
+
+def parse_ticket_links(raw_links):
+    # type: (str) -> list
+    """
+    Parses the link IDs from the ticket link response
+    An example to an expected 'raw_links' is:
+    "RT/4.4.4 200 Ok
+
+    id: ticket/68315/links
+
+    Members: some-url.com/ticket/65461,
+             some-url.com/ticket/65462,
+             some-url.com/ticket/65463"
+
+    For 'raw_links' as descripbed above- the output will be [{'ID': '65461'}, {'ID': '65462'}, {'ID': '65463'}]
+    Args:
+        raw_links: The raw links string response
+
+    Returns:
+        A list of parsed IDs
+    """
+    links = [{'ID': link} for link in re.findall(r'/ticket/(\d+)', raw_links)] if raw_links else []
+    return links
 
 
 def add_comment_request(ticket_id, encoded):
@@ -776,7 +836,7 @@ def add_reply():
             demisto.results('Replied successfully to ticket {}.'.format(ticket_id))
         else:
             return_error('Failed to reply')
-    except Exception, e:
+    except Exception as e:
         demisto.error(str(e))
         return_error('Failed to reply')
 
