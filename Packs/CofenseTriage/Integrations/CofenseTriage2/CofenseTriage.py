@@ -29,6 +29,15 @@ TERSE_FIELDS = [
 ]
 
 
+class TriageRequestFailedError(Exception):
+    def __init__(self, status_code, message):
+        self.status_code = status_code
+        self.message = message
+
+    def __str__(self):
+        return f"Call to Cofense Triage failed ({self.status_code}): {self.message}"
+
+
 class TriageInstance:
     def __init__(self, *, host, token, user, disable_tls_verification=False):
         self.host = host
@@ -53,9 +62,7 @@ class TriageInstance:
         )
 
         if not response.ok:
-            return return_error(
-                f"Call to Cofense Triage failed ({response.status_code}): {response.text}"
-            )
+            raise TriageRequestFailedError(response.status_code, response.text)
 
         if response.status_code == 206:
             # 206 indicates Partial Content. The reason will be in the warning header.

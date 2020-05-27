@@ -1,6 +1,7 @@
 import pytest
 
 from CofenseTriage2.CofenseTriage import TriageInstance
+from CofenseTriage2.CofenseTriage import TriageRequestFailedError
 
 
 @pytest.fixture
@@ -30,13 +31,11 @@ class TestTriageInstance:
             status_code=403,
             text="a bad error",
         )
-        return_error = mocker.patch("CofenseTriage2.CofenseTriage.return_error")
 
-        triage_instance.request("processed_reports")
+        with pytest.raises(TriageRequestFailedError) as e:
+            triage_instance.request("processed_reports")
 
-        return_error.assert_called_once_with(
-            "Call to Cofense Triage failed (403): a bad error"
-        )
+            assert e.message ==  "Call to Cofense Triage failed (403): a bad error"
 
     def test_request_raw(self, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
