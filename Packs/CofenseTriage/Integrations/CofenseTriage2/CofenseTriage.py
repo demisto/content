@@ -91,7 +91,12 @@ class TriageInstance:
 
 
 class TriageReport:
-    """Class representing a Triage report by an end-user of a suspicious message"""
+    """
+    Class representing a Triage report by an end-user of a suspicious message
+
+    Model associations:
+    TriageReporter - The user who reported the message. A TriageReport has exactly one TriageReporter.
+    """
 
     def __init__(self, attrs):
         self.attrs = attrs
@@ -170,7 +175,12 @@ class TriageReport:
 
 
 class TriageReporter:
-    """Class representing an end user who has reported a suspicious message"""
+    """
+    Class representing an end user who has reported a suspicious message
+
+    Model associations:
+    TriageReport - A reporter sumbitted by this user. A TriageReporter may have many TriageReports.
+    """
 
     def __init__(self, reporter_id):
         """Fetch data for the first matching reporter from Triage"""

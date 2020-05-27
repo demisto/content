@@ -1,8 +1,8 @@
 commonfields:
-  id: Cofense Triage 2
+  id: Cofense Triage v2
   version: -1
-name: Cofense Triage 2
-display: Cofense Triage 2
+name: Cofense Triage v2
+display: Cofense Triage v2
 category: Data Enrichment & Threat Intelligence
 description: Use the Cofense Triage integration to ingest reported phishing indicators.
 configuration:
@@ -260,9 +260,9 @@ script:
         - name: level
           description: indicator severity
         - name: start_date
-          description: designated start date tagged by analyst
+          description: "designated start date tagged by analyst (format example: YYYY-MM-DD+HH:MM:SS)"
         - name: end_date
-          description: designated end date from assignment
+          description: "designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS)"
       outputs:
         - contextPath: Cofense.Cofense.ThreatIndicators
           description: Threat Indicator Output
