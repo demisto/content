@@ -1,7 +1,6 @@
-id: TIM - Process Domain Registrar With WHOIS
-version: -1
-fromversion: 5.5.0
-name: TIM - Process Domain Registrar With WHOIS
+id: 719ae595-c887-4bd7-89ec-a7fc3d67e96d
+version: 9
+name: TIM - Process Domain Registrant With Whois
 description: This playbook runs the whois enrichment on domain indicators provided
   by an indicator query such as "type:Domain". The playbook then compares the domain
   registrars against the Cortex XSOAR list provided in the inputs.
@@ -196,7 +195,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ApprovedRegistrarsListName
+              simple: inputs.ApprovedRegistrantListName
             iscontext: true
     view: |-
       {
@@ -219,7 +218,7 @@ tasks:
       version: -1
       name: Set not-approved domains
       description: Domains whose registrar does not appear in the list defined in inputs.
-        ApprovedRegistrarsListName context key are added to NonApprovedDomains in context.
+        ApprovedRegistrantListName context key are added to NonApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -310,7 +309,7 @@ tasks:
       id: 08277e99-e1e6-49c1-8ddb-bdc9ce072a2d
       version: -1
       name: Set domains without Whois results
-      description: Domains with no registrar information are added to NonApprovedDomains in context.
+      description: Domains with no registrant information are added to NonApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -322,7 +321,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: NonApprovedDomains
+        simple: DomainNotResolvedByWhois
       stringify: {}
       value:
         complex:
@@ -359,9 +358,9 @@ tasks:
     task:
       id: c7a3c947-cfdf-4656-8245-cfbff77ca48e
       version: -1
-      name: Set domains by approved registrars
-      description: Domains whose registrar appears in the list defined in inputs.ApprovedRegistrarsListName context
-        key are added to ApprovedDomains in context.
+      name: Set domains by approved registrant
+      description: Domains whose registrant appears in the list defined in inputs.ApprovedRegistrantListName
+        context key are added to ApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -411,7 +410,7 @@ tasks:
     task:
       id: 371bb257-dce3-46c7-8bf0-c0273a94472c
       version: -1
-      name: Set domains by non approved registrars
+      name: Set domains by non approved registrant
       description: Checks if the specified value exists in context. If the value exists,
         it will be set in context, otherwise no value will be set in context.
       scriptName: SetAndHandleEmpty
@@ -463,7 +462,7 @@ tasks:
     task:
       id: beeb8248-9272-45fb-8874-30d2e06bf64a
       version: -1
-      name: No registrar list provided
+      name: No registrant list provided
       type: title
       iscommand: false
       brand: ""
@@ -519,7 +518,7 @@ tasks:
     task:
       id: 31c23415-0ec9-4f59-81fa-b221094cb371
       version: -1
-      name: Domain registrar in approved list
+      name: Domain registrant in approved list
       type: title
       iscommand: false
       brand: ""
@@ -547,7 +546,7 @@ tasks:
     task:
       id: a2907802-7f62-49de-886a-f23ee2148b5a
       version: -1
-      name: Domain registrar not in approved list
+      name: Domain registrant not in approved list
       type: title
       iscommand: false
       brand: ""
@@ -601,10 +600,12 @@ inputs:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
-- key: ApprovedRegistrarsListName
+- key: ApprovedRegistrantListName
   value: {}
   required: false
-  description: The Cortex XSOAR list name that contains the approved registrars.
+  description: The Cortex XSOAR list name that contains the approved registrars.  A
+    registrant is the company or entity  that owns the domain.
+  playbookInputQuery: null
 - key: RegistrarListDelimiter
   value: {}
   required: false
@@ -619,6 +620,9 @@ outputs:
   type: string
 - contextPath: ApprovedDomains
   description: Domains for which the registrar is approved.
+  type: string
+- contextPath: DomainNotResolvedByWhois
+  description: Domains which Whois wasn't able to resolve.
   type: string
 quiet: true
 tests:
