@@ -1,2 +1,2 @@
 ## [Unreleased]
-Integration has been deprecated.
+ - Integration has been deprecated.
