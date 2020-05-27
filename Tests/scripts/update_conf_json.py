@@ -118,6 +118,7 @@ def run():
             new_conf_json_objects.extend(calc_conf_json_object(pack_integrations, pack_test_playbooks))
 
     add_to_conf_json(new_conf_json_objects)
+    print(f'Added {len(new_conf_json_objects)} tests to the conf.json')
 
 
 if __name__ == '__main__':
