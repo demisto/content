@@ -2,17 +2,14 @@ import json
 import os
 import sys
 import argparse
-import warnings
 import shutil
 import uuid
 import prettytable
-import google.auth
 import glob
-from google.cloud import storage
 from datetime import datetime
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, \
-    PACKS_FOLDER, IGNORED_PATHS, Metadata
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH,\
+    IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
@@ -67,33 +64,6 @@ def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     with ZipFile(packs_artifacts_path) as packs_artifacts:
         packs_artifacts.extractall(extract_destination_path)
     print("Finished extracting packs artifacts")
-
-
-def init_storage_client(service_account=None):
-    """Initialize google cloud storage client.
-
-    In case of local dev usage the client will be initialized with user default credentials.
-    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
-
-    Args:
-        service_account (str): full path to service account json.
-
-    Return:
-        storage.Client: initialized google cloud storage client.
-    """
-    if service_account:
-        storage_client = storage.Client.from_service_account_json(service_account)
-        print("Created gcp service account")
-
-        return storage_client
-    else:
-        # in case of local dev use, ignored the warning of non use of service account.
-        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
-        credentials, project = google.auth.default()
-        storage_client = storage.Client(credentials=credentials, project=project)
-        print("Created gcp private account")
-
-        return storage_client
 
 
 def download_and_extract_index(storage_bucket, extract_destination_path):

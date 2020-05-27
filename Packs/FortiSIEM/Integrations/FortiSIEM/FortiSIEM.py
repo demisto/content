@@ -80,20 +80,22 @@ def login():
     viewState = p.findall(response.text.encode('utf-8'))
     VIEW_STATE = viewState[0][len('value="'):][:-1]
 
-    headers = {
-        'Upgrade-Insecure-Requests': '1',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'en-US,en;q=0.9,he;q=0.8'
-    }
     data = {
         'loginHtml': 'loginHtml',
         'loginHtml:username': USERNAME,
         'loginHtml:password': PASSWORD,
         'loginHtml:userDomain': 'Empty',
         'loginHtml:loginBtn': 'Log In',
+        'loginHtml:domain': 'super',
         'javax.faces.ViewState': VIEW_STATE
+    }
+
+    headers = {
+        'Upgrade-Insecure-Requests': '1',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,'
+                  'application/signed-exchange;v=b3;q=0.9',
+        'Accept-Language': 'en-US,en;q=0.9,pt-PT;q=0.8,pt;q=0.7'
     }
 
     response = session.post(login_url, headers=headers, data=data, verify=VERIFY_SSL)  # type: ignore
