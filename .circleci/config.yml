@@ -331,7 +331,7 @@ jobs:
                     export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
                 elif [ -n "${INSTANCE_TESTS}" ] ;
                   then
-                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+                    export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
 
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
@@ -475,7 +475,7 @@ jobs:
                 echo "Not AMI run, can't run on this version"
             fi
       - run:
-          name: Run Tests - Demisto PreGA
+          name: Run Tests - Demisto Marketplace
           shell: /bin/bash
           when: always
           command: |
@@ -488,8 +488,8 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
-            echo "Demisto PreGA filter=$TEMP"
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+            echo "Demisto Marketplace filter=$TEMP"
             if [[ "$TEMP" == "false" ]];
               then
                 echo "Skipping - instance was not setup"
@@ -497,7 +497,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Demisto PreGA"
+                ./Tests/scripts/run_tests.sh "Demisto Marketplace"
                 export RETVAL=$?
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                 exit $RETVAL
