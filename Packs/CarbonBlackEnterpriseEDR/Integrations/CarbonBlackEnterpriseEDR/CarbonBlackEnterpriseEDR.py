@@ -1,5 +1,7 @@
 from typing import Union, Dict, Optional, Any, Tuple, List
 
+import dateparser
+
 import demistomock as demisto
 import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -1164,7 +1166,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        latest_alert_create_date = date_to_timestamp(datetime.strptime(alert_create_date, '%Y-%m-%dT%H:%M:%S.%fZ')) + 1
+        latest_alert_create_date = datetime.strftime(dateparser.parse(alert_create_date) + timedelta(seconds=1),
+                                                     '%Y-%m-%dT%H:%M:%S.000Z')
         latest_alert_id = alert_id
 
     return incidents, \

@@ -100,10 +100,10 @@ tasks:
     quiet: false
   "3":
     id: "3"
-    taskid: "416"
+    taskid: "418"
     type: regular
     task:
-      id: "416"
+      id: "418"
       version: -1
       name: Create new wachlist
       description: Create a new report or classifier watchlist.
@@ -122,7 +122,7 @@ tasks:
       description:
         simple: This is a test
       report_ids:
-        simple: A59huyinQSmAr8t1a2hpg
+        simple: ${CarbonBlackEEDR.Report.ID}
       tags_enabled:
         simple: "false"
       watchlist_name:
@@ -132,7 +132,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 750
+          "y": 1720
         }
       }
     note: false
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 940
+          "y": 1910
         }
       }
     note: false
@@ -206,7 +206,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1350
+          "y": 2310
         }
       }
     note: false
@@ -238,7 +238,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1550
+          "y": 2520
         }
       }
     note: false
@@ -259,7 +259,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -281,7 +281,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1750
+          "y": 2720
         }
       }
     note: false
@@ -327,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1960
+          "y": 730
         }
       }
     note: false
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2170
+          "y": 940
         }
       }
     note: false
@@ -407,7 +407,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2370
+          "y": 1140
         }
       }
     note: false
@@ -439,7 +439,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2560
+          "y": 1330
         }
       }
     note: false
@@ -460,7 +460,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -487,7 +487,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2760
+          "y": 1530
         }
       }
     note: false
@@ -519,7 +519,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2960
+          "y": 2950
         }
       }
     note: false
@@ -672,7 +672,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     scriptarguments:
       all:
         simple: "yes"
@@ -725,7 +725,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1130
+          "y": 2100
         }
       }
     note: false

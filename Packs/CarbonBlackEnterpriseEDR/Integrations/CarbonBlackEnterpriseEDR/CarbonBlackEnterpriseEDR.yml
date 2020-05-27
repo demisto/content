@@ -963,7 +963,7 @@ script:
       description: The watchlist name.
       isArray: false
       name: watchlist_name
-      required: false
+      required: true
       secret: false
     - default: false
       description: Watchlist description.
