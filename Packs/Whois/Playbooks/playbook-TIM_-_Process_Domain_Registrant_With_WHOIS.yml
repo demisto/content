@@ -3,7 +3,7 @@ version: 9
 name: TIM - Process Domain Registrant With Whois
 description: This playbook runs the whois enrichment on domain indicators provided
   by an indicator query such as "type:Domain". The playbook then compares the domain
-  registrars against the Cortex XSOAR list provided in the inputs.
+  registrant against the Cortex XSOAR list provided in the inputs.
 starttaskid: "0"
 tasks:
   "0":
