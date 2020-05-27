@@ -958,10 +958,6 @@
             "playbookID": "DeleteContext-auto-test"
         },
         {
-            "playbookID": "GmailTest",
-            "integrations": "Gmail"
-        },
-        {
             "playbookID": "Gmail Convert Html Test",
             "integrations": "Gmail"
         },
@@ -972,10 +968,6 @@
         {
             "playbookID": "Indicators reputation-.json Test",
             "fromversion": "5.5.0"
-        },
-        {
-            "playbookID": "Test IP Indicator Fields",
-            "fromversion": "5.0.0"
         },
         {
             "integrations": "Shodan",
@@ -998,9 +990,6 @@
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
-        },
-        {
-            "playbookID": "stripChars - Test"
         },
         {
             "integrations": "McAfee Advanced Threat Defense",
