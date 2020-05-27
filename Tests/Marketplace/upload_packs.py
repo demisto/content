@@ -212,6 +212,11 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
 
     """
+    if not os.environ.get('CI') or os.environ('CIRCLE_BRANCH') != 'master' \
+            and storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
+        print("Skipping cleanup of packs in gcs.")
+        return
+
     public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
     private_packs_names = {p.get('id', '') for p in private_packs}
     valid_packs_names = public_packs_names.union(private_packs_names)
