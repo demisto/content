@@ -194,7 +194,8 @@ def test_module(client: Client) -> Tuple[str, dict, dict]:
     Returns:
         str -- "ok" if succeeded, else raises a error.
     """
-    client.build_iterator()
+    for _ in client.build_iterator():
+        return "ok", {}, {}
     return "ok", {}, {}
 
 
@@ -303,6 +304,10 @@ def main():
     # handle params
     url = "https://www.threathq.com"
     credentials = params.get("credentials", {})
+    if not credentials:
+        raise DemistoException("Credentials are empty. "
+                               "Fill up the username/password fields in the integration configuration.")
+
     auth = (credentials.get("identifier"), credentials.get("password"))
     verify = not params.get("insecure")
     proxy = params.get("proxy")

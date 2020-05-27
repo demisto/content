@@ -101,6 +101,10 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Use Python requests handler
+  name: use_requests_handler
+  required: false
+  type: 8
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
