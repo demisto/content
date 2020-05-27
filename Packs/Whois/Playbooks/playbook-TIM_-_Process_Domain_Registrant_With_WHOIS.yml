@@ -105,10 +105,10 @@ tasks:
       version: -1
       name: Run whois on indicators
       description: Provides data enrichment for domains.
-      script: Whois1|||whois
+      script: Whois|||whois
       type: regular
       iscommand: true
-      brand: Whois1
+      brand: Whois
     nexttasks:
       '#none#':
       - "4"
