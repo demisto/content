@@ -272,4 +272,4 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - Cofense Triage 2 Test
+  - Cofense Triage Test

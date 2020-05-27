@@ -69,7 +69,6 @@ class TriageInstance:
             demisto.debug(str(response.headers))
 
         if raw_response:
-            # TODO refactor to get rid of this?
             return response
 
         if not response.text or response.text == "[]":
@@ -117,7 +116,6 @@ class TriageReport:
             3: 'Crimeware',
             4: 'Advanced Threats',
             5: 'Phishing Simulation',
-            # TODO is this still complete?
         }.get(self.attrs["category_id"], "Unknown")
 
     @property
@@ -156,7 +154,6 @@ class TriageReport:
     @property  # type: ignore
     @functools.lru_cache()
     def attachment(self):
-        # TODO case-insensitive?
         if "HTML" in self.report_body:
             html_attachment = fileResult(
                 filename=f"{self.id}-report.html", data=self.report_body.encode()
@@ -326,7 +323,6 @@ def search_reports(subject=None, url=None, file_hash=None, reported_at=None, cre
 
     for report in reports:
         if subject and subject != report.get('report_subject'):
-            # TODO do we really want to do exact string match here? not case-insensitive substring?
             continue
         if url and url not in [email_url["url"] for email_url in report["email_urls"]]:
             continue
