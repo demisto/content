@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+	{
+            "integrations": "Humio",
+            "playbookID": "Humio-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
