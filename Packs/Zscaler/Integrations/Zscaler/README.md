@@ -1,5 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the Zscaler integration to block manage domains using whitelists and blacklists.</p>
+<p>In order that the integration will work properly, one must use a Zscaler user with admin permissions.</p>
 <p>Category ID is the same as the category name, except all letters are capitalized and each word is separated with an underscored instead of spaces. For example, if the category name is Other Education, then the Category ID is OTHER_EDUCATION.</p>
 <p>Custom category ID has the format <code>CUSTOM_01</code>, which is not indicative of the category. Use the using <code style="font-size: 13px;">zscaler-get-categories </code>command to get a custom category and its configured name.</p>
 <h2>Configure the Zscaler Integration on Demisto</h2>

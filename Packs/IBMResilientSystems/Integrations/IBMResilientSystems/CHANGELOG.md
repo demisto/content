@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 Fixed an issue where the ***fetch-incident*** command did not pull all incidents.
 
 ## [20.4.1] - 2020-04-29
