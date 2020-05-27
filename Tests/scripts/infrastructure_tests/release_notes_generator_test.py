@@ -1,7 +1,4 @@
-from demisto_sdk.conftest import get_repo
-from _pytest.tmpdir import TempPathFactory
-from _pytest.fixtures import FixtureRequest
-from demisto_sdk.TestSuite.test_tools import ChangeCWD
+from demisto_sdk.demisto_sdk.TestSuite.test_tools import ChangeCWD
 from release_notes_generator import get_release_notes_dict, generate_release_notes_summary, \
     RELEASE_NOTES_FILE, IGNORE_RN
 
@@ -17,7 +14,7 @@ def ignore_release_note_update(file_path):
 def get_release_note_files(repo):
     release_notes_files = []
     for pack in repo.packs:
-        release_notes_files.extend([rn.path for rn in pack_2.release_notes])
+        release_notes_files.extend([rn.path for rn in pack.release_notes])
     return release_notes_files
 
 
