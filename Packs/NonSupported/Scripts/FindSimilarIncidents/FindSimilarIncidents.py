@@ -117,7 +117,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
                           max_number_of_results, extra_query, applied_condition):
     condition_string = ' %s ' % applied_condition.lower()
     similar_keys_query = condition_string.join(
-        map(lambda t: '%s:"%s"' % (t[0], t[1].replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")),
+        map(lambda t: '%s:"%s"' % (t[0], str(t[1]).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")),
             similar_incident_keys.items()))
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
@@ -169,7 +169,7 @@ def incident_to_record(incident, time_field):
                 date_time_str = date_time_str[:date_time_str.find('.')]
             if date_time_str.find('+') > 0:
                 date_time_str = date_time_str[:date_time_str.find('+')]
-            return date_time_str.replace('T', ' ')
+            return str(date_time_str).replace('T', ' ')
         except Exception:
             return date_time_str
 
@@ -193,8 +193,10 @@ def is_text_equal_by_x_different_words(text1, text2, number_of_different_words, 
     elif number_of_different_words == CONTAINS:
         return text1.find(text2) >= 0 or text2.find(text1) >= 0
     else:
-        words_set1 = set([x for x in map(lambda x: x.strip(), text1.replace("\\n", separator).split(separator)) if x])
-        words_set2 = set([x for x in map(lambda x: x.strip(), text2.replace("\\n", separator).split(separator)) if x])
+        words_set1 = set([x for x in map(lambda x: x.strip(),
+                                         str(text1).replace("\\n", separator).split(separator)) if x])
+        words_set2 = set([x for x in map(lambda x: x.strip(),
+                                         str(text2).replace("\\n", separator).split(separator)) if x])
         return len(words_set1.difference(words_set2)) <= number_of_different_words and len(
             words_set2.difference(words_set1)) <= number_of_different_words
 
