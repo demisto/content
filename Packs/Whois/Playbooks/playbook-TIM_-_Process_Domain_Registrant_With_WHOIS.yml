@@ -1,9 +1,11 @@
-id: TIM - Process Domain Registrant With Whois
+id: TIM - Process Domain registrant With WHOIS
 version: -1
-name: TIM - Process Domain Registrant With Whois
+fromversion: 5.5.0
+name: TIM - Process Domain registrant With WHOIS
 description: This playbook runs the whois enrichment on domain indicators provided
   by an indicator query such as "type:Domain". The playbook then compares the domain
-  registrant against the Cortex XSOAR list provided in the inputs.
+  registrant against the Cortex XSOAR list provided in the inputs. A registrant is the company or entity
+  that owns the domain.
 starttaskid: "0"
 tasks:
   "0":
@@ -105,10 +107,10 @@ tasks:
       version: -1
       name: Run whois on indicators
       description: Provides data enrichment for domains.
-      script: Whois|||whois
+      script: Whois1|||whois
       type: regular
       iscommand: true
-      brand: Whois
+      brand: Whois1
     nexttasks:
       '#none#':
       - "4"
@@ -149,15 +151,15 @@ tasks:
       - "24"
     scriptarguments:
       delimiter:
-        simple: ${inputs.RegistrarListDelimiter}
+        simple: ${inputs.registrantListDelimiter}
       ignorecase:
         simple: "yes"
       listname:
-        simple: ${inputs.ApprovedRegistrarsListName}
+        simple: ${inputs.ApprovedregistrantsListName}
       matchexact:
         simple: "yes"
       values:
-        simple: ${Domain.Whois.Registrar.Name}
+        simple: ${Domain.Whois.registrant.Name}
     separatecontext: false
     view: |-
       {
@@ -178,7 +180,7 @@ tasks:
     task:
       id: 3b71315c-73ff-4b78-887a-eb33d3d55e27
       version: -1
-      name: Is there an approved registrars list?
+      name: Is there an approved registrants list?
       type: condition
       iscommand: false
       brand: ""
@@ -195,7 +197,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ApprovedRegistrantListName
+              simple: inputs.ApprovedregistrantsListName
             iscontext: true
     view: |-
       {
@@ -217,8 +219,8 @@ tasks:
       id: 061481f3-9fc5-4689-8288-1c00aec0c05d
       version: -1
       name: Set not-approved domains
-      description: Domains whose registrar does not appear in the list defined in inputs.
-        ApprovedRegistrantListName context key are added to NonApprovedDomains in context.
+      description: Domains whose registrant does not appear in the list defined in inputs.
+        ApprovedregistrantsListName context key are added to NonApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -321,7 +323,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: DomainsNotResolvedByWhois
+        simple: NonApprovedDomains
       stringify: {}
       value:
         complex:
@@ -358,9 +360,9 @@ tasks:
     task:
       id: c7a3c947-cfdf-4656-8245-cfbff77ca48e
       version: -1
-      name: Set domains by approved registrant
-      description: Domains whose registrant appears in the list defined in inputs.ApprovedRegistrantListName
-        context key are added to ApprovedDomains in context.
+      name: Set domains by approved registrants
+      description: Domains whose registrant appears in the list defined in inputs.ApprovedregistrantsListName context
+        key are added to ApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -381,7 +383,7 @@ tasks:
           - - operator: inList
               left:
                 value:
-                  simple: Domain.Whois.Registrar.Name
+                  simple: Domain.Whois.registrant.Name
                 iscontext: true
               right:
                 value:
@@ -410,7 +412,7 @@ tasks:
     task:
       id: 371bb257-dce3-46c7-8bf0-c0273a94472c
       version: -1
-      name: Set domains by non approved registrant
+      name: Set domains by non approved registrants
       description: Checks if the specified value exists in context. If the value exists,
         it will be set in context, otherwise no value will be set in context.
       scriptName: SetAndHandleEmpty
@@ -433,7 +435,7 @@ tasks:
           - - operator: inList
               left:
                 value:
-                  simple: Domain.Whois.Registrar.Name
+                  simple: Domain.Whois.registrant.Name
                 iscontext: true
               right:
                 value:
@@ -600,30 +602,29 @@ inputs:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
-- key: ApprovedRegistrantListName
+- key: ApprovedregistrantsListName
   value: {}
   required: false
-  description: The Cortex XSOAR list name that contains the approved registrants.  A
+  description: The Cortex XSOAR list name that contains the approved registrars.  A
     registrant is the company or entity  that owns the domain.
-  playbookInputQuery: null
-- key: RegistrarListDelimiter
+- key: registrantListDelimiter
   value: {}
   required: false
   description: |-
-    A one-character string used to delimit fields. This must match the value that you defined in the list separator server configuration.  
-    The default value is a comma, however, as registrars might contain the "," character in their name, 
+    A one-character string used to delimit fields. This must match the value that you defined in the list separator server configuration.
+    The default value is a comma, however, as registrants might contain the "," character in their name,
     Cortex XSOAR recommends that you select a different delimiter.
   playbookInputQuery: null
 outputs:
 - contextPath: NonApprovedDomains
-  description: Domains for which the registrar isn't approved.
+  description: Domains for which the registrant isn't approved.
   type: string
 - contextPath: ApprovedDomains
-  description: Domains for which the registrar is approved.
+  description: Domains for which the registrant is approved.
   type: string
-- contextPath: DomainsNotResolvedByWhois
-  description: Domains which Whois wasn't able to resolve.
-  type: string
+  - contextPath: DomainsNotResolvedByWhois
+    description: Domains which Whois wasn't able to resolve.
+    type: string
 quiet: true
 tests:
 - No test
