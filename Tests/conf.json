@@ -665,13 +665,13 @@
             "playbookID": "Google-Vault-Generic-Test",
             "nightly": true,
             "timeout": 3600,
-            "memory_threshold": 120
+            "memory_threshold": 130
         },
         {
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
-            "memory_threshold": 120,
+            "memory_threshold": 130,
             "timeout": 3600
         },
         {
@@ -1193,10 +1193,6 @@
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
-        },
-        {
-            "integrations": "PostgreSQL",
-            "playbookID": "PostgreSQL Test"
         },
         {
             "integrations": "google",
@@ -2822,7 +2818,6 @@
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
