@@ -182,10 +182,10 @@ class Client(BaseClient):
 
 
 def determine_indicator_type(indicator_type, default_indicator_type, value):
-    if not indicator_type:
+    if not indicator_type and default_indicator_type:
         indicator_type = default_indicator_type
-    if indicator_type == FeedIndicatorType.Domain and '*' in value:
-        indicator_type = FeedIndicatorType.DomainGlob
+    elif not indicator_type and not default_indicator_type:
+        indicator_type = auto_detect_indicator_type(value)
     return indicator_type
 
 

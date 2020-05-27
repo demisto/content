@@ -343,10 +343,11 @@ def fetch_indicators_command(client, feed_tags, itype, **kwargs):
                     if 'firstseenbysource' in attributes.keys():
                         attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
                             attributes['firstseenbysource'])
-
+                    indicator_type = client.feed_url_to_config.get(url, {}).get('indicator_type', itype)
+                    indicator_type = indicator_type if indicator_type else auto_detect_indicator_type(value)
                     indicator_data = {
                         "value": value,
-                        "type": client.feed_url_to_config.get(url, {}).get('indicator_type', itype),
+                        "type": indicator_type,
                         "rawJSON": attributes,
                     }
 
