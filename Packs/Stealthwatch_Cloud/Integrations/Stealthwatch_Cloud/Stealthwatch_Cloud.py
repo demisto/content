@@ -156,7 +156,6 @@ def update_alert_command():
         }
     update_params['resolved'] = args.get('resolved') == 'true'
 
-
     alert_data = update_alert(alert_id, update_params)
 
     alert_data.pop('comments')
