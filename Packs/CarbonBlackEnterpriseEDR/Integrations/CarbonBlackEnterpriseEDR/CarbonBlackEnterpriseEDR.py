@@ -37,7 +37,7 @@ class Client(BaseClient):
                               device_os: List = None, process_sha256: List = None, policy_name: List = None,
                               reputation: List = None, alert_type: List = None, alert_category: List = None,
                               workflow: List = None, device_name: List = None, process_name: List = None,
-                              sort_field: str = None, sort_order: str = None, limit: str = None) -> dict:
+                              sort_field: str = None, sort_order: str = None, limit: str = None) -> Dict:
 
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
         body = {
@@ -494,7 +494,8 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
     sort_field = args.get('sort_field', '')
     sort_order = args.get('sort_order')
     contents = []
-    headers = ['ID', 'Name', 'OS', 'PolicyName', 'Quarantined', 'status', 'TargetPriority']
+    headers = ['ID', 'Name', 'OS', 'PolicyName', 'Quarantined', 'status', 'TargetPriority', 'LastInternalIpAddress',
+               'LastExternalIpAddress', 'LastContactTime', 'LastLocation']
 
     result = client.devices_list_request(device_id, status, device_os, last_contact_time, ad_group_id, policy_id,
                                          target_priority, limit, sort_field, sort_order)
@@ -523,7 +524,7 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
         os_version=device.get('os_version')
     )
 
-    readable_output = tableToMarkdown('Devices list results', contents, removeNull=True)
+    readable_output = tableToMarkdown('Devices list results', contents, headers, removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Device',
         outputs_key_field='id',
@@ -711,7 +712,7 @@ def create_watchlist_command(client: Client, args: Dict) -> CommandResults:
                                       removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Watchlist',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=contents,
         readable_output=readable_output,
         raw_response=result
@@ -799,18 +800,17 @@ def get_report_command(client: Client, args: Dict) -> CommandResults:
     }
 
     iocs = result.get('iocs_v2', [])
-    if iocs:
-        for ioc in iocs:
-            ioc_contents.append({
-                'ID': ioc.get('id'),
-                'Match_type': ioc.get('match_type'),
-                'Values': ioc.get('values'),
-                'Field': ioc.get('field'),
-                'Link': ioc.get('link')
-            })
+    for ioc in iocs:
+        ioc_contents.append({
+            'ID': ioc.get('id'),
+            'Match_type': ioc.get('match_type'),
+            'Values': ioc.get('values'),
+            'Field': ioc.get('field'),
+            'Link': ioc.get('link')
+        })
 
     readable_output = tableToMarkdown(f'Report "{report_id}" information', contents, headers, removeNull=True)
-    ioc_output = tableToMarkdown(f'The IOCs for the report', ioc_contents, removeNull=True)
+    ioc_output = tableToMarkdown(f'The IOCs for the report {report_id}', ioc_contents, removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Report',
         outputs_key_field='id',
@@ -864,7 +864,7 @@ def create_report_command(client: Client, args: Dict) -> CommandResults:
     md5 = argToList(args.get('md5'))
     ioc_query = argToList(args.get('ioc_query'))
     severity = args.get('severity')
-    timestamp = date_to_timestamp(args.get('timestamp')) / 1000
+    timestamp = int(date_to_timestamp(args.get('timestamp')) / 1000)
     ioc_contents = []
     iocs = assign_params(
         ipv4=ipv4,
@@ -960,7 +960,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
     report_id = args.get('report_id')
     title = args.get('title')
     description = args.get('description')
-    timestamp = date_to_timestamp(args.get('timestamp')) / 100
+    timestamp = int(date_to_timestamp(args.get('timestamp')) / 1000)
     tags = argToList(args.get('tags'))
     ipv4 = argToList(args.get('ipv4'))
     ipv6 = argToList(args.get('ipv6'))
@@ -1015,7 +1015,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
         })
 
     readable_output = tableToMarkdown(f'The report was updated successfully.', contents, headers, removeNull=True)
-    ioc_output = tableToMarkdown(f'The IOCs for the report', ioc_contents, removeNull=True)
+    ioc_output = tableToMarkdown('The IOCs for the report', ioc_contents, removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Report',
         outputs_key_field='ID',
@@ -1044,6 +1044,7 @@ def get_file_device_summary(client: Client, args: Dict) -> CommandResults:
 def get_file_metadata_command(client: Client, args: Dict) -> CommandResults:
     sha256 = args.get('sha256')
     result = client.get_file_metadata_request(sha256)
+    headers = ['SHA256', 'file_size', 'original_filename', 'internal_name', 'os_type', 'comments']
     contents = {
         'SHA256': result.get('sha256'),
         'file_size': result.get('file_size'),
@@ -1073,7 +1074,7 @@ def get_file_metadata_command(client: Client, args: Dict) -> CommandResults:
         'product_version': result.get('product_version')
     }
 
-    readable_output = tableToMarkdown('The file metadata', contents)
+    readable_output = tableToMarkdown('The file metadata', contents, headers, removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.File',
         outputs_key_field='sha256',
