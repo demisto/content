@@ -21,7 +21,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input. |  | Optional |
 | ApprovedregistrantsListName | The Cortex XSOAR list name that contains the approved registrars.  A registrant is the company or entity  that owns the domain. |  | Optional |
 | registrantListDelimiter | A one\-character string used to delimit fields. This must match the value that you defined in the list separator server configuration.
 The default value is a comma, however, as registrants might contain the "," character in their name,
@@ -36,4 +36,6 @@ Cortex XSOAR recommends that you select a different delimiter. |  | Optional |
 | ApprovedDomains | Domains for which the registrant is approved. | string |
 | DomainsNotResolvedByWhois | Domains which Whois wasn't able to resolve. | string |
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/9d1fb26ca3d7b801b27b8e892f09bf97885a7274/Packs/Whois/doc_files/TIM_-_Process_Domain_registrant_With_Whois.png)
