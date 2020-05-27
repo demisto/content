@@ -1822,5 +1822,5 @@ def test_auto_detect_indicator_type(indicator_value, indicatory_type):
         try:
             auto_detect_indicator_type(indicator_value)
         except Exception as e:
-            assert str(e) == "Missing tldextract module, In order to use the auto detect function please use a docker" \
-                        " image with it installed such as: demisto/jmespath"
+            assert str(e) == "Missing tldextract module, In order to use the auto detect function please" \
+                             " use a docker image with it installed such as: demisto/jmespath"
