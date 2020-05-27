@@ -832,7 +832,7 @@ try:
         delete_case_command()
 
     elif demisto.command() == 'as-get-security-events':
-        return_outputs(get_security_events_command())
+        return_outputs(*get_security_events_command())
 
     elif demisto.command() == 'as-get-entries':
         get_entries_command()
