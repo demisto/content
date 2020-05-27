@@ -109,7 +109,6 @@ jobs:
                 exit 0
             fi
             demisto-sdk create-id-set -o ./Tests/id_set.json
-            python3 ./Tests/scripts/update_conf_json.py
       - run:
           name: Infrastructure testing
           when: always
