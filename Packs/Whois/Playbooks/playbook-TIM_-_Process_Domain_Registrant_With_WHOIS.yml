@@ -107,10 +107,10 @@ tasks:
       version: -1
       name: Run whois on indicators
       description: Provides data enrichment for domains.
-      script: Whois1|||whois
+      script: '|||whois'
       type: regular
       iscommand: true
-      brand: Whois1
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -159,7 +159,7 @@ tasks:
       matchexact:
         simple: "yes"
       values:
-        simple: ${Domain.Whois.registrant.Name}
+        simple: ${Domain.Whois.Registrant.organization}
     separatecontext: false
     view: |-
       {
@@ -323,7 +323,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: NonApprovedDomains
+        simple: DomainNotResolvedByWhois
       stringify: {}
       value:
         complex:
@@ -383,7 +383,7 @@ tasks:
           - - operator: inList
               left:
                 value:
-                  simple: Domain.Whois.registrant.Name
+                  simple: Domain.Whois.Registrant.organization
                 iscontext: true
               right:
                 value:
@@ -435,7 +435,7 @@ tasks:
           - - operator: inList
               left:
                 value:
-                  simple: Domain.Whois.registrant.Name
+                  simple: Domain.Whois.Registrant.organization
                 iscontext: true
               right:
                 value:
