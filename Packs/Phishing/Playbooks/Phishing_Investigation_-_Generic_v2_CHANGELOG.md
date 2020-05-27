@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 - The playbook now uses Block Indicators - Generic v2 to block malicious indicators (off by default).
 - Replaced the deprecated SendEmail automation with the send-mail command. 
 
