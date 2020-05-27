@@ -140,11 +140,12 @@ jobs:
 
             demisto-sdk secrets --post-commit --ignore-entropy
 
-            ${BLACKLIST_KEY} | base64 --decode | gpg --import --no-tty --batch --yes
+            mkdir ~/.gnupg/
             echo use-agent >> ~/.gnupg/gpg.conf
             echo pinentry-mode loopback >> ~/.gnupg/gpg.conf
             echo allow-loopback-pinentry >> ~/.gnupg/gpg-agent.conf
             echo RELOADAGENT | gpg-connect-agent
+            echo -e ${BLACKLIST_KEY} | gpg --import
             for secret in $(gpg --no-tty --passphrase "${BLACKLIST_PASS}" --pinentry-mode loopback --decrypt blacklist_test)
               do
                 if [ "$(grep -Ril $secret ./ | wc -l)" -gt 0 ]
