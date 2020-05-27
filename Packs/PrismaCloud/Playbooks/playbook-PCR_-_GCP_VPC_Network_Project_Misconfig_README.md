@@ -32,4 +32,4 @@ This playbook does not use any sub-playbooks.
 There are no outputs for this playbook.
 
 ## Playbook Image
-![Playbook Image](https://github.com/demisto/content/raw/33cbee1e6ae852ef6875761f7acf367c63589f03/Packs/Legacy/doc_files/PCR_-_GCP_VPC_Network_Project_Misconfig.png)
+![Playbook Image](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Project_Misconfig.png)

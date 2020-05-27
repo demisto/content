@@ -1,8 +1,7 @@
-This playbook remediates Prisma Cloud GCP VPC Network alerts.  It calls sub-playbooks that perform the actual remediation steps.
+This playbook remediates the following Prisma Cloud GCP VPC Network Firewall alerts.
 
-Remediation:
+Prisma Cloud policies remediated:
 
- - GCP project is using the default network
  - GCP Firewall rule allows internet traffic to FTP port (21)
  - GCP Firewall rule allows internet traffic to HTTP port (80)
  - GCP Firewall rule allows internet traffic to MongoDB port (27017)
@@ -22,31 +21,28 @@ Remediation:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Prisma Cloud Remediation - GCP VPC Network Project Misconfiguration
-* Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
+This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
-* RedLock
+* Google Cloud Compute
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* redlock-dismiss-alerts
-* closeInvestigation
+* gcp-compute-get-firewall
+* gcp-compute-patch-firewall
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AutoRemediateVPCNetwork | Execute GCP Compute Engine remediation automatically? | no | Optional |
-| policyId | Grab the Prima Cloud policy Id. | incident.labels.policy | Optional |
+| policyId | Prisma Cloud policy Id. |  | Required |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
-![Playbook Image](https://github.com/demisto/content/raw/308d2beeb7f87711dec93fee4ce19c6acf69c58b/Packs/Legacy/doc_files/PCR_-_GCP_VPC_Network_Misconfig.png)
+![Playbook Image](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Firewall_Misconfig.png)
