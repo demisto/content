@@ -1,24 +1,18 @@
 {
-    "name": "NIST",
-    "description": "This pack contains playbooks that follow the phases to handling an incident as described in the \u2018Handling an Incident\u2019 section of NIST - Computer Security Incident Handling Guide.",
-    "support": "xsoar",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "",
-    "email": "",
-    "categories": [
-        "Case Management"
-    ],
-    "tags": [
-        "NIST"
-    ],
-    "created": "2020-04-30T14:55:08Z",
-    "updated": "2020-04-30T14:55:08Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+  "name": "NIST",
+  "description": "This pack contains playbooks that follow the phases to handling an incident as described in the \u2018Handling an Incident\u2019 section of NIST - Computer Security Incident Handling Guide.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-30T14:55:08Z",
+  "categories": [
+    "Case Management"
+  ],
+  "tags": [
+    "NIST"
+  ],
+  "useCases": [],
+  "keywords": []
 }

@@ -1,23 +1,16 @@
 {
-    "name": "Port Scan",
-    "description": "A generic solution for investigation of port scan incidents.",
-    "support": "demisto",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "",
-    "email": "",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [],
-    "created": "2020-04-07T15:38:59Z",
-    "updated": "2020-04-07T15:38:59Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "price": "0",
-    "dependencies": {}
+  "name": "Port Scan",
+  "description": "A generic solution for investigation of port scan incidents.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-07T15:38:59Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
 }

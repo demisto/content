@@ -33,6 +33,10 @@ configuration:
   name: unsecure
   required: false
   type: 8
+- display: Use a self-deployed Azure Application
+  name: self_deployed
+  required: false
+  type: 8
 description: Create and Manage Azure Virtual Machines
 display: Azure Compute v2
 name: Azure Compute v2
@@ -442,7 +446,7 @@ script:
     - contextPath: Azure.Subscription.State
       description: The state of the subscription.
       type: String
-  dockerimage: demisto/crypto:1.0.0.4187
+  dockerimage: demisto/crypto:1.0.0.7634
   isfetch: false
   longRunning: false
   longRunningPort: false

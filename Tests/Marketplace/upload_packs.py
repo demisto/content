@@ -2,18 +2,15 @@ import json
 import os
 import sys
 import argparse
-import warnings
 import shutil
 import uuid
 import prettytable
-import google.auth
 import glob
-from google.cloud import storage
 from datetime import datetime
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, \
-    PACKS_FOLDER, IGNORED_PATHS, Metadata
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH,\
+    IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata
+from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
 def get_modified_packs(specific_packs=""):
@@ -67,33 +64,6 @@ def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
     with ZipFile(packs_artifacts_path) as packs_artifacts:
         packs_artifacts.extractall(extract_destination_path)
     print("Finished extracting packs artifacts")
-
-
-def init_storage_client(service_account=None):
-    """Initialize google cloud storage client.
-
-    In case of local dev usage the client will be initialized with user default credentials.
-    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
-
-    Args:
-        service_account (str): full path to service account json.
-
-    Return:
-        storage.Client: initialized google cloud storage client.
-    """
-    if service_account:
-        storage_client = storage.Client.from_service_account_json(service_account)
-        print("Created gcp service account")
-
-        return storage_client
-    else:
-        # in case of local dev use, ignored the warning of non use of service account.
-        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
-        credentials, project = google.auth.default()
-        storage_client = storage.Client(credentials=credentials, project=project)
-        print("Created gcp private account")
-
-        return storage_client
 
 
 def download_and_extract_index(storage_bucket, extract_destination_path):
@@ -392,6 +362,22 @@ def _build_summary_table(packs_input_list):
     return table
 
 
+def load_json(file_path):
+    """ Reads and loads json file.
+
+    Args:
+        file_path (str): full path to json file.
+
+    Returns:
+        dict: loaded json file.
+
+    """
+    with open(file_path, 'r') as json_file:
+        result = json.load(json_file)
+
+    return result
+
+
 def print_packs_summary(packs_list):
     """Prints summary of packs uploaded to gcs.
 
@@ -442,7 +428,8 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
-    parser.add_argument('--id_set_path', help="The full path of id_set.json", required=False)
+    parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
+    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Comma separated list of target pack names. "
                               "Define `All` in order to store all available packs."),
@@ -454,6 +441,10 @@ def option_handler():
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.",
+                        required=False)
+    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+                        help='Should remove test playbooks from content packs or not.', default=True)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -470,13 +461,21 @@ def main():
     override_pack = option.override_pack
     signature_key = option.key_string
     id_set_path = option.id_set_path
+    packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
+    storage_bash_path = option.storage_bash_path
+    remove_test_playbooks = option.remove_test_playbooks
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
+    if storage_bash_path:
+        GCPConfig.STORAGE_BASE_PATH = storage_bash_path
+
     # download and extract index from public bucket
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_folder_path, index_blob = download_and_extract_index(
+        storage_bucket, extract_destination_path
+    )
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
@@ -520,7 +519,8 @@ def main():
 
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
-                                           index_folder_path=index_folder_path)
+                                           index_folder_path=index_folder_path,
+                                           packs_dependencies_mapping=packs_dependencies_mapping)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -532,12 +532,13 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.remove_unwanted_files()
+        task_status = pack.remove_unwanted_files(remove_test_playbooks)
         if not task_status:
             pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
             pack.cleanup()
             continue
 
+        # if should_sign_pack:
         task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name

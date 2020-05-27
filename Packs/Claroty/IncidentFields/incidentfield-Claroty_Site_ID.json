@@ -9,7 +9,7 @@
 	"cliName": "clarotysiteid",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "Site ID",
 	"editForm": true,
@@ -38,5 +38,5 @@
 	"validatedError": "",
 	"validationRegex": "",
 	"version": -1,
-	"fromversion": "5.0.0"
+	"fromVersion": "5.0.0"
 }
