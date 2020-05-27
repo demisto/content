@@ -1,4 +1,8 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
+  - Fixed the timestamp field parameter description.
   - Added the *incident_name* parameter, to allow the user to choose the column from ServiceNow on which the fetched incidents will be named.
   - Fixed an issue where system proxy settings were always being used.
   - Fixed an issue where ***fetch-incidents*** command with attachments did not work as expected.

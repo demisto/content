@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 - Fixed an issue where several commands would not work as expected in case they were performed on app ID 411.
 - Fixed an issue where type 4 fields were not displayed in ***archer-search-records*** command results.
 
