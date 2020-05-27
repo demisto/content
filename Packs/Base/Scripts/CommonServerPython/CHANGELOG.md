@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
   - Fixed IPv4 regex to only catch IPv4 addresses, not CIDR ranges.
   - Added a retry mechanism to the BaseClient.
   - Fixed an issue where the **appendContext** function did not behave as expected.

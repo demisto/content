@@ -589,7 +589,7 @@ def get_release_notes_draft(github_token, asset_id):
 def create_content_descriptor(version, asset_id, res, github_token, beta_rn=None):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
-    release_notes = '## Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
+    release_notes = '# Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
     release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"), res)
     content_descriptor = {
         "installDate": "0001-01-01T00:00:00Z",
