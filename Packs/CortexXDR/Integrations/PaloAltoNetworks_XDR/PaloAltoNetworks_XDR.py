@@ -693,8 +693,10 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
-    def endpoint_scan(self, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None, lte_first_seen=None,
-                       lte_last_seen=None, ip_list=None, group_name=None, platform=None, alias=None, isolate=None, hostname=None):
+    def endpoint_scan(self, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None,
+                      lte_first_seen=None,
+                      lte_last_seen=None, ip_list=None, group_name=None, platform=None, alias=None, isolate=None,
+                      hostname=None):
         request_data: Dict[str, Any] = {}
         filters = []
 
@@ -1468,9 +1470,8 @@ def whitelist_files_command(client, args):
 
     client.whitelist_files(hash_list=hash_list, comment=comment)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
-
     return (
-        tableToMarkdown('Whitelist Files', markdown_data, ['fileHash'],  headerTransform=pascalToSpace),
+        tableToMarkdown('Whitelist Files', markdown_data, ['fileHash'], headerTransform=pascalToSpace),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.whiteList.fileHash(val.fileHash == obj.fileHash)': hash_list
         },
@@ -1488,12 +1489,11 @@ def quarantine_files_command(client, args):
         file_path=file_path,
         file_hash=file_hash
     )
-
     output = {
-            'endpointIdList': endpoint_id_list,
-            'filePath': file_path,
-            'fileHash': file_hash,
-            'actionId': reply.get("action_id")
+        'endpointIdList': endpoint_id_list,
+        'filePath': file_path,
+        'fileHash': file_hash,
+        'actionId': reply.get("action_id")
     }
 
     return (
@@ -1536,10 +1536,10 @@ def get_quarantine_status_command(client, args):
         endpoint_id=endpoint_id
     )
     output = {
-            'status': reply['status'],
-            'endpointId': reply['endpoint_id'],
-            'filePath': reply['file_path'],
-            'fileHash': reply['file_hash']
+        'status': reply['status'],
+        'endpointId': reply['endpoint_id'],
+        'filePath': reply['file_path'],
+        'fileHash': reply['file_hash']
     }
 
     return (

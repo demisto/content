@@ -25,7 +25,7 @@ def test_get_incident_list(requests_mock):
 
     expected_output = {
         'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': get_incidents_list_response.get('reply')
-                                                                                                     .get('incidents')
+        .get('incidents')
     }
     assert expected_output == outputs
 
@@ -206,7 +206,7 @@ def test_isolate_endpoint(requests_mock):
 
 def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
     from PaloAltoNetworks_XDR import isolate_endpoint_command, Client
-#    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    #    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
         'reply': {
@@ -496,7 +496,7 @@ def test_blacklist_files_command_with_more_than_one_file(requests_mock):
     from PaloAltoNetworks_XDR import blacklist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)':
-                                   test_data['multi_command_args']['hash_list']}
+                               test_data['multi_command_args']['hash_list']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
 
     client = Client(
@@ -573,7 +573,7 @@ def test_whitelist_files_command_with_more_than_one_file(requests_mock):
     from PaloAltoNetworks_XDR import whitelist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)':
-                                   test_data['multi_command_args']['hash_list']}
+                               test_data['multi_command_args']['hash_list']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
 
     client = Client(
@@ -624,7 +624,8 @@ def test_whitelist_files_command_with_no_comment_file(requests_mock):
     from PaloAltoNetworks_XDR import whitelist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {
-        'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args']['hash_list']}
+        'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
+            'hash_list']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
 
     client = Client(
@@ -647,8 +648,8 @@ def test_quarantine_files_command(requests_mock):
     """
     from PaloAltoNetworks_XDR import quarantine_files_command, Client
     test_data = load_test_data('test_data/quarantine_files.json')
-    quarantine_files_expected_tesult = {'PaloAltoNetworksXDR.quarantineFiles.actionIds(val.actionId === obj.actionId)'
-                                        : test_data['context_data']}
+    quarantine_files_expected_tesult = {'PaloAltoNetworksXDR.quarantineFiles.actionIds(val.actionId === obj.actionId)':
+                                        test_data['context_data']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/quarantine/', json=test_data['api_response'])
 
     client = Client(
@@ -671,9 +672,10 @@ def test_get_quarantine_status_command(requests_mock):
     """
     from PaloAltoNetworks_XDR import get_quarantine_status_command, Client
     test_data = load_test_data('test_data/get_quarantine_status.json')
-    quarantine_files_expected_tesult = {'PaloAltoNetworksXDR.quarantineFiles.status(val.fileHash === obj.fileHash &&val.endpointId'
-                                        ' === obj.endpointId && val.filePath === obj.filePath)':
-                                            test_data['context_data']}
+    quarantine_files_expected_tesult = {
+        'PaloAltoNetworksXDR.quarantineFiles.status(val.fileHash === obj.fileHash &&val.endpointId'
+        ' === obj.endpointId && val.filePath === obj.filePath)':
+            test_data['context_data']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/quarantine/status/', json=test_data['api_response'])
 
     client = Client(
@@ -742,7 +744,6 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
         - returns markdown, context data and raw response.
     """
     from PaloAltoNetworks_XDR import endpoint_scan_command, Client
-    test_data = load_test_data('test_data/scan_endpoints.json')
     scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
