@@ -151,7 +151,7 @@ tasks:
       - "24"
     scriptarguments:
       delimiter:
-        simple: ${inputs.registrantListDelimiter}
+        simple: ${inputs.RegistrantListDelimiter}
       ignorecase:
         simple: "yes"
       listname:
@@ -607,7 +607,7 @@ inputs:
   required: false
   description: The Cortex XSOAR list name that contains the approved registrars.  A
     registrant is the company or entity  that owns the domain.
-- key: registrantListDelimiter
+- key: RegistrantListDelimiter
   value: {}
   required: false
   description: |-
