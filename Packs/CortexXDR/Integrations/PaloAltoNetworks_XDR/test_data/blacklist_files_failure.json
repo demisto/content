@@ -16,6 +16,5 @@
       {"err_code": 401,
         "err_msg": "\tUnauthorized access. An issue occurred during authentication. This can indicate an incorrect key, id, or other invalid authentication parameters.",
         "err_extra": "EXTRA_DATA"}
-      },
-  "command_expected_result": {}
+      }
 }
