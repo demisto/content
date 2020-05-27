@@ -834,7 +834,9 @@ class Pack(object):
                         })
                     elif current_directory == PackFolders.WIDGETS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', "")
+                            'name': content_item.get('name', ""),
+                            'dataType': content_item.get('dataType', ""),
+                            'widgetType': content_item.get('widgetType', "")
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
