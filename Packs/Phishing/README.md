@@ -1,5 +1,5 @@
 ##### What can this pack do?
- - Dissect emails, providing screenshots of the email and of embedded URLs, and calculating reputation for all indicators involved.
+- Dissect emails, providing screenshots of the email and of embedded URLs, and calculating reputation for all indicators involved.
 - Extracts and enriches all indicators from email attachments. Analyze files and provide reputation using sandbox and threat intelligence integrations.
 - Run checks for SSL certificates of URLs, email address breach involvement, domain-squatting and email authenticity (using SPF, DKIM and DMARC checks).
 - Calculate severity for the incident based on initial severity provided, indicator reputations, email authenticity check, and critical assets if any were involved.

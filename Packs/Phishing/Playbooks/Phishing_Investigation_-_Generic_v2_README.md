@@ -1,10 +1,15 @@
-
-
 ## Usage
 
 Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
 The final remediation tasks are always decided by a human analyst.
+
+##### Triggers
+The investigation is triggered by an email sent or forwarded to a designated "phishing inbox". A mail listener integration that listens to that mailbox, will use every received email to create a phishing incident in Cortex XSOAR.
+A mail listener can be one of the following integrations:
+- EWS v2
+- Gmail
+- Mail Listener (does not support retrieval of original emails when the suspected emails are not attached)
 
 ##### Configuration
 - Create an email inbox that should be used for phishing reports. Make sure the user in control of that inbox has the permissions required by your integration (EWS v2 or Gmail).
