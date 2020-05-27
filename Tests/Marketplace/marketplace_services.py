@@ -307,8 +307,8 @@ class Pack(object):
 
             for dependency_integration in dependency_integration_images:
                 dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
-                dependency_pack_name = os.path.dirname(  # extract pack name from public url
-                    os.path.relpath(dependency_integration_gcs_path, GCPConfig.STORAGE_BASE_PATH))
+                dependency_pack_name = os.path.basename(
+                    os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
 
                 if dependency_pack_name not in display_dependencies_images:
                     continue  # skip if integration image is not part of displayed pack
