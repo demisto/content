@@ -439,7 +439,7 @@ RBAC Permissions Required - device: READ
             "vdi_base_device": null, 
             "passive_mode": false, 
             "login_user_name": null, 
-            "av_engine": "4.9.0.264-ave.8.3.60.28:avpack.2.4.1.58:vdf.8.16.46.30:apc.2.10.0.66", 
+            "av_engine": "4.9.0.264-ave.8.3.60.28:avpack.2.4.1.58:vdf.8.16.46.30:apc.2.2.2.2", 
             "device_meta_data_item_list": [
                 {
                     "key_name": "OS_MAJOR_VERSION", 

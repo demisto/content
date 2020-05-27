@@ -634,8 +634,8 @@ def get_watchlist_by_id_command(client: Client, args: Dict) -> CommandResults:
         'Description': result.get('description'),
         'Tags_enabled': result.get('tags_enabled'),
         'Alerts_enabled': result.get('alerts_enabled'),
-        'create_timestamp': timestamp_to_datestring(result.get('create_timestamp')),
-        'Last_update_timestamp': timestamp_to_datestring(result.get('last_update_timestamp')),
+        'create_timestamp': timestamp_to_datestring(result.get('create_timestamp') * 1000),
+        'Last_update_timestamp': timestamp_to_datestring(result.get('last_update_timestamp') * 1000),
         'Report_ids': result.get('report_ids'),
         'Classifier': result.get('classifier')
     }
