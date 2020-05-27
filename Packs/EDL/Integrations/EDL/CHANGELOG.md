@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
   - Removed the *panos_compatible* parameter. All indicators exported by this integrations will be PAN-OS compatible.
   - Added request parameters that are passed in the URL.
 

@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 - Fixed an issue parsing EML files encoded with a BOM.
 - Fixed an issue with header parsing.
 
