@@ -1,2 +1,2 @@
 ## [Unreleased]
-Deprecated - We recommend using SafeBreach v2 instead.
+Use the SafeBreach v2 integration instead.
