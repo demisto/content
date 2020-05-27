@@ -1102,7 +1102,7 @@ def get_file_command(client: Client, args: Dict) -> CommandResults:
 
         if download_to_xsoar == 'true':
             request = requests.get(file_.get('url'))
-            demisto.results(fileResult('result.zip', request.content))
+            demisto.results(fileResult(f'{sha256}.zip', request.content))
 
     readable_output = tableToMarkdown('The file to download', contents)
     results = CommandResults(
@@ -1307,8 +1307,10 @@ def main():
     except Exception as e:
         err_msg = str(e)
         if 'MALFORMED_JSON' in err_msg:
-            return_error(f'Failed to execute {demisto.command()} command. \nError: One or more of the arguments are '
-                         f'invalid. Make sure that all arguments are correct.')
+            message = err_msg.split('\n')
+            bad_field = json.loads(message[1]).get('field')
+            return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
+                         f'invalid. Make sure that the arguments is correct.')
         return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
 
 
