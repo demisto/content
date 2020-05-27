@@ -1454,7 +1454,7 @@ def blacklist_files_command(client, args):
     markdown_data = [{'file_hash': file_hash} for file_hash in hash_list]
 
     return (
-        tableToMarkdown('Blacklist Files', markdown_data, ['file_hash']),
+        tableToMarkdown('Blacklist Files', markdown_data, headers=['file_hash'], headerTransform=pascalToSpace),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.blacklist(val.id == obj.id)': hash_list
         },
@@ -1470,7 +1470,7 @@ def whitelist_files_command(client, args):
     markdown_data = [{'file_hash': file_hash} for file_hash in hash_list]
 
     return (
-        tableToMarkdown('Whitelist Files', markdown_data, ['file_hash']),
+        tableToMarkdown('Whitelist Files', markdown_data, ['file_hash'],  headerTransform=pascalToSpace),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.whitelist(val.id == obj.id)': hash_list
         },
@@ -1488,12 +1488,19 @@ def quarantine_files_command(client, args):
         file_path=file_path,
         file_hash=file_hash
     )
-    action_id = reply.get("action_id")
+
+    output = {
+            'endpointIds': endpoint_id_list,
+            'filePath': file_path,
+            'fileHash': file_hash,
+            'actionId': reply.get("action_id")
+    }
 
     return (
-        tableToMarkdown('Quarantine files', {'action_id': action_id}, ['action_id']),
+        tableToMarkdown('Quarantine files', output, headers=[*output],
+                        headerTransform=pascalToSpace),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.actionId(val.id == obj.id)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.actionIds(val.actionId === obj.actionId)': output
         },
         reply
     )
@@ -1510,9 +1517,9 @@ def restore_file_command(client, args):
     action_id = reply.get("action_id")
 
     return (
-        tableToMarkdown('Restore files', {'action_id': action_id}, ['action_id']),
+        tableToMarkdown('Restore files', {'Action Id': action_id}, ['Action Id']),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.restoredFiles(val.id == obj.id)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.restoredFiles(val.actionId == obj.actionId)': action_id
         },
         action_id
     )
@@ -1530,15 +1537,16 @@ def get_quarantine_status_command(client, args):
     )
     output = {
             'status': reply['status'],
-            'endpoint_id': reply['endpoint_id'],
-            'file_path': reply['file_path'],
-            'file_hash': reply['file_hash']
+            'endpointId': reply['endpoint_id'],
+            'filePath': reply['file_path'],
+            'fileHash': reply['file_hash']
     }
 
     return (
-        tableToMarkdown('Quarantine files', output, ['status', 'endpoint_id', 'file_path', 'file_hash']),
+        tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.actionId(val.id == obj.id)': output
+            f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.status(val.fileHash === obj.fileHash &&'
+            f'val.endpointId === obj.endpointId && val.filePath === obj.filePath)': output
         },
         reply
     )
@@ -1576,7 +1584,7 @@ def endpoint_scan_command(client, args):
     action_id = reply.get("action_id")
 
     return (
-        tableToMarkdown('Endpoint scan', {'action_id': action_id}, ['action_id']),
+        tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.endpointScan.actionId(val.id == obj.id)': action_id
         },
