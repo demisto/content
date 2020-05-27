@@ -321,7 +321,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: DomainNotResolvedByWhois
+        simple: DomainsNotResolvedByWhois
       stringify: {}
       value:
         complex:
@@ -621,7 +621,7 @@ outputs:
 - contextPath: ApprovedDomains
   description: Domains for which the registrar is approved.
   type: string
-- contextPath: DomainNotResolvedByWhois
+- contextPath: DomainsNotResolvedByWhois
   description: Domains which Whois wasn't able to resolve.
   type: string
 quiet: true
