@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Added a new sub-playbook "Illinois - Breach Notification"
 
 
 ## [20.5.2] - 2020-05-26
