@@ -1095,7 +1095,7 @@ def get_file_command(client: Client, args: Dict) -> CommandResults:
     for file_ in found_files:
         contents.append({
             'sha256': file_.get('sha256'),
-            'url': file_.get('url')
+            'url': f"[{file_.get('url')}]({file_.get('url')})"
         })
 
         if download_to_xsoar == 'true':
