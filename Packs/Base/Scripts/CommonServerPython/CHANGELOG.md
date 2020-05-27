@@ -1,6 +1,6 @@
 ## [Unreleased]
   - Added new indicator Common class - Endpoint
-
+  - Added a new function **auto_detect_indicator_type** which detects indicators. 
 
 ## [20.5.2] - 2020-05-26
   - Fixed IPv4 regex to only catch IPv4 addresses, not CIDR ranges.
