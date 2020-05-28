@@ -503,19 +503,18 @@ class TestCleanPacks:
     @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'master'})
     def test_clean_non_existing_packs(self, mocker):
         """
-         Scenario: running clean_non_existing_packs function on CI environment on master branch and on production
-         bucket
+         Scenario: deleting pack that is not part of content repo or paid packs from index
 
          Given
-         - production bucket input
-         - master branch env variable
-         - CI env variable (ensures that script is executed in circle CI)
+         - valid pack from content repo
+         - valid pack from private bucket
+         - not valid pack that may be located in bucket and in the index
 
          When
-         - running clean_non_existing_packs in circle CI master branch on production bucket
+         - pack was deleted from content repo
 
          Then
-         - Ensure that task is not skipped
+         - Ensure that not valid pack is deleted from index
          """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
         from Tests.Marketplace.marketplace_services import GCPConfig
