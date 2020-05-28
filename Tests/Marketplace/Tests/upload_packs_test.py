@@ -563,9 +563,9 @@ class TestCleanPacks:
             (os.path.join(index_folder_path, invalid_pack), invalid_pack, True)
         ])
 
-        mocker.patch("os.listdir", return_value=[public_pack])
-        mocker.patch("os.scandir", return_value=dirs)
-        mocker.patch('shutil.rmtree')
+        mocker.patch("Tests.Marketplace.upload_packs.os.listdir", return_value=[public_pack])
+        mocker.patch("Tests.Marketplace.upload_packs.os.scandir", return_value=dirs)
+        mocker.patch('Tests.Marketplace.upload_packs.shutil.rmtree')
         mocker.patch("Tests.Marketplace.upload_packs.print_warning")
 
         private_packs = [{'id': private_pack, 'price': 120}]
