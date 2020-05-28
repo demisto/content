@@ -211,11 +211,13 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
         private_packs (list): priced packs from private bucket.
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
 
+    Returns:
+        bool: whether cleanup was skipped or not.
     """
-    if not os.environ.get('CI') or os.environ.get('CIRCLE_BRANCH') != 'master' \
+    if 'CI' not in os.environ or os.environ.get('CIRCLE_BRANCH') != 'master' \
             or storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
-        print("Skipping cleanup of packs in gcs.")
-        return
+        print("Skipping cleanup of packs in gcs.")  # task must be executed only on master branch in circle CI
+        return True
 
     public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
     private_packs_names = {p.get('id', '') for p in private_packs}
@@ -231,7 +233,7 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
             for invalid_pack in invalid_packs_names:
                 invalid_pack_name = invalid_pack[0]
                 invalid_pack_path = invalid_pack[1]
-
+                # remove pack from index
                 shutil.rmtree(invalid_pack_path)
                 print_warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
                 # important to add trailing slash at the end of path in order to avoid packs with same prefix
@@ -245,6 +247,8 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
 
     else:
         print(f"No invalid packs detected inside {GCPConfig.INDEX_NAME} folder")
+
+    return False
 
 
 def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs):
