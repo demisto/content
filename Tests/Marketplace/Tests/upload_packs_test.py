@@ -547,8 +547,8 @@ class TestCleanPacks:
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
         mocker.patch("Tests.Marketplace.marketplace_services.print")
-        mocker.patch("os.listdir", return_value=["PackA"])
-        mocker.patch("os.scandir", return_value={})
+        mocker.patch("Tests.Marketplace.upload_packs.os.listdir", return_value=["PackA"])
+        mocker.patch("Tests.Marketplace.upload_packs.os.scandir", return_value={})
         private_packs = [{'id': 'PackB', 'price': 120}]
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=private_packs,
