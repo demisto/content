@@ -29,12 +29,16 @@ class TestModifiedPacks:
 
 
 class FakeDirEntry:
-    def __init__(self, path, name):
+    def __init__(self, path, name, is_directory=True):
         self.name = name
         self.path = path
+        self.is_directory = is_directory
+
+    def is_dir(self):
+        return self.is_directory
 
     @staticmethod
-    def is_dir(path):
+    def isdir(path):
         return True if path == 'mock_path' else False
 
 
@@ -392,7 +396,7 @@ class TestPrivatePacks:
 
         dirs = scan_dir()
         mocker.patch('os.scandir', return_value=dirs)
-        mocker.patch('os.path.isdir', side_effect=FakeDirEntry.is_dir)
+        mocker.patch('os.path.isdir', side_effect=FakeDirEntry.isdir)
         mocker.patch.object(upload_packs, 'update_index_folder')
 
         upload_packs.add_private_packs_to_index('test', 'private_test')
@@ -421,6 +425,7 @@ class TestPrivatePacks:
         from Tests.Marketplace import upload_packs
 
         mocker.patch('glob.glob', return_value=[])
+        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
 
         private_packs = upload_packs.get_private_packs('path')
 
@@ -430,6 +435,7 @@ class TestPrivatePacks:
         from Tests.Marketplace import upload_packs
 
         mocker.patch('glob.glob', side_effect=InterruptedError)
+        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
 
         private_packs = upload_packs.get_private_packs('path')
 
@@ -461,7 +467,6 @@ class TestCleanPacks:
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
-        mocker.patch("Tests.Marketplace.marketplace_services.print")
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket)
@@ -489,7 +494,6 @@ class TestCleanPacks:
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
-        mocker.patch("Tests.Marketplace.marketplace_services.print")
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket)
@@ -517,7 +521,6 @@ class TestCleanPacks:
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = "dummy_bucket"
-        mocker.patch("Tests.Marketplace.marketplace_services.print")
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket)
@@ -543,15 +546,32 @@ class TestCleanPacks:
          """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
         from Tests.Marketplace.marketplace_services import GCPConfig
+        import os
+        import shutil
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
-        mocker.patch("Tests.Marketplace.marketplace_services.print")
-        mocker.patch("Tests.Marketplace.upload_packs.os.listdir", return_value=["PackA"])
-        mocker.patch("Tests.Marketplace.upload_packs.os.scandir", return_value={})
-        private_packs = [{'id': 'PackB', 'price': 120}]
 
-        skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=private_packs,
+        index_folder_path = "dummy_index_path"
+        public_pack = "public_pack"
+        private_pack = "private_pack"
+        invalid_pack = "invalid_pack"
+
+        dirs = scan_dir([
+            (os.path.join(index_folder_path, public_pack), public_pack, True),
+            (os.path.join(index_folder_path, private_pack), private_pack, True),
+            (os.path.join(index_folder_path, invalid_pack), invalid_pack, True)
+        ])
+
+        mocker.patch("os.listdir", return_value=[public_pack])
+        mocker.patch("os.scandir", return_value=dirs)
+        mocker.patch('shutil.rmtree')
+        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
+
+        private_packs = [{'id': private_pack, 'price': 120}]
+
+        skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
                                                    storage_bucket=dummy_storage_bucket)
 
         assert not skipped_cleanup
+        shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
