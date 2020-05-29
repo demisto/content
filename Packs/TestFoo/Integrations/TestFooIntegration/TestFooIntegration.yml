@@ -1,0 +1,33 @@
+category: Analytics & SIEM
+commonfields:
+  id: TestFooIntegration
+  version: -1
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+display: TestFooIntegration
+name: TestFooIntegration
+description: this is root description
+script:
+  commands:
+  - arguments:
+    - description: This is arg1
+      name: arg_1
+      required: true
+    description: This is description
+    name: test-foo
+    outputs:
+    - contextPath: Test.Foo.output_1
+      description: This is output description
+  dockerimage: demisto/python3:3.8.3.8494
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0

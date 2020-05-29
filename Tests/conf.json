@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "TestFooIntegration",
+            "playbookID": "TestFooPlaybook"
+        },
+        {
             "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
         },
