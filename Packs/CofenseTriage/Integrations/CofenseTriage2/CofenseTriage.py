@@ -28,12 +28,25 @@ TERSE_FIELDS = [
 
 
 class TriageRequestFailedError(Exception):
+    """Triage responded with something other than a normal 200 response"""
     def __init__(self, status_code, message):
+        super().__init__(self, status_code, message)
         self.status_code = status_code
         self.message = message
 
     def __str__(self):
         return f"Call to Cofense Triage failed ({self.status_code}): {self.message}"
+
+
+class TriageRequestEmptyResponse(Exception):
+    """Triage responded without error, but the result set was unexpectedly empty"""
+    def __init__(self, record_id, record_type):
+        super().__init__(self, record_id, record_type)
+        self.record_id = record_id
+        self.record_type = record_type
+
+    def __str__(self):
+        return f"Could not find a {self.record_type} with id {self.record_id}"
 
 
 class TriageInstance:
@@ -79,8 +92,8 @@ class TriageInstance:
             return response.json()
         except json.decoder.JSONDecodeError as ex:
             demisto.debug(str(ex))
-            return return_error(
-                f"Could not parse result from Cofense Triage ({response.status_code})"
+            raise TriageRequestFailedError(
+                response.status_code, "Could not parse result from Cofense Triage"
             )
 
     def api_url(self, endpoint):
@@ -225,15 +238,14 @@ def test_function(triage_instance) -> None:
         if response:
             demisto.results('ok')
         else:
-            return_error(
-                "API call to Cofense Triage failed. Please check Server URL, or authentication "
-                "related parameters.Status Code: {response.status_code} Reason: {response.reason}"
-                f" [{response.status_code}] - {response.reason}"
+            raise TriageRequestFailedError(
+                response.status_code,
+                "API call to Cofense Triage failed. Please check integration configuration.\n"
+                "Reason: {response.reason}"
             )
     except Exception as ex:
         demisto.debug(str(ex))
-        #TODO raise
-        return_error(repr(ex))
+        raise ex
 
 
 def fetch_reports(triage_instance) -> None:
@@ -426,7 +438,7 @@ def get_report_by_id_command(triage_instance) -> None:
     report = TriageReport.fetch(triage_instance, report_id)
 
     if not report:
-        return return_error('Could not find report with matching ID')
+        raise TriageRequestEmptyResponse(report_id, "Report")
 
     if verbose:
         report_attrs = report.attrs

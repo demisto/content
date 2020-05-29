@@ -52,13 +52,11 @@ class TestTriageInstance:
             "https://some-triage-host/api/public/v1/processed_reports",
             text=fixture_from_file("malformed_json.not_json"),
         )
-        return_error = mocker.patch("CofenseTriage2.CofenseTriage.return_error")
 
-        triage_instance.request("processed_reports")
+        with pytest.raises(TriageRequestFailedError) as e:
+            triage_instance.request("processed_reports")
 
-        return_error.assert_called_once_with(
-            "Could not parse result from Cofense Triage (200)"
-        )
+            assert e.message == "Could not parse result from Cofense Triage (200)"
 
     def test_api_url(self, triage_instance):
         assert (

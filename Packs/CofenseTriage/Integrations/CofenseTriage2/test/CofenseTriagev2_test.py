@@ -1,3 +1,5 @@
+from CofenseTriage2.CofenseTriage import TriageRequestFailedError
+
 import pytest
 from freezegun import freeze_time
 import datetime
@@ -10,11 +12,6 @@ def fixture_from_file(fname):
 
 
 DEMISTO_ARGS = {}
-
-
-TEST_FIXTURES = {
-        #....
-}
 
 
 def set_demisto_arg(name, value):
@@ -72,9 +69,8 @@ class TestCofenseTriage:
             text=fixture_from_file("processed_reports.json"),
         )
 
-        CofenseTriage.test_function(triage_instance)
-
-        CofenseTriage.return_error.assert_called_once()
+        with pytest.raises(TriageRequestFailedError) as e:
+            CofenseTriage.test_function(triage_instance)
 
     @freeze_time("2000-10-31")
     def test_fetch_reports(self, mocker, requests_mock, triage_instance):
