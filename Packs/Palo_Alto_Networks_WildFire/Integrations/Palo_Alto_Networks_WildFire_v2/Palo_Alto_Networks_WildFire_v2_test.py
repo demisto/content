@@ -5,6 +5,7 @@ from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entr
 import demistomock as demisto
 from requests import Response
 
+
 def test_will_return_ok():
     assert 1 == 1
 
@@ -95,8 +96,7 @@ def test_get_sample(mocker):
             'Content-Type': 'application/octet-stream',
             'Transfer-Encoding': 'chunked',
             'Connection': 'keep-alive',
-            'Content-Disposition':
-            f'attachment; filename={filename}.000',
+            'Content-Disposition': f'attachment; filename={filename}.000',
             'x-envoy-upstream-service-time': '258'
         }
     get_sample_response._content = 'filecontent'.encode()
