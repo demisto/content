@@ -53,6 +53,9 @@ def req(method, path, data, param_data):
                 statuses = json.loads(response.headers.get('x-redlock-status'))  # type: ignore
                 for status in statuses:
                     text += '\n%s [%s]' % (status.get('i18nKey', ''), status.get('subject', ''))
+                # Handle case for no remediation details
+                if response.status_code == 405:
+                    return {'status': response.status_code, 'text': text}
             except Exception:
                 pass
         raise Exception('Error in API call to RedLock service [%d] - %s' % (response.status_code, text))
