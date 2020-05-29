@@ -101,6 +101,9 @@ class TriageInstance:
         endpoint = endpoint.lstrip("/")
         return f"{self.host}/api/public/v1/{endpoint}"
 
+    def get_demisto_param(self, name):
+        return self.demisto_params[name]
+
 
 class TriageReport:
     """
@@ -249,15 +252,15 @@ def test_function(triage_instance) -> None:
 
 def fetch_reports(triage_instance) -> None:
     """Fetch up to `max_reports` reports since the last time the command was run."""
-    start_date = parse_date_range(demisto.getParam('date_range'))[0].isoformat()
-    max_fetch = int(demisto.getParam('max_fetch'))
+    start_date = triage_instance.get_demisto_param("start_date")
+    max_fetch = triage_instance.get_demisto_param("max_fetch")
 
     triage_response = triage_instance.request(
         "processed_reports",
         params={
-            "category_id": demisto.getParam("category_id"),
-            "match_priority": demisto.getParam("match_priority"),
-            "tags": demisto.getParam("tags"),
+            "category_id": triage_instance.get_demisto_param("category_id"),
+            "match_priority": triage_instance.get_demisto_param("match_priority"),
+            "tags": triage_instance.get_demisto_param("tags"),
             "start_date": start_date,
         },
     )
@@ -563,7 +566,13 @@ def main():
     try:
         handle_proxy()
 
-        demisto_params = {} #TODO do all getParam call here
+        demisto_params = {
+            "start_date": parse_date_range(demisto.getParam('date_range'))[0].isoformat(),
+            "max_fetch": int(demisto.getParam('max_fetch')),
+            "category_id": demisto.getParam("category_id"),
+            "match_priority": demisto.getParam("match_priority"),
+            "tags": demisto.getParam("tags"),
+        }
 
         triage_instance = TriageInstance(
             host=demisto.getParam("host").rstrip("/"),

@@ -80,7 +80,7 @@ class TestCofenseTriage:
         set_demisto_arg("match_priority", 2)
         set_demisto_arg("tags", "")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30T00%3A00%3A00",  # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",  # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
         requests_mock.get(
@@ -126,7 +126,7 @@ class TestCofenseTriage:
             }
         )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30T00%3A00%3A00",  # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",  # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
         requests_mock.get(

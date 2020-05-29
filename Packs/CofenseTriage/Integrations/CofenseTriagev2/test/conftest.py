@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from unittest.mock import patch
 
@@ -52,5 +54,11 @@ def triage_instance():
         token="top-secret-token-value",
         user="triage-user",
         disable_tls_verification=False,
-        demisto_params={"date_range": "5 days", "max_fetch": 10},
+        demisto_params={
+            "start_date": datetime.datetime.fromisoformat("2000-10-30"),
+            "max_fetch": 10,
+            "category_id": 5,
+            "match_priority": 2,
+            "tags": "",
+        },
     )
