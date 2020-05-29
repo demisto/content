@@ -5,11 +5,9 @@ from typing import List, Dict
 from io import BytesIO
 from PIL import Image
 from datetime import datetime
+from datetime import timezone
 import functools
 import json
-
-DEFAULT_TIME_RANGE = '7 days'  # type: str
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # type: str
 
 TERSE_FIELDS = [
     'id',
@@ -217,7 +215,11 @@ def split_snake(string: str) -> str:
 
 
 def parse_triage_date(date: str):
-    return datetime.strptime(date, TIME_FORMAT)
+    # datetime.fromisoformat only supports a subset of ISO-8601.
+    # See https://discuss.python.org/t/parse-z-timezone-suffix-in-datetime/2220
+    if date.endswith('Z'):
+        date = date[:-1] + '+00:00'
+    return datetime.fromisoformat(date)
 
 
 def test_function() -> None:
@@ -234,14 +236,13 @@ def test_function() -> None:
             )
     except Exception as ex:
         demisto.debug(str(ex))
+        #TODO raise
         return_error(repr(ex))
 
 
 def fetch_reports() -> None:
-    """Fetch up to `max_reports` reports since the last time the command was run. TODO date_range"""
-    start_date, _ = parse_date_range(
-        demisto.getParam('date_range'), date_format=TIME_FORMAT
-    )
+    """Fetch up to `max_reports` reports since the last time the command was run."""
+    start_date = parse_date_range(demisto.getParam('date_range'))[0].isoformat()
     max_fetch = int(demisto.getParam('max_fetch'))
 
     triage_response = TRIAGE_INSTANCE.request(
@@ -288,8 +289,8 @@ def search_reports_command() -> None:
     subject = demisto.getArg('subject')  # type: str
     url = demisto.getArg('url')  # type: str
     file_hash = demisto.getArg('file_hash')  # type: str
-    reported_at, _ = parse_date_range(demisto.args().get('reported_at', DEFAULT_TIME_RANGE))
-    created_at, _ = parse_date_range(demisto.args().get('created_at', DEFAULT_TIME_RANGE))
+    reported_at = parse_date_range(demisto.args().get('reported_at', '7 days'))[0].replace(tzinfo=timezone.utc)
+    created_at = parse_date_range(demisto.args().get('created_at', '7 days'))[0].replace(tzinfo=timezone.utc)
     reporter = demisto.getArg('reporter')  # type: str
     max_matches = int(demisto.getArg('max_matches'))  # type: int
     verbose = demisto.getArg('verbose') == "true"
@@ -315,8 +316,7 @@ def search_reports_command() -> None:
 
 def search_reports(subject=None, url=None, file_hash=None, reported_at=None, created_at=None, reporter=None,
                    verbose=False, max_matches=30) -> list:
-    # TODO move to new TriageReportQuery (or similar) class
-    params = {'start_date': datetime.strftime(reported_at, TIME_FORMAT)}
+    params = {'start_date': reported_at}
     reports = TRIAGE_INSTANCE.request("processed_reports", params=params)
 
     matches = []
