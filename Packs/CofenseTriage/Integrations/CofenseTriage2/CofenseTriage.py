@@ -37,11 +37,14 @@ class TriageRequestFailedError(Exception):
 
 
 class TriageInstance:
-    def __init__(self, *, host, token, user, disable_tls_verification=False):
+    def __init__(
+        self, *, host, token, user, disable_tls_verification=False, demisto_params
+    ):
         self.host = host
         self.token = token
         self.user = user
         self.disable_tls_verification = disable_tls_verification
+        self.demisto_params = demisto_params
 
     def request(self, endpoint, params=None, body=None, raw_response=False):
         """
@@ -95,7 +98,8 @@ class TriageReport:
     TriageReporter - The user who reported the message. A TriageReport has exactly one TriageReporter.
     """
 
-    def __init__(self, attrs):
+    def __init__(self, triage_instance, attrs):
+        self.triage_instance = triage_instance
         self.attrs = attrs
 
     @property
@@ -134,7 +138,7 @@ class TriageReport:
     @property  # type: ignore
     @functools.lru_cache()
     def reporter(self):
-        return TriageReporter(self.attrs["reporter_id"])
+        return TriageReporter(self.triage_instance, self.attrs["reporter_id"])
 
     @property
     def terse_attrs(self):
@@ -165,8 +169,8 @@ class TriageReport:
         return None
 
     @classmethod
-    def fetch(cls, report_id):
-        return cls(TRIAGE_INSTANCE.request(f"reports/{report_id}")[0])
+    def fetch(cls, triage_instance, report_id):
+        return cls(triage_instance, triage_instance.request(f"reports/{report_id}")[0])
 
 
 class TriageReporter:
@@ -177,9 +181,9 @@ class TriageReporter:
     TriageReport - A reporter sumbitted by this user. A TriageReporter may have many TriageReports.
     """
 
-    def __init__(self, reporter_id):
+    def __init__(self, triage_instance, reporter_id):
         """Fetch data for the first matching reporter from Triage"""
-        matching_reporters = TRIAGE_INSTANCE.request(f"reporters/{reporter_id}")
+        matching_reporters = triage_instance.request(f"reporters/{reporter_id}")
 
         if matching_reporters:
             self.attrs = matching_reporters[0]
@@ -188,14 +192,6 @@ class TriageReporter:
 
     def exists(self):
         return bool(self.attrs)
-
-
-TRIAGE_INSTANCE = TriageInstance(
-    host=demisto.getParam('host').rstrip('/'),
-    token=demisto.getParam('token'),
-    user=demisto.getParam('user'),
-    disable_tls_verification=demisto.params().get('insecure', False),
-)
 
 
 def snake_to_camel_keys(snake_list: List[Dict]) -> List[Dict]:
@@ -222,9 +218,9 @@ def parse_triage_date(date: str):
     return datetime.fromisoformat(date)
 
 
-def test_function() -> None:
+def test_function(triage_instance) -> None:
     try:
-        response = TRIAGE_INSTANCE.request("processed_reports")
+        response = triage_instance.request("processed_reports")
 
         if response:
             demisto.results('ok')
@@ -240,12 +236,12 @@ def test_function() -> None:
         return_error(repr(ex))
 
 
-def fetch_reports() -> None:
+def fetch_reports(triage_instance) -> None:
     """Fetch up to `max_reports` reports since the last time the command was run."""
     start_date = parse_date_range(demisto.getParam('date_range'))[0].isoformat()
     max_fetch = int(demisto.getParam('max_fetch'))
 
-    triage_response = TRIAGE_INSTANCE.request(
+    triage_response = triage_instance.request(
         "processed_reports",
         params={
             "category_id": demisto.getParam("category_id"),
@@ -258,7 +254,7 @@ def fetch_reports() -> None:
     already_fetched = set(json.loads(demisto.getLastRun().get("reports_fetched", "[]")))
 
     triage_reports = [
-        TriageReport(report)
+        TriageReport(triage_instance, report)
         for report in triage_response
         if report["id"] not in already_fetched
     ]
@@ -284,7 +280,7 @@ def fetch_reports() -> None:
     demisto.setLastRun({"reports_fetched": json.dumps(list(already_fetched))})
 
 
-def search_reports_command() -> None:
+def search_reports_command(triage_instance) -> None:
     # arguments importing
     subject = demisto.getArg('subject')  # type: str
     url = demisto.getArg('url')  # type: str
@@ -295,8 +291,17 @@ def search_reports_command() -> None:
     max_matches = int(demisto.getArg('max_matches'))  # type: int
     verbose = demisto.getArg('verbose') == "true"
 
-    # running the API command
-    results = search_reports(subject, url, file_hash, reported_at, created_at, reporter, verbose, max_matches)
+    results = search_reports(
+        triage_instance,
+        subject,
+        url,
+        file_hash,
+        reported_at,
+        created_at,
+        reporter,
+        verbose,
+        max_matches,
+    )
 
     # parsing outputs
     if results:
@@ -314,10 +319,10 @@ def search_reports_command() -> None:
         return_outputs("no results were found.", {})
 
 
-def search_reports(subject=None, url=None, file_hash=None, reported_at=None, created_at=None, reporter=None,
+def search_reports(triage_instance, subject=None, url=None, file_hash=None, reported_at=None, created_at=None, reporter=None,
                    verbose=False, max_matches=30) -> list:
     params = {'start_date': reported_at}
-    reports = TRIAGE_INSTANCE.request("processed_reports", params=params)
+    reports = triage_instance.request("processed_reports", params=params)
 
     matches = []
 
@@ -360,8 +365,8 @@ def search_reports(subject=None, url=None, file_hash=None, reported_at=None, cre
     return matches
 
 
-def get_all_reporters(time_frame) -> list:
-    res = TRIAGE_INSTANCE.request("reporters", params={'start_date': time_frame})
+def get_all_reporters(triage_instance, time_frame) -> list:
+    res = triage_instance.request("reporters", params={'start_date': time_frame})
     if not isinstance(res, list):
         res = [res]
     reporters = [reporter.get('email') for reporter in res]
@@ -369,10 +374,10 @@ def get_all_reporters(time_frame) -> list:
     return reporters
 
 
-def get_reporter_command() -> None:
+def get_reporter_command(triage_instance) -> None:
     reporter_id = demisto.getArg('reporter_id')
 
-    reporter = TriageReporter(reporter_id)
+    reporter = TriageReporter(triage_instance, reporter_id)
 
     if not reporter.exists():
         return return_outputs(
@@ -395,12 +400,12 @@ def get_reporter_command() -> None:
     )
 
 
-def get_attachment_command() -> None:
+def get_attachment_command(triage_instance) -> None:
     # arguments importing
     attachment_id = demisto.getArg('attachment_id')  # type: str
     file_name = demisto.getArg('file_name') or attachment_id  # type: str
 
-    res = TRIAGE_INSTANCE.request(f'attachment/{attachment_id}', raw_response=True)
+    res = triage_instance.request(f'attachment/{attachment_id}', raw_response=True)
 
     # parsing outputs
     context_data = {'ID': attachment_id}
@@ -414,11 +419,11 @@ def get_attachment_command() -> None:
     })
 
 
-def get_report_by_id_command() -> None:
+def get_report_by_id_command(triage_instance) -> None:
     report_id = int(demisto.getArg('report_id'))  # type: int
     verbose = demisto.getArg('verbose') == "true"
 
-    report = TriageReport.fetch(report_id)
+    report = TriageReport.fetch(triage_instance, report_id)
 
     if not report:
         return return_error('Could not find report with matching ID')
@@ -442,8 +447,8 @@ def get_report_by_id_command() -> None:
     return_outputs(readable_output=hr, outputs=ec)
 
 
-def get_threat_indicators_command() -> None:
-    results = TRIAGE_INSTANCE.request(
+def get_threat_indicators_command(triage_instance) -> None:
+    results = triage_instance.request(
         "triage_threat_indicators",
         params={
             "type": demisto.getArg("type"),
@@ -478,11 +483,11 @@ def get_threat_indicators_command() -> None:
     )
 
 
-def get_report_png_by_id_command() -> None:
+def get_report_png_by_id_command(triage_instance) -> None:
     report_id = int(demisto.getArg('report_id'))  # type: int
     set_white_bg = demisto.args().get('set_white_bg', 'False') == 'True'  # type: bool
 
-    orig_png = get_report_png_by_id(report_id)
+    orig_png = get_report_png_by_id(triage_instance, report_id)
 
     if set_white_bg:
         inbuf = BytesIO()
@@ -519,41 +524,55 @@ def get_report_png_by_id_command() -> None:
     )
 
 
-def get_report_png_by_id(report_id):
+def get_report_png_by_id(triage_instance, report_id):
     """Fetch and return the PNG file associated with the specified report_id"""
-    return TRIAGE_INSTANCE.request(
+    return triage_instance.request(
         f"reports/{report_id}.png", raw_response=True
     ).content
 
 
-try:
-    handle_proxy()
+def main():
+    try:
+        handle_proxy()
 
-    # COMMANDS
-    if demisto.command() == 'test-module':
-        test_function()
+        demisto_params = {} #TODO do all getParam call here
 
-    if demisto.command() == 'fetch-incidents':
-        fetch_reports()
+        triage_instance = TriageInstance(
+            host=demisto.getParam("host").rstrip("/"),
+            token=demisto.getParam("token"),
+            user=demisto.getParam("user"),
+            disable_tls_verification=demisto.params().get("insecure", False),
+            demisto_params=demisto_params,
+        )
 
-    elif demisto.command() == 'cofense-search-reports':
-        search_reports_command()
+        if demisto.command() == 'test-module':
+            test_function(triage_instance)
 
-    elif demisto.command() == 'cofense-get-attachment':
-        get_attachment_command()
+        if demisto.command() == 'fetch-incidents':
+            fetch_reports(triage_instance)
 
-    elif demisto.command() == 'cofense-get-reporter':
-        get_reporter_command()
+        elif demisto.command() == 'cofense-search-reports':
+            search_reports_command(triage_instance)
 
-    elif demisto.command() == 'cofense-get-report-by-id':
-        get_report_by_id_command()
+        elif demisto.command() == 'cofense-get-attachment':
+            get_attachment_command(triage_instance)
 
-    elif demisto.command() == 'cofense-get-report-png-by-id':
-        get_report_png_by_id_command()
+        elif demisto.command() == 'cofense-get-reporter':
+            get_reporter_command(triage_instance)
 
-    elif demisto.command() == 'cofense-get-threat-indicators':
-        get_threat_indicators_command()
+        elif demisto.command() == 'cofense-get-report-by-id':
+            get_report_by_id_command(triage_instance)
 
-except Exception as e:
-    return_error(str(e))
-    raise
+        elif demisto.command() == 'cofense-get-report-png-by-id':
+            get_report_png_by_id_command(triage_instance)
+
+        elif demisto.command() == 'cofense-get-threat-indicators':
+            get_threat_indicators_command(triage_instance)
+
+    except Exception as e:
+        return_error(str(e))
+        raise
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

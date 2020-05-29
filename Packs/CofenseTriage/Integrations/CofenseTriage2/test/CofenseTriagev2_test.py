@@ -55,29 +55,29 @@ def stub_demisto_setup(mocker):
 
 
 class TestCofenseTriage:
-    def test_test_function(self, requests_mock):
+    def test_test_function(self, requests_mock, triage_instance):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports",
             text=fixture_from_file("processed_reports.json"),
         )
 
-        CofenseTriage.test_function()
+        CofenseTriage.test_function(triage_instance)
 
         CofenseTriage.demisto.results.assert_called_once_with("ok")
 
-    def test_test_function_error(self, requests_mock):
+    def test_test_function_error(self, requests_mock, triage_instance):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports",
             status_code=404,
             text=fixture_from_file("processed_reports.json"),
         )
 
-        CofenseTriage.test_function()
+        CofenseTriage.test_function(triage_instance)
 
         CofenseTriage.return_error.assert_called_once()
 
     @freeze_time("2000-10-31")
-    def test_fetch_reports(self, mocker, requests_mock):
+    def test_fetch_reports(self, mocker, requests_mock, triage_instance):
         set_demisto_arg("max_fetch", 10)
         set_demisto_arg("date_range", "1 day")
         set_demisto_arg("category_id", 5)
@@ -96,7 +96,7 @@ class TestCofenseTriage:
             lambda filename, data: {"FileID": "file_id", "FileName": "file_name"},
         )
 
-        CofenseTriage.fetch_reports()
+        CofenseTriage.fetch_reports(triage_instance)
 
         demisto_incidents = CofenseTriage.demisto.incidents.call_args_list[0][0][0]
         assert len(demisto_incidents) == 2
@@ -117,7 +117,9 @@ class TestCofenseTriage:
         )
 
     @freeze_time("2000-10-31")
-    def test_fetch_reports_already_fetched(self, mocker, requests_mock):
+    def test_fetch_reports_already_fetched(
+        self, mocker, requests_mock, triage_instance
+    ):
         set_demisto_args(
             {
                 "max_fetch": 10,
@@ -137,7 +139,7 @@ class TestCofenseTriage:
         )
         mocker.patch("demistomock.getLastRun", lambda: {"reports_fetched": "[13363]"})
 
-        CofenseTriage.fetch_reports()
+        CofenseTriage.fetch_reports(triage_instance)
 
         demisto_incidents = CofenseTriage.demisto.incidents.call_args_list[0][0][0]
         assert len(demisto_incidents) == 1
@@ -148,7 +150,7 @@ class TestCofenseTriage:
         )
 
     @freeze_time("2000-10-31")
-    def test_search_reports_command(self, requests_mock):
+    def test_search_reports_command(self, requests_mock, triage_instance):
         set_demisto_arg("subject", "suspicious subject")
         set_demisto_arg("url", "")
         set_demisto_arg("file_hash", "")
@@ -160,7 +162,7 @@ class TestCofenseTriage:
             text=fixture_from_file("processed_reports.json"),
         )
 
-        CofenseTriage.search_reports_command()
+        CofenseTriage.search_reports_command(triage_instance)
 
         demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
@@ -172,7 +174,7 @@ class TestCofenseTriage:
         )
 
     @freeze_time("2000-10-31")
-    def test_search_reports_command_not_found(self, requests_mock):
+    def test_search_reports_command_not_found(self, requests_mock, triage_instance):
         set_demisto_arg("subject", "my great subject")
         set_demisto_arg("url", "my-great-url")
         set_demisto_arg("file_hash", "")
@@ -184,7 +186,7 @@ class TestCofenseTriage:
             text=fixture_from_file("processed_reports.json"),
         )
 
-        CofenseTriage.search_reports_command()
+        CofenseTriage.search_reports_command(triage_instance)
 
         demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
@@ -213,7 +215,7 @@ class TestCofenseTriage:
         ],
     )
     def test_search_reports_filtering(
-        self, requests_mock, filter_attrs, expected_found_report_ids
+        self, requests_mock, triage_instance, filter_attrs, expected_found_report_ids
     ):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-31+00%3A00%3A00", # noqa: 501
@@ -221,11 +223,11 @@ class TestCofenseTriage:
         )
 
         found_reports = CofenseTriage.search_reports(
-            **filter_attrs, reported_at=datetime.datetime.now()
+            triage_instance, **filter_attrs, reported_at=datetime.datetime.now()
         )
         assert [report["id"] for report in found_reports] == expected_found_report_ids
 
-    def test_get_attachment_command(self, mocker, requests_mock):
+    def test_get_attachment_command(self, mocker, requests_mock, triage_instance):
         set_demisto_arg("attachment_id", "5")
         set_demisto_arg("file_name", "my_great_file")
         requests_mock.get(
@@ -233,7 +235,7 @@ class TestCofenseTriage:
             text=fixture_from_file("attachment.txt"),
         )
 
-        CofenseTriage.get_attachment_command()
+        CofenseTriage.get_attachment_command(triage_instance)
 
         CofenseTriage.fileResult.assert_called_with(
             "my_great_file", b"A Great Attachment\n"
@@ -255,14 +257,14 @@ class TestCofenseTriage:
             ]
         )
 
-    def test_get_reporter_command(self, requests_mock):
+    def test_get_reporter_command(self, requests_mock, triage_instance):
         set_demisto_arg("reporter_id", "5")
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reporters/5",
             text=fixture_from_file("reporters.json"),
         )
 
-        CofenseTriage.get_reporter_command()
+        CofenseTriage.get_reporter_command(triage_instance)
 
         demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
         assert demisto_results[0]["HumanReadable"] == (
@@ -282,7 +284,7 @@ class TestCofenseTriage:
             "vip": False,
         }
 
-    def test_get_report_by_id_command(self, requests_mock):
+    def test_get_report_by_id_command(self, requests_mock, triage_instance):
         set_demisto_arg("report_id", "6")
         set_demisto_arg("verbose", "false")
         requests_mock.get(
@@ -294,7 +296,7 @@ class TestCofenseTriage:
             text=fixture_from_file("reporters.json"),
         )
 
-        CofenseTriage.get_report_by_id_command()
+        CofenseTriage.get_report_by_id_command(triage_instance)
 
         demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
         assert demisto_results[0]["HumanReadable"] == (
@@ -304,7 +306,9 @@ class TestCofenseTriage:
             "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: 501
         )
 
-    def test_get_report_by_id_command_with_attachment(self, requests_mock):
+    def test_get_report_by_id_command_with_attachment(
+        self, requests_mock, triage_instance
+    ):
         set_demisto_arg("report_id", "6")
         set_demisto_arg("verbose", "false")
         requests_mock.get(
@@ -316,7 +320,7 @@ class TestCofenseTriage:
             text=fixture_from_file("reporters.json"),
         )
 
-        CofenseTriage.get_report_by_id_command()
+        CofenseTriage.get_report_by_id_command(triage_instance)
 
         demisto_results = CofenseTriage.demisto.results.call_args_list
         assert demisto_results[0][0][0]["HumanReadable"] == (
@@ -330,20 +334,20 @@ class TestCofenseTriage:
             "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: 501
         )
 
-    def test_get_all_reporters(self, requests_mock):
+    def test_get_all_reporters(self, requests_mock, triage_instance):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reporters?start_date=1995-01-01",
             text=fixture_from_file("reporters.json"),
         )
 
-        reporters = CofenseTriage.get_all_reporters("1995-01-01")
+        reporters = CofenseTriage.get_all_reporters(triage_instance, "1995-01-01")
 
         assert reporters == [
             "reporter1@example.com",
             "reporter2@example.com",
         ]
 
-    def test_get_threat_indicators_command(self, requests_mock):
+    def test_get_threat_indicators_command(self, requests_mock, triage_instance):
         set_demisto_arg("type", "what")
         set_demisto_arg("level", "what")
         set_demisto_arg("start_date", "what")
@@ -355,7 +359,7 @@ class TestCofenseTriage:
             text=fixture_from_file("threat_indicators.json"),
         )
 
-        CofenseTriage.get_threat_indicators_command()
+        CofenseTriage.get_threat_indicators_command(triage_instance)
 
         demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
@@ -366,7 +370,9 @@ class TestCofenseTriage:
             "| 2020-03-16T17:39:14.579Z | 37 | 2 | 13353 | Domain | Malicious | malicious.example.com |\n"
         )
 
-    def test_get_threat_indicators_command_not_found(self, requests_mock):
+    def test_get_threat_indicators_command_not_found(
+        self, requests_mock, triage_instance
+    ):
         set_demisto_arg("type", "what")
         set_demisto_arg("level", "what")
         set_demisto_arg("start_date", "what")
@@ -378,7 +384,7 @@ class TestCofenseTriage:
             text="[]",
         )
 
-        CofenseTriage.get_threat_indicators_command()
+        CofenseTriage.get_threat_indicators_command(triage_instance)
 
         demisto_results = CofenseTriage.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1

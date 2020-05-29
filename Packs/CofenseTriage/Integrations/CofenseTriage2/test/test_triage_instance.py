@@ -4,19 +4,10 @@ from CofenseTriage2.CofenseTriage import TriageInstance
 from CofenseTriage2.CofenseTriage import TriageRequestFailedError
 
 
-@pytest.fixture
-def triage_instance():
-    return TriageInstance(
-        host="https://triage.whatever",
-        token="top-secret-token-value",
-        user="triage-user",
-    )
-
-
 class TestTriageInstance:
     def test_request(self, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
-            "https://triage.whatever/api/public/v1/processed_reports",
+            "https://some-triage-host/api/public/v1/processed_reports",
             text=fixture_from_file("processed_reports.json"),
         )
 
@@ -27,7 +18,7 @@ class TestTriageInstance:
 
     def test_request_unsuccessful(self, mocker, requests_mock, triage_instance):
         requests_mock.get(
-            "https://triage.whatever/api/public/v1/processed_reports",
+            "https://some-triage-host/api/public/v1/processed_reports",
             status_code=403,
             text="a bad error",
         )
@@ -39,7 +30,7 @@ class TestTriageInstance:
 
     def test_request_raw(self, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
-            "https://triage.whatever/api/public/v1/processed_reports",
+            "https://some-triage-host/api/public/v1/processed_reports",
             text=fixture_from_file("processed_reports.json"),
         )
 
@@ -49,7 +40,7 @@ class TestTriageInstance:
 
     def test_request_empty(self, requests_mock, triage_instance):
         requests_mock.get(
-            "https://triage.whatever/api/public/v1/processed_reports", text="[]"
+            "https://some-triage-host/api/public/v1/processed_reports", text="[]"
         )
 
         assert triage_instance.request("processed_reports") == {}
@@ -58,8 +49,8 @@ class TestTriageInstance:
         self, mocker, requests_mock, triage_instance, fixture_from_file
     ):
         requests_mock.get(
-            "https://triage.whatever/api/public/v1/processed_reports",
-            text=fixture_from_file("malformed_json.json"),
+            "https://some-triage-host/api/public/v1/processed_reports",
+            text=fixture_from_file("malformed_json.not_json"),
         )
         return_error = mocker.patch("CofenseTriage2.CofenseTriage.return_error")
 
@@ -72,13 +63,13 @@ class TestTriageInstance:
     def test_api_url(self, triage_instance):
         assert (
             triage_instance.api_url("endpoint")
-            == "https://triage.whatever/api/public/v1/endpoint"
+            == "https://some-triage-host/api/public/v1/endpoint"
         )
         assert (
             triage_instance.api_url("/endpoint")
-            == "https://triage.whatever/api/public/v1/endpoint"
+            == "https://some-triage-host/api/public/v1/endpoint"
         )
         assert (
             triage_instance.api_url("///endpoint/edit?query_string&")
-            == "https://triage.whatever/api/public/v1/endpoint/edit?query_string&"
+            == "https://some-triage-host/api/public/v1/endpoint/edit?query_string&"
         )

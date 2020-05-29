@@ -8,6 +8,7 @@ demisto_params = {
 }
 with patch("demistomock.params", lambda: demisto_params):
     from CofenseTriage2 import CofenseTriage  # noqa: 401 - this is used in other test files
+    from CofenseTriage2.CofenseTriage import TriageInstance  # noqa: 401 - this is used in other test files
 
 
 @pytest.fixture
@@ -42,3 +43,14 @@ def stub_demisto_setup(mocker):
     mocker.patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
     mocker.patch("demistomock.results")
     mocker.patch("demistomock.incidents")
+
+
+@pytest.fixture
+def triage_instance():
+    return TriageInstance(
+        host="https://some-triage-host",
+        token="top-secret-token-value",
+        user="triage-user",
+        disable_tls_verification=False,
+        demisto_params={"date_range": "5 days", "max_fetch": 10},
+    )
