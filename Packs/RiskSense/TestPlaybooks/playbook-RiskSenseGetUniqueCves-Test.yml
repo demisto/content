@@ -1,7 +1,6 @@
 id: RiskSense Get Unique Cves - Test
 version: -1
 name: RiskSense Get Unique Cves - Test
-fromversion: 5.0.0
 description: This playbook uses the RiskSense integration and tests the various scenarios
   of the "risksense-get-unique-cves" command.
 starttaskid: "0"
@@ -11,7 +10,6 @@ tasks:
     taskid: 3c9198c1-91f7-4558-8f0d-dfbefeb96f2d
     type: start
     task:
-      description: ""
       id: 3c9198c1-91f7-4558-8f0d-dfbefeb96f2d
       version: -1
       name: ""
@@ -100,7 +98,6 @@ tasks:
     taskid: 38e322a1-71cf-455c-8e3f-3e4db30a8ef5
     type: condition
     task:
-      description: ""
       id: 38e322a1-71cf-455c-8e3f-3e4db30a8ef5
       version: -1
       name: Is context data matched?
@@ -271,7 +268,6 @@ tasks:
     taskid: e085ab63-9e1f-415d-8856-3d0c770e6530
     type: title
     task:
-      description: ""
       id: e085ab63-9e1f-415d-8856-3d0c770e6530
       version: -1
       name: Done

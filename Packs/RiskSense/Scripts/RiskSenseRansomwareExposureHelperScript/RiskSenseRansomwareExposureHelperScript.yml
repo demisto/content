@@ -1,0 +1,140 @@
+args:
+- auto: PREDEFINED
+  default: false
+  description: Script will execute a particular function based on module_name.
+  isArray: false
+  name: module_name
+  predefined:
+  - Ransomware
+  - Trending Ransomware
+  - Display CVEs Chart
+  required: true
+  secret: false
+comment: This script is a helper script of Ransomware Exposure - RiskSense playbook and performs a particular task based on module_name arguments.
+commonfields:
+  id: RiskSenseRansomwareExposureHelperScript
+  version: -1
+enabled: false
+name: RiskSenseRansomwareExposureHelperScript
+outputs:
+- contextPath: RiskSense.RansomwareCves.Cve
+  description: The ID of the CVE.
+  type: String
+- contextPath: RiskSense.RansomwareCves.CVSS
+  description: The CVSS score of the CVE.
+  type: Number
+- contextPath: RiskSense.RansomwareCves.VRR
+  description: The risk rate of the host finding.
+  type: Number
+- contextPath: RiskSense.RansomwareCves.ThreatCount
+  description: The total number of threats associated with the CVE.
+  type: Number
+- contextPath: RiskSense.RansomwareCves.Trending
+  description: This signifies whether the vulnerability (which is associated with
+    the hostFinding) has been reported by our internal functions as being trending.
+  type: boolean
+- contextPath: RiskSense.RansomwareCves.VulnLastTrendingOn
+  description: Date when last trending vulnerability was found.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Description
+  description: A description of the CVE.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.Title
+  description: The title of the threat.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.Category
+  description: The threat category.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.Severity
+  description: The severity level of the threat.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.Description
+  description: The threat description.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.Cve
+  description: List of CVEs that contain particular threat.
+  type: Unknown
+- contextPath: RiskSense.RansomwareCves.Threats.Source
+  description: The source of the threat.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.Published
+  description: The time when the threat was published.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.Updated
+  description: The time when the threat was last updated.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.ThreatLastTrendingOn
+  description: The last time when threat was in trending.
+  type: String
+- contextPath: RiskSense.RansomwareCves.Threats.Trending
+  description: Whether the threat is trending.
+  type: boolean
+- contextPath: RiskSense.RansomwareTrendingCves.Cve
+  description: The ID of the CVE.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.CVSS
+  description: The CVSS score of the CVE.
+  type: Number
+- contextPath: RiskSense.RansomwareTrendingCves.VRR
+  description: The risk rate of the host finding.
+  type: Number
+- contextPath: RiskSense.RansomwareTrendingCves.ThreatCount
+  description: The total number of threats associated with the CVE.
+  type: Number
+- contextPath: RiskSense.RansomwareTrendingCves.Trending
+  description: This signifies whether the vulnerability (which is associated with
+    the hostFinding) has been reported by our internal functions as being trending.
+  type: boolean
+- contextPath: RiskSense.RansomwareTrendingCves.VulnLastTrendingOn
+  description: Date when last trending vulnerability was found.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Description
+  description: A description of the CVE.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Title
+  description: The title of the threat.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Category
+  description: The threat category.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Severity
+  description: The severity level of the threat.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Description
+  description: The threat description.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Cve
+  description: List of CVEs that contain particular threat.
+  type: Unknown
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Source
+  description: The source of the threat.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Published
+  description: The time when the threat was published.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Updated
+  description: The time when the threat was last updated.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.ThreatLastTrendingOn
+  description: The last time when threat was in trending.
+  type: String
+- contextPath: RiskSense.RansomwareTrendingCves.Threats.Trending
+  description: Whether the threat is trending.
+  type: boolean
+- contextPath: Date.CurrentDate
+  description: The current date
+  type: String
+- contextPath: Date.WeekAgoDate.
+  description: The date that was 7 days ago starting from current date.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- RiskSense
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.3.8494
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

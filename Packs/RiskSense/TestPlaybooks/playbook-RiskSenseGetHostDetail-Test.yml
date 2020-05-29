@@ -1,7 +1,6 @@
 id: RiskSense Get Host Detail - Test
 version: -1
 name: RiskSense Get Host Detail - Test
-fromversion: 5.0.0
 description: This playbook uses the RiskSense integration and tests the various scenarios
   of the "risksense-get-host-detail" command.  
 starttaskid: "0"
@@ -11,7 +10,6 @@ tasks:
     taskid: 37f7b539-06cb-4bab-8343-5d6e7a09502a
     type: start
     task:
-      description: ""
       id: 37f7b539-06cb-4bab-8343-5d6e7a09502a
       version: -1
       name: ""
@@ -347,7 +345,6 @@ tasks:
     taskid: 22c24809-25aa-4db3-839e-87740e0a5004
     type: title
     task:
-      description: ""
       id: 22c24809-25aa-4db3-839e-87740e0a5004
       version: -1
       name: Done

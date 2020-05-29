@@ -1,0 +1,460 @@
+id: DHS-CISA-FBI Top 10 CVE Exposure - RiskSense
+version: -1
+name: DHS-CISA-FBI Top 10 CVE Exposure - RiskSense
+description: Block IPs and apply the tag to assets that are vulnerable to DHS-CISA-FBI
+  Top 10 CVEs.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5d205ec0-77df-4b7f-869d-1c71c98da065
+    type: start
+    task:
+      id: 5d205ec0-77df-4b7f-869d-1c71c98da065
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 1ef0f27b-376b-40b2-82b4-e70a93a11b30
+    type: condition
+    task:
+      id: 1ef0f27b-376b-40b2-82b4-e70a93a11b30
+      version: -1
+      name: Is RiskSense enabled ?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '13'
+    scriptarguments:
+      brandname:
+        simple: RiskSense
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 277b6725-ecde-4306-8d06-9ad8114fea5b
+    type: regular
+    task:
+      id: 277b6725-ecde-4306-8d06-9ad8114fea5b
+      version: -1
+      name: Block assets
+      description: Blocks IP in configured firewall
+      scriptName: BlockIP
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      direction:
+        simple: both
+      ip:
+        complex:
+          root: RiskSense
+          accessor: HostFinding.HostIpAddress
+          transformers:
+          - operator: uniq
+      ipname: {}
+      rulename: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: a81d5a34-0466-4f47-8b2e-489b84ecaf7e
+    type: regular
+    task:
+      id: a81d5a34-0466-4f47-8b2e-489b84ecaf7e
+      version: -1
+      name: Apply "DHS-Top-10" tag to found assets
+      description: Apply the new or existing tag to the asset, creates a new tag if it does not exist in RiskSense.
+      script: RiskSense|||risksense-apply-tag
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      assettype:
+        simple: host
+      exclusivity: {}
+      fieldname:
+        simple: id
+      operator:
+        simple: IN
+      propagate_to_all_findings: {}
+      tagname:
+        simple: DHS-Top-10
+      value:
+        complex:
+          root: RiskSense
+          accessor: HostFinding.HostID
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: 0bb038eb-f4aa-4075-8508-9dfc9f00dc3b
+    type: title
+    task:
+      id: 0bb038eb-f4aa-4075-8508-9dfc9f00dc3b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '11':
+    id: '11'
+    taskid: 20957a6c-0f7a-4fd6-8dce-1ea094bd1938
+    type: regular
+    task:
+      id: 20957a6c-0f7a-4fd6-8dce-1ea094bd1938
+      version: -1
+      name: Get open findings for DHS Top 10 CVEs
+      description: A detailed host finding view with the severity level. Displays
+        vulnerability information like CVE, Threats associated with current findings
+        and origin of findings.
+      script: RiskSense|||risksense-get-host-findings
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      exclusivity: {}
+      fieldname:
+        simple: cves
+      operator:
+        simple: IN
+      page: {}
+      size:
+        simple: '1000'
+      sort_by:
+        simple: Risk Rating
+      sort_direction:
+        simple: Descending
+      status:
+        simple: Open
+      value:
+        simple: CVE-2017-11882,CVE-2017-0199,CVE-2017-5638,CVE-2012-0158,CVE-2019-0604,CVE-2017-0143,CVE-2018-4878,CVE-2017-8759,CVE-2015-1641,CVE-2018-7600
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '12':
+    id: '12'
+    taskid: 213871ae-1a68-404a-8333-19ff26c94d7f
+    type: condition
+    task:
+      id: 213871ae-1a68-404a-8333-19ff26c94d7f
+      version: -1
+      name: Are asset findings found?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '6'
+      - '14'
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RiskSense.HostFinding.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '13':
+    id: '13'
+    taskid: 5b8f310d-eab7-4a01-8e47-3739febe1a8a
+    type: title
+    task:
+      id: 5b8f310d-eab7-4a01-8e47-3739febe1a8a
+      version: -1
+      name: Get assets findings with asset and perform actions
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '14':
+    id: '14'
+    taskid: c073bd8a-d668-4226-8d19-797104414cd4
+    type: title
+    task:
+      id: c073bd8a-d668-4226-8d19-797104414cd4
+      version: -1
+      name: Blocks IP addresses (requires at least one integration)
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '15':
+    id: '15'
+    taskid: b8d2f92f-b622-4ba3-8276-46627425e464
+    type: regular
+    task:
+      id: b8d2f92f-b622-4ba3-8276-46627425e464
+      version: -1
+      name: Get asset information with owner
+      description: Gets details of the supplied host. The host details can be searched
+        based on input parameters like fieldname (Host Name, IP Address, Criticality,
+        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
+      script: RiskSenseV1|||risksense-get-hosts
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      exclusivity: {}
+      fieldname:
+        simple: id
+      operator:
+        simple: IN
+      page: {}
+      size:
+        simple: '1000'
+      sort_by:
+        simple: RS3
+      sort_direction:
+        simple: Descending
+      value:
+        complex:
+          root: RiskSense
+          accessor: HostFinding.HostID
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '16':
+    id: '16'
+    taskid: ed572c6c-6a91-469b-8f8d-7435cb8b6604
+    type: regular
+    task:
+      id: ed572c6c-6a91-469b-8f8d-7435cb8b6604
+      version: -1
+      name: Apply "DHS-Top-10" tag to found asset findings
+      description: Apply the new or existing tag to the asset, creates a new tag if it does not exist in RiskSense.
+      script: RiskSense|||risksense-apply-tag
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      assettype:
+        simple: hostFinding
+      exclusivity: {}
+      fieldname:
+        simple: id
+      operator:
+        simple: IN
+      propagate_to_all_findings: {}
+      tagname:
+        simple: DHS-Top-10
+      value:
+        complex:
+          root: RiskSense
+          accessor: HostFinding.ID
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_10_#default#": 0.17,
+      "1_10_#default#": 0.73
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 1260,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

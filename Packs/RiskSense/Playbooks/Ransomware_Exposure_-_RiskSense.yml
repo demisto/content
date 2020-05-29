@@ -1,0 +1,502 @@
+id: Ransomware Exposure - RiskSense
+version: -1
+name: Ransomware Exposure - RiskSense
+description: The ransomware exposure playbook quickly reveals an organization’s exposure
+  to the specific vulnerabilities that are being exploited to launch ransomware attacks.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 157ed777-e882-4aa0-8fab-79605a7df317
+    type: start
+    task:
+      id: 157ed777-e882-4aa0-8fab-79605a7df317
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: afb3701d-ef09-4400-8e0b-ab5eb3c8d19d
+    type: condition
+    task:
+      id: afb3701d-ef09-4400-8e0b-ab5eb3c8d19d
+      version: -1
+      name: Is RiskSense enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: RiskSense
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 28e59df4-9bcf-4ef5-88a7-f394604ce895
+    type: title
+    task:
+      id: 28e59df4-9bcf-4ef5-88a7-f394604ce895
+      version: -1
+      name: Finding ransomware CVEs and impacted assets
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5df76082-1616-4b48-8668-fa7ef45ba7c2
+    type: regular
+    task:
+      id: 5df76082-1616-4b48-8668-fa7ef45ba7c2
+      version: -1
+      name: Get open host findings that have ransomware threat
+      description: A detailed host finding view with the severity level. Displays
+        vulnerability information like CVE, Threats associated with current findings
+        and origin of findings.
+      script: RiskSense|||risksense-get-host-findings
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      exclusivity: {}
+      fieldname:
+        simple: threat_categories
+      operator:
+        simple: EXACT
+      page: {}
+      size:
+        simple: "1000"
+      sort_by: {}
+      sort_direction: {}
+      status:
+        simple: Open
+      value:
+        simple: Ransomware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7fbff83c-af6e-4dd7-886e-570ee743db7b
+    type: condition
+    task:
+      id: 7fbff83c-af6e-4dd7-886e-570ee743db7b
+      version: -1
+      name: Is there any host findings?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: RiskSense.HostFinding.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 00edb132-4d15-427c-8b57-f691014f6aaa
+    type: title
+    task:
+      id: 00edb132-4d15-427c-8b57-f691014f6aaa
+      version: -1
+      name: Get list of ransomware and trending ransomware CVEs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 87f46433-5d26-4094-8ac6-82df522642b6
+    type: regular
+    task:
+      id: 87f46433-5d26-4094-8ac6-82df522642b6
+      version: -1
+      name: Get ransomware CVEs
+      description: This script is a helper script of Ransomware Exposure - RiskSense playbook and performs a particular task based on module_name arguments.
+      scriptName: RiskSenseRansomwareExposureHelperScript
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      module_name:
+        simple: Ransomware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 36f8bab9-dcc2-411b-8150-1c4bf787fecc
+    type: regular
+    task:
+      id: 36f8bab9-dcc2-411b-8150-1c4bf787fecc
+      version: -1
+      name: Get trending ransomware CVEs
+      description: This script is a helper script of Ransomware Exposure - RiskSense playbook and performs a particular task based on module_name arguments.
+      scriptName: RiskSenseRansomwareExposureHelperScript
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      module_name:
+        simple: Trending Ransomware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 26a25d46-c40d-4b73-8aa7-384d24460081
+    type: title
+    task:
+      id: 26a25d46-c40d-4b73-8aa7-384d24460081
+      version: -1
+      name: Get impacted assets
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: aab4252a-93bf-49e1-8cbf-7efbd1409fc8
+    type: regular
+    task:
+      id: aab4252a-93bf-49e1-8cbf-7efbd1409fc8
+      version: -1
+      name: Get impacted assets by ransomware CVEs
+      description: Gets details of the supplied host. The host details can be searched
+        based on input parameters like fieldname (Host Name, IP Address, Criticality,
+        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
+      script: RiskSense|||risksense-get-hosts
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      exclusivity: {}
+      extend-context:
+        simple: RiskSense.RansomwareImpactedHosts=_embedded.hosts.id
+      fieldname:
+        simple: has_open_ransomware_finding
+      operator:
+        simple: EXACT
+      page: {}
+      size:
+        simple: "1000"
+      sort_by: {}
+      sort_direction: {}
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 3e104cdf-d2d0-4bec-8f06-56f3cfd56f5d
+    type: regular
+    task:
+      id: 3e104cdf-d2d0-4bec-8f06-56f3cfd56f5d
+      version: -1
+      name: Get impacted assets by trending ransomware CVEs
+      description: Gets details of the supplied host. The host details can be searched
+        based on input parameters like fieldname (Host Name, IP Address, Criticality,
+        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
+      script: RiskSense|||risksense-get-hosts
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      exclusivity: {}
+      extend-context:
+        simple: RiskSense.TrendingRansomwareImpactedHosts=_embedded.hosts.id
+      fieldname:
+        simple: openRansomwareVulnLastTrendingOn
+      operator:
+        simple: BETWEEN
+      page: {}
+      size:
+        simple: "1000"
+      sort_by: {}
+      sort_direction: {}
+      value:
+        simple: ${Date.WeekAgoDate},${Date.CurrentDate}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d44b336c-a730-4a14-8677-7d0a935263a2
+    type: title
+    task:
+      id: d44b336c-a730-4a14-8677-7d0a935263a2
+      version: -1
+      name: Prepare graph
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0e26f938-6e1e-4af4-86d5-a38a4ef1b213
+    type: regular
+    task:
+      id: 0e26f938-6e1e-4af4-86d5-a38a4ef1b213
+      version: -1
+      name: Counts of ransomware-related CVEs
+      description: This script is a helper script of Ransomware Exposure - RiskSense playbook and performs a particular task based on module_name arguments.
+      scriptName: RiskSenseRansomwareExposureHelperScript
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      module_name:
+        simple: Display CVEs Chart
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 3b39c5d6-4ee5-4048-8f28-8441cd97e64d
+    type: title
+    task:
+      id: 3b39c5d6-4ee5-4048-8f28-8441cd97e64d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_13_#default#": 0.67,
+      "4_5_yes": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1840,
+        "width": 1035,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

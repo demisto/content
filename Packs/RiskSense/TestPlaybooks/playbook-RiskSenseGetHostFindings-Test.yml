@@ -1,7 +1,6 @@
 id: RiskSense Get Host Findings - Test
 version: -1
 name: RiskSense Get Host Findings - Test
-fromversion: 5.0.0
 description: This playbook uses the RiskSense integration and tests the various scenarios
   of the "risksense-get-host-findings" command. 
 starttaskid: "0"
@@ -11,7 +10,6 @@ tasks:
     taskid: 10b39b81-f0f8-4b75-8977-1fe9f12a3e8e
     type: start
     task:
-      description: ""
       id: 10b39b81-f0f8-4b75-8977-1fe9f12a3e8e
       version: -1
       name: ""
@@ -84,7 +82,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      exclusive_operator:
+      exclusivity:
         simple: "false"
       fieldname:
         simple: titles
@@ -93,7 +91,7 @@ tasks:
       page: {}
       size: {}
       sort_by: {}
-      sort_order: {}
+      sort_direction: {}
       value:
         simple: 'NULL Pointer Dereference - based vulnerability identified : CVE-2017-3169'
     separatecontext: false
@@ -112,7 +110,6 @@ tasks:
     taskid: 8bea6e9e-5c4d-4022-8f4c-b717f5caabb6
     type: condition
     task:
-      description: ""
       id: 8bea6e9e-5c4d-4022-8f4c-b717f5caabb6
       version: -1
       name: Is context data matched to the response?
@@ -346,7 +343,6 @@ tasks:
     taskid: 8455350c-2248-431b-8e57-3c08cfc1cb2b
     type: title
     task:
-      description: ""
       id: 8455350c-2248-431b-8e57-3c08cfc1cb2b
       version: -1
       name: Done

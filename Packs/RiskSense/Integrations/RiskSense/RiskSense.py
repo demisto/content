@@ -29,7 +29,9 @@ RISKSENSE_FIELD_MAPPINGS = {
     'Host Name': 'hostName',
     'Criticality': 'criticality',
     'RS3': 'rs3',
-    'BETWEEN': 'RANGE'
+    'BETWEEN': 'RANGE',
+    'ascending': 'ASC',
+    'descending': 'DESC'
 }
 REGEX_FOR_YYYY_MM_DD = r'^[12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
 REGEX_FOR_INR_OR_FLOAT = r'^\d+?(\.\d+)?$'
@@ -114,7 +116,7 @@ class Client(BaseClient):
                 return_error('No record(s) found.')
             # handling any server error
             elif status_code >= 500:
-                return_error('API call failed. Server error received')
+                return_error('API call failed. Server error received.')
             else:
                 resp.raise_for_status()
 
@@ -122,6 +124,35 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def validate_arguments(args):
+    """
+    Validate argument of the commands
+
+    :param args: command arguments
+    :return: True if arguments are valid else return error
+    :rtype: bool
+    """
+
+    size = args.get('size', "10")
+    page = args.get('page', "0")
+    sort_order = args.get('sort_direction', 'ascending').lower()
+    exclusive_operator = args.get('exclusivity', 'False').lower()
+    if sort_order not in ['ascending', 'descending']:
+        return_error('Sort_direction argument should be either Ascending or Descending.')
+
+    if exclusive_operator not in ['true', 'false']:
+        return_error('Exclusivity argument should be either true or false.')
+
+    if not str(size).isdigit() or int(size) == 0:
+        return_error('Size argument must be a non-zero positive number. Accepted values between 1-1000.')
+
+    if not str(page).isdigit():
+        return_error('Page argument must be positive number.')
+    if int(size) > 1000:
+        return_error('Maximum size supported by RiskSense is 1000.')
+    return True
 
 
 def get_client_detail_from_context(client):
@@ -162,7 +193,7 @@ def get_client_detail_from_context(client):
     return client_detail
 
 
-def prepare_filter_payload(args, projection):
+def prepare_filter_payload(args, projection=None):
     """
     Prepare body (raw-json) for post API request.
     Used in 'risksense-get-hosts', 'risksense-get-host-findings', 'risksense-get-apps' and
@@ -177,12 +208,12 @@ def prepare_filter_payload(args, projection):
     # Fetching value of arguments.
     fieldname = args.get('fieldname', '')
     operator = args.get('operator', '')
-    exclusive_operator = args.get('exclusive_operator', '')
+    exclusive_operator = args.get('exclusivity', '').lower()
     value = args.get('value', '')
     page = args.get('page')  # defaultValue 0
     size = args['size']  # defaultValue 10
     sort_by = args['sort_by']
-    sort_order = args['sort_order']  # defaultValue asc
+    sort_order = args['sort_direction'].lower()  # defaultValue asc
     data = {}  # type: Dict[str, Any]
     filters = []  # type: List[Dict[str, Any]]
     sort_detail = []  # type: List[Dict[str, Any]]
@@ -191,9 +222,9 @@ def prepare_filter_payload(args, projection):
     # then validate their required fields
     if fieldname or value or operator or exclusive_operator:
         if not fieldname:
-            return_error('fieldname is missing')
+            return_error('fieldname is missing.')
         if not value:
-            return_error('value is missing')
+            return_error('value is missing.')
         if not operator:
             operator = 'EXACT'
         if not exclusive_operator:
@@ -227,7 +258,7 @@ def prepare_filter_payload(args, projection):
     if sort_by and sort_order:
         if sort_by in RISKSENSE_FIELD_MAPPINGS:
             sort_by = RISKSENSE_FIELD_MAPPINGS[sort_by]
-        sort_detail = [{'field': sort_by, 'direction': sort_order}]
+        sort_detail = [{'field': sort_by, 'direction': RISKSENSE_FIELD_MAPPINGS[sort_order]}]
 
     data['projection'] = projection
     data['sort'] = sort_detail
@@ -279,6 +310,8 @@ def get_host_hr(resp_host):
     :param resp_host: response from host command.
     :return: None
     """
+    owner = [owner.get('value', '') for owner in resp_host.get('configurationManagementDB', []) if
+             owner.get('key', '') == 'owned_by']
     return {
         'ID': resp_host.get('id', ''),
         'RS3': resp_host.get('rs3', ''),
@@ -296,7 +329,9 @@ def get_host_hr(resp_host):
         'Info Findings': resp_host.get('findingsDistribution', {}).get('info', {}).get('value', 0),
         'OS': resp_host.get('operatingSystemScanner', {}).get('name', ''),
         'Tags': len(resp_host.get('tags', [])),
-        'Notes': len(resp_host.get('notes', []))
+        'Notes': len(resp_host.get('notes', [])),
+        'Owner': owner[0] if len(owner) == 1 else ','.join(owner),
+        'External': resp_host.get('external', '')
     }
 
 
@@ -487,7 +522,7 @@ def prepare_payload_for_detail_commands(args):
             field = val
 
     if not field:
-        return_error('Argument is mandatory')
+        return_error('Argument is mandatory.')
 
     # Check validation of multiple values
     if len(value.split(',')) > 1:
@@ -846,7 +881,8 @@ def get_vulnerability_detail(vulnerabilities):
         'Integrity': vulnerability.get('integrity', ''),
         'AvailabilityImpact': vulnerability.get('availabilityImpact', ''),
         'Trending': vulnerability.get('trending', ''),
-        'VulnLastTrendingOn': vulnerability.get('vulnLastTrendingOn', '')
+        'VulnLastTrendingOn': vulnerability.get('vulnLastTrendingOn', ''),
+        'Description': vulnerability.get('summary', '')
     } for vulnerability in vulnerabilities]
 
 
@@ -863,7 +899,7 @@ def get_threat_detail(threats):
         'Category': threat.get('category', ''),
         'Severity': threat.get('severity', ''),
         'Description': threat.get('description', ''),
-        'Cve': ', '.join(threat.get('cves', '')),
+        'Cve': threat.get('cves', ''),
         'Source': threat.get('source', ''),
         'Published': threat.get('published', ''),
         'Updated': threat.get('updated', ''),
@@ -900,7 +936,8 @@ def get_tags_asset(tag_assets):
         'Category': tag_asset.get('category', ''),
         'Created': tag_asset.get('created', ''),
         'Updated': tag_asset.get('updated', ''),
-        'Color': tag_asset.get('color', '')
+        'Color': tag_asset.get('color', ''),
+        'Description': tag_asset.get('description', '')
     } for tag_asset in tag_assets]
 
 
@@ -1027,7 +1064,9 @@ def get_risksense_host_finding_context(resp_hostfinding):
         'Note': get_note_detail(resp_hostfinding.get('notes', [])),
         'Assignment': get_assignment_detail(resp_hostfinding.get('assignments', [])),
         'Services': get_services(resp_hostfinding.get('services', [])),
-        'Ticket': get_ticket_detail(resp_hostfinding.get('tickets', []))
+        'Ticket': get_ticket_detail(resp_hostfinding.get('tickets', [])),
+        'GroupID': resp_hostfinding.get('group', {}).get('id', ''),
+        'GroupName': resp_hostfinding.get('group', {}).get('name', '')
     }
 
 
@@ -1506,13 +1545,205 @@ def validate_values_for_between_operator(args):
     if operator == 'BETWEEN':
         values = value.split(',')
         if len(values) != 2:
-            return_error('Only two values allowed for BETWEEN operator')
+            return_error('BETWEEN operator requires exact two values.')
 
         if not (bool(re.match(REGEX_FOR_INR_OR_FLOAT, values[0]))
                 and bool(re.match(REGEX_FOR_INR_OR_FLOAT, values[1]))
                 or bool(re.match(REGEX_FOR_YYYY_MM_DD, values[0]))
                 and bool(re.match(REGEX_FOR_YYYY_MM_DD, values[1]))):
-            return_error('Value must be in number format or YYYY-MM-DD date format for BETWEEN operator')
+            return_error('Value must be in number format or YYYY-MM-DD date format for BETWEEN operator.')
+
+
+def get_user_id_from_integration_context(client):
+    """
+    Initializes a RiskSense context and set user id in context.
+    User id is fetched from the Demisto's integration context is available otherwise,
+    make an API call and updates integration context.
+
+    :param client: client class object.
+    :return: user id
+    """
+    integration_context = demisto.getIntegrationContext()
+
+    user_id = integration_context.get('RiskSenseUserContext', {}).get('userId', '')
+
+    if not user_id:
+        url = client._base_url
+        url = url.replace('/client', '/user/profile')
+        resp_json = client.http_request('GET', url_suffix='', full_url=url)
+
+        if resp_json.get('userId', ''):
+            user_id = resp_json.get('userId', '')
+        else:
+            return_error('Unable to find user Id.')
+
+        demisto.setIntegrationContext({'RiskSenseUserContext': {'userId': user_id}})
+
+    return user_id
+
+
+def prepare_payload_for_create_tag(tag_name, client, propagate_to_all_findings):
+    """
+    Prepare request body (raw-json) to create tag in RiskSense.
+
+    :param tag_name: The name of the tag.
+    :param client: Client class object.
+    :param propagate_to_all_findings: If the given argument is set to true, then it applies the tag to assets as well
+    as findings of assets.
+    :return: data in json format
+    :rtype ``dict``
+    """
+    return {
+        'fields': [
+            {
+                'uid': 'TAG_TYPE',
+                'value': 'CUSTOM'
+            },
+            {
+                'uid': 'NAME',
+                'value': tag_name
+            },
+            {
+                'uid': 'DESCRIPTION',
+                'value': 'Tag Created for ' + tag_name
+            },
+            {
+                'uid': 'OWNER',
+                'value': get_user_id_from_integration_context(client)
+            },
+            {
+                'uid': 'COLOR',
+                'value': '#648d9f'
+            },
+            {
+                'uid': 'PROPAGATE_TO_ALL_FINDINGS',
+                'value': propagate_to_all_findings
+            }
+        ]
+    }
+
+
+def create_tag(tag_name, client_id, client, propagate_to_all_findings):
+    """
+    Create the tag with given tag name.
+
+    :param tag_name: name of the tag.
+    :param client_id: Client id.
+    :param client: Client class object.
+    :param propagate_to_all_findings: If the given argument is set to true, then it applies the tag to assets as well
+    as findings of assets.
+    :return: Tag Id
+    """
+    url_suffix = '/' + str(client_id) + '/tag'
+
+    data = prepare_payload_for_create_tag(tag_name, client, propagate_to_all_findings)
+
+    resp = client.http_request('POST', url_suffix=url_suffix, json_data=data)
+
+    tag_id = resp.get('id', '')
+
+    return tag_id if tag_id else None
+
+
+def search_tag_id(tag_name, client_id, client):
+    """
+    Search tag in RiskSense tag API. If available then return tagID.
+
+    :param tag_name: name of the tag to search.
+    :param client_id: Client id.
+    :param client: Client class object.
+    """
+
+    url_suffix = '/' + str(client_id) + '/tag/search'
+
+    # Tag search payload
+    filter_dict = {'field': 'name', 'exclusive': False, 'operator': 'EXACT', 'value': tag_name}
+    data = {'filters': [filter_dict], 'projection': 'basic'}  # Only projection basic is supported.
+
+    # Request search tag API
+    resp = client.http_request('POST', url_suffix=url_suffix, json_data=data)
+
+    tags = resp.get('_embedded', {}).get('tags', [])
+    if tags:
+        return tags[0].get('id')
+    return None
+
+
+def prepare_request_payload_for_tag(args, tag_id):
+    """
+    Prepare body (raw-json) for post API request.
+    Used in 'risksense-apply-tag' command.
+
+    :param args: Demisto argument provided by user
+    :param tag_id: The id of the tag.
+    :return: data in json format
+    :rtype ``dict``
+    :raises ValueError exception if required params are missing
+    """
+    # Fetching value of arguments.
+    fieldname = args.get('fieldname', '')
+    operator = args.get('operator', '')
+    exclusive_operator = args.get('exclusivity', '').lower()
+    value = args.get('value', '')
+    filter_data = {}  # type: Dict[str, Any]
+    filters = []  # type: List[Dict[str, Any]]
+    data = {}  # type: Dict[str, Any]
+
+    # If either of fieldname, value, operator or exculsive_operator are provided
+    # then validate their required fields
+    if fieldname or value or operator or exclusive_operator:
+        if not fieldname:
+            return_error('fieldname is missing.')
+        if not value:
+            return_error('value is missing.')
+        if not operator:
+            operator = 'EXACT'
+        if not exclusive_operator:
+            exclusive_operator = 'false'
+
+        if operator in RISKSENSE_FIELD_MAPPINGS:
+            operator = RISKSENSE_FIELD_MAPPINGS[operator]
+
+        if fieldname in RISKSENSE_FIELD_MAPPINGS:
+            fieldname = RISKSENSE_FIELD_MAPPINGS[fieldname]
+
+        # Check validation of IP Address in case of operator = EXACT
+        if fieldname == 'ipAddress' and operator == 'EXACT':
+            if not is_ip_valid(value, True):
+                return_error('IP Address is invalid.')
+
+        # Check validation of between operator.
+        validate_values_for_between_operator(args)
+
+        filters.append(
+            {
+                'field': fieldname,
+                'exclusive': exclusive_operator,
+                'operator': operator,
+                'value': value.lower()
+            }
+        )
+        filter_data['filters'] = filters
+    data['filterRequest'] = filter_data
+    data['isRemove'] = False
+    data['tagId'] = tag_id
+    return data
+
+
+def get_apply_tag_context(resp, tag_name):
+    """
+    Prepare context for apply tag command.
+
+    :param resp: response.
+    :param tag_name: Name of the tag.
+    :return: Dictionary of tag context.
+    """
+
+    return {
+        'AssociationID': resp.get('id', ''),
+        'Created': resp.get('created', ''),
+        'TagName': tag_name
+    }
 
 
 ''' REQUESTS FUNCTIONS '''
@@ -1546,6 +1777,8 @@ def get_hosts_command(client, args):
     :param args: filter criteria provided by user.
     :return: standard output.
     """
+    # validate command arguments
+    validate_arguments(args)
 
     # gather client detail from integration context
     client_detail = get_client_detail_from_context(client)
@@ -1595,8 +1828,9 @@ def get_hosts_command(client, args):
 
         hr += tableToMarkdown('RiskSense host(s) details:', host_details_hr,
                               ['RS3', 'Host Name', 'Total Findings', 'Critical Findings', 'High Findings',
-                               'Medium Findings', 'Low Findings', 'Info Findings', 'ID', 'OS', 'Tags',
-                               'Notes', 'xRS3', 'Criticality', 'IP Address', 'Network', 'Group'], removeNull=True)
+                               'Medium Findings', 'Low Findings', 'Info Findings', 'Owner', 'ID', 'OS', 'Tags',
+                               'Notes', 'xRS3', 'Criticality', 'IP Address', 'Network', 'Group', 'External'],
+                              removeNull=True)
 
         ec = {
             'Host(val.ID == obj.ID)': host_context,
@@ -1730,6 +1964,10 @@ def get_host_findings_command(client, args):
     :param args: Demisto arguments provided by user
     :return: Standard output
     """
+
+    # validate command arguments
+    validate_arguments(args)
+
     client_detail = get_client_detail_from_context(client)
     client_id = client_detail['Id']
     client_name = client_detail['ClientName']
@@ -1816,6 +2054,9 @@ def get_unique_open_findings_command(client, args):
     :param args: demisto argument provided by user.
     :return: standard output.
     """
+    # validate command arguments
+    validate_arguments(args)
+
     client_detail = get_client_detail_from_context(client)
     client_id = client_detail['Id']
     client_name = client_detail['ClientName']
@@ -1879,6 +2120,10 @@ def get_apps_command(client, args):
    :param args: Demisto argument(s) provided by user.
    :return: standard output.
    """
+
+    # validate command arguments
+    validate_arguments(args)
+
     client_detail = get_client_detail_from_context(client)
     client_id = client_detail['Id']
     client_name = client_detail['ClientName']
@@ -2039,6 +2284,61 @@ def get_app_detail_command(client, args):
     return hr, ec, resp
 
 
+def apply_tag_command(client, args):
+    """
+    Apply new or existing tag to asset, creates a new tag if it does not exist in RiskSense.
+
+    :param client: client object
+    :param args: demisto argument provided by user.
+    :return: command output.
+    """
+    client_detail = get_client_detail_from_context(client)
+    client_id = client_detail['Id']
+    asset_type = args.get('assettype', '')
+    url_suffix = '/' + str(client_id) + '/' + asset_type + '/tag'
+    tag_name = args.get('tagname', '')
+    propagate_to_all_findings = args.get('propagate_to_all_findings', 'false')
+
+    if args.get('exclusivity', 'false').lower() not in ['true', 'false']:
+        return_error('Exclusivity argument should be either true or false.')
+
+    if propagate_to_all_findings.lower() not in ['true', 'false']:
+        return_error('Value of propagate_to_all_findings argument should be either true or false.')
+
+    # Check special character in tag name.
+    if bool(re.match(r'[`*+=\\.;,\'\"@!#$%^&*()<>?/\|}{\]\[~]', tag_name)):
+        return_error('No special characters are allowed in the tag name.')
+
+    # Check tag name length.
+    if len(tag_name) < 2:
+        return_error('Tag name must be at least 2 characters.')
+
+    tag_id = search_tag_id(tag_name, client_id, client)
+    hr = ''
+    ec = {}  # type: Dict[str, Any]
+    if not tag_id:
+        tag_id = create_tag(tag_name, client_id, client, propagate_to_all_findings)
+        if not tag_id:
+            return_error('Unable to Create tag.')
+
+    data = prepare_request_payload_for_tag(args, tag_id)
+
+    resp = client.http_request('POST', url_suffix=url_suffix, json_data=data)
+
+    if resp:
+        # Human Readable
+        hr += '### ' + tag_name + ' tag applied to given asset(s).'
+
+        # Context.
+        ec = {
+            'RiskSense.TagAssociation(val.AssociationID == obj.AssociationID)': get_apply_tag_context(resp, tag_name)
+        }
+    else:
+        hr += '### Unable to apply tag.'
+
+    return hr, ec, resp
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -2080,7 +2380,8 @@ def main():
         'risksense-get-unique-open-findings': get_unique_open_findings_command,
         'risksense-get-apps': get_apps_command,
         'risksense-get-host-finding-detail': get_host_finding_detail_command,
-        'risksense-get-app-detail': get_app_detail_command
+        'risksense-get-app-detail': get_app_detail_command,
+        'risksense-apply-tag': apply_tag_command
     }
     # Run the commands
     try:

@@ -28,12 +28,12 @@ configuration:
     type: 0
   - display: Trust any certificate (not secure)
     name: insecure
-    defaultvalue: ""
+    defaultvalue: "false"
     type: 8
     required: false
   - display: Use system proxy settings
     name: proxy
-    defaultvalue: ""
+    defaultvalue: "false"
     type: 8
     required: false
 script:
@@ -47,7 +47,7 @@ script:
             - Host Name
             - IP Address
             - Criticality
-          description: The RiskSense host attribute by which to filter the results. Can be 'Host Name', 'IP Address', or 'Criticality'. Apart from the available choices you can provide the attributes supported by RiskSense API. Refer to the API /host/filter API to get the list of supported attributes. The uid of filter attributes must be provided here, for example assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
+          description: The RiskSense host attribute by which to filter the results. Can be 'Host Name', 'IP Address', or 'Criticality'. Apart from the available choices, you can provide the attributes supported by RiskSense API. Refer to the API /host/filter API to get the list of supported attributes. The uid of filter attributes must be provided here, for example, assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
         - name: operator
           auto: PREDEFINED
           predefined:
@@ -55,13 +55,13 @@ script:
             - IN
             - LIKE
             - BETWEEN
-          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
-        - name: exclusive_operator
+          description: The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators.
+        - name: exclusivity
           auto: PREDEFINED
           predefined:
             - 'true'
             - 'false'
-          description: The exclusive operator flag that determines whether the returned records matches filter criteria or not. The default set is false.
+          description: The exclusivity flag that determines whether the returned records matches filter criteria or not. The default set is false.
             If set to True, host not matching the specified values are fetched.
         - name: value
           description: The value of the host property mentioned in 'fieldname' to be considered for filter criteria.
@@ -84,13 +84,13 @@ script:
             - RS3
           description: The fieldname by which to sort the returned records.
           defaultValue: RS3
-        - name: sort_order
+        - name: sort_direction
           auto: PREDEFINED
           predefined:
-            - ASC
-            - DESC
-          description: The sorting order to apply to returned records.
-          defaultValue: ASC
+            - Ascending
+            - Descending
+          description: The sorting direction to apply to returned records.
+          defaultValue: Ascending
       outputs:
         - contextPath: Host.Hostname
           description: The hostname of the host.
@@ -116,8 +116,12 @@ script:
         - contextPath: RiskSense.Host.GroupName
           description: The name of the group belonging to the host.
           type: String
-        - contextPath: RiskSense.Host.Groups
-          description: The list of groups.
+        - contextPath: RiskSense.Host.Group.ID
+          description: The ID of the group belonging to the host.
+          type: Number
+        - contextPath: RiskSense.Host.Group.Name
+          description: The name of the group belonging to the host.
+          type: String
         - contextPath: RiskSense.Host.Rs3
           description: The asset security score calculated by the RiskSense platform (includes vulnerability risk on related web applications).
           type: Number
@@ -283,13 +287,13 @@ script:
         - contextPath: Ticket.State
           description: The state of the ticket associated with the host.
           type: String
-      description: Gets details of the supplied host. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort order.
+      description: Gets details of the supplied host. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
     - name: risksense-get-host-detail
       arguments:
         - name: host_id
-          description: The unique host ID of the host. Host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in human-readable output of 'risksense-get-hosts' command.
+          description: The unique host ID of the host. The host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in the human-readable output of 'risksense-get-hosts' command.
         - name: host
-          description: The hostname of the host. Host name is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in human-readable output of 'risksense-get-hosts' command.
+          description: The hostname of the host. The hostname is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in the human-readable output of 'risksense-get-hosts' command.
       outputs:
         - contextPath: Host.Hostname
           description: The hostname of the host.
@@ -315,8 +319,12 @@ script:
         - contextPath: RiskSense.Host.GroupName
           description: The name of the group belonging to the host.
           type: String
-        - contextPath: RiskSense.Host.Groups
-          description: The list of the groups.
+        - contextPath: RiskSense.Host.Group.ID
+          description: The ID of the group belonging to the host.
+          type: Number
+        - contextPath: RiskSense.Host.Group.Name
+          description: The name of the group belonging to the host.
+          type: String
         - contextPath: RiskSense.Host.Rs3
           description: The asset security score calculated by the RiskSense platform (includes vulnerability risk on related web applications).
           type: Number
@@ -487,7 +495,7 @@ script:
       arguments:
         - name: hostFindingId
           required: true
-          description: The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command.
+          description: The unique host finding ID. The host finding ID is either known by RiskSense users or it can be found in the human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command.
       outputs:
         - contextPath: RiskSense.UniqueVulnerabilities.Cve
           description: Common Vulnerabilities and Exposures name.
@@ -544,7 +552,7 @@ script:
             - Title
             - Severity
             - Source
-          description: The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'Severity' and 'Source'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /uniqueHostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
+          description: The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'Severity', and 'Source'. Apart from the available choices, one can provide the attributes supported by RiskSense API. Refer to the API /uniqueHostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
         - name: operator
           auto: PREDEFINED
           predefined:
@@ -552,16 +560,16 @@ script:
             - IN
             - LIKE
             - BETWEEN
-          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
+          description: The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators.
         - name: value
           description: The value of the unique open finding property mentioned in 'fieldname' to be considered for filter criteria.
           isArray: true
-        - name: exclusive_operator
+        - name: exclusivity
           auto: PREDEFINED
           predefined:
             - 'true'
             - 'false'
-          description: The exclusive operator flag that determines whether the returned records matche filter criteria or not. By default set to False.
+          description: The exclusivity flag that determines whether the returned records matches filter criteria or not. By default set to False.
         - name: page
           description: The index of the page. The index is a numeric value and starting with 0.
           defaultValue: 0
@@ -578,14 +586,14 @@ script:
             - ID
           description: The fieldname that should be considered for sorting the returned records.
           defaultValue: severity
-        - name: sort_order
+        - name: sort_direction
           default: true
           auto: PREDEFINED
           predefined:
-            - ASC
-            - DESC
-          description: The sorting order to apply to returned records.
-          defaultValue: ASC
+            - Ascending
+            - Descending
+          description: The sorting direction to apply to returned records.
+          defaultValue: Ascending
       outputs:
         - contextPath: RiskSense.UniqueHostFinding.Title
           description: The title of the unique host finding.
@@ -615,7 +623,7 @@ script:
             - Title
             - IP Address
             - Host Name
-          description: The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'IP Address', or 'Host Name'. In addition to the available choices you can provide the attributes supported by RiskSense API. Refer the API /hostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
+          description: The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'IP Address', or 'Host Name'. In addition to the available choices, you can provide the attributes supported by RiskSense API. Refer to the API /hostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
         - name: operator
           auto: PREDEFINED
           predefined:
@@ -623,13 +631,13 @@ script:
             - IN
             - LIKE
             - BETWEEN
-          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with value matching the the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
-        - name: exclusive_operator
+          description: The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with the value matching the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators.
+        - name: exclusivity
           auto: PREDEFINED
           predefined:
             - 'true'
             - 'false'
-          description: The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False.
+          description: The exclusivity flag that determines whether the returned records matches filter criteria or not. By default set to False.
         - name: value
           description: The value of the 'fieldname' to be considered for filter criteria.
           isArray: true
@@ -645,14 +653,14 @@ script:
             - Risk Rating
             - Severity
           description: The fieldname that should be considered for sorting the returned records.
-          defaultValue: riskRating
-        - name: sort_order
+          defaultValue: Risk Rating
+        - name: sort_direction
           auto: PREDEFINED
           predefined:
-            - ASC
-            - DESC
-          description: The sorting order to apply to returned records.
-          defaultValue: ASC
+            - Ascending
+            - Descending
+          description: The sorting direction to apply to returned records.
+          defaultValue: Ascending
         - name: status
           auto: PREDEFINED
           predefined:
@@ -678,6 +686,12 @@ script:
         - contextPath: RiskSense.HostFinding.GroupCount
           description: The total number of groups for host finding.
           type: Number
+        - contextPath: RiskSense.HostFinding.GroupID
+          description: The unique ID of the group associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.GroupName
+          description: The name of the group associated with the host finding.
+          type: String
         - contextPath: RiskSense.HostFinding.Group.ID
           description: The unique ID of the group associated with the host finding.
           type: Number
@@ -758,6 +772,9 @@ script:
           type: boolean
         - contextPath: RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn
           description: Date when last trending vulnerability was found.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.Description
+          description: A description of the CVE.
           type: String
         - contextPath: RiskSense.HostFinding.ThreatCount
           description: The total number of threats.
@@ -1037,7 +1054,7 @@ script:
             - Name
             - Network
             - Address
-          description: The RiskSense application attribute that should be considered for filtering the results. The available choices are 'Name', 'Network', or 'Address'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /application/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
+          description: The RiskSense application attribute that should be considered for filtering the results. The available choices are 'Name', 'Network', or 'Address'. Apart from the available choices, one can provide the attributes supported by RiskSense API. Refer to the API /application/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
         - name: operator
           auto: PREDEFINED
           predefined:
@@ -1045,15 +1062,15 @@ script:
             - IN
             - LIKE
             - BETWEEN
-          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with value matching the the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
+          description: The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with the value matching the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators.
         - name: value
           description: The value of the apps property mentioned in 'fieldname' to be considered for filter criteria.
-        - name: exclusive_operator
+        - name: exclusivity
           auto: PREDEFINED
           predefined:
             - 'true'
             - 'false'
-          description: The exclusive operator flag that determines whether the returned records matches filter criteria or not. The default is "false".
+          description: The exclusivity flag that determines whether the returned records matches filter criteria or not. The default is "false".
         - name: page
           default: true
           description: The index of the page. The index is a numeric value and starting with 0.
@@ -1076,13 +1093,13 @@ script:
             - High Findings
           description: The fieldname that should be considered for sorting the returned records.
           defaultValue: Name
-        - name: sort_order
+        - name: sort_direction
           auto: PREDEFINED
           predefined:
-            - ASC
-            - DESC
-          description: The sorting order to apply to returned records.
-          defaultValue: ASC
+            - Ascending
+            - Descending
+          description: The sorting direction to apply to returned records.
+          defaultValue: Ascending
       outputs:
         - contextPath: RiskSense.Application.ID
           description: The unique ID within the tool retrieving the application.
@@ -1093,8 +1110,12 @@ script:
         - contextPath: RiskSense.Application.GroupName
           description: The group name of the application.
           type: String
-        - contextPath: RiskSense.Application.Groups
-          description: The list of groups.
+        - contextPath: RiskSense.Application.Group.ID
+          description: The ID of the group belonging to the Application.
+          type: Number
+        - contextPath: RiskSense.Application.Group.Name
+          description: The name of the group belonging to the Application.
+          type: String
         - contextPath: RiskSense.Application.Network.ID
           description: The network ID of the application.
           type: Number
@@ -1270,12 +1291,12 @@ script:
         - contextPath: Ticket.State
           description: The state of the ticket associated with the application.
           type: String
-      description: Looks up the application details. The application details can be searched based on input parameters like fieldname (Name, Network, Address), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort order.
+      description: Looks up the application details. The application details can be searched based on input parameters like fieldname (Name, Network, Address), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
     - name: risksense-get-host-finding-detail
       description: Gets in-depth details of a single host finding. The command accepts the host finding ID as an argument.
       arguments:
         - name: hostfinding_id
-          description: The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command.
+          description: The unique host finding ID. The host finding ID is either known by RiskSense users or it can be found in the human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command.
           required: true
       outputs:
         - contextPath: RiskSense.HostFinding.ID
@@ -1296,6 +1317,12 @@ script:
         - contextPath: RiskSense.HostFinding.GroupCount
           description: The total number of groups for the host finding.
           type: Number
+        - contextPath: RiskSense.HostFinding.GroupID
+          description: The unique ID of the group associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.GroupName
+          description: The name of the group associated with the host finding.
+          type: String
         - contextPath: RiskSense.HostFinding.Group.ID
           description: The unique ID of the group associated with the host finding.
           type: Number
@@ -1376,6 +1403,9 @@ script:
           type: boolean
         - contextPath: RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn
           description: Date when the last trending vulnerability was found.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.Description
+          description: A description of the CVE.
           type: String
         - contextPath: RiskSense.HostFinding.ThreatCount
           description: The total number of threats.
@@ -1651,7 +1681,7 @@ script:
       arguments:
         - name: application_id
           required: true
-          description: The application ID is unique for the application. Application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.ID) or in human-readable output of 'risksense-get-apps' command.
+          description: The application ID is unique for the application. The application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.ID) or in the human-readable output of 'risksense-get-apps' command.
       outputs:
         - contextPath: RiskSense.Application.ID
           description: The unique ID within the tool retrieving the application.
@@ -1662,8 +1692,12 @@ script:
         - contextPath: RiskSense.Application.GroupName
           description: The group name of the application.
           type: String
-        - contextPath: RiskSense.Application.Groups
-          description: The list of groups.
+        - contextPath: RiskSense.Application.Group.ID
+          description: The ID of the group belonging to the Application.
+          type: Number
+        - contextPath: RiskSense.Application.Group.Name
+          description: The name of the group belonging to the Application.
+          type: String
         - contextPath: RiskSense.Application.Network.ID
           description: The network ID of the application.
           type: Number
@@ -1840,7 +1874,58 @@ script:
           description: The state of the ticket associated with the application.
           type: String
       description: Gets in-depth details of a single application. The command accepts an application ID as an argument.
-  dockerimage: demisto/python3:3.8.1.6615
+    - name: risksense-apply-tag
+      arguments:
+        - name: propagate_to_all_findings
+          defaultValue: 'false'
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+          description: If the given argument is set to true, then it applies the tag to assets as well as findings of assets. Note - It only works if the tag with the given name does not exist.
+        - name: assettype
+          required: true
+          description: Type of asset available in RiskSense to apply the tag. Apart from the available choices, you can provide the asset type supported by RiskSense API.
+          auto: PREDEFINED
+          predefined:
+            - host
+            - hostFinding
+            - application
+            - applicationFinding
+        - name: tagname
+          required: true
+          description: Tag name which applies to the asset(s).
+        - name: fieldname
+          description: The RiskSense asset attribute by which to filter the assets to apply the tag. It can be an attribute of Host, Application, Host Finding, Application Finding. If specified, the 'value' argument is mandatory.
+        - name: operator
+          auto: PREDEFINED
+          predefined:
+            - EXACT
+            - IN
+            - LIKE
+            - BETWEEN
+          description: The match operator should be applied for filtering the assets to apply the tag based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators.
+        - name: exclusivity
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+          description: The exclusivity flag that determines whether to apply the tag on assets matches filter criteria or not. Default set to false. If set to true, tag applied on an asset not matching the specified values.
+        - name: value
+          description: The value of the asset property mentioned in 'fieldname' to be considered for filter criteria.
+          isArray: true
+      outputs:
+        - contextPath: RiskSense.TagAssociation.TagName
+          description: Name of the tag.
+          type: String
+        - contextPath: RiskSense.TagAssociation.AssociationID
+          description: Tag association ID.
+          type: Number
+        - contextPath: RiskSense.TagAssociation.Created
+          description: The time when the tag was associated.
+          type: String
+      description: Apply the new or existing tag to the asset, creates a new tag if it does not exist in RiskSense.
+  dockerimage: demisto/python3:3.8.3.8494
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -1857,3 +1942,4 @@ tests:
   - RiskSense Get Unique Cves - Test
   - RiskSense Get Unique Open Findings - Test
   - RiskSense Get Apps Detail - Test
+  - RiskSense Apply Tag - Test
