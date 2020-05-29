@@ -69,7 +69,7 @@ class TestCofenseTriage:
             text=fixture_from_file("processed_reports.json"),
         )
 
-        with pytest.raises(TriageRequestFailedError) as e:
+        with pytest.raises(TriageRequestFailedError):
             CofenseTriage.test_function(triage_instance)
 
     @freeze_time("2000-10-31")
@@ -80,7 +80,7 @@ class TestCofenseTriage:
         set_demisto_arg("match_priority", 2)
         set_demisto_arg("tags", "")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30T00%3A00%3A00", # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30T00%3A00%3A00",  # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
         requests_mock.get(
@@ -126,7 +126,7 @@ class TestCofenseTriage:
             }
         )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30T00%3A00%3A00", # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30T00%3A00%3A00",  # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
         requests_mock.get(
@@ -154,7 +154,7 @@ class TestCofenseTriage:
         set_demisto_arg("max_matches", 10)
         set_demisto_arg("verbose", "")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00", # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00",  # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
 
@@ -178,7 +178,7 @@ class TestCofenseTriage:
         set_demisto_arg("max_matches", 10)
         set_demisto_arg("verbose", "")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00", # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00",  # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
 
@@ -214,7 +214,7 @@ class TestCofenseTriage:
         self, requests_mock, triage_instance, filter_attrs, expected_found_report_ids
     ):
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-31+00%3A00%3A00", # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-31+00%3A00%3A00",  # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
 
@@ -351,7 +351,7 @@ class TestCofenseTriage:
         set_demisto_arg("page", "what")
         set_demisto_arg("per_page", "what")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what", # noqa: 501
+            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what",  # noqa: 501
             text=fixture_from_file("threat_indicators.json"),
         )
 
@@ -376,7 +376,7 @@ class TestCofenseTriage:
         set_demisto_arg("page", "what")
         set_demisto_arg("per_page", "what")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what", # noqa: 501
+            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what",  # noqa: 501
             text="[]",
         )
 

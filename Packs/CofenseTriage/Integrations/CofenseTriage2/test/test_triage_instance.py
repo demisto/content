@@ -1,7 +1,6 @@
 import pytest
 
-from CofenseTriage2.CofenseTriage import TriageInstance
-from CofenseTriage2.CofenseTriage import TriageRequestFailedError
+from CofenseTriagev2.CofenseTriage import TriageRequestFailedError
 
 
 class TestTriageInstance:
