@@ -1,4 +1,4 @@
-from CofenseTriage2.CofenseTriage import TriageRequestFailedError
+from CofenseTriagev2.CofenseTriage import TriageRequestFailedError
 
 import pytest
 from freezegun import freeze_time
@@ -36,14 +36,14 @@ set_demisto_arg("token", "api_token")
 set_demisto_arg("user", "user")
 patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
 
-from CofenseTriage2 import CofenseTriage  # noqa: 402
-from CofenseTriage2.CofenseTriage import parse_triage_date  # noqa: 402
+from CofenseTriagev2 import CofenseTriage  # noqa: 402
+from CofenseTriagev2.CofenseTriage import parse_triage_date  # noqa: 402
 
 
 @pytest.fixture(autouse=True)
 def stub_demisto_setup(mocker):
-    mocker.patch("CofenseTriage2.CofenseTriage.return_error")
-    mocker.patch("CofenseTriage2.CofenseTriage.fileResult")
+    mocker.patch("CofenseTriagev2.CofenseTriage.return_error")
+    mocker.patch("CofenseTriagev2.CofenseTriage.fileResult")
     mocker.patch("demistomock.getArg", get_demisto_arg)
     mocker.patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
     mocker.patch("demistomock.results")
@@ -88,7 +88,7 @@ class TestCofenseTriage:
             text=fixture_from_file("reporters.json"),
         )
         mocker.patch(
-            "CofenseTriage2.CofenseTriage.fileResult",
+            "CofenseTriagev2.CofenseTriage.fileResult",
             lambda filename, data: {"FileID": "file_id", "FileName": "file_name"},
         )
 

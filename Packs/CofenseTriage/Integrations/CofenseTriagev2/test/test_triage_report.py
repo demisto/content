@@ -1,4 +1,4 @@
-from CofenseTriage2.CofenseTriage import TriageReport
+from CofenseTriagev2.CofenseTriage import TriageReport
 
 
 class TestTriageReport:
@@ -20,12 +20,12 @@ class TestTriageReport:
             text=fixture_from_file("single_report.json"),
         )
         stubbed_triagereporter_init = mocker.patch(
-            "CofenseTriage2.CofenseTriage.TriageReporter"
+            "CofenseTriagev2.CofenseTriage.TriageReporter"
         )
 
         TriageReport.fetch(triage_instance, "6").reporter
 
-        stubbed_triagereporter_init.assert_called_once_with(5331)
+        stubbed_triagereporter_init.assert_called_once_with(triage_instance, 5331)
 
     def test_attachment_none(self, requests_mock, triage_instance, fixture_from_file):
         requests_mock.get(
@@ -46,7 +46,7 @@ class TestTriageReport:
         )
 
         mocker.patch(
-            "CofenseTriage2.CofenseTriage.fileResult",
+            "CofenseTriagev2.CofenseTriage.fileResult",
             lambda **_kwargs: {
                 "FileID": "file_result_id",
                 "FileName": "file_result_name",
