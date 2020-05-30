@@ -1,0 +1,73 @@
+id: TestFooPlaybook
+version: -1
+name: TestFooPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7e2fe762-58f2-48a3-8443-0fdd24980c37
+    type: start
+    task:
+      id: 7e2fe762-58f2-48a3-8443-0fdd24980c37
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1858a54e-86c0-4918-8bca-d6a4ba640f9f
+    type: regular
+    task:
+      id: 1858a54e-86c0-4918-8bca-d6a4ba640f9f
+      version: -1
+      name: test-foo
+      description: This is description
+      script: TestFooIntegration|||test-foo
+      type: regular
+      iscommand: true
+      brand: TestFooIntegration
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
