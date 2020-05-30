@@ -91,14 +91,14 @@ def test_get_sample(mocker):
     get_sample_response = Response()
     get_sample_response.status_code = 200
     get_sample_response.headers = {
-            'Server': 'nginx',
-            'Date': 'Thu, 28 May 2020 15:03:35 GMT',
-            'Content-Type': 'application/octet-stream',
-            'Transfer-Encoding': 'chunked',
-            'Connection': 'keep-alive',
-            'Content-Disposition': f'attachment; filename={filename}.000',
-            'x-envoy-upstream-service-time': '258'
-        }
+        'Server': 'nginx',
+        'Date': 'Thu, 28 May 2020 15:03:35 GMT',
+        'Content-Type': 'application/octet-stream',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'Content-Disposition': f'attachment; filename={filename}.000',
+        'x-envoy-upstream-service-time': '258'
+    }
     get_sample_response._content = 'filecontent'.encode()
     mocker.patch(
         'Palo_Alto_Networks_WildFire_v2.wildfire_get_sample',
