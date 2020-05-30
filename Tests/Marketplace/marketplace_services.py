@@ -4,9 +4,12 @@ import subprocess
 import fnmatch
 import shutil
 import yaml
+import google.auth
+from google.cloud import storage
 import enum
 import base64
 import urllib.parse
+import warnings
 from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
@@ -85,22 +88,23 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def pack_displayed_items(cls):
-        return [
+        return {
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
-        ]
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+        }
 
     @classmethod
     def yml_supported_folders(cls):
-        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
+        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value}
 
     @classmethod
     def json_supported_folders(cls):
-        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
                 PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.REPORTS.value]
+                PackFolders.WIDGETS.value}
 
 
 class PackStatus(enum.Enum):
@@ -1156,6 +1160,33 @@ class Pack(object):
 
 
 # HELPER FUNCTIONS
+
+def init_storage_client(service_account=None):
+    """Initialize google cloud storage client.
+
+    In case of local dev usage the client will be initialized with user default credentials.
+    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
+
+    Args:
+        service_account (str): full path to service account json.
+
+    Return:
+        storage.Client: initialized google cloud storage client.
+    """
+    if service_account:
+        storage_client = storage.Client.from_service_account_json(service_account)
+        print("Created gcp service account")
+
+        return storage_client
+    else:
+        # in case of local dev use, ignored the warning of non use of service account.
+        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
+        credentials, project = google.auth.default()
+        storage_client = storage.Client(credentials=credentials, project=project)
+        print("Created gcp private account")
+
+        return storage_client
+
 
 def input_to_list(input_data, capitalize_input=False):
     """ Helper function for handling input list or str from the user.
