@@ -238,6 +238,16 @@ def test_fetch_incidents_with_incident_name(mocker):
 
 
 def test_incident_name_is_initialized(mocker, requests_mock):
+    """
+    Given:
+     - Integration instance initialized with fetch enabled and without changing incident name
+
+    When:
+     - Clicking on Test button (running test-module)
+
+    Then:
+     - Verify expected exception is raised as default incident name value is not in response
+    """
     url = 'https://test.service-now.com'
     mocker.patch.object(
         demisto,
@@ -253,6 +263,11 @@ def test_incident_name_is_initialized(mocker, requests_mock):
         }
     )
     mocker.patch.object(demisto, 'command', return_value='test-module')
+
+    def return_error_mock(message, error):
+        raise
+
+    mocker.patch('ServiceNowv2.return_error', side_effect=return_error_mock)
     requests_mock.get(
         f'{url}/api/now/table/incident?sysparm_limit=1',
         json={
@@ -261,4 +276,6 @@ def test_incident_name_is_initialized(mocker, requests_mock):
             }]
         }
     )
-    main()
+    with pytest.raises(ValueError) as e:
+        main()
+    assert str(e.value) == 'The field [number] does not exist in the ticket.'
