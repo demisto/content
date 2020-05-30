@@ -127,13 +127,13 @@ def show_alert_command():
     }
 
 
-def update_alert(alert_id, params):
+def update_alert(alert_id, data):
     """
     Updates alert by specific id
     """
 
     api_endpoint = "/alerts/alert/{}/".format(alert_id)
-    return http_request('PUT', api_endpoint, params, DEFAULT_HEADERS)
+    return http_request('PATCH', api_endpoint, headers=DEFAULT_HEADERS, data=data)
 
 
 def update_alert_command():
