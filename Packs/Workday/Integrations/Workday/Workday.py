@@ -14,10 +14,6 @@ requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = "v34.0"
 
-WORKER = {
-
-}
-
 
 # TODO: NOTICE THE COMMENT ON PAGINATION:
 #  The numbered page of data Workday returns in the response. The default page is the first page(Page = 1).
@@ -31,9 +27,94 @@ def convert_to_json(response):
 
 
 def create_worker_context(workers: List[dict]):
-    pass
+    # TODO: ASK Arseny about things I didnt find:
+    # Business_site_Address:
+    # 	* region - take ISO_3166-2_Code from country region reference ???????
+    # 	* Region_Descriptor ??????????
 
-    #
+    return [
+        {
+            "Worker ID": worker['Worker_ID'],
+            "User ID": worker['User_ID'],
+            "Country": worker['Personal_Data']['Name_Data']['Legal_Name_Data']['Name_Detail_Data']['Country_Reference']['ID'][1]['#text'],
+            "Legal First Name": worker['Personal_Data']['Name_Data']['Legal_Name_Data']['Name_Detail_Data']['First_Name'],
+            "Legal Last Name": worker['Personal_Data']['Name_Data']['Legal_Name_Data']['Name_Detail_Data']['Last_Name'],
+            "Preferred First Name": worker['Personal_Data']['Name_Data']['Preferred_Name_Data']['Name_Detail_Data']['First_Name'],
+            "Preferred Last Name": worker['Personal_Data']['Name_Data']['Preferred_Name_Data']['Name_Detail_Data']['Last_Name'],
+            "Addresses":{
+                "Address ID": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Address_ID'],
+                "Formatted Address": worker['Personal_Data']['Contact_Data']['Address_Data'][0]["@{urn:com.workday/bsvc}Formatted_Address"],
+                "country": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Country_Reference']['ID'][1]['#text'],
+                "Region": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Country_Region_Reference']['ID'][2]['#text'],
+                "Region Descriptor": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Country_Region_Descriptor'],
+                "Postal Code": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Postal_Code'],
+                "Type": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
+            },
+            "Phones":{
+                "ID": worker['Personal_Data']['Contact_Data']['Phone_Data'][0]['ID'],
+                "Phone Number": worker['Personal_Data']['Contact_Data']['Phone_Data'][0]['Phone_Number'],
+                "Type": worker['Personal_Data']['Contact_Data']['Phone_Data'][0]['Phone_Device_Type_Reference']['ID'][1]['#text'],
+                "Usage": worker['Personal_Data']['Contact_Data']['Phone_Data'][0]['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
+            },
+            "Emails":{
+                "Email Address": worker['Personal_Data']['Contact_Data']['Email_Address_Data']['Email_Address'],
+                "Type":  worker['Personal_Data']['Contact_Data']['Email_Address_Data']['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
+                "Primary": "true" if worker['Personal_Data']['Contact_Data']['Email_Address_Data']['Usage_Data']['Type_Data']["@{urn:com.workday/bsvc}Primary"] == '1' else "false",
+                "Public": "true" if worker['Personal_Data']['Contact_Data']['Email_Address_Data']['Usage_Data']["@{urn:com.workday/bsvc}Public"] == '1' else 'false'
+            },
+            "Position ID": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Position_ID'],
+            "Position Title": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Position_Title'],
+            "Business Title": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Title'],
+            "Start Date": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Start_Date'],
+            "End Employment Reason Reference": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['End_Employment_Reason_Reference']['ID'][1]['#text'],
+            "Worker Type": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Worker_Type_Reference']['ID'][1]['Text'],
+            "Position Time Type": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Position_Time_Type_Reference']['ID'][1]['Text'],
+            "Scheduled Weekly Hours": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Scheduled_Weekly_Hours'],
+            "Default Weekly Hours": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Default_Weekly_Hours'],
+            "Full Time Equivalent Percentage": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Full_Time_Equivalent_Percentage'],
+            "Exclude from Headcount": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Exclude_from_Headcount'],
+            "Pay Rate Type": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Pay_Rate_Type_Reference']['ID'][1]['#text'],
+            "Job Profile Name": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Job_Profile_Summary_Data']['Job_Profile_Name'],
+            "Work Shift Required": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Job_Profile_Summary_Data']['Work_Shift_Required'],
+            "Critical Job": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Job_Profile_Summary_Data']['Critical_Job'],
+            "Business Site id": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Location_Reference']['ID'][1]['#text'],
+            "Business Site Name": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Name'],
+            "Business Site Type": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Location_Type_Reference']['ID'][1]['#text'],
+            "Business Site Address":{
+                "Address ID": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data']['Address_ID'],
+                "Formatted Address": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data']["@{urn:com.workday/bsvc}Formatted_Address"],
+                "Country": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data']['Country_Reference']['ID'][1]['#text'],
+                # "region": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data'],
+                # "Region_Descriptor": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data'],
+                "Postal Code": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data']['Postal_Code'],
+            },
+            "End Date": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['End_Date'],
+            "Pay Through Date": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Pay_Through_Date'],
+            # Worker_Status_Data Begins
+            "Active": worker['Employment_Data']['Worker_Status_Data']['Active'],
+            "Hire Date": worker['Employment_Data']['Worker_Status_Data']['Hire_Date'],
+            "Hire Reason": worker['Employment_Data']['Worker_Status_Data']['Hire_Reason_Reference']['ID'][2]['#text'],
+            "First Day of Work": worker['Employment_Data']['Worker_Status_Data']['First_Day_of_Work'],
+            "Retired": worker['Employment_Data']['Worker_Status_Data']['Retired'],
+            "Days Unemployed": worker['Employment_Data']['Worker_Status_Data']['Days_Unemployed'],
+            "Terminated": worker['Employment_Data']['Worker_Status_Data']['Terminated'],
+            "Termination Date": worker['Employment_Data']['Worker_Status_Data']['Termination_Date'],
+            # TODO: ASK Arseny about it.
+            "Pay Through Date_DUPLICATE?": worker['Employment_Data']['Worker_Status_Data']['Pay_Through_Date'],
+            "Primary Termination Reason": worker['Employment_Data']['Worker_Status_Data']['Primary_Termination_Reason_Reference']['ID'][2]['#text'],
+            "Primary Termination Category": worker['Employment_Data']['Worker_Status_Data']['Primary_Termination_Category_Reference']['ID'][1]['#text'],
+            "Termination Involuntary": worker['Employment_Data']['Worker_Status_Data']['Termination_Involuntary'],
+            "Rehire": worker['Employment_Data']['Worker_Status_Data']['Rehire'],
+            "Termination Last Day of Work": worker['Employment_Data']['Worker_Status_Data']['Termination_Last_Day_of_Work'],
+            "Resignation_Date": worker['Employment_Data']['Worker_Status_Data']['Resignation_Date'],
+            # Worker_Status_Data Ends
+            "Has International Assignment": worker['Employment_Data']['International_Assignment_Summary_Data']['Has_International_Assignment'],
+            "Home Country Reference": worker['Employment_Data']['International_Assignment_Summary_Data']['Home_Country_Reference']['ID'][1]['#text'],
+
+
+        } for worker in workers
+    ]
+
     # raw_workers = workers if isinstance(workers, list) else [workers]
     # workers = []
     # for worker in raw_workers:
@@ -61,16 +142,12 @@ class Client(BaseClient):
 
     # TODO: take care of employee id and page params
     def create_soap_request(self, employee_id, page, count) -> str:
-        body = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com
-.workday/bsvc"> 
+        body = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc"> 
        <soapenv:Header>
-          <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401
--wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility
--1.0.xsd"> 
+          <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"> 
              <wsse:UsernameToken wsu:Id="UsernameToken-{self.token}">
                 <wsse:Username>{self.username}</wsse:Username>
-                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1
-.0#PasswordText">{self.password}</wsse:Password> 
+                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{self.password}</wsse:Password> 
              </wsse:UsernameToken>
           </wsse:Security>
        </soapenv:Header>
