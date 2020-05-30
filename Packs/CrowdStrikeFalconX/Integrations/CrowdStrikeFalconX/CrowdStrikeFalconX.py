@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Tuple, Any, Union
+from typing import Dict, Callable, Tuple, Any, Union, List
 
 from requests import Response
 
@@ -79,7 +79,6 @@ class Client(BaseClient):
                     demisto.getFilePath(file)['name'])
         f = open(demisto.getFilePath(file)['name'], 'rb')
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
-        #data = open(file, 'rb').read()
         self._headers['Content-Type'] = 'application/octet-stream'
         return self._http_request("POST", url_suffix, files={'file': f})
 
@@ -171,29 +170,29 @@ class Client(BaseClient):
 
     def get_full_report(
             self,
-            ids: list
+            id: str
     ) -> Union[dict, str, Response]:
         """Creating the needed arguments for the http request
-        :param ids: ids of a submitted malware samples.
+        :param id: id of a submitted malware samples.
         :return: http response
         """
         url_suffix = f"/falconx/entities/reports/v1?ids={id}"
         params = {
-            "ids": ids
+            "ids": id
         }
         return self._http_request("Get", url_suffix, params=params)
 
     def get_report_summary(
             self,
-            ids: list
+            id: str
     ) -> Union[dict, str, Response]:
         """Creating the needed arguments for the http request
-        :param ids: ids of a submitted malware samples.
+        :param id: id of a submitted malware samples.
         :return: http response
         """
         url_suffix = f"/falconx/entities/report-summaries/v1?ids={id}"
         params = {
-            "ids": ids
+            "ids": id
         }
         return self._http_request("Get", url_suffix, params=params)
 
@@ -245,7 +244,7 @@ class Client(BaseClient):
             limit: int,
             filter: str,
             offset: str,
-            sort: str ,
+            sort: str,
     ) -> Union[dict, str, Response]:
         """Creating the needed arguments for the http request
         :param limit: maximum number of report IDs to return
@@ -370,7 +369,7 @@ def test_module(client):
     :param client: the client object with an access token
     :return: ok if got a valid accesses token and not all the quota is used at the moment
     """
-    _, _, output = check_quota_status_command(client)
+    output = client.check_quota_status()
     total = output.get("meta").get("quota").get("total")
     used = output.get("meta").get("quota").get("used")
     if total <= used:
@@ -384,22 +383,22 @@ def upload_file_command(
         file_name: str,
         is_confidential: str = "true",
         comment: str = ""
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
     :param file: content of the uploaded sample in binary format
     :param file_name: name of the file
     :param is_confidential: defines visibility of this file in Falcon MalQuery, either via the API or the Falcon console
     :param comment: a descriptive comment to identify the file for other users
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.upload_file(file, file_name, is_confidential, comment)
 
     resources_fields = ["file_name", "sha256"]
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
 def send_uploaded_file_to_sandbox_analysis_command(
@@ -413,7 +412,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
         submit_name: str = "",
         system_date: str = "",
         system_time: str = ""
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Submit a sample SHA256 for sandbox analysis.
     :param client: the client object with an access token
     :param sha256: SHA256 ID of the sample, which is a SHA256 hash value
@@ -425,7 +424,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
     :param submit_name: name of the malware sample that’s used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.send_uploaded_file_to_sandbox_analysis(sha256, environment_id, action_script, command_line,
                                                              document_password, enable_tor, submit_name, system_date,
@@ -434,9 +433,9 @@ def send_uploaded_file_to_sandbox_analysis_command(
     sandbox_fields = ["environment_id", "sha256"]
     resource_fields = ['id', 'state', 'created_timestamp', 'created_timestamp']
     filtered_outputs = parse_outputs(response, sandbox_fields=sandbox_fields, resources_fields=resource_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
 def send_url_to_sandbox_analysis_command(
@@ -450,7 +449,7 @@ def send_url_to_sandbox_analysis_command(
         submit_name: str = "",
         system_date: str = "",
         system_time: str = ""
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Submit a URL or FTP for sandbox analysis.
     :param client: the client object with an access token
     :param url: a web page or file URL. It can be HTTP(S) or FTP.
@@ -462,7 +461,7 @@ def send_url_to_sandbox_analysis_command(
     :param submit_name: name of the malware sample that’s used for file type detection and analysis
     :param system_date: set a custom date in the format yyyy-MM-dd for the sandbox environment
     :param system_time: set a custom time in the format HH:mm for the sandbox environment.
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.send_url_to_sandbox_analysis(url, environment_id, action_script, command_line, document_password,
                                                    enable_tor, submit_name, system_date, system_time)
@@ -470,78 +469,101 @@ def send_url_to_sandbox_analysis_command(
     resources_fields = ['id', 'state', 'created_timestamp']
     sandbox_fields = ["environment_id", "sha256"]
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
 def get_full_report_command(
         client: Client,
         ids: list
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
-    response = client. get_full_report(ids)
+    ids_list = argToList(ids)
+    filtered_outputs_list = []
+    response_list = []
 
-    resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
-                        "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
-                        "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
-                        "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
-                        "ioc_report_broad_maec_artifact_id"]
+    for single_id in ids_list:
+        response = client. get_full_report(single_id)
+        response_list.append(response)
 
-    sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                      "filetyp", "filesize", "sha256"]
-    filtered_outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+        resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
+                            "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
+                            "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
+                            "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
+                            "ioc_report_broad_maec_artifact_id"]
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+        sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
+                          "filetyp", "filesize", "sha256"]
+        filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
+                                                   sandbox_fields=sandbox_fields))
+
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list), entry_context, response_list
 
 
 def get_report_summary_command(
         client: Client,
         ids: list
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Get a short summary version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
-    response = client.get_report_summary(ids)
+    filtered_outputs_list = []
+    response_list = []
+    ids_list = argToList(ids)
 
-    resources_fields = ['id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
-                        "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
-                        "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
-                        "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
-                        "ioc_report_broad_maec_artifact_id"]
+    for single_id in ids_list:
+        response = client.get_report_summary(single_id)
+        response_list.append(response)
 
-    sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                     "filetyp", "filesize", "sha256"]
-    filtered_outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+        resources_fields = [
+            'id', 'verdict', 'created_timestamp', "ioc_report_strict_csv_artifact_id",
+            "ioc_report_broad_csv_artifact_id", "ioc_report_strict_json_artifact_id",
+            "ioc_report_broad_json_artifact_id", "ioc_report_strict_stix_artifact_id",
+            "ioc_report_broad_stix_artifact_id", "ioc_report_strict_maec_artifact_id",
+            "ioc_report_broad_maec_artifact_id"
+        ]
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+        sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
+                         "filetyp", "filesize", "sha256"]
+        filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
+                                                   sandbox_fields=sandbox_fields))
+
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list), entry_context, response_list
 
 
 def get_analysis_status_command(
         client: Client,
         ids: list
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Check the status of a sandbox analysis.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
-    response = client.get_analysis_status(ids)
+    filtered_outputs_list = []
+    response_list = []
+    ids_list = argToList(ids)
 
-    resources_fields = ['id', 'state', 'created_timestamp']
-    sandbox_fields = ["environment_id", "sha256"]
-    filtered_outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+    for single_id in ids_list:
+        response = client.get_analysis_status(single_id)
+        response_list.append(response)
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+        resources_fields = ['id', 'state', 'created_timestamp']
+        sandbox_fields = ["environment_id", "sha256"]
+        filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
+                                                   sandbox_fields=sandbox_fields))
+
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list), entry_context, response_list
 
 
 def download_ioc_command(
@@ -549,34 +571,34 @@ def download_ioc_command(
         id: str,
         name: str = "",
         accept_encoding: str = ""
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Download IOC packs, PCAP files, and other analysis artifacts.
     :param client: the client object with an access token
     :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
     :param name: the name given to your downloaded file
     :param accept_encoding: format used to compress your downloaded file
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.download_ioc(id, name, accept_encoding)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': response}
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': [response]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", response), entry_context, response
+    return tableToMarkdown("CrowdStrike Falcon X response:", response), entry_context, [response]
 
 
 def check_quota_status_command(
         client: Client
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Search endpoint contains File Hash.
     :param client: the client object with an access token
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.check_quota_status()
     quota_fields = ['total', 'used', 'in_progress']
 
     filtered_outputs = parse_outputs(response, quota_fields=quota_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
 def find_sandbox_reports_command(
@@ -585,22 +607,22 @@ def find_sandbox_reports_command(
         filter: str = "",
         offset: str = "",
         sort: str = "",
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Find sandbox reports by providing an FQL filter and paging details.
     :param client: the client object with an access token
     :param limit: maximum number of report IDs to return
     :param filter: optional filter and sort criteria in the form of an FQL query
     :param offset: the offset to start retrieving reports from.
     :param sort: sort order: asc or desc
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.find_sandbox_reports(limit, filter, offset, sort)
     resources_fields = ['id']
 
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
 def find_submission_id_command(
@@ -609,22 +631,22 @@ def find_submission_id_command(
         filter: str = "",
         offset: str = "",
         sort: str = "",
-) -> Tuple[str, dict, dict]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
     """Find submission IDs for uploaded files by providing an FQL filter and paging details.
     :param client: the client object with an access token
     :param limit: maximum number of report IDs to return
     :param filter: optional filter and sort criteria in the form of an FQL query
     :param offset: the offset to start retrieving reports from.
     :param sort: sort order: asc or desc
-    :return: Demisto outputs
+    :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.find_submission_id(limit, filter, offset, sort)
 
     resources_fields = ['id']
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
-    entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs}
+    entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, response
+    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
 def main():

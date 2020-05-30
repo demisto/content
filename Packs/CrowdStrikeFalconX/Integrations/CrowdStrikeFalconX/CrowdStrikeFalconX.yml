@@ -304,7 +304,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: D of a submitted malware sample. Find a submission ID from the
+      description: ID of a submitted malware sample. Find a submission ID from the
         response when submitting a malware sample or search with cs-fx-detonate-uploaded-file/url.
       isArray: true
       name: ids
@@ -391,7 +391,7 @@ script:
       description: Format used to compress your downloaded file. Currently, you must
         provide the value gzip, the only valid format.
       isArray: false
-      name: accept_encodong
+      name: accept_encoding
       required: false
       secret: false
     deprecated: false
@@ -606,5 +606,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-  tests:
-    - No test - no instance
