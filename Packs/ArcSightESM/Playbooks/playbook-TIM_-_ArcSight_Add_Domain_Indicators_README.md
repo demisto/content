@@ -8,26 +8,25 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 * ArcSight ESM v2
-* Builtin
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* appendIndicatorField
 * as-add-entries
+* appendIndicatorField
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| ArcSightBlackListDomainActiveListID | ID of the black list Domain Active List resource as it appears in ArcSight. |  |  | Optional |
-| ArcsightBlackDomainValueFieldName | The name of the black list Active List field to insert the Domain value to. |  |  | Optional |
-| ArcSightWhiteListDomainActiveListID | ID of the white list Domain Active List resource as appears in ArcSight. |  |  | Optional |
-| ArcsightWhiteListDomainValueFieldName | The name of the white list Active List field to insert the Domain value to. |  |  | Optional |
-| ArcSightWatchListDomainActiveListID | ID of the watch list Domain Active List resource as appears in ArcSight. |  |  | Optional |
-| ArcsightWatchListDomainValueFieldName | The name of the watch list Active List field to insert the Domain value to. |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| ArcSightBlackListDomainActiveListID | ID of the black list Domain Active List resource as it appears in ArcSight. |  | Optional |
+| ArcsightBlackDomainValueFieldName | The name of the black list Active List field to insert the Domain value to. |  | Optional |
+| ArcSightWhiteListDomainActiveListID | ID of the white list Domain Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightWhiteListDomainValueFieldName | The name of the white list Active List field to insert the Domain value to. |  | Optional |
+| ArcSightWatchListDomainActiveListID | ID of the watch list Domain Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightWatchListDomainValueFieldName | The name of the watch list Active List field to insert the Domain value to. |  | Optional |
 
 ## Playbook Outputs
 ---

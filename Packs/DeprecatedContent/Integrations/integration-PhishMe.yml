@@ -26,12 +26,10 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: URL Threshold (None, Minor, Moderate or Major). Minimum severity to consider

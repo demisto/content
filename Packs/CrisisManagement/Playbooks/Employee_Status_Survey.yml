@@ -373,11 +373,11 @@ tasks:
     nexttasks:
       '#default#':
       - '9'
-      yes:
+      'yes':
       - '16'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: lessThan
           left:
@@ -704,12 +704,12 @@ tasks:
     nexttasks:
       '#default#':
       - '27'
-      yes:
+      'yes':
       - '22'
       - '11'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -778,12 +778,12 @@ tasks:
     nexttasks:
       '#default#':
       - '29'
-      yes:
+      'yes':
       - '20'
       - '21'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:

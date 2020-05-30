@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.constants import INTEGRATIONS_DIR, SCRIPTS_DIR,
     DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, INDICATOR_TYPES_DIR
 from demisto_sdk.commands.common.tools import print_error, print_warning, get_last_release_version, \
     filter_packagify_changes, is_file_path_in_pack, \
-    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
+    run_command, server_version_compare, old_get_release_notes_file_path, old_get_latest_release_notes_text, get_remote_file
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 
 CONTENT_LIB_PATH = "./"
@@ -73,7 +73,7 @@ def add_dot(text):
 
 
 def release_notes_item(header, body):
-    return '- __{}__\n{}\n'.format(header, add_dot(body))
+    return '- __{}__  \n{}\n'.format(header, add_dot(body))
 
 
 class Content(object):  # pylint: disable=useless-object-inheritance
@@ -109,9 +109,9 @@ class Content(object):  # pylint: disable=useless-object-inheritance
         :param data: object data
         :return: raw release notes or None in case of an error.
         """
-        release_note_path = get_release_notes_file_path(file_path)
+        release_note_path = old_get_release_notes_file_path(file_path)
 
-        return get_latest_release_notes_text(release_note_path)
+        return old_get_latest_release_notes_text(release_note_path)
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
@@ -178,7 +178,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
                     if ans is None:
                         print_error("Error:\n[{}] is missing releaseNotes entry, Please add it under {}".format(
-                            path, get_release_notes_file_path(path)))
+                            path, old_get_release_notes_file_path(path)))
                         self.is_missing_release_notes = True
                     elif ans:
                         new_count += 1
@@ -589,7 +589,7 @@ def get_release_notes_draft(github_token, asset_id):
 def create_content_descriptor(version, asset_id, res, github_token, beta_rn=None):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
-    release_notes = '## Demisto Content Release Notes for version {} ({})\n'.format(version, asset_id)
+    release_notes = '# Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
     release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"), res)
     content_descriptor = {
         "installDate": "0001-01-01T00:00:00Z",
@@ -615,7 +615,7 @@ def create_content_descriptor(version, asset_id, res, github_token, beta_rn=None
 
     print("saving beta release notes")
     with open('beta-release-notes.md', 'w') as outfile:
-        beta_release_notes = '## Demisto Content Beta Release Notes for version {}\n'.format(NEXT_VERSION)
+        beta_release_notes = '## Cortex XSOAR Content Beta Release Notes for version {}\n'.format(NEXT_VERSION)
         beta_release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"),
                                                                  beta_rn)
         outfile.write(beta_rn)

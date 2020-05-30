@@ -1688,7 +1688,7 @@
 <li>Set the <strong>key</strong> field using this format: FireEye HX.&lt;<em>command-name</em>&gt;.timeout.</li>
 <li>Set the <strong>value</strong> field to the desired time limit for the command to run (in minutes).</li>
 </ol>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/FireEyeHX_mceclip0.png" width="814" height="123"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/FireEyeHX_mceclip0.png" width="814" height="123"></p>
 <p> </p>
 <h2>Known Limitations</h2>
 <h3>Acquisitions limitations</h3>

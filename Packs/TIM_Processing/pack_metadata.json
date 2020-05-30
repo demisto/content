@@ -1,22 +1,18 @@
 {
-    "name": "TIM - Processing",
-    "description": "TIM threat intel management package for processing and working with indicators.",
-    "support": "xsoar",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "",
-    "email": "",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "TIM"
-    ],
-    "created": "2020-05-13T09:34:42Z",
-    "updated": "2020-05-13T09:34:42Z",
-    "beta": false,
-    "deprecated": false,
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+  "name": "TIM - Processing",
+  "description": "TIM threat intel management package for processing and working with indicators.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-05-13T09:34:42Z",
+  "categories": [
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "TIM"
+  ],
+  "useCases": [],
+  "keywords": []
 }

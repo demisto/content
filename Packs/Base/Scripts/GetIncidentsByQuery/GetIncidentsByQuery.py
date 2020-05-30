@@ -1,9 +1,12 @@
-from CommonServerPython import *
 import pickle
 import re
 import uuid
 from datetime import datetime, timedelta
 from dateutil import parser
+
+from CommonServerPython import *
+
+PREFIXES_TO_REMOVE = ['incident.']
 
 
 def parse_datetime(datetime_str):
@@ -25,7 +28,6 @@ def parse_relative_time(datetime_str):
             elif unit == 'months':
                 number *= 43800
                 unit = 'minutes'
-
             kargs = {}
             kargs[unit] = int(number)
             result = datetime.now() - timedelta(**kargs)
@@ -55,8 +57,8 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
     if to_date:
         to_part = '%s:<"%s"' % (time_field, parse_datetime(to_date))
         query_parts.append(to_part)
-    if non_empty_fields:
-        non_empty_fields_part = " and ".join(map(lambda x: "%s:*" % x, non_empty_fields.split(",")))
+    if len(non_empty_fields) > 0:
+        non_empty_fields_part = " and ".join(map(lambda x: "%s:*" % x, non_empty_fields))
         query_parts.append(non_empty_fields_part)
     if len(query_parts) == 0:
         return_error("Incidents query is empty - please fill one of the arguments")
@@ -89,24 +91,38 @@ def get_comma_sep_list(value):
     return map(lambda x: x.strip(), value.split(","))
 
 
+def preprocess_incidents_fields_list(incidents_fields):
+    res = []
+    for field in incidents_fields:
+        field = field.strip()
+        for prefix in PREFIXES_TO_REMOVE:
+            if field.startswith(prefix):
+                field = field[len(prefix):]
+            res.append(field)
+    return res
+
+
 def main():
     # fetch query
-    query = build_incidents_query(demisto.args().get('query'),
-                                  demisto.args().get('incidentTypes'),
-                                  demisto.args()['timeField'],
-                                  demisto.args().get('fromDate'),
-                                  demisto.args().get('toDate'),
-                                  demisto.args().get('NonEmptyFields'))
-
-    incident_list = get_incidents(query, demisto.args()['timeField'],
-                                  int(demisto.args()['limit']),
-                                  demisto.args().get('fromDate'))
-    fields_to_populate = demisto.args().get('populateFields')
-    if fields_to_populate:
-        fields_to_populate = get_comma_sep_list(fields_to_populate)
-        fields_to_populate += get_comma_sep_list(demisto.args().get('NonEmptyFields', ''))
-        fields_to_populate = set([x for x in fields_to_populate if x])
-    include_context = demisto.args()['includeContext'] == 'true'
+    d_args = dict(demisto.args())
+    for arg_name in ['NonEmptyFields', 'populateFields']:
+        split_argument_list = get_comma_sep_list(d_args.get(arg_name, ''))
+        split_argument_list = [x for x in split_argument_list if len(x) > 0]
+        d_args[arg_name] = preprocess_incidents_fields_list(split_argument_list)
+    query = build_incidents_query(d_args.get('query'),
+                                  d_args.get('incidentTypes'),
+                                  d_args['timeField'],
+                                  d_args.get('fromDate'),
+                                  d_args.get('toDate'),
+                                  d_args.get('NonEmptyFields'))
+    incident_list = get_incidents(query, d_args['timeField'],
+                                  int(d_args['limit']),
+                                  d_args.get('fromDate'))
+    fields_to_populate = d_args.get('populateFields')   # type: ignore
+    if len(fields_to_populate) > 0:  # type: ignore
+        fields_to_populate += d_args['NonEmptyFields']
+        fields_to_populate = set([x for x in fields_to_populate if x])  # type: ignore
+    include_context = d_args['includeContext'] == 'true'
     # extend incidents fields \ context
     new_incident_list = []
     for i in incident_list:
@@ -125,7 +141,7 @@ def main():
     # output
     file_name = str(uuid.uuid4())
 
-    output_format = demisto.args()['outputFormat']
+    output_format = d_args['outputFormat']
     if output_format == 'pickle':
         data_encoded = pickle.dumps(incident_list)
     elif output_format == 'json':

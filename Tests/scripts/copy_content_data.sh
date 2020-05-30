@@ -9,6 +9,9 @@ USER="ec2-user"
 echo "[`date`] ${PUBLIC_IP}: add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 
+MOCKS_SETUP_DEPS_COMMAND=`cat ./Tests/scripts/ami_mock_dependencies_setup.sh`
+ssh ${USER}@${PUBLIC_IP} "eval ${MOCKS_SETUP_DEPS_COMMAND}" &>/dev/null
+
 echo "[`date`] ${PUBLIC_IP}: start server"
 
 START_SERVER_COMMAND="sudo systemctl start demisto"
