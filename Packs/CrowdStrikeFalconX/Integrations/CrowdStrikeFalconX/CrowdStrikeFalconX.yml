@@ -592,7 +592,6 @@ script:
     description: Download IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-
   dockerimage: demisto/python3:3.8.3.8494
   feed: false
   isfetch: false
