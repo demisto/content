@@ -1,5 +1,5 @@
-id: 8dc4f8c3-e906-4e39-8739-2f1824555646
-version: 35
+id: FalconX - Detonate URL
+version: -1
 name: FalconX - Detonate URL
 description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
   This playbook returns relevant reports to the War Room and file reputations to the

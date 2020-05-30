@@ -163,9 +163,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: |-
-        ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with
-        cs-fx-detonate-uploaded-file.
+      description: ID of a submitted malware sample. Find a submission ID from the
+        response when submitting a malware sample or search with cs-fx-detonate-uploaded-file.
       isArray: true
       name: ids
       required: true
@@ -304,7 +303,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: D of a submitted malware sample. Find a submission ID from the
+      description: ID of a submitted malware sample. Find a submission ID from the
         response when submitting a malware sample or search with cs-fx-detonate-uploaded-file/url.
       isArray: true
       name: ids
@@ -373,36 +372,6 @@ script:
       description: ID of IOC pack to download
       type: String
   - arguments:
-    - default: false
-      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image.
-        Find an artifact ID in a report or summary.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: The name given to your downloaded file.
-      isArray: false
-      name: name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: gzip
-      description: Format used to compress your downloaded file. Currently, you must
-        provide the value gzip, the only valid format.
-      isArray: false
-      name: accept_encodong
-      required: false
-      secret: false
-    deprecated: false
-    description: Download IOC packs, PCAP files, and other analysis artifacts.
-    execution: false
-    name: cs-fx-download-ioc
-  - arguments:
-    - default: false
-      isArray: false
-      required: false
-      secret: false
     deprecated: false
     description: Search endpoint contains File Hash
     execution: false
@@ -597,7 +566,33 @@ script:
     - contextPath: csfalconx.resource.environment_id
       description: Environment ID of the analysis
       type: Unknown
-  dockerimage: demisto/python3:3.8.2.6981
+  - arguments:
+    - default: false
+      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image.
+        Find an artifact ID in a report or summary.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The name given to your downloaded file.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: gzip
+      description: Format used to compress your downloaded file. Currently, you must
+        provide the value gzip, the only valid format.
+      isArray: false
+      name: accept_encoding
+      required: false
+      secret: false
+    deprecated: false
+    description: Download IOC packs, PCAP files, and other analysis artifacts.
+    execution: false
+    name: cs-fx-download-ioc
+  dockerimage: demisto/python3:3.8.3.8494
   feed: false
   isfetch: false
   longRunning: false
@@ -606,5 +601,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  tests:
-    - No test - no instance
+tests:
+  - No tests - no instance

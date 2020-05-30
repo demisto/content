@@ -1,6 +1,6 @@
-id: 64d57c19-95fd-4b26-8e25-48e49b88b295
-version: 11
-name: FalconX - Test-Detonate File
+id: FalconX - Test-Detonate URL
+version: -1
+name: FalconX - Test-Detonate URL
 starttaskid: "0"
 tasks:
   "0":
@@ -64,42 +64,31 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: ec7e6444-ec59-4b3d-8c35-aeb9508939d0
+    taskid: 388c23ee-ab6f-4ea7-8af6-70302f35822f
     type: regular
     task:
-      id: ec7e6444-ec59-4b3d-8c35-aeb9508939d0
+      id: 388c23ee-ab6f-4ea7-8af6-70302f35822f
       version: -1
-      name: Set File
-      description: Sends http request. Returns the response as json.
-      scriptName: http
+      name: Set URL
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
-      body: {}
-      filename:
-        simple: test.pdf
-      headers: {}
-      insecure: {}
-      method:
-        simple: GET
-      password: {}
-      proxy: {}
-      saveAsFile:
-        simple: "yes"
-      unsecure: {}
-      url:
-        simple: http://www.pdf995.com/samples/pdf.pdf
-      username: {}
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.google.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 380
+          "y": 370
         }
       }
     note: false
@@ -107,15 +96,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 583889be-6fbe-42e9-86da-962df691794d
+  "5":
+    id: "5"
+    taskid: a19f504f-57d7-467a-807e-54d194efc612
     type: playbook
     task:
-      id: 583889be-6fbe-42e9-86da-962df691794d
+      id: a19f504f-57d7-467a-807e-54d194efc612
       version: -1
-      name: FalconX - Detonate File
-      playbookName: FalconX - Detonate File
+      name: FalconX - Detonate URL
+      playbookName: FalconX - Detonate URL
       type: playbook
       iscommand: false
       brand: ""
@@ -124,7 +113,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 570
+          "y": 575
         }
       }
     note: false
@@ -137,7 +126,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 615,
+        "height": 620,
         "width": 380,
         "x": 50,
         "y": 50

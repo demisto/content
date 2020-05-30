@@ -1,5 +1,5 @@
-id: 11fc9f27-2d0e-4706-804d-4a5923551051
-version: 23
+id: FalconX - Detonate File
+version: -1
 name: FalconX - Detonate File
 description: |-
   Detonates a File using the McAfee Advanced Threat Defense sandbox.
