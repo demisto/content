@@ -937,7 +937,7 @@ def reactivate_report_command(client: Client, args: Dict) -> str:
 
     client.reactivate_report_request(report_id)
 
-    return f'Report with report_id "{report_id}" and all contained IOCs will match future events for all watchlists'
+    return f'Report with report_id "{report_id}" and all contained IOCs will match future events for all watchlists.'
 
 
 def get_report_ignore_status_command(client: Client, args: Dict) -> str:
