@@ -23,7 +23,7 @@ from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEG
     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
 from demisto_sdk.commands.common.tools import server_version_compare
 from Tests.update_content_data import update_content
-from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, PACKS_PATH
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
 MARKET_PLACE_MACHINES = ('master',)
 
