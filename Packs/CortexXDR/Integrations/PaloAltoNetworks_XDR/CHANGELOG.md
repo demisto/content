@@ -1,6 +1,14 @@
 ## [Unreleased]
 
-
+## [20.5.0] - 2020-05-29
+  - Added new commands.
+    - ***xdr-blacklist-files***
+    - ***xdr-whitelist-files***
+    - ***xdr-quarantine-files***
+    - ***xdr-get-quarantine-status***
+    - ***xdr-restore-file***
+    - ***xdr-endpoint-scan***
+  - Added get-quarantine-file-status playbook.
 ## [20.4.1] - 2020-04-29
 - Fixed an issue where the ***xdr-get-endpoints*** command failed when returning all the endpoints if no filters were given. 
 
