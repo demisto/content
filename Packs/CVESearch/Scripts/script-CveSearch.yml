@@ -1,6 +1,6 @@
 commonfields:
   id: c99e196b-e05e-41f2-82cb-6798f33cb653
-  version: 32
+  version: -1
 name: cveSearch
 script: |2
 
@@ -56,3 +56,5 @@ dependson:
   must:
   - cve-search
 timeout: 0s
+tests:
+- No tests (auto formatted)

@@ -6,13 +6,9 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2020-05-14T08:33:25Z",
     "categories": [],
     "tags": [],
-    "created": "2020-05-14T08:33:25Z",
-    "updated": "2020-05-14T08:33:25Z",
-    "beta": false,
-    "deprecated": false,
     "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+    "keywords": []
 }

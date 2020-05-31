@@ -40,9 +40,18 @@ configuration:
   name: first_run
   required: false
   type: 0
+- display: Minimum severity of Expanse Exposure to create an incident for
+  hidden: false
+  name: minimum_severity
+  required: false
+  type: 15
+  options:
+  - ROUTINE
+  - WARNING
+  - CRITICAL
 description: The Expanse App for Demisto leverages the Expander API to retrieve network
-  exposures and create incidents in Demisto.  This application also allows for IP
-  and Domain enrichment, retrieving assets and exposures information drawn from Expanse’s
+  exposures and risky flows to create incidents in Demisto.  This application also allows for IP,
+  Domain, Certificate, Behavior, and Exposure enrichment, retrieving assets and exposures information drawn from Expanse’s
   unparalleled view of the Internet.
 display: Expanse
 name: Expanse

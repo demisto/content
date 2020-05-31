@@ -394,3 +394,5 @@ outputs:
 - contextPath: CVE.Description
   description: The CVE description
   type: string
+tests:
+- No tests (auto formatted)

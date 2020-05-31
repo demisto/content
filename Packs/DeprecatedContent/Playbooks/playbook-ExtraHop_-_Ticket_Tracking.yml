@@ -1,6 +1,5 @@
 id: ExtraHop - Ticket Tracking
 version: -1
-fromversion: 4.5.0
 name: ExtraHop - Ticket Tracking
 description: Links the Demisto incident back to the ExtraHop detection that created
   it for ticket tracking purposes.
@@ -14,9 +13,9 @@ tasks:
       id: 71394f2c-bc76-4885-8bab-b55ce0094789
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -90,10 +89,10 @@ tasks:
       id: f4953d89-2219-4d74-8acf-d819728d0ac9
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -245,15 +244,14 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 8185a734-72c0-4461-83d4-774c4cc8652a
+    taskid: 695438ce-bf6a-43e8-8d73-3b314c1ea1e5
     type: regular
     task:
-      id: 8185a734-72c0-4461-83d4-774c4cc8652a
+      id: 695438ce-bf6a-43e8-8d73-3b314c1ea1e5
       version: -1
       name: Search for any untracked ExtraHop Detections
-      description: Searches Demisto incidents for any ExtraHop Detections that are
-        untracked.
-      scriptName: SearchIncidents
+      description: Searches Demisto incidents for any ExtraHop Detections that are untracked.
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
@@ -736,9 +734,11 @@ view: |-
 inputs:
 - key: OnCall
   value:
-    simple: false
+    simple: "false"
   required: false
-  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
 outputs: []
+fromversion: 4.5.0
 tests:
 - ExtraHop_v2-Test

@@ -1,21 +1,16 @@
 {
-    "name": "SecBI",
-    "description": "A threat, intelligence, and investigation platform, enabled by automation of detection and investigation, including remediation and prevention policy enforcements on all integrated appliances.",
-    "support": "partner",
-    "currentVersion": "1.0.0",
-    "author": "SecBI",
-    "url": "https://www.secbi.com",
-    "email": "",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [],
-    "created": "2020-04-14T00:00:00Z",
-    "updated": "2020-03-14T00:00:00Z",
-    "beta": false,
-    "deprecated": false,
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {},
-    "displayedImages": []
+  "name": "SecBI",
+  "description": "A threat, intelligence, and investigation platform, enabled by automation of detection and investigation, including remediation and prevention policy enforcements on all integrated appliances.",
+  "support": "partner",
+  "currentVersion": "1.0.0",
+  "author": "SecBI",
+  "url": "https://www.secbi.com",
+  "email": "",
+  "created": "2020-04-14T00:00:00Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
 }

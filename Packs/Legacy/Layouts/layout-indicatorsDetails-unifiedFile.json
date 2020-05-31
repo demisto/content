@@ -514,7 +514,26 @@
 						"displayType": "CARD",
 						"h": 2,
 						"i": "main-f2c99c60-6f4f-11ea-a717-9facf5f245ed",
-						"items": [],
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "threatcategory",
+								"height": 24,
+								"id": "1cf1e851-4e74-11ea-8bf6-67db400d7da8",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "threatcategoryconfidence",
+								"height": 24,
+								"id": "1cf1e870-4e74-11ea-8bf6-67db400d7da8",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
