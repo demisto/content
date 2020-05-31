@@ -661,7 +661,7 @@ class Pack(object):
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
                         version_changelog = {'releaseNotes': changelog_lines,
-                                             'displayName': f'{latest_release_notes} ({build_number})',
+                                             'displayName': f'{latest_release_notes} - {build_number}',
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
 
@@ -675,7 +675,7 @@ class Pack(object):
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
                 changelog = {}
                 version_changelog = {'releaseNotes': self._description,
-                                     'displayName': f'{Pack.PACK_INITIAL_VERSION} ({build_number})',
+                                     'displayName': f'{Pack.PACK_INITIAL_VERSION} - {build_number}',
                                      'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                 changelog[Pack.PACK_INITIAL_VERSION] = version_changelog
 
