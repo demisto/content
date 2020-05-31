@@ -7,9 +7,13 @@ import demisto_client
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list
 
+PACKS_PATH = './Packs'
+PACK_METADATA_FILE = 'pack_metadata.json'
+PACKS_TO_IGNORE = ['NonSupported']
+
 
 def get_pack_display_name(pack_id):
-    metadata_path = './Packs/{}/pack_metadata.json'.format(pack_id)
+    metadata_path = os.path.join(PACKS_PATH, pack_id, PACK_METADATA_FILE)
     if pack_id and os.path.isfile(metadata_path):
         with open(metadata_path, 'r') as json_file:
             pack_metadata = json.load(json_file)
@@ -222,7 +226,8 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
 
 
 def add_pack_to_installation_request(pack_id, installation_request_body):
-    with open('./Packs/{}/pack_metadata.json'.format(pack_id), 'r') as json_file:
+    metadata_path = os.path.join(PACKS_PATH, pack_id, PACK_METADATA_FILE)
+    with open(metadata_path, 'r') as json_file:
         pack_metadata = json.load(json_file)
         version = pack_metadata.get('currentVersion')
         installation_request_body.append({
@@ -231,38 +236,49 @@ def add_pack_to_installation_request(pack_id, installation_request_body):
         })
 
 
-def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager):
+def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, is_nightly=False):
     """ Searches for the packs from the specified list, searches their dependencies, and then installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
         prints_manager (ParallelPrintsManager): A prints manager object.
+        is_nightly (bool): Whether or not the build is a nightly build.
 
     Returns (list): A list of the installed packs' ids.
     """
-    lock = Lock()
-    threads_list = []
-
-    packs_to_install = ['Base', 'DeveloperTools']  # we save all the packs we want to install, to avoid duplications
-    installation_request_body = []  # the packs to install, in the request format
-    for pack_id in packs_to_install:
-        add_pack_to_installation_request(pack_id, installation_request_body)
-
     host = client.api_client.configuration.host
     msg = 'Starting to search and install packs in server: {}\n'.format(host)
     prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
-    for pack_id in pack_ids:
-        thread = Thread(target=search_pack_and_its_dependencies,
-                        kwargs={'client': client,
-                                'prints_manager': prints_manager,
-                                'pack_id': pack_id,
-                                'packs_to_install': packs_to_install,
-                                'installation_request_body': installation_request_body,
-                                'lock': lock})
-        threads_list.append(thread)
-    run_threads_list(threads_list)
+    packs_to_install = []  # we save all the packs we want to install, to avoid duplications
+    installation_request_body = []  # the packs to install, in the request format
+
+    if not is_nightly:
+        lock = Lock()
+        threads_list = []
+
+        packs_to_install.extend(['Base', 'DeveloperTools'])
+        for pack_id in packs_to_install:
+            add_pack_to_installation_request(pack_id, installation_request_body)
+
+        for pack_id in pack_ids:
+            thread = Thread(target=search_pack_and_its_dependencies,
+                            kwargs={'client': client,
+                                    'prints_manager': prints_manager,
+                                    'pack_id': pack_id,
+                                    'packs_to_install': packs_to_install,
+                                    'installation_request_body': installation_request_body,
+                                    'lock': lock})
+            threads_list.append(thread)
+        run_threads_list(threads_list)
+
+    else:
+        # install all packs for nightly build
+        for pack_id in os.listdir(PACKS_PATH):
+            if pack_id not in PACKS_TO_IGNORE:
+                packs_to_install.append(pack_id)
+                add_pack_to_installation_request(pack_id, installation_request_body)
 
     install_packs(client, host, prints_manager, installation_request_body)
 

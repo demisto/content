@@ -23,10 +23,9 @@ from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEG
     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
 from demisto_sdk.commands.common.tools import server_version_compare
 from Tests.update_content_data import update_content
-from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, PACKS_PATH
 
 MARKET_PLACE_MACHINES = ('master',)
-PACKS_PATH = 'Packs'
 
 
 def options_handler():
@@ -689,13 +688,10 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         print_error(msg)
 
 
-def get_pack_ids_to_install(is_nightly):
-    if is_nightly:
-        return os.listdir(PACKS_PATH)
-    else:
-        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
-            pack_ids = packs_stream.readlines()
-            return [pack_id.rstrip('\n') for pack_id in pack_ids]
+def get_pack_ids_to_install():
+    with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+        pack_ids = packs_stream.readlines()
+        return [pack_id.rstrip('\n') for pack_id in pack_ids]
 
 
 def main():
@@ -762,13 +758,13 @@ def main():
     installed_content_packs_successfully = True
 
     if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
-        pack_ids = get_pack_ids_to_install(options.is_nightly)
+        pack_ids = get_pack_ids_to_install()
         # install content packs in every server
         try:
             for server_url in servers:
                 client = demisto_client.configure(base_url=server_url, username=username, password=password,
                                                   verify_ssl=False)
-                search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, options.is_nightly)
         except Exception as e:
             prints_manager.add_print_job(str(e), print_error, 0)
             prints_manager.execute_thread_prints(0)
