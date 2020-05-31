@@ -31,6 +31,7 @@ class GCPConfig(object):
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
+    PRODUCTION_BUCKET = "marketplace-dist"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
@@ -309,7 +310,14 @@ class Pack(object):
             dependency_integration_images = dependency_data.get('integrations', [])
 
             for dependency_integration in dependency_integration_images:
-                if dependency_integration not in pack_integration_images:
+                dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
+                dependency_pack_name = os.path.basename(
+                    os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
+
+                if dependency_pack_name not in display_dependencies_images:
+                    continue  # skip if integration image is not part of displayed pack
+
+                if dependency_integration not in pack_integration_images:  # avoid duplicates in list
                     pack_integration_images.append(dependency_integration)
 
         return pack_integration_images
@@ -829,7 +837,9 @@ class Pack(object):
                         })
                     elif current_directory == PackFolders.WIDGETS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', "")
+                            'name': content_item.get('name', ""),
+                            'dataType': content_item.get('dataType', ""),
+                            'widgetType': content_item.get('widgetType', "")
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
