@@ -78,4 +78,3 @@ def test_get_shifts(mocker):
 | Sunday 08:00 | Tuesday 12:00 | 
 | Wednesday 16:00 | Friday 20:00 |
 """
-

@@ -21,6 +21,7 @@ DAY_NUM_TO_DAY_HEADER = {
     6: SATURDAY_HEADER
 }
 
+
 def time_fix(t):
     # If the time is a single number padd it with zeros
     if t % 10 < 1:
