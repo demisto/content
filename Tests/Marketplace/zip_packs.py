@@ -142,6 +142,9 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
             else:
                 print_warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
 
+    if not zipped_packs:
+        print_error('Did not find any pack to download from GCP.')
+        sys.exit(1)
     return zipped_packs
 
 
