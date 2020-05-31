@@ -437,6 +437,7 @@ class PCAP():
             pcap_filter_new_file_path: The new path to save the filtered PCAP in
 
         """
+        cap = None
         try:
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
                                       decryption_key=wpa_password, encryption_type='WPA-PWD', keep_packets=False)
@@ -546,7 +547,8 @@ class PCAP():
             raise ValueError("Could not find packets. Make sure that the file is a .cap/.pcap/.pcapng file, "
                              "the filter is of the correct syntax and that the rsa key is added correctly.")
         finally:
-            cap.close()
+            if cap:
+                cap.close()
 
 
 '''HELPER FUNCTIONS'''

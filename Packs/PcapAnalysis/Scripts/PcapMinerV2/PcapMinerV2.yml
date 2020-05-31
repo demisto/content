@@ -407,7 +407,7 @@ timeout: '0'
 type: python
 dockerimage: demisto/pcap-http-extractor:1.0.0.4873
 runas: DBotWeakRole
-runonce: false
+runonce: true
 tests:
 - No tests (auto formatted)
 subtype: python3
