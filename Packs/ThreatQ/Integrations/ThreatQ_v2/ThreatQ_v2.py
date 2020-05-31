@@ -87,7 +87,7 @@ RELATED_KEY = {
 }
 
 CONTEXT_PATH = {
-    'indicator': 'ThreatQ.Indicator(val.ID === obj.ID)',
+    'indicator': 'ThreatQ.Indicator((val.ID && val.ID === obj.ID) || (val.Value && val.Value === obj.Value))',
     'adversary': 'ThreatQ.Adversary(val.ID === obj.ID)',
     'event': 'ThreatQ.Event(val.ID === obj.ID)',
     'attachment': 'ThreatQ.File(val.ID === obj.ID)'
