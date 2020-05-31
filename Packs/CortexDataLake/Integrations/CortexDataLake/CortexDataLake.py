@@ -546,7 +546,7 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
 
     records, raw_results = client.query_loggings(query)
 
-    table_name = get_table_name(records)
+    table_name = get_table_name(query)
     transformed_results = [common_context_transformer(record) for record in records]
     human_readable = tableToMarkdown('Logs ' + table_name + ' table', transformed_results, removeNull=True)
     ec = {
@@ -555,16 +555,20 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
     return human_readable, ec, raw_results
 
 
-def get_table_name(records: List[Dict[str, Any]]):
+def get_table_name(query: str) -> str:
     """
     Table name is stored in log_type attribute of the records
     Args:
-        records: Records to get the table name of
+        query: Query string, i.e SELECT * FROM firewall.threat LIMIT 1
 
     Returns:
-        The records table name
+        The query's table name
     """
-    return next(record.get('log_type', {}).get('value') for record in records if record.get('log_type')) or ''
+    find_table_name_from_query = r'(FROM `)(\w+.\w+)(`)'
+    search_result = re.search(find_table_name_from_query, query)
+    if search_result:
+        return search_result.group(2)
+    return "Unrecognized table name"
 
 
 def get_critical_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[dict]], List[Dict[str, Any]]]:
