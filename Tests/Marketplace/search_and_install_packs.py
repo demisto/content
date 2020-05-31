@@ -7,11 +7,11 @@ import demisto_client
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list
 # todo: uncomment
-from Tests.Marketplace.marketplace_services import IGNORED_FILES, PACKS_FULL_PATH
+# from Tests.Marketplace.marketplace_services import IGNORED_FILES, PACKS_FULL_PATH
 
 # todo: remove 2 lines
-# IGNORED_FILES = ['NonSupported', 'ApiModules', '__init__.py']
-# PACKS_FULL_PATH = 'Packs'
+IGNORED_FILES = ['NonSupported', 'ApiModules', '__init__.py']
+PACKS_FULL_PATH = 'Packs'
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 
@@ -159,7 +159,7 @@ def search_pack(client, prints_manager, pack_display_name):
         raise Exception(err_msg)
 
 
-def install_packs(client, host, prints_manager, packs_to_install, installed_packs):
+def install_packs(client, host, prints_manager, packs_to_install):
     """ Make a packs installation request.
 
     Args:
@@ -167,7 +167,6 @@ def install_packs(client, host, prints_manager, packs_to_install, installed_pack
         host (str): The server URL.
         prints_manager (ParallelPrintsManager): Print manager object.
         packs_to_install (list): A list of the packs to install.
-        installed_packs (list): A list of the packs already installed.
     """
 
     request_data = {
@@ -312,3 +311,11 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         install_packs(client, host, prints_manager, installation_request_body)
 
     return installed_packs
+
+
+apikey = '0248676162E8EAF15F9F25363618E227'
+host = 'https://ec2-34-222-130-94.us-west-2.compute.amazonaws.com'
+client = demisto_client.configure(base_url=host, api_key=apikey, verify_ssl=False)
+from Tests.test_content import ParallelPrintsManager
+prints_manager = ParallelPrintsManager(1)
+search_and_install_packs_and_their_dependencies([], client, prints_manager, is_nightly=True)
