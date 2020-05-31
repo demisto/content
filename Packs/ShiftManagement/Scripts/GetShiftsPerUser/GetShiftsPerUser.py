@@ -34,7 +34,7 @@ def main():
     user_id = demisto.args().get('userId', False)
     if not user_id:
         get_users_res: List = demisto.executeCommand("getUsers",
-                                                          {"current": True})
+                                                     {"current": True})
         if is_error(get_users_res):
             return_error(
                 f'Failed to get users: {str(get_error(get_users_res))}')
