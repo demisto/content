@@ -6,14 +6,13 @@ import json
 import demisto_client
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list
+from Tests.Marketplace.marketplace_services import IGNORED_FILES, PACKS_FULL_PATH
 
-PACKS_PATH = './Packs'
 PACK_METADATA_FILE = 'pack_metadata.json'
-PACKS_TO_IGNORE = ['NonSupported']
 
 
 def get_pack_display_name(pack_id):
-    metadata_path = os.path.join(PACKS_PATH, pack_id, PACK_METADATA_FILE)
+    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
     if pack_id and os.path.isfile(metadata_path):
         with open(metadata_path, 'r') as json_file:
             pack_metadata = json.load(json_file)
@@ -226,7 +225,7 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
 
 
 def add_pack_to_installation_request(pack_id, installation_request_body):
-    metadata_path = os.path.join(PACKS_PATH, pack_id, PACK_METADATA_FILE)
+    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
     with open(metadata_path, 'r') as json_file:
         pack_metadata = json.load(json_file)
         version = pack_metadata.get('currentVersion')
@@ -275,8 +274,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
 
     else:
         # install all packs for nightly build
-        for pack_id in os.listdir(PACKS_PATH):
-            if pack_id not in PACKS_TO_IGNORE:
+        for pack_id in os.listdir(PACKS_FULL_PATH):
+            if pack_id not in IGNORED_FILES:
                 packs_to_install.append(pack_id)
                 add_pack_to_installation_request(pack_id, installation_request_body)
 
