@@ -387,9 +387,9 @@ Get remediation details for a given alert
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Remediation.cliDescription | string | Description of CLI remediation instructions | 
-| Redlock.Remediation.scriptImpact | string | Summary of remediation impact | 
-| Redlock.Remediation.alertIdVsCliScript | string | Exact CLI command string | 
+| Redlock.Alert.Remediation.Description | string | Description of CLI remediation instructions | 
+| Redlock.Alert.ID | string | The ID of the alert for which the remediation details applies | 
+| Redlock.Alert.Remediation.CLI | string | Exact CLI command string | 
 
 
 #### Command Example
@@ -399,12 +399,12 @@ Get remediation details for a given alert
 ```
 {
     "Redlock": {
-        "Remediation": {
-            "alertIdVsCliScript": {
-                "P-214016": "aws --region us-west-2 ec2 revoke-security-group-ingress --group-id sg-98vc98sd76sd --ip-permissions '[{\"IpProtocol\": \"tcp\", \"IpRanges\":[{\"CidrIp\": \"0.0.0.0/0\"}]}]' ; aws --region us-west-2 ec2 authorize-security-group-ingress --group-id sg-98vc98sd76sd --ip-permissions '[{\"IpProtocol\": \"tcp\", \"FromPort\": 22, \"ToPort\": 22, \"IpRanges\":[{\"CidrIp\": \"10.0.0.0/8\", \"Description\": \"Enforced by Redlock Remediation\"}]}]'"
-            },
-            "cliDescription": "\"This CLI command requires 'ec2:RevokeSecurityGroupIngress' permission. Successful execution will update the security group to revoke the ingress rule records open to internet either on IPv4 or on IPv6 protocol.\"} To resolve the alert from Prisma Cloud's console, add the permission.",
-            "scriptImpact": "modify resource configuration"
+        "Alert": {
+            "ID": "P-214016",
+            "Remediation": {
+                "CLI": "aws --region us-west-2 ec2 revoke-security-group-ingress --group-id sg-984392384bkhjb --ip-permissions '[{\"IpProtocol\": \"tcp\", \"IpRanges\":[{\"CidrIp\": \"0.0.0.0/0\"}]}]' ; aws --region us-west-1 ec2 authorize-security-group-ingress --group-id sg-98237498798 --ip-permissions '[{\"IpProtocol\": \"tcp\", \"FromPort\": 22, \"ToPort\": 22, \"IpRanges\":[{\"CidrIp\": \"10.0.0.0/8\", \"Description\": \"Enforced by Redlock Remediation\"}]}]'",
+                "Description": "\"This CLI command requires 'ec2:RevokeSecurityGroupIngress' permission. Successful execution will update the security group to revoke the ingress rule records open to internet either on IPv4 or on IPv6 protocol.\"} To resolve the alert from Prisma Cloud's console, add the permission."
+            }
         }
     }
 }
@@ -413,7 +413,7 @@ Get remediation details for a given alert
 #### Human Readable Output
 
 >### remediationCLIoutput
->|alertIdVsCliScript|cliDescription|scriptImpact|
->|---|---|---|
->| P-214016: aws --region us-west-2 ec2 revoke-security-group-ingress --group-id sg-98vc98sd76sd --ip-permissions '[{"IpProtocol": "tcp", "IpRanges":[{"CidrIp": "0.0.0.0/0"}]}]' ; aws --region us-west-2 ec2 authorize-security-group-ingress --group-id sg-98vc98sd76sd --ip-permissions '[{"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22, "IpRanges":[{"CidrIp": "10.0.0.0/8", "Description": "Enforced by Redlock Remediation"}]}]' | "This CLI command requires 'ec2:RevokeSecurityGroupIngress' permission. Successful execution will update the security group to revoke the ingress rule records open to internet either on IPv4 or on IPv6 protocol."} To resolve the alert from Prisma Cloud's console, add the permission. | modify resource configuration |
+>|ID|Remediation|
+>|---|---|
+>| P-214016 | CLI: aws --region us-west-2 ec2 revoke-security-group-ingress --group-id sg-98234234 --ip-permissions '[{"IpProtocol": "tcp", "IpRanges":[{"CidrIp": "0.0.0.0/0"}]}]' ; aws --region us-west-2 ec2 authorize-security-group-ingress --group-id sg-92834324234h --ip-permissions '[{"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22, "IpRanges":[{"CidrIp": "10.0.0.0/8", "Description": "Enforced by Redlock Remediation"}]}]'<br/>Description: "This CLI command requires 'ec2:RevokeSecurityGroupIngress' permission. Successful execution will update the security group to revoke the ingress rule records open to internet either on IPv4 or on IPv6 protocol."} To resolve the alert from Prisma Cloud's console, add the permission. |
 

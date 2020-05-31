@@ -485,13 +485,13 @@ script:
   - name: redlock-get-remediation-details
     description: Get remediation details for a given alert
     outputs:
-    - contextPath: Redlock.Remediation.cliDescription
+    - contextPath: Redlock.Alert.Remediation.Description
       description: Description of CLI remediation instructions
       type: string
-    - contextPath: Redlock.Remediation.scriptImpact
-      description: Summary of remediation impact
+    - contextPath: Redlock.Alert.ID
+      description: The ID of the alert for which the remediation details apply
       type: string
-    - contextPath: Redlock.Remediation.alertIdVsCliScript
+    - contextPath: Redlock.Alert.Remediation.CLI
       description: Exact CLI command string
       type: string
     arguments:
