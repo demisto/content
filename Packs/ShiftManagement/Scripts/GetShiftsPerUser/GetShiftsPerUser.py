@@ -72,7 +72,7 @@ def main():
         demisto.error(f'Failed to find shifts for user: {str(user_id)}')
         demisto.results([])
 
-    shifts_of_user = [s for rshifts in shifts_of_user for s in rshifts]
+    shifts_of_user = [[s,000] for rshifts in shifts_of_user for s in rshifts]
 
     shifts_of_user_readable = []
     for s in shifts_of_user:
@@ -92,7 +92,7 @@ def main():
         {
             HEADERS[0]: shift[0],
             HEADERS[1]: shift[1],
-        } for shift in shifts_of_user_readable
+        } for shift in shifts_of_user
     ]
 
     demisto.results({
