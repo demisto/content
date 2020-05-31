@@ -6,12 +6,7 @@ import json
 import demisto_client
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list
-# todo: uncomment
-# from Tests.Marketplace.marketplace_services import IGNORED_FILES, PACKS_FULL_PATH
-
-# todo: remove 2 lines
-IGNORED_FILES = ['NonSupported', 'ApiModules', '__init__.py']
-PACKS_FULL_PATH = 'Packs'
+from Tests.Marketplace.marketplace_services import IGNORED_FILES, PACKS_FULL_PATH
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 
@@ -197,7 +192,7 @@ def install_packs(client, host, prints_manager, packs_to_install):
         raise Exception(err_msg)
 
 
-def search_pack_and_its_dependencies(client, prints_manager, pack_id, installed_packs,
+def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
                                      installation_request_body, lock, is_nightly):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
@@ -206,7 +201,7 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, installed_
         client (demisto_client): The configured client to use.
         prints_manager (ParallelPrintsManager): A prints manager object.
         pack_id (str): The id of the pack to be installed.
-        installed_packs (list): A list of the installed packs.
+        packs_to_install (list) A list of the packs to be installed in this iteration.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
         is_nightly (bool): Whether or not the build is a nightly build.
@@ -219,7 +214,7 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, installed_
             pack_data = search_pack(client, prints_manager, pack_display_name)
 
     else:
-        if pack_id not in installed_packs:
+        if pack_id not in packs_to_install:
             pack_data = get_pack_data(pack_id)
 
     if pack_data:
@@ -230,8 +225,8 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, installed_
 
         lock.acquire()
         for pack in current_packs_to_install:
-            if pack['id'] not in installed_packs:
-                installed_packs.append(pack['id'])
+            if pack['id'] not in packs_to_install:
+                packs_to_install.append(pack['id'])
                 installation_request_body.append(pack)
         lock.release()
 
@@ -291,6 +286,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     for chunk in chunks:
         lock = Lock()
         threads_list = []
+        packs_to_install = []
 
         for pack_id in default_packs_to_install:
             chunk.append(pack_id)
@@ -301,7 +297,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
                             kwargs={'client': client,
                                     'prints_manager': prints_manager,
                                     'pack_id': pack_id,
-                                    'installed_packs': installed_packs,
+                                    'packs_to_install': packs_to_install,
                                     'installation_request_body': installation_request_body,
                                     'lock': lock,
                                     'is_nightly': is_nightly})
@@ -309,13 +305,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         run_threads_list(threads_list)
 
         install_packs(client, host, prints_manager, installation_request_body)
+        installed_packs.extend(packs_to_install)
 
     return installed_packs
-
-
-apikey = '0248676162E8EAF15F9F25363618E227'
-host = 'https://ec2-34-222-130-94.us-west-2.compute.amazonaws.com'
-client = demisto_client.configure(base_url=host, api_key=apikey, verify_ssl=False)
-from Tests.test_content import ParallelPrintsManager
-prints_manager = ParallelPrintsManager(1)
-search_and_install_packs_and_their_dependencies([], client, prints_manager, is_nightly=True)
