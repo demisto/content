@@ -940,7 +940,7 @@
 <pre><code>{<br> "ThreatGrid": {<br> "Sample": {<br> "Id": "9798717402a40970a2d043014d9a6170"<br> }<br> }, <br> "InfoFile": {<br> "Info": "application/json", <br> "Name": "9798717402a40970a2d043014d9a6170-analysis.json", <br> "Extension": "json", <br> "EntryID": "124@16", <br> "Type": "ASCII text, with very long lines\n", <br> "Size": 132549<br> }
 </code></pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-Threat_Grid_mceclip0.png" width="750" height="377"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Threat_Grid_mceclip0.png" width="750" height="377"></p>
 <h3 id="h_72983432240461540721271350">8. Get processes by ID</h3>
 <hr>
 <p>Returns a JSON object that contains a timeline of all process activities as determined by the dynamic analysis engine.</p>

@@ -1,0 +1,1614 @@
+id: California - Breach Notification
+version: -1
+name: California - Breach Notification
+description: "This playbook helps an analyst determine if the breached data meets\
+  \ the criteria for breach notification according to California law, and, if necessary,\
+  \ follows through with the notification procedures. \n\nDISCLAIMER: Please consult\
+  \ with your legal team before implementing this playbook.\n\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7b3a65d0-fec2-4bc7-87da-c466d923d5ad
+    type: start
+    task:
+      id: 7b3a65d0-fec2-4bc7-87da-c466d923d5ad
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 55a0877a-dcf9-4ae0-8645-2b9f37d0a9ce
+    type: collection
+    task:
+      id: 55a0877a-dcf9-4ae0-8645-2b9f37d0a9ce
+      version: -1
+      name: Notify DPO of suspected data breach
+      description: Notifies the Data Protection Officer of a suspected data breach.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.dpoemailaddress}
+      subject:
+        simple: Suspected Data Breach in your organization
+      body:
+        simple: |-
+          Hello,
+          A suspected data breach has occurred in your organization and requires your attention.
+
+          Data breach details:
+
+          Company: ${inputs.CompanyName}
+          State: ${incident.statewherethebreachtookplace}
+          Date/Time: ${incident.datetimeofthebreach}
+          Affected data type: ${incident.affecteddata}
+          Approx. # of affected data subjects: ${incident.approximatenumberofaffecteddatasubjects}
+          Data encryption status: ${incident.dataencryptionstatus}
+          Where data is hosted: ${incident.whereisdatahosted}
+          The suspected cause of the breach: ${incident.possiblecauseofthebreach}
+          If the cause is malicious, the specific cause might have been: ${incident.maliciouscauseifthecauseisamaliciousattack}
+          Refer to the 'California legislative information' site for more details about the notification process: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82.
+
+          Please complete the following form to continue the data breach investigation.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: In your assessment, does the breach involve the personal data of
+            living individuals?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If the answer is 'Yes', the breach will be documented. Please fill
+          out the following questions.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: How likely is it that the breach will result in a risk to individuals?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Likely
+        - Unlikely
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Risk - The resulting risk of the impact of the breach on individuals.
+          When assessing the risk to individuals as a result of a breach, the DPO
+          should consider the specific circumstances of the breach, including the
+          severity of the potential impact and the likelihood of this occurring. If
+          the answer is 'Likely' to result in a risk to individuals, please fill out
+          the next question, and the section regarding the information for the breach
+          report.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Are you aware of the cause of the breach?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options:
+        - ""
+        - Malicious attack - internal
+        - Malicious attack - external
+        - Accident (system failure)
+        - Negligence (human error)
+        - Other
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: If a result of a malicious attack, what caused the breach?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options:
+        - ""
+        - Unknown vulnerability
+        - Cryptolockers
+        - Fire reconnaissance
+        - Phishing
+        - Distributed denial of service
+        - Malware
+        - Social engineering
+        - Blackmail
+        - Other
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: What is the likely impact of the breach?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options:
+        - ""
+        - Data publication
+        - Data theft
+        - Identity theft or fraud
+        - Loss of data
+        - Loss of confidentiality of personal data
+        - Property damage
+        - Direct financial loss
+        - Business interruption
+        - Liability issues
+        - Damage to the reputation
+        - Other
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'A data protection impact assessment (...) shall in particular be
+          required in the case of: (a) a systematic and extensive evaluation of personal
+          aspects relating to natural persons which is based on automated processing,
+          including profiling, and on which decisions are based that produce legal
+          effects concerning the natural person or similarly significantly affect
+          the natural person; (b) processing on a large scale of special categories
+          of data referred to in Article 9(1), or of personal data relating to criminal
+          convictions and offences referred to in Article 10; or (c) a systematic
+          monitoring of a publicly accessible area on a large scale. - GDPR Art. 35'
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: |-
+            What measures have been taken to mitigate the adverse effects of the
+            breach?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: (d) describe the measures taken or proposed to be taken by the DPO
+          to address the personal data breach, including, where appropriate, measures
+          to mitigate its possible adverse effects." - GDPR Art. 33
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          simple: Country where business has its main establishment
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          simple: Additional information that is relevant to the case
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "8"
+        label: ""
+        labelarg:
+          simple: Company Size - number of employees
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - 1-9
+        - 10-49
+        - 50-249
+        - 250 - 749
+        - 750-1000
+        - '> 1000'
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "9"
+        label: ""
+        labelarg:
+          simple: What should the residents do
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Suspected PII data breach
+      description: Suspected PII data breach was found in your organization
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+  "2":
+    id: "2"
+    taskid: d74d4bdb-1e1b-4820-859c-45700ae405a4
+    type: condition
+    task:
+      id: d74d4bdb-1e1b-4820-859c-45700ae405a4
+      version: -1
+      name: DPO confirmed the breach
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "46"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: ${Suspected PII data breach.Answers.0}
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Suspected PII data breach
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 76b75121-29a3-4a04-8c2a-9a7cd622616a
+    type: title
+    task:
+      id: 76b75121-29a3-4a04-8c2a-9a7cd622616a
+      version: -1
+      name: Breach documentation process
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 26c59205-51db-4d49-8f96-493adfb89b73
+    type: regular
+    task:
+      id: 26c59205-51db-4d49-8f96-493adfb89b73
+      version: -1
+      name: Generate breach report
+      description: |-
+        A script that automatically generates an investigation summary report. The script can also be used
+        in a post-processing workflow.
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: bdf57866-a298-49ac-8c67-12501dc9658a
+    type: title
+    task:
+      id: bdf57866-a298-49ac-8c67-12501dc9658a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 391370fd-c86e-4ad0-873b-1968f49520c7
+    type: regular
+    task:
+      id: 391370fd-c86e-4ad0-873b-1968f49520c7
+      version: -1
+      name: Upload and submit the report to California attorney general
+      description: "A person or business that is required to issue a security breach\
+        \ notification pursuant to this section to more than 500 California residents\
+        \ as a result of a single breach of the security system shall electronically\
+        \ submit a single sample copy of that security breach notification, excluding\
+        \ any personally identifiable information, to the Attorney General. A single\
+        \ sample copy of a security breach notification shall not be deemed to be\
+        \ within subdivision (f) of Section 6254 of the Government Code.\nSubmit the\
+        \ report to https://oag.ca.gov/privacy/databreach/report-a-breach\n\n**Source:\
+        \ http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82.\n\
+        **Email:** : ISO@dds.ca.gov, Security@state.ca.gov  \n**Phone:** (916) 445-5239"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: a4f642ac-3aa3-4c8c-8df1-c59e97d236e6
+    type: title
+    task:
+      id: a4f642ac-3aa3-4c8c-8df1-c59e97d236e6
+      version: -1
+      name: DPO updates report
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: e94a88d1-0b4c-41e5-8bfe-d8755ad39651
+    type: regular
+    task:
+      id: e94a88d1-0b4c-41e5-8bfe-d8755ad39651
+      version: -1
+      name: Get new report from DPO
+      description: manual task - ask user to send new report
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 2d16714a-625b-45b5-86fa-d258c42181e4
+    type: title
+    task:
+      id: 2d16714a-625b-45b5-86fa-d258c42181e4
+      version: -1
+      name: Contact authorities
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: eeab4cf8-6f7c-4249-805b-323ec2bbf1ee
+    type: regular
+    task:
+      id: eeab4cf8-6f7c-4249-805b-323ec2bbf1ee
+      version: -1
+      name: Send report for DPO approval
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        simple: ${Report.FileID}
+      attachNames:
+        simple: ${Report.Name}
+      bcc: {}
+      body:
+        simple: This is the data breach report generated from Cortex XSOAR.
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Generated data breach report from Cortex XSOAR
+      to:
+        simple: ${incident.dpoemailaddress}
+      transientFile: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 8242f2fd-eb00-4c3d-8700-16d214a6dd59
+    type: condition
+    task:
+      id: 8242f2fd-eb00-4c3d-8700-16d214a6dd59
+      version: -1
+      name: Get DPO Approval for the report
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "No":
+      - "29"
+      "Yes":
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.dpoemailaddress}
+      subject:
+        simple: 'Data Breach report approval '
+      body:
+        simple: |-
+          Hello,
+
+          Please specify if you approve sending the data breach report to the Attorney General's office.
+
+           To approve sending the data breach report generated from Cortex XSOAR, click Yes.
+
+          To decline sending the data breach report generated from Cortex XSOAR, click No.
+          If you decline to send the report, please generate a new report and forward it to your SOC team.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "45":
+    id: "45"
+    taskid: 1a4febe0-e4b5-4026-843a-9a79f709a102
+    type: condition
+    task:
+      id: 1a4febe0-e4b5-4026-843a-9a79f709a102
+      version: -1
+      name: Is PII compromised?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: healthinsurancebreached
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Analyst review
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Analyst review.Answers.1
+                      iscontext: true
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: financialinformationbreached
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: medicalinformationbreached
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: accountinformationbreached
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: uniquebiometricdatabreached
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: uniqueidentificationnumberbreached
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: otherpiidatabreached
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: d7f34ae3-c314-4355-848b-1115601331f3
+    type: title
+    task:
+      id: d7f34ae3-c314-4355-848b-1115601331f3
+      version: -1
+      name: PII Breach Notification required
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: bd37e415-6f39-447e-80cb-d0677162cb32
+    type: title
+    task:
+      id: bd37e415-6f39-447e-80cb-d0677162cb32
+      version: -1
+      name: No breach has occurred
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: bb518891-8a2f-456e-82e0-540940669a30
+    type: regular
+    task:
+      id: bb518891-8a2f-456e-82e0-540940669a30
+      version: -1
+      name: Analyst review
+      description: The breach does not contain California resident information. Please
+        review which state information the breach contains, and start measures according
+        to the laws of that particular state.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: c01c3808-a721-4c88-8612-be8fb3eb7c3f
+    type: condition
+    task:
+      id: c01c3808-a721-4c88-8612-be8fb3eb7c3f
+      version: -1
+      name: Does breach contain California resident information?
+      description: |-
+        California breach notification laws come into effect only if data of California residents has been breached.
+        If yes, continue the investigation.
+        If no, decide on the further course of action.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "49"
+      "Yes":
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: eeb76f8f-cd99-4247-84a3-8c5c86c726b2
+    type: regular
+    task:
+      id: eeb76f8f-cd99-4247-84a3-8c5c86c726b2
+      version: -1
+      name: Notify management with the severity of data breach
+      description: "Management to be included:\n•\tCISO\n•\tPrivacy officer\n•\tData\
+        \ Protection Officer (DPO) \n•\tOrganization legal VP\n•\tMarketing VP\n•\t\
+        Accounting VP\n•\tPublic relations VP\n•\tOrganization’s external legal adviser\n\
+        This may change according to organizational policy."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: 125fe20b-467c-4155-8750-af51d7fb1c2f
+    type: condition
+    task:
+      id: 125fe20b-467c-4155-8750-af51d7fb1c2f
+      version: -1
+      name: Does law enforcement require delaying breach notification?
+      description: |-
+        According to California law, breach notification may be delayed if a law enforcement agency determines that the notification will impede a criminal investigation.
+
+        **Source: http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "9"
+      "Yes":
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 62782a7d-eb04-4266-8fb7-74417a257339
+    type: regular
+    task:
+      id: 62782a7d-eb04-4266-8fb7-74417a257339
+      version: -1
+      name: Wait to hear back from law enforcement
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: 48bd4c82-464e-4d5c-8e35-23f9ffe47f54
+    type: condition
+    task:
+      id: 48bd4c82-464e-4d5c-8e35-23f9ffe47f54
+      version: -1
+      name: Checks number of affected data subjects
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      Less than 500:
+      - "20"
+      More than 500:
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: More than 500
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: incident
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: incident.approximatenumberofaffecteddatasubjects
+                      iscontext: true
+                accessor: approximatenumberofaffecteddatasubjects
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    - label: Less than 500
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              complex:
+                root: incident
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: incident.approximatenumberofaffecteddatasubjects
+                      iscontext: true
+                accessor: approximatenumberofaffecteddatasubjects
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: d6b1f61f-0c3e-4db7-831a-19c72ffd452d
+    type: regular
+    task:
+      id: d6b1f61f-0c3e-4db7-831a-19c72ffd452d
+      version: -1
+      name: Update incident with DPO answers
+      description: Collects the answers provided by the DPO in the Notify DPO of suspected data breach data collection task and adds them to the context.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation:
+        complex:
+          root: Suspected PII data breach
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Suspected PII data breach.Answers.1
+                iscontext: true
+          accessor: Answers.1
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attackerusername: {}
+      blockedaction: {}
+      bpareport: {}
+      bugtraq: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress:
+        complex:
+          root: inputs.CompanyAddress
+      companycity:
+        complex:
+          root: inputs.CompanyCity
+      companycountry:
+        complex:
+          root: inputs.CompanyCountry
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname:
+        complex:
+          root: inputs.ContactName
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationip: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailheaders2: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      grid: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      markdowntest: {}
+      measurestomitigate:
+        complex:
+          root: Suspected PII data breach
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Suspected PII data breach.Answers.5
+                iscontext: true
+          accessor: Answers.5
+      medicalinformationbreached: {}
+      name: {}
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      otherpiidatabreached: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      portscantimestamp: {}
+      possiblecauseofthebreach:
+        complex:
+          root: Suspected PII data breach
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Suspected PII data breach.Answers.3
+                iscontext: true
+          accessor: Answers.3
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Contact Email address
+      output:
+        simple: ${inputs.ContactEmailAddress}
+    - incidentfield: Contact Telephone number
+      output:
+        simple: ${inputs.ContactTelNumber}
+    - incidentfield: Contact Name
+      output:
+        simple: ${inputs.ContactName}
+    - incidentfield: Company Name
+      output:
+        simple: ${inputs.CompanyName}
+    - incidentfield: Company Address
+      output:
+        simple: ${inputs.CompanyAddress}
+  "68":
+    id: "68"
+    taskid: 4368627d-1219-4ffc-8ea0-062ebf61ca9e
+    type: title
+    task:
+      id: 4368627d-1219-4ffc-8ea0-062ebf61ca9e
+      version: -1
+      name: breach does not contain California resident
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "69":
+    id: "69"
+    taskid: 534dcbea-8595-488f-8dc7-a114f807f0ea
+    type: regular
+    task:
+      id: 534dcbea-8595-488f-8dc7-a114f807f0ea
+      version: -1
+      name: Set PII compromised flag
+      description: |
+        Store the fact that PII was compromised.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PIICompromised
+      stringify: {}
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "70":
+    id: "70"
+    taskid: b9e0320f-ae77-4b1a-8a95-a5824b0326fc
+    type: regular
+    task:
+      id: b9e0320f-ae77-4b1a-8a95-a5824b0326fc
+      version: -1
+      name: Set PII wasn't compromised flag
+      description: Store the fact that PII was not compromised.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: PIICompromised
+      stringify: {}
+      value:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_46_yes": 0.57,
+      "2_47_#default#": 0.12,
+      "37_29_No": 0.33,
+      "37_57_Yes": 0.26,
+      "45_47_#default#": 0.13,
+      "45_69_yes": 0.41,
+      "51_1_Yes": 0.28,
+      "51_49_No": 0.13,
+      "55_56_Yes": 0.35,
+      "55_9_No": 0.18,
+      "57_20_Less than 500": 0.12,
+      "57_33_More than 500": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3355,
+        "width": 1990,
+        "x": -130,
+        "y": -820
+      }
+    }
+  }
+inputs:
+- key: ContactName
+  value: {}
+  required: false
+  description: In case of a breach, the contact details to send to the Attorney General
+    and the affected residents.
+- key: ContactEmailAddress
+  value: {}
+  required: false
+  description: In case of a breach, the contact details to send to the Attorney General
+    and the affected residents.
+- key: ContactTelNumber
+  value: {}
+  required: false
+  description: In case of a breach, the contact details to send to the Attorney General
+    and the affected residents.
+- key: CompanyName
+  value: {}
+  required: false
+  description: ""
+- key: CompanyAddress
+  value: {}
+  required: false
+  description: In case of a breach, the company details to display in the breach report.
+- key: CompanyCity
+  value: {}
+  required: false
+  description: In case of a breach, the company details to display in the breach report.
+- key: CompanyCountry
+  value: {}
+  required: false
+  description: In case of a breach, the company details to display in the breach report.
+outputs:
+- contextPath: PIICompromised
+  description: Set a flag indicating that PII has been compromised.
+  type: boolean
+- contextPath: HealthInsuranceBreached
+  description: Set a flag indicating that the breach contains PII of health insurance
+    information.
+  type: unknown
+- contextPath: MedicalInformationBreached
+  description: Set a flag indicating that the breach contains PII of medical information.
+  type: unknown
+- contextPath: FinancialInformationBreached
+  description: Set a flag indicating that the breach contains PII of financial information.
+  type: unknown
+- contextPath: AccountInformationBreached
+  description: Set a flag indicating that the breach contains PII of account information.
+  type: unknown
+- contextPath: UniqueIdentificationNumberBreached
+  description: Set a flag indicating that the breach contains PII of unique identification
+    number.
+  type: unknown
+- contextPath: UniqueBiometricDataBreached
+  description: Set a flag indicating that the breach contains PII of unique biometric
+    data.
+  type: unknown
+- contextPath: Analyst review.Answers.1
+  description: Explain, in your words, the incident origin, what you have checked,
+    and any information related to this incident.
+  type: longText
+tests:
+- No test
+fromversion: 5.0.0
