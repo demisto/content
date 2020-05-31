@@ -8,7 +8,7 @@ import prettytable
 import glob
 from datetime import datetime
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH,\
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
     IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
@@ -184,9 +184,10 @@ def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
     Returns:
         bool: whether cleanup was skipped or not.
     """
-    if 'CI' not in os.environ or os.environ.get('CIRCLE_BRANCH') != 'master' \
-            or storage_bucket.name != GCPConfig.PRODUCTION_BUCKET:
-        print("Skipping cleanup of packs in gcs.")  # task must be executed only on master branch in circle CI
+    if ('CI' not in os.environ) or (
+            os.environ.get('CIRCLE_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
+            os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name != GCPConfig.PRODUCTION_BUCKET):
+        print("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
 
     public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
