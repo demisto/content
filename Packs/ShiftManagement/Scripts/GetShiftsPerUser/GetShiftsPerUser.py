@@ -2,7 +2,30 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import List
+HOURS_DAYS_HEADER = 'Hours / Days'
+SUNDAY_HEADER = 'Sunday'
+MONDAY_HEADER = 'Monday'
+TUESDAY_HEADER = 'Tuesday'
+WEDNESDAY_HEADER = 'Wednesday'
+THURSDAY_HEADER = 'Thursday'
+FRIDAY_HEADER = 'Friday'
+SATURDAY_HEADER = 'Saturday'
+
+DAY_NUM_TO_DAY_HEADER = {
+    0: SUNDAY_HEADER,
+    1: MONDAY_HEADER,
+    2: TUESDAY_HEADER,
+    3: WEDNESDAY_HEADER,
+    4: THURSDAY_HEADER,
+    5: FRIDAY_HEADER,
+    6: SATURDAY_HEADER
+}
+
+def time_fix(t):
+    # If the time is a single number padd it with zeros
+    if t % 10 < 1:
+        return '0' + str(t)
+    return str(t)
 
 
 def main():
@@ -41,28 +64,44 @@ def main():
         demisto.results([])
 
     roles = get_roles_response[0]['Contents']
-    rshifts_of_user = [r.get("name") for r in roles if
-                       r.get("shifts", False) and r.get("name") in user_roles]
-    if len(rshifts_of_user) == 0:
+    shifts_of_user = [r.get("shifts") for r in roles if
+                      r.get("shifts", False) and r.get("name") in user_roles]
+    if len(shifts_of_user) == 0:
         demisto.error(f'Failed to find shifts for user: {str(user_id)}')
         demisto.results([])
 
-    roles_per_shift = demisto.executeCommand('GetRolesPerShift', {})
-    if is_error(roles_per_shift):
-        return_error(
-            f'Failed to get roles and shifts: {str(get_error(roles_per_shift))}')
+    shifts_of_user = [s for rshifts in shifts_of_user for s in rshifts]
 
-    # demisto.results(json.dumps(roles_per_shift))
+    shifts_of_user_readable = []
+    for s in shifts_of_user:
+        from_day = DAY_NUM_TO_DAY_HEADER[s.get("fromDay")]
+        from_hour = time_fix(s.get("fromHour"))
+        from_minute = time_fix(s.get("fromMinute"))
+        to_day = DAY_NUM_TO_DAY_HEADER[s.get("toDay")]
+        to_hour = time_fix(s.get("toHour"))
+        to_minute = time_fix(s.get("toMinute"))
+        shifts_of_user_readable.append(
+            [f'{from_day} {from_hour}:{from_minute}',
+             f'{to_day} {to_hour}:{to_minute}'])
 
-    roles_per_shift_md = roles_per_shift[0].get("Contents")
-    for rshift in rshifts_of_user:
-        roles_per_shift_md = roles_per_shift_md.replace(rshift,
-                                                        "You have a shift here")
+    HEADERS = ["Start", "End"]
+
+    shifts_table = [
+        {
+            HEADERS[0]: shift[0],
+            HEADERS[1]: shift[1],
+        } for shift in shifts_of_user_readable
+    ]
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
-        'Contents': roles_per_shift_md})
+        'Contents': tableToMarkdown(
+            name='Shifts',
+            t=shifts_table,
+            headers=HEADERS
+        )
+    })
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
