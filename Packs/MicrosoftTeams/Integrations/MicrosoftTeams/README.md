@@ -124,8 +124,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For the following permissions, search for,  select the checkbox and click **Add permissions**.
-  - User.ReadWrite.All
-  - Directory.ReadWrite.All
+  - User.Read.All
   - Group.ReadWrite.All
   - Calls.Initiate.All
   - Calls.InitiateGroupCall.All
@@ -185,9 +184,7 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
+`Group.Read.All`
 
 ##### Input
 
@@ -222,8 +219,6 @@ Mirrors the Demisto investigation to the specified Microsoft Teams channel.
 ##### Required Permissions
 
 `Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
 
 ##### Input
 
@@ -259,8 +254,6 @@ Deletes the specified Microsoft Teams channel.
 ##### Required Permissions
 
 `Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
 
 ##### Input
 
@@ -350,9 +343,8 @@ Adds a member (user) to a private channel.
 
 ##### Required Permissions
 
-`Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
+`User.Read.All`
+`ChannelMember.ReadWrite.All`
 
 ##### Input
 
@@ -385,8 +377,6 @@ Creates a new channel in a Microsoft Teams team.
 ##### Required Permissions
 
 `Group.ReadWrite.All`
-`User.ReadWrite.All`
-`Directory.ReadWrite.All`
 
 ##### Input
 
@@ -422,28 +412,31 @@ You can send the message `help` in order to see the supported commands:
 
 ## Troubleshooting
 
-The integration works by spinning up a webserver that listens to events and data posted to it from Microsoft Teams.
+1. The integration works by spinning up a webserver that listens to events and data posted to it from Microsoft Teams.
 
-If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the webserver, which should happen for the first time when the bot is added to the configured team.
+    If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the webserver, which should happen for the first time when the bot is added to the configured team.
+    
+    This probably means that there is a connection issue, and the webserver does not intercept the HTTPS queries from Microsoft Teams.
+    
+    In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
+    
+    From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
+    
+    You should see the following, assuming port 7000 is used:
+    
+    `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26` 
+     
+    If the Docker container is up and running, try running cURL queries, to verify the webserver is up and running and listens on the configured URL:
+    
+     - To the messaging endpoint from a separate box.
+     - From the Cortex XSOAR machine to localhost.
+     
+       - Note: The webserver supports only POST method queries.
+       
+    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`
 
-This probably means that there is a connection issue, and the webserver does not intercept the HTTPS queries from Microsoft Teams.
 
-In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
-
-From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
-
-You should see the following, assuming port 7000 is used:
-
-`988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26` 
- 
-If the Docker container is up and running, try running cURL queries, to verify the webserver is up and running and listens on the configured URL:
-
- - To the messaging endpoint from a separate box.
- - From the Cortex XSOAR machine to localhost.
- 
-   - Note: The webserver supports only POST method queries.
-   
-If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`
+2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 
 ## Download Demisto Bot
 
