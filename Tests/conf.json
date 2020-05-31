@@ -487,6 +487,9 @@
             "playbookID": "Test CommonServer"
         },
         {
+            "playbookID": "Test-debug-mode"
+        },
+        {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
         },
