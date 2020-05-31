@@ -8,9 +8,6 @@ from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list
 from Tests.Marketplace.marketplace_services import IGNORED_FILES, PACKS_FULL_PATH
 
-IGNORED_FILES = ['NonSupported', 'ApiModules', '__init__.py']
-PACKS_FULL_PATH = 'Packs'
-
 PACK_METADATA_FILE = 'pack_metadata.json'
 
 
