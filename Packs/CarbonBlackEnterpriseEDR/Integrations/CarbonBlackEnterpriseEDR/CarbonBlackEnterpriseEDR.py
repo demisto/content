@@ -608,8 +608,8 @@ def list_watchlists_command(client: Client) -> Union[CommandResults, str]:
             'Description': watchlist.get('description'),
             'Tags_enabled': watchlist.get('tags_enabled'),
             'Alerts_enabled': watchlist.get('alerts_enabled'),
-            'create_timestamp': timestamp_to_datestring(watchlist.get('create_timestamp') * 1000),  # type: ignore
-            'Last_update_timestamp': timestamp_to_datestring(watchlist.get('last_update_timestamp') * 1000),  # type: ignore
+            'create_timestamp': timestamp_to_datestring(watchlist.get('create_timestamp', 0) * 1000),
+            'Last_update_timestamp': timestamp_to_datestring(watchlist.get('last_update_timestamp', 0) * 1000),
             'Report_ids': watchlist.get('report_ids'),
             'Classifier': watchlist.get('classifier')
         })
@@ -638,8 +638,8 @@ def get_watchlist_by_id_command(client: Client, args: Dict) -> CommandResults:
         'Description': result.get('description'),
         'Tags_enabled': result.get('tags_enabled'),
         'Alerts_enabled': result.get('alerts_enabled'),
-        'create_timestamp': timestamp_to_datestring(result.get('create_timestamp') * 1000),  # type: ignore
-        'Last_update_timestamp': timestamp_to_datestring(result.get('last_update_timestamp') * 1000),  # type: ignore
+        'create_timestamp': timestamp_to_datestring(result.get('create_timestamp', 0) * 1000),
+        'Last_update_timestamp': timestamp_to_datestring(result.get('last_update_timestamp', 0) * 1000),
         'Report_ids': result.get('report_ids'),
         'Classifier': result.get('classifier')
     }
@@ -705,7 +705,7 @@ def create_watchlist_command(client: Client, args: Dict) -> CommandResults:
         'Description': result.get('description'),
         'Tags_enabled': result.get('tags_enabled'),
         'Alerts_enabled': result.get('alerts_enabled'),
-        'Create_timestamp': timestamp_to_datestring(result.get('create_timestamp') * 1000),  # type: ignore
+        'Create_timestamp': timestamp_to_datestring(result.get('create_timestamp', 0) * 1000),
         'Report_ids': result.get('report_ids'),
         'Classifier': result.get('classifier')
     }
@@ -755,7 +755,7 @@ def update_watchlist_command(client: Client, args: Dict) -> CommandResults:
         'Description': result.get('description'),
         'Tags_enabled': result.get('tags_enabled'),
         'Alerts_enabled': result.get('alerts_enabled'),
-        'Create_timestamp': timestamp_to_datestring(result.get('create_timestamp') * 1000),  # type: ignore
+        'Create_timestamp': timestamp_to_datestring(result.get('create_timestamp', 0) * 1000),
         'Report_ids': result.get('report_ids'),
         'Classifier': result.get('classifier')
     }
@@ -780,7 +780,7 @@ def get_report_command(client: Client, args: Dict) -> CommandResults:
     ioc_contents = []
     contents = {
         'ID': result.get('id'),
-        'Timestamp': timestamp_to_datestring(result.get('timestamp') * 1000),  # type: ignore
+        'Timestamp': timestamp_to_datestring(result.get('timestamp', 0) * 1000),
         'Title': result.get('title'),
         'Description': result.get('description'),
         'Severity': result.get('severity'),
@@ -791,7 +791,7 @@ def get_report_command(client: Client, args: Dict) -> CommandResults:
 
     context = {
         'ID': result.get('id'),
-        'Timestamp': timestamp_to_datestring(result.get('timestamp') * 1000),  # type: ignore
+        'Timestamp': timestamp_to_datestring(result.get('timestamp', 0) * 1000),
         'Title': result.get('title'),
         'Description': result.get('description'),
         'Severity': result.get('severity'),
@@ -880,7 +880,7 @@ def create_report_command(client: Client, args: Dict) -> CommandResults:
 
     contents = {
         'ID': result.get('id'),
-        'Timestamp': timestamp_to_datestring(result.get('timestamp') * 1000),  # type: ignore
+        'Timestamp': timestamp_to_datestring(result.get('timestamp', 0) * 1000),
         'Description': result.get('description'),
         'Title': result.get('title'),
         'Severity': result.get('severity'),
@@ -891,7 +891,7 @@ def create_report_command(client: Client, args: Dict) -> CommandResults:
 
     context = {
         'ID': result.get('id'),
-        'Timestamp': timestamp_to_datestring(result.get('timestamp') * 1000),  # type: ignore
+        'Timestamp': timestamp_to_datestring(result.get('timestamp', 0) * 1000),
         'Description': result.get('description'),
         'Title': result.get('title'),
         'Severity': result.get('severity'),
@@ -985,7 +985,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
 
     contents = {
         'ID': result.get('id'),
-        'Timestamp': timestamp_to_datestring(result.get('timestamp') * 1000),  # type: ignore
+        'Timestamp': timestamp_to_datestring(result.get('timestamp', 0) * 1000),
         'Description': result.get('description'),
         'Title': result.get('title'),
         'Severity': result.get('severity'),
@@ -996,7 +996,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
 
     context = {
         'ID': result.get('id'),
-        'Timestamp': timestamp_to_datestring(result.get('timestamp') * 1000),  # type: ignore
+        'Timestamp': timestamp_to_datestring(result.get('timestamp', 0) * 1000),
         'Description': result.get('description'),
         'Title': result.get('title'),
         'Severity': result.get('severity'),
