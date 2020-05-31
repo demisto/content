@@ -304,7 +304,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
                                     'prints_manager': prints_manager,
                                     'pack_id': pack_id,
                                     'packs_to_install': packs_to_install,
-                                    'installed_packs': installed_packs
+                                    'installed_packs': installed_packs,
                                     'installation_request_body': installation_request_body,
                                     'lock': lock,
                                     'is_nightly': is_nightly})
