@@ -6,7 +6,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: Values to compare the timestamp with
+  description: Values to compare the against the tested_time, we are checking each value and determining whether it's before/after/equal to the tested_time.
   isArray: true
   name: values_to_compare
   required: true

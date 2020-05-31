@@ -8,8 +8,8 @@ def test_compare_times():
     after_tested_time = parse("2021-02-01T00:00:00")
 
     assert compare_times(compared_time, equal_tested_time) == EQUAL
-    assert compare_times(compared_time, before_tested_time) == BEFORE
-    assert compare_times(compared_time, after_tested_time) == AFTER
+    assert compare_times(compared_time, before_tested_time) == AFTER
+    assert compare_times(compared_time, after_tested_time) == BEFORE
 
 
 def test_command():
@@ -23,12 +23,12 @@ def test_command():
     assert results[DT_STRING] == [
         {
             "ComparedTime": "2020-02-01T00:00:00",
-            "Result": "before",
+            "Result": "after",
             "TestedTime": "2020-01-01T00:00:00"
         },
         {
             "ComparedTime": "2019-12-31T00:00:00",
-            "Result": "after",
+            "Result": "before",
             "TestedTime": "2020-01-01T00:00:00"
         }
     ]

@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-from dateutil.parser import parse
+import dateparser
 
 
 EQUAL = 'equal'
@@ -19,14 +19,20 @@ def time_stamp_compare_command(args):
     values_to_compare = argToList(args.get('values_to_compare'))
 
     results = []
-    parsed_tested_time = parse(tested_time)
+    parsed_tested_time = dateparser.parse(tested_time, settings={
+        'TIMEZONE': 'UTC',
+        'RELATIVE_BASE': datetime(datetime.now().year, 1, 1)
+    })
     for compared_time in values_to_compare:
-        parsed_compared_time = parse(compared_time)
-        result = compare_times(parsed_compared_time, parsed_tested_time)
+        parsed_compared_time = dateparser.parse(compared_time, settings={
+            'TIMEZONE': 'UTC',
+            'RELATIVE_BASE': datetime(datetime.now().year, 1, 1)
+        })
+        result = compare_times(parsed_compared_time.timestamp(), parsed_tested_time.timestamp())
 
         results.append({
-            "TestedTime": parsed_tested_time.strftime(TIMESTAMP_FORMAT),
-            "ComparedTime": parsed_compared_time.strftime(TIMESTAMP_FORMAT),
+            "TestedTime": parsed_tested_time.isoformat(),
+            "ComparedTime": parsed_compared_time.isoformat(),
             "Result": result
         })
 
@@ -42,9 +48,9 @@ def time_stamp_compare_command(args):
 
 
 def compare_times(parsed_compared_time, parsed_tested_time):
-    if parsed_compared_time > parsed_tested_time:
+    if parsed_compared_time < parsed_tested_time:
         result = BEFORE
-    elif parsed_compared_time < parsed_tested_time:
+    elif parsed_compared_time > parsed_tested_time:
         result = AFTER
     else:
         result = EQUAL
@@ -55,8 +61,8 @@ def compare_times(parsed_compared_time, parsed_tested_time):
 def main():
     try:
         return_outputs(*time_stamp_compare_command(demisto.args()))
-    except Exception as ex:
-        return_error(f'Failed to execute TimeStampCompare. Error: {str(ex)}')
+    except Exception as exc:
+        return_error(f'Failed to execute TimeStampCompare. Error: {str(exc)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
