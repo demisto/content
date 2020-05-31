@@ -83,6 +83,9 @@ MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
 
+# error messages
+SEARCH_MAILBOXES_RBAC = "The RBAC role does require user context. The user context is missing."
+
 # context paths
 CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} === obj.{0} || (val.{1} && obj.{1} && val.{1} === obj.{1}))".format(
     ITEM_ID, MESSAGE_ID
@@ -635,7 +638,7 @@ def search_mailboxes(
             "Use one of the arguments - mailbox-search-scope or email-addresses, not both"
         )
     if email_addresses:
-        email_addresses = email_addresses.split(",")
+        email_addresses = argToList(email_addresses)
         all_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
         for email_address in email_addresses:
             for mailbox in all_mailboxes:
@@ -663,6 +666,8 @@ def search_mailboxes(
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
         search_results = search_results[:limit]
     except TransportError as e:
+        if SEARCH_MAILBOXES_RBAC in str(e):
+            raise Exception(SEARCH_MAILBOXES_RBAC)
         if "ItemCount>0<" in str(e):
             return "No results for search query: " + filter,
         else:
@@ -1466,7 +1471,7 @@ def find_folders(client: EWSClient, target_mailbox=None):
     account = client.get_account(target_mailbox)
     root = account.root
     if client.is_public_folder:
-        root = account.public_folders_root  # todo: search online
+        root = account.public_folders_root
     folders = []
     for f in root.walk():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
@@ -1578,17 +1583,28 @@ def get_folder(client: EWSClient, folder_path, target_mailbox=None, is_public=No
 
 
 def folder_to_context_entry(f):
-    f_entry = {
-        "name": f.name,
-        "totalCount": f.total_count,
-        "id": f.id,
-        "childrenFolderCount": f.child_folder_count,
-        "changeKey": f.changekey,
-    }
+    try:
+        f_entry = {
+            "name": f.name,
+            "totalCount": f.total_count,
+            "id": f.id,
+            "childrenFolderCount": f.child_folder_count,
+            "changeKey": f.changekey,
+        }
 
-    if "unread_count" in [x.name for x in Folder.FIELDS]:
-        f_entry["unreadCount"] = f.unread_count
-    return f_entry
+        if "unread_count" in [x.name for x in Folder.FIELDS]:
+            f_entry["unreadCount"] = f.unread_count
+        return f_entry
+    except AttributeError:
+        if isinstance(f, dict):
+            return {
+                "name": f.get('name'),
+                "totalCount": f.get('total_count'),
+                "id": f.get('id'),
+                "childrenFolderCount": f.get('child_folder_count'),
+                "changeKey": f.get('changekey'),
+                "unreadCount": f.get('unread_count')
+            }
 
 
 def mark_item_as_read(
@@ -1721,7 +1737,18 @@ def sub_main():
 
         # normal commands
         else:
-            return_outputs(*normal_commands[command](client, **args))  # type: ignore[operator]
+            output = normal_commands[command](client, **args)  # type: ignore[operator]
+            with open("/Users/darbel/dev/demisto/content/Packs/EWSO365/Integrations/EWSO365/test_data/commands_outputs.json", "r") as f:
+                command_outputs = json.load(f)
+            with open("/Users/darbel/dev/demisto/content/Packs/EWSO365/Integrations/EWSO365/test_data/commands_outputs.json", "w") as f:
+                command_outputs[command] = output[1]
+                json.dump(command_outputs, f)
+            with open("/Users/darbel/dev/demisto/content/Packs/EWSO365/Integrations/EWSO365/test_data/raw_responses.json", "r") as f:
+                command_raw = json.load(f)
+            with open("/Users/darbel/dev/demisto/content/Packs/EWSO365/Integrations/EWSO365/test_data/raw_responses.json", "w") as f:
+                command_raw[command] = output[2]
+                json.dump(command_raw, f)
+            return_outputs(*output)
 
     except Exception as e:
         time.sleep(2)
