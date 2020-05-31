@@ -25,7 +25,7 @@ DAY_NUM_TO_DAY_HEADER = {
 
 def time_fix(t):
     # If the time is a single number padd it with zeros
-    if t % 10 < 1:
+    if t // 10 < 1:
         return '0' + str(t)
     return str(t)
 
