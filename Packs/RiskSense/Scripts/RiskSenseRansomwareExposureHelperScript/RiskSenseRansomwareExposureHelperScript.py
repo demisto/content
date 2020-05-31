@@ -44,11 +44,6 @@ def get_cve_list_from_host_findings(response):
         risk_rating = findings.get('RiskRating', 0)
         threat_list: DefaultDict[str, list] = defaultdict(list)
 
-        if isinstance(response, dict):
-            host_findings = [response]
-        else:
-            host_findings = response
-
         threats = findings.get('Threat') if findings.get('Threat', []) else []
         vulns = findings.get('Vulnerability') if findings.get('Vulnerability', []) else []
 
