@@ -33,12 +33,12 @@ def time_fix(t):
 def main():
     user_id = demisto.args().get('userId', False)
     if not user_id:
-        get_users_response: List = demisto.executeCommand("getUsers",
+        get_users_res: List = demisto.executeCommand("getUsers",
                                                           {"current": True})
-        if is_error(get_users_response):
+        if is_error(get_users_res):
             return_error(
-                f'Failed to get users: {str(get_error(get_users_response))}')
-        contents = get_users_response[0]
+                f'Failed to get users: {str(get_error(get_users_res))}')
+        contents = get_users_res[0]
         if contents and len(contents.get("Contents")) == 1:
             user_id = contents.get("Contents")[0].get("id")
         else:
