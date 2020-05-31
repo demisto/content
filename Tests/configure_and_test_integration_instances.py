@@ -19,6 +19,7 @@ from Tests.test_content import load_conf_files, extract_filtered_tests, Parallel
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, \
     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
+from distutils.version import LooseVersion
 from demisto_sdk.commands.common.tools import server_version_compare
 from Tests.update_content_data import update_content
 # from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
@@ -120,8 +121,8 @@ def check_test_version_compatible_with_server(test, server_version, prints_manag
     """
     test_from_version = test.get('fromversion', '0.0.0')
     test_to_version = test.get('toversion', '99.99.99')
-    if (server_version_compare(test_from_version, server_version) > 0
-            or server_version_compare(test_to_version, server_version) < 0):
+    if (LooseVersion(test_from_version) > LooseVersion(server_version)
+            or LooseVersion(test_to_version) < LooseVersion(server_version)):
         warning_message = 'Test Playbook: {} was ignored in the content installation test due to version mismatch ' \
                           '(test versions: {}-{}, server version: {})'.format(test.get('playbookID'),
                                                                               test_from_version,
