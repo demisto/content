@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 43629c57-4889-406f-8dac-8b9b3cc08a59
+    taskid: d0fe4cff-a589-45e0-85a3-8461696cd380
     type: start
     task:
-      id: 43629c57-4889-406f-8dac-8b9b3cc08a59
+      id: d0fe4cff-a589-45e0-85a3-8461696cd380
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 6acecbab-410f-45f0-8236-d164d58d11a4
+    taskid: 98144e9f-b5a1-4633-8d2f-b8ba35a1977a
     type: regular
     task:
-      id: 6acecbab-410f-45f0-8236-d164d58d11a4
+      id: 98144e9f-b5a1-4633-8d2f-b8ba35a1977a
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: c234f4fd-56b9-497f-8403-2fd98440b4b7
+    taskid: 054fc178-00b7-4af2-8583-163c5734cb87
     type: regular
     task:
-      id: c234f4fd-56b9-497f-8403-2fd98440b4b7
+      id: 054fc178-00b7-4af2-8583-163c5734cb87
       version: -1
       name: Py logging first time
       scriptName: TestPyLogging
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 41806431-8fb8-412b-8628-5bff8a296717
+    taskid: 82ea9245-d514-4453-8001-8882a2e47ef0
     type: regular
     task:
-      id: 41806431-8fb8-412b-8628-5bff8a296717
+      id: 82ea9245-d514-4453-8001-8882a2e47ef0
       version: -1
       name: PyLogging in debug-mode
       description: Run executeCommand in a generic manner. Can be used to dynamically
@@ -143,10 +143,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 2cb30111-4450-43a5-8f5a-218ea59a9d16
+    taskid: c03bfdc4-ad69-4fd1-8c52-b7d3c34fef67
     type: regular
     task:
-      id: 2cb30111-4450-43a5-8f5a-218ea59a9d16
+      id: c03bfdc4-ad69-4fd1-8c52-b7d3c34fef67
       version: -1
       name: Load Debug File
       description: Load the contents of a file into context.
@@ -185,10 +185,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: b497f62b-ed13-4948-865f-e9833451c113
+    taskid: 03b01e55-313b-4137-8f95-63fd8041bd39
     type: condition
     task:
-      id: b497f62b-ed13-4948-865f-e9833451c113
+      id: 03b01e55-313b-4137-8f95-63fd8041bd39
       version: -1
       name: Verify Debug Data
       type: condition
@@ -226,10 +226,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 96d5c029-f41c-45a2-84ed-1224e24fe6c3
+    taskid: 9be2e043-75de-480f-8d40-c86f6cc632d7
     type: regular
     task:
-      id: 96d5c029-f41c-45a2-84ed-1224e24fe6c3
+      id: 9be2e043-75de-480f-8d40-c86f6cc632d7
       version: -1
       name: All is good
       description: Prints text to war room (Markdown supported)
@@ -255,10 +255,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 5bcb519e-4979-49d7-81f5-a0aed967d497
+    taskid: ec3be904-c22a-44c7-810a-ba975451d5d4
     type: regular
     task:
-      id: 5bcb519e-4979-49d7-81f5-a0aed967d497
+      id: ec3be904-c22a-44c7-810a-ba975451d5d4
       version: -1
       name: Failed verifying data
       description: Prints an error entry with a given message
