@@ -96,7 +96,7 @@ class Client:
 
             # Establish TAXII2 Collection instance
             collection_url = urljoin(self.base_url, f'stix/collections/{collection.id}/')
-            collection_data = Collection(collection_url)
+            collection_data = Collection(collection_url, verify=self.verify, proxies=self.proxies)
 
             # Supply the collection to TAXIICollection
             tc_source = TAXIICollectionSource(collection_data)
