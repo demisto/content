@@ -65,7 +65,7 @@ def execute_command(name, args=None):
         return None
 
 
-def test_get_shifts(mocker):
+def test_get_shifts_per_user(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'args', return_value={'userId': 'user1'})
