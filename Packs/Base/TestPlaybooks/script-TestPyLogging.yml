@@ -1,6 +1,6 @@
 commonfields:
-  id: 4f1d18f1-fdc9-414f-8a75-4cccf7259e33
-  version: 10
+  id: TestPyLogging
+  version: -1
 name: TestPyLogging
 script: |
   import logging
@@ -14,7 +14,7 @@ tags: []
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
+fromversion: 5.0.0
