@@ -26,6 +26,7 @@ from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
 MARKET_PLACE_MACHINES = ('master',)
+PACKS_PATH = 'Packs'
 
 
 def options_handler():
@@ -688,6 +689,15 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         print_error(msg)
 
 
+def get_pack_ids_to_install(is_nightly):
+    if is_nightly:
+        return os.listdir(PACKS_PATH)
+    else:
+        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+            pack_ids = packs_stream.readlines()
+            return [pack_id.rstrip('\n') for pack_id in pack_ids]
+
+
 def main():
     options = options_handler()
     username = options.user
@@ -752,10 +762,7 @@ def main():
     installed_content_packs_successfully = True
 
     if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
-        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
-            pack_ids = packs_stream.readlines()
-            pack_ids = [pack_id.rstrip('\n') for pack_id in pack_ids]
-
+        pack_ids = get_pack_ids_to_install(options.is_nightly)
         # install content packs in every server
         try:
             for server_url in servers:
@@ -868,18 +875,19 @@ def main():
         else:
             preupdate_success.add((instance_name, integration_of_instance))
 
-    threads_list = []
-    threads_prints_manager = ParallelPrintsManager(len(servers))
-    # For each server url we install content
-    for thread_index, server_url in enumerate(servers):
-        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
-        t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
-                           'prints_manager': threads_prints_manager,
-                           'thread_index': thread_index})
-        threads_list.append(t)
-
-    run_threads_list(threads_list)
+    # todo: should it be removed?
+    # threads_list = []
+    # threads_prints_manager = ParallelPrintsManager(len(servers))
+    # # For each server url we install content
+    # for thread_index, server_url in enumerate(servers):
+    #     client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
+    #     t = Thread(target=update_content_on_demisto_instance,
+    #                kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
+    #                        'prints_manager': threads_prints_manager,
+    #                        'thread_index': thread_index})
+    #     threads_list.append(t)
+    #
+    # run_threads_list(threads_list)
 
     # configure instances for new integrations
     new_integration_module_instances = []
