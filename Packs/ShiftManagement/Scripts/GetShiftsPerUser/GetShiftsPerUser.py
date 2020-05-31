@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from typing import List
 
 HOURS_DAYS_HEADER = 'Hours / Days'
 SUNDAY_HEADER = 'Sunday'
