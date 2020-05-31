@@ -366,23 +366,33 @@ def get_remediation_details():
     """
     Retrieve remediation details for a given alert
     """
-    ids = argToList(demisto.getArg('alert-id'))
-    payload = {'alerts': ids, 'filter': {}}
+    alert_ids = argToList(demisto.getArg('alert-id'))
+    payload = {'alerts': alert_ids, 'filter': {}}
     handle_filters(payload['filter'])
     handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
-    if not ids:
+    if not alert_ids:
         return_error('You must specify the alert-id to retrieve with CLI remediation')
     response = req('POST', 'alert/remediation', payload, None)
-    MD = tableToMarkdown("remediationCLIoutput", response)
-    context = {'Redlock.Remediation': response}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': response,
-        'EntryContext': context,
-        'HumanReadable': MD
-    })
 
+    for alert_id in alert_ids:
+        details = {
+            'ID': alert_id,
+            'Remediation': {
+                'CLI': response['alertIdVsCliScript'][alert_id],
+                'Description': response['cliDescription']
+            }
+        }
+        context = {
+          'Redlock.Alert(val.ID == obj.ID)': details
+        }
+        MD = tableToMarkdown("remediationCLIoutput", details)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response,
+            'EntryContext': context,
+            'HumanReadable': MD
+        })
 
 def fetch_incidents():
     """
