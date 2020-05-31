@@ -1,6 +1,6 @@
-id: Cortex_XDR_-_quarantine_file
+id: Cortex XDR - quarantine_file
 version: -1
-name: Cortex_XDR_-_quarantine_file
+name: Cortex XDR - quarantine_file
 starttaskid: "0"
 tasks:
   "0":
@@ -218,5 +218,5 @@ inputs:
     system.
   playbookInputQuery:
 outputs: []
-fromversion: 5.5.0
+fromversion: 5.0.0
 description: ''
