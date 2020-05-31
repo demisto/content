@@ -2844,7 +2844,6 @@
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
-        "VxStream Test": "Issue #23795",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
@@ -2937,7 +2936,6 @@
         "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
-        "VxStream": "Issue #23795",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
