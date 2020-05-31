@@ -688,7 +688,7 @@ def fetch_last_emails(
         last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone("UTC")) - timedelta(
             minutes=10
         )
-        qs = qs.filter(datetime_received__gte=last_10_min)
+        qs = qs.filter(last_modified_time__gte=last_10_min)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
 
