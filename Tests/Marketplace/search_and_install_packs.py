@@ -169,6 +169,11 @@ def install_packs(client, host, prints_manager, packs_to_install):
         'ignoreWarnings': True
     }
 
+    packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
+    message = 'Installing packs:\n{}\n'.format(host, packs_to_install_str)
+    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(0)
+
     # make the pack installation request
     try:
         response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -192,7 +197,7 @@ def install_packs(client, host, prints_manager, packs_to_install):
         raise Exception(err_msg)
 
 
-def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
+def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install, installed_packs,
                                      installation_request_body, lock, is_nightly):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
@@ -202,19 +207,19 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
         prints_manager (ParallelPrintsManager): A prints manager object.
         pack_id (str): The id of the pack to be installed.
         packs_to_install (list) A list of the packs to be installed in this iteration.
+        installed_packs (list) A list of installed packs.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
         is_nightly (bool): Whether or not the build is a nightly build.
     """
     pack_data = []
 
-    if not is_nightly:
-        pack_display_name = get_pack_display_name(pack_id)
-        if pack_display_name:
-            pack_data = search_pack(client, prints_manager, pack_display_name)
-
-    else:
-        if pack_id not in packs_to_install:
+    if pack_id not in packs_to_install and pack_id not in installed_packs:
+        if not is_nightly:
+            pack_display_name = get_pack_display_name(pack_id)
+            if pack_display_name:
+                pack_data = search_pack(client, prints_manager, pack_display_name)
+        else:
             pack_data = get_pack_data(pack_id)
 
     if pack_data:
@@ -225,7 +230,7 @@ def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_i
 
         lock.acquire()
         for pack in current_packs_to_install:
-            if pack['id'] not in packs_to_install:
+            if pack['id'] not in packs_to_install and pack['id'] not in installed_packs:
                 packs_to_install.append(pack['id'])
                 installation_request_body.append(pack)
         lock.release()
@@ -283,14 +288,15 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
     else:
         chunks = [pack_ids]
 
+    chunks[0].extend(default_packs_to_install)
     for chunk in chunks:
         lock = Lock()
         threads_list = []
         packs_to_install = []
-
-        for pack_id in default_packs_to_install:
-            chunk.append(pack_id)
-            add_pack_to_installation_request(pack_id, installation_request_body)
+        #
+        # for pack_id in default_packs_to_install:
+        #     chunk.append(pack_id)
+        #     add_pack_to_installation_request(pack_id, installation_request_body)
 
         for pack_id in chunk:
             thread = Thread(target=search_pack_and_its_dependencies,
@@ -298,6 +304,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
                                     'prints_manager': prints_manager,
                                     'pack_id': pack_id,
                                     'packs_to_install': packs_to_install,
+                                    'installed_packs': installed_packs
                                     'installation_request_body': installation_request_body,
                                     'lock': lock,
                                     'is_nightly': is_nightly})
