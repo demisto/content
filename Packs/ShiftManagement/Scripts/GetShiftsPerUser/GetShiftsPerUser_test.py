@@ -50,38 +50,6 @@ USERS = [
     }
 ]
 
-ROLES_SHIFT_MD = """### Roles Per Shift
-|Hours / Days|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|
-|---|---|---|---|---|---|---|---|
-| __0:00 - 1:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __1:00 - 2:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __2:00 - 3:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __3:00 - 4:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __4:00 - 5:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __5:00 - 6:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __6:00 - 7:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __7:00 - 8:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __8:00 - 9:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __9:00 - 10:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __10:00 - 11:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __11:00 - 12:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __12:00 - 13:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __13:00 - 14:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __14:00 - 15:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __15:00 - 16:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 |  | Shift1, Shift2 | Shift1, Shift2 |
-| __16:00 - 17:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __17:00 - 18:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __18:00 - 19:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __19:00 - 20:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 |
-| __20:00 - 21:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
-| __21:00 - 22:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
-| __22:00 - 23:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
-| __23:00 - 24:00__ | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |  |
-""" # noqa E501
-ROLES_SHIFT = [{"ModuleName": "CustomScripts", "Brand": "Scripts",
-                "Category": "automation", "ID": "", "Version": 0, "Type": 1,
-                "Contents": ROLES_SHIFT_MD}]
-
 GET_ROLES_RESPONSE = [{
     'Type': 1,
     'Contents': ROLES
@@ -93,8 +61,6 @@ def execute_command(name, args=None):
         return GET_ROLES_RESPONSE
     elif name == 'getUsers':
         return USERS
-    elif name == 'GetRolesPerShift':
-        return ROLES_SHIFT
     else:
         return None
 
@@ -106,31 +72,10 @@ def test_get_shifts(mocker):
     main()
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0]['Contents'] == """### Roles Per Shift
-|Hours / Days|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|
-|---|---|---|---|---|---|---|---|
-| __0:00 - 1:00__ |  | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __1:00 - 2:00__ |  | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __2:00 - 3:00__ |  | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __3:00 - 4:00__ |  | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __4:00 - 5:00__ |  | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __5:00 - 6:00__ |  | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __6:00 - 7:00__ |  | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __7:00 - 8:00__ |  | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __8:00 - 9:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __9:00 - 10:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __10:00 - 11:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __11:00 - 12:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __12:00 - 13:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __13:00 - 14:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __14:00 - 15:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __15:00 - 16:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 |  | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __16:00 - 17:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __17:00 - 18:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __18:00 - 19:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __19:00 - 20:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |
-| __20:00 - 21:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  |
-| __21:00 - 22:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  |
-| __22:00 - 23:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  |
-| __23:00 - 24:00__ | You have a shift here, Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 | Shift2 | You have a shift here, Shift2 | You have a shift here, Shift2 |  |
-"""  # noqa E501
+    assert results[0]['Contents'] == """### Shifts
+|Start|End|
+|---|---|
+| Sunday 08:00 | Tuesday 12:00 | 
+| Wednesday 16:00 | Friday 20:00 |
+"""
+
