@@ -1,6 +1,6 @@
 {
-  "name": "Palo Alto Traps ESM (Beta)",
-  "description": "Palo Alto Traps ESM beta integration.",
+  "name": "Palo Alto Networks Traps",
+  "description": "Palo Alto Networks Traps pack.",
   "support": "xsoar",
   "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",
@@ -10,9 +10,7 @@
   "categories": [
     "Endpoint"
   ],
-  "tags": [
-    "Palo Alto Traps ESM (Beta)"
-  ],
+  "tags": [],
   "useCases": [],
-  "keywords": []
+  "keywords": ["Traps"]
 }
