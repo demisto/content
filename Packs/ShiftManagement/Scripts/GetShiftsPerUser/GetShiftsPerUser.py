@@ -74,7 +74,7 @@ def main():
 
     shifts_of_user = [s for rshifts in shifts_of_user for s in rshifts]
 
-    assert(shifts_of_user == [])
+    assert(shifts_of_user == [111])
     shifts_of_user_readable = []
     for s in shifts_of_user:
         from_day = DAY_NUM_TO_DAY_HEADER[s.get("fromDay")]
