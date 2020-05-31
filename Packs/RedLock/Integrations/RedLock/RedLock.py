@@ -383,7 +383,7 @@ def get_remediation_details():
             }
         }
         context = {
-          'Redlock.Alert(val.ID == obj.ID)': details
+            'Redlock.Alert(val.ID == obj.ID)': details
         }
         MD = tableToMarkdown("remediationCLIoutput", details)
         demisto.results({
@@ -393,6 +393,7 @@ def get_remediation_details():
             'EntryContext': context,
             'HumanReadable': MD
         })
+
 
 def fetch_incidents():
     """

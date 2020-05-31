@@ -9,7 +9,8 @@ This integration was integrated and tested with version xx of RedLock
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL | True |
-| credentials | Username | True |
+| username | API Access Key | True |
+| password | API Secret | True |
 | customer | Customer name | False |
 | proxy | Use system proxy settings | False |
 | unsecure | Trust any certificate \(not secure\) | False |
