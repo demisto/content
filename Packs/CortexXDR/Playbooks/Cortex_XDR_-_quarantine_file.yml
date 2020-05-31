@@ -1,6 +1,6 @@
-id: Cortex XDR - quarantine_file
+id: Cortex XDR - quarantine file
 version: -1
-name: Cortex XDR - quarantine_file
+name: Cortex XDR - quarantine file
 starttaskid: "0"
 tasks:
   "0":
