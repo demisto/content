@@ -75,6 +75,6 @@ def test_get_shifts(mocker):
     assert results[0]['Contents'] == """### User1's Shifts
 |Start|End|
 |---|---|
-| Sunday 08:00 | Tuesday 12:00 | 
+| Sunday 08:00 | Tuesday 12:00 |
 | Wednesday 16:00 | Friday 20:00 |
 """
