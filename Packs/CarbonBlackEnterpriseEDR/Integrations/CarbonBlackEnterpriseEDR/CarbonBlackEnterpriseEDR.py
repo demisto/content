@@ -1309,11 +1309,14 @@ def main():
     # Log exceptions
     except Exception as e:
         err_msg = str(e)
-        if 'MALFORMED_JSON' in err_msg:
-            message = err_msg.split('\n')
-            bad_field = json.loads(message[1]).get('field')
-            return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
-                         f'invalid. Make sure that the arguments is correct.')
+        try:
+            if 'MALFORMED_JSON' in err_msg:
+                message = err_msg.split('\n')
+                bad_field = json.loads(message[1]).get('field')
+                return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
+                             f'invalid. Make sure that the arguments is correct.')
+        except Exception as e:
+            return_error(str(e))
         return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
 
 

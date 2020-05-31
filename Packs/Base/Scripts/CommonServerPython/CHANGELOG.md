@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added new indicator Common class - Endpoint
+  - Added **Endpoint** Common class.
   - Added a new function **auto_detect_indicator_type** which detects indicators. 
 
 ## [20.5.2] - 2020-05-26

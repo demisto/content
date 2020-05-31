@@ -105,7 +105,7 @@ tasks:
     task:
       id: "418"
       version: -1
-      name: Create new wachlist
+      name: Create new watchlist
       description: Create a new report or classifier watchlist.
       script: '|||cb-eedr-watchlist-create'
       type: regular
