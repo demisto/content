@@ -182,8 +182,11 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     }
     if 'expiration' in ioc:
         xdr_ioc['expiration_date'] = demisto_expiration_to_xdr(ioc['expiration'])
-    if ioc.get('comment'):
-        xdr_ioc['comment'] = ioc['comment']
+
+    # get last 'IndicatorCommentRegular'
+    comment = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', ioc.get('comments', [])), False)
+    if comment:
+        xdr_ioc['comment'] = comment
     if ioc.get('aggregatedReliability'):
         xdr_ioc['reliability'] = ioc['aggregatedReliability'][0]
     vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
