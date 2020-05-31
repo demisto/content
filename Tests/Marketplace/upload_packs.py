@@ -264,12 +264,13 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
-def upload_core_packs_config(storage_bucket, packs_list):
+def upload_core_packs_config(storage_bucket, packs_list, build_number):
     """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         packs_list (list): list of initialized packs.
+        build_number (str): circleCI build number.
 
     """
     # todo later check if it is not pre release and only then upload corepacks.json
@@ -287,7 +288,8 @@ def upload_core_packs_config(storage_bucket, packs_list):
 
     # construct core pack data with public gcs urls
     core_packs_data = {
-        'corePacks': core_packs_public_urls
+        'corePacks': core_packs_public_urls,
+        'buildNumber': build_number
     }
 
     core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
@@ -638,7 +640,7 @@ def main():
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
     # upload core packs json to bucket
-    upload_core_packs_config(storage_bucket, packs_list)
+    upload_core_packs_config(storage_bucket, packs_list, build_number)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
