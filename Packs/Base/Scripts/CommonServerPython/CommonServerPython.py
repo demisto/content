@@ -2536,13 +2536,22 @@ class CommandResults:
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
+    :type timeline: ``dict`` | ``list``
+    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
+        indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
+        be be added to the dict(s) with its value set to 'Integration Update'.
+
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
+
+
     :return: None
     :rtype: ``None``
     """
     def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
-                 raw_response=None):
+                 raw_response=None, timeline=None, ignore_auto_extract=False):
 
-        # type: (str, str, object, list, str, object) -> None
+        # type: (str, str, object, list, str, object, dict, bool) -> None
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
@@ -2551,6 +2560,9 @@ class CommandResults:
 
         self.raw_response = raw_response
         self.readable_output = readable_output
+
+        self.timeline_list = [timeline] if isinstance(timeline, dict) else timeline
+        self.ignore_auto_extract = ignore_auto_extract
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -2591,12 +2603,19 @@ class CommandResults:
                 outputs = self.outputs
                 human_readable = self.readable_output  # prefix and key field not provided, human readable should
 
+        if self.timeline_list:
+            for tl_obj in self.timeline_list:
+                if 'Category' not in tl_obj.keys():
+                    tl_obj['Category'] = 'Integration Update'
+
         return_entry = {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': raw_response,
             'HumanReadable': human_readable,
-            'EntryContext': outputs
+            'EntryContext': outputs,
+            'IndicatorTimeline': self.timeline_list,
+            'IgnoreAutoExtract': self.ignore_auto_extract,
         }
 
         return return_entry
@@ -2665,7 +2684,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         "ContentsFormat": formats["json"],
         "Contents": raw_response,
         "EntryContext": outputs,
-        'IgnoreAutoExtract': ignore_auto_extract,
+        "IgnoreAutoExtract": ignore_auto_extract,
         "IndicatorTimeline": timeline_list
     }
     # Return 'readable_output' only if needed
