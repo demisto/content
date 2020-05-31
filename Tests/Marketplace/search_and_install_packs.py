@@ -170,7 +170,7 @@ def install_packs(client, host, prints_manager, packs_to_install):
     }
 
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-    message = 'Installing packs:\n{}\n'.format(host, packs_to_install_str)
+    message = 'Installing packs:\n{}\n'.format(packs_to_install_str)
     prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
