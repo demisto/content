@@ -37,14 +37,16 @@ USERS = [
                 'name': 'User1',
                 'roles': {
                     'demisto': ['Shift1']
-                }
+                },
+                "allRoles": ['Shift1', 'Administrator']
             },
             {
                 'id': 'admin',
                 'name': 'Admin',
                 'roles': {
                     'demisto': ['Administrator']
-                }
+                },
+                "allRoles": ['Administrator']
             }
         ]
     }
