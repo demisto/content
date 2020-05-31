@@ -2459,6 +2459,76 @@ class Common(object):
 
             return ret_value
 
+    class Endpoint(Indicator):
+        """ ignore docstring
+        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
+        """
+        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
+
+        def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
+                     os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
+                     memory=None, processors=None, processor=None):
+            self.id = id
+            self.hostname = hostname
+            self.ip_address = ip_address
+            self.domain = domain
+            self.mac_address = mac_address
+            self.os = os
+            self.os_version = os_version
+            self.dhcp_server = dhcp_server
+            self.bios_version = bios_version
+            self.model = model
+            self.memory = memory
+            self.processors = processors
+            self.processor = processor
+
+        def to_context(self):
+            endpoint_context = {
+                'ID': self.id
+            }
+
+            if self.hostname:
+                endpoint_context['Hostname'] = self.hostname
+
+            if self.ip_address:
+                endpoint_context['IPAddress'] = self.ip_address
+
+            if self.domain:
+                endpoint_context['Domain'] = self.domain
+
+            if self.mac_address:
+                endpoint_context['MACAddress'] = self.mac_address
+
+            if self.os:
+                endpoint_context['OS'] = self.os
+
+            if self.os_version:
+                endpoint_context['OSVersion'] = self.os_version
+
+            if self.dhcp_server:
+                endpoint_context['DHCPServer'] = self.dhcp_server
+
+            if self.bios_version:
+                endpoint_context['BIOSVersion'] = self.bios_version
+
+            if self.model:
+                endpoint_context['Model'] = self.model
+
+            if self.memory:
+                endpoint_context['Memory'] = self.memory
+
+            if self.processors:
+                endpoint_context['Processors'] = self.processors
+
+            if self.processor:
+                endpoint_context['Processor'] = self.processor
+
+            ret_value = {
+                Common.Endpoint.CONTEXT_PATH: endpoint_context
+            }
+
+            return ret_value
+
 
 class CommandResults:
     """
