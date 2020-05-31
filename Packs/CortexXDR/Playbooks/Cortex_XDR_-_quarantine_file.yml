@@ -1,5 +1,5 @@
-id: c41bda9e-4d49-4700-8688-e5da23a4bce3
-version: 43
+id: Cortex_XDR_-_quarantine_file
+version: -1
 name: Cortex_XDR_-_quarantine_file
 starttaskid: "0"
 tasks:
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -137,6 +138,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -203,16 +205,18 @@ inputs:
   value: {}
   required: true
   description: The file’s hash. Hash must be a valid SHA256.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: file_path
   value: {}
   required: true
   description: the path for the selected file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: endpoint_id
   value: {}
   required: true
   description: Here you provide the endpoint id which is the file's location in the
     system.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0
+description: ''
