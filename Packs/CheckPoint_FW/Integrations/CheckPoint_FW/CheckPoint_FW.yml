@@ -17,14 +17,6 @@ configuration:
   name: username
   required: true
   type: 0
-- display: Administrator password
-  name: passworda
-  required: true
-  type: 9
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -34,6 +26,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- hidden: false
+  name: passworda
+  required: true
+  type: 9
 description: Read information and to send commands to the Check Point Firewall server.
 display: CheckPoint Firewall - V2
 name: CheckPoint
@@ -52,15 +48,6 @@ script:
       description: Number of the results to initially skip.
       isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      defaultValue: standard
-      description: The level of detail for some of the fields in the response can
-        vary from showing only the UID value of the object to a fully detailed representation
-        of the object.
-      isArray: false
-      name: details_level
       required: false
       secret: false
     deprecated: false
@@ -177,7 +164,38 @@ script:
     execution: false
     name: checkpoint-host-update
     outputs:
-    - type: Unknown
+    - contextPath: checkpoint.host.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.host.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.host.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.host.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.host.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.host.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.host.meta-info-creation-time
+      type: Unknown
+    - contextPath: checkpoint.host.meta-info-creator
+      type: String
+    - contextPath: checkpoint.host.meta-info-last-modifier
+      type: String
+    - contextPath: checkpoint.host.meta-info-last-modify-time
+      type: String
+    - contextPath: checkpoint.host.ipv4-address
+      type: String
+    - contextPath: checkpoint.host.meta-info-last-modify-time
+      type: String
+    - contextPath: checkpoint.host.read-only
+      type: Boolean
   - arguments:
     - default: false
       description: uid or name.
@@ -190,8 +208,7 @@ script:
     name: checkpoint-host-delete
     outputs:
     - contextPath: checkpoint.host.message
-      description: Operation status.
-      type: String
+      type: Unknown
   - arguments:
     - default: false
       description: the command to execute
@@ -221,51 +238,408 @@ script:
     description: Show a list of all groups
     execution: false
     name: checkpoint-group-list
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.group.from
+      description: From which element number the query was done.
+      type: Number
+    - contextPath: checkpoint.group.to
+      description: To which element number the query was done.
+      type: Number
+    - contextPath: checkpoint.group.total
+      description: Total number of elements returned by the query.
+      type: Number
+    - contextPath: checkpoint.group.object-name
+      description: object's name
+      type: String
+    - contextPath: checkpoint.group.object-uid
+      description: object's uid
+      type: String
+    - contextPath: checkpoint.group.object-type
+      description: Type of the object
+      type: String
+  - arguments:
+    - default: false
+      description: object uid or name
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
     description: Get all data of a given group
     execution: false
     name: checkpoint-group-get
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.group.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.group.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.group.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.group.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.group.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.group.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.group.meta-info-creation-time
+      type: Unknown
+    - contextPath: checkpoint.group.meta-info-creator
+      type: String
+    - contextPath: checkpoint.group.meta-info-last-modifier
+      type: String
+    - contextPath: checkpoint.group.meta-info-last-modify-time
+      type: String
+    - contextPath: checkpoint.group.read-only
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Object name. Must be unique in the domain.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
     description: add a group
     execution: false
     name: checkpoint-group-add
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.group.name
+      description: object's name
+      type: String
+    - contextPath: checkpoint.group.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.group.type
+      description: object type
+      type: Unknown
+    - contextPath: checkpoint.group.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.group.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.group.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.group.meta-info-creation-time
+      description: creation time
+      type: Unknown
+    - contextPath: checkpoint.group.meta-info-creator
+      type: String
+    - contextPath: checkpoint.group.meta-info-last-modifier
+      type: String
+    - contextPath: checkpoint.group.read-only
+      description: Indicates whether the object is read-only
+      type: Boolean
+    - contextPath: checkpoint.group.groups-name
+      type: Unknown
+  - arguments:
+    - default: false
+      description: uid or name.
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: New name of the group object
+      isArray: false
+      name: new_name
+      required: false
+      secret: false
+    - default: false
+      description: Comments string.
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'True'
+      description: Apply changes ignoring warnings.
+      isArray: false
+      name: ignore_warnings
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'False'
+      description: Apply changes ignoring errors.
+      isArray: false
+      name: ignore_errors
+      required: false
+      secret: false
+    deprecated: false
     description: update group object
     execution: false
     name: checkpoint-group-update
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.group.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.group.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.group.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.group.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.group.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.group.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.group.meta-info-creation-time
+      type: Unknown
+    - contextPath: checkpoint.group.meta-info-creator
+      type: String
+    - contextPath: checkpoint.group.meta-info-last-modifier
+      type: String
+    - contextPath: checkpoint.group.meta-info-last-modify-time
+      type: String
+    - contextPath: checkpoint.group.read-only
+      type: Boolean
+  - arguments:
+    - default: false
+      description: object name or uid
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
     description: delete a group object
     execution: false
     name: checkpoint-group-delete
+    outputs:
+    - contextPath: checkpoint.group.message
+      description: Operation massege
+      type: String
   - arguments:
-    - default: false
-      description: Get all data for a given address range
-      isArray: false
-      name: checkpoint-address-range-get
-      required: false
-      secret: false
     - default: false
       description: The maximal number of returned results.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      isArray: false
+      name: offset
       required: false
       secret: false
     deprecated: false
     description: List all address range objects
     execution: false
     name: checkpoint-address-range-list
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.address-range.from
+      description: From which element number the query was done.
+      type: Number
+    - contextPath: checkpoint.address-range.to
+      description: To which element number the query was done.
+      type: Number
+    - contextPath: checkpoint.address-range.total
+      description: Total number of elements returned by the query.
+      type: Number
+    - contextPath: checkpoint.address-range.object-name
+      description: object's name
+      type: String
+    - contextPath: checkpoint.address-range.object-uid
+      description: object's uid
+      type: Unknown
+    - contextPath: checkpoint.address-range.object-type
+      description: Type of the object.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: object name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: First IP address in the range.
+      isArray: false
+      name: ip_address_first
+      required: true
+      secret: false
+    - default: false
+      description: Last IP address in the range.
+      isArray: false
+      name: ip_address_last
+      required: true
+      secret: false
+    - default: false
+      defaultValue: 'false'
+      description: 'If another object with the same identifier already exists, it
+        will be updated. '
+      isArray: false
+      name: set_if_exists
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'true'
+      description: Apply changes ignoring warnings.
+      isArray: false
+      name: ignore_warnings
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'false'
+      description: Apply changes ignoring errors
+      isArray: false
+      name: ignore_errors
+      required: false
+      secret: false
+    deprecated: false
     description: Add address range object
     execution: false
     name: checkpoint-address-range-add
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.address-range.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.address-range.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.address-range.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.address-range.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.address-range.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.address-range.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.address-range.ipv4-address-first
+      description: First IPv4 address in the range
+      type: String
+    - contextPath: checkpoint.address-range.ipv4-address-last
+      description: Last IPv4 address in the range
+      type: String
+    - contextPath: checkpoint.address-range.ipv6-address-first
+      description: First IPv4 address in the range
+      type: String
+    - contextPath: checkpoint.address-range.ipv6-address-last
+      description: Last IPv6 address in the range
+      type: String
+    - contextPath: checkpoint.address-range.read-only
+      description: Indicates whether the object is read-only.
+      type: Boolean
+   - contextPath: checkpoint.address-range.meta-info-creation-time
+      description: creation time
+      type: Unknown
+    - contextPath: checkpoint.address-range.meta-info-creator
+      type: String
+    - contextPath: checkpoint.address-range.meta-info-last-modifier
+      type: String
+  - arguments:
+    - default: false
+      description: uid or name.
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: First IP address in the range. IPv4 or IPv6 address.
+      isArray: false
+      name: first_ip
+      required: false
+      secret: false
+    - default: false
+      description: Last IP address in the range. IPv4 or IPv6 address.
+      isArray: false
+      name: last_ip
+      required: false
+      secret: false
+    - default: false
+      description: ' New name of the object.'
+      isArray: false
+      name: new_name
+      required: false
+      secret: false
+    - default: false
+      description: ' Comments string.'
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'True'
+      description: Apply changes ignoring warnings.
+      isArray: false
+      name: ignore_warnings
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'False'
+      description: Apply changes ignoring errors.
+      isArray: false
+      name: ignore_errors
+      required: false
+      secret: false
+    deprecated: false
     description: Update an address range object
     execution: false
     name: checkpoint-address-range-update
-  - deprecated: false
-    description: Delete a gicen address range
+    outputs:
+    - contextPath: checkpoint.address-range.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.address-range.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.address-range.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.address-range.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.address-range.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.address-range.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.address-range.ipv4-address-first
+      description: First IPv4 address in the range
+      type: String
+    - contextPath: checkpoint.address-range.ipv4-address-last
+      description: Last IPv4 address in the range
+      type: String
+    - contextPath: checkpoint.address-range.ipv6-address-first
+      description: First IPv4 address in the range
+      type: String
+    - contextPath: checkpoint.address-range.ipv6-address-last
+      description: Last IPv6 address in the range
+      type: String
+    - contextPath: checkpoint.address-range.read-only
+      description: Indicates whether the object is read-only.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: object name or uid
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a given address range
     execution: false
     name: checkpoint-address-range-delete
+    outputs:
+    - contextPath: checkpoint.address-range.message
+      description: Operation status
+      type: String
   - arguments:
     - default: false
       description: The maximal number of returned results.
@@ -273,33 +647,606 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      defaultValue: '0'
+      description: Skip that many results before beginning to return them.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
     deprecated: false
     description: List all threat indicators
     execution: false
     name: checkpoint-threat-indicator-list
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.group.from
+      description: from which element number the query was done
+      type: Number
+    - contextPath: checkpoint.group.to
+      description: To which element number the query was done
+      type: Number
+    - contextPath: checkpoint.group.total
+      description: Total nuber of elements returned by the query
+      type: Number
+    - contextPath: checkpoint.group.object-name
+      description: object name
+      type: String
+    - contextPath: checkpoint.group.object-uid
+      description: object uid
+      type: Unknown
+  - arguments:
+    - default: false
+      description: object uid or name
+      isArray: false
+      name: identifier
+      required: false
+      secret: false
+    deprecated: false
     description: Get data for a given list indicator
     execution: false
     name: checkpoint-threat-indicator-get
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.group.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.group.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.group.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.group.domain-name
+      description: Domain name
+      type: String
+    - contextPath: checkpoint.group.domain-uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.group.domain-type
+      description: domain type
+      type: Unknown
+    - contextPath: checkpoint.group.meta-info-creation-time
+      description: Creation time
+      type: Unknown
+    - contextPath: checkpoint.group.meta-info-creator
+      description: creator
+      type: String
+    - contextPath: checkpoint.group.meta-info-last-modifier
+      type: String
+    - contextPath: checkpoint.group.meta-info-last-modify-time
+      type: Unknown
+    - contextPath: checkpoint.group.read-only
+      description: Indicates whether the object is read-only.
+      type: Boolean
+  - arguments:
+    - default: false
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: 'The indicator''s observable or the contents of a file containing
+        the indicator''s observables. '
+      isArray: false
+      name: observables
+      required: true
+      secret: false
+    deprecated: false
     description: Add a threat indicator
     execution: false
     name: checkpoint-threat-indicator-add
+    outputs:
+    - contextPath: checkpoint.threat-indicator.task-id
+      description: Asynchronous task unique identifier.
+      type: Unknown
   - arguments:
     - default: false
-      description: Delete a given threat indicator
+      description: uid or name.
       isArray: false
-      name: checkpoint-threat-indicator-delete
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: the action to set.
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: New name of the object.
+      isArray: false
+      name: new_name
+      required: false
+      secret: false
+    - default: false
+      description: Comments string.
+      isArray: false
+      name: comments
       required: false
       secret: false
     deprecated: false
     description: Update a given indicator
     execution: false
     name: checkpoint-threat-indicator-update
-  - deprecated: false
+    outputs:
+    - contextPath: checkpoint.threat-indicator.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.threat-indicator.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.threat-indicator.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.threat-indicator.action
+      description: The indicator's action.
+      type: String
+    - contextPath: checkpoint.threat-indicator.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.threat-indicator.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.threat-indicator.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.threat-indicator.meta-info-creation-time
+      description: creation time
+      type: Unknown
+    - contextPath: checkpoint.threat-indicator.meta-info-creator
+      type: String
+    - contextPath: checkpoint.threat-indicator.meta-info-last-modifier
+      type: String
+    - contextPath: checkpoint.threat-indicator.read-only
+      description: Indicates whether the object is read-only.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: uid or name object
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
     description: Get all date of a given address range object
     execution: false
     name: checkpoint-address-range-get
+    outputs:
+    - contextPath: checkpoint.address-range.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.address-range.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.address-range.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.address-range.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.address-range.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.address-range.domain-type
+      description: domain type
+      type: String
+  - arguments:
+    - default: false
+      description: object name or uid
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
+    description: delete threat indicator
+    execution: false
+    name: checkpoint-threat-indicator-delete
+    outputs:
+    - contextPath: checkpoint.threat-indicator.message
+      description: Operation status
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: object name or uid
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximal number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: |
+        Number of the results to initially skip.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Shows the entire Access Rules layer
+    execution: false
+    name: checkpoint-access-rule-list
+    outputs:
+    - contextPath: checkpoint.access-rulebase.object-name
+      description: object name
+      type: String
+    - contextPath: checkpoint.access-rulebase.object-uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.access-rulebase.from
+      description: From which element number the query was done.
+      type: Number
+    - contextPath: checkpoint.access-rulebase.to
+      description: To which element number the query was done.
+      type: Number
+    - contextPath: checkpoint.access-rulebase.total
+      description: Total number of elements returned by the query.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Layer that the rule belongs to identified by the name or UID.
+      isArray: false
+      name: layer
+      required: true
+      secret: false
+    - default: false
+      description: Position in the rulebase.
+      isArray: false
+      name: position
+      required: true
+      secret: false
+    - default: false
+      description: Rule name.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Create new access rule
+    execution: false
+    name: checkpoint-access-rule-add
+    outputs:
+    - contextPath: checkpoint.access-rule.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.access-rule.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.access-rule.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.access-rule.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.access-rule.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.access-rule.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.access-rule.enabled
+      description: Enable/Disable the rule.
+      type: Boolean
+    - contextPath: checkpoint.access-rule.layer
+      type: String
+   - contextPath: checkpoint.access-rule.meta-info-creation-time
+      description: creation time
+      type: Unknown
+    - contextPath: checkpoint.access-rule.meta-info-creator
+      type: String
+    - contextPath: checkpoint.access-rule.meta-info-last-modifier
+      type: String
+  - arguments:
+    - default: false
+      description: object name or uid, OR  rule number
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: Layer that the rule belongs to identified by the name or UID.
+      isArray: false
+      name: layer
+      required: true
+      secret: false
+    - default: false
+      description: action to be taken on the rule
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: Enable/Disable the rule.
+      isArray: false
+      name: enabled
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: New name of the object.
+      isArray: false
+      name: new_name
+      required: false
+      secret: false
+    - default: false
+      description: New position in the rulebase.  value can be int to set specific
+        position, ot str- 'top' or 'bottom'
+      isArray: false
+      name: new_position
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'true'
+      description: Apply changes ignoring warnings.
+      isArray: false
+      name: ignore_warnings
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'false'
+      description: ' Apply changes ignoring errors'
+      isArray: false
+      name: ignore_errors
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit existing access rule using object name or uid.
+    execution: false
+    name: checkpoint-access-rule-update
+    outputs:
+    - contextPath: checkpoint.access-rule.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.access-rule.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.access-rule.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.access-rule.action-name
+      description: action name
+      type: String
+    - contextPath: checkpoint.access-rule.action-uid
+      description: action uid
+      type: String
+    - contextPath: checkpoint.access-rule.action-type
+      description: action type
+      type: Unknown
+    - contextPath: checkpoint.access-rule.action-domain-name
+      description: action domain name
+      type: String
+    - contextPath: checkpoint.access-rule.content-direction
+      description: On which direction the file types processing is applied.
+      type: String
+    - contextPath: checkpoint.access-rule.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.access-rule.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.access-rule.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.access-rule.enabled
+      description: Enable/Disable the rule.
+      type: Boolean
+    - contextPath: checkpoint.access-rule.layer
+      description: layer
+      type: String
+    - contextPath: checkpoint.access-rule.meta-info-creation-time
+      type: String
+    - contextPath: checkpoint.access-rule.meta-info-creator
+      type: String
+    - contextPath: checkpoint.access-rule.meta-info-last-modifier
+      type: String
+  - arguments:
+    - default: false
+      description: uid, name or rule-number.
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: Layer that the rule belongs to identified by the name or UID.
+      isArray: false
+      name: layer
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: checkpoint-access-rule-delete
+    outputs:
+    - contextPath: checkpoint.access-rule.message
+      description: Operation status
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximal number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of the results to initially skip
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve all objects.
+    execution: false
+    name: checkpoint-application-site-list
+    outputs:
+    - contextPath: checkpoint.application-site.object-name
+      description: objects name
+      type: String
+    - contextPath: checkpoint.application-site.object-uid
+      description: objects uid
+      type: Unknown
+    - contextPath: checkpoint.application-site.object-type
+      description: objects type
+      type: Unknown
+    - contextPath: checkpoint.application-site.from
+      description: From which element number the query was done.
+      type: Number
+    - contextPath: checkpoint.application-site.to
+      description: To which element number the query was done.
+      type: Number
+    - contextPath: checkpoint.application-site.total
+      description: Total number of elements returned by the query.
+      type: Number
+  - arguments:
+    - default: false
+      description: Object name. Must be unique in the domain
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Each application is assigned to one primary category based on its
+        most defining aspect
+      isArray: false
+      name: primary_category
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        can be:
+          url-list(str): URLs that determine this particular application.
+          application-signature(str): Application signature generated by Signature Tool.
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: checkpoint-application-site-add
+    outputs:
+    - contextPath: checkpoint.application-site.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.application-site.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.application-site.type
+      description: object ty[e
+      type: String
+    - contextPath: checkpoint.application-site.application-id
+      description: application ID
+      type: Number
+    - contextPath: checkpoint.application-site.description
+      description: A description for the application.
+      type: String
+    - contextPath: checkpoint.application-site.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.application-site.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.application-site.domain-type
+      type: String
+    - contextPath: checkpoint.application-site.url-list
+      description: URLs that determine this particular application.
+      type: String
+    - contextPath: checkpoint.application-site.Meta-info-creation-time
+      type: Unknown
+    - contextPath: checkpoint.application-site.Meta-info-creator
+      type: String
+    - contextPath: checkpoint.application-site.Meta-info-last-modifier
+      type: Unknown
+  - arguments:
+    - default: false
+      description: uid or name
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: A description for the application
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Each application is assigned to one primary category based on its
+        most defining aspect
+      isArray: false
+      name: primary_category
+      required: false
+      secret: false
+    - default: false
+      description: Application signature generated by Signature Tool
+      isArray: false
+      name: application_signature
+      required: false
+      secret: false
+    - default: false
+      description: ' New name of the object.'
+      isArray: false
+      name: new_name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'States whether the URL is defined as a Regular Expression or
+        not. '
+      isArray: false
+      name: urls_defined_as_regular_expression
+      required: false
+      secret: false
+    deprecated: false
+    description: "Edit existing application using object name or uid. \nIt's impossible\
+      \ to set 'application-signature' when the application was initialized with 'url-list'\
+      \ and vice-verse."
+    execution: false
+    name: checkpoint-application-site-update
+    outputs:
+    - contextPath: checkpoint.application-site.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.application-site.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.application-site.type
+      description: object ty[e
+      type: String
+    - contextPath: checkpoint.application-site.application-id
+      description: application ID
+      type: Number
+    - contextPath: checkpoint.application-site.description
+      description: A description for the application.
+      type: String
+    - contextPath: checkpoint.application-site.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.application-site.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.application-site.domain-type
+      type: String
+    - contextPath: checkpoint.application-site.url-list
+      description: URLs that determine this particular application.
+      type: String
+  - arguments:
+    - default: false
+      description: uid or name object
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete existing application site object using object name or uid.
+    execution: false
+    name: checkpoint-application-site-delete
+    outputs:
+    - contextPath: checkpoint.application-site.message
+      description: Operation status.
+      type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: false
