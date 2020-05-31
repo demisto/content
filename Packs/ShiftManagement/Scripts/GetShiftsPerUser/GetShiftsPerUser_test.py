@@ -1,5 +1,5 @@
 import demistomock as demisto
-from GetRolesPerShift import main
+from GetShiftsPerUser import main
 
 ROLES = [
     {
