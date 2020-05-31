@@ -1,7 +1,7 @@
 id: Test XDR Playbook
 version: -1
 name: Test XDR Playbook
-fromversion: 4.1.0
+fromversion: 5.0.0
 description: Cortex XDR Test Playbook
 starttaskid: "0"
 tasks:
