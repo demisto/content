@@ -72,7 +72,7 @@ def test_get_shifts(mocker):
     main()
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0]['Contents'] == """### Shifts
+    assert results[0]['Contents'] == """### User1's Shifts
 |Start|End|
 |---|---|
 | Sunday 08:00 | Tuesday 12:00 | 

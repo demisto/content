@@ -97,7 +97,7 @@ def main():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': tableToMarkdown(
-            name='Shifts',
+            name=f'{user.get("name", user_id)}\'s Shifts',
             t=shifts_table,
             headers=HEADERS
         )
