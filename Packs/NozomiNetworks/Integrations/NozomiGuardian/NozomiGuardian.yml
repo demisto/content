@@ -71,7 +71,7 @@ script:
     - contextPath: NozomiGuardian.Mappings
       description: IP to MAC Address Mappings
       type: Unknown
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: false
   longRunning: false

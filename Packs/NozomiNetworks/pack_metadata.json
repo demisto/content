@@ -1,10 +1,10 @@
 {
     "name": "Nozomi Networks",
     "description": "An Integration Pack of Nozomi Networks OT Security Tools",
-    "support": "demisto",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Ayman Mahmoud",
-    "url": "",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Network Security"
