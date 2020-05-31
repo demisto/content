@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import List
+import json
+
 
 HOURS_DAYS_HEADER = 'Hours / Days'
 SUNDAY_HEADER = 'Sunday'
@@ -74,6 +76,12 @@ def main():
 
     shifts_of_user = [s for rshifts in shifts_of_user for s in rshifts]
 
+    assert(json.dumps(shifts_of_user) == json.dumps([
+            {'fromDay': 0, 'fromHour': 8, 'fromMinute': 0, 'toDay': 3,
+             'toHour': 12, 'toMinute': 0},
+            {'fromDay': 4, 'fromHour': 16, 'fromMinute': 0, 'toDay': 6,
+             'toHour': 20, 'toMinute': 0}
+        ]))
     shifts_of_user_readable = []
     for s in shifts_of_user:
         from_day = DAY_NUM_TO_DAY_HEADER[s.get("fromDay")]
