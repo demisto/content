@@ -85,9 +85,7 @@ subtype: python2
 tags:
 - phishing
 - ml
-comment: |-
-  Create a text classifier model using machine learning.
-  Each line of the text file is sample data, and it has to be with a tag.
+comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 enabled: true
 args:
 - name: trainingFileName
@@ -117,6 +115,7 @@ scripttarget: 0
 timeout: 60µs
 runonce: true
 dockerimage: demisto/dl:1.1
+deprecated: true
 fromversion: 4.1.0
 tests:
   - CreatePhishingClassifierMLTest
