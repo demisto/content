@@ -87,19 +87,6 @@ args:
   - 'False'
   required: false
   secret: false
-- default: false
-  description: Wether to iterate over this pcap and run only the `iterate_num_of_packets`
-    packets. To be used in playbooks.
-  isArray: false
-  name: iterate
-  required: false
-  secret: false
-- default: false
-  description: The number of packets to analyze. Recommended not over 20,000.
-  isArray: false
-  name: packets_to_analyze
-  required: false
-  secret: false
 comment: |-
   PcapMIner V2 allows to parse pcap files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
   This automation takes about a minute to process 20,000 packets (which is approximatly 10MB). If you want to mine large files you can either:
