@@ -74,25 +74,30 @@ def main():
 
     shifts_of_user = [s for rshifts in shifts_of_user for s in rshifts]
 
-    shifts_of_user_readable = []
-    for s in shifts_of_user:
-        from_day = DAY_NUM_TO_DAY_HEADER[s.get("fromDay")]
-        from_hour = time_fix(s.get("fromHour"))
-        from_minute = time_fix(s.get("fromMinute"))
-        to_day = DAY_NUM_TO_DAY_HEADER[s.get("toDay")]
-        to_hour = time_fix(s.get("toHour"))
-        to_minute = time_fix(s.get("toMinute"))
-        shifts_of_user_readable.append(
-            [f'{from_day} {from_hour}:{from_minute}',
-             f'{to_day} {to_hour}:{to_minute}'])
+    # shifts_of_user_readable = []
+    # for s in shifts_of_user:
+    #     from_day = DAY_NUM_TO_DAY_HEADER[s.get("fromDay")]
+    #     from_hour = time_fix(s.get("fromHour"))
+    #     from_minute = time_fix(s.get("fromMinute"))
+    #     to_day = DAY_NUM_TO_DAY_HEADER[s.get("toDay")]
+    #     to_hour = time_fix(s.get("toHour"))
+    #     to_minute = time_fix(s.get("toMinute"))
+    #     shifts_of_user_readable.append(
+    #         [f'{from_day} {from_hour}:{from_minute}',
+    #          f'{to_day} {to_hour}:{to_minute}'])
 
     HEADERS = ["Start", "End"]
 
+    # shifts_table = [
+    #     {
+    #         HEADERS[0]: shift[0],
+    #         HEADERS[1]: shift[1],
+    #     } for shift in shifts_of_user_readable
+    # ]
+
     shifts_table = [
-        {
-            HEADERS[0]: shift[0],
-            HEADERS[1]: shift[1],
-        } for shift in shifts_of_user_readable
+        {"Start": "statata", "End": "endndnd"},
+        {"Start": "statata2", "End": "endndnd2"}
     ]
 
     demisto.results({
