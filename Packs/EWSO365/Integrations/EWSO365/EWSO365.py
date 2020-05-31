@@ -1738,16 +1738,6 @@ def sub_main():
         # normal commands
         else:
             output = normal_commands[command](client, **args)  # type: ignore[operator]
-            with open("/Users/darbel/dev/demisto/content/Packs/EWSO365/Integrations/EWSO365/test_data/commands_outputs.json", "r") as f:
-                command_outputs = json.load(f)
-            with open("/Users/darbel/dev/demisto/content/Packs/EWSO365/Integrations/EWSO365/test_data/commands_outputs.json", "w") as f:
-                command_outputs[command] = output[1]
-                json.dump(command_outputs, f)
-            with open("/Users/darbel/dev/demisto/content/Packs/EWSO365/Integrations/EWSO365/test_data/raw_responses.json", "r") as f:
-                command_raw = json.load(f)
-            with open("/Users/darbel/dev/demisto/content/Packs/EWSO365/Integrations/EWSO365/test_data/raw_responses.json", "w") as f:
-                command_raw[command] = output[2]
-                json.dump(command_raw, f)
             return_outputs(*output)
 
     except Exception as e:

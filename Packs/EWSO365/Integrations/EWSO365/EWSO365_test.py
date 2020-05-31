@@ -7,7 +7,7 @@ from EWSO365 import get_searchable_mailboxes, find_folders
 class TestNormalCommands:
     """
     The test class checks the following normal_commands:
-        * ews-get-searchable-mailboxes
+        * ews-find-folders
     """
     with open("test_data/commands_outputs.json", "r") as f:
         COMMAND_OUTPUTS = json.load(f)
@@ -60,13 +60,28 @@ class TestNormalCommands:
             return ""
 
     def test_ews_find_folders(self):
+        """
+        This test checks the following normal_commands:
+            * ews-find-folders
+        Using this method:
+        Given:
+            - command name is ews-find-folders
+            - client function name to mock
+            - expected client function result
+            - expected command result
+        When:
+            - we want to execute command function
+        Then:
+            - the expected result will be the same as the entry context
+        """
         command_name = 'ews-find-folders'
         raw_response = self.RAW_RESPONSES[command_name]
         expected = self.COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
         client.account.walk_res = raw_response
         res = find_folders(client)
-        assert expected == res[1]
+        actual_ec = res[1]
+        assert expected == actual_ec
     #
     # @pytest.mark.parametrize(
     #     "command_name,command_func,client_func,args", TEST_COMMANDS_LIST_CLIENT_RQRD
