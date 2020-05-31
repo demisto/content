@@ -875,19 +875,18 @@ def main():
         else:
             preupdate_success.add((instance_name, integration_of_instance))
 
-    # todo: should it be removed?
-    # threads_list = []
-    # threads_prints_manager = ParallelPrintsManager(len(servers))
-    # # For each server url we install content
-    # for thread_index, server_url in enumerate(servers):
-    #     client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
-    #     t = Thread(target=update_content_on_demisto_instance,
-    #                kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
-    #                        'prints_manager': threads_prints_manager,
-    #                        'thread_index': thread_index})
-    #     threads_list.append(t)
-    #
-    # run_threads_list(threads_list)
+    threads_list = []
+    threads_prints_manager = ParallelPrintsManager(len(servers))
+    # For each server url we install content
+    for thread_index, server_url in enumerate(servers):
+        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
+        t = Thread(target=update_content_on_demisto_instance,
+                   kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
+                           'prints_manager': threads_prints_manager,
+                           'thread_index': thread_index})
+        threads_list.append(t)
+
+    run_threads_list(threads_list)
 
     # configure instances for new integrations
     new_integration_module_instances = []
