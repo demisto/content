@@ -835,3 +835,5 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+tests:
+  - no test
