@@ -1206,7 +1206,7 @@ def main():
             fetch_time = demisto.params().get('fetch_time', '3 days')
             fetch_limit = demisto.params().get('fetch_limit', '50')
             # Set and define the fetch incidents command to run after activated via integration settings.
-            incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())  # type: ignore
+            incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
             demisto.setLastRun(last_run)
 
@@ -1315,8 +1315,8 @@ def main():
                 bad_field = json.loads(message[1]).get('field')
                 return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
                              f'invalid. Make sure that the arguments is correct.')
-        except Exception as e:
-            return_error(str(e))
+        except Exception:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
         return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
 
 
