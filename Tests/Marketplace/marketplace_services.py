@@ -610,12 +610,13 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
-    def prepare_release_notes(self, index_folder_path):
+    def prepare_release_notes(self, index_folder_path, build_number):
         """
         Handles the creation and update of the changelog.json files.
 
         Args:
             index_folder_path (str): Path to the unzipped index json.
+            build_number (str): circleCI build number, used as an index revision.
         Returns:
             bool: whether the operation succeeded.
         """
@@ -660,7 +661,7 @@ class Pack(object):
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
                         version_changelog = {'releaseNotes': changelog_lines,
-                                             'displayName': latest_release_notes,
+                                             'displayName': f'{latest_release_notes} ({build_number})',
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
 
@@ -674,7 +675,7 @@ class Pack(object):
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
                 changelog = {}
                 version_changelog = {'releaseNotes': self._description,
-                                     'displayName': Pack.PACK_INITIAL_VERSION,
+                                     'displayName': f'{Pack.PACK_INITIAL_VERSION} ({build_number})',
                                      'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                 changelog[Pack.PACK_INITIAL_VERSION] = version_changelog
 

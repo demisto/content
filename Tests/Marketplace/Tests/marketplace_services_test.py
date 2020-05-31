@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+import random
 from unittest.mock import mock_open
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig
@@ -243,7 +244,8 @@ class TestChangelogCreation:
         """
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        build_number = random.randint(0, 100000)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
         assert result is True
 
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
@@ -274,7 +276,8 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        build_number = random.randint(0, 100000)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
         assert result is True
 
     def test_prepare_release_notes_upgrade_version_mismatch(self, mocker, dummy_pack):
@@ -306,7 +309,8 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        build_number = random.randint(0, 100000)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
         assert result is False
 
     def test_prepare_release_notes_upgrade_version_dup(self, mocker, dummy_pack):
@@ -339,7 +343,8 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        build_number = random.randint(0, 100000)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
         assert result is True
 
 
