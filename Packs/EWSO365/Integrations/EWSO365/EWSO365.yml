@@ -1,4 +1,4 @@
-fromversion: 5.5.0
+fromversion: 5.0.0
 category: Messaging
 commonfields:
   id: EWSO365
@@ -19,24 +19,20 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- display: Email address from which to fetch incidents
+- display: Email Address
+  additionalinfo: Mailbox to run commands on, and to fetch incidents from.
   name: default_target_mailbox
   required: true
   type: 0
 - defaultvalue: Inbox
-  display: Name of the folder from which to fetch incidents (supports Exchange Folder
-    ID and sub-folders e.g. Inbox/Phishing)
+  additionalinfo: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing.
+  display: Name of the folder from which to fetch incidents
   name: folder
   required: true
   type: 0
 - defaultvalue: 'false'
   display: Public Folder
   name: is_public_folder
-  required: false
-  type: 8
-- defaultvalue: 'false'
-  display: Has impersonation rights
-  name: impersonation
   required: false
   type: 8
 - display: Fetch incidents
@@ -47,10 +43,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Mark fetched emails as read
-  name: mark_as_read
-  required: false
-  type: 8
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
@@ -391,7 +383,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '50'
       description: Maximum number of results to return.
       isArray: false
       name: limit
@@ -497,7 +489,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '50'
       description: Maximum number of results to return.
       isArray: false
       name: limit
@@ -707,7 +699,7 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '50'
       description: Maximum number of items to return.
       isArray: false
       name: limit

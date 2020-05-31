@@ -28,9 +28,7 @@ from exchangelib.errors import (
     ErrorMailboxMoveInProgress,
     ErrorNameResolutionNoResults,
     ErrorInvalidPropertyRequest,
-    ErrorIrresolvableConflict,
     MalformedResponseError,
-    ErrorNameResolutionMultipleResults,
 )
 from exchangelib.items import Item, Message, Contact
 from exchangelib.services.common import EWSService, EWSAccountService
@@ -130,9 +128,7 @@ class EWSClient:
         tenant_id,
         folder="Inbox",
         is_public_folder=False,
-        impersonation=False,
         request_timeout="120",
-        mark_as_read=False,
         max_fetch="50",
         self_deployed=True,
         insecure=True,
@@ -146,9 +142,7 @@ class EWSClient:
         :param client_secret: Application client secret
         :param folder: Name of the folder from which to fetch incidents
         :param is_public_folder: Public Folder flag
-        :param impersonation: Has impersonation rights flag
         :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
-        :param mark_as_read: Mark fetched emails as read
         :param max_fetch: Max incidents per fetch
         :param insecure: Trust any certificate (not secure)
         """
@@ -167,8 +161,7 @@ class EWSClient:
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
-        self.access_type = IMPERSONATION if impersonation else DELEGATE
-        self.mark_as_read = mark_as_read
+        self.access_type = IMPERSONATION
         self.max_fetch = min(50, int(max_fetch))
         self.last_run_ids_queue_size = 500
         self.client_id = client_id
@@ -997,14 +990,6 @@ def parse_incident_from_item(client: EWSClient, item, is_fetch=False):
     # handle conversion id
     if item.conversation_id:
         labels.append({"type": "Email/ConversionID", "value": item.conversation_id.id})
-
-    if client.mark_as_read and is_fetch:
-        item.is_read = True
-        try:
-            item.save()
-        except ErrorIrresolvableConflict:
-            time.sleep(0.5)
-            item.save()
 
     incident["labels"] = labels
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
