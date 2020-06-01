@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added new context paths for ***cb-get-processes*** command:
+Added new context outputs for the ***cb-get-processes*** command:
     - **File.Name**
     - **File.MD5**
     - **File.Path**
