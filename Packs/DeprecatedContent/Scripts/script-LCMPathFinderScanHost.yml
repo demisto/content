@@ -33,6 +33,7 @@ args:
   default: true
   description: The host's ID
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - lcm-pathfinder-scan

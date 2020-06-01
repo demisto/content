@@ -38,6 +38,7 @@ args:
 - name: ip
   description: (Optional) IP of host to find
 scripttarget: 0
+deprecated: true
 dependson:
   should:
   - lcm-hosts
