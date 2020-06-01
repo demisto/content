@@ -97,7 +97,7 @@ subtype: python2
 tags:
 - ml
 - phishing
-comment: Evaluate phishing model created by text classification ml automation.
+comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 enabled: true
 args:
 - name: incidentsQuery
@@ -160,6 +160,7 @@ scripttarget: 0
 timeout: 6µs
 runonce: true
 dockerimage: demisto/dl:1.1
+deprecated: true
 fromversion: 4.1.0
 tests:
   - CreatePhishingClassifierMLTest
