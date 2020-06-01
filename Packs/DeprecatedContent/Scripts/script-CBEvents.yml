@@ -1,6 +1,6 @@
 commonfields:
   id: CBEvents
-  version: 1
+  version: -1
 name: CBEvents
 script: |-
   //Searches for all processes with a given query - and lists events associated with processes.
