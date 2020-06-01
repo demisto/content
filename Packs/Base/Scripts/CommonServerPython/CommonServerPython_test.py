@@ -653,7 +653,7 @@ def test_logger_replace_strs_credentials(mocker):
                 'password': 'cred_pass',
                 'sortValues': None,
                 'sshkey': 'ssh_key_secret',
-                'sshkeyPass': 'ssh_key_secret_pass', 
+                'sshkeyPass': 'ssh_key_secret_pass',
                 'user': '',
                 'vaultInstanceId': '',
                 'version': 0,
