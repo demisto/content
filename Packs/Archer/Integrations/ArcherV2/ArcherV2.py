@@ -3,8 +3,11 @@ from CommonServerPython import *
 import traceback
 from CommonServerUserPython import *
 from typing import Tuple, Dict, Any
+import dateparser
 ''' IMPORTS '''
 
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 REQUEST_HEADERS = {'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
                    'Content-Type': 'application/json'}
@@ -110,6 +113,81 @@ def get_user_info_soap_request(token, username, domain):
            '</soap:Envelope>'
 
 
+def search_records_soap_request(token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
+                                numeric_operator='', sort_by_field='', max_results=10, is_descending=True):
+    request_body =  '<?xml version="1.0" encoding="UTF-8"?>' + \
+            '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
+            'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + \
+            '    <soap:Body>' + \
+            '        <ExecuteSearch xmlns="http://archer-tech.com/webservices/">' + \
+            f'            <sessionToken>{token}</sessionToken>' + \
+            '            <searchOptions>' + \
+            '                <![CDATA[<SearchReport>' + \
+            '                <PageSize>100</PageSize>' + \
+            '                <PageNumber>1</PageNumber>' + \
+            f'                <MaxRecordCount>{max_results}</MaxRecordCount>' + \
+            '                <ShowStatSummaries>false</ShowStatSummaries>' + \
+            f'                <DisplayFields>{display_fields}</DisplayFields>' + \
+            f'                <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
+
+    if search_value:
+        request_body +='<Filter><Conditions>'
+
+        if date_operator:
+            request_body += '<DateComparisonFilterCondition>' + \
+                            f'        <Operator>{date_operator}</Operator>' + \
+                            f'        <Field name="{field_name}">{field_id}</Field>' + \
+                            f'        <Value>{search_value}</Value>' + \
+                            '        <TimeZoneId>UTC Standard Time</TimeZoneId>' + \
+                            '        <IsTimeIncluded>TRUE</IsTimeIncluded>' + \
+                            '</DateComparisonFilterCondition >'
+        elif numeric_operator:
+            request_body += '<NumericFilterCondition>' + \
+                            f'        <Operator>{numeric_operator}</Operator>' + \
+                            f'        <Field name="{field_name}">{field_id}</Field>' + \
+                            f'        <Value>{search_value}</Value>' + \
+                            '</NumericFilterCondition >'
+        else:
+            request_body += '<TextFilterCondition>' + \
+                            '        <Operator>Contains</Operator>' + \
+                            f'        <Field name="{field_name}">{field_id}</Field>' + \
+                            f'        <Value>{search_value}</Value>' + \
+                            '</TextFilterCondition >'
+
+        request_body +='</Conditions></Filter>'
+
+    if date_operator:
+        request_body +='<Filter>' + \
+                        '<Conditions>' + \
+                        '    <DateComparisonFilterCondition>' + \
+                        f'        <Operator>{date_operator}</Operator>' + \
+                        f'        <Field name="{field_name}">{field_id}</Field>' + \
+                        f'        <Value>{search_value}</Value>' + \
+                        '        <TimeZoneId>UTC Standard Time</TimeZoneId>' + \
+                        '        <IsTimeIncluded>TRUE</IsTimeIncluded>' + \
+                        '    </DateComparisonFilterCondition >' + \
+                        '</Conditions>' + \
+                        '</Filter>'
+
+    if sort_by_field:
+        sort_type = 'Descending' if is_descending else 'Ascending'
+        request_body +='<SortFields>' + \
+                        '    <SortField>' + \
+                        f'        <Field>{sort_by_field}</Field>' + \
+                        f'        <SortType>{sort_type}</SortType>' + \
+                        '    </SortField>' + \
+                        '</SortFields>'
+
+    request_body +='</Criteria></SearchReport>]]>' + \
+    '</searchOptions>' + \
+    '<pageNumber>1</pageNumber>' + \
+    '</ExecuteSearch>' + \
+    '</soap:Body>' + \
+    '</soap:Envelope>'
+
+    return request_body
+
+
 SOAP_COMMANDS = {'archer-get-reports':
                  {'soapAction': 'http://archer-tech.com/webservices/GetReports',
                   'urlSuffix': 'rsaarcher/ws/search.asmx',
@@ -129,7 +207,12 @@ SOAP_COMMANDS = {'archer-get-reports':
                      {'soapAction': 'http://archer-tech.com/webservices/LookupDomainUserId',
                       'urlSuffix': 'rsaarcher/ws/accesscontrol.asmx',
                       'soapBody': get_user_info_soap_request,
-                      'outputPath': 'response.Envelope.Body.LookupDomainUserIdResponse.LookupDomainUserIdResult'}
+                      'outputPath': 'response.Envelope.Body.LookupDomainUserIdResponse.LookupDomainUserIdResult'},
+                 'archer-search-records':
+                     {'soapAction': 'http://archer-tech.com/webservices/ExecuteSearch',
+                      'urlSuffix': 'rsaarcher/ws/search.asmx',
+                      'soapBody': search_records_soap_request,
+                      'outputPath': 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult'}
                  }
 
 
@@ -191,7 +274,7 @@ class Client(BaseClient):
 
         res = self._http_request('Post', req_data['urlSuffix'], headers=headers,
                                   data=body, ok_codes=[200], resp_type='content')
-        return extract_from_xml(res, req_data['outputPath'])
+        return extract_from_xml(res, req_data['outputPath']), res
 
     def get_level_by_app_id(self, app_id):
         cache = demisto.getIntegrationContext()
@@ -222,6 +305,136 @@ class Client(BaseClient):
             demisto.setIntegrationContext(cache)
             return levels
         return []
+
+    def get_record(self, app_id, record_id):
+        res = self.do_request('GET', f'rsaarcher/api/core/content/{record_id}')
+
+        if not isinstance(res,dict):
+            res = res.json()
+
+        errors = get_errors_from_res(res)
+        record = {}
+        if res.get('RequestedObject') and res.get('IsSuccessful'):
+            content_obj = res.get('RequestedObject')
+            level_id = content_obj.get('LevelId')
+            levels = self.get_level_by_app_id(app_id)
+            level_fields = list(filter(lambda m: m['level'] == level_id, levels))
+            if level_fields:
+                level_fields = level_fields[0]['mapping']
+
+            for _id, field in content_obj.get('FieldContents').items():
+                field_data = level_fields.get(str(_id))
+                field_type = field_data.get('Type')
+
+                if field_type == 19:
+                    field_value = field.get('IpAddressBytes')
+                else:
+                    field_value = field.get('Value')
+
+                if field_value:
+                    record[field_data.get('Name')] = field_value
+
+            record['Id'] = content_obj.get('Id')
+        return record, res, errors
+
+    def record_to_incident(self, record_item, app_id, date_field):
+        labels = []
+        raw_record = record_item['raw']
+        record_item = record_item['record']
+
+        incident_created_time = ''
+        if record_item.get(date_field):
+            incident_created_time = dateparser.parse(record_item[date_field]).replace(tzinfo=None)
+
+        for k, v in record_item.items():
+            if isinstance(v, str):
+                labels.append({
+                    'type': k,
+                    'value': v
+                })
+            else:
+                labels.append({
+                    'type': k,
+                    'value': json.dumps(v)
+                })
+
+        labels.append({'type': 'ModuleId', 'value': app_id})
+        labels.append({'type': 'ContentId', 'value': record_item.get("Id")})
+        labels.append({'type': 'rawJSON', 'value': json.dumps(raw_record)})
+
+        incident = {
+            'name': f'RSA Archer Incident: {record_item.get("Id")}',
+            'details': json.dumps(record_item),
+            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            # 'labels': labels,
+            'rawJSON': json.dumps(raw_record)
+        }
+        return incident, incident_created_time
+
+    def search_records(self, app_id, fields_to_display, field_to_search, search_value,
+                       numeric_operator='', date_operator='', max_results=10):
+
+        level_data = self.get_level_by_app_id(app_id)[0]
+        fields_xml = ''
+        search_field_name = ''
+        search_field_id = ''
+        fields_mapping = level_data['mapping']
+        for field in fields_mapping.keys():
+            field_name = fields_mapping[field]['Name']
+            if field_name in fields_to_display:
+                fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
+            if field_name == field_to_search:
+                search_field_name = field_name
+                search_field_id = field
+
+        res, raw_res = self.do_soap_request('archer-search-records',
+                                            app_id=app_id, display_fields=fields_xml,
+                                            field_id=search_field_id, field_name=search_field_name,
+                                            numeric_operator=numeric_operator,
+                                            date_operator=date_operator, search_value=search_value,
+                                            sort_by_field=search_field_id, max_results=max_results)
+
+        if not res:
+            return [], raw_res
+
+        res = json.loads(xml2json(res))
+
+        if res.get('Records') and res['Records'].get('Record'):
+            records_data = res['Records']['Record']
+            if isinstance(records_data, dict):
+                records_data = [records_data]
+
+            records = []
+
+            for item in records_data:
+                record = {'Id': item.get('@contentId')}
+                record_fields = item.get('Field')
+
+                if isinstance(record_fields, dict):
+                    record_fields = [record_fields]
+
+                for field in record_fields:
+                    field_name = fields_mapping[field.get('@id')]['Name']
+                    field_type = field.get('@type')
+                    field_value = ''
+                    if field_type == '3':
+                        field_value = field.get('@xmlConvertedValue')
+                    elif field_type == '4':
+                        if field.get('ListValues'):
+                            field_value = field['ListValues']['ListValue']['@displayName']
+                    elif field_type == '8':
+                        if field.get('Users'):
+                            field_value += json.dumps(field.get('Users'))
+                        if field.get('Groups'):
+                            field_value += json.dumps(field.get('Groups'))
+                            field_value = json.dumps(field)
+                    else:
+                        field_value = field.get('#text')
+
+                    record[field_name] = field_value
+                records.append({'record': record, 'raw': item})
+            return records, raw_res
+        return [], raw_res
 
     def get_sub_form_id(self, app_id, field_id, value_for_sub_form):
         level_data = self.get_level_by_app_id(app_id)[0]
@@ -257,25 +470,10 @@ def generate_field_contents(fields_values, level_fields):
                 break
 
         if field_data:
-            field_content[_id] = generate_field(_id, field_data, fields_values[field_name])
+            field_content[_id] = {'Type': field_data['Type'],
+                                   'Value': fields_values[field_name],
+                                   'FieldId': _id}
     return field_content
-
-
-def generate_field(field_id, field_data, value):
-    field_type = field_data['Type']
-
-    if field_type:
-        return {'Type': field_type,
-                'Value': value,
-                'FieldId': field_id}
-    if field_type == 4:
-        return {'Type': field_type,
-                'Value': {'ValuesListIds': [int(value)]},
-                'FieldId': field_id}
-    if field_type == 7:
-        return {'Type': field_type,
-                'Value': [{'Name': value, "URL": value}],
-                'FieldId': field_id}
 
 
 def get_errors_from_res(res):
@@ -301,7 +499,7 @@ def test_module(client: Client) -> str:
     return 'ok' if client.do_request('GET', 'rsaarcher/api/core/system/application') else 'Connection failed.'
 
 
-def search_applications_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def search_applications_command(client: Client, args: Dict[str, str]):
     app_id = args.get('application-id')
     endpoint_url = 'rsaarcher/api/core/system/application/'
 
@@ -336,7 +534,7 @@ def search_applications_command(client: Client, args: Dict[str, str]) -> Tuple[s
     return_outputs(markdown, context, res)
 
 
-def get_application_fields_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_application_fields_command(client: Client, args: Dict[str, str]):
     app_id = args.get('application-id')
 
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/application/{app_id}')
@@ -363,7 +561,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]) -> Tupl
     return_outputs(markdown, context, res)
 
 
-def get_field_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_field_command(client: Client, args: Dict[str, str]):
     field_id = args.get('field-id')
 
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
@@ -390,7 +588,7 @@ def get_field_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, 
     return_outputs(markdown, context, res)
 
 
-def get_mapping_by_level_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
     level = args.get('level')
 
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level}')
@@ -420,47 +618,23 @@ def get_mapping_by_level_command(client: Client, args: Dict[str, str]) -> Tuple[
     return_outputs(markdown, context, res)
 
 
-def get_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('record-id')
     app_id = args.get('application-id')
-    res = client.do_request('GET', f'rsaarcher/api/core/content/{record_id}')
 
-    errors = get_errors_from_res(res)
+    record, res, errors = client.get_record(app_id, record_id)
     if errors:
         return_error(errors)
 
-    if res.get('RequestedObject') and res.get('IsSuccessful'):
-        content_obj = res.get('RequestedObject')
-        level_id = content_obj.get('LevelId')
-        levels = client.get_level_by_app_id(app_id)
-        level_fields = list(filter(lambda m: m['level'] == level_id, levels))
-        if level_fields:
-            level_fields = level_fields[0]['mapping']
-
-        record = {}
-        for _id, field in content_obj.get('FieldContents').items():
-            field_data = level_fields.get(str(_id))
-            field_type = field_data.get('Type')
-
-            if field_type == 19:
-                field_value = field.get('IpAddressBytes')
-            else:
-                field_value = field.get('Value')
-
-            if field_value:
-                record[field_data.get('Name')] = field_value
-
-        record['Id'] = content_obj.get('Id')
-
-        markdown = tableToMarkdown('archer-get-record', record)
-        context: dict = {
-            f'Archer.Record(val.Id && val.Id == obj.Id)':
-                record
-        }
-        return_outputs(markdown, context, res)
+    markdown = tableToMarkdown('archer-get-record', record)
+    context: dict = {
+        f'Archer.Record(val.Id && val.Id == obj.Id)':
+            record
+    }
+    return_outputs(markdown, context, res)
 
 
-def create_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def create_record_command(client: Client, args: Dict[str, str]):
     app_id = args.get('application-id')
     fields_values = args.get('fields-to-values')
 
@@ -480,16 +654,16 @@ def create_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
         return_outputs(f'Record created successfully, record id: {rec_id}', {}, res)
 
 
-def delete_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def delete_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('record-id')
     res = client.do_request('Delete', f'rsaarcher/api/core/content/{record_id}')
     if res.get('IsSuccessful'):
         return f'Record {record_id} deleted successfully', {}, res
+    else:
+        return_error('Delete record failed')
 
-    return_error('Delete record failed')
 
-
-def update_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def update_record_command(client: Client, args: Dict[str, str]):
     app_id = args.get('application-id')
     record_id = args.get('record-id')
     fields_values = args.get('fields-to-values')
@@ -497,6 +671,7 @@ def update_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
     field_contents = generate_field_contents(fields_values,  level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId':  level_data['level'], 'FieldContents': field_contents}}
+    print(body)
     res = client.do_request('Put', f'rsaarcher/api/core/content', data=body)
 
     errors = get_errors_from_res(res)
@@ -505,44 +680,44 @@ def update_record_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
 
     if res.get('IsSuccessful'):
         return_outputs(f'Record {record_id} updated successfully', {}, res)
+    else:
+        return_error('Update record failed')
 
-    return_error('Update record failed')
 
-
-def execute_statistics_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def execute_statistics_command(client: Client, args: Dict[str, str]):
     report_guid = args.get('report-guid')
     max_results = args.get('max-results')
-    res = client.do_soap_request('archer-execute-statistic-search-by-report',
+    res, raw_res = client.do_soap_request('archer-execute-statistic-search-by-report',
                                  report_guid=report_guid, max_results=max_results)
     if res:
         res = json.loads(xml2json(res))
-    return_outputs(res, {}, {})
+    return_outputs(res, {}, raw_res)
 
 
-def get_reports_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
-    res = client.do_soap_request('archer-get-reports')
+def get_reports_command(client: Client, args: Dict[str, str]):
+    res, raw_res = client.do_soap_request('archer-get-reports')
     res = json.loads(xml2json(res))
     ec = res.get('ReportValues').get('ReportValue')
 
     context: dict = {
         f'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
     }
-    return_outputs(ec, context, {})
+    return_outputs(ec, context, raw_res)
 
 
-def search_options_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def search_options_command(client: Client, args: Dict[str, str]):
     report_guid = args.get('report-guid')
-    res = client.do_soap_request('archer-get-search-options-by-guid', report_guid=report_guid)
+    res, raw_res = client.do_soap_request('archer-get-search-options-by-guid', report_guid=report_guid)
     res = json.loads(xml2json(res))
-    return_outputs(res, {}, {})
+    return_outputs(res, {}, raw_res)
 
 
-def reset_cache_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def reset_cache_command(client: Client, args: Dict[str, str]):
     demisto.setIntegrationContext({})
     return_outputs('', {}, '')
 
 
-def get_value_list_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_value_list_command(client: Client, args: Dict[str, str]):
     field_id = args.get('field-id')
     res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/{field_id}')
 
@@ -570,17 +745,17 @@ def get_value_list_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
             return_outputs(markdown, context, values_list_res)
 
 
-def get_user_id_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def get_user_id_command(client: Client, args: Dict[str, str]):
     user_info = args.get('user-info')
     user_info = user_info.split('/')
-    res = client.do_soap_request('archer-get-user-id',
+    res, raw_res = client.do_soap_request('archer-get-user-id',
                                      domain=user_info[0].lower(), username=user_info[1].lower())
     res = json.loads(xml2json(res))
 
-    return_outputs(res, {}, {})
+    return_outputs(res, {}, raw_res)
 
 
-def upload_file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def upload_file_command(client: Client, args: Dict[str, str]):
     entry_id = args.get('entry-id')
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
@@ -594,11 +769,11 @@ def upload_file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         attachment_id = res['RequestedObject'].get('Id')
         return_outputs(f'File uploaded succsessfully, attachment ID: {attachment_id}', {}, res)
+    else:
+        return_error('Upload file failed')
 
-    return_error('Upload file failed')
 
-
-def download_file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def download_file_command(client: Client, args: Dict[str, str]):
     attachment_id = args.get('attachment-id')
     res = client.do_request('GET', f'rsaarcher/api/core/content/attachment/{attachment_id}')
 
@@ -610,14 +785,117 @@ def download_file_command(client: Client, args: Dict[str, str]) -> Tuple[str, di
         content = base64.b64decode(res['RequestedObject'].get('AttachmentBytes'))
         filename = res['RequestedObject'].get('AttachmentName')
         return demisto.results(fileResult(filename, content))
+    else:
+        return_error('File downloading failed', outputs=res)
 
-    return_error('File downloading failed', outputs=res)
+
+def list_users_command(client: Client, args: Dict[str, str]):
+    user_id = args.get('user-id')
+    if user_id:
+        res = client.do_request('GET', f'rsaarcher/api/core/system/user/{user_id}')
+    else:
+        res = client.do_request('GET', f'rsaarcher/api/core/system/user')
+
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
+
+    if isinstance(res, dict):
+        res = [res]
+
+    users = []
+    for user in res:
+        if user.get('RequestedObject') and user.get('IsSuccessful'):
+            user_obj = user['RequestedObject']
+            users.append({'Id': user_obj.get('Id'),
+                                 'DisplayName': user_obj.get('DisplayName'),
+                                 'FirstName': user_obj.get('FirstName'),
+                                 'MiddleName': user_obj.get('MiddleName'),
+                                 'LastName': user_obj.get('LastName'),
+                                 'LastLoginDate': user_obj.get('LastLoginDate'),
+                                 'UserName': user_obj.get('UserName')})
+
+    markdown = tableToMarkdown('Archer list users:', users)
+    context: dict = {
+        f'Archer.User(val.Id && val.Id == obj.Id)':
+            users
+    }
+    return_outputs(markdown, context, res)
+
+
+def search_records_command(client: Client, args: Dict[str, str]):
+    app_id = args.get('application-id')
+    field_to_search = args.get('field-to-search-on')
+    search_value = args.get('search-value')
+    max_results = args.get('max-results', 10)
+    date_operator = args.get('date-operator')
+    numeric_operator = args.get('numeric-operator')
+    fields_to_display = argToList(args.get('fields-to-display'))
+    fields_to_get = argToList(args.get('fields-to-get'))
+
+    if 'Id' not in fields_to_get:
+        fields_to_get.append('Id')
+
+    if not all(f in fields_to_get for f in fields_to_display):
+        return_error('fields-to-display param should conatins only values from fields-to-get')
+
+    records, raw_res = client.search_records(app_id, fields_to_get, field_to_search, search_value,
+                                                  numeric_operator, date_operator, max_results)
+
+    records = list(map(lambda x: x['record'], records))
+
+    hr = []
+    for record in records:
+        hr.append({f: record[f] for f in fields_to_display})
+
+    markdown = tableToMarkdown('Search records results:', hr)
+    context: dict = {'Archer.Record(val.Id && val.Id == obj.Id)': records}
+    return_outputs(markdown, context, {})
+
+
+def fetch_incidents(client, last_run, first_fetch_time, params):
+    # Get the last fetch time, if exists
+    last_fetch = last_run.get('last_fetch')
+
+    # Handle first time fetch
+    if last_fetch is None:
+        last_fetch = dateparser.parse(first_fetch_time)
+    else:
+        last_fetch = dateparser.parse(last_fetch)
+
+    last_fetch = last_fetch.replace(tzinfo=None)
+    app_id = params.get('applicationId')
+    date_field = params.get('applicationDateField')
+    max_results = params.get('fetch_limit', 10)
+    time_offset = int(params.get('time_zone', '0'))
+    fields_to_display = argToList(params.get('fields_to_fetch'))
+    fields_to_display.append(date_field)
+
+    last_fetch = last_fetch + timedelta(minutes = (time_offset * -1))
+
+    records, raw_res = client.search_records(app_id, fields_to_display, date_field,
+                                             last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                                             date_operator='GreaterThan', max_results=max_results)
+
+    incidents = []
+
+    for item in records:
+        incident, incident_created_time = client.record_to_incident(item, app_id, date_field)
+
+        incidents.append(incident)
+        if incident_created_time > last_fetch:
+            last_fetch = incident_created_time
+
+    last_fetch = last_fetch + timedelta(minutes = time_offset)
+    next_run = {'last_fetch': last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ')}
+    return next_run, incidents
 
 
 def main():
     params = demisto.params()
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
+    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
     client = Client(base_url,
                     credentials.get('identifier'), credentials.get('password'),
                     params.get('instanceName'),
@@ -640,14 +918,26 @@ def main():
         'archer-get-valuelist': get_value_list_command,
         'archer-get-user-id': get_user_id_command,
         'archer-upload-file': upload_file_command,
-        'archer-get-file': download_file_command
+        'archer-get-file': download_file_command,
+        'archer-list-users': list_users_command,
+        'archer-search-records': search_records_command
     }
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
 
     try:
-        if command == 'test-module':
+        if command == 'fetch-incidents':
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            next_run, incidents = fetch_incidents(
+                client=client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_time,
+                params=params)
+
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+        elif command == 'test-module':
             demisto.results(test_module(client))
         elif command in commands:
             return commands[command](client, demisto.args())

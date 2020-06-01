@@ -38,6 +38,43 @@ configuration:
   name: userDomain
   required: false
   type: 0
+- defaultvalue: '75'
+  display: Application ID for fetch
+  hidden: false
+  name: applicationId
+  required: true
+  type: 0
+- defaultvalue: Date/Time Occurred
+  display: Application date field for fetch
+  hidden: false
+  name: applicationDateField
+  required: true
+  type: 0
+- defaultvalue: '10'
+  display: How many incidents to fetch each time
+  hidden: false
+  name: fetch_limit
+  required: false
+  type: 0
+- defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- display: Fields to fetch
+  hidden: false
+  name: fields_to_fetch
+  required: false
+  type: 0
+- defaultvalue: '0'
+  display: Timezone offset in minutes of the RSA Archer server machine (+60, -60,
+    in minutes)
+  hidden: false
+  name: time_zone
+  required: false
+  type: 0
 description: This is the Hello World integration for getting started.
 display: RSA Archer V2
 name: ArcherV2
@@ -201,6 +238,72 @@ script:
     deprecated: false
     execution: false
     name: archer-get-file
+  - arguments:
+    - default: false
+      isArray: false
+      name: user-id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-list-users
+  - arguments:
+    - default: false
+      isArray: false
+      name: application-id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: field-to-search-on
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: search-value
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      isArray: false
+      name: max-results
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: fields-to-display
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: numeric-operator
+      predefined:
+      - Equals
+      - NotEqual
+      - GreaterThan
+      - LessThan
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: date-operator
+      predefined:
+      - Equals
+      - DoesNotEqual
+      - GreaterThan
+      - LessThan
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: fields-to-get
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-search-records
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
