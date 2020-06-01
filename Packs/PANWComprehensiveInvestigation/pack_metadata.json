@@ -10,7 +10,7 @@
     "categories": [
         "Forensics & Malware Analysis"
     ],
-    "tags": ["malware", "hunting"],
-    "useCases": ["PANW Comprehensive Investigation"],
+    "tags": [],
+    "useCases": ["Malware", "Hunting"],
     "keywords": []
 }
