@@ -46,6 +46,7 @@ tags:
 comment: Display the incident details retrieved from Confer in a readable format
 system: true
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - confer

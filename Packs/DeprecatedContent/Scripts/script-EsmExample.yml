@@ -18,6 +18,7 @@ tags:
 - example
 comment: Example of using McAfee ESM (Nitro) with advanced filters
 system: true
+deprecated: true
 args:
 - name: ip
   required: true

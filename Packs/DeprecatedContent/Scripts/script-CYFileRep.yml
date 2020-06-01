@@ -49,6 +49,7 @@ tags:
 - file
 comment: Retrieve file reputation and upload the file if required for analysis
 system: true
+deprecated: true
 args:
 - name: entry
   required: true

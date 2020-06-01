@@ -197,6 +197,7 @@ dependson:
   - sandblast-upload
   - sandblast-query
 system: true
+deprecated: true
 timeout: 86.4µs
 runonce: false
 tests:
