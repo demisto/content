@@ -188,4 +188,4 @@ outputs:
   description: File Sample
   type: unknown
 tests:
-  - get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test
+  - no test

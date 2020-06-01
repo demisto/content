@@ -398,4 +398,4 @@ outputs:
   description: The endpoint
   type: unknown
 tests:
-  - search_endpoints_by_hash_
+  - search_endpoints_by_hash_-_tie_-_test
