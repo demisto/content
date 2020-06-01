@@ -2,6 +2,7 @@ import json
 import DeepInstinct
 import demistomock as demisto
 
+
 params = {
     "apikey": "key",
     "base_url": "https://demisto.poc.deepinstinctweb.com",
