@@ -8,49 +8,51 @@ import prettytable
 import glob
 from datetime import datetime
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH,\
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
     IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
-def get_modified_packs(specific_packs=""):
-    """Detects and returns modified or new packs names.
+def get_modified_packs(target_packs):
+    """Detects and returns modified or new packs names to upload.
 
-    Checks the git difference between two commits, current and previous and greps only ones with prefix Packs/.
-    After content repo will move only for Packs structure, the grep pipe can be removed.
-    In case of local dev mode, the function will receive comma separated list of target packs.
+    In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
+    current and previous and greps only ones with prefix Packs/.
+    By default this function will receive `All` as target_packs and will return all packs names from content repo.
 
     Args:
-        specific_packs (str): comma separated packs names or `All` for all available packs in content.
+        target_packs (str): csv packs names or `All` for all available packs in content
+                            or `Modified` for only modified packs (currently not in use).
 
     Returns:
-        set: unique collection of modified/new packs names.
+        set: unique collection of packs names to upload.
 
     """
-    packs = None
-    if specific_packs.lower() == "all":
+    if target_packs.lower() == "all":
         if os.path.exists(PACKS_FULL_PATH):
             all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
-            print(f"Number of selected packs is: {len(all_packs)}")
-            packs = all_packs
+            print(f"Number of selected packs to upload is: {len(all_packs)}")
+            # return all available packs names
+            return all_packs
         else:
             print_error((f"Folder {PACKS_FOLDER} was not found "
                          f"at the following path: {PACKS_FULL_PATH}"))
             sys.exit(1)
-
-    elif specific_packs:
-        modified_packs = {p.strip() for p in specific_packs.split(',')}
-        print(f"Number of selected packs is: {len(modified_packs)}")
-        packs = modified_packs
-    else:
+    elif target_packs.lower() == "modified":
         cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
         modified_packs_path = run_command(cmd).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         print(f"Number of modified packs is: {len(modified_packs)}")
-
-        packs = modified_packs
-
-    return packs
+        # return only modified packs between two commits
+        return modified_packs
+    elif target_packs and isinstance(target_packs, str):
+        modified_packs = {p.strip() for p in target_packs.split(',')}
+        print(f"Number of selected packs to upload is: {len(modified_packs)}")
+        # return only packs from csv list
+        return modified_packs
+    else:
+        print_error("Not correct usage of flag -p. Please check help section of upload packs script.")
+        sys.exit(1)
 
 
 def extract_packs_artifacts(packs_artifacts_path, extract_destination_path):
@@ -169,6 +171,57 @@ def update_index_folder(index_folder_path, pack_name, pack_path, pack_version=''
         return task_status
 
 
+def clean_non_existing_packs(index_folder_path, private_packs, storage_bucket):
+    """ Detects packs that are not part of content repo or from private packs bucket.
+
+    In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
+
+    Args:
+        index_folder_path (str): full path to downloaded index folder.
+        private_packs (list): priced packs from private bucket.
+        storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
+
+    Returns:
+        bool: whether cleanup was skipped or not.
+    """
+    if ('CI' not in os.environ) or (
+            os.environ.get('CIRCLE_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
+            os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name != GCPConfig.PRODUCTION_BUCKET):
+        print("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
+        return True
+
+    public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
+    private_packs_names = {p.get('id', '') for p in private_packs}
+    valid_packs_names = public_packs_names.union(private_packs_names)
+    # search for invalid packs folder inside index
+    invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
+                           entry.name not in valid_packs_names and entry.is_dir()}
+
+    if invalid_packs_names:
+        try:
+            print_warning(f"Detected {len(invalid_packs_names)} non existing pack inside index, starting cleanup.")
+
+            for invalid_pack in invalid_packs_names:
+                invalid_pack_name = invalid_pack[0]
+                invalid_pack_path = invalid_pack[1]
+                # remove pack from index
+                shutil.rmtree(invalid_pack_path)
+                print_warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
+                # important to add trailing slash at the end of path in order to avoid packs with same prefix
+                invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, invalid_pack_name, "")  # by design
+
+                for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
+                    print_warning(f"Deleted invalid {invalid_pack_name} pack under url {invalid_blob.public_url}")
+                    invalid_blob.delete()  # delete invalid pack in gcs
+        except Exception as e:
+            print_error(f"Failed to cleanup non existing packs. Additional info:\n {e}")
+
+    else:
+        print(f"No invalid packs detected inside {GCPConfig.INDEX_NAME} folder")
+
+    return False
+
+
 def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs):
     """Upload updated index zip to cloud storage.
 
@@ -211,12 +264,13 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
-def upload_core_packs_config(storage_bucket, packs_list):
+def upload_core_packs_config(storage_bucket, packs_list, build_number):
     """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         packs_list (list): list of initialized packs.
+        build_number (str): circleCI build number.
 
     """
     # todo later check if it is not pre release and only then upload corepacks.json
@@ -234,7 +288,8 @@ def upload_core_packs_config(storage_bucket, packs_list):
 
     # construct core pack data with public gcs urls
     core_packs_data = {
-        'corePacks': core_packs_public_urls
+        'corePacks': core_packs_public_urls,
+        'buildNumber': build_number
     }
 
     core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
@@ -431,9 +486,10 @@ def option_handler():
     parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
     parser.add_argument('-p', '--pack_names',
-                        help=("Comma separated list of target pack names. "
-                              "Define `All` in order to store all available packs."),
-                        required=False, default="")
+                        help=("Target packs to upload to gcs. Optional values are: `All`, "
+                              "`Modified` or csv list of packs "
+                              "Default is set to `All`"),
+                        required=False, default="All")
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_pack', help="Override existing packs in cloud storage", default=False,
@@ -456,7 +512,7 @@ def main():
     storage_bucket_name = option.bucket_name
     private_bucket_name = option.private_bucket_name
     service_account = option.service_account
-    specific_packs = option.pack_names
+    target_packs = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_pack = option.override_pack
     signature_key = option.key_string
@@ -472,16 +528,14 @@ def main():
     if storage_bash_path:
         GCPConfig.STORAGE_BASE_PATH = storage_bash_path
 
-    # download and extract index from public bucket
-    index_folder_path, index_blob = download_and_extract_index(
-        storage_bucket, extract_destination_path
-    )
-
-    # detect new or modified packs
-    modified_packs = get_modified_packs(specific_packs)
+    # detect packs to upload
+    modified_packs = get_modified_packs(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+
+    # download and extract index from public bucket
+    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
 
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
@@ -490,6 +544,9 @@ def main():
     else:  # skipping private packs
         print("Skipping index update of priced packs")
         private_packs = []
+
+    # clean index and gcs from non existing or invalid packs
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
 
     # starting iteration over packs
     for pack in packs_list:
@@ -583,7 +640,7 @@ def main():
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
     # upload core packs json to bucket
-    upload_core_packs_config(storage_bucket, packs_list)
+    upload_core_packs_config(storage_bucket, packs_list, build_number)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)

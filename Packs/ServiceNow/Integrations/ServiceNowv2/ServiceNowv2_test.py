@@ -4,7 +4,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
-    get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents
+    get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
     RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, \
@@ -20,6 +20,8 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
     EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, \
     EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE
+
+import demistomock as demisto
 
 
 def test_get_server_url():
@@ -233,3 +235,47 @@ def test_fetch_incidents_with_incident_name(mocker):
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert incidents[0].get('name') == 'ServiceNow Incident Unable to access Oregon mail server. Is it down?'
+
+
+def test_incident_name_is_initialized(mocker, requests_mock):
+    """
+    Given:
+     - Integration instance initialized with fetch enabled and without changing incident name
+
+    When:
+     - Clicking on Test button (running test-module)
+
+    Then:
+     - Verify expected exception is raised as default incident name value is not in response
+    """
+    url = 'https://test.service-now.com'
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'isFetch': True,
+            'url': url,
+            'credentials': {
+                'identifier': 'identifier',
+                'password': 'password',
+            },
+            'incident_name': None
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+
+    def return_error_mock(message, error):
+        raise
+
+    mocker.patch('ServiceNowv2.return_error', side_effect=return_error_mock)
+    requests_mock.get(
+        f'{url}/api/now/table/incident?sysparm_limit=1',
+        json={
+            'result': [{
+                'opened_at': 'sometime'
+            }]
+        }
+    )
+    with pytest.raises(ValueError) as e:
+        main()
+    assert str(e.value) == 'The field [number] does not exist in the ticket.'
