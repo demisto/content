@@ -966,15 +966,17 @@ class IntegrationLogger(object):
             # add common params
             sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
             if demisto.params():
-                for (k, v) in demisto.params().items():
-                    k_lower = k.lower()
-                    for p in sensitive_params:
-                        if p in k_lower:
-                            if isinstance(v, STRING_OBJ_TYPES):
-                                self.add_replace_strs(v, b64_encode(v))
-                            if isinstance(v, dict) and v.get('password'):  # credentials object case
-                                pswrd = v.get('password')
-                                self.add_replace_strs(pswrd, b64_encode(pswrd))
+                self._iter_sesistive_dict_obj(demisto.params(), sensitive_params)
+
+    def _iter_sesistive_dict_obj(self, dict_obj, sensitive_params):
+        for (k, v) in dict_obj.items():
+            if isinstance(v, dict):  # credentials object case. recurse into the object
+                self._iter_sesistive_dict_obj(v, sensitive_params)
+            elif isinstance(v, STRING_OBJ_TYPES):
+                k_lower = k.lower()
+                for p in sensitive_params:
+                    if p in k_lower:
+                        self.add_replace_strs(v, b64_encode(v))
 
     def encode(self, message):
         try:
@@ -3173,16 +3175,20 @@ def is_debug_mode():
 
 class DemistoHandler(logging.Handler):
     """
-        Handler to route logging messages to demisto.debug
+        Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
     """
 
-    def __init__(self):
+    def __init__(self, int_logger=None):
         logging.Handler.__init__(self)
+        self.int_logger = int_logger
 
     def emit(self, record):
         msg = self.format(record)
         try:
-            demisto.debug(msg)
+            if self.int_logger:
+                self.int_logger.write(msg)
+            else:
+                demisto.debug(msg)
         except Exception:
             pass
 
@@ -3196,15 +3202,15 @@ class DebugLogger(object):
     def __init__(self):
         logging.raiseExceptions = False
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
+        self.int_logger = IntegrationLogger()
+        self.int_logger.set_buffering(False)
         if IS_PY3:
             # pylint: disable=import-error
             import http.client as http_client
             # pylint: enable=import-error
             self.http_client = http_client
             self.http_client.HTTPConnection.debuglevel = 1
-            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
-            self.int_logger = IntegrationLogger()
-            self.int_logger.set_buffering(False)            
+            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already            
             setattr(http_client, 'print', self.int_logger.print_override)
         else:
             self.http_client = None
@@ -3236,12 +3242,22 @@ class DebugLogger(object):
                 setattr(self.http_client, 'print', self.http_client_print)
             else:
                 delattr(self.http_client, 'print')
+    
+    def log_start_debug(self):
+        """
+        Utility function to log start of debug mode logging
+        """
+        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None, os.environ)
+        if hasattr(demisto, 'params'):
+            msg = msg + "\nParams: {}.".format(demisto.params())
+        self.int_logger.write(msg)
 
 
 _requests_logger = None
 try:
     if is_debug_mode():
         _requests_logger = DebugLogger()
+        _requests_logger.log_start_debug()
 except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
     # not affect the execution of commands and playbooks

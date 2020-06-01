@@ -640,6 +640,37 @@ def test_logger_replace_strs(mocker):
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
+def test_logger_replace_strs_credentials(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'app': None,
+        'authentication': {
+            'credential': '',
+            'credentials': {
+                'id': '',
+                'locked': False,
+                'modified': '0001-01-01T00: 00: 00Z',
+                'name': '',
+                'password': 'cred_pass',
+                'sortValues': None,
+                'sshkey': 'ssh_key_secret',
+                'sshkeyPass': 'ssh_key_secret_pass', 
+                'user': '',
+                'vaultInstanceId': '',
+                'version': 0,
+                'workgroup': ''
+            },
+            'identifier': 'admin',
+            'password': 'ident_pass',
+            'passwordChanged': False
+        },
+    })
+    ilog = IntegrationLogger()
+    # log some secrets
+    ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh pass: ssh_key_secret_pass. ident: ident_pass:')
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+        assert s not in ilog.messages[0]
+
+
 def test_is_mac_address():
     from CommonServerPython import is_mac_address
 
