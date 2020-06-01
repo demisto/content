@@ -1355,8 +1355,10 @@ def fetch_incidents():
 ''' EXECUTION CODE '''
 
 LOG('command is %s' % (demisto.command(),))
-
 try:
+    if not re.match(r'[0-9a-z_.-]+', CORPNAME):
+        raise ValueError('Corporation Name should match the pattern [0-9a-z_.-]+')
+
     if demisto.command() == 'test-module':
         test_module()
     elif demisto.command() == 'fetch-incidents':
@@ -1415,7 +1417,5 @@ try:
         get_requests_command()
     elif demisto.command() == 'sigsci-get-request-by-id':
         get_request_by_id_command()
-
-
 except Exception as e:
     return_error(e.message)

@@ -627,7 +627,7 @@ outputs:
   description: The Indicator's object
   type: unknown
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator that was tested
   type: string
 - contextPath: DBotScore.Score
   description: The actual score
@@ -990,18 +990,6 @@ outputs:
   type: String
 - contextPath: ANYRUN.Task.Process.Version.Version
   description: Version of the program executed.
-  type: String
-- contextPath: DBotScore.Indicator
-  description: The indicator that was tested.
-  type: String
-- contextPath: DBotScore.Score
-  description: The actual score.
-  type: Number
-- contextPath: DBotScore.Type
-  description: Type of indicator.
-  type: String
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score.
   type: String
 - contextPath: File.Extension
   description: Extension of the file submitted for analysis.

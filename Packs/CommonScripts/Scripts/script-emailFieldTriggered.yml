@@ -14,11 +14,14 @@ script: |-
   if (email) {
       var body = 'Hello,\nField ' + args.name + ' was changed from ' + args.old + ' to ' + args.new + ' in incident ' + incidents[0].name + '.\n--DBot';
       var subject = 'Field ' + args.name + ' was triggered';
-      executeCommand('SendEmail', {'to':email, 'subject':subject, 'body':body});
+      executeCommand('send-mail', {'to':email, 'subject':subject, 'body':body});
   }
 type: javascript
 tags:
 - field-change-triggered
 comment: Sends email to incident owner when selected field is triggered.
 enabled: true
+dependson:
+  must:
+  - send-mail
 scripttarget: 0
