@@ -173,7 +173,7 @@ def install_packs(client, host, prints_manager, packs_to_install, request_timeou
     }
 
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-    message = 'Installing packs:\n{}\n'.format(packs_to_install_str)
+    message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
     prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
@@ -187,7 +187,7 @@ def install_packs(client, host, prints_manager, packs_to_install, request_timeou
                                                                             _request_timeout=request_timeout)
 
         if 200 <= status_code < 300:
-            message = 'Packs were successfully installed!\n'.format(host)
+            message = 'Packs were successfully installed!'
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
@@ -248,25 +248,10 @@ def add_pack_to_installation_request(pack_id, installation_request_body):
 def install_all_content_packs(client, host, prints_manager):
     all_packs = []
 
-    import time
-    start_time = time.time()
-    message = 'start_time:\n' + str(start_time) + '\n'
-
-    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
-    prints_manager.execute_thread_prints(0)
-
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES and pack_id != 'Silverfort':  # todo: remove silverfort when fixed
             add_pack_to_installation_request(pack_id, all_packs)
     install_packs(client, host, prints_manager, all_packs)
-
-    end_time = time.time()
-    message = '\nend_time:\n' + str(end_time) + '\n'
-    took = end_time - start_time
-    message += '\ntook:\n' + str(took) + '\n'
-
-    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
-    prints_manager.execute_thread_prints(0)
 
 
 # todo: remove if not used
@@ -286,12 +271,7 @@ def upload_zipped_packs(client, host, prints_manager):
     file_path = os.path.abspath(packs_zip_path)
     files = {'file': file_path}
 
-    message = 'Making "POST" request to server {} - to install all packs from {}...'.format(host, packs_zip_path)
-
-    import time
-    start_time = time.time()
-    message += '\nstart_time:\n' + str(start_time) + '\n'
-
+    message = 'Making "POST" request to server {} - to install all packs from file {}'.format(host, packs_zip_path)
     prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
@@ -303,12 +283,6 @@ def upload_zipped_packs(client, host, prints_manager):
 
         if 200 <= status_code < 300:
             message = 'All packs from {} were successfully installed!'.format(packs_zip_path)
-
-            end_time = time.time()
-            message += '\nend_time:\n' + str(end_time) + '\n'
-            took = end_time - start_time
-            message += '\ntook:\n' + str(took) + '\n'
-
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
