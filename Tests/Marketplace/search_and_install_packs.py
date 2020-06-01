@@ -257,19 +257,28 @@ def upload_zipped_packs(client, host, prints_manager):
     files = {'file': file_path}
 
     message = 'Making "POST" request to server {} - to install all packs from {}...'.format(host, packs_zip_path)
+
+    import time
+    start_time = time.time()
+    message += '\nstart_time:\n' + start_time + '\n'
+
     prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
 
     # make the pack installation request
     try:
-        response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path='/contentpacks/installed/upload',
-                                                                            method='POST',
-                                                                            header_params=header_params,
-                                                                            files=files)
+        response_data, status_code, _ = client.api_client.call_api(resource_path='/contentpacks/installed/upload',
+                                                                   method='POST',
+                                                                   header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
             message = 'All packs from {} were successfully installed!'.format(packs_zip_path)
+
+            end_time = time.time()
+            message += '\nend_time:\n' + end_time + '\n'
+            took = end_time - start_time
+            message += '\ntook:\n' + took + '\n'
+
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
