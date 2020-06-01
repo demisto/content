@@ -1,6 +1,6 @@
 {
     "name": "Exchange",
-    "description": "Query exchange servers with powershell queries.",
+    "description": "Query exchange servers with PowerShell queries.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
