@@ -152,6 +152,7 @@ class EWSClient:
         :param insecure: Trust any certificate (not secure)
         """
         BaseProtocol.TIMEOUT = int(request_timeout)
+        insecure = not insecure
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
