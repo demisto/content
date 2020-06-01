@@ -42,6 +42,7 @@ args:
   name: description
 scripttarget: 0
 timeout: 0s
+deprecated: true
 dependson:
   must:
   - create-image

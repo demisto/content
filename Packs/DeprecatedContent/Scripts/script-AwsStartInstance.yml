@@ -1,15 +1,15 @@
 commonfields:
-  id: AwsStopInstance
+  id: AwsStartInstance
   version: -1
-name: AwsStopInstance
+name: AwsStartInstance
 script: |2
 
-  resp = demisto.executeCommand("stop-instance", demisto.args())
+  resp = demisto.executeCommand("start-instance", demisto.args())
 
   if isError(resp[0]):
       demisto.results(resp)
   else:
-      data = demisto.get(resp[0], "Contents.StopInstancesResponse")
+      data = demisto.get(resp[0], "Contents.StartInstancesResponse")
       if data:
           data = data if isinstance(data, list) else [data]
           data = [{k: formatCell(row[k]) for k in row} for row in data]
@@ -19,20 +19,16 @@ script: |2
 type: python
 tags:
 - Amazon Web Services
-comment: stop ec2 aws instances
+comment: Starts an Amazon EBS-backed AMI that you've previously stopped.
 system: true
 args:
 - default: true
   description: instance ID
   name: instanceId
   required: true
-- description: ' Forces the instances to stop (Default: false). The instances do not
-    have an opportunity to flush file system caches or file system metadata. If you
-    use this option, you must perform file system check and repair procedures. This
-    option is not recommended for Windows instances.'
-  name: force
 scripttarget: 0
 timeout: 0s
+deprecated: true
 dependson:
   must:
-  - stop-instance
+  - start-instance
