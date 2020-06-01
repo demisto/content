@@ -46,6 +46,7 @@ args:
   name: securityGroup
 scripttarget: 0
 timeout: 0s
+deprecated: true
 dependson:
   must:
   - run-instance
