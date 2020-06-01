@@ -139,6 +139,7 @@ args:
 - name: ip
   description: ip of a Carbon Black sensor
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - cb-sensor-info
