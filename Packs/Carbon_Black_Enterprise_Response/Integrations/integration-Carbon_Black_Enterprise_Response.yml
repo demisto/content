@@ -2023,6 +2023,6 @@ script:
       file containing the requested file and it's metadata.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python:2.7.18.8494
+  dockerimage: demisto/python:2.7.18.8715
 tests:
   - Carbon Black Response Test
