@@ -1178,7 +1178,7 @@ tasks:
       next_page_id: {}
       page_size: {}
       response_policy_zone_name:
-        simple: infoblow.com
+        simple: 123e
     separatecontext: false
     view: |-
       {
@@ -1483,7 +1483,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${Infoblox.ResponsePolicyZones(val.FQDN == 'test!!!!!')}
+              simple: ${Infoblox.ResponsePolicyZones(val.FQDN == 'infonlox.nightly.tpb.com')}
             iscontext: true
     view: |-
       {
