@@ -81,7 +81,6 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 1.  [Get the attachments of an item: ews-get-attachment](#h_22ec0bbb-12b3-4f1c-9159-b1a4daa114c7)
 2.  [Delete the attachments of an item: ews-delete-attachment](#h_cae18768-1dd5-4cd1-b2c9-abfd0e7787f3)
 3.  [Get a list of searchable mailboxes: ews-get-searchable-mailboxes](#h_7bdec9fe-e3d9-4645-8da4-337ee3798a84)
-4.  [Search mailboxes: ews-search-mailboxes](#h_fa3bd755-beb9-4c98-a020-6210f3179d3c)
 5.  [Move an item to a different folder: ews-move-item](#h_0661f657-850a-430a-8fe1-aacf7e3ce40b)
 6.  [Delete an item from a mailbox: ews-delete-items](#h_712791a3-5937-4641-8e02-1fd773ab3211)
 7.  [Search a single mailbox: ews-search-mailbox](#h_2b4fd205-165c-489f-b58c-3bb77a86acfc)
@@ -316,77 +315,7 @@ There are no input arguments for this command.
 
 ```
 
-### 4\. Search mailboxes
-
-* * *
-
-Searches over multiple mailboxes or all Exchange mailboxes. The maximum number of mailboxes that can be searched is 20,000\. Use either the mailbox-search-scope command or the email-addresses command to search specific mailboxes.
-
-##### Required Permissions
-
-Requires eDiscovery permissions to the Exchange Server. For more information, see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
-
-##### Base Command
-
-`ews-search-mailboxes`
-
-##### Input
-
-|**Argument Name**|**Description**|**Required**|
-|--- |--- |--- |
-|filter|The filter query to search.|Required|
-|mailbox-search-scope|The mailbox IDs to search. If empty, all mailboxes are searched.|Optional|
-|limit|Maximum number of results to return.|Optional|
-|email_addresses|CSV list or array of email addresses.|Optional|
-
-##### Context Output
-
-|**Path**|**Type**|**Description**|
-|--- |--- |--- |
-|EWS.Items.itemId|string|The item ID.|
-|EWS.Items.mailbox|string|The mailbox address where the item was found.|
-|EWS.Items.subject|string|The subject of the email.|
-|EWS.Items.toRecipients|Unknown|List of recipient email addresses.|
-|EWS.Items.sender|string|Sender email address.|
-|EWS.Items.hasAttachments|boolean|Whether the email has attachments?|
-|EWS.Items.datetimeSent|date|Sent time of the email.|
-|EWS.Items.datetimeReceived|date|Received time of the email.|
-
-##### Command Example
-
-```
-!ews-search-mailboxes filter="subject:Test" limit=1
-```
-
-##### Human Readable Output
-
-|datetimeReceived|datetimeSent|hasAttachments|itemId|mailbox|sender|subject|toRecipients|
-|--- |--- |--- |--- |--- |--- |--- |--- |
-|2019-08-11T11:00:28Z|2019-08-11T11:00:28Z|false|AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGACASFAACYCKjWAnXDFrfsdhdnfkanpAAA=|[test2@demistodev.onmicrosoft.com](mailto:test2@demistodev.onmicrosoft.com)|John Smith|test report|[dem@demistodev.onmicrosoft.com](mailto:dem@demistodev.onmicrosoft.com)|
-
-##### Context Example
-
-```
-{
-    "EWS": {
-        "Items": {
-            "itemId": "AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGACASFAACYCKjWAnXDFrfsdhdnfkanpAAA=", 
-            "sender": "John Smith", 
-            "datetimeReceived": "2019-08-11T11:00:28Z", 
-            "hasAttachments": "false", 
-            "toRecipients": [
-                "dem@demistodev.onmicrosoft.com"
-            ], 
-            "mailbox": "test2@demistodev.onmicrosoft.com", 
-            "datetimeSent": "2019-08-11T11:00:28Z", 
-            "subject": "test report "
-        }
-    }
-}
-
-```
-
-### 5\. Move an item to a different folder
+### 4\. Move an item to a different folder
 
 * * *
 
@@ -443,7 +372,7 @@ Impersonation rights required. In order to perform actions on the target mailbox
         }
     }
 
-### 6\. Delete an item from a mailbox
+### 5\. Delete an item from a mailbox
 
 * * *
 
@@ -500,7 +429,7 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ```
 
-### 7\. Search a single mailbox
+### 6\. Search a single mailbox
 
 * * *
 
@@ -614,7 +543,7 @@ Impersonation rights required. To perform actions on the target mailbox of other
 
 ```
 
-### 8\. Get the contacts for a mailbox
+### 7\. Get the contacts for a mailbox
 
 * * *
 
@@ -691,7 +620,7 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ```
 
-### 9\. Get the out-of-office status for a mailbox
+### 8\. Get the out-of-office status for a mailbox
 
 * * *
 
@@ -754,7 +683,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ```
 
-### 10\. Recover soft-deleted messages
+### 9\. Recover soft-deleted messages
 
 * * *
 
@@ -812,7 +741,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ```
 
-### 11\. Create a folder
+### 10\. Create a folder
 
 * * *
 
@@ -848,7 +777,7 @@ There is no context output for this command.
 
 Folder Inbox\Created Folder created successfully
 
-### 12\. Mark an item as junk
+### 11\. Mark an item as junk
 
 * * *
 
@@ -900,7 +829,7 @@ There is no context output for this command.
 
 ```
 
-### 13\. Search for folders
+### 12\. Search for folders
 
 * * *
 
@@ -1002,7 +931,7 @@ root
 
 ```
 
-### 14\. Get items of a folder
+### 13\. Get items of a folder
 
 * * *
 
@@ -1116,7 +1045,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ```
 
-### 15\. Get items
+### 14\. Get items
 
 * * *
 
@@ -1178,7 +1107,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 Identical outputs to `ews-get-items-from-folder` command.
 
-### 16\. Move an item to a different mailbox
+### 15\. Move an item to a different mailbox
 
 * * *
 
@@ -1234,7 +1163,7 @@ Item was moved successfully.
 
 ```
 
-### 17\. Get a folder
+### 16\. Get a folder
 
 * * *
 
@@ -1297,7 +1226,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ```
 
-### 24\. Expand a distribution list
+### 17\. Expand a distribution list
 
 * * *
 
@@ -1352,7 +1281,7 @@ There is no context output for this command.
 
 ```
 
-### 25\. Mark items as read
+### 18\. Mark items as read
 
 * * *
 

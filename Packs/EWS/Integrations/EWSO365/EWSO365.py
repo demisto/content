@@ -22,7 +22,6 @@ import exchangelib
 from exchangelib.errors import (
     ErrorItemNotFound,
     ResponseMessageError,
-    TransportError,
     RateLimitError,
     ErrorInvalidIdMalformed,
     ErrorFolderNotFound,
@@ -167,7 +166,7 @@ class EWSClient:
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
-        self.access_type = IMPERSONATION
+        self.access_type = kwargs.get('access_type') or IMPERSONATION
         self.max_fetch = min(50, int(max_fetch))
         self.last_run_ids_queue_size = 500
         self.client_id = client_id
@@ -358,69 +357,6 @@ class GetSearchableMailboxes(EWSService):
 
     def get_payload(self):
         element = create_element(f"m:{self.SERVICE_NAME}")
-        return element
-
-
-class SearchMailboxes(EWSService):
-    element_container_name = f"{{{MNS}}}SearchMailboxesResult/{{{TNS}}}Items"
-    SERVICE_NAME = "SearchMailboxes"
-
-    @staticmethod
-    def parse_element(element):
-        to_recipients = element.find(f"{{{TNS}}}ToRecipients")
-        if to_recipients:
-            to_recipients = [x.text if x is not None else None for x in to_recipients]
-
-        result = {
-            ITEM_ID: element.find(f"{{{TNS}}}Id").attrib["Id"]
-            if element.find(f"{{{TNS}}}Id") is not None
-            else None,
-            MAILBOX: element.find(f"{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress").text
-            if element.find(f"{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress") is not None
-            else None,
-            "subject": element.find(f"{{{TNS}}}Subject").text
-            if element.find(f"{{{TNS}}}Subject") is not None
-            else None,
-            "toRecipients": to_recipients,
-            "sender": element.find(f"{{{TNS}}}Sender").text
-            if element.find(f"{{{TNS}}}Sender") is not None
-            else None,
-            "hasAttachments": element.find(f"{{{TNS}}}HasAttachment").text
-            if element.find(f"{{{TNS}}}HasAttachment") is not None
-            else None,
-            "datetimeSent": element.find(f"{{{TNS}}}SentTime").text
-            if element.find(f"{{{TNS}}}SentTime") is not None
-            else None,
-            "datetimeReceived": element.find(f"{{{TNS}}}ReceivedTime").text
-            if element.find(f"{{{TNS}}}ReceivedTime") is not None
-            else None,
-        }
-
-        return result
-
-    def call(self, query, mailboxes):
-        elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
-        return [self.parse_element(x) for x in elements]
-
-    def get_payload(self, query, mailboxes):
-        def get_mailbox_search_scope(mailbox_id):
-            mailbox_search_scope = create_element("t:MailboxSearchScope")
-            add_xml_child(mailbox_search_scope, "t:Mailbox", mailbox_id)
-            add_xml_child(mailbox_search_scope, "t:SearchScope", "All")
-            return mailbox_search_scope
-
-        mailbox_query_element = create_element("t:MailboxQuery")
-        add_xml_child(mailbox_query_element, "t:Query", query)
-        mailboxes_scopes = []
-        for mailbox in mailboxes:
-            if mailbox:
-                mailboxes_scopes.append(get_mailbox_search_scope(mailbox))
-        add_xml_child(mailbox_query_element, "t:MailboxSearchScopes", mailboxes_scopes)
-
-        element = create_element(f"m:{self.SERVICE_NAME}")
-        add_xml_child(element, "m:SearchQueries", mailbox_query_element)
-        add_xml_child(element, "m:ResultType", "PreviewOnly")
-
         return element
 
 
@@ -630,61 +566,6 @@ def get_searchable_mailboxes(client: EWSClient):
     )
     output = {"EWS.Mailboxes": searchable_mailboxes}
     return readable_output, output, searchable_mailboxes
-
-
-def search_mailboxes(
-    client: EWSClient,
-    filter,
-    limit=100,
-    mailbox_search_scope=None,
-    email_addresses=None,
-):
-    mailbox_ids = []
-    limit = int(limit)
-    protocol = client.protocol
-    if mailbox_search_scope is not None and email_addresses is not None:
-        raise Exception(
-            "Use one of the arguments - mailbox-search-scope or email-addresses, not both"
-        )
-    if email_addresses:
-        email_addresses = argToList(email_addresses)
-        all_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
-        for email_address in email_addresses:
-            for mailbox in all_mailboxes:
-                if (
-                    MAILBOX in mailbox
-                    and email_address.lower() == mailbox[MAILBOX].lower()
-                ):
-                    mailbox_ids.append(mailbox[MAILBOX_ID])
-        if len(mailbox_ids) == 0:
-            raise Exception(
-                "No searchable mailboxes were found for the provided email addresses."
-            )
-    elif mailbox_search_scope:
-        mailbox_ids = (
-            mailbox_search_scope
-            if type(mailbox_search_scope) is list
-            else [mailbox_search_scope]
-        )
-    else:
-        entry = GetSearchableMailboxes(protocol=protocol).call()
-        mailboxes = [x for x in entry if MAILBOX_ID in list(x.keys())]
-        mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]
-
-    try:
-        search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
-        search_results = search_results[:limit]
-    except TransportError as e:
-        if SEARCH_MAILBOXES_RBAC in str(e):
-            raise Exception(SEARCH_MAILBOXES_RBAC)
-        if "ItemCount>0<" in str(e):
-            return ("No results for search query: " + filter,)
-        else:
-            raise e
-
-    readable_output = tableToMarkdown("Search mailboxes results", search_results)
-    output = {CONTEXT_UPDATE_EWS_ITEM: search_results}
-    return readable_output, output, search_results
 
 
 def fetch_last_emails(
@@ -1708,7 +1589,6 @@ def sub_main():
         # commands that return a single note result
         normal_commands = {
             "ews-get-searchable-mailboxes": get_searchable_mailboxes,
-            "ews-search-mailboxes": search_mailboxes,
             "ews-move-item-between-mailboxes": move_item_between_mailboxes,
             "ews-move-item": move_item,
             "ews-delete-items": delete_items,
