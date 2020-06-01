@@ -148,11 +148,14 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ##### Command Example
 
-<pre>!ews-get-attachment item-id=BBFDShfdafFSDF3FADR3434DFASDFADAFDADFADFCJebinpkUAAAfxuiVAAA= target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-get-attachment item-id=BBFDShfdafFSDF3FADR3434DFASDFADAFDADFADFCJebinpkUAAAfxuiVAAA= target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "ItemAttachments": {
@@ -192,7 +195,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
             }
         }
     }
-</pre>
+
+```
 
 ### 2\. Delete the attachments of an item
 
@@ -227,7 +231,9 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ##### Command Example
 
-<pre>!ews-delete-attachment item-id=AAMkADQ0NmwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJjfaljfAFDVSDinpkUAAAfxxd9AAA= target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-delete-attachment item-id=AAMkADQ0NmwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJjfaljfAFDVSDinpkUAAAfxxd9AAA= target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -237,7 +243,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "FileAttachments": {
@@ -247,7 +254,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
         }
     }
 }
-</pre>
+
+```
 
 ### 3\. Get a list of searchable mailboxes
 
@@ -279,7 +287,9 @@ There are no input arguments for this command.
 
 ##### Command Example
 
-<pre>!ews-get-searchable-mailboxes</pre>
+```
+!ews-get-searchable-mailboxes
+```
 
 ##### Human Readable Output
 
@@ -289,7 +299,8 @@ There are no input arguments for this command.
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Mailboxes": [
             {
@@ -302,7 +313,8 @@ There are no input arguments for this command.
         ]
     }
 }
-</pre>
+
+```
 
 ### 4\. Search mailboxes
 
@@ -342,7 +354,9 @@ Requires eDiscovery permissions to the Exchange Server. For more information, se
 
 ##### Command Example
 
-<pre>!ews-search-mailboxes filter="subject:Test" limit=1</pre>
+```
+!ews-search-mailboxes filter="subject:Test" limit=1
+```
 
 ##### Human Readable Output
 
@@ -352,7 +366,8 @@ Requires eDiscovery permissions to the Exchange Server. For more information, se
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "itemId": "AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGACASFAACYCKjWAnXDFrfsdhdnfkanpAAA=", 
@@ -368,7 +383,8 @@ Requires eDiscovery permissions to the Exchange Server. For more information, se
         }
     }
 }
-</pre>
+
+```
 
 ### 5\. Move an item to a different folder
 
@@ -404,7 +420,9 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ##### Command Example
 
-<pre>!ews-move-item item-id=VDAFNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU34cSCSSSfBJebinpkUAAAAAAEMAACyyVyFtlsUQZfBJebinpkUAAAfxuiRAAA= target-folder-path=Moving target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-move-item item-id=VDAFNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU34cSCSSSfBJebinpkUAAAAAAEMAACyyVyFtlsUQZfBJebinpkUAAAfxuiRAAA= target-folder-path=Moving target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -457,7 +475,9 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ##### Command Example
 
-<pre>!ews-delete-items item-ids=VWAFA3hmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMGAACyw+kAAA= delete-type=soft target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-delete-items item-ids=VWAFA3hmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMGAACyw+kAAA= delete-type=soft target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -467,7 +487,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "action": "soft-deleted", 
@@ -476,7 +497,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
         }
     }
 }
-</pre>
+
+```
 
 ### 7\. Search a single mailbox
 
@@ -528,7 +550,9 @@ Impersonation rights required. To perform actions on the target mailbox of other
 
 ##### Command Example
 
-<pre>!ews-search-mailbox query="subject:"Get Attachment Email" target-mailbox=test@demistodev.onmicrosoft.com limit=1</pre>
+```
+!ews-search-mailbox query="subject:"Get Attachment Email" target-mailbox=test@demistodev.onmicrosoft.com limit=1
+```
 
 ##### Human Readable Output
 
@@ -538,7 +562,8 @@ Impersonation rights required. To perform actions on the target mailbox of other
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<style type=\"text/css\" style=\"display:none;\"><!-- P {margin-top:0;margin-bottom:0;} --></style>\r\n</head>\r\n<body dir=\"ltr\">\r\n<div id=\"divtagrapper\" style=\"font-size:12pt;color:#000000;font-family:Calibri,Helvetica,sans-serif;\" dir=\"ltr\">\r\n<p style=\"margin-top:0;margin-bottom:0\">Some text inside email</p>\r\n</div>\r\n</body>\r\n</html>\r\n", 
@@ -586,7 +611,8 @@ Impersonation rights required. To perform actions on the target mailbox of other
         }
     }
 }
-</pre>
+
+```
 
 ### 8\. Get the contacts for a mailbox
 
@@ -621,7 +647,9 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ##### Command Example
 
-<pre>!ews-get-contacts limit="1"</pre>
+```
+!ews-get-contacts limit="1"
+```
 
 ##### Human Readable Output
 
@@ -631,7 +659,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 ##### Context Example
 
-<pre>{
+```
+{
     "Account.Email": [
         {
             "itemClass": "IPM.Contact", 
@@ -659,7 +688,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
         }
     ]
 }
-</pre>
+
+```
 
 ### 9\. Get the out-of-office status for a mailbox
 
@@ -695,7 +725,9 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Command Example
 
-<pre>!ews-get-out-of-office target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-get-out-of-office target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -705,7 +737,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Context Example
 
-<pre>{
+```
+{
     "Account": {
         "Email": {
             "OutOfOffice": {
@@ -718,7 +751,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
         }
     }
 }
-</pre>
+
+```
 
 ### 10\. Recover soft-deleted messages
 
@@ -753,7 +787,9 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Command Example
 
-<pre>!ews-recover-messages message-ids=<DFVDFmvsCSCS.com> target-folder-path=Moving target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-recover-messages message-ids=<DFVDFmvsCSCS.com> target-folder-path=Moving target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -763,7 +799,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "action": "recovered", 
@@ -772,7 +809,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
         }
     }
 }
-</pre>
+
+```
 
 ### 11\. Create a folder
 
@@ -802,7 +840,9 @@ There is no context output for this command.
 
 ##### Command Example
 
-<pre>!ews-create-folder folder-path=Inbox new-folder-name="Created Folder" target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-create-folder folder-path=Inbox new-folder-name="Created Folder" target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -836,7 +876,9 @@ There is no context output for this command.
 
 ##### Command Example
 
-<pre>!ews-mark-item-as-junk item-id=AAMkcSQ0NmFkOhmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUcsBJebinpkUAAAAAAEMASFDkUAAAfxuiSAAA= move-items=yes target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-mark-item-as-junk item-id=AAMkcSQ0NmFkOhmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUcsBJebinpkUAAAAAAEMASFDkUAAAfxuiSAAA= move-items=yes target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -846,7 +888,8 @@ There is no context output for this command.
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "action": "marked-as-junk", 
@@ -854,7 +897,8 @@ There is no context output for this command.
         }
     }
 }
-</pre>
+
+```
 
 ### 13\. Search for folders
 
@@ -890,11 +934,14 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Command Example
 
-<pre>!ews-find-folders target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-find-folders target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
-<pre>root
+```
+root
 ├── AllContacts
 ├── AllItems
 ├── Common Views
@@ -931,11 +978,13 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 │ ├── Drafts
 │ ├── Inbox
 ...
-</pre>
+
+```
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Folders": [    
             {
@@ -950,7 +999,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
         ]
     }
 }
-</pre>
+
+```
 
 ### 14\. Get items of a folder
 
@@ -1002,7 +1052,9 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Command Example
 
-<pre>!ews-get-items-from-folder folder-path=Test target-mailbox=test@demistodev.onmicrosoft.com limit=1</pre>
+```
+!ews-get-items-from-folder folder-path=Test target-mailbox=test@demistodev.onmicrosoft.com limit=1
+```
 
 ##### Human Readable Output
 
@@ -1012,7 +1064,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "body": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<style type=\"text/css\" style=\"display:none;\"><!-- P {margin-top:0;margin-bottom:0;} --></style>\r\n</head>\r\n<body dir=\"ltr\">\r\n<div id=\"divtagdefaultwrapper\" style=\"font-size:12pt;color:#000000;font-family:Calibri,Helvetica,sans-serif;\" dir=\"ltr\">\r\n<p style=\"margin-top:0;margin-bottom:0\">Some text inside email</p>\r\n</div>\r\n</body>\r\n</html>\r\n", 
@@ -1060,7 +1113,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
         }
     }
 }
-</pre>
+
+```
 
 ### 15\. Get items
 
@@ -1116,7 +1170,9 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Command Example
 
-<pre>!ews-get-items item-ids=AAMkADQ0NmFkODFkLWQ4MDEtNDFDFZjNTMxNwBGAAAAAAA4kxhFFAfxw+jAAA= target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-get-items item-ids=AAMkADQ0NmFkODFkLWQ4MDEtNDFDFZjNTMxNwBGAAAAAAA4kxhFFAfxw+jAAA= target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -1156,7 +1212,9 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Command Example
 
-<pre>!ews-move-item-between-mailboxes item-id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NFSFSyNzBkNABGAAAAAACYCKjWAjq/zTrN6vWSzK4OWAAK2ISFSA= destination-folder-path=Moving destination-mailbox=test@demistodev.onmicrosoft.com source-mailbox=test2@demistodev.onmicrosoft.com</pre>
+```
+!ews-move-item-between-mailboxes item-id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NFSFSyNzBkNABGAAAAAACYCKjWAjq/zTrN6vWSzK4OWAAK2ISFSA= destination-folder-path=Moving destination-mailbox=test@demistodev.onmicrosoft.com source-mailbox=test2@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -1164,7 +1222,8 @@ Item was moved successfully.
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "movedToMailbox": "test@demistodev.onmicrosoft.com", 
@@ -1172,7 +1231,8 @@ Item was moved successfully.
         }
     }
 }
-</pre>
+
+```
 
 ### 17\. Get a folder
 
@@ -1209,7 +1269,9 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Command Example
 
-<pre>!ews-get-folder folder-path=demistoEmail target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-get-folder folder-path=demistoEmail target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -1219,7 +1281,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Folders": {
             "unreadCount": 0, 
@@ -1231,7 +1294,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
         }
     }
 }
-</pre>
+
+```
 
 ### 24\. Expand a distribution list
 
@@ -1260,7 +1324,9 @@ There is no context output for this command.
 
 ##### Command Example
 
-<pre>!ews-expand-group email-address="TestPublic" recursive-expansion="False"</pre>
+```
+!ews-expand-group email-address="TestPublic" recursive-expansion="False"
+```
 
 ##### Human Readable Output
 
@@ -1270,7 +1336,8 @@ There is no context output for this command.
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS.ExpandGroup": {
         "name": "TestPublic", 
         "members": [
@@ -1282,7 +1349,8 @@ There is no context output for this command.
         ]
     }
 }
-</pre>
+
+```
 
 ### 25\. Mark items as read
 
@@ -1316,7 +1384,9 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Command Example
 
-<pre>!ews-mark-items-as-read item-ids=AAMkADQ0NFSffU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMnpkUAAAfxw+jAAA= operation=read target-mailbox=test@demistodev.onmicrosoft.com</pre>
+```
+!ews-mark-items-as-read item-ids=AAMkADQ0NFSffU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMnpkUAAAfxw+jAAA= operation=read target-mailbox=test@demistodev.onmicrosoft.com
+```
 
 ##### Human Readable Output
 
@@ -1326,7 +1396,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Context Example
 
-<pre>{
+```
+{
     "EWS": {
         "Items": {
             "action": "marked-as-read", 
@@ -1335,7 +1406,8 @@ Impersonation rights are required. To perform actions on the target mailbox of o
         }
     }
 }
-</pre>
+
+```
 
 ## Additional Information
 
