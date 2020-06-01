@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+	{
+            "integrations": "Humio",
+            "playbookID": "Humio-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
@@ -2964,6 +2969,7 @@
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
+        "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
 
 
