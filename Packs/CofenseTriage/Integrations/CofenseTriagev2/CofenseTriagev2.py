@@ -179,7 +179,7 @@ class TriageReport:
             )
             attachment = {
                 "path": html_attachment.get("FileID"),
-                "name": html_attachment.get("FileName"),
+                "name": html_attachment.get("File"),
             }
             return attachment
 

@@ -45,7 +45,16 @@ from CofenseTriagev2.CofenseTriagev2 import parse_triage_date  # noqa: 402
 @pytest.fixture(autouse=True)
 def stub_demisto_setup(mocker):
     mocker.patch("CofenseTriagev2.CofenseTriagev2.return_error")
-    mocker.patch("CofenseTriagev2.CofenseTriagev2.fileResult")
+    mocker.patch(
+        "CofenseTriagev2.CofenseTriagev2.fileResult",
+        lambda filename="file_result_name", data="file_result_id": {
+            "Contents": "",
+            "ContentsFormat": "text",
+            "Type": "what",
+            "File": filename,
+            "FileID": "/path/to/temp/file",
+        },
+    )
     mocker.patch("demistomock.getArg", get_demisto_arg)
     mocker.patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
     mocker.patch("demistomock.results")
@@ -89,10 +98,6 @@ class TestCofenseTriage:
             "https://some-triage-host/api/public/v1/reporters/5331",
             text=fixture_from_file("reporters.json"),
         )
-        mocker.patch(
-            "CofenseTriagev2.CofenseTriagev2.fileResult",
-            lambda filename, data: {"FileID": "file_id", "FileName": "file_name"},
-        )
 
         CofenseTriagev2.fetch_reports(triage_instance)
 
@@ -107,7 +112,7 @@ class TestCofenseTriage:
         assert len(demisto_incidents[0]["rawJSON"]) == 1931
 
         assert demisto_incidents[1]["attachment"] == [
-            {"name": "file_name", "path": "file_id"}
+            {"name": "13392-report.html", "path": "/path/to/temp/file"}
         ]
 
         CofenseTriagev2.demisto.setLastRun.assert_called_once_with(
@@ -235,25 +240,12 @@ class TestCofenseTriage:
 
         CofenseTriagev2.get_attachment_command(triage_instance)
 
-        CofenseTriagev2.fileResult.assert_called_with(
-            "my_great_file", b"A Great Attachment\n"
-        )
-        CofenseTriagev2.demisto.results.assert_has_calls(
-            [
-                mocker.call(CofenseTriagev2.fileResult()),
-                mocker.call(
-                    {
-                        "Type": 1,
-                        "ContentsFormat": "markdown",
-                        "Contents": "",
-                        "HumanReadable": "",
-                        "EntryContext": {
-                            "Cofense.Attachment(val.ID == obj.ID)": {"ID": "5"}
-                        },
-                    }
-                ),
-            ]
-        )
+        demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
+        assert demisto_results[0]["FileID"] == "/path/to/temp/file"
+        assert demisto_results[0]["File"] == "my_great_file"
+        assert demisto_results[0]["EntryContext"] == {
+            "Cofense.Attachment(val.ID == obj.ID)": {"ID": "5"}
+        }
 
     def test_get_reporter_command(self, requests_mock, triage_instance):
         set_demisto_arg("reporter_id", "5")
@@ -290,7 +282,7 @@ class TestCofenseTriage:
             text=fixture_from_file("single_report.json"),
         )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/reporters/5",
+            "https://some-triage-host/api/public/v1/reporters/5331",
             text=fixture_from_file("reporters.json"),
         )
 
@@ -314,7 +306,7 @@ class TestCofenseTriage:
             text=fixture_from_file("single_report_with_attachment.json"),
         )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/reporters/5",
+            "https://some-triage-host/api/public/v1/reporters/5331",
             text=fixture_from_file("reporters.json"),
         )
 
@@ -502,18 +494,10 @@ class TestTriageReport:
             text=fixture_from_file("single_report_with_attachment.json"),
         )
 
-        mocker.patch(
-            "CofenseTriagev2.CofenseTriagev2.fileResult",
-            lambda **_kwargs: {
-                "FileID": "file_result_id",
-                "FileName": "file_result_name",
-            },
-        )
-
         report = TriageReport.fetch(triage_instance, "6")
         attachment = report.attachment
 
-        assert attachment == {"path": "file_result_id", "name": "file_result_name"}
+        assert attachment == {"path": "/path/to/temp/file", "name": "13363-report.html"}
 
 
 class TestTriageReporter:
