@@ -1,9 +1,9 @@
 {
 	"fromVersion": "6.0.0",
 	"name": "Cortex XDR - Classifier",
-    "type": "classification",
-    "id": "Cortex XDR - IR",
-    "description": "Classifies Cortex XDR incidents.",
+	"type": "classification",
+	"id": "Cortex XDR - IR",
+	"description": "Classifies Cortex XDR incidents.",
 	"defaultIncidentType": "",
 	"keyTypeMap": {
 		"PortScan": "Cortex XDR Port Scan",

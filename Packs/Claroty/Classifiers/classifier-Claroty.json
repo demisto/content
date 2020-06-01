@@ -1,8 +1,8 @@
 {
-    "id": "Claroty",
-    "name": "Claroty - Classifier",
-    "type": "classification",
-    "description": "Classifies Claroty incidents.",
+	"id": "Claroty",
+	"name": "Claroty - Classifier",
+	"type": "classification",
+	"description": "Classifies Claroty incidents.",
 	"defaultIncidentType": "",
 	"keyTypeMap": {
 		"Integrity": "Claroty Integrity Incident",
