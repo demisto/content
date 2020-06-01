@@ -17,7 +17,7 @@ _RESULTS_PER_PAGE = 50  # Max for Cofense is 100
 class Client(BaseClient):
     """Implements class for miners of Cofense feed over http/https."""
 
-    available_fields = ["all", "malware", "phish"]
+    available_fields = ["all", "malware"]
 
     cofense_to_indicator = {
         "IPv4 Address": FeedIndicatorType.IP,
