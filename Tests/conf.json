@@ -2797,7 +2797,13 @@
             "integrations": "Endace",
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Deep Instinct",
+            "playbookID": "Deep_Instinct-Test",
+            "fromversion": "5.0.0"
         }
+
     ],
     "skipped_tests": {
         "Maltiverse Test": "Issue 24335",
