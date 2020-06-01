@@ -39,6 +39,7 @@ tags:
 comment: Set incident severity according to indicators found in an confer alert
 system: true
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - confer
