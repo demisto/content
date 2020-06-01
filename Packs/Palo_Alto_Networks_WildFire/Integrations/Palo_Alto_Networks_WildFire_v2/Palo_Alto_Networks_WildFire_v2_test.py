@@ -1,6 +1,9 @@
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
-    file_args_handler
+    file_args_handler, wildfire_get_sample_command
+
+import demistomock as demisto
+from requests import Response
 
 
 def test_will_return_ok():
@@ -70,3 +73,44 @@ def test_file_args_handler():
     file_hash_list = file_args_handler(
         file="12345678901234567890123456789012,1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3")
     assert expected_file_hash_list == file_hash_list
+
+
+def test_get_sample(mocker):
+    """
+    Given:
+     - SHA-256 hash of sample to get.
+
+    When:
+     - Running get-sample command.
+
+    Then:
+     - Verify file with the expected name is returned.
+    """
+    mocker.patch.object(demisto, 'results')
+    filename = '1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3.xlsx'
+    get_sample_response = Response()
+    get_sample_response.status_code = 200
+    get_sample_response.headers = {
+        'Server': 'nginx',
+        'Date': 'Thu, 28 May 2020 15:03:35 GMT',
+        'Content-Type': 'application/octet-stream',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'Content-Disposition': f'attachment; filename={filename}.000',
+        'x-envoy-upstream-service-time': '258'
+    }
+    get_sample_response._content = 'filecontent'.encode()
+    mocker.patch(
+        'Palo_Alto_Networks_WildFire_v2.wildfire_get_sample',
+        return_value=get_sample_response
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'sha256': '1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3'
+        }
+    )
+    wildfire_get_sample_command()
+    results = demisto.results.call_args[0]
+    assert results[0]['File'] == filename

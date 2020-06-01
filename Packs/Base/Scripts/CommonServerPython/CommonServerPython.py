@@ -29,6 +29,7 @@ try:
 except Exception:
     pass
 
+
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
@@ -252,6 +253,65 @@ class FeedIndicatorType(object):
             return None
 
 
+def auto_detect_indicator_type(indicator_value):
+    """
+      Infer the type of the indicator.
+
+      :type indicator_value: ``str``
+      :param indicator_value: The indicator whose type we want to check. (required)
+
+      :return: The type of the indicator.
+      :rtype: ``str``
+    """
+    try:
+        import tldextract
+    except Exception:
+        raise Exception("Missing tldextract module, In order to use the auto detect function please use a docker"
+                        " image with it installed such as: demisto/jmespath")
+
+    if re.match(ipv4cidrRegex, indicator_value):
+        return FeedIndicatorType.CIDR
+
+    if re.match(ipv6cidrRegex, indicator_value):
+        return FeedIndicatorType.IPv6CIDR
+
+    if re.match(ipv4Regex, indicator_value):
+        return FeedIndicatorType.IP
+
+    if re.match(ipv6Regex, indicator_value):
+        return FeedIndicatorType.IPv6
+
+    if re.match(sha256Regex, indicator_value):
+        return FeedIndicatorType.File
+
+    if re.match(urlRegex, indicator_value):
+        return FeedIndicatorType.URL
+
+    if re.match(md5Regex, indicator_value):
+        return FeedIndicatorType.File
+
+    if re.match(sha1Regex, indicator_value):
+        return FeedIndicatorType.File
+
+    if re.match(emailRegex, indicator_value):
+        return FeedIndicatorType.Email
+
+    if re.match(cveRegex, indicator_value):
+        return FeedIndicatorType.CVE
+
+    try:
+        no_cache_extract = tldextract.TLDExtract(cache_file=False,suffix_list_urls=None)
+        if no_cache_extract(indicator_value).suffix:
+            if '*' in indicator_value:
+                return FeedIndicatorType.DomainGlob
+            return FeedIndicatorType.Domain
+
+    except Exception:
+        pass
+
+    return None
+
+
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -270,16 +330,26 @@ except Exception:
 # ====================================================================================
 
 
-def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
+def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True, insecure_param_name=None):
     """
         Handle logic for routing traffic through the system proxy.
         Should usually be called at the beginning of the integration, depending on proxy checkbox state.
+
+        Additionally will unset env variables REQUESTS_CA_BUNDLE and CURL_CA_BUNDLE if handle_insecure is speficied (default).
+        This is needed as when these variables are set and a requests.Session object is used, requests will ignore the 
+        Sesssion.verify setting. See: https://github.com/psf/requests/blob/master/requests/sessions.py#L703
 
         :type proxy_param_name: ``string``
         :param proxy_param_name: name of the "use system proxy" integration parameter
 
         :type checkbox_default_value: ``bool``
         :param checkbox_default_value: Default value of the proxy param checkbox
+
+        :type handle_insecure: ``bool``
+        :param handle_insecure: Whether to check the insecure param and unset env variables
+
+        :type insecure_param_name: ``string``
+        :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
 
         :rtype: ``dict``
         :return: proxies dict for the 'proxies' parameter of 'requests' functions
@@ -294,6 +364,16 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
         for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
             if k in os.environ:
                 del os.environ[k]
+    if handle_insecure:
+        if insecure_param_name is None:
+            param_names = ('insecure', 'unsecure')
+        else:
+            param_names = (insecure_param_name, )
+        for p in param_names:
+            if demisto.params().get(p, False):
+                for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
+                    if k in os.environ:
+                        del os.environ[k]
     return proxies
 
 
@@ -2379,6 +2459,76 @@ class Common(object):
 
             return ret_value
 
+    class Endpoint(Indicator):
+        """ ignore docstring
+        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
+        """
+        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
+
+        def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
+                     os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
+                     memory=None, processors=None, processor=None):
+            self.id = id
+            self.hostname = hostname
+            self.ip_address = ip_address
+            self.domain = domain
+            self.mac_address = mac_address
+            self.os = os
+            self.os_version = os_version
+            self.dhcp_server = dhcp_server
+            self.bios_version = bios_version
+            self.model = model
+            self.memory = memory
+            self.processors = processors
+            self.processor = processor
+
+        def to_context(self):
+            endpoint_context = {
+                'ID': self.id
+            }
+
+            if self.hostname:
+                endpoint_context['Hostname'] = self.hostname
+
+            if self.ip_address:
+                endpoint_context['IPAddress'] = self.ip_address
+
+            if self.domain:
+                endpoint_context['Domain'] = self.domain
+
+            if self.mac_address:
+                endpoint_context['MACAddress'] = self.mac_address
+
+            if self.os:
+                endpoint_context['OS'] = self.os
+
+            if self.os_version:
+                endpoint_context['OSVersion'] = self.os_version
+
+            if self.dhcp_server:
+                endpoint_context['DHCPServer'] = self.dhcp_server
+
+            if self.bios_version:
+                endpoint_context['BIOSVersion'] = self.bios_version
+
+            if self.model:
+                endpoint_context['Model'] = self.model
+
+            if self.memory:
+                endpoint_context['Memory'] = self.memory
+
+            if self.processors:
+                endpoint_context['Processors'] = self.processors
+
+            if self.processor:
+                endpoint_context['Processor'] = self.processor
+
+            ret_value = {
+                Common.Endpoint.CONTEXT_PATH: endpoint_context
+            }
+
+            return ret_value
+
 
 class CommandResults:
     """
@@ -2709,7 +2859,6 @@ hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
-
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
@@ -3006,7 +3155,7 @@ def is_demisto_version_ge(version):
         server_version = get_demisto_version()
         return server_version.get('version') >= version
     except AttributeError:
-        # demistoVersion was added in 5.0.0. We are currently runnining in 4.5.0 and below
+        # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
             return False
         raise

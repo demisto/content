@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 - Added an argument which enables you to download a Panorama report.
 - Fixed an issue where proxy settings were not handled properly.
 

@@ -1,4 +1,7 @@
 ## [Unreleased]
+- POST request parameterss are now passed through body and not through the URI.
+
+## [20.5.2] - 2020-05-26
 - Added the option to list predefined applications in PAN-OS 9.X in the ***panorama-get-applications*** command using the argument *predefined*.
 - Fixed an issue where listing custom applications in PAN-OS 9.X using the ***panorama-get-applications***  command did not work properly.
 - Fixed an issue where running the ***panorama-get-url-category*** command multiple times, displayed previous results in the war room.

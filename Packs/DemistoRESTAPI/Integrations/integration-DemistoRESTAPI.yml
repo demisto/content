@@ -78,7 +78,7 @@ script:
 
     var sendRequest = function(method, uri, body, raw) {
         var requestUrl = serverURL;
-        if (uri.slice(-1) !== '/') {
+        if (uri.slice(0, 1) !== '/') {
             requestUrl += '/';
         }
         requestUrl += uri;
