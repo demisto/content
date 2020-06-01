@@ -399,7 +399,7 @@ tasks:
         simple: sade
       type: {}
       users:
-        simple: demisto_integration
+        simple: cortex_xsoar
     separatecontext: false
     view: |-
       {
@@ -765,7 +765,7 @@ tasks:
       - "14"
     scriptarguments:
       user:
-        simple: demisto_integration
+        simple: cortex_xsoar
     separatecontext: false
     view: |-
       {

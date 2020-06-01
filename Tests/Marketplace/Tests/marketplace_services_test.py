@@ -44,7 +44,7 @@ class TestMetadataParsing:
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == '5.5.0'
         assert parsed_metadata['currentVersion'] == '2.3.0'
-        assert parsed_metadata['tags'] == ["Tag Number One", "Tag Number Two"]
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two"]
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
         assert 'integrations' in parsed_metadata

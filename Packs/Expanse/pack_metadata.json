@@ -2,7 +2,7 @@
   "name": "Expanse",
   "description": "The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.",
   "support": "partner",
-  "currentVersion": "1.0.0",
+  "currentVersion": "1.0.1",
   "author": "Expanse",
   "url": "https://www.expanse.co/",
   "email": "help@expanseinc.com",
@@ -12,6 +12,7 @@
   ],
   "tags": [],
   "useCases": [],
+  "certification": "certified",
   "keywords": [
     "Expanse"
   ]

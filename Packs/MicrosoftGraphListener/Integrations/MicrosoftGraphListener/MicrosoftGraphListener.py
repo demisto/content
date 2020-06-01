@@ -45,16 +45,6 @@ EMAIL_DATA_MAPPING = {
 ''' HELPER FUNCTIONS '''
 
 
-def get_now_utc():
-    """
-    Creates UTC current time of format Y-m-dTH:M:SZ (e.g. 2019-11-06T09:06:39Z)
-
-    :return: String format of current UTC time
-    :rtype: ``str``
-    """
-    return datetime.utcnow().strftime(DATE_FORMAT)
-
-
 def add_second_to_str_date(date_string, seconds=1):
     """
     Add seconds to date string.
@@ -673,7 +663,6 @@ class MsGraphClient:
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
-        start_time = get_now_utc()
         last_fetch = last_run.get('LAST_RUN_TIME')
         exclude_ids = last_run.get('LAST_RUN_IDS', [])
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
@@ -694,7 +683,7 @@ class MsGraphClient:
         fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
                                                                      exclude_ids=exclude_ids)
         incidents = list(map(self._parse_email_as_incident, fetched_emails))
-        next_run_time = MsGraphClient._get_next_run_time(fetched_emails, start_time)
+        next_run_time = MsGraphClient._get_next_run_time(fetched_emails, last_fetch)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
             'LAST_RUN_IDS': fetched_emails_ids,

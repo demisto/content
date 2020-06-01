@@ -242,6 +242,31 @@ def request(url, message):
     }
 
 
+def requests_handler(url, message, **kwargs):
+    method = message['method'].lower()
+    data = message.get('body', '') if method == 'post' else None
+    headers = dict(message.get('headers', []))
+    try:
+        response = requests.request(
+            method,
+            url,
+            data=data,
+            headers=headers,
+            verify=VERIFY_CERTIFICATE,
+            **kwargs
+        )
+    except requests.exceptions.HTTPError as e:
+        # Propagate HTTP errors via the returned response message
+        response = e.response
+        demisto.debug('Got exception while using requests handler - {}'.format(str(e)))
+    return {
+        'status': response.status_code,
+        'reason': response.reason,
+        'headers': response.headers.items(),
+        'body': io.BytesIO(response.content)
+    }
+
+
 def build_search_kwargs(args):
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
@@ -666,29 +691,31 @@ def replace_keys(data):
 def main():
     service = None
     proxy = demisto.params().get('proxy')
-    if proxy:
-        try:
-            service = client.connect(
-                handler=handler(proxy),
-                host=demisto.params()['host'],
-                port=demisto.params()['port'],
-                app=demisto.params().get('app'),
-                username=demisto.params()['authentication']['identifier'],
-                password=demisto.params()['authentication']['password'],
-                verify=VERIFY_CERTIFICATE)
-        except urllib2.URLError as e:
-            if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
-                pass
-            else:
-                raise
-    else:
-        service = client.connect(
-            host=demisto.params()['host'],
-            port=demisto.params()['port'],
-            app=demisto.params().get('app'),
-            username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'],
-            verify=VERIFY_CERTIFICATE)
+    use_requests_handler = demisto.params().get('use_requests_handler')
+
+    connection_args = {
+        'host': demisto.params()['host'],
+        'port': demisto.params()['port'],
+        'app': demisto.params().get('app'),
+        'username': demisto.params()['authentication']['identifier'],
+        'password': demisto.params()['authentication']['password'],
+        'verify': VERIFY_CERTIFICATE
+    }
+
+    if use_requests_handler:
+        handle_proxy()
+        connection_args['handler'] = requests_handler
+
+    elif proxy:
+        connection_args['handler'] = handler(proxy)
+
+    try:
+        service = client.connect(**connection_args)
+    except urllib2.URLError as e:
+        if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
+            pass
+        else:
+            raise
 
     if service is None:
         demisto.error("Could not connect to SplunkPy")
