@@ -3184,7 +3184,7 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             self.int_logger = IntegrationLogger()
-            self.int_logger.set_buffering(False)
+            self.int_logger.set_buffering(False)            
             setattr(http_client, 'print', self.int_logger.print_override)
         else:
             self.http_client = None
@@ -3194,14 +3194,22 @@ class DebugLogger(object):
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
         self.root_logger.setLevel(logging.DEBUG)
+        self.org_handlers = list()
+        if self.root_logger.handlers:
+            self.org_handlers.extend(self.root_logger.handlers)
+            for h in self.org_handlers:
+                self.root_logger.removeHandler(h)            
         self.root_logger.addHandler(self.handler)
 
     def __del__(self):
         if self.handler:
             self.root_logger.setLevel(self.prev_log_level)
-            self.root_logger.removeHandler(self.handler)
+            self.root_logger.removeHandler(self.handler)            
             self.handler.flush()
             self.handler.close()
+        if self.org_handlers:
+            for h in self.org_handlers:
+                self.root_logger.addHandler(h)
         if self.http_client:
             self.http_client.HTTPConnection.debuglevel = 0
             if self.http_client_print:
