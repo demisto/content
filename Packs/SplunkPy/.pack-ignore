@@ -1,0 +1,3 @@
+[file:classifier-SplunkPy.json]
+ignore=CL104
+ignore=CL107
