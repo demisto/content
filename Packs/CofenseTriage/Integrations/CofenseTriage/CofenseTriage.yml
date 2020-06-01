@@ -2,8 +2,9 @@ commonfields:
   id: Cofense Triage
   version: -1
 name: Cofense Triage
-description: Use the Cofense Triage integration to manage reports and attachments.
-display: Cofense Triage
+description: Deprecated - We recommend using Cofense Triage v2 instead.
+display: Cofense Triage - Deprecated
+deprecated: true
 category: Data Enrichment & Threat Intelligence
 configuration:
   - display: Server URL (e.g., https://192.168.0.1)
