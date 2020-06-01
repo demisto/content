@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -35,7 +37,6 @@ from exchangelib.services.common import EWSService, EWSAccountService
 from exchangelib.util import create_element, add_xml_child, MNS, TNS
 from exchangelib import (
     IMPERSONATION,
-    DELEGATE,
     Account,
     EWSDateTime,
     EWSTimeZone,
@@ -84,7 +85,9 @@ MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
 
 # error messages
-SEARCH_MAILBOXES_RBAC = "The RBAC role does require user context. The user context is missing."
+SEARCH_MAILBOXES_RBAC = (
+    "The RBAC role does require user context. The user context is missing."
+)
 
 # context paths
 CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} === obj.{0} || (val.{1} && obj.{1} && val.{1} === obj.{1}))".format(
@@ -347,7 +350,11 @@ class GetSearchableMailboxes(EWSService):
 
     def call(self):
         elements = self._get_elements(payload=self.get_payload())
-        return [self.parse_element(x) for x in elements if x.find(f"{{{TNS}}}ReferenceId").text]
+        return [
+            self.parse_element(x)
+            for x in elements
+            if x.find(f"{{{TNS}}}ReferenceId").text
+        ]
 
     def get_payload(self):
         element = create_element(f"m:{self.SERVICE_NAME}")
@@ -356,7 +363,7 @@ class GetSearchableMailboxes(EWSService):
 
 class SearchMailboxes(EWSService):
     element_container_name = f"{{{MNS}}}SearchMailboxesResult/{{{TNS}}}Items"
-    SERVICE_NAME = 'SearchMailboxes'
+    SERVICE_NAME = "SearchMailboxes"
 
     @staticmethod
     def parse_element(element):
@@ -618,7 +625,9 @@ def get_expanded_group(client: EWSClient, email_address, recursive_expansion=Fal
 
 def get_searchable_mailboxes(client: EWSClient):
     searchable_mailboxes = GetSearchableMailboxes(protocol=client.protocol).call()
-    readable_output = tableToMarkdown("Searchable mailboxes", searchable_mailboxes, headers=['displayName', 'mailbox'])
+    readable_output = tableToMarkdown(
+        "Searchable mailboxes", searchable_mailboxes, headers=["displayName", "mailbox"]
+    )
     output = {"EWS.Mailboxes": searchable_mailboxes}
     return readable_output, output, searchable_mailboxes
 
@@ -669,7 +678,7 @@ def search_mailboxes(
         if SEARCH_MAILBOXES_RBAC in str(e):
             raise Exception(SEARCH_MAILBOXES_RBAC)
         if "ItemCount>0<" in str(e):
-            return "No results for search query: " + filter,
+            return ("No results for search query: " + filter,)
         else:
             raise e
 
@@ -784,7 +793,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
-            item.folder.absolute[len(TOIS_PATH) :]
+            item.folder.absolute[len(TOIS_PATH):]
             if item.folder.absolute.startswith(TOIS_PATH)
             else item.folder.absolute
         )
@@ -847,7 +856,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
     return raw_dict
 
 
-def parse_incident_from_item(client: EWSClient, item, is_fetch=False):
+def parse_incident_from_item(item):
     incident = {}
     labels = []
 
@@ -916,7 +925,7 @@ def parse_incident_from_item(client: EWSClient, item, is_fetch=False):
                             }
                         )
                 except TypeError as e:
-                    if e.message != "must be string or buffer, not None":
+                    if str(e) != "must be string or buffer, not None":
                         raise
                     continue
             else:
@@ -1021,7 +1030,7 @@ def fetch_emails_as_incidents(client: EWSClient):
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
-                incident = parse_incident_from_item(client, item, is_fetch=True)
+                incident = parse_incident_from_item(item)
                 incidents.append(incident)
 
                 if len(incidents) >= client.max_fetch:
@@ -1087,7 +1096,7 @@ def parse_attachment_as_dict(item_id, attachment):
             else ITEM_ATTACHMENT_TYPE,
         }
     except TypeError as e:
-        if e.message != "must be string or buffer, not None":
+        if str(e) != "must be string or buffer, not None":
             raise
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
@@ -1558,7 +1567,7 @@ def get_items(client: EWSClient, item_ids, target_mailbox=None):
     account = client.get_account(target_mailbox)
     items = client.get_items_from_mailbox(account, item_ids)
     items = [x for x in items if isinstance(x, Message)]
-    items_as_incidents = [parse_incident_from_item(client, x) for x in items]
+    items_as_incidents = [parse_incident_from_item(x) for x in items]
     items_to_context = [
         parse_item_as_dict(x, account.primary_smtp_address, True, True) for x in items
     ]
@@ -1598,12 +1607,12 @@ def folder_to_context_entry(f):
     except AttributeError:
         if isinstance(f, dict):
             return {
-                "name": f.get('name'),
-                "totalCount": f.get('total_count'),
-                "id": f.get('id'),
-                "childrenFolderCount": f.get('child_folder_count'),
-                "changeKey": f.get('changekey'),
-                "unreadCount": f.get('unread_count')
+                "name": f.get("name"),
+                "totalCount": f.get("total_count"),
+                "id": f.get("id"),
+                "childrenFolderCount": f.get("child_folder_count"),
+                "changeKey": f.get("changekey"),
+                "unreadCount": f.get("unread_count"),
             }
 
 
@@ -1685,7 +1694,7 @@ def test_module(client: EWSClient):
                 "get all the folders structure that the user has permissions to"
             )
 
-    return 'ok'
+    return "ok"
 
 
 def sub_main():

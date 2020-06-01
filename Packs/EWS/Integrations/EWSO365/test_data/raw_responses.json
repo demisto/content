@@ -2411,19 +2411,16 @@
       "mailbox": "testbox@demistodev.onmicrosoft.com"
     }
   ],
-  "ews-expand-group": {
-    "name": "testgroup-1@demistodev.onmicrosoft.com",
-    "members": [
-      {
-        "mailbox": "avishai@demistodev.onmicrosoft.com",
-        "displayName": "Avishai Brandeis",
-        "mailboxType": "Mailbox"
-      },
-      {
-        "mailbox": "testbox@demistodev.onmicrosoft.com",
-        "displayName": "test box",
-        "mailboxType": "Mailbox"
-      }
-    ]
-  }
+  "ews-expand-group": [
+    {
+      "mailbox": "avishai@demistodev.onmicrosoft.com",
+      "displayName": "Avishai Brandeis",
+      "mailboxType": "Mailbox"
+    },
+    {
+      "mailbox": "testbox@demistodev.onmicrosoft.com",
+      "displayName": "test box",
+      "mailboxType": "Mailbox"
+    }
+  ]
 }
