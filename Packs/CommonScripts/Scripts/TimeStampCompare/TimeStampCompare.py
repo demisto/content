@@ -17,22 +17,27 @@ DT_STRING = "TimeStampCompare(val.TestedTime && val.TestedTime == obj.TestedTime
 def time_stamp_compare_command(args):
     tested_time = args.get('tested_time')
     values_to_compare = argToList(args.get('values_to_compare'))
+    time_format = args.get('time_format', None)
+    if time_format == '':
+        time_format = None
+    elif time_format is not None:
+        time_format = [time_format]
 
     results = []
-    parsed_tested_time = dateparser.parse(tested_time, settings={
+    parsed_tested_time = dateparser.parse(tested_time, date_formats=time_format, settings={
         'TIMEZONE': 'UTC',
         'RELATIVE_BASE': datetime(datetime.now().year, 1, 1)
     })
     for compared_time in values_to_compare:
-        parsed_compared_time = dateparser.parse(compared_time, settings={
+        parsed_compared_time = dateparser.parse(compared_time, date_formats=time_format, settings={
             'TIMEZONE': 'UTC',
             'RELATIVE_BASE': datetime(datetime.now().year, 1, 1)
         })
         result = compare_times(parsed_compared_time.timestamp(), parsed_tested_time.timestamp())
 
         results.append({
-            "TestedTime": parsed_tested_time.isoformat(),
-            "ComparedTime": parsed_compared_time.isoformat(),
+            "TestedTime": tested_time,
+            "ComparedTime": compared_time,
             "Result": result
         })
 

@@ -11,6 +11,12 @@ args:
   name: values_to_compare
   required: true
   secret: false
+- default: false
+  description: Time format of the times you entered, by default we are on automatic parsing - this should be used for cases like DD/MM/YYYY
+  isArray: false
+  name: time_format
+  required: false
+  secret: false
 comment: Compare a single timestamp to a list of timestamps;
 commonfields:
   id: TimeStampCompare
