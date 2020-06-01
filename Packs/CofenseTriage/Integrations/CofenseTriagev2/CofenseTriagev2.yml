@@ -265,7 +265,7 @@ script:
         - name: end_date
           description: "designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS)"
       outputs:
-        - contextPath: Cofense.Cofense.ThreatIndicators
+        - contextPath: Cofense.ThreatIndicators
           description: Threat Indicator Output
       description: Threat Indicators that are designated by analysts as malicious, suspicious
         or benign
