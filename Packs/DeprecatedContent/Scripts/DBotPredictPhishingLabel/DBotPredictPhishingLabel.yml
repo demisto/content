@@ -29,9 +29,7 @@ args:
   name: emailBody
   required: false
   secret: false
-comment: |-
-  Predict text label using pre-trained machine learning phishing model.
-  Notice you have to run training playbook successfully first.
+comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 commonfields:
   id: DBotPredictPhishingLabel
   version: -1
@@ -58,6 +56,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
+deprecated: true
 dockerimage: demisto/dl:1.1
 runonce: false
 tests:
