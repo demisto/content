@@ -184,7 +184,7 @@ def install_packs(client, host, prints_manager, packs_to_install):
 
         if 200 <= status_code < 300:
             packs_str = '\n'.join([pack['id'] for pack in packs_to_install])
-            message = 'Successully installed the following packs in server {}:\n{}\n'.format(host, packs_str)
+            message = 'Successfully installed the following packs in server {}:\n{}\n'.format(host, packs_str)
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
@@ -250,7 +250,9 @@ def upload_zipped_packs(client, host, prints_manager):
             host (str): The server URL.
             prints_manager (ParallelPrintsManager): Print manager object.
         """
-    header_params = {'Content-Type': 'multipart/form-data'}
+    header_params = {
+        'Content-Type': 'multipart/form-data'
+    }
 
     packs_zip_path = 'artifacts/zipped_packs.zip'
     file_path = os.path.abspath(packs_zip_path)
@@ -260,7 +262,7 @@ def upload_zipped_packs(client, host, prints_manager):
 
     import time
     start_time = time.time()
-    message += '\nstart_time:\n' + start_time + '\n'
+    message += '\nstart_time:\n' + str(start_time) + '\n'
 
     prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
@@ -275,9 +277,9 @@ def upload_zipped_packs(client, host, prints_manager):
             message = 'All packs from {} were successfully installed!'.format(packs_zip_path)
 
             end_time = time.time()
-            message += '\nend_time:\n' + end_time + '\n'
+            message += '\nend_time:\n' + str(end_time) + '\n'
             took = end_time - start_time
-            message += '\ntook:\n' + took + '\n'
+            message += '\ntook:\n' + str(took) + '\n'
 
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
