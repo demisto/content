@@ -3,12 +3,8 @@
     "name": "AWS Feed - Incoming Mapper",
     "type": "mapping-incoming",
     "description": "Maps incoming AWS indicator fields.",
-	"custom": true,
 	"defaultIncidentType": "",
 	"feed": true,
-	"incidentSamples": [],
-	"indicatorSamples": [],
-	"isDefault": false,
 	"mapping": {
 		"CIDR": {
 			"dontMapEventToLabels": false,
@@ -24,9 +20,6 @@
 			}
 		}
 	},
-	"propagationLabels": null,
-	"sortValues": null,
-	"unclassifiedCases": {},
 	"version": -1,
 	"fromVersion": "6.0.0"
 }
