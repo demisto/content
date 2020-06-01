@@ -25,6 +25,7 @@ args:
 - name: reason
   description: Reason for resolving the host
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - lcm-resolve-host

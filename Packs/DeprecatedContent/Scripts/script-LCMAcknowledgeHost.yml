@@ -1,8 +1,8 @@
 commonfields:
-  id: LCMSetHostComment
+  id: LCMAcknowledgeHost
   version: -1
-name: LCMSetHostComment
-script: |+
+name: LCMAcknowledgeHost
+script: |
   import re
   ID_REGEX = r'Id: ([a-zA-Z0-9\-]+)'
 
@@ -13,14 +13,14 @@ script: |+
   elif  resp[0]['Contents'] == 'No results.':
       demisto.results('Host not found in LightCyber.')
   else:
-      #demisto.log(str(resp))
+      demisto.log(str(resp))
       hosts = resp[0]['Contents']
       if isinstance(hosts, list) and len(hosts) == 1 :
           reMatch = re.search(ID_REGEX, hosts[0]['HostId'], re.I)
           if reMatch and len(reMatch.groups()) > 0:
               hostID = reMatch.group(1)
           if hostID:
-              resp = demisto.executeCommand("lcm-set-host-comment", {'id': hostID, 'comment': dArgs['comment']})
+              resp = demisto.executeCommand("lcm-acknowledge-host", {'id': hostID})
               if isError(resp[0]) or resp[0]['Contents'] != 'No result returned':
                   demisto.results(resp)
               else:
@@ -29,24 +29,23 @@ script: |+
               demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not extract host ID.' } )
       else:
           demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Results weren\'t a single host: ' + str(resp)[:3000] } )
-
 type: python
 subtype: python2
 tags:
 - lightcyber
-comment: Change a host comment in LightCyber Magna.
+comment: Mark a host as resolved in LightCyber Magna. Will return an error if you
+  try to resolve a host that isn't in the detected entities list or if the host is
+  already resolved (You can use "unresolve" to change this property back).
+system: true
+deprecated: true
 args:
 - name: name
   default: true
   description: The host's name
-- name: comment
-  required: true
-  description: The new comment to set for the host
 - name: ip
-  description: The host's IP
+  description: The host's IP address
 scripttarget: 0
 dependson:
   must:
-  - lcm-set-host-comment
+  - lcm-acknowledge-host
 timeout: 0s
-system: true
