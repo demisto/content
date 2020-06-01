@@ -499,6 +499,7 @@ jobs:
           name: Run Tests - Demisto Marketplace
           shell: /bin/bash
           when: always
+          no_output_timeout: 5h
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"

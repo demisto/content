@@ -6,7 +6,7 @@ import json
 import demisto_client
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list
-from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH
+from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 
@@ -154,7 +154,7 @@ def search_pack(client, prints_manager, pack_display_name):
         raise Exception(err_msg)
 
 
-def install_packs(client, host, prints_manager, packs_to_install):
+def install_packs(client, host, prints_manager, packs_to_install, request_timeout=9999999):
     """ Make a packs installation request.
 
     Args:
@@ -162,6 +162,7 @@ def install_packs(client, host, prints_manager, packs_to_install):
         host (str): The server URL.
         prints_manager (ParallelPrintsManager): Print manager object.
         packs_to_install (list): A list of the packs to install.
+        request_timeout (int): Timeout settings for the installation request.
     """
 
     request_data = {
@@ -180,11 +181,11 @@ def install_packs(client, host, prints_manager, packs_to_install):
                                                                             path='/contentpacks/marketplace/install',
                                                                             method='POST',
                                                                             body=request_data,
-                                                                            accept='application/json')
+                                                                            accept='application/json',
+                                                                            _request_timeout=request_timeout)
 
         if 200 <= status_code < 300:
-            packs_str = '\n'.join([pack['id'] for pack in packs_to_install])
-            message = 'Successfully installed the following packs in server {}:\n{}\n'.format(host, packs_str)
+            message = 'Packs were successfully installed!\n'.format(host)
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
@@ -242,6 +243,31 @@ def add_pack_to_installation_request(pack_id, installation_request_body):
         })
 
 
+def install_all_content_packs(client, host, prints_manager):
+    all_packs = []
+
+    import time
+    start_time = time.time()
+    message = 'start_time:\n' + str(start_time) + '\n'
+
+    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(0)
+
+    for pack_id in os.listdir(PACKS_FULL_PATH):
+        if pack_id not in IGNORED_FILES and pack_id != 'Silverfort':  # todo: remove silverfort when fixed
+            add_pack_to_installation_request(pack_id, all_packs)
+    install_packs(client, host, prints_manager, all_packs)
+
+    end_time = time.time()
+    message = '\nend_time:\n' + str(end_time) + '\n'
+    took = end_time - start_time
+    message += '\ntook:\n' + str(took) + '\n'
+
+    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(0)
+
+
+# todo: remove if not used
 def upload_zipped_packs(client, host, prints_manager):
     """ Install packs from zip file.
 
@@ -301,13 +327,12 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         prints_manager (ParallelPrintsManager): A prints manager object.
         is_nightly (bool): Whether or not the build is a nightly build.
 
-    Returns (list): A list of the installed packs' ids, or an empty list if is_nightly.
+    Returns (list): A list of the installed packs' ids, or an empty list if is_nightly == True.
     """
     host = client.api_client.configuration.host
 
     if is_nightly:
-        # only install all packs from zip file
-        upload_zipped_packs(client, host, prints_manager)
+        install_all_content_packs(client, host, prints_manager)
         return []
     else:
         msg = 'Starting to search and install packs in server: {}\n'.format(host)
