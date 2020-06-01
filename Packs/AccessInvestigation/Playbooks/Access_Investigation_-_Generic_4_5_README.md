@@ -61,4 +61,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Access](link)
+![Access](https://raw.githubusercontent.com/demisto/content/a5e419535b376b08764f65670c24ea364072e869/Packs/AccessInvestigation/doc_files/Access_Investigation_-_Generic_4_5.png)
