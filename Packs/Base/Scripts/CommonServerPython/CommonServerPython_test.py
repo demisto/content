@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type
+    appendContext, auto_detect_indicator_type, handle_proxy
 
 try:
     from StringIO import StringIO
@@ -1824,3 +1824,17 @@ def test_auto_detect_indicator_type(indicator_value, indicatory_type):
         except Exception as e:
             assert str(e) == "Missing tldextract module, In order to use the auto detect function please" \
                              " use a docker image with it installed such as: demisto/jmespath"
+
+
+def test_handle_proxy(mocker):
+    os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+    mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+    handle_proxy()
+    assert os.getenv('REQUESTS_CA_BUNDLE') is None
+    os.environ['REQUESTS_CA_BUNDLE'] = '/test2.pem'
+    mocker.patch.object(demisto, 'params', return_value={})
+    handle_proxy()
+    assert os.environ['REQUESTS_CA_BUNDLE'] == '/test2.pem'  # make sure no change
+    mocker.patch.object(demisto, 'params', return_value={'unsecure': True})
+    handle_proxy()
+    assert os.getenv('REQUESTS_CA_BUNDLE') is None

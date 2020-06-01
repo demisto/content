@@ -1580,7 +1580,8 @@
         },
         {
             "integrations": "carbonblack-v2",
-            "playbookID": "Carbon Black Response Test"
+            "playbookID": "Carbon Black Response Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -2800,7 +2801,6 @@
         "SentinelOne V2 - test": "Issue 24933",
         "DuoAdmin API test playbook": "Issue 24937",
         "Wildfire Test": "Issue 24936",
-        "FireEye HX Test": "Issue 24935",
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
