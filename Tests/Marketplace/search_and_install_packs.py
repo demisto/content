@@ -84,7 +84,8 @@ def get_pack_dependencies(client, prints_manager, pack_data):
             path='/contentpacks/marketplace/search/dependencies',
             method='POST',
             body=[pack_data],
-            accept='application/json'
+            accept='application/json',
+            _request_timeout=None
         )
 
         if 200 <= status_code < 300:
@@ -126,7 +127,8 @@ def search_pack(client, prints_manager, pack_display_name):
                                                                             path='/contentpacks/marketplace/search',
                                                                             method='POST',
                                                                             body={"packsQuery": pack_display_name},
-                                                                            accept='application/json')
+                                                                            accept='application/json',
+                                                                            _request_timeout=None)
 
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
