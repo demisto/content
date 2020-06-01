@@ -14,6 +14,21 @@ from math import ceil
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
+xdr_types_to_demisto: Dict = {
+    "DOMAIN_NAME": 'Domain',
+    "HASH": 'File',
+    "IP": 'IP'
+}
+xdr_reputation_to_demisto: Dict = {
+    'GOOD': 1,
+    'SUSPICIOUS': 2,
+    'BAD': 3
+}
+demisto_score_to_xdr: Dict[int, str] = {
+    1: 'GOOD',
+    2: 'SUSPICIOUS',
+    3: 'BAD'
+}
 
 
 class Client:
@@ -117,20 +132,12 @@ def create_file_sync(file_path):
                 _file.write('\n')
 
 
-demisto_score_to_xdr: Dict[int, str] = {
-    1: 'GOOD',
-    2: 'SUSPICIOUS',
-    3: 'BAD'
-}
+def get_iocs_size(query=None) -> int:
+    return demisto.searchIndicators(query=query if query else Client.query, page=0, size=1).get('total', 0)
 
 
-def get_iocs_size(from_date=None, to_date=None) -> int:
-    return demisto.searchIndicators(query=Client.query, page=0, size=1, fromDate=from_date, toDate=to_date).get('total', 0)
-
-
-def get_iocs(page=0, size=200, from_date=None, to_date=None) -> List:
-    return demisto.searchIndicators(query=Client.query, page=page, size=size,
-                                    fromDate=from_date, toDate=to_date).get('iocs', [])
+def get_iocs(page=0, size=200, query=None) -> List:
+    return demisto.searchIndicators(query=query if query else Client.query, page=page, size=size).get('iocs', [])
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
@@ -225,14 +232,19 @@ def iocs_to_keep(client: Client):
     return_outputs('sync with XDR completed.')
 
 
+def create_last_iocs_query(from_date, to_date):
+    return f'modified:>={from_date} and modified:<{to_date}'
+
+
 def get_last_iocs() -> List:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
     last_run: Dict = demisto.getIntegrationContext()
-    total_size = get_iocs_size(from_date=last_run['time'], to_date=current_run)
+    query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
+    total_size = get_iocs_size(query)
     batch_size = 200
     iocs: List = []
     for i in range(0, ceil(total_size / batch_size)):
-        iocs.extend(get_iocs(from_date=last_run['time'], to_date=current_run, page=i, size=batch_size))
+        iocs.extend(get_iocs(query=query, page=i, size=batch_size))
     last_run['time'] = current_run
     demisto.setIntegrationContext(last_run)
     return iocs
@@ -267,21 +279,9 @@ def xdr_ioc_to_timeline(ioc: Dict) -> Dict:
     return ioc_time_line
 
 
-xdr_types_to_demisto: Dict = {
-    "DOMAIN_NAME": 'Domain',
-    "HASH": 'File',
-    "IP": 'IP'
-}
-xdr_reputation_to_demisto: Dict = {
-    'GOOD': 1,
-    'SUSPICIOUS': 2,
-    'BAD': 3
-}
-
-
 def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
     if expiration:
-        if expiration != -1:
+        if expiration == -1:
             return 'Never'
         return datetime.utcfromtimestamp(expiration / 1000).strftime(DEMISTO_TIME_FORMAT)
 
@@ -305,16 +305,8 @@ def xdr_ioc_to_entry(ioc: Dict) -> Dict:
     return entry
 
 
-def filter_inserts(ioc: Dict) -> bool:
-    if ioc.get('RULE_MODIFY_TIME', False) and ioc.get('RULE_INSERT_TIME', False):
-        if ioc['RULE_MODIFY_TIME'] - ioc['RULE_INSERT_TIME'] < 1000 * 60:   # 1 min
-            return False
-    return True
-
-
 def get_changes(client: Client):
     from_time: Dict = demisto.getIntegrationContext()
-    from_time['ts'] = int((datetime.now(timezone.utc) - timedelta(days=1)).timestamp() * 1000)
     if not from_time:
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
@@ -323,7 +315,6 @@ def get_changes(client: Client):
     if iocs:
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
         demisto.setIntegrationContext(from_time)
-        iocs = list(filter(filter_inserts, iocs))
         demisto.createIndicators(list(map(xdr_ioc_to_entry, iocs)))
 
 
@@ -343,7 +334,7 @@ def main():
         'xdr-disable-iocs': iocs_command,
         'xdr-push-iocs': tim_insert_jsons,
         'fetch-indicators': get_changes,
-        'xdr-iocs-get-changes': get_changes
+        'xdr-iocs-get-changes': get_changes,
     }
 
     command = demisto.command()
