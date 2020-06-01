@@ -59,4 +59,6 @@ This playbook does not use any integrations.
 | Endpoint.MAC | List of endpoint MAC addresses | unknown |
 | Endpoint.Domain | Endpoint domain name | string |
 
-<!-- Playbook PNG image comes here -->
+## Playbook Image
+---
+![Access](link)
