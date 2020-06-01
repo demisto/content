@@ -49,6 +49,7 @@ tags:
 - exabeam
 comment: Retrieve notable Exabeam users
 system: true
+deprecated: true
 args:
 - name: rows
   description: Maximum number of result rows to return
