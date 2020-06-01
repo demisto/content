@@ -3223,4 +3223,3 @@ Apply the new or existing tag to the asset, creates a new tag if it does not exi
 
 ##### Human Readable Output
 Test tag applied to given asset(s).
-
