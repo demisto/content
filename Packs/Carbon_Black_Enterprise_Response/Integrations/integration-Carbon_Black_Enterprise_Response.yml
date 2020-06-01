@@ -1651,21 +1651,13 @@ script:
       description: File Path
     - contextPath: Endpoint.Hostname
       description: Endpoint Hostname
-    - contextPath: Process.MD5
-      description: Process MD5
-    - contextPath: Process.Hostname
-      description: Process Hostname
     - contextPath: Process.CommandLine
       description: Process  Commandline
     - contextPath: Process.PID
       description: Process PID
-    - contextPath: Process.Path
-      description: Process Path
     - contextPath: Process.CbID
       description: Cb unique ID for this process instance - required (together with
         CbSegmentID) to fetch further info on a process.
-    - contextPath: Process.Name
-      description: Process Name
     - contextPath: Process.CbSegmentId
       description: Cb "segment" where this process instance is stored. Required to
         fetch further info on a process.
