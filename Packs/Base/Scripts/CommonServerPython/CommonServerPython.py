@@ -330,16 +330,26 @@ except Exception:
 # ====================================================================================
 
 
-def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
+def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True, insecure_param_name=None):
     """
         Handle logic for routing traffic through the system proxy.
         Should usually be called at the beginning of the integration, depending on proxy checkbox state.
+
+        Additionally will unset env variables REQUESTS_CA_BUNDLE and CURL_CA_BUNDLE if handle_insecure is speficied (default).
+        This is needed as when these variables are set and a requests.Session object is used, requests will ignore the 
+        Sesssion.verify setting. See: https://github.com/psf/requests/blob/master/requests/sessions.py#L703
 
         :type proxy_param_name: ``string``
         :param proxy_param_name: name of the "use system proxy" integration parameter
 
         :type checkbox_default_value: ``bool``
         :param checkbox_default_value: Default value of the proxy param checkbox
+
+        :type handle_insecure: ``bool``
+        :param handle_insecure: Whether to check the insecure param and unset env variables
+
+        :type insecure_param_name: ``string``
+        :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
 
         :rtype: ``dict``
         :return: proxies dict for the 'proxies' parameter of 'requests' functions
@@ -354,6 +364,16 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
         for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
             if k in os.environ:
                 del os.environ[k]
+    if handle_insecure:
+        if insecure_param_name is None:
+            param_names = ('insecure', 'unsecure')
+        else:
+            param_names = (insecure_param_name, )
+        for p in param_names:
+            if demisto.params().get(p, False):
+                for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
+                    if k in os.environ:
+                        del os.environ[k]
     return proxies
 
 
