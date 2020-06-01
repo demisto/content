@@ -72,8 +72,8 @@ def get_release_notes_dict(release_notes_files):
         pack_version = get_pack_version_from_path(file_path)
         with open(file_path, 'r') as rn:
             release_note = rn.read()
+            pack_name = get_pack_name_from_metdata(file_path)
             if release_note and release_note.strip() != IGNORE_RN:
-                pack_name = get_pack_name_from_metdata(file_path)
                 release_notes_dict.setdefault(pack_name, {})[pack_version] = release_note
                 print('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
             else:
@@ -88,6 +88,9 @@ def generate_release_notes_summary(release_notes_dict, version, asset_id):
         release_notes_dict (dict): A mapping from pack names to dictionaries of pack versions to release notes.
         version (str): Content version.
         asset_id (str): The asset ID.
+
+    Returns:
+        (str). The release notes summary string.
     """
     release_notes = '# Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
     current_date = datetime.now().strftime(DATE_FORMAT)
@@ -100,6 +103,8 @@ def generate_release_notes_summary(release_notes_dict, version, asset_id):
 
     with open(RELEASE_NOTES_FILE, 'w') as outfile:
         outfile.write(release_notes)
+
+    return release_notes
 
 
 def main():
