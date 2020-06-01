@@ -23,6 +23,7 @@ tags:
 - exabeam
 comment: Retrieve timeline of a user
 system: true
+deprecated: true
 args:
 - name: username
   required: true

@@ -50,6 +50,7 @@ tags:
 - exabeam
 comment: Retrieve lockouts from Exabeam
 system: true
+deprecated: true
 args:
 - name: rows
   description: Maximum number of result rows to return
