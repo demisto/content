@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -71,6 +72,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "3"
@@ -177,6 +179,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "5"
@@ -330,6 +333,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "29"
@@ -392,6 +396,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -422,6 +427,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -455,6 +461,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -490,6 +497,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "9"
@@ -521,6 +529,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "10"
@@ -557,6 +566,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "19"
@@ -588,6 +598,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -608,6 +619,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "11"
@@ -645,6 +657,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -670,6 +683,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "25"
@@ -707,6 +721,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -740,6 +755,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "22"
@@ -782,6 +798,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -809,6 +826,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -835,6 +853,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -861,6 +880,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -888,6 +908,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -914,6 +935,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -940,6 +962,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "15"
@@ -976,6 +999,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "6"
@@ -1010,3 +1034,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

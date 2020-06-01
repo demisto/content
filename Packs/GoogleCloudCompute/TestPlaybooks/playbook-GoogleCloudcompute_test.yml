@@ -13,9 +13,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -42,7 +43,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -77,7 +78,7 @@ tasks:
       brand: Google Cloud Compute
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     scriptarguments:
       disktype:
         simple: pd-ssd
@@ -110,7 +111,7 @@ tasks:
       brand: Google Cloud Compute
     nexttasks:
       '#none#':
-        - "4"
+      - "4"
     scriptarguments:
       family:
         simple: debian-9
@@ -167,9 +168,11 @@ view: |-
     }
   }
 inputs:
-  - key: zone
-    value:
-      simple: us-east1-b
-    required: false
-    description: ""
+- key: zone
+  value:
+    simple: us-east1-b
+  required: false
+  description: ""
 outputs: []
+fromversion: 4.1.0
+description: ''

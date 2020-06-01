@@ -1,4 +1,4 @@
-id: nexpose_test
+id: Nexpose test
 version: -1
 name: Nexpose test
 description: Playbook test for Nexpose integration
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -569,6 +570,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "22"
@@ -675,6 +677,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "23"
@@ -715,3 +718,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

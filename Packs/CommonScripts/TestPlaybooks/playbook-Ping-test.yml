@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -39,6 +40,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -71,6 +73,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       outputformat: {}
     separatecontext: false
@@ -95,6 +98,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -122,6 +126,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "7"
@@ -192,6 +197,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: Ping output  doesn't match expected result
@@ -217,6 +223,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -246,6 +253,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "7"
@@ -276,6 +284,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -305,6 +314,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "7"
@@ -335,6 +345,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -364,6 +375,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "7"
@@ -398,3 +410,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

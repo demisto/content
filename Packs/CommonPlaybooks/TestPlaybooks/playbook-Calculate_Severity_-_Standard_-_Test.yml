@@ -1,8 +1,7 @@
 id: Calculate Severity - Standard - Test
 version: -1
 name: Calculate Severity - Standard - Test
-description: A test playbook for the Calculate Severity - Standard playbook.
-  playbook.
+description: A test playbook for the Calculate Severity - Standard playbook. playbook.
 fromversion: 4.5.0
 starttaskid: "0"
 tasks:
@@ -79,6 +78,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -112,6 +112,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Palo Alto Minemeld
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -316,7 +317,7 @@ tasks:
     task:
       id: f0f9b58d-fdc8-48f8-89c4-879674a8913d
       version: -1
-      name: Calculate Severity - Core
+      name: Calculate Severity - Standard
       description: ""
       playbookName: Calculate Severity - Standard
       type: playbook
@@ -347,6 +348,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "8"

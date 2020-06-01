@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -114,6 +115,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -176,6 +178,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       outputformat: {}
     separatecontext: false
@@ -200,6 +203,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: Body contains html
@@ -227,3 +231,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -96,6 +97,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       expectedValue:
         simple: Demisto$$
@@ -182,3 +184,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

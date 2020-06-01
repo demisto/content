@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -39,6 +40,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -95,6 +97,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -123,6 +126,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -158,6 +162,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -187,6 +192,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       groupID:
         simple: ${TC.Threat.ID}
@@ -215,6 +221,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       groupID:
         simple: ${TC.Campaign.ID}
@@ -243,6 +250,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -304,6 +312,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -338,6 +347,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -365,6 +375,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -399,6 +410,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -443,6 +455,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -475,6 +488,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -509,6 +523,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -540,6 +555,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -572,6 +588,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -601,6 +618,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -632,6 +650,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       incidentId: {}
       incidentName: {}
@@ -659,6 +678,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -689,6 +709,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       tag:
         simple: Verified
@@ -715,6 +736,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       limit:
         simple: "3"
@@ -742,6 +764,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -772,6 +795,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -1060,6 +1084,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "42"
@@ -1098,6 +1123,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "46"
@@ -1361,6 +1387,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "35"
@@ -1417,3 +1444,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

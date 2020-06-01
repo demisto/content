@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -38,6 +39,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -70,6 +72,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -112,6 +115,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       message:
         simple: The incidents were not fetched
@@ -137,6 +141,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -166,6 +171,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -334,6 +340,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -358,3 +365,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

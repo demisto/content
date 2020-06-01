@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -150,6 +151,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Threat Intelligence Exchange
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -245,6 +247,7 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee Threat Intelligence Exchange
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -272,6 +275,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "12"
@@ -307,6 +311,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -331,3 +336,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

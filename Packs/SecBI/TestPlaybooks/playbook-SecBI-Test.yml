@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -40,6 +41,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -103,6 +105,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -196,3 +199,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

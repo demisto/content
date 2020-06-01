@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -230,6 +231,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "5"
@@ -850,3 +852,4 @@ outputs:
 - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
   description: Google Analytics Tracking Code
   type: Number
+fromversion: 4.1.0

@@ -1,4 +1,4 @@
-id: Jask_Test
+id: Jask Test
 version: -1
 name: Jask Test
 fromversion: 4.1.0
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -576,6 +577,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -608,6 +610,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "20"
@@ -649,3 +652,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''

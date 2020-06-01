@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -86,9 +87,9 @@ tasks:
       - "10"
     scriptarguments:
       json:
-        simple: "{\n\"Title\": \"Test task\", \n\"Description\": \"Test task generated
-          from scripts test playbook\", \n\"OwnedByTeam\": \"HR\",\n\"Type\":\"Work
-          Item\", \n\"Status\":\"New\"\n}"
+        simple: "{\n\"Title\": \"Test task\", \n\"Description\": \"Test task generated\
+          \ from scripts test playbook\", \n\"OwnedByTeam\": \"HR\",\n\"Type\":\"\
+          Work Item\", \n\"Status\":\"New\"\n}"
       type:
         simple: task
     separatecontext: false
@@ -224,6 +225,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "4"
@@ -262,6 +264,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "5"
@@ -453,6 +456,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -509,6 +513,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "12"
@@ -562,6 +567,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "2"
@@ -650,6 +656,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "18"
@@ -789,3 +796,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

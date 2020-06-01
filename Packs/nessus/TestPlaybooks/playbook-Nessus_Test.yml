@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -180,6 +181,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Nessus3
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -271,3 +273,5 @@ view: |-
     }
   }
 inputs: []
+fromversion: 4.1.0
+description: ''

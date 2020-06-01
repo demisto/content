@@ -1,4 +1,4 @@
-id: Google-Vault-Generic-Test
+id: Google Vault Generic Test
 version: -1
 name: Google Vault Generic Test
 description: This is a test for the Google Vault integration. It calls a variety of
@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -146,6 +147,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -186,6 +188,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -221,6 +224,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -255,6 +259,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -289,6 +294,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
@@ -382,6 +388,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -417,6 +424,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -439,16 +447,16 @@ tasks:
       id: 25eea044-0b8d-4043-8d38-52ff6635b5a2
       version: -1
       name: GeneratePassword
-      description: "This function generates a password and allows various parameters
-        to customize the properties of the password depending on the use case (e.g.
-        password complexity requirements).  The default behavior is to generate a
-        password of  *random length* including all four character classes (upper,
-        lower, digits, symbols) with at least five and at most ten characters per
-        class. \n\nThe min_* values all default to 0. This means that if the command
-        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
-        a password of length zero could be generated. It is therefore recommended
-        to always include a min_* parameter that matches. \n\nThe debug parameter
-        will print certain properties of the command into the WarRoom for easy diagnostics."
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five and at most ten characters per\
+        \ class. \n\nThe min_* values all default to 0. This means that if the command\
+        \ is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible\
+        \ that a password of length zero could be generated. It is therefore recommended\
+        \ to always include a min_* parameter that matches. \n\nThe debug parameter\
+        \ will print certain properties of the command into the WarRoom for easy diagnostics."
       scriptName: GeneratePassword
       type: regular
       iscommand: false
@@ -697,6 +705,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -725,6 +734,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       bucketName:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
@@ -755,6 +765,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       bucketName:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
@@ -785,6 +796,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       bucketName:
         simple: ${GoogleVault.Matter.Export.[0].BucketName}
@@ -1111,6 +1123,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
@@ -1150,6 +1163,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "4"
@@ -1183,6 +1197,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "4"
@@ -1219,6 +1234,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       holdID:
         simple: ${GoogleVault.Hold(val.name == 'Nightly Test Playbook email hold').ID}
@@ -1249,3 +1265,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

@@ -1,4 +1,4 @@
-id: search_endpoints_by_hash_-_tie_-_test
+id: Search Endpoints By Hash - TIE - Test
 version: -1
 name: Search Endpoints By Hash - TIE - Test
 description: A test playbook for Search Endpoints By Hash - TIE
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"

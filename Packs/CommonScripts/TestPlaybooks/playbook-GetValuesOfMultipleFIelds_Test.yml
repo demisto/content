@@ -238,6 +238,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       'yes':
       - '8'
@@ -321,3 +322,4 @@ inputs:
   required: false
   description: ''
 outputs: []
+description: ''

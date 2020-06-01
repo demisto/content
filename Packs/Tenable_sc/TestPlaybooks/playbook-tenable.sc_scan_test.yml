@@ -1,4 +1,4 @@
-id: tenable-sc-scan-test
+id: Test tenable scan
 version: -1
 name: Test tenable scan
 starttaskid: "0"
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -73,3 +74,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

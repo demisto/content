@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -36,7 +37,7 @@ tasks:
     task:
       id: 8ecfaffd-55cd-45e2-8667-f5cf68a029cf
       version: -1
-      name: Active Directory - Get User Manager Email
+      name: Active Directory - Get User Manager Details
       description: Takes an email address or a username of a user account in Active
         Directory, and returns the email address of his or her manager.
       playbookName: Active Directory - Get User Manager Details
@@ -76,6 +77,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "4"
@@ -116,6 +118,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -146,8 +149,8 @@ tasks:
     scriptarguments:
       message:
         simple: The manager was not found. Check the demisto.local Active Directory
-          instance. There should be a Remove Me user, and Donald Trump should
-          be his manager. Trump should also have a specific email address configured.
+          instance. There should be a Remove Me user, and Donald Trump should be his
+          manager. Trump should also have a specific email address configured.
     reputationcalc: 1
     separatecontext: false
     view: |-

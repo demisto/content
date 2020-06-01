@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -40,6 +41,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -278,6 +280,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -375,6 +378,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -403,3 +407,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''

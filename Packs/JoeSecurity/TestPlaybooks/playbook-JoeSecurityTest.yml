@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -38,6 +39,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -67,6 +69,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -92,6 +95,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Joe Security
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -125,6 +129,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Joe Security
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -158,6 +163,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Joe Security
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -186,6 +192,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Joe Security
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -214,6 +221,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       data:
         simple: qwerty
@@ -242,6 +250,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Joe Security
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -272,6 +281,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Joe Security
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -319,6 +329,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Joe Security
+      description: ''
     scriptarguments:
       type:
         simple: json
@@ -363,6 +374,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Joe Security
+      description: ''
     scriptarguments:
       type:
         simple: html
@@ -409,3 +421,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

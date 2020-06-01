@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -35,6 +36,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Remedy On-Demand
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -239,9 +241,10 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      expectedValue: "{\n\t\"Description\": \"new description\",\n\t\"ID\": \"${TicketID2}\",\n\t\"Impact\":
-        \"3-Moderate/Limited\",\n\t\"Source\": \"Web\",\n\t\"Status\": \"Cancelled\",\n\t\"Submitter\":
-        \"appadmin\",\n\t\"Type\": \"User Service Restoration\",\n\t\"Urgency\": \"4-Low\"\n}"
+      expectedValue: "{\n\t\"Description\": \"new description\",\n\t\"ID\": \"${TicketID2}\"\
+        ,\n\t\"Impact\": \"3-Moderate/Limited\",\n\t\"Source\": \"Web\",\n\t\"Status\"\
+        : \"Cancelled\",\n\t\"Submitter\": \"appadmin\",\n\t\"Type\": \"User Service\
+        \ Restoration\",\n\t\"Urgency\": \"4-Low\"\n}"
       fields: ID,Status,Description,Source,Impact,Urgency,Type,Submitter
       path: Ticket
     view: |-
@@ -394,3 +397,5 @@ view: |-
     }
   }
 inputs: []
+fromversion: 4.1.0
+description: ''

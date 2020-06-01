@@ -1,7 +1,8 @@
 id: Cortex Data Lake Test
 version: -1
 name: Cortex Data Lake Test
-description: The Palo Alto Networks Cortex Test playbook tests Cortex Data Lake main usecases
+description: The Palo Alto Networks Cortex Test playbook tests Cortex Data Lake main
+  usecases
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -436,3 +438,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

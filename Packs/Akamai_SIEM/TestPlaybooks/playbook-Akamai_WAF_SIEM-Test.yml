@@ -1,4 +1,4 @@
-id: Akamai_WAF_SIEM-Test
+id: Akamai-WAF-SIEM_Test
 version: -1
 contentitemfields:
   propagationLabels: []
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -153,3 +154,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

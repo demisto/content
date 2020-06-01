@@ -1,4 +1,4 @@
-id: AlphaSOC-Wisdom-Test
+id: AlphaSOC Wisdom Test
 version: -1
 name: AlphaSOC Wisdom Test
 starttaskid: "0"
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -165,3 +166,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

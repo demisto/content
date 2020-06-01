@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -187,3 +188,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+description: ''

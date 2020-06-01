@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -104,6 +105,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "5"
@@ -273,6 +275,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "8"
@@ -377,6 +380,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -405,6 +409,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "11"
@@ -509,6 +514,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -537,6 +543,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "14"
@@ -641,6 +648,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -671,6 +679,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "18"
@@ -774,6 +783,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -804,6 +814,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "21"
@@ -906,6 +917,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -929,6 +941,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -961,6 +974,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "25"
@@ -1089,6 +1103,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -1121,6 +1136,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "29"
@@ -1214,6 +1230,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "35"
@@ -1342,6 +1359,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1372,6 +1390,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "32"
@@ -1500,6 +1519,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -1531,6 +1551,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlashNext Phishing Incident Response
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -1561,6 +1582,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "37"
@@ -1707,3 +1729,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

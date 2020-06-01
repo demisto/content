@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -39,6 +40,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: true
     view: |-
       {
@@ -60,6 +62,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       Interval:
         simple: "1"
@@ -233,3 +236,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

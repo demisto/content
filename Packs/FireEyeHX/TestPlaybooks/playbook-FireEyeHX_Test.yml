@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -38,6 +39,7 @@ tasks:
       type: regular
       iscommand: true
       brand: FireEye HX
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -82,6 +84,7 @@ tasks:
       type: regular
       iscommand: true
       brand: FireEye HX
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -110,6 +113,7 @@ tasks:
       type: regular
       iscommand: true
       brand: FireEye HX
+      description: ''
     scriptarguments:
       agentId:
         simple: ${FireEyeHX.Alerts.agent._id}
@@ -136,6 +140,7 @@ tasks:
       type: regular
       iscommand: true
       brand: FireEye HX
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -173,6 +178,7 @@ tasks:
       type: regular
       iscommand: true
       brand: FireEye HX
+      description: ''
     scriptarguments:
       category:
         simple: ${FireEyeHX.Indicators.[0].category.name}
@@ -260,6 +266,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       #- "7"
@@ -295,6 +302,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "11"
@@ -334,6 +342,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -355,6 +364,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -380,6 +390,7 @@ tasks:
       type: regular
       iscommand: true
       brand: FireEye HX
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -411,28 +422,29 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "16"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  simple: FireEyeHX.Indicators.category.name
-                iscontext: true
-          - - operator: isExists
-              left:
-                value:
-                  simple: FireEyeHX.Indicators.name
-                iscontext: true
-          - - operator: isExists
-              left:
-                value:
-                  simple: FireEyeHX.Indicators._id
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Indicators.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Indicators._id
+            iscontext: true
     view: |-
       {
         "position": {
@@ -454,6 +466,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       category:
         simple: custom
@@ -482,6 +495,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -508,3 +522,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

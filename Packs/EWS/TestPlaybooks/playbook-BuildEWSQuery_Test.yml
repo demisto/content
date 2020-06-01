@@ -1,4 +1,4 @@
-id: buildewsquery_test
+id: BuildEWSQuery Test
 version: -1
 name: BuildEWSQuery Test
 starttaskid: "0"
@@ -130,3 +130,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

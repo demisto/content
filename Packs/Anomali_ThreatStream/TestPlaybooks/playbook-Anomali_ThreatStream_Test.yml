@@ -1,4 +1,4 @@
-id: Anomali_ThreatStream_Test
+id: Anomali ThreatStream Test
 version: -1
 fromversion: 3.5.0
 name: Anomali ThreatStream Test
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -249,6 +250,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "20"
@@ -286,6 +288,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "3"
@@ -338,6 +341,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "20"
@@ -415,6 +419,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "19"
@@ -526,6 +531,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "20"
@@ -623,3 +629,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''

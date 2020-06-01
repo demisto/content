@@ -1,4 +1,4 @@
-id: secureworks_test
+id: Secureworks test
 version: -1
 name: Secureworks test
 description: Secureworks test playbook
@@ -491,3 +491,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

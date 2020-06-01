@@ -110,6 +110,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     scriptarguments:
       scan_id:
         complex:
@@ -139,3 +140,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

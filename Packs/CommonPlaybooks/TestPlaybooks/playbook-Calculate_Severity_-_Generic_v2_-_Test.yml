@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -112,6 +113,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -143,6 +145,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Active Directory Query v2
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -181,6 +184,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Active Directory Query v2
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -213,6 +217,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -239,6 +244,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -265,6 +271,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -299,6 +306,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Palo Alto Minemeld
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -336,6 +344,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Palo Alto Minemeld
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -373,6 +382,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -538,6 +548,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -598,6 +609,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: true
     view: |-
       {
@@ -728,3 +740,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''

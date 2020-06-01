@@ -1,4 +1,4 @@
-id: get_original_email_-_gmail_-_test
+id: Get Original Email - Gmail - Test
 version: -1
 name: Get Original Email - Gmail - Test
 starttaskid: "0"
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -36,6 +37,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -52,11 +54,12 @@ tasks:
     task:
       id: 62a376b7-ff93-4fd6-8a04-c21d9379046d
       version: -1
-      name: Get Original Message - Gmail
+      name: Get Original Email - Gmail
       playbookName: Get Original Email - Gmail
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -92,6 +95,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -123,3 +127,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

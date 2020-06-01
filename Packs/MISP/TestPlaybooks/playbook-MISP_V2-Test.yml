@@ -2218,4 +2218,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: MISP V2 Test
+fromversion: 4.1.0

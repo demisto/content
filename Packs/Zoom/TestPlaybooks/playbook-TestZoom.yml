@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -37,6 +38,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -67,6 +69,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -91,6 +94,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Zoom
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -123,6 +127,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Zoom
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -150,6 +155,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "6"
@@ -210,6 +216,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -238,6 +245,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -262,6 +270,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Zoom
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -295,6 +304,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Zoom
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -323,6 +333,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "11"
@@ -383,6 +394,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -410,6 +422,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Zoom
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -437,6 +450,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "20"
@@ -472,6 +486,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Zoom
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -505,6 +520,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       expectedValue: {}
       fields:
@@ -532,6 +548,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       value:
         simple: Zoom test completed successfuly
@@ -556,6 +573,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Zoom
+      description: ''
     scriptarguments:
       meeting_id:
         simple: "120332943"
@@ -582,3 +600,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

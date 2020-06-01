@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -36,6 +37,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -61,6 +63,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -85,6 +88,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -140,6 +144,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       notes: ""
       reason: ""
@@ -161,6 +166,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     view: |-
       {
         "position": {
@@ -187,3 +193,4 @@ inputs:
 - key: DecodedURL
   value: http://click.email.runrocknroll.com/?qs=3399a02bcfe05857350e94d66fd69e46a560a106e06d86e4a3b4662dfee779a80faed86d6690e500dbecd1c29c095d37a9e3b86fd3b2d4fe
   description: ""
+fromversion: 4.1.0

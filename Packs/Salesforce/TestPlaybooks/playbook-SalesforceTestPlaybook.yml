@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -37,6 +38,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     scriptarguments:
       pattern:
         simple: asdf
@@ -61,6 +63,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     scriptarguments:
       query:
         simple: SELECT ID,Name FROM User WHERE Email LIKE '%@demisto%'
@@ -85,6 +88,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -120,6 +124,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     scriptarguments:
       path:
         simple: Case/${SalesForce.Case.ID}
@@ -144,6 +149,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -172,6 +178,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -206,6 +213,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "12"
@@ -245,6 +253,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -292,6 +301,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "12"
@@ -342,6 +352,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -372,6 +383,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -403,6 +415,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       path:
         simple: "21423"
@@ -429,6 +442,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -459,6 +473,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -487,6 +502,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Salesforce
+      description: ''
     scriptarguments:
       caseNumber:
         complex:
@@ -531,3 +547,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

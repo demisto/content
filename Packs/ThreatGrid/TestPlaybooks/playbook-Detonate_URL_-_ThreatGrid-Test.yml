@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -38,6 +39,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       FileName:
         simple: file-detonated-via-demisto
@@ -81,3 +83,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

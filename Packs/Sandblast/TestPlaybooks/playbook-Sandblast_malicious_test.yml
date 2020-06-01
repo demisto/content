@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -282,3 +283,5 @@ inputs:
   required: false
   description: ""
 outputs: []
+fromversion: 4.1.0
+description: ''

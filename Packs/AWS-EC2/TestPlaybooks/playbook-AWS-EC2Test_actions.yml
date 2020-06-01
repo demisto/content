@@ -1,4 +1,4 @@
-id: d66e5f86-e045-403f-819e-5058aa603c32
+id: AWS - EC2 Test Playbook actions
 version: -1
 name: AWS - EC2 Test Playbook actions
 starttaskid: "0"
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -2431,6 +2432,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -2572,3 +2574,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

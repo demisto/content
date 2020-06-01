@@ -41,6 +41,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -279,10 +280,10 @@ tasks:
       id: 280413a6-fb84-4400-8752-48bd03fc5b78
       version: -1
       name: commentsToContext
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -318,6 +319,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "8"
@@ -379,3 +381,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

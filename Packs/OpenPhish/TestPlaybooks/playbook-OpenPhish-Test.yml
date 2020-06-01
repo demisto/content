@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -37,6 +38,7 @@ tasks:
       type: regular
       iscommand: true
       brand: OpenPhish
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -61,6 +63,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "4"
@@ -87,6 +90,7 @@ tasks:
       type: regular
       iscommand: true
       brand: OpenPhish
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -111,6 +115,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       value: False Positive - found non-malicious URL as malicious
     view: |-
@@ -131,6 +136,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     view: |-
       {
         "position": {
@@ -150,6 +156,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "9"
@@ -176,6 +183,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       notes: ""
       reason: ""
@@ -198,6 +206,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       value: Did not find malicious URL
     view: |-
@@ -249,3 +258,4 @@ inputs:
 - key: Non malicious URL
   value: http://google.com
   description: ""
+fromversion: 4.1.0

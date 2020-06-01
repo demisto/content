@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -77,6 +78,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -110,6 +112,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SplunkPy
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -141,6 +144,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "7"
@@ -179,6 +183,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SplunkPy
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -250,6 +255,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -280,6 +286,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SplunkPy
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -316,6 +323,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "11"
@@ -351,6 +359,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       value:
         simple: Hurry!
@@ -379,6 +388,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -408,6 +418,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -436,6 +447,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SplunkPy
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -466,6 +478,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -499,6 +512,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -540,6 +554,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SplunkPy
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -572,6 +587,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "18"
@@ -610,6 +626,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -642,3 +659,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

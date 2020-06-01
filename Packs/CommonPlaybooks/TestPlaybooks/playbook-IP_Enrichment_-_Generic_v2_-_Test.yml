@@ -332,6 +332,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -376,3 +377,4 @@ inputs:
     IP addresses to hostnames using a DNS query. You can set this to either True or
     False.
 outputs: []
+description: ''

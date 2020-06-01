@@ -21,6 +21,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "86"
@@ -79,6 +80,7 @@ tasks:
       type: regular
       iscommand: true
       brand: VirusTotal
+      description: ''
     nexttasks:
       '#none#':
       - "84"
@@ -111,6 +113,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "1"
@@ -160,6 +163,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "83"
@@ -252,3 +256,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

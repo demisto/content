@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -37,6 +38,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -65,6 +67,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -100,11 +103,12 @@ tasks:
     task:
       id: 2c00b69d-0bb7-4d37-876d-5c654c740ab6
       version: -1
-      name: SNDBOX - Detonate File
+      name: Detonate File - SNDBOX
       playbookName: Detonate File - SNDBOX
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       File:
         complex:
@@ -140,3 +144,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

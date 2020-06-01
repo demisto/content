@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -40,6 +41,7 @@ tasks:
       type: regular
       iscommand: true
       brand: EWS Mail Sender
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -80,6 +82,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -122,6 +125,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -192,6 +196,7 @@ tasks:
       type: regular
       iscommand: true
       brand: EWS Mail Sender
+      description: ''
     scriptarguments:
       attachCIDs: {}
       attachIDs:
@@ -232,3 +237,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
+description: ''

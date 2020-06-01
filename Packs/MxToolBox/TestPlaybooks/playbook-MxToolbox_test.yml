@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -224,6 +225,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "no":
       - "12"
@@ -250,6 +252,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       columns: ""
       data: ${MXToolbox.Errors}
@@ -273,6 +276,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       notes: All good
       reason: Sababa
@@ -296,3 +300,5 @@ view: |-
     }
   }
 inputs: []
+fromversion: 4.1.0
+description: ''

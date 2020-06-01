@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -143,6 +144,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "3"
@@ -186,5 +188,5 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: AlienVaultReputationFeed_Test
 fromversion: 5.5.0
+description: ''
