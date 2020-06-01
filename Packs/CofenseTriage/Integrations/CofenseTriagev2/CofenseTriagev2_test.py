@@ -1,4 +1,6 @@
 from CofenseTriagev2.CofenseTriagev2 import TriageRequestFailedError
+from CofenseTriagev2.CofenseTriagev2 import TriageReport
+from CofenseTriagev2.CofenseTriagev2 import TriageReporter
 
 import pytest
 from freezegun import freeze_time
@@ -385,3 +387,154 @@ class TestCofenseTriage:
         demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
         assert len(demisto_results) == 1
         assert demisto_results[0]["HumanReadable"] == ("no results were found.")
+
+
+class TestTriageInstance:
+    def test_request(self, requests_mock, triage_instance, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports",
+            text=fixture_from_file("processed_reports.json"),
+        )
+
+        requests = triage_instance.request("processed_reports")
+
+        assert len(requests) == 2
+        assert requests[0]["report_subject"] == "suspicious subject"
+
+    def test_request_unsuccessful(self, mocker, requests_mock, triage_instance):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports",
+            status_code=403,
+            text="a bad error",
+        )
+
+        with pytest.raises(TriageRequestFailedError) as e:
+            triage_instance.request("processed_reports")
+
+            assert e.message == "Call to Cofense Triage failed (403): a bad error"
+
+    def test_request_raw(self, requests_mock, triage_instance, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports",
+            text=fixture_from_file("processed_reports.json"),
+        )
+
+        response = triage_instance.request("processed_reports", raw_response=True)
+
+        assert response.__class__.__name__ == "Response"
+
+    def test_request_empty(self, requests_mock, triage_instance):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports", text="[]"
+        )
+
+        assert triage_instance.request("processed_reports") == {}
+
+    def test_request_malformed_json(
+        self, mocker, requests_mock, triage_instance, fixture_from_file
+    ):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/processed_reports",
+            text=fixture_from_file("malformed_json.not_json"),
+        )
+
+        with pytest.raises(TriageRequestFailedError) as e:
+            triage_instance.request("processed_reports")
+
+            assert e.message == "Could not parse result from Cofense Triage (200)"
+
+    def test_api_url(self, triage_instance):
+        assert (
+            triage_instance.api_url("endpoint")
+            == "https://some-triage-host/api/public/v1/endpoint"
+        )
+        assert (
+            triage_instance.api_url("/endpoint")
+            == "https://some-triage-host/api/public/v1/endpoint"
+        )
+        assert (
+            triage_instance.api_url("///endpoint/edit?query_string&")
+            == "https://some-triage-host/api/public/v1/endpoint/edit?query_string&"
+        )
+
+
+class TestTriageReport:
+    def test_attrs(self, requests_mock, triage_instance, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report.json"),
+        )
+
+        report = TriageReport.fetch(triage_instance, "6")
+
+        assert len(report.attrs) == 25
+        assert report.id == 13363
+        assert report.date == "2020-03-19T16:43:09.715Z"
+
+    def test_reporter(self, mocker, requests_mock, triage_instance, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report.json"),
+        )
+        stubbed_triagereporter_init = mocker.patch(
+            "CofenseTriagev2.CofenseTriagev2.TriageReporter"
+        )
+
+        TriageReport.fetch(triage_instance, "6").reporter
+
+        stubbed_triagereporter_init.assert_called_once_with(triage_instance, 5331)
+
+    def test_attachment_none(self, requests_mock, triage_instance, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report.json"),
+        )
+
+        report = TriageReport.fetch(triage_instance, "6")
+
+        assert report.attachment is None
+
+    def test_attachment_present(
+        self, mocker, requests_mock, triage_instance, fixture_from_file
+    ):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reports/6",
+            text=fixture_from_file("single_report_with_attachment.json"),
+        )
+
+        mocker.patch(
+            "CofenseTriagev2.CofenseTriagev2.fileResult",
+            lambda **_kwargs: {
+                "FileID": "file_result_id",
+                "FileName": "file_result_name",
+            },
+        )
+
+        report = TriageReport.fetch(triage_instance, "6")
+        attachment = report.attachment
+
+        assert attachment == {"path": "file_result_id", "name": "file_result_name"}
+
+
+class TestTriageReporter:
+    def test_init(self, requests_mock, triage_instance, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reporters/5",
+            text=fixture_from_file("reporters.json"),
+        )
+
+        reporter = TriageReporter(triage_instance, 5)
+
+        assert reporter.attrs["email"] == "reporter1@example.com"
+
+    def test_exists(self, requests_mock, triage_instance, fixture_from_file):
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reporters/5",
+            text=fixture_from_file("reporters.json"),
+        )
+        requests_mock.get(
+            "https://some-triage-host/api/public/v1/reporters/6", text="[]"
+        )
+
+        assert TriageReporter(triage_instance, 5).exists() is True
+        assert TriageReporter(triage_instance, 6).exists() is False
