@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added private ranges.
 
 ## [20.5.2] - 2020-05-26
 -
