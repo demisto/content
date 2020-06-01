@@ -29,6 +29,7 @@ TERSE_FIELDS = [
 
 class TriageRequestFailedError(Exception):
     """Triage responded with something other than a normal 200 response"""
+
     def __init__(self, status_code, message):
         super().__init__(self, status_code, message)
         self.status_code = status_code
@@ -40,6 +41,7 @@ class TriageRequestFailedError(Exception):
 
 class TriageRequestEmptyResponse(Exception):
     """Triage responded without error, but the result set was unexpectedly empty"""
+
     def __init__(self, record_id, record_type):
         super().__init__(self, record_id, record_type)
         self.record_id = record_id
@@ -430,16 +432,12 @@ def get_attachment_command(triage_instance) -> None:
     res = triage_instance.request(f'attachment/{attachment_id}', raw_response=True)
 
     context_data = {'ID': attachment_id}
-    demisto.results(fileResult(file_name, res.content))
-    demisto.results(
-        {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': '',
-            'HumanReadable': '',
-            'EntryContext': {'Cofense.Attachment(val.ID == obj.ID)': context_data},
-        }
+
+    result = fileResult(file_name, res.content)
+    result.update(
+        {'EntryContext': {'Cofense.Attachment(val.ID == obj.ID)': context_data}}
     )
+    demisto.results(result)
 
 
 def get_report_by_id_command(triage_instance) -> None:
@@ -475,7 +473,7 @@ def get_report_by_id_command(triage_instance) -> None:
             [report_attrs]
         )
     }
-    return_outputs(readable_output=hr, outputs=ec)
+    return_outputs(readable_output=hr, outputs=ec, raw_response=report.to_json())
 
 
 def get_threat_indicators_command(triage_instance) -> None:
@@ -506,7 +504,7 @@ def get_threat_indicators_command(triage_instance) -> None:
                 removeNull=True,
             ),
             "EntryContext": {
-                "cofense.threatindicators(val.id && val.id == obj.id)": snake_to_camel_keys(
+                "Cofense.ThreatIndicators(val.ID && val.ID == obj.ID)": snake_to_camel_keys(
                     results
                 )
             },
@@ -567,7 +565,9 @@ def main():
         handle_proxy()
 
         demisto_params = {
-            "start_date": parse_date_range(demisto.getParam('date_range'))[0].isoformat(),
+            "start_date": parse_date_range(demisto.getParam('date_range'))[
+                0
+            ].isoformat(),
             "max_fetch": int(demisto.getParam('max_fetch')),
             "category_id": demisto.getParam("category_id"),
             "match_priority": demisto.getParam("match_priority"),

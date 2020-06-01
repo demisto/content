@@ -36,8 +36,9 @@ configuration:
     defaultvalue: 3 days
     type: 0
     required: false
-  - display: 'Category ID to fetch - corresponds to category IDs defined in Triage'
+  - display: Category ID to fetch
     name: category_id
+    additionalinfo: Corresponds to category IDs defined in Triage. Eg, "1".
     defaultvalue: ""
     type: 0
     required: false
@@ -257,16 +258,47 @@ script:
     - name: cofense-get-threat-indicators
       arguments:
         - name: type
-          description: indicator type (Domain, URL, MD5, SHA256, Subject, Sender)
+          auto: PREDEFINED
+          description: indicator type
+          predefined:
+            - Domain
+            - URL
+            - MD5
+            - SHA256
+            - Subject
+            - Sender
         - name: level
+          auto: PREDEFINED
           description: indicator severity
+          predefined:
+            - Malicious
+            - Suspicious
+            - Benign
         - name: start_date
-          description: "designated start date tagged by analyst (format example: YYYY-MM-DD+HH:MM:SS)"
+          description: "designated start date tagged by analyst (format example: YYYY-MM-DD+HH:MM:SS). Default: 6 days ago."
         - name: end_date
-          description: "designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS)"
+          description: "designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS). Default: current date."
       outputs:
         - contextPath: Cofense.ThreatIndicators
-          description: Threat Indicator Output
+          description: Threat indicator output
+        - contextPath: Cofense.ThreatIndicators.ID
+          description: Threat indicator ID in Cofense Triage.
+          type: number
+        - contextPath: Cofense.ThreatIndicators.OperatorId
+          description: Cofense Triage operator who designated the threat indicator.
+          type: number
+        - contextPath: Cofense.ThreatIndicators.ReportId
+          description: Associated Report in Cofense Triage.
+          type: number
+        - contextPath: Cofense.ThreatIndicators.ThreatKey
+          description: Threat indicator type.
+          type: string
+        - contextPath: Cofense.ThreatIndicators.ThreatLevel
+          description: Threat indicator level.
+          type: string
+        - contextPath: Cofense.ThreatIndicators.ThreatValue
+          description: Value of the threat indicator.
+          type: string
       description: Threat Indicators that are designated by analysts as malicious, suspicious
         or benign
   dockerimage: demisto/chromium:1.0.0.5952
