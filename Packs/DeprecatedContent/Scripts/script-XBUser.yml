@@ -41,6 +41,7 @@ tags:
 - exabeam
 comment: Retrieve user info from Exabeam
 system: true
+deprecated: true
 args:
 - name: username
   required: true

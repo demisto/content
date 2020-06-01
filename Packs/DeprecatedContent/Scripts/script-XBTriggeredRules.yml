@@ -23,6 +23,7 @@ tags:
 - exabeam
 comment: Retrieve the triggered rules for a session
 system: true
+deprecated: true
 args:
 - name: session
   required: true

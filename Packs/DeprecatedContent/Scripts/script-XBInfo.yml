@@ -31,6 +31,7 @@ tags:
 comment: Retrieve global Exabeam info about number of users, assets and events
 system: true
 scripttarget: 0
+deprecated: true
 dependson:
   must: []
   should:
