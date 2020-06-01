@@ -7,7 +7,7 @@ script: |
 
   root_logger = logging.getLogger()
 
-  logging.debug("logging: this is a test")
+  logging.debug("this is a logging test")
   demisto.results("done debug test. handlers: {}".format(root_logger.handlers))
 type: python
 tags: []

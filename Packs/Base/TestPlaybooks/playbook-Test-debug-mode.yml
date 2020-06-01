@@ -211,7 +211,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: logging
+              simple: this is a logging test
     view: |-
       {
         "position": {
