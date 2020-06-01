@@ -1115,7 +1115,7 @@ def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_se
         json.dump(envs_to_test, filter_envs_file)
 
 
-def create_test_file(is_nightly, skip_save=False):
+def create_test_file(is_nightly, skip_save=False, file_string=''):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     packs_to_install_string = ''
@@ -1125,7 +1125,9 @@ def create_test_file(is_nightly, skip_save=False):
         branch_name = branch_name_reg.group(1)
 
         print("Getting changed files from the branch: {0}".format(branch_name))
-        if branch_name != 'master':
+        if file_string:
+            files_string = file_string
+        elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
@@ -1176,10 +1178,11 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly or not')
     parser.add_argument('-s', '--skip-save', type=str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
+    parser.add_argument('-f', '--file-string', type=str, help='Is nightly or not')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save)
+    create_test_file(options.nightly, options.skip_save, options.file_string)
     if not _FAILED:
         print_color("Finished test configuration", LOG_COLORS.GREEN)
         sys.exit(0)
