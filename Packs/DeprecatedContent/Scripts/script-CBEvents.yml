@@ -59,6 +59,7 @@ args:
   default: true
   description: Query to match against events
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - cb-process
