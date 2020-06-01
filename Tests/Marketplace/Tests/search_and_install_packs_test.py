@@ -81,7 +81,7 @@ MOCK_PACKS_DEPENDENCIES_RESULT = """{
 }"""
 
 
-def mocked_generic_request_func(self, path, method, body, accept, request_timeout):
+def mocked_generic_request_func(self, path, method, body, accept, _request_timeout):
     if path == '/contentpacks/marketplace/search':
         return MOCK_PACKS_SEARCH_RESULTS, 200, None
     elif path == '/contentpacks/marketplace/install':
