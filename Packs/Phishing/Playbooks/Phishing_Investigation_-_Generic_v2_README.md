@@ -82,4 +82,4 @@ There are no outputs for this playbook.
 
 ## Playbook Visualization
 ---
-![Phishing_Investigation_Generic_v2](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/Phishing_Investigation_Generic_v2.png)
+![Phishing_Investigation_Generic_v2](https://github.com/demisto/content/raw/4000f5d617a0929a78095a6bb3aa90279b9ee527/Packs/Phishing/doc_files/Phishing_Investigation_Generic_v2.png)
