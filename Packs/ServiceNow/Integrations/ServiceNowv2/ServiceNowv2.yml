@@ -42,8 +42,8 @@ configuration:
   type: 0
 - defaultvalue: opened_at
   display: |-
-    Timestamp field to filter by (e.g., `opened_at`)
-    This is how the filter is applied to the query: “ORDERBYopened_at^opened_at>[Last Run]. To prevent duplicate incidents, this field is mandatory for fetching incidents.
+    Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at>[Last Run]".
+    To prevent duplicate incidents, this field is mandatory for fetching incidents.
   name: timestamp_field
   required: false
   type: 0
@@ -53,6 +53,7 @@ configuration:
   name: incident_name
   required: false
   type: 0
+  defaultvalue: number
 - display: Incident type
   name: incidentType
   required: false

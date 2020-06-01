@@ -1,9 +1,8 @@
 {
-    "defaultIncidentType": "Logz.io Alert",
-    "id": "Logz.io",
-    "type": "classification",
-    "name": "Logz.io Classifier",
-    "description": "Classifies Logz.io alerts.",
+    "brandName": "Logz.io",
+    "custom": true,
+    "defaultIncidentType": "",
+    "id": "b9b76667-9c4e-4d64-8af2-e532ec3a8c02",
     "keyTypeMap": {
         "Logz.Io": "Logz.io Alert"
     },
@@ -38,6 +37,7 @@
         "complex": null,
         "simple": "datasource"
     },
+    "unclassifiedCases": {},
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.0.0"
 }

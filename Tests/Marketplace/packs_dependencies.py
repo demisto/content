@@ -53,6 +53,7 @@ def main():
                 dependency_graph.remove_nodes_from(legacy_sub_tree)
                 dependency_graph.remove_nodes_from(list(nx.isolates(dependency_graph)))
 
+            # currently all level of dependencies is not in use
             first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(dependency_graph, pack.name)
 
         except Exception as e:
@@ -61,7 +62,7 @@ def main():
 
         pack_dependencies_result[pack.name] = {
             "dependencies": first_level_dependencies,
-            "displayedImages": all_level_dependencies,
+            "displayedImages": list(first_level_dependencies.keys()),
             "path": os.path.join(PACKS_FOLDER, pack.name),
             "fullPath": pack.path
         }

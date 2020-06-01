@@ -58,7 +58,7 @@
 </tr>
 <tr>
 <td style="width: 178px;">label_keys</td>
-<td style="width: 491px;">The label keys associated with this Project. Label keys must be between 1 and 63 characters long and conform to the following regular expression: <a href="https://github.com/demisto/etc/issues/%5B-a-z0-9%5D*%5Ba-z0-9%5D">a-z</a>?. You can associate a maximum of 256 labels with a given resource.</td>
+<td style="width: 491px;">The label keys associated with this Project. Label keys must be between 1 and 63 characters long and conform to the following regular expression: <code>[a-z]([-a-z0-9]*[a-z0-9])?</code>. You can associate a maximum of 256 labels with a given resource.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>

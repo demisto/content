@@ -682,7 +682,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: approved_white
+                  simple: approved_watchlist
           - - operator: isEqualString
               left:
                 value:
