@@ -28,7 +28,7 @@ tasks:
       }
     note: false
     evidencedata:
-      description:
+      description: {}
       occurred:
       tags:
       customfields: {}
@@ -60,7 +60,7 @@ tasks:
       }
     note: false
     evidencedata:
-      description:
+      description: {}
       occurred:
       tags:
       customfields: {}

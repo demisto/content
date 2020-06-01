@@ -10,6 +10,7 @@ tasks:
     taskid: 779793c2-558a-495f-87a5-fb527a7724e5
     type: start
     task:
+      brand: ''
       id: 779793c2-558a-495f-87a5-fb527a7724e5
       version: -1
       name: ""
@@ -38,6 +39,7 @@ tasks:
     taskid: 39dfd1b2-0375-43cc-8cbf-2b89faa7eeb0
     type: regular
     task:
+      brand: ''
       id: 39dfd1b2-0375-43cc-8cbf-2b89faa7eeb0
       version: -1
       name: send ip message
@@ -69,6 +71,7 @@ tasks:
     taskid: 8ba48f89-9d7f-4e04-85f2-fe060928b0f1
     type: title
     task:
+      brand: ''
       id: 8ba48f89-9d7f-4e04-85f2-fe060928b0f1
       version: -1
       name: done
@@ -91,6 +94,7 @@ tasks:
     taskid: 35d0683e-e6f8-450e-8d8a-1d3d5b073af0
     type: regular
     task:
+      brand: ''
       id: 35d0683e-e6f8-450e-8d8a-1d3d5b073af0
       version: -1
       name: send hash message
@@ -122,6 +126,7 @@ tasks:
     taskid: 2148da77-5c61-4b89-82f6-31a5fb463ad7
     type: regular
     task:
+      brand: ''
       id: 2148da77-5c61-4b89-82f6-31a5fb463ad7
       version: -1
       name: dxl-push-domain
@@ -153,6 +158,7 @@ tasks:
     taskid: 87026516-2a46-43ff-8ff5-7cd79dc04057
     type: regular
     task:
+      brand: ''
       id: 87026516-2a46-43ff-8ff5-7cd79dc04057
       version: -1
       name: dxl-push-url
@@ -184,6 +190,7 @@ tasks:
     taskid: 798e3bc9-e79b-492f-872c-9430be443e8e
     type: regular
     task:
+      brand: ''
       id: 798e3bc9-e79b-492f-872c-9430be443e8e
       version: -1
       name: dxl-send-event

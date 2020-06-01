@@ -172,6 +172,7 @@ tasks:
           left:
             value:
               simple: ${Redlock.Alert(val.ID === 'P-953').Status}
+            iscontext: true
           right:
             value:
               simple: open

@@ -32,6 +32,7 @@ tasks:
     taskid: 1318b929-317a-4aca-8826-817a73394ccb
     type: regular
     task:
+      brand: ''
       id: 1318b929-317a-4aca-8826-817a73394ccb
       version: -1
       name: smb-download
@@ -59,6 +60,7 @@ tasks:
     taskid: 9a4f14b7-5df9-460b-8268-d292925c51a9
     type: regular
     task:
+      brand: ''
       id: 9a4f14b7-5df9-460b-8268-d292925c51a9
       version: -1
       name: smb-upload
@@ -87,6 +89,7 @@ tasks:
     taskid: 5f522da4-b8a8-4a16-8658-7a28f214852b
     type: regular
     task:
+      brand: ''
       id: 5f522da4-b8a8-4a16-8658-7a28f214852b
       version: -1
       name: smb-upload
@@ -118,6 +121,7 @@ tasks:
     taskid: d86019cf-1da9-41ad-802f-c68016511089
     type: regular
     task:
+      brand: ''
       id: d86019cf-1da9-41ad-802f-c68016511089
       version: -1
       name: smb-download

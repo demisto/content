@@ -243,6 +243,7 @@ tasks:
           left:
             value:
               simple: 8lock.co
+            iscontext: true
           right:
             value:
               complex:
@@ -253,6 +254,7 @@ tasks:
           left:
             value:
               simple: 8lock.io
+            iscontext: true
           right:
             value:
               complex:

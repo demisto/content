@@ -348,7 +348,10 @@ inputs:
 outputs:
 - contextPath: AutoFocus.SessionsResults
   type: string
+  description: ''
 - contextPath: AutoFocus.SamplesResults
   type: string
+  description: ''
 - contextPath: AutoFocus.TopTagResults
   type: unknown
+  description: ''

@@ -139,6 +139,7 @@ tasks:
           left:
             value:
               simple: GoogleCloudTranslate.SupportedLanguages(val.language_code=="en")
+            iscontext: true
       - - operator: isExists
           left:
             value:

@@ -117,6 +117,7 @@ tasks:
           left:
             value:
               simple: test
+            iscontext: false
           right:
             value:
               simple: StringArray
@@ -193,6 +194,7 @@ tasks:
           left:
             value:
               simple: nop
+            iscontext: false
           right:
             value:
               simple: StringArray

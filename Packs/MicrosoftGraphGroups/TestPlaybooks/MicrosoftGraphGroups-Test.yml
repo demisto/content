@@ -7,7 +7,6 @@ tasks:
     id: "0"
     taskid: e05b1592-66dd-400f-89ab-f748adfdf873
     type: start
-    description: ""
     task:
       id: e05b1592-66dd-400f-89ab-f748adfdf873
       version: -1

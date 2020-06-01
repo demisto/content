@@ -2090,6 +2090,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "120"
@@ -2166,6 +2167,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "yes":
       - "74"
@@ -2240,6 +2242,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "116"

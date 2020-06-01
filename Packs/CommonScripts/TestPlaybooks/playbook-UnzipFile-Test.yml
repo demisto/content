@@ -35,6 +35,7 @@ tasks:
     taskid: 2ece6aff-a1c5-4e4a-860d-c942b3b6870f
     type: regular
     task:
+      brand: ""
       id: 2ece6aff-a1c5-4e4a-860d-c942b3b6870f
       version: -1
       name: download_file
@@ -77,6 +78,7 @@ tasks:
     taskid: b0569f3f-e68d-4427-8227-58cd8e24c38c
     type: title
     task:
+      brand: ""
       id: b0569f3f-e68d-4427-8227-58cd8e24c38c
       version: -1
       name: done
@@ -99,6 +101,7 @@ tasks:
     taskid: dad812ae-8465-43e4-821c-4b29f4529338
     type: condition
     task:
+      brand: ""
       id: dad812ae-8465-43e4-821c-4b29f4529338
       version: -1
       name: hash_compare
@@ -139,6 +142,7 @@ tasks:
     taskid: 5ebd0868-c6e3-4ac4-8a5d-cdf814f90d35
     type: regular
     task:
+      brand: ""
       id: 5ebd0868-c6e3-4ac4-8a5d-cdf814f90d35
       version: -1
       name: delete_context
@@ -172,6 +176,7 @@ tasks:
     taskid: 9b4cd1df-a9c5-4ac2-8262-5c2fb4bc344d
     type: regular
     task:
+      brand: ""
       id: 9b4cd1df-a9c5-4ac2-8262-5c2fb4bc344d
       version: -1
       name: unzip_file
@@ -207,6 +212,7 @@ tasks:
     taskid: 7526ad65-4065-44a6-8414-412564aca96a
     type: regular
     task:
+      brand: ""
       id: 7526ad65-4065-44a6-8414-412564aca96a
       version: -1
       name: print_error
