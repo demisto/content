@@ -1,4 +1,4 @@
-from CofenseTriagev2.CofenseTriage import TriageReport
+from CofenseTriagev2.CofenseTriagev2 import TriageReport
 
 
 class TestTriageReport:
