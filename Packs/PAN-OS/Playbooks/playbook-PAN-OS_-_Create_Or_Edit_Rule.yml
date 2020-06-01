@@ -536,3 +536,5 @@ inputs:
   description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure.
     Exists only in panorama!
 outputs: []
+tests:
+  - no test

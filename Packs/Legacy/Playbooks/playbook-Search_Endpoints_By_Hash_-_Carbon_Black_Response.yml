@@ -285,3 +285,5 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+tests:
+  - search_endpoints_by_hash_-_carbon_black_response_-_test

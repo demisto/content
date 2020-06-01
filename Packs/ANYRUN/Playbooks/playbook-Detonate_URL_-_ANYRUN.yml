@@ -486,3 +486,5 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
+tests:
+ -  Detonate URL - ANYRUN - Test
