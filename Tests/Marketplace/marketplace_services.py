@@ -53,8 +53,12 @@ class GCPConfig(object):
                        "CommonScripts",
                        "CommonPlaybooks",
                        "CommonTypes",
+                       "CommonDashboards",
+                       "CommonReports",
+                       "CommonWidgets",
                        "TIM_Processing",
-                       "TIM_SIEM"
+                       "TIM_SIEM",
+                       "HelloWorld"
                        ]  # cores packs list
 
 

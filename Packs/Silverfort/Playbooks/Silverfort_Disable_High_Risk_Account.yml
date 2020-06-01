@@ -1,7 +1,5 @@
 id: Silverfort Disable High Risk Account
 version: -1
-rolename:
-- Read-Only
 name: Silverfort Disable High Risk Account
 description: This playbook gets the user risk from Silverfort DB. If the risk is medium
   or higher, the user will be blocked & alert will be sent.
