@@ -2,8 +2,8 @@
     "defaultIncidentType": "Illusive Networks Incident",
     "id": "Illusive Networks-mapper",
     "name": "Illusive Networks - Incoming Mapper",
-	"type": "classification",
-	"description": "Maps incoming Illusive Networks incident fields.",
+    "type": "classification",
+    "description": "Maps incoming Illusive Networks incident fields.",
     "mapping": {
         "Illusive Networks Incident": {
             "dontMapEventToLabels": false,

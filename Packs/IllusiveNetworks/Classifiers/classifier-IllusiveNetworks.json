@@ -2,8 +2,8 @@
     "defaultIncidentType": "Illusive Networks Incident",
     "id": "Illusive Networks",
     "name": "Illusive Networks - Classifier",
-	"type": "classification",
-	"description": "Classifies Illusive Networks incidents.",
+    "type": "classification",
+    "description": "Classifies Illusive Networks incidents.",
     "keyTypeMap": {
         "DECEPTION": "Illusive Networks Incident",
         "DECOY_SUSPICIOUS_ACTIVITY": "Illusive Networks Incident",

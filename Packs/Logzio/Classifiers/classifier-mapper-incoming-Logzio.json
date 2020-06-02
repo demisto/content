@@ -2,8 +2,8 @@
     "defaultIncidentType": "Logz.io Alert",
     "id": "Logz.io-mapper",
     "name": "Logz.io - Incoming Mapper",
-	"type": "mapping-incoming",
-	"description": "Maps incoming Logz.io alerts fields.",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Logz.io alerts fields.",
     "mapping": {
         "Logz.io Alert": {
             "dontMapEventToLabels": false,

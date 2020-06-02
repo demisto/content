@@ -2,8 +2,8 @@
     "defaultIncidentType": "Logz.io Alert",
     "id": "Logz.io",
     "name": "Logz.io - Classifier",
-	"type": "classification",
-	"description": "Classifies Logz.io alerts.",
+    "type": "classification",
+    "description": "Classifies Logz.io alerts.",
     "keyTypeMap": {
         "Logz.Io": "Logz.io Alert"
     },
