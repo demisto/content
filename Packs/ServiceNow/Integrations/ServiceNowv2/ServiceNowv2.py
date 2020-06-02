@@ -1827,7 +1827,7 @@ def main():
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
     ticket_type = params.get('ticket_type', 'incident')
-    incident_name = params.get('incident_name', 'number')
+    incident_name = params.get('incident_name', 'number') or 'number'
     get_attachments = params.get('get_attachments', False)
 
     raise_exception = False

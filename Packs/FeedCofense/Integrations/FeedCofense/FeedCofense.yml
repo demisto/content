@@ -72,7 +72,6 @@ configuration:
   options:
   - all
   - malware
-  - phish
   required: false
   type: 15
 - additionalinfo: This value also will be used as an expiration time - all indicators
