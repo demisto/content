@@ -38,7 +38,6 @@ args:
 - name: verbose
   description: Show more detailed output
 scripttarget: 0
-deprecated: true
 dependson:
   must:
   - cb-list-sessions
