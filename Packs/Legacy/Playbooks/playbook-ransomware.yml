@@ -1100,3 +1100,5 @@ view: |-
       }
     }
   }
+tests:
+  - No tests
