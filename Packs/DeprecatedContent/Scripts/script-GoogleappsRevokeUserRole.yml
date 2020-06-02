@@ -27,6 +27,7 @@ tags:
 - google apps
 comment: Deletes a role assignment.
 system: true
+deprecated: true
 args:
 - name: roleAssignmentId
   required: true
