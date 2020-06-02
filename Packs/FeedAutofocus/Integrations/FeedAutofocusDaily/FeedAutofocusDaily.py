@@ -296,28 +296,15 @@ class Client(BaseClient):
 
     def build_iterator(self, limit=None, offset=None):
         """Builds a list of indicators.
-
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
         """
-        parsed_indicators = []  # type:List
-
-        for service in ["Daily Threat Feed", "Custom Feed"]:
-            if service in self.indicator_feeds:
-                response = self.daily_custom_http_request(feed_type=service)
-                parsed_indicators.extend(self.create_indicators_from_response(service, response))
+        response = self.daily_http_request()
+        parsed_indicators = self.create_indicators_from_response('Daily Threat Feed', response)
 
         # for get_indicator_command only
         if limit:
             parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
-
-        if "Samples Feed" in self.indicator_feeds:
-            parsed_indicators.extend(self.sample_http_request())
-
-        # for get_indicator_command only
-        if limit:
-            parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
-
         return parsed_indicators
 
 
@@ -332,18 +319,11 @@ def module_test_command(client: Client, args: dict):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    indicator_feeds = client.indicator_feeds
-    exception_list = []  # type:List
-    if 'Daily Threat Feed' in indicator_feeds:
-        client.indicator_feeds = ['Daily Threat Feed']
-        try:
-            client.build_iterator(1, 0)
-        except Exception:
-            exception_list.append("Could not fetch Daily Threat Feed\n"
-                                  "\nCheck your API key and your connection to AutoFocus.")
-    if len(exception_list) > 0:
-        raise Exception("\n".join(exception_list))
-
+    try:
+        client.build_iterator(1, 0)
+    except Exception:
+        raise Exception("Could not fetch Daily Threat Feed\n"
+                        "\nCheck your API key and your connection to AutoFocus.")
     return 'ok', {}, {}
 
 
