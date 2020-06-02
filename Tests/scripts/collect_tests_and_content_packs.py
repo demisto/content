@@ -548,7 +548,7 @@ def get_api_module_integrations(changed_api_modules, integration_set):
     integration_to_version = {}
     integration_ids_to_test = set([])
     for integration in integration_set:
-        integration_data = integration.values()[0]
+        integration_data = list(integration.values())[0]
         if integration_data.get('api_modules', '') in changed_api_modules:
             file_path = integration_data.get('file_path')
             integration_id = get_script_or_integration_id(file_path)
