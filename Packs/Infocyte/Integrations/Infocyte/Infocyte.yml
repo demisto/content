@@ -1,0 +1,254 @@
+commonfields:
+  id: Infocyte
+  version: -1
+name: Infocyte
+display: Infocyte
+category: Endpoint
+description: Infocyte can pivot off alerts and automate triage, validating events
+  with forensic data and enabling dynamic response actions against any or all host.
+configuration:
+- display: Instance Name
+  name: InstanceName
+  defaultvalue: testPANXSOAR
+  type: 0
+  required: true
+  additionalinfo: 'Your Infocyte Instance name is the cname of the URL: https://<cname>.infocyte.com'
+- display: API Key
+  name: APIKey
+  defaultvalue: gQ3YyPqjLWPBa9ubPiKFLqabF0YoxrMt4iXGWZfabdrTB3XnBLw3uc7CHXCYZHOV
+  type: 4
+  required: true
+  additionalinfo: https://yourinstance.infocyte.com/profile/access-tokens
+script:
+  script: ''
+  type: powershell
+  commands:
+  - name: infocyte-scan-host
+    arguments:
+    - name: Target
+      required: true
+      description: Hostname or IPAddress of target endpoint
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      description: ""
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE)
+      type: string
+    - contextPath: Infocyte.Task.target
+      description: hostname or ip of target provided
+      type: string
+    description: Kicks off a Scan (forensic collection) against an endpoint
+  - name: infocyte-isolate-host
+    arguments:
+    - name: Target
+      required: true
+      description: Hostname or IPAddress of target endpoint
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      type: string
+    - contextPath: Infocyte.Task.type
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      description: Name of extension ran
+      type: string
+    - contextPath: Infocyte.Task.target
+      description: hostname or ip of target provided
+      type: string
+    description: Isolates a host to only communicate to Infocyte and other security
+      tools
+    execution: true
+  - name: infocyte-restore-host
+    arguments:
+    - name: Target
+      required: true
+      description: Hostname or IPAddress of target endpoint
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      type: string
+    - contextPath: Infocyte.Task.type
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      type: string
+    - contextPath: Infocyte.Task.target
+      type: string
+    description: Restore an isolated host
+  - name: infocyte-collect-evidence
+    arguments:
+    - name: Target
+      required: true
+      description: Hostname or IPAddress of target endpoint
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      type: string
+    - contextPath: Infocyte.Task.type
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      type: string
+    - contextPath: Infocyte.Task.target
+      type: string
+    description: Collects Forensic Evidence to S3 bucket (Dat files, eventlogs, etc.)
+  - name: infocyte-kill-process
+    arguments:
+    - name: Target
+      required: true
+      description: '    description: Recovers a file on an endpoint to your defined
+        recovery point (S3, ftp, share)'
+    - name: processName
+    - name: SHA1
+      description: SHA1 of process image to search for and kill
+    - name: processId
+    - name: processPath
+    description: Kills a process and associated persistence mechanisms
+    execution: true
+  - name: infocyte-recover-file
+    arguments:
+    - name: Target
+      required: true
+      description: Hostname or IPAddress of target endpoint
+    - name: Paths
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      type: string
+    - contextPath: Infocyte.Task.type
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      type: string
+    - contextPath: Infocyte.Task.target
+      type: string
+    description: Recovers a file on an endpoint to your defined recovery point (S3,
+      ftp, share)
+  - name: infocyte-responseextension
+    arguments:
+    - name: Target
+      required: true
+      description: Hostname or IPAddress of target endpoint
+    - name: ExtensionName
+      required: true
+      description: Name of extension loaded in Infocyte to run on target host
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      type: string
+    - contextPath: Infocyte.Task.type
+      type: string
+    - contextPath: Infocyte.Task.extensionName
+      type: string
+    - contextPath: Infocyte.Task.target
+      type: string
+    description: Runs the named Infocyte extension on target host
+  - name: infocyte-get-taskstatus
+    arguments:
+    - name: userTaskId
+      required: true
+    outputs:
+    - contextPath: Infocyte.Task.userTaskId
+      type: string
+    - contextPath: Infocyte.Task.scanId
+      type: string
+    - contextPath: Infocyte.Task.type
+      description: Task type (SCAN or RESPONSE)
+      type: string
+    - contextPath: Infocyte.Task.progress
+      description: Percent completion
+      type: number
+    - contextPath: Infocyte.Task.message
+      type: string
+    - contextPath: Infocyte.Task.status
+      type: string
+    - contextPath: Infocyte.Task.timeElapsed
+      description: Seconds since task created
+      type: number
+  - name: infocyte-get-scanresult
+    arguments:
+    - name: scanId
+      required: true
+    outputs:
+    - contextPath: Infocyte.Scan.scanId
+      type: string
+    - contextPath: Infocyte.Scan.hostId
+      type: string
+    - contextPath: Infocyte.Scan.os
+      type: string
+    - contextPath: Infocyte.Scan.success
+      type: boolean
+    - contextPath: Infocyte.Scan.compromised
+      type: boolean
+    - contextPath: Infocyte.Scan.completedOn
+      type: date
+    - contextPath: Infocyte.Scan.compromisedObjects
+      description: Bad files, artifacts, and events found
+      type: number
+    - contextPath: Infocyte.Scan.hostname
+      type: string
+    - contextPath: Infocyte.Scan.ip
+      type: string
+    - contextPath: Infocyte.Scan.objectCount
+      description: Total files, artifacts, and events collected
+      type: number
+  - name: infocyte-get-hostscanresult
+    arguments:
+    - name: scanId
+      required: true
+    - name: Target
+    outputs:
+    - contextPath: Infocyte.Scan.scanId
+      type: string
+    - contextPath: Infocyte.Scan.hostId
+      type: string
+    - contextPath: Infocyte.Scan.os
+      type: string
+    - contextPath: Infocyte.Scan.success
+      type: boolean
+    - contextPath: Infocyte.Scan.compromised
+      type: boolean
+    - contextPath: Infocyte.Scan.completedOn
+      type: date
+    - contextPath: Infocyte.Scan.compromisedObjects
+      description: Bad files, artifacts, and events found
+      type: number
+    - contextPath: Infocyte.Scan.hostname
+      type: string
+    - contextPath: Infocyte.Scan.ip
+      type: string
+    - contextPath: Infocyte.Scan.objectCount
+      description: '    description: Recovers a file on an endpoint to your defined
+        recovery point (S3, ftp, share)'
+      type: number
+  - name: infocyte-get-responseresult
+    arguments:
+    - name: scanId
+      required: true
+    - name: target
+      description: Hostname or IP Address of target
+    outputs:
+    - contextPath: Infocyte.Response.scanId
+      type: string
+    - contextPath: Infocyte.Response.hostId
+      type: string
+    - contextPath: Infocyte.Response.os
+      type: string
+    - contextPath: Infocyte.Response.success
+      type: boolean
+    - contextPath: Infocyte.Response.compromised
+      type: boolean
+    - contextPath: Infocyte.Response.completedOn
+      type: date
+    - contextPath: Infocyte.Response.messages
+      description: ""
+      type: string
+    - contextPath: Infocyte.Response.hostname
+      type: string
+    - contextPath: Infocyte.Response.ip
+      type: string
+    - contextPath: Infocyte.Response.extensionId
+      type: string
+    - contextPath: Infocyte.Response.extensionName
+      type: string
+    description: Retrieve results for a scan against a host
+  dockerimage: demisto/pwsh-infocyte:1.0.3.8726
+  runonce: false
+fromversion: 5.5.0
+tests:
+- No tests
