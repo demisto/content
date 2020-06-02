@@ -57,7 +57,8 @@ class GCPConfig(object):
                        "CommonReports",
                        "CommonWidgets",
                        "TIM_Processing",
-                       "TIM_SIEM"
+                       "TIM_SIEM",
+                       "HelloWorld"
                        ]  # cores packs list
 
 
