@@ -1,6 +1,6 @@
 commonfields:
   id: ExchangeDeleteMail
-  version: 1
+  version: -1
 name: ExchangeDeleteMail
 script: |-
   //+ exchange/search.ps1

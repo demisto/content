@@ -1,6 +1,6 @@
 commonfields:
   id: ExchangeSearchMailbox
-  version: 1
+  version: -1
 name: ExchangeSearchMailbox
 script: |-
   //+ exchange/search.ps1
