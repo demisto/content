@@ -3249,7 +3249,7 @@ class DebugLogger(object):
         """
         msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None, os.environ)
         if hasattr(demisto, 'params'):
-            msg = msg + "\nParams: {}.".format(demisto.params())
+            msg += "\nParams: {}.".format(demisto.params())
         self.int_logger.write(msg)
 
 
