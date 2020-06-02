@@ -1306,4 +1306,4 @@ def test_integration_health(mocker):
 
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == expected_results
+    assert results[0]['HumanReadable'] == expected_results
