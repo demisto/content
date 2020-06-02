@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
     if not params.get('auto_detect_type'):
