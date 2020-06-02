@@ -657,3 +657,5 @@ outputs:
 - contextPath: VMRay.ThreatIndicator.Operation
   description: Operation the indicators caused.
 fromversion: 4.0.0
+tests:
+  - no test

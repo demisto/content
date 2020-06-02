@@ -1,21 +1,22 @@
-id: Detonate URL - ANYRUN
+id: Detonate File - ANYRUN
 version: -1
-name: Detonate URL - ANYRUN
+name: Detonate File - ANYRUN
 description: |-
-  Detonates one or more URLs using the ANYRUN sandbox integration.
-  Returns relevant reports to the War Room and url reputations to the context data.
+  Detonates one or more files using the ANYRUN sandbox integration.
+  Returns relevant reports to the War Room and file reputations to the context data.
+  All file types are supported.
 fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 23448fd0-ac86-4add-8c75-4ba42a46b482
+    taskid: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
     type: start
     task:
-      id: 23448fd0-ac86-4add-8c75-4ba42a46b482
+      id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
       version: -1
       name: ""
-      description: Start
+      description: Detonates a file using ANYRUN
       iscommand: false
       brand: ""
     nexttasks:
@@ -34,12 +35,12 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 5ad7ba28-f794-4483-8aa9-82af5bdc0fbb
+    taskid: 5ad0fc44-886e-47e0-8d7d-ff6edae126dd
     type: regular
     task:
-      id: 5ad7ba28-f794-4483-8aa9-82af5bdc0fbb
+      id: 5ad0fc44-886e-47e0-8d7d-ff6edae126dd
       version: -1
-      name: ANYRUN Submit URL for Analysis
+      name: ANYRUN Submit File for Analysis
       description: Submit a file or url for analysis.
       script: ANYRUN|||anyrun-run-analysis
       type: regular
@@ -52,13 +53,12 @@ tasks:
       env_bitness: {}
       env_type: {}
       env_version: {}
-      file: {}
-      obj_type:
-        simple: url
-      obj_url:
+      file:
         complex:
-          root: inputs.URL
-          accessor: Data
+          root: inputs.File
+          accessor: EntryID
+      obj_type: {}
+      obj_url: {}
       opt_kernel_heavyevasion: {}
       opt_network_connect: {}
       opt_privacy_type: {}
@@ -75,10 +75,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 8c93dd33-bf2d-4d0a-8e21-e8c14d3ef936
+    taskid: 0f91df59-058c-43e3-8338-4f6220de8cec
     type: playbook
     task:
-      id: 8c93dd33-bf2d-4d0a-8e21-e8c14d3ef936
+      id: 0f91df59-058c-43e3-8338-4f6220de8cec
       version: -1
       name: GenericPolling
       description: |-
@@ -130,13 +130,13 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 14e8fb5f-ed61-4ceb-83b5-4f76be05996e
+    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
     type: title
     task:
-      id: 14e8fb5f-ed61-4ceb-83b5-4f76be05996e
+      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
       version: -1
       name: Done
-      description: Done
+      description: Detonates a file using ANYRUN
       type: title
       iscommand: false
       brand: ""
@@ -153,13 +153,13 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 0be14bfe-7eaa-497e-8bae-22d012fb21fd
+    taskid: ae212064-acba-4bbf-8356-36fa72a109aa
     type: condition
     task:
-      id: 0be14bfe-7eaa-497e-8bae-22d012fb21fd
+      id: ae212064-acba-4bbf-8356-36fa72a109aa
       version: -1
-      name: Is there a URL to detonate?
-      description: Look for URLs to detonate
+      name: Is there a File to detonate?
+      description: Look for files to detonate
       type: condition
       iscommand: false
       brand: ""
@@ -176,7 +176,8 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.URL
+                root: inputs.File
+                accessor: EntryID
             iscontext: true
     view: |-
       {
@@ -190,12 +191,12 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 687ef7d7-ea6f-4289-8595-9d493fd94454
+    taskid: 93ed41bd-5396-498b-88e6-6576a6497e5e
     type: condition
     task:
-      id: 687ef7d7-ea6f-4289-8595-9d493fd94454
+      id: 93ed41bd-5396-498b-88e6-6576a6497e5e
       version: -1
-      name: Is ANYRUN sandbox enabled?
+      name: Is ANY.RUN sandbox enabled?
       description: Check if integration instance is enabled
       type: condition
       iscommand: false
@@ -245,10 +246,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: d69a873b-1f51-4ef9-8a5a-a7efece28f03
+    taskid: bf26e230-eb55-4b32-8031-5da5dd851921
     type: regular
     task:
-      id: d69a873b-1f51-4ef9-8a5a-a7efece28f03
+      id: bf26e230-eb55-4b32-8031-5da5dd851921
       version: -1
       name: ANYRUN Get Report
       description: Get the report for a task created for a submitted file or url.
@@ -288,12 +289,12 @@ view: |-
     }
   }
 inputs:
-- key: URL
+- key: File
   value:
     complex:
-      root: URL
+      root: File
   required: false
-  description: URL to detonate.
+  description: File object of the file to detonate. The File is taken from the context.
 - key: Interval
   value:
     simple: "1"
@@ -420,6 +421,18 @@ outputs:
 - contextPath: ANYRUN.Task.MIME
   description: The MIME of the file submitted for analysis.
   type: String
+- contextPath: ANYRUN.Task.MD5
+  description: The MD5 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SHA1
+  description: The SHA1 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SHA256
+  description: The SHA256 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SSDeep
+  description: SSDeep hash of the file submitted for analysis.
+  type: String
 - contextPath: ANYRUN.Task.Verdict
   description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
   type: String
@@ -474,15 +487,32 @@ outputs:
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score.
   type: String
-- contextPath: URL.Data
-  description: URL data.
+- contextPath: File.Extension
+  description: Extension of the file submitted for analysis.
   type: String
-- contextPath: URL.Malicious.Vendor
-  description: For malicious URLs, the vendor that made the decision.
+- contextPath: File.Name
+  description: The name of the file submitted for analysis.
   type: String
-- contextPath: URL.Malicious.Description
-  description: For malicious URLs, the reason that the vendor made the decision.
+- contextPath: File.MD5
+  description: MD5 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SHA1
+  description: SHA1 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SHA256
+  description: SHA256 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SSDeep
+  description: SSDeep hash of the file submitted for analysis.
+  type: String
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: String
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason that the vendor made the decision.
   type: String
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
+tests:
+  - Detonate File From URL - ANYRUN - Test

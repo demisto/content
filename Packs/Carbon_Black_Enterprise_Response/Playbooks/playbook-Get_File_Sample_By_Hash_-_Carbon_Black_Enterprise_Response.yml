@@ -187,3 +187,5 @@ outputs:
 - contextPath: File
   description: File Sample
   type: unknown
+tests:
+  - no test

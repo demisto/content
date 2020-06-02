@@ -1,22 +1,22 @@
-id: Detonate File - ANYRUN
+id: Detonate File From URL - ANYRUN
 version: -1
-name: Detonate File - ANYRUN
+name: Detonate File From URL - ANYRUN
 description: |-
-  Detonates one or more files using the ANYRUN sandbox integration.
+  Detonates one or more remote files using the ANYRUN sandbox integration.
   Returns relevant reports to the War Room and file reputations to the context data.
-  All file types are supported.
+  This type of analysis works only for direct download links.
 fromversion: 4.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+    taskid: b04c121d-294e-4dd0-8148-d9fe0f44be04
     type: start
     task:
-      id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+      id: b04c121d-294e-4dd0-8148-d9fe0f44be04
       version: -1
       name: ""
-      description: Detonates a file using ANYRUN
+      description: Start
       iscommand: false
       brand: ""
     nexttasks:
@@ -26,7 +26,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 50
         }
       }
@@ -35,12 +35,12 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 5ad0fc44-886e-47e0-8d7d-ff6edae126dd
+    taskid: 1abf1e54-1633-41fb-80b5-00a994d7c4b5
     type: regular
     task:
-      id: 5ad0fc44-886e-47e0-8d7d-ff6edae126dd
+      id: 1abf1e54-1633-41fb-80b5-00a994d7c4b5
       version: -1
-      name: ANYRUN Submit File for Analysis
+      name: ANYRUN Submit File from URL for Analysis
       description: Submit a file or url for analysis.
       script: ANYRUN|||anyrun-run-analysis
       type: regular
@@ -53,12 +53,13 @@ tasks:
       env_bitness: {}
       env_type: {}
       env_version: {}
-      file:
+      file: {}
+      obj_type:
+        simple: download
+      obj_url:
         complex:
-          root: inputs.File
-          accessor: EntryID
-      obj_type: {}
-      obj_url: {}
+          root: inputs.URL
+          accessor: Data
       opt_kernel_heavyevasion: {}
       opt_network_connect: {}
       opt_privacy_type: {}
@@ -66,7 +67,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 545
         }
       }
@@ -75,10 +76,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0f91df59-058c-43e3-8338-4f6220de8cec
+    taskid: faf98979-d9b0-4fcd-86e5-0004f3b98603
     type: playbook
     task:
-      id: 0f91df59-058c-43e3-8338-4f6220de8cec
+      id: faf98979-d9b0-4fcd-86e5-0004f3b98603
       version: -1
       name: GenericPolling
       description: |-
@@ -95,7 +96,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "3"
     scriptarguments:
       Ids:
         complex:
@@ -112,7 +113,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: ANYRUN.Task(val.Status !== 'done').ID
+        simple: ANYRUN.Task(val.Status != 'done').ID
     separatecontext: true
     loop:
       iscommand: false
@@ -121,135 +122,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
-    type: title
-    task:
-      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
-      version: -1
-      name: Done
-      description: Detonates a file using ANYRUN
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: ae212064-acba-4bbf-8356-36fa72a109aa
-    type: condition
-    task:
-      id: ae212064-acba-4bbf-8356-36fa72a109aa
-      version: -1
-      name: Is there a File to detonate?
-      description: Look for files to detonate
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.File
-                accessor: EntryID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 93ed41bd-5396-498b-88e6-6576a6497e5e
-    type: condition
-    task:
-      id: 93ed41bd-5396-498b-88e6-6576a6497e5e
-      version: -1
-      name: Is ANY.RUN sandbox enabled?
-      description: Check if integration instance is enabled
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ANYRUN
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: bf26e230-eb55-4b32-8031-5da5dd851921
+  "3":
+    id: "3"
+    taskid: 371e111a-9263-4708-86ae-961495255ff9
     type: regular
     task:
-      id: bf26e230-eb55-4b32-8031-5da5dd851921
+      id: 371e111a-9263-4708-86ae-961495255ff9
       version: -1
       name: ANYRUN Get Report
       description: Get the report for a task created for a submitted file or url.
@@ -269,8 +154,122 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
+    type: title
+    task:
+      id: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: a1d00028-5388-4ea3-8877-cb5b7fb2a5d0
+    type: condition
+    task:
+      id: a1d00028-5388-4ea3-8877-cb5b7fb2a5d0
+      version: -1
+      name: Is there a download URL to detonate?
+      description: Look for file URLs to detonate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 57c1be55-35b0-4527-83e8-66cc23fc33c9
+    type: condition
+    task:
+      id: 57c1be55-35b0-4527-83e8-66cc23fc33c9
+      version: -1
+      name: Is ANYRUN sandbox enabled?
+      description: Check if integration instance is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ANYRUN
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
         }
       }
     note: false
@@ -289,12 +288,12 @@ view: |-
     }
   }
 inputs:
-- key: File
+- key: URL
   value:
     complex:
-      root: File
+      root: URL
   required: false
-  description: File object of the file to detonate. The File is taken from the context.
+  description: URL of the web file to detonate.
 - key: Interval
   value:
     simple: "1"
@@ -514,3 +513,5 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
+tests:
+  - Detonate File From URL - ANYRUN - Test

@@ -564,3 +564,5 @@ outputs:
 - contextPath: Panorama.Monitor.Message
   description: Message  of the log query.
   type: string
+tests:
+  - Panorama Query Logs - Test
