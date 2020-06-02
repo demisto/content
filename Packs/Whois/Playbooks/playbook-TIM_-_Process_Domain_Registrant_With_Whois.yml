@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 416a64c6-a933-4459-8880-67c8237586dd
+    taskid: 56443fa8-222d-4859-8feb-fd9e7b202053
     type: start
     task:
-      id: 416a64c6-a933-4459-8880-67c8237586dd
+      id: 56443fa8-222d-4859-8feb-fd9e7b202053
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 3fa9b3ef-4fa9-439d-8f50-409a63bd3abc
+    taskid: 8f996d46-fb1d-4680-88cd-a3d222d5a167
     type: condition
     task:
-      id: 3fa9b3ef-4fa9-439d-8f50-409a63bd3abc
+      id: 8f996d46-fb1d-4680-88cd-a3d222d5a167
       version: -1
       name: Are there query results?
       type: condition
@@ -74,10 +74,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ca3a145e-45a6-46a8-851a-425fe0ae1104
+    taskid: 9ac9f838-21c1-4381-8745-6ebcab8da602
     type: title
     task:
-      id: ca3a145e-45a6-46a8-851a-425fe0ae1104
+      id: 9ac9f838-21c1-4381-8745-6ebcab8da602
       version: -1
       name: Done
       type: title
@@ -99,10 +99,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 409e4d28-2e62-4095-8687-29e3c1cc5d24
+    taskid: 44b28e9c-3040-4919-8edf-98c2861fabbc
     type: regular
     task:
-      id: 409e4d28-2e62-4095-8687-29e3c1cc5d24
+      id: 44b28e9c-3040-4919-8edf-98c2861fabbc
       version: -1
       name: FilterByList
       description: Checks whether the specified item is in a list. The default list
@@ -141,16 +141,16 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: ea9db6a0-cbe0-432b-86c0-2189f44e9dfb
+    taskid: 50b702d1-0484-4baa-87e7-ce371bc4b0b8
     type: condition
     task:
-      id: ea9db6a0-cbe0-432b-86c0-2189f44e9dfb
+      id: 50b702d1-0484-4baa-87e7-ce371bc4b0b8
       version: -1
       name: Is there an approved registrants list?
       type: condition
       iscommand: false
       brand: ""
-
+      description: ''
     nexttasks:
       '#default#':
       - "21"
@@ -180,12 +180,12 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e547deec-31ab-4aac-866a-3b6ffe9e3906
+    taskid: 051e749a-0df6-4aed-8aa1-bbaad5b3f6a5
     type: regular
     task:
-      id: e547deec-31ab-4aac-866a-3b6ffe9e3906
+      id: 051e749a-0df6-4aed-8aa1-bbaad5b3f6a5
       version: -1
-      name: Set non tested domains
+      name: Set domains that couldnt be processed
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -198,7 +198,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: NotTestedDomains
+        simple: DomainsNotProcessed
       stringify: {}
       value:
         complex:
@@ -221,10 +221,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 5e36ad8a-1271-4fbf-8124-0663b0cd4660
+    taskid: 2a35a5b3-1824-4906-8666-be31cf6651b1
     type: condition
     task:
-      id: 5e36ad8a-1271-4fbf-8124-0663b0cd4660
+      id: 2a35a5b3-1824-4906-8666-be31cf6651b1
       version: -1
       name: Are there domains without Whois query results?
       type: condition
@@ -262,13 +262,13 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: f5ecad72-7e2a-4619-882b-efe72d7f2f22
+    taskid: fd92dde4-0bda-406e-8402-2307582a68c6
     type: regular
     task:
-      id: f5ecad72-7e2a-4619-882b-efe72d7f2f22
+      id: fd92dde4-0bda-406e-8402-2307582a68c6
       version: -1
       name: Tag domain with no Whois resolution
-      description: Tag indicator with the no Whois resolution tag.
+      description: Tag indicator with the no_whois_result tag.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -298,10 +298,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 39fe185c-642b-4444-88de-3ed07a4806e5
+    taskid: d619742c-2c27-4a60-8156-e877eba9030d
     type: regular
     task:
-      id: 39fe185c-642b-4444-88de-3ed07a4806e5
+      id: d619742c-2c27-4a60-8156-e877eba9030d
       version: -1
       name: Set domains by approved registrants
       description: Domains whose registrant appears in the list defined in inputs.ApprovedregistrantsListName
@@ -350,10 +350,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: ac8f990e-836a-4215-85a0-0e721776151b
+    taskid: f7130c8f-83a1-4b6d-89ec-8d6018251e31
     type: regular
     task:
-      id: ac8f990e-836a-4215-85a0-0e721776151b
+      id: f7130c8f-83a1-4b6d-89ec-8d6018251e31
       version: -1
       name: Set domains by non approved registrants
       description: Checks if the specified value exists in context. If the value exists,
@@ -402,10 +402,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: cb1a7ce3-0c22-4b75-8529-453ed37b85a6
+    taskid: bc5363dd-1f51-4e66-89d2-12a52b46dec3
     type: title
     task:
-      id: cb1a7ce3-0c22-4b75-8529-453ed37b85a6
+      id: bc5363dd-1f51-4e66-89d2-12a52b46dec3
       version: -1
       name: No registrant list provided
       type: title
@@ -430,10 +430,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 8287a40c-3f55-4706-8e92-007fae6f7d80
+    taskid: c17301fa-f768-4889-8bc1-2ab05c94b019
     type: title
     task:
-      id: 8287a40c-3f55-4706-8e92-007fae6f7d80
+      id: c17301fa-f768-4889-8bc1-2ab05c94b019
       version: -1
       name: Domain not found by Whois
       type: title
@@ -458,10 +458,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: c4b4d2db-75c1-4f03-8906-95733f76919b
+    taskid: 87cf4728-0a47-4ca4-854e-b5da694d87fe
     type: title
     task:
-      id: c4b4d2db-75c1-4f03-8906-95733f76919b
+      id: 87cf4728-0a47-4ca4-854e-b5da694d87fe
       version: -1
       name: Domain registrant in approved list
       type: title
@@ -486,10 +486,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 6e9eac1d-9674-4cf0-8bfd-b5ecc13d79b3
+    taskid: a8d7d880-46c3-4b04-8ca9-0394a42f1c88
     type: title
     task:
-      id: 6e9eac1d-9674-4cf0-8bfd-b5ecc13d79b3
+      id: a8d7d880-46c3-4b04-8ca9-0394a42f1c88
       version: -1
       name: Domain registrant not in approved list
       type: title
@@ -514,10 +514,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: ced367cb-b7ab-4018-86fb-16c5c73c0136
+    taskid: 55884370-bce5-43b9-8daa-ce8e94c99240
     type: regular
     task:
-      id: ced367cb-b7ab-4018-86fb-16c5c73c0136
+      id: 55884370-bce5-43b9-8daa-ce8e94c99240
       version: -1
       name: Set Results
       description: Sets a value into the context with the given context key
@@ -551,10 +551,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 2388288d-3f2a-46e6-8f26-189e66ac3fe8
+    taskid: 66b81388-3784-4887-85e2-d4ac600e80f1
     type: regular
     task:
-      id: 2388288d-3f2a-46e6-8f26-189e66ac3fe8
+      id: 66b81388-3784-4887-85e2-d4ac600e80f1
       version: -1
       name: Tag as approved registrant
       description: tags the indicatorwith the approved_registrant tag.
@@ -587,10 +587,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 1b1f490a-f599-448b-82d2-aec2b435d99f
+    taskid: f1b25a8e-a6ae-41ab-8f3d-30689c64b0a8
     type: regular
     task:
-      id: 1b1f490a-f599-448b-82d2-aec2b435d99f
+      id: f1b25a8e-a6ae-41ab-8f3d-30689c64b0a8
       version: -1
       name: Set domains without Whois results
       description: Sets a value into the context with the given context key
@@ -674,7 +674,7 @@ inputs:
   description: The Cortex XSOAR list name that contains the approved registrars.  A
     registrant is the company or entity  that owns the domain.
   playbookInputQuery: null
-- key: registrantListDelimiter
+- key: RegistrantListDelimiter
   value: {}
   required: false
   description: |-
@@ -688,18 +688,18 @@ inputs:
   description: This input receives the Whois results from the parent playbook.
   playbookInputQuery: null
 outputs:
-- contextPath: NonApprovedDomains
-  description: Domains for which the registrant isn't approved.
+- contextPath: RegistrantDomainNotInList
+  description: Domains for which the registrant wasn't in the list.
   type: string
-- contextPath: ApprovedRegistrantDomains
-  description: Domains for which the registrant is approved.
+- contextPath: RegistrantDomainInList
+  description: Domains for which the registrant was in the list.
   type: string
-- contextPath: NonApprovedRegistrantDomains
+- contextPath: DomainsNotResolvedByWhois
   description: Domains which Whois wasn't able to resolve.
   type: string
-- contextPath: NotTestedDomains
+- contextPath: DomainsNotProcessed
   description: In case no registrant list was provided all domains will be outputted
-    here.
+    to this context path.
   type: string
 quiet: true
 tests:
