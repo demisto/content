@@ -1,9 +1,7 @@
-Cloud threat defense
-This integration was integrated and tested with version xx of RedLock
-## Configure RedLock on Cortex XSOAR
+## Configure Prisma Cloud (RedLock) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RedLock.
+2. Search for Prisma Cloud (RedLock).
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -412,8 +410,9 @@ Get remediation details for a given alert
 
 #### Human Readable Output
 
->### remediationCLIoutput
->|ID|Remediation|
->|---|---|
->| P-214016 | CLI: aws --region us-west-2 ec2 revoke-security-group-ingress --group-id sg-98234234 --ip-permissions '[{"IpProtocol": "tcp", "IpRanges":[{"CidrIp": "0.0.0.0/0"}]}]' ; aws --region us-west-2 ec2 authorize-security-group-ingress --group-id sg-92834324234h --ip-permissions '[{"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22, "IpRanges":[{"CidrIp": "10.0.0.0/8", "Description": "Enforced by Redlock Remediation"}]}]'<br/>Description: "This CLI command requires 'ec2:RevokeSecurityGroupIngress' permission. Successful execution will update the security group to revoke the ingress rule records open to internet either on IPv4 or on IPv6 protocol."} To resolve the alert from Prisma Cloud's console, add the permission. |
+>### Remediation Details
+>|ID|RemediationCLI|RemediationDescription|
+>|---|---|---|
+>| P-211648 | gcloud compute networks subnets update default --project=project1-111111 --region europe-north2 --enable-flow-logs | This CLI command requires 'compute.securityAdmin' permission. Successful execution will enables GCP VPC Flow logs for subnets to capture information about the IP traffic going to and from network interfaces in VPC Subnets. To resolve the alert from Prisma Cloud's console, add the permission. |
+
 

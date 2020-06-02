@@ -374,6 +374,8 @@ def get_remediation_details():
     if not alert_ids:
         return_error('You must specify the alert-id to retrieve with CLI remediation')
 
+    md_data = []
+    context = []
     response = req('POST', 'alert/remediation', payload, None)
 
     if response:
@@ -385,17 +387,22 @@ def get_remediation_details():
                     'Description': response['cliDescription']
                 }
             }
-            context = {
-                'Redlock.Alert(val.ID == obj.ID)': details
+            human_readable_details = {
+                'ID': details['ID'],
+                'RemediationCLI': details['Remediation']['CLI'],
+                'RemediationDescription': details['Remediation']['Description']
             }
-            MD = tableToMarkdown("remediationCLIoutput", details)
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': response,
-                'EntryContext': context,
-                'HumanReadable': MD
-            })
+            context.append(details)
+            md_data.append(human_readable_details)
+
+        MD = tableToMarkdown("Remediation Details", md_data)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response,
+            'EntryContext': {'Redlock.Alert(val.ID == obj.ID)': context},
+            'HumanReadable': MD
+        })
     else:
         demisto.results('No Remediation Details Found')
 
