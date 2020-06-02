@@ -23,7 +23,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### redlock-search-alerts
 ***
-Search alerts on the RedLock platform
+Search alerts on the Prisma Cloud (RedLock) platform
 
 
 #### Base Command
