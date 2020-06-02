@@ -1,11 +1,11 @@
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT = {
     'csfalconx.resource(val.id === obj.id)':
         [{'id': 'id',
-         'state': 'created',
-         'created_timestamp': '2020-05-12T15:34:11Z',
-         'environment_id': 160,
-         'sha256': 'sha256'
-         }]
+          'state': 'created',
+          'created_timestamp': '2020-05-12T15:34:11Z',
+          'environment_id': 160,
+          'sha256': 'sha256'
+          }]
 }
 
 SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT = {

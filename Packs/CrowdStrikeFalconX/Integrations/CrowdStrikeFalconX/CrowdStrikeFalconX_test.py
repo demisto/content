@@ -1,6 +1,6 @@
-from CrowdStrikeFalconX import Client, test_module,\
-    upload_file_command, send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
-    get_full_report_command, get_report_summary_command, get_analysis_status_command, download_ioc_command, \
+from CrowdStrikeFalconX import Client,\
+    send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
+    get_full_report_command, get_report_summary_command, get_analysis_status_command,\
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command
 from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT,\
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT,\
@@ -31,7 +31,6 @@ SEND_URL_TO_SANDBOX_ANALYSIS_ARGS = {
     "action_script": "",
     "command_line": "",
     "document_password": "",
-    "enable_tor": "",
     "submit_name": "",
     "system_date": "",
     "system_time": ""
@@ -50,27 +49,32 @@ GET_ANALYSIS_STATUS_ARGS = {
 }
 
 FIND_SANDBOX_REPORTS_ARGS = {
-        "offset": "",
-        "limit": "",
-        "sort": "",
-        "filter": "",
+    "offset": "",
+    "limit": "",
+    "sort": "",
+    "filter": "",
 }
 
 FIND_SUBMISSION_ID_ARGS = {
-        "offset": "",
-        "limit": "",
-        "sort": "",
-        "filter": "",
+    "offset": "",
+    "limit": "",
+    "sort": "",
+    "filter": "",
 }
 
-@pytest.mark.parametrize('command, args, http_response, context', [
-    (send_uploaded_file_to_sandbox_analysis_command, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT),
-    (send_url_to_sandbox_analysis_command, SEND_URL_TO_SANDBOX_ANALYSIS_ARGS, SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT),
+
+@pytest.mark.parametrize('command, args, http_response, context',[
+    (send_uploaded_file_to_sandbox_analysis_command, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS,
+     SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT),
+    (send_url_to_sandbox_analysis_command, SEND_URL_TO_SANDBOX_ANALYSIS_ARGS,
+     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT),
     (get_full_report_command, GET_FULL_REPORT_ARGS, GET_FULL_REPORT_HTTP_RESPONSE, GET_FULL_REPORT_CONTEXT),
     (get_report_summary_command, GET_REPORT_SUMMARY_ARGS, GET_REPORT_SUMMARY_HTTP_RESPONSE, GET_REPORT_SUMMARY_CONTEXT),
-    (get_analysis_status_command, GET_ANALYSIS_STATUS_ARGS, GET_ANALYSIS_STATUS_HTTP_RESPONSE, GET_ANALYSIS_STATUS_CONTEXT),
+    (get_analysis_status_command, GET_ANALYSIS_STATUS_ARGS, GET_ANALYSIS_STATUS_HTTP_RESPONSE,
+     GET_ANALYSIS_STATUS_CONTEXT),
     (check_quota_status_command, {}, CHECK_QUOTA_STATUS_HTTP_RESPONSE, CHECK_QUOTA_STATUS_CONTEXT),
-    (find_sandbox_reports_command, FIND_SANDBOX_REPORTS_ARGS, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_CONTEXT),
+    (find_sandbox_reports_command, FIND_SANDBOX_REPORTS_ARGS, FIND_SANDBOX_REPORTS_HTTP_RESPONSE,
+     FIND_SANDBOX_REPORTS_CONTEXT),
     (find_submission_id_command, FIND_SUBMISSION_ID_ARGS, FIND_SUBMISSION_ID_HTTP_RESPONSE, FIND_SUBMISSION_ID_CONTEXT),
 ])
 def test_cs_falconx_commands(command, args, http_response, context, mocker):
@@ -86,8 +90,8 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
     - validate the expected_result and the created context
     """
     mocker.patch.object(Client, '_generate_token')
-    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False
-                    , proxy=False)
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
 

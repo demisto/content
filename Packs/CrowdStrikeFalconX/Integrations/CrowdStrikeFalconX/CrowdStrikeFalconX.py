@@ -1,17 +1,16 @@
 from typing import Dict, Callable, Tuple, Any, Union, List
 
-from requests import Response
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import requests
+import urllib3
+from requests import Response
 import traceback
 import shutil
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 def convert_environment_id_string_to_int(environment_id: str) -> int:
@@ -20,16 +19,19 @@ def convert_environment_id_string_to_int(environment_id: str) -> int:
     :param environment_id: one of the environment_id options
     :return: environment_id represented by an int
     """
-    environment_id_options = {
-        "300: Linux Ubuntu 16.04": 300,
-        "200: Android (static analysis)": 200,
-        "160: Windows 10": 160,
-        "110: Windows 7": 110,
-        "100: Windows 7": 100,
-        "64-bit": 64,
-        "32-bit": 32,
-    }
-    return environment_id_options.get(environment_id)
+    try:
+        environment_id_options = {
+            "300: Linux Ubuntu 16.04": 300,
+            "200: Android (static analysis)": 200,
+            "160: Windows 10": 160,
+            "110: Windows 7": 110,
+            "100: Windows 7": 100,
+            "64-bit": 64,
+            "32-bit": 32,
+        }
+        return environment_id_options[environment_id]
+    except Exception:
+        raise Exception('Invalid environment id option')
 
 
 class Client(BaseClient):
@@ -41,8 +43,8 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=use_ssl, proxy=proxy)
         self._username = username
         self._password = password
-        self.token = self._generate_token()
-        self._headers = {'Authorization': 'bearer ' + self.token}
+        self._token = self._generate_token()
+        self._headers = {'Authorization': 'bearer ' + self._token}
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
@@ -75,17 +77,21 @@ class Client(BaseClient):
         :param comment: a descriptive comment to identify the file for other users
         :return: http response
         """
-        shutil.copy(demisto.getFilePath(file)['path'],
-                    demisto.getFilePath(file)['name'])
-        f = open(demisto.getFilePath(file)['name'], 'rb')
-        url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
-        self._headers['Content-Type'] = 'application/octet-stream'
-        return self._http_request("POST", url_suffix, files={'file': f})
+        name = demisto.getFilePath(file)['name']
+        try:
+            shutil.copy(demisto.getFilePath(file)['path'], name)
+        except Exception:
+            raise Exception('Failed to prepare file for upload.')
+        with open(name, 'rb') as f:
+            url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
+            self._headers['Content-Type'] = 'application/octet-stream'
+            shutil.rmtree(file_name, ignore_errors=True)
+            return self._http_request("POST", url_suffix, files={'file': f})
 
     def send_uploaded_file_to_sandbox_analysis(
             self,
             sha256: str,
-            environment_id: int,
+            environment_id: str,
             action_script: str,
             command_line: str,
             document_password: str,
@@ -128,7 +134,7 @@ class Client(BaseClient):
     def send_url_to_sandbox_analysis(
             self,
             url: str,
-            environment_id: int,
+            environment_id: str,
             action_script: str,
             command_line: str,
             document_password: str,
@@ -330,7 +336,7 @@ def parse_outputs(
     """
     if api_res.get("errors"):
         # if there is an error in the api result, return only the error
-        return api_res.get("errors")
+        return {"errors": api_res.get("errors")[0]}
 
     api_res_meta, api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}, {}
     resources_group_outputs, sandbox_group_outputs = {}, {}
@@ -361,7 +367,9 @@ def parse_outputs(
     return merged_dicts
 
 
-def test_module(client):
+def test_module(
+        client: Client,
+) -> Tuple[str, dict, list]:
     """
     If a client was made then an accesses token was successfully reached,
     therefor the username and password are valid and a connection was made
@@ -373,7 +381,7 @@ def test_module(client):
     total = output.get("meta").get("quota").get("total")
     used = output.get("meta").get("quota").get("used")
     if total <= used:
-        return_error(f"Quota limitation has been reached: {used}")
+        raise Exception(f"Quota limitation has been reached: {used}")
     return 'ok', {}, []
 
 
@@ -404,7 +412,7 @@ def upload_file_command(
 def send_uploaded_file_to_sandbox_analysis_command(
         client: Client,
         sha256: str,
-        environment_id: int,
+        environment_id: str,
         action_script: str = "",
         command_line: str = "",
         document_password: str = "",
@@ -441,7 +449,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
 def send_url_to_sandbox_analysis_command(
         client: Client,
         url: str,
-        environment_id: int,
+        environment_id: str,
         action_script: str = "",
         command_line: str = "",
         document_password: str = "",
