@@ -384,7 +384,7 @@ jobs:
             fi
             python3 ./Tests/scripts/wait_until_server_ready.py
       - run:
-          name: Run Tests - Latest GA
+          name: Run Tests - Server 5.0
           shell: /bin/bash
           when: always
           command: |
@@ -412,7 +412,7 @@ jobs:
                 ./Tests/scripts/run_tests.sh "master"
             fi
       - run:
-          name: Run Tests - One Before GA
+          name: Run Tests - Server 4.5
           shell: /bin/bash
           when: always
           command: |
@@ -440,7 +440,7 @@ jobs:
                 echo "Not AMI run, can't run on this version"
             fi
       - run:
-          name: Run Tests - Two Before GA
+          name: Run Tests - Server 4.1
           shell: /bin/bash
           when: always
           command: |
@@ -496,7 +496,7 @@ jobs:
                 echo "Not AMI run, can't run on this version"
             fi
       - run:
-          name: Run Tests - Demisto PreGA
+          name: Run Tests - Server 5.5
           shell: /bin/bash
           when: always
           command: |
