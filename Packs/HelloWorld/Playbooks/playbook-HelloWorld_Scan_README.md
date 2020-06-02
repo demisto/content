@@ -47,4 +47,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | InfoFile.Size | The size of the report file. | unknown |
 | InfoFile.Type | The type of the report file. | unknown |
 
-<!-- Playbook PNG image comes here -->
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/6bbd43a604ed992299a9db196509006da8414cf3/Packs/HelloWorld/doc_files/HelloWorld_Scan.png)
