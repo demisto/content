@@ -1,7 +1,7 @@
-id: TIM - Process Domain registrant With Whois
+id: TIM - Process Domain Registrant With Whois
 version: -1
 fromversion: 5.5.0
-name: TIM - Process Domain registrant With Whois
+name: TIM - Process Domain Registrant With Whois
 description: This playbook compares the domain registrant against the Cortex XSOAR
   list provided in the inputs. A registrant is the company or entity that owns the
   domain.
