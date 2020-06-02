@@ -3204,6 +3204,8 @@ class DebugLogger(object):
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         self.int_logger = IntegrationLogger()
         self.int_logger.set_buffering(False)
+        self.http_client_print = None
+        self.http_client = None
         if IS_PY3:
             # pylint: disable=import-error
             import http.client as http_client
@@ -3212,8 +3214,6 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
-        else:
-            self.http_client = None
         self.handler = DemistoHandler()
         demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
