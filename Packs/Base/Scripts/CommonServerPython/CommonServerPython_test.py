@@ -679,9 +679,11 @@ def test_debug_logger_replace_strs(mocker):
     debug_logger = DebugLogger()
     debug_logger.int_logger.set_buffering(True)
     debug_logger.log_start_debug()
-    assert 'debug-mode started' in debug_logger.int_logger.messages[0]
+    msg = debug_logger.int_logger.messages[0]
+    assert 'debug-mode started' in msg
+    assert 'Params:' in msg
     for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
-        assert s not in debug_logger.int_logger.messages[0]
+        assert s not in msg
 
 
 def test_is_mac_address():
