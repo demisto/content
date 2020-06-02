@@ -61,12 +61,6 @@ configuration:
   required: false
   type: 8
   defaultvalue: ""
-- additionalinfo: If selected, the indicator type will be auto detected for each indicator.
-  defaultvalue: 'true'
-  display: Auto detect indicator type
-  name: auto_detect_type
-  required: false
-  type: 8
 - additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
   name: indicator_type

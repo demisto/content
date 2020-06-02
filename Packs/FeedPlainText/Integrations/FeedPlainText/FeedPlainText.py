@@ -3,10 +3,13 @@ from CommonServerPython import *
 
 
 def main():
-    params = {k: v for k, v in demisto.params().items() if v is not None}
-    if not params.get('auto_detect_type'):
-        if not params.get('indicator_type'):
-            return_error('Indicator Type cannot be empty when Auto Detect Indicator Type is unchecked')
+    params = demisto.params()
+    # when auto_detect is not selected
+    if params.get('auto_detect_type') is False and not params.get('indicator_type'):
+        return_error('Indicator Type cannot be empty when Auto Detect Indicator Type is unchecked')
+    # when auto_detect does not exist - for previous integration instances
+    if params.get('auto_detect_type') is None and not params.get('indicator_type'):
+        return_error('Indicator Type cannot be empty')
     feed_main('PlainText', prefix='plaintext')
 
 
