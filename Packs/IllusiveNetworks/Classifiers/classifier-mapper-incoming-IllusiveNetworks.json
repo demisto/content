@@ -2,7 +2,7 @@
     "defaultIncidentType": "Illusive Networks Incident",
     "id": "Illusive Networks-mapper",
     "name": "Illusive Networks - Incoming Mapper",
-    "type": "classification",
+    "type": "mapping-incoming",
     "description": "Maps incoming Illusive Networks incident fields.",
     "mapping": {
         "Illusive Networks Incident": {
