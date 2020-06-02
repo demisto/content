@@ -12,7 +12,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: Time format of the times you entered, by default we are on automatic parsing - this should be used for cases like DD/MM/YYYY
+  description: Time format of the times you entered, by default we are on automatic parsing - this should be used for cases like DD/MM/YYYY. Automatic parsing will detect fromats like: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z
   isArray: false
   name: time_format
   required: false
