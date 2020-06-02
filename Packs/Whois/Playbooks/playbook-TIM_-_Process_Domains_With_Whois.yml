@@ -198,7 +198,7 @@ tasks:
     task:
       id: 779e3bdd-a5aa-4ab0-82ff-830364a0fee8
       version: -1
-      name: TIM - Process Domain registrant With Whois
+      name: TIM - Process Domain Registrant With Whois
       description: This playbook compares the domain registrant against the Cortex
         XSOAR list provided in the inputs. A registrant is the company or entity that
         owns the domain.
