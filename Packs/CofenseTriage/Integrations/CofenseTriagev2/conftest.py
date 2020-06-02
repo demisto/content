@@ -9,7 +9,6 @@ demisto_params = {
     "user": "user",
 }
 with patch("demistomock.params", lambda: demisto_params):
-    from CofenseTriagev2 import CofenseTriagev2  # noqa: 401 - this is used in other test files
     from CofenseTriagev2.CofenseTriagev2 import TriageInstance  # noqa: 401 - this is used in other test files
 
 
