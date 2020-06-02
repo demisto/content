@@ -1,4 +1,4 @@
-The Ransomware Exposure Playbook quickly reveals an organization’s exposure to the specific vulnerabilities that are being exploited to launch ransomware attacks.
+The Ransomware Exposure Playbook quickly reveals an organization's exposure to the specific vulnerabilities that are being exploited to launch ransomware attacks.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
