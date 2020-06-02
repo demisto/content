@@ -185,7 +185,7 @@ tasks:
     task:
       id: e547deec-31ab-4aac-866a-3b6ffe9e3906
       version: -1
-      name: Set not-approved domains
+      name: Set non tested domains
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
