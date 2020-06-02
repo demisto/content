@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,6 +24,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 5582a4f7-c435-4ab3-8543-a8def2c9d13b
@@ -40,9 +46,12 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      additionalParams: ""
-      command: a
-      data: example.com
+      additionalParams: {}
+      command:
+        simple: a
+      data:
+        simple: example.com
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -50,6 +59,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: bef3476d-5e36-4a43-8314-173c6d248da1
@@ -67,9 +81,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      additionalParams: ""
-      command: dns
-      data: example.com
+      additionalParams: {}
+      command:
+        simple: dns
+      data:
+        simple: example.com
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -77,6 +94,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: ab67ffc2-667b-4be6-8d60-373407b192cf
@@ -94,9 +116,12 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      additionalParams: ""
-      command: mx
-      data: example.com
+      additionalParams: {}
+      command:
+        simple: mx
+      data:
+        simple: example.com
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -104,6 +129,11 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: ccf16577-ac2a-449c-8e76-96ba1e8dcef0
@@ -121,9 +151,12 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      additionalParams: ""
-      command: spf
-      data: example.com
+      additionalParams: {}
+      command:
+        simple: spf
+      data:
+        simple: example.com
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -131,6 +164,11 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 490fc374-756e-443b-8fb3-74293b8d1a80
@@ -148,9 +186,12 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      additionalParams: ""
-      command: txt
-      data: example.com
+      additionalParams: {}
+      command:
+        simple: txt
+      data:
+        simple: example.com
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -158,6 +199,11 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: b1d8ca06-a2dc-4c7a-82f9-44c24f0d96dd
@@ -175,9 +221,12 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      additionalParams: ""
-      command: soa
-      data: example.com
+      additionalParams: {}
+      command:
+        simple: soa
+      data:
+        simple: example.com
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -185,6 +234,11 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: 7d23483f-ff42-467e-8fe5-8bbc7d867845
@@ -202,9 +256,12 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      additionalParams: ""
-      command: ptr
-      data: 93.184.216.34
+      additionalParams: {}
+      command:
+        simple: ptr
+      data:
+        simple: 93.184.216.34
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -212,6 +269,11 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: 70e517c3-74ac-4fbd-892a-9944ec5115cb
@@ -220,7 +282,7 @@ tasks:
       id: 70e517c3-74ac-4fbd-892a-9944ec5115cb
       version: -1
       name: Exists errors?
-      scriptName: Exists
+      script: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -230,7 +292,9 @@ tasks:
       "yes":
       - "11"
     scriptarguments:
-      value: ${MXToolbox.Errors}
+      value:
+        simple: ${MXToolbox.Errors}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -238,6 +302,11 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: 14b04ad2-9d29-4a4e-8937-8aeb9d6d7893
@@ -246,14 +315,16 @@ tasks:
       id: 14b04ad2-9d29-4a4e-8937-8aeb9d6d7893
       version: -1
       name: Print failures
-      scriptName: ToTable
+      script: ToTable
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      columns: ""
-      data: ${MXToolbox.Errors}
-      title: ""
+      columns: {}
+      data:
+        simple: ${MXToolbox.Errors}
+      title: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -261,6 +332,11 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: e99092da-b540-4f8c-8528-38942c383b12
@@ -269,13 +345,16 @@ tasks:
       id: e99092da-b540-4f8c-8528-38942c383b12
       version: -1
       name: Close
-      scriptName: CloseInvestigation
+      script: CloseInvestigation
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: All good
-      reason: Sababa
+      notes:
+        simple: All good
+      reason:
+        simple: Sababa
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -283,6 +362,11 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -296,3 +380,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []
