@@ -15,6 +15,7 @@ import urllib3
 import uuid
 import tempfile
 import os
+import shutil
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -29,7 +30,17 @@ def get_cache_path():
             pass
         else:
             raise
-    return os.path.join(path, "cache.db")
+    db_path = os.path.join(path, "cache.db")
+    try:
+        if not os.path.isfile(db_path):
+            static_init_db = os.getenv('ZEEP_STATIC_CACHE_DB', '/zeep/static/cache.db')
+            if os.path.isfile(static_init_db):
+                demisto.debug(f'copying static init db: {static_init_db} to: {db_path}')
+                shutil.copyfile(static_init_db, db_path)
+    except Exception as ex:
+        # non fatal
+        demisto.error(f'Failed copying static init db to: {db_path}. Error: {ex}')
+    return db_path
 
 
 class SymantecAuth(AuthBase):
