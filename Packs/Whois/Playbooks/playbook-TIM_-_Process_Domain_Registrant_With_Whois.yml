@@ -694,7 +694,7 @@ outputs:
 - contextPath: ApprovedRegistrantDomains
   description: Domains for which the registrant is approved.
   type: string
-- contextPath: DomainsNotResolvedByWhois
+- contextPath: NonApprovedRegistrantDomains
   description: Domains which Whois wasn't able to resolve.
   type: string
 - contextPath: NotTestedDomains
