@@ -366,7 +366,7 @@ inputs:
     With Whois playbook.
   playbookInputQuery: null
 outputs:
-- contextPath: NonApprovedDomains
+- contextPath: NonApprovedRegistrantDomains
   description: Domains for which the registrant isn't approved.
   type: string
 - contextPath: ApprovedRegistrantDomains
