@@ -2803,6 +2803,8 @@
         }
     ],
     "skipped_tests": {
+        "TestShowScheduledEntries": "Issue 24401",
+        "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "SentinelOne V2 - test": "Issue 24933",
         "DuoAdmin API test playbook": "Issue 24937",
         "Wildfire Test": "Issue 24936",
@@ -2992,7 +2994,6 @@
     ],
     "unmockable_integrations": {
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
-        "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
