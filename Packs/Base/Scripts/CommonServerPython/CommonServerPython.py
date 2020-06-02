@@ -330,16 +330,26 @@ except Exception:
 # ====================================================================================
 
 
-def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
+def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True, insecure_param_name=None):
     """
         Handle logic for routing traffic through the system proxy.
         Should usually be called at the beginning of the integration, depending on proxy checkbox state.
+
+        Additionally will unset env variables REQUESTS_CA_BUNDLE and CURL_CA_BUNDLE if handle_insecure is speficied (default).
+        This is needed as when these variables are set and a requests.Session object is used, requests will ignore the 
+        Sesssion.verify setting. See: https://github.com/psf/requests/blob/master/requests/sessions.py#L703
 
         :type proxy_param_name: ``string``
         :param proxy_param_name: name of the "use system proxy" integration parameter
 
         :type checkbox_default_value: ``bool``
         :param checkbox_default_value: Default value of the proxy param checkbox
+
+        :type handle_insecure: ``bool``
+        :param handle_insecure: Whether to check the insecure param and unset env variables
+
+        :type insecure_param_name: ``string``
+        :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
 
         :rtype: ``dict``
         :return: proxies dict for the 'proxies' parameter of 'requests' functions
@@ -354,6 +364,16 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
         for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
             if k in os.environ:
                 del os.environ[k]
+    if handle_insecure:
+        if insecure_param_name is None:
+            param_names = ('insecure', 'unsecure')
+        else:
+            param_names = (insecure_param_name, )
+        for p in param_names:
+            if demisto.params().get(p, False):
+                for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
+                    if k in os.environ:
+                        del os.environ[k]
     return proxies
 
 
@@ -2436,6 +2456,76 @@ class Common(object):
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class Endpoint(Indicator):
+        """ ignore docstring
+        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
+        """
+        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
+
+        def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
+                     os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
+                     memory=None, processors=None, processor=None):
+            self.id = id
+            self.hostname = hostname
+            self.ip_address = ip_address
+            self.domain = domain
+            self.mac_address = mac_address
+            self.os = os
+            self.os_version = os_version
+            self.dhcp_server = dhcp_server
+            self.bios_version = bios_version
+            self.model = model
+            self.memory = memory
+            self.processors = processors
+            self.processor = processor
+
+        def to_context(self):
+            endpoint_context = {
+                'ID': self.id
+            }
+
+            if self.hostname:
+                endpoint_context['Hostname'] = self.hostname
+
+            if self.ip_address:
+                endpoint_context['IPAddress'] = self.ip_address
+
+            if self.domain:
+                endpoint_context['Domain'] = self.domain
+
+            if self.mac_address:
+                endpoint_context['MACAddress'] = self.mac_address
+
+            if self.os:
+                endpoint_context['OS'] = self.os
+
+            if self.os_version:
+                endpoint_context['OSVersion'] = self.os_version
+
+            if self.dhcp_server:
+                endpoint_context['DHCPServer'] = self.dhcp_server
+
+            if self.bios_version:
+                endpoint_context['BIOSVersion'] = self.bios_version
+
+            if self.model:
+                endpoint_context['Model'] = self.model
+
+            if self.memory:
+                endpoint_context['Memory'] = self.memory
+
+            if self.processors:
+                endpoint_context['Processors'] = self.processors
+
+            if self.processor:
+                endpoint_context['Processor'] = self.processor
+
+            ret_value = {
+                Common.Endpoint.CONTEXT_PATH: endpoint_context
+            }
 
             return ret_value
 
