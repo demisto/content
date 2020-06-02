@@ -336,7 +336,7 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         Should usually be called at the beginning of the integration, depending on proxy checkbox state.
 
         Additionally will unset env variables REQUESTS_CA_BUNDLE and CURL_CA_BUNDLE if handle_insecure is speficied (default).
-        This is needed as when these variables are set and a requests.Session object is used, requests will ignore the 
+        This is needed as when these variables are set and a requests.Session object is used, requests will ignore the
         Sesssion.verify setting. See: https://github.com/psf/requests/blob/master/requests/sessions.py#L703
 
         :type proxy_param_name: ``string``
@@ -3210,7 +3210,7 @@ class DebugLogger(object):
             # pylint: enable=import-error
             self.http_client = http_client
             self.http_client.HTTPConnection.debuglevel = 1
-            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already            
+            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
         else:
             self.http_client = None
@@ -3224,13 +3224,13 @@ class DebugLogger(object):
         if self.root_logger.handlers:
             self.org_handlers.extend(self.root_logger.handlers)
             for h in self.org_handlers:
-                self.root_logger.removeHandler(h)            
+                self.root_logger.removeHandler(h)
         self.root_logger.addHandler(self.handler)
 
     def __del__(self):
         if self.handler:
             self.root_logger.setLevel(self.prev_log_level)
-            self.root_logger.removeHandler(self.handler)            
+            self.root_logger.removeHandler(self.handler)
             self.handler.flush()
             self.handler.close()
         if self.org_handlers:
@@ -3242,7 +3242,7 @@ class DebugLogger(object):
                 setattr(self.http_client, 'print', self.http_client_print)
             else:
                 delattr(self.http_client, 'print')
-    
+
     def log_start_debug(self):
         """
         Utility function to log start of debug mode logging
