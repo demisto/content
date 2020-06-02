@@ -5,7 +5,7 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 94a71756-6d5e-4a89-8052-1f08c5fa4e31
+    taskid: b75c9325-1847-4451-8216-551e33f9b4c7
     type: start
     task:
       id: 94a71756-6d5e-4a89-8052-1f08c5fa4e31
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,9 +24,14 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: b7cbf292-f8c0-420d-8145-ae6dfc3256f3
+    taskid: 40912ef2-6a78-4b92-86a3-bb70f3edb09c
     type: regular
     task:
       id: b7cbf292-f8c0-420d-8145-ae6dfc3256f3
@@ -39,8 +45,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      domain: ""
-      domainID: ""
+      domain: {}
+      domainID: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -48,9 +55,14 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 244e68f1-5059-47f1-893c-c11856b699de
+    taskid: cb374045-048e-4349-857d-fc9b0445a4f4
     type: regular
     task:
       id: 244e68f1-5059-47f1-893c-c11856b699de
@@ -64,14 +76,16 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      domain: ${NSM.Domains.ID}
-      domainID: ""
-      end_time: ""
-      filter: ""
-      search: ""
-      start_time: ""
-      state: ""
-      time_period: ""
+      domain:
+        simple: ${NSM.Domains.ID}
+      domainID: {}
+      end_time: {}
+      filter: {}
+      search: {}
+      start_time: {}
+      state: {}
+      time_period: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -79,9 +93,14 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 2c6334be-ae5f-47a0-8fad-08ebcf866846
+    taskid: e0b8702d-f4e4-43bd-891f-cfa059798b84
     type: regular
     task:
       id: 2c6334be-ae5f-47a0-8fad-08ebcf866846
@@ -95,7 +114,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      domain_id: ${NSM.Domains.[0].ID}
+      domain_id:
+        simple: ${NSM.Domains.[0].ID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -103,9 +124,14 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 8be26751-b32a-49ed-8590-8744ba7bc6a7
+    taskid: 80b80fb8-ab11-4283-85f5-fec4bd4814aa
     type: regular
     task:
       id: 8be26751-b32a-49ed-8590-8744ba7bc6a7
@@ -119,7 +145,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      policy_id: "16"
+      policy_id:
+        simple: "16"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -127,9 +155,14 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 66a1fa38-2b7f-474e-8fb0-57679409e755
+    taskid: dc56df34-5e61-4534-80d3-57e88be41939
     type: regular
     task:
       id: 66a1fa38-2b7f-474e-8fb0-57679409e755
@@ -143,12 +176,14 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      end_time: ""
-      filter: ""
-      search: ""
-      start_time: ""
-      state: ""
-      time_period: LAST_5_MINUTES
+      end_time: {}
+      filter: {}
+      search: {}
+      start_time: {}
+      state: {}
+      time_period:
+        simple: LAST_5_MINUTES
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -156,9 +191,14 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: d302ee89-0de1-4b75-8ad8-8a99152d63ef
+    taskid: 4bf362c9-6cb5-4c46-8622-f6b9eef7e3b0
     type: regular
     task:
       id: d302ee89-0de1-4b75-8ad8-8a99152d63ef
@@ -172,12 +212,17 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      end_time: 09/09/2017 23:15
-      filter: attackSeverity:High
-      search: ""
-      start_time: 09/09/2017 23:05
-      state: ""
-      time_period: CUSTOM
+      end_time:
+        simple: 09/09/2017 23:15
+      filter:
+        simple: attackSeverity:High
+      search: {}
+      start_time:
+        simple: 09/09/2017 23:05
+      state: {}
+      time_period:
+        simple: CUSTOM
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -185,9 +230,14 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 4427ceb2-a02d-4c4b-8103-5255038ea0d7
+    taskid: 80975f60-94d7-4947-8f28-ca4559e86b2c
     type: regular
     task:
       id: 4427ceb2-a02d-4c4b-8103-5255038ea0d7
@@ -201,14 +251,21 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      end_time: 09/09/2017 23:10
-      filter: attackSeverity:Medium
-      new_assignee: ""
-      new_state: Acknowledged
-      search: ""
-      start_time: 09/09/2017 23:10
-      state: Unacknowledged
-      time_period: CUSTOM
+      end_time:
+        simple: 09/09/2017 23:10
+      filter:
+        simple: attackSeverity:Medium
+      new_assignee: {}
+      new_state:
+        simple: Acknowledged
+      search: {}
+      start_time:
+        simple: 09/09/2017 23:10
+      state:
+        simple: Unacknowledged
+      time_period:
+        simple: CUSTOM
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -216,9 +273,14 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 44f2fcdd-a70f-4f4c-8012-05719f5d17d8
+    taskid: 852704c6-0df9-4eda-8163-293d2f19a663
     type: regular
     task:
       id: 44f2fcdd-a70f-4f4c-8012-05719f5d17d8
@@ -232,14 +294,21 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      end_time: 09/09/2017 23:10
-      filter: attackSeverity:Medium
-      new_assignee: ""
-      new_state: Unacknowledged
-      search: ""
-      start_time: 09/09/2017 23:10
-      state: Acknowledged
-      time_period: CUSTOM
+      end_time:
+        simple: 09/09/2017 23:10
+      filter:
+        simple: attackSeverity:Medium
+      new_assignee: {}
+      new_state:
+        simple: Unacknowledged
+      search: {}
+      start_time:
+        simple: 09/09/2017 23:10
+      state:
+        simple: Acknowledged
+      time_period:
+        simple: CUSTOM
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -247,9 +316,14 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 16fb9736-b93e-4ba5-8c30-084f7c9a9d55
+    taskid: d18e53e7-1924-4534-8dbe-4e2ea1366412
     type: regular
     task:
       id: 16fb9736-b93e-4ba5-8c30-084f7c9a9d55
@@ -263,7 +337,9 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      domainID: ${NSM.Domains.[0].ID}
+      domainID:
+        simple: ${NSM.Domains.[0].ID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -271,9 +347,14 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 7dd879be-4186-4501-849d-8bef44dd38d4
+    taskid: 489e64ba-9dd2-4aaf-8a70-7c50905fd966
     type: regular
     task:
       id: 7dd879be-4186-4501-849d-8bef44dd38d4
@@ -284,7 +365,8 @@ tasks:
       iscommand: true
       brand: McAfee NSM
     scriptarguments:
-      domainID: ""
+      domainID: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -292,6 +374,11 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -305,3 +392,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []
