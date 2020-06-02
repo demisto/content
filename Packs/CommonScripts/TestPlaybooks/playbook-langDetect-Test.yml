@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7238e150-e4f4-404f-8bfc-80ff4b8273ed
+    taskid: 448ca2cf-2467-4306-8418-13a95c98ae9c
     type: start
     task:
-      id: 7238e150-e4f4-404f-8bfc-80ff4b8273ed
+      id: 448ca2cf-2467-4306-8418-13a95c98ae9c
       version: -1
       name: ""
       iscommand: false
@@ -17,6 +17,7 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -24,12 +25,17 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: d1c85417-91a0-47f8-888a-2696b1d612b4
+    taskid: e7f8493d-7ee9-4562-8f5d-5396fc52bac0
     type: regular
     task:
-      id: d1c85417-91a0-47f8-888a-2696b1d612b4
+      id: e7f8493d-7ee9-4562-8f5d-5396fc52bac0
       version: -1
       name: Detect english
       scriptName: LanguageDetect
@@ -40,8 +46,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      text: Hello World
+      text:
+        simple: Hello World
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -49,12 +57,17 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 6c9ea698-a55f-4195-8adb-12e0097087d6
+    taskid: cb7d24b2-0f25-4d9e-87e3-89da25df5f1d
     type: condition
     task:
-      id: 6c9ea698-a55f-4195-8adb-12e0097087d6
+      id: cb7d24b2-0f25-4d9e-87e3-89da25df5f1d
       version: -1
       name: Check if we found English
       scriptName: Exists
@@ -65,7 +78,9 @@ tasks:
       "yes":
       - "3"
     scriptarguments:
-      value: ${langDetect(val.lang=='en')}
+      value:
+        simple: ${langDetect(val.lang=='en')}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -73,12 +88,17 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 52cfb4ba-93d1-4f65-8473-72decda9c58a
+    taskid: b734b4b5-931b-488c-860e-43d16bca90e0
     type: regular
     task:
-      id: 52cfb4ba-93d1-4f65-8473-72decda9c58a
+      id: b734b4b5-931b-488c-860e-43d16bca90e0
       version: -1
       name: Close
       scriptName: CloseInvestigation
@@ -86,8 +106,9 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: ""
-      reason: ""
+      notes: {}
+      reason: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -95,12 +116,17 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 216f45df-ed29-4d60-8af4-c15bf67b62e3
+    taskid: 6998200f-0ec7-4560-8489-6aa94c879875
     type: regular
     task:
-      id: 216f45df-ed29-4d60-8af4-c15bf67b62e3
+      id: 6998200f-0ec7-4560-8489-6aa94c879875
       version: -1
       name: Sleep for 3 minutes
       scriptName: Sleep
@@ -111,7 +137,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      seconds: "60" 
+      seconds:
+        simple: "60"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -119,12 +147,17 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: a5cc10e3-f1f2-4473-8c55-8d241a08ea4b
+    taskid: 6af1144b-28a0-4e57-86f7-bed70791a315
     type: regular
     task:
-      id: a5cc10e3-f1f2-4473-8c55-8d241a08ea4b
+      id: 6af1144b-28a0-4e57-86f7-bed70791a315
       version: -1
       name: Detect english once again
       scriptName: LanguageDetect
@@ -135,7 +168,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      text: Hello World
+      text:
+        simple: Hello World
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -143,12 +178,17 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: ace9fc44-0e58-4610-8b0f-b6355a3d403b
+    taskid: 0b20fdc4-5726-4ff6-8ccb-5d0d2844bfed
     type: regular
     task:
-      id: ace9fc44-0e58-4610-8b0f-b6355a3d403b
+      id: 0b20fdc4-5726-4ff6-8ccb-5d0d2844bfed
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -159,8 +199,10 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      all: "yes"
-      key: ""
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -168,6 +210,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -181,3 +228,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []
