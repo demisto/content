@@ -649,3 +649,5 @@ outputs:
 - contextPath: File
   description: The sample file
   type: unknown
+tests:
+ -  get_file_sample_by_hash_-_cylance_protect_-_test

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.4.1] - 2020-04-29
 The playbook now verifies that the integration is enabled before continuing.

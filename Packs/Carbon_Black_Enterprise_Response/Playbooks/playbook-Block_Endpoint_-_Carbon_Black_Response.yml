@@ -178,3 +178,5 @@ outputs:
   description: Carbon Black Response Sensors ids that has been isolated
 - contextPath: Endpoint
   description: The isolated enpoint
+tests:
+  - no test

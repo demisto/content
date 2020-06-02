@@ -251,3 +251,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
