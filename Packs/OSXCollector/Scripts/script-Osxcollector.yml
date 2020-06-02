@@ -1,6 +1,6 @@
 commonfields:
   id: Osxcollector
-  version: 1
+  version: -1
 name: Osxcollector
 script: |-
   var res = http('https://raw.githubusercontent.com/Yelp/osxcollector/master/osxcollector/osxcollector.py', {SaveToFile: true});
