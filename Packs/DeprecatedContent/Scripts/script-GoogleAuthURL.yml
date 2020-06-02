@@ -29,6 +29,7 @@ tags:
 - google apps
 comment: Generate a Google auth URL to authenticate for a given list of scopes
 enabled: true
+deprecated: true
 args:
 - name: scopes
   required: true
