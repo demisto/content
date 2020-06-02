@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 19920ead-0eef-4423-8515-a520b92ff963
+    taskid: 433dce95-7704-43e4-8a24-aab3ce6d0b7a
     type: start
     task:
-      id: 19920ead-0eef-4423-8515-a520b92ff963
+      id: 433dce95-7704-43e4-8a24-aab3ce6d0b7a
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: f7fc986f-391b-417e-88d4-655d0e2bd2d0
+    taskid: 4377baae-b28b-4ed3-88eb-92739f774496
     type: condition
     task:
-      id: f7fc986f-391b-417e-88d4-655d0e2bd2d0
+      id: 4377baae-b28b-4ed3-88eb-92739f774496
       version: -1
       name: Are there query results?
       type: condition
@@ -81,10 +81,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 19e19ec3-471a-4d5e-82d7-525baa65eef6
+    taskid: 3e91d851-7939-4aae-8eaf-44824d0de234
     type: title
     task:
-      id: 19e19ec3-471a-4d5e-82d7-525baa65eef6
+      id: 3e91d851-7939-4aae-8eaf-44824d0de234
       version: -1
       name: Done
       type: title
@@ -106,12 +106,12 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: cd5e328f-b1de-4aac-8288-830b7a5ac726
+    taskid: dbb7e5e0-66b2-48fc-8e23-0153e92fff2f
     type: regular
     task:
-      id: cd5e328f-b1de-4aac-8288-830b7a5ac726
+      id: dbb7e5e0-66b2-48fc-8e23-0153e92fff2f
       version: -1
-      name: Whois
+      name: Run Whois on domain indicators
       description: Provides data enrichment for domains.
       script: '|||whois'
       type: regular
@@ -152,10 +152,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0ff54693-edf6-4ed5-8cd5-6385a84da8e2
+    taskid: 96773908-372c-4daa-8d9e-15eddee6e4dc
     type: condition
     task:
-      id: 0ff54693-edf6-4ed5-8cd5-6385a84da8e2
+      id: 96773908-372c-4daa-8d9e-15eddee6e4dc
       version: -1
       name: Was the registrant check enabled?
       type: condition
@@ -193,16 +193,16 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 779e3bdd-a5aa-4ab0-82ff-830364a0fee8
+    taskid: 71774b85-6fd5-4762-8c28-bd64d3527b6a
     type: playbook
     task:
-      id: 779e3bdd-a5aa-4ab0-82ff-830364a0fee8
+      id: 71774b85-6fd5-4762-8c28-bd64d3527b6a
       version: -1
       name: TIM - Process Domain Registrant With Whois
       description: This playbook compares the domain registrant against the Cortex
         XSOAR list provided in the inputs. A registrant is the company or entity that
         owns the domain.
-      playbookName: TIM - Process Domain registrant With Whois
+      playbookName: TIM - Process Domain Registrant With Whois
       type: playbook
       iscommand: false
       brand: ""
@@ -210,10 +210,12 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      ApprovedregistrantsListName: {}
+      ApprovedregistrantsListName:
+        simple: ApprovedRegistars
       WhoisResults:
         simple: ${Domain}
-      registrantListDelimiter: {}
+      registrantListDelimiter:
+        simple: ;
     separatecontext: true
     loop:
       iscommand: false
@@ -234,10 +236,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 9e1d216a-63f5-4dc3-89df-a9bf3ccde7e8
+    taskid: ba4eea74-f034-4d54-8082-8279783819d6
     type: condition
     task:
-      id: 9e1d216a-63f5-4dc3-89df-a9bf3ccde7e8
+      id: ba4eea74-f034-4d54-8082-8279783819d6
       version: -1
       name: Was the domain creation date check enabled?
       type: condition
@@ -256,7 +258,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.CheckForWhoisDomainDateCreation
+              simple: inputs.CheckForWhoisDomainAgeCreation
             iscontext: true
           right:
             value:
@@ -275,10 +277,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 8800fd66-b7fd-46b8-8f6f-164f04263f08
+    taskid: c3687b9a-158f-4fbe-89ec-3ae97d61a750
     type: playbook
     task:
-      id: 8800fd66-b7fd-46b8-8f6f-164f04263f08
+      id: c3687b9a-158f-4fbe-89ec-3ae97d61a750
       version: -1
       name: TIM - Process Domain Age With Whois
       description: This playbook compares the domain creation time against the a provided
@@ -358,15 +360,15 @@ inputs:
   description: Setting this input as True will run the TIM - Process Domain registrant
     With Whois playbook.
   playbookInputQuery: null
-- key: CheckForWhoisDomainDateCreation
+- key: CheckForWhoisDomainAgeCreation
   value:
     simple: "True"
   required: false
   description: Setting this input as True will run the TIM - Process Domain Creation
-    With Whois playbook.
+    Age With Whois playbook.
   playbookInputQuery: null
 outputs:
-- contextPath: NonApprovedRegistrantDomains
+- contextPath: NonApprovedDomains
   description: Domains for which the registrant isn't approved.
   type: string
 - contextPath: ApprovedRegistrantDomains
@@ -381,8 +383,8 @@ outputs:
 - contextPath: NonNewDomains
   description: Domains their create value is before the tested date.
   type: string
-- contextPath: NotTestedDomains
-  description: In case a playbook doesn't process the indicators. The indicators
+- contextPath: DomainsNotProcessed
+  description: In case a playbook doesnt process the indicators. The indicators
     will be outputted to this context path.
   type: string
 quiet: true
