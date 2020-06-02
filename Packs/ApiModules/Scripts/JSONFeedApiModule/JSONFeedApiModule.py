@@ -196,7 +196,7 @@ def feed_main(params, feed_name, prefix):
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client,
-                                                  None if params.get('auto_detect_type')
+                                                  '' if params.get('auto_detect_type')
                                                   else params.get('indicator_type'), feedTags)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

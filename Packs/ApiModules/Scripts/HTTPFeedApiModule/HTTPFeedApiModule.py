@@ -404,7 +404,7 @@ def feed_main(feed_name, params=None, prefix=''):
     try:
         if command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, feed_tags,
-                                                  None if params.get('auto_detect_type') else
+                                                  '' if params.get('auto_detect_type') else
                                                   params.get('indicator_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
