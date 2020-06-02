@@ -12,7 +12,7 @@ from datetime import datetime
 requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
-SOURCE_NAME = "AutoFocusFeed"
+SOURCE_NAME = "AutoFocusFeedDaily"
 DAILY_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult'
 
 EPOCH_BASE = datetime.utcfromtimestamp(0)
@@ -21,26 +21,6 @@ af_indicator_type_to_demisto = {
     'Domain': FeedIndicatorType.Domain,
     'Url': FeedIndicatorType.URL,
     'IPv4': FeedIndicatorType.IP
-}
-
-VERDICTS_TO_DBOTSCORE = {
-    '0': 1,
-    '1': 3,
-    '2': 2,
-    '4': 3,
-}
-
-VERDICTS_TO_TEXT = {
-    '0': 'benign',
-    '1': 'malware',
-    '2': 'grayware',
-    '4': 'phishing',
-}
-
-CONFIDENCE_TO_DBOTSCORE = {
-    'interesting': 2,
-    'suspect': 3,
-    'highly_suspect': 3
 }
 
 
@@ -56,14 +36,9 @@ class Client(BaseClient):
         api_key(str): The API key for AutoFocus.
         insecure(bool): Use SSH on http request.
         proxy(str): Use system proxy.
-        indicator_feeds(List): A list of indicator feed types to bring from AutoFocus.
-        scope_type(str): The scope type of the AutoFocus samples feed.
-        sample_query(str): The query to use to fetch indicators from AutoFocus samples feed.
-        custom_feed_urls(str): The URLs of the custom feeds to fetch.
     """
 
-    def __init__(self, api_key, insecure, proxy, indicator_feeds, custom_feed_urls=None,
-                 scope_type=None, sample_query=None):
+    def __init__(self, api_key, insecure, proxy):
         self.api_key = api_key
         self.verify = not insecure
         if proxy:
@@ -115,107 +90,8 @@ class Client(BaseClient):
 
         return raw_json_data
 
-    @staticmethod
-    def create_indicators_for_file(raw_json_data: dict, full_sample_json: dict):
-        raw_json_data['type'] = FeedIndicatorType.File
-        raw_json_data['md5'] = full_sample_json.get('md5')
-        raw_json_data['size'] = full_sample_json.get('size')
-        raw_json_data['sha1'] = full_sample_json.get('sha1')
-        raw_json_data['value'] = full_sample_json.get('sha256')
-        raw_json_data['sha256'] = full_sample_json.get('sha256')
-        raw_json_data['ssdeep'] = full_sample_json.get('ssdeep')
-        raw_json_data['region'] = [single_region.upper() for single_region in full_sample_json.get('region', [])]
-        raw_json_data['imphash'] = full_sample_json.get('imphash')
-        raw_json_data['autofocus_filetype'] = full_sample_json.get('filetype')
-        raw_json_data['autofocus_malware'] = VERDICTS_TO_TEXT.get(full_sample_json.get('malware'))  # type: ignore
 
-        fields_mapping = {
-            'md5': full_sample_json.get('md5'),
-            'tags': full_sample_json.get('tag'),
-            'size': full_sample_json.get('size'),
-            'sha1': full_sample_json.get('sha1'),
-            'region': raw_json_data.get('region'),
-            'sha256': full_sample_json.get('sha256'),
-            'ssdeep': full_sample_json.get('ssdeep'),
-            'imphash': full_sample_json.get('imphash'),
-            'filetype': full_sample_json.get('filetype'),
-            'threattypes': [{'threatcategory': threat} for threat in full_sample_json.get('tag_groups', [])],
-            'creationdate': raw_json_data.get('autofocus_create_date'),
-        }
 
-        return [
-            {
-                'value': raw_json_data['value'],
-                'type': raw_json_data['type'],
-                'rawJSON': raw_json_data,
-                'fields': fields_mapping,
-                'score': VERDICTS_TO_DBOTSCORE.get(full_sample_json.get('malware'), 0)  # type: ignore
-            }
-        ]
-
-    @staticmethod
-    def create_indicator_from_artifact(raw_json_data: dict, artifact: dict):
-        indicator_value = artifact.get('indicator', None)
-        if indicator_value is None:
-            return None
-
-        autofocus_indicator_type = artifact.get('indicator_type', None)
-        indicator_type = af_indicator_type_to_demisto.get(autofocus_indicator_type)
-        if not indicator_type:
-            return None
-
-        raw_json_data.update(
-            {
-                'value': indicator_value,
-                'type': indicator_type,
-                'autofocus_confidence': artifact.get('confidence', ''),
-                'autofocus_malware': artifact.get('m', 0),
-                'autofocus_benign': artifact.get('b', 0),
-                'autofocus_grayware': artifact.get('g', 0)
-            }
-        )
-
-        if indicator_type == FeedIndicatorType.IP and ':' in indicator_value:
-            indicator_value, port = indicator_value.split(':', 1)
-            raw_json_data['autofocus_port'] = port
-
-        fields_mapping = {
-            'firstseenbysource': raw_json_data.get('autofocus_create_date'),
-            'region': raw_json_data.get('autofocus_region'),
-            'tags': raw_json_data.get('autofocus_tags'),
-            'threattypes': [{'threatcategory': threat} for threat in raw_json_data.get('autofocus_tags_groups', [])],
-            'service': 'AutoFocus Samples Feed'
-        }
-
-        return {
-            'value': raw_json_data['value'],
-            'type': raw_json_data['type'],
-            'rawJSON': raw_json_data,
-            'fields': fields_mapping,
-            'score': CONFIDENCE_TO_DBOTSCORE.get(artifact.get('confidence'), 0),  # type: ignore
-        }
-
-    @staticmethod
-    def create_indicators_from_single_sample_response(single_sample):
-        single_sample_data = single_sample.get('_source', {})
-        if not single_sample_data:
-            return []
-
-        # When the user do not have access to sample's details a truncated sha256 is used.
-        if '...' in single_sample_data.get('sha256', '...'):
-            return []
-
-        indicators = Client.create_indicators_for_file(Client.get_basic_raw_json(single_sample), single_sample_data)
-
-        artifacts = single_sample_data.get('artifact', [])
-
-        for artifact in artifacts:
-            indicator_from_artifact = Client.create_indicator_from_artifact(Client.get_basic_raw_json(single_sample),
-                                                                            artifact)
-            if indicator_from_artifact:
-                indicators.append(indicator_from_artifact)
-
-        return indicators
 
     def get_ip_type(self, indicator):
         if re.match(ipv4cidrRegex, indicator):
@@ -294,13 +170,22 @@ class Client(BaseClient):
 
         return parsed_indicators
 
+
+
+
+
+
+
+
+
+
     def build_iterator(self, limit=None, offset=None):
         """Builds a list of indicators.
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
         """
         response = self.daily_http_request()
-        parsed_indicators = self.create_indicators_from_response('Daily Threat Feed', response)
+        parsed_indicators = self.create_indicators_from_response('Daily Threat Feed', response) #list of dict of indicators
 
         # for get_indicator_command only
         if limit:
@@ -383,11 +268,7 @@ def main():
 
     client = Client(api_key=params.get('api_key'),
                     insecure=params.get('insecure'),
-                    proxy=params.get('proxy'),
-                    indicator_feeds=params.get('indicator_feeds'),
-                    custom_feed_urls=params.get('custom_feed_urls'),
-                    scope_type=params.get('scope_type'),
-                    sample_query=params.get('sample_query'))
+                    proxy=params.get('proxy'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
