@@ -966,12 +966,12 @@ class IntegrationLogger(object):
             # add common params
             sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
             if demisto.params():
-                self._iter_sesistive_dict_obj(demisto.params(), sensitive_params)
+                self._iter_sensistive_dict_obj(demisto.params(), sensitive_params)
 
-    def _iter_sesistive_dict_obj(self, dict_obj, sensitive_params):
+    def _iter_sensistive_dict_obj(self, dict_obj, sensitive_params):
         for (k, v) in dict_obj.items():
             if isinstance(v, dict):  # credentials object case. recurse into the object
-                self._iter_sesistive_dict_obj(v, sensitive_params)
+                self._iter_sensistive_dict_obj(v, sensitive_params)
             elif isinstance(v, STRING_OBJ_TYPES):
                 k_lower = k.lower()
                 for p in sensitive_params:
