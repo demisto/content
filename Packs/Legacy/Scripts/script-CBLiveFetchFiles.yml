@@ -23,7 +23,6 @@ args:
   default: true
   description: 'specially formatted json with [md5: (path,hostname)]'
 scripttarget: 0
-deprecated: true
 dependson:
   must:
   - CBLiveGetFile
