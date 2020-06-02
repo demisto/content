@@ -2,11 +2,15 @@ import json
 import os
 import subprocess
 import fnmatch
+import re
 import shutil
 import yaml
+import google.auth
+from google.cloud import storage
 import enum
 import base64
 import urllib.parse
+import warnings
 from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
@@ -28,6 +32,7 @@ class GCPConfig(object):
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
+    PRODUCTION_BUCKET = "marketplace-dist"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
@@ -48,8 +53,12 @@ class GCPConfig(object):
                        "CommonScripts",
                        "CommonPlaybooks",
                        "CommonTypes",
+                       "CommonDashboards",
+                       "CommonReports",
+                       "CommonWidgets",
                        "TIM_Processing",
-                       "TIM_SIEM"
+                       "TIM_SIEM",
+                       "HelloWorld"
                        ]  # cores packs list
 
 
@@ -85,22 +94,23 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def pack_displayed_items(cls):
-        return [
+        return {
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
-        ]
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+        }
 
     @classmethod
     def yml_supported_folders(cls):
-        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
+        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value}
 
     @classmethod
     def json_supported_folders(cls):
-        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
                 PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.REPORTS.value]
+                PackFolders.WIDGETS.value}
 
 
 class PackStatus(enum.Enum):
@@ -305,10 +315,21 @@ class Pack(object):
             dependency_integration_images = dependency_data.get('integrations', [])
 
             for dependency_integration in dependency_integration_images:
-                if dependency_integration not in pack_integration_images:
+                dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
+                dependency_pack_name = os.path.basename(
+                    os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
+
+                if dependency_pack_name not in display_dependencies_images:
+                    continue  # skip if integration image is not part of displayed pack
+
+                if dependency_integration not in pack_integration_images:  # avoid duplicates in list
                     pack_integration_images.append(dependency_integration)
 
         return pack_integration_images
+
+    @staticmethod
+    def _clean_release_notes(changelog_lines):
+        return re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
 
     @staticmethod
     def _parse_pack_dependencies(first_level_dependencies, all_level_pack_dependencies_data):
@@ -647,6 +668,7 @@ class Pack(object):
 
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
+                            changelog_lines = self._clean_release_notes(changelog_lines)
                         version_changelog = {'releaseNotes': changelog_lines,
                                              'displayName': latest_release_notes,
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
@@ -825,7 +847,9 @@ class Pack(object):
                         })
                     elif current_directory == PackFolders.WIDGETS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', "")
+                            'name': content_item.get('name', ""),
+                            'dataType': content_item.get('dataType', ""),
+                            'widgetType': content_item.get('widgetType', "")
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
@@ -1156,6 +1180,33 @@ class Pack(object):
 
 
 # HELPER FUNCTIONS
+
+def init_storage_client(service_account=None):
+    """Initialize google cloud storage client.
+
+    In case of local dev usage the client will be initialized with user default credentials.
+    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
+
+    Args:
+        service_account (str): full path to service account json.
+
+    Return:
+        storage.Client: initialized google cloud storage client.
+    """
+    if service_account:
+        storage_client = storage.Client.from_service_account_json(service_account)
+        print("Created gcp service account")
+
+        return storage_client
+    else:
+        # in case of local dev use, ignored the warning of non use of service account.
+        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
+        credentials, project = google.auth.default()
+        storage_client = storage.Client(credentials=credentials, project=project)
+        print("Created gcp private account")
+
+        return storage_client
+
 
 def input_to_list(input_data, capitalize_input=False):
     """ Helper function for handling input list or str from the user.
