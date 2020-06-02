@@ -213,8 +213,7 @@ tasks:
       ApprovedregistrantsListName: {}
       WhoisResults:
         simple: ${Domain}
-      registrantListDelimiter:
-        simple: ;
+      registrantListDelimiter: {}
     separatecontext: true
     loop:
       iscommand: false
