@@ -653,7 +653,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: value:xmxmx.com or value:paloaltonetworks.com or value:txxdueri.com
+    query: ""
     queryEntity: indicators
     results: null
     daterange:
