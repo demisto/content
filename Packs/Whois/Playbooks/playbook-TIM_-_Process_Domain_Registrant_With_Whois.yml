@@ -2,18 +2,17 @@ id: TIM - Process Domain registrant With Whois
 version: -1
 fromversion: 5.5.0
 name: TIM - Process Domain registrant With Whois
-description: This playbook runs the whois enrichment on domain indicators provided
-  by an indicator query such as "type:Domain". The playbook then compares the domain
-  registrant against the Cortex XSOAR list provided in the inputs. A registrant is the company or entity
-  that owns the domain.
+description: This playbook compares the domain registrant against the Cortex XSOAR
+  list provided in the inputs. A registrant is the company or entity that owns the
+  domain.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 22c564e6-c75c-4709-8fb4-473d3d61807e
+    taskid: 416a64c6-a933-4459-8880-67c8237586dd
     type: start
     task:
-      id: 22c564e6-c75c-4709-8fb4-473d3d61807e
+      id: 416a64c6-a933-4459-8880-67c8237586dd
       version: -1
       name: ""
       iscommand: false
@@ -21,13 +20,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "25"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -80
+          "y": -240
         }
       }
     note: false
@@ -37,10 +36,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: e8b6a799-2a22-4d66-84fa-66696bc91f35
+    taskid: 3fa9b3ef-4fa9-439d-8f50-409a63bd3abc
     type: condition
     task:
-      id: e8b6a799-2a22-4d66-84fa-66696bc91f35
+      id: 3fa9b3ef-4fa9-439d-8f50-409a63bd3abc
       version: -1
       name: Are there query results?
       type: condition
@@ -59,7 +58,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: playbookQuery.value
+              simple: Results
             iscontext: true
     view: |-
       {
@@ -75,10 +74,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: a01e20f3-29f5-4ab4-83ad-454ab189ba87
+    taskid: ca3a145e-45a6-46a8-851a-425fe0ae1104
     type: title
     task:
-      id: a01e20f3-29f5-4ab4-83ad-454ab189ba87
+      id: ca3a145e-45a6-46a8-851a-425fe0ae1104
       version: -1
       name: Done
       type: title
@@ -98,45 +97,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: f90a2267-1595-40d6-87a6-8e25335c3ea2
-    type: regular
-    task:
-      id: f90a2267-1595-40d6-87a6-8e25335c3ea2
-      version: -1
-      name: Run whois on indicators
-      description: Provides data enrichment for domains.
-      script: '|||whois'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-      - "13"
-    scriptarguments:
-      query:
-        simple: ${playbookQuery.value}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -860,
-          "y": 420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: b40a8c3f-0302-4ae7-8874-b1580268f1df
+    taskid: 409e4d28-2e62-4095-8687-29e3c1cc5d24
     type: regular
     task:
-      id: b40a8c3f-0302-4ae7-8874-b1580268f1df
+      id: 409e4d28-2e62-4095-8687-29e3c1cc5d24
       version: -1
       name: FilterByList
       description: Checks whether the specified item is in a list. The default list
@@ -151,7 +117,7 @@ tasks:
       - "24"
     scriptarguments:
       delimiter:
-        simple: ${inputs.RegistrantListDelimiter}
+        simple: ${inputs.registrantListDelimiter}
       ignorecase:
         simple: "yes"
       listname:
@@ -159,13 +125,13 @@ tasks:
       matchexact:
         simple: "yes"
       values:
-        simple: ${Domain.Whois.Registrant.organization}
+        simple: ${Results.Whois.Registrant.organization}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -70,
-          "y": 630
+          "y": 480
         }
       }
     note: false
@@ -175,21 +141,22 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 3b71315c-73ff-4b78-887a-eb33d3d55e27
+    taskid: ea9db6a0-cbe0-432b-86c0-2189f44e9dfb
     type: condition
     task:
-      id: 3b71315c-73ff-4b78-887a-eb33d3d55e27
+      id: ea9db6a0-cbe0-432b-86c0-2189f44e9dfb
       version: -1
       name: Is there an approved registrants list?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+
     nexttasks:
       '#default#':
       - "21"
       "yes":
-      - "3"
+      - "13"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -202,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 240
+          "x": -60,
+          "y": 270
         }
       }
     note: false
@@ -213,15 +180,14 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 061481f3-9fc5-4689-8288-1c00aec0c05d
+    taskid: e547deec-31ab-4aac-866a-3b6ffe9e3906
     type: regular
     task:
-      id: 061481f3-9fc5-4689-8288-1c00aec0c05d
+      id: e547deec-31ab-4aac-866a-3b6ffe9e3906
       version: -1
       name: Set not-approved domains
-      description: Domains whose registrant does not appear in the list defined in inputs.
-        ApprovedregistrantsListName context key are added to NonApprovedDomains in context.
-      scriptName: SetAndHandleEmpty
+      description: Sets a value into the context with the given context key
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -232,21 +198,12 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: NonApprovedDomains
+        simple: NotTestedDomains
       stringify: {}
       value:
         complex:
-          root: playbookQuery
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: playbookQuery.indicator_type
-                iscontext: true
-              right:
-                value:
-                  simple: Domain
-          accessor: value
+          root: Results
+          accessor: Whois.QueryValue
           transformers:
           - operator: uniq
     separatecontext: false
@@ -264,10 +221,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 91c48fed-e49e-4486-85b5-ca787571d27b
+    taskid: 5e36ad8a-1271-4fbf-8124-0663b0cd4660
     type: condition
     task:
-      id: 91c48fed-e49e-4486-85b5-ca787571d27b
+      id: 5e36ad8a-1271-4fbf-8124-0663b0cd4660
       version: -1
       name: Are there domains without Whois query results?
       type: condition
@@ -286,7 +243,7 @@ tasks:
       - - operator: isNotEqualString
           left:
             value:
-              simple: Domain.Whois.QueryResult
+              simple: Results.Whois.QueryResult
             iscontext: true
           right:
             value:
@@ -294,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -860,
-          "y": 630
+          "x": -950,
+          "y": 480
         }
       }
     note: false
@@ -305,46 +262,32 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 08277e99-e1e6-49c1-8ddb-bdc9ce072a2d
+    taskid: f5ecad72-7e2a-4619-882b-efe72d7f2f22
     type: regular
     task:
-      id: 08277e99-e1e6-49c1-8ddb-bdc9ce072a2d
+      id: f5ecad72-7e2a-4619-882b-efe72d7f2f22
       version: -1
-      name: Set domains without Whois results
-      description: Domains with no registrant information are added to NonApprovedDomains in context.
-      scriptName: SetAndHandleEmpty
+      name: Tag domain with no Whois result
+      description: Tag indicator with the no_whois_result tag.
+      script: Builtin|||appendIndicatorField
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: DomainNotResolvedByWhois
-      stringify: {}
-      value:
-        complex:
-          root: Domain
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: Domain.Whois.QueryResult
-                iscontext: true
-              right:
-                value:
-                  simple: "true"
-          accessor: Whois.QueryValue
-          transformers:
-          - operator: uniq
+      field:
+        simple: tags
+      fieldValue:
+        simple: no_whois_value
+      indicatorsValues:
+        simple: ${DomainsNotResolvedByWhois}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -990,
+          "x": -1050,
           "y": 1010
         }
       }
@@ -355,35 +298,35 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: c7a3c947-cfdf-4656-8245-cfbff77ca48e
+    taskid: 39fe185c-642b-4444-88de-3ed07a4806e5
     type: regular
     task:
-      id: c7a3c947-cfdf-4656-8245-cfbff77ca48e
+      id: 39fe185c-642b-4444-88de-3ed07a4806e5
       version: -1
       name: Set domains by approved registrants
-      description: Domains whose registrant appears in the list defined in inputs.ApprovedregistrantsListName context
-        key are added to ApprovedDomains in context.
+      description: Domains whose registrant appears in the list defined in inputs.ApprovedregistrantsListName
+        context key are added to ApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "26"
     scriptarguments:
       append:
         simple: "true"
       key:
-        simple: ApprovedDomains
+        simple: ApprovedRegistrantDomains
       stringify: {}
       value:
         complex:
-          root: Domain
+          root: Results
           filters:
           - - operator: inList
               left:
                 value:
-                  simple: Domain.Whois.Registrant.organization
+                  simple: Results.Whois.Registrant.organization
                 iscontext: true
               right:
                 value:
@@ -396,8 +339,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -290,
-          "y": 1010
+          "x": -240,
+          "y": 820
         }
       }
     note: false
@@ -407,10 +350,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 371bb257-dce3-46c7-8bf0-c0273a94472c
+    taskid: ac8f990e-836a-4215-85a0-0e721776151b
     type: regular
     task:
-      id: 371bb257-dce3-46c7-8bf0-c0273a94472c
+      id: ac8f990e-836a-4215-85a0-0e721776151b
       version: -1
       name: Set domains by non approved registrants
       description: Checks if the specified value exists in context. If the value exists,
@@ -426,16 +369,16 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: NonApprovedDomains
+        simple: NonApprovedRegistrantDomains
       stringify: {}
       value:
         complex:
-          root: Domain
+          root: Results
           filters:
           - - operator: inList
               left:
                 value:
-                  simple: Domain.Whois.Registrant.organization
+                  simple: Results.Whois.Registrant.organization
                 iscontext: true
               right:
                 value:
@@ -448,8 +391,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 1010
+          "x": 210,
+          "y": 1000
         }
       }
     note: false
@@ -459,10 +402,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: beeb8248-9272-45fb-8874-30d2e06bf64a
+    taskid: cb1a7ce3-0c22-4b75-8529-453ed37b85a6
     type: title
     task:
-      id: beeb8248-9272-45fb-8874-30d2e06bf64a
+      id: cb1a7ce3-0c22-4b75-8529-453ed37b85a6
       version: -1
       name: No registrant list provided
       type: title
@@ -477,7 +420,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 420
+          "y": 480
         }
       }
     note: false
@@ -487,10 +430,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: e3ac3676-405c-4fad-8bfd-8374fa33356b
+    taskid: 8287a40c-3f55-4706-8e92-007fae6f7d80
     type: title
     task:
-      id: e3ac3676-405c-4fad-8bfd-8374fa33356b
+      id: 8287a40c-3f55-4706-8e92-007fae6f7d80
       version: -1
       name: Domain not found by Whois
       type: title
@@ -499,13 +442,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "14"
+      - "27"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -990,
-          "y": 880
+          "x": -1050,
+          "y": 730
         }
       }
     note: false
@@ -515,10 +458,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 31c23415-0ec9-4f59-81fa-b221094cb371
+    taskid: c4b4d2db-75c1-4f03-8906-95733f76919b
     type: title
     task:
-      id: 31c23415-0ec9-4f59-81fa-b221094cb371
+      id: c4b4d2db-75c1-4f03-8906-95733f76919b
       version: -1
       name: Domain registrant in approved list
       type: title
@@ -532,8 +475,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -290,
-          "y": 880
+          "x": -240,
+          "y": 655
         }
       }
     note: false
@@ -543,10 +486,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: a2907802-7f62-49de-886a-f23ee2148b5a
+    taskid: 6e9eac1d-9674-4cf0-8bfd-b5ecc13d79b3
     type: title
     task:
-      id: a2907802-7f62-49de-886a-f23ee2148b5a
+      id: 6e9eac1d-9674-4cf0-8bfd-b5ecc13d79b3
       version: -1
       name: Domain registrant not in approved list
       type: title
@@ -560,8 +503,131 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 880
+          "x": 210,
+          "y": 655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: ced367cb-b7ab-4018-86fb-16c5c73c0136
+    type: regular
+    task:
+      id: ced367cb-b7ab-4018-86fb-16c5c73c0136
+      version: -1
+      name: Set Results
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Results
+      stringify: {}
+      value:
+        simple: ${inputs.WhoisResults}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 2388288d-3f2a-46e6-8f26-189e66ac3fe8
+    type: regular
+    task:
+      id: 2388288d-3f2a-46e6-8f26-189e66ac3fe8
+      version: -1
+      name: Tag as approved registrant
+      description: tags the indicatorwith the approved_registrant tag.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: approved_registrant
+      indicatorsValues:
+        simple: ${ApprovedRegistrantDomains}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 1b1f490a-f599-448b-82d2-aec2b435d99f
+    type: regular
+    task:
+      id: 1b1f490a-f599-448b-82d2-aec2b435d99f
+      version: -1
+      name: Set domains without Whois results
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DomainsNotResolvedByWhois
+      stringify: {}
+      value:
+        complex:
+          root: Results
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Results.Whois.QueryResult
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Whois.QueryValue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1050,
+          "y": 860
         }
       }
     note: false
@@ -574,10 +640,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1345,
-        "width": 2100,
-        "x": -990,
-        "y": -80
+        "height": 1505,
+        "width": 2160,
+        "x": -1050,
+        "y": -240
       }
     }
   }
@@ -587,7 +653,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: ""
+    query: value:xmxmx.com or value:paloaltonetworks.com or value:txxdueri.com
     queryEntity: indicators
     results: null
     daterange:
@@ -603,27 +669,39 @@ inputs:
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: ApprovedregistrantsListName
-  value: {}
+  value:
+    simple: ApprovedRegistars
   required: false
   description: The Cortex XSOAR list name that contains the approved registrars.  A
     registrant is the company or entity  that owns the domain.
-- key: RegistrantListDelimiter
-  value: {}
+  playbookInputQuery: null
+- key: registrantListDelimiter
+  value:
+    simple: ;
   required: false
   description: |-
     A one-character string used to delimit fields. This must match the value that you defined in the list separator server configuration.
     The default value is a comma, however, as registrants might contain the "," character in their name,
     Cortex XSOAR recommends that you select a different delimiter.
   playbookInputQuery: null
+- key: WhoisResults
+  value: {}
+  required: false
+  description: This input receives the Whois results from the parent playbook.
+  playbookInputQuery: null
 outputs:
 - contextPath: NonApprovedDomains
   description: Domains for which the registrant isn't approved.
   type: string
-- contextPath: ApprovedDomains
+- contextPath: ApprovedRegistrantDomains
   description: Domains for which the registrant is approved.
   type: string
 - contextPath: DomainsNotResolvedByWhois
   description: Domains which Whois wasn't able to resolve.
+  type: string
+- contextPath: NotTestedDomains
+  description: In case no registrant list was provided all domains will be outputted
+    here.
   type: string
 quiet: true
 tests:
