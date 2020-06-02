@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+	{
+            "integrations": "Humio",
+            "playbookID": "Humio-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
@@ -1353,10 +1358,6 @@
             "nightly": true
         },
         {
-            "playbookID": "TestSafeBreach",
-            "integrations": "SafeBreach"
-        },
-        {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test",
             "timeout": 500
@@ -1584,7 +1585,8 @@
         },
         {
             "integrations": "carbonblack-v2",
-            "playbookID": "Carbon Black Response Test"
+            "playbookID": "Carbon Black Response Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -2596,6 +2598,11 @@
             "playbookID": "illuminate Integration Test"
         },
         {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "illuminate",
             "playbookID": "illuminate Integration Demonstration - Test"
         },
@@ -2799,7 +2806,6 @@
         "SentinelOne V2 - test": "Issue 24933",
         "DuoAdmin API test playbook": "Issue 24937",
         "Wildfire Test": "Issue 24936",
-        "FireEye HX Test": "Issue 24935",
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
@@ -2963,6 +2969,7 @@
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
+        "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
 
 
@@ -2977,7 +2984,6 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
-        "SafeBreach": "pending rewrite",
         "Cymulate": "Partner didn't provided test playbook"
     },
     "nightly_integrations": [
@@ -3042,7 +3048,6 @@
         "Microsoft Graph Calendar": "Test direct access to oproxy",
         "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
-        "SafeBreach": "SSL Issues",
         "AWS - CloudWatchLogs": "Issue 20958",
         "AWS - AccessAnalyzer": "Issue 24926",
         "AWS - ACM": "Issue 24926",
