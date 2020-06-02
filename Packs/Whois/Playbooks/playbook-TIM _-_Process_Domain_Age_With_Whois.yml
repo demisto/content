@@ -646,7 +646,7 @@ tasks:
       id: 221d777c-07e3-4330-8892-af254aa84dd8
       version: -1
       name: Tag domain with no Whois result
-      description: tag indicator with no Whois result.
+      description: tag indicator with no Whois resolution.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -658,7 +658,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: no_whois_value
+        simple: no_whois_resolution
       indicatorsValues:
         simple: ${DomainsNotResolvedByWhois}
     separatecontext: false
