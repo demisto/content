@@ -669,8 +669,7 @@ inputs:
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: ApprovedregistrantsListName
-  value:
-    simple: ApprovedRegistars
+  value: {}
   required: false
   description: The Cortex XSOAR list name that contains the approved registrars.  A
     registrant is the company or entity  that owns the domain.
