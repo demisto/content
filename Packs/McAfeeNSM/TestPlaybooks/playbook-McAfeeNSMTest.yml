@@ -3,9 +3,9 @@ version: -1
 name: McAfeeNSMTest
 starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: 94a71756-6d5e-4a89-8052-1f08c5fa4e31
+  "0":
+    id: "0"
+    taskid: b75c9325-1847-4451-8216-551e33f9b4c7
     type: start
     task:
       id: 94a71756-6d5e-4a89-8052-1f08c5fa4e31
@@ -110,7 +110,6 @@ tasks:
       type: regular
       iscommand: true
       brand: McAfee NSM
-      description: ''
     nexttasks:
       '#none#':
       - "4"
