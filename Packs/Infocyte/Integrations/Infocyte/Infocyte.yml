@@ -46,8 +46,10 @@ script:
       description: Hostname or IPAddress of target endpoint
     outputs:
     - contextPath: Infocyte.Task.userTaskId
+      description: ""
       type: string
     - contextPath: Infocyte.Task.type
+      description: ""
       type: string
     - contextPath: Infocyte.Task.extensionName
       description: Name of extension ran
@@ -65,12 +67,16 @@ script:
       description: Hostname or IPAddress of target endpoint
     outputs:
     - contextPath: Infocyte.Task.userTaskId
+      description: ""
       type: string
     - contextPath: Infocyte.Task.type
+      description: ""
       type: string
     - contextPath: Infocyte.Task.extensionName
+      description: ""
       type: string
     - contextPath: Infocyte.Task.target
+      description: ""
       type: string
     description: Restore an isolated host
   - name: infocyte-collect-evidence
@@ -80,25 +86,32 @@ script:
       description: Hostname or IPAddress of target endpoint
     outputs:
     - contextPath: Infocyte.Task.userTaskId
+      description: ""
       type: string
     - contextPath: Infocyte.Task.type
+      description: ""
       type: string
     - contextPath: Infocyte.Task.extensionName
+      description: ""
       type: string
     - contextPath: Infocyte.Task.target
+      description: ""
       type: string
     description: Collects Forensic Evidence to S3 bucket (Dat files, eventlogs, etc.)
   - name: infocyte-kill-process
     arguments:
     - name: Target
       required: true
-      description: '    description: Recovers a file on an endpoint to your defined
-        recovery point (S3, ftp, share)'
+      description: "Recovers a file on an endpoint to your defined
+        recovery point (S3, ftp, share)"
     - name: processName
+      description: ""
     - name: SHA1
       description: SHA1 of process image to search for and kill
     - name: processId
+      description: ""
     - name: processPath
+      description: ""
     description: Kills a process and associated persistence mechanisms
     execution: true
   - name: infocyte-recover-file
@@ -107,16 +120,21 @@ script:
       required: true
       description: Hostname or IPAddress of target endpoint
     - name: Paths
+      description: ""
       required: true
       isArray: true
     outputs:
     - contextPath: Infocyte.Task.userTaskId
+      description: ""
       type: string
     - contextPath: Infocyte.Task.type
+      description: ""
       type: string
     - contextPath: Infocyte.Task.extensionName
+      description: ""
       type: string
     - contextPath: Infocyte.Task.target
+      description: ""
       type: string
     description: Recovers a file on an endpoint to your defined recovery point (S3,
       ftp, share)
@@ -130,22 +148,30 @@ script:
       description: Name of extension loaded in Infocyte to run on target host
     outputs:
     - contextPath: Infocyte.Task.userTaskId
+      description: ""
       type: string
     - contextPath: Infocyte.Task.type
+      description: ""
       type: string
     - contextPath: Infocyte.Task.extensionName
+      description: ""
       type: string
     - contextPath: Infocyte.Task.target
+      description: ""
       type: string
     description: Runs the named Infocyte extension on target host
   - name: infocyte-get-taskstatus
+    description: ""
     arguments:
     - name: userTaskId
+      description: ""
       required: true
     outputs:
     - contextPath: Infocyte.Task.userTaskId
+      description: ""
       type: string
     - contextPath: Infocyte.Task.scanId
+      description: ""
       type: string
     - contextPath: Infocyte.Task.type
       description: Task type (SCAN or RESPONSE)
@@ -154,63 +180,86 @@ script:
       description: Percent completion
       type: number
     - contextPath: Infocyte.Task.message
+      description: ""
       type: string
     - contextPath: Infocyte.Task.status
+      description: ""
       type: string
     - contextPath: Infocyte.Task.timeElapsed
       description: Seconds since task created
       type: number
   - name: infocyte-get-scanresult
+    description: ""
     arguments:
     - name: scanId
+      description: ""
       required: true
     outputs:
     - contextPath: Infocyte.Scan.scanId
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.hostId
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.os
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.success
+      description: ""
       type: boolean
     - contextPath: Infocyte.Scan.compromised
+      description: ""
       type: boolean
     - contextPath: Infocyte.Scan.completedOn
+      description: ""
       type: date
     - contextPath: Infocyte.Scan.compromisedObjects
       description: Bad files, artifacts, and events found
       type: number
     - contextPath: Infocyte.Scan.hostname
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.ip
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.objectCount
       description: Total files, artifacts, and events collected
       type: number
   - name: infocyte-get-hostscanresult
+    description: ""
     arguments:
     - name: scanId
+      description: ""
       required: true
     - name: Target
+      description: ""
     outputs:
     - contextPath: Infocyte.Scan.scanId
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.hostId
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.os
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.success
+      description: ""
       type: boolean
     - contextPath: Infocyte.Scan.compromised
+      description: ""
       type: boolean
     - contextPath: Infocyte.Scan.completedOn
+      description: ""
       type: date
     - contextPath: Infocyte.Scan.compromisedObjects
       description: Bad files, artifacts, and events found
       type: number
     - contextPath: Infocyte.Scan.hostname
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.ip
+      description: ""
       type: string
     - contextPath: Infocyte.Scan.objectCount
       description: '    description: Recovers a file on an endpoint to your defined
@@ -219,32 +268,43 @@ script:
   - name: infocyte-get-responseresult
     arguments:
     - name: scanId
+      description: ""
       required: true
     - name: target
       description: Hostname or IP Address of target
     outputs:
     - contextPath: Infocyte.Response.scanId
+      description: ""
       type: string
     - contextPath: Infocyte.Response.hostId
+      description: ""
       type: string
     - contextPath: Infocyte.Response.os
+      description: ""
       type: string
     - contextPath: Infocyte.Response.success
+      description: ""
       type: boolean
     - contextPath: Infocyte.Response.compromised
+      description: ""
       type: boolean
     - contextPath: Infocyte.Response.completedOn
+      description: ""
       type: date
     - contextPath: Infocyte.Response.messages
       description: ""
       type: string
     - contextPath: Infocyte.Response.hostname
+      description: ""
       type: string
     - contextPath: Infocyte.Response.ip
+      description: ""
       type: string
     - contextPath: Infocyte.Response.extensionId
+      description: ""
       type: string
     - contextPath: Infocyte.Response.extensionName
+      description: ""
       type: string
     description: Retrieve results for a scan against a host
   dockerimage: demisto/pwsh-infocyte:1.0.3.8726
