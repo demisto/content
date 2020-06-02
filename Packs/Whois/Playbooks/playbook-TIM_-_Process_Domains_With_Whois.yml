@@ -382,8 +382,8 @@ outputs:
   description: Domains their create value is before the tested date.
   type: string
 - contextPath: NotTestedDomains
-  description: 'In case a playbook doesn''t process the indicators. The indicators
-    will be outputted here. '
+  description: In case a playbook doesn't process the indicators. The indicators
+    will be outputted to this context path.
   type: string
 quiet: true
 tests:
