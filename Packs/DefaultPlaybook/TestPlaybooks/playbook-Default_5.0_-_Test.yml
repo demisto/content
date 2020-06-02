@@ -338,8 +338,8 @@ tasks:
     task:
       id: c2a0df7b-6c7f-4c61-8d4b-de59da3ab32d
       version: -1
-      name: Default_dev
-      playbookName: Default_dev
+      name: Default
+      playbookName: Default
       type: playbook
       iscommand: false
       brand: ""
