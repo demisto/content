@@ -14,9 +14,6 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 SOURCE_NAME = "AutoFocusFeed"
 DAILY_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult'
-SAMPLE_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/samples/'
-SAMPLE_FEED_REQUEST_BASE_URL = f'{SAMPLE_FEED_BASE_URL}search'
-SAMPLE_FEED_RESPONSE_BASE_URL = f'{SAMPLE_FEED_BASE_URL}results/'
 
 EPOCH_BASE = datetime.utcfromtimestamp(0)
 
@@ -68,58 +65,12 @@ class Client(BaseClient):
     def __init__(self, api_key, insecure, proxy, indicator_feeds, custom_feed_urls=None,
                  scope_type=None, sample_query=None):
         self.api_key = api_key
-        self.indicator_feeds = indicator_feeds
-
-        if 'Custom Feed' in indicator_feeds and (custom_feed_urls is None or custom_feed_urls == ''):
-            return_error(f'{SOURCE_NAME} - Output Feed ID and Name are required for Custom Feed')
-
-        elif 'Custom Feed' in indicator_feeds:
-            url_list = []  # type:List
-            for url in custom_feed_urls.split(','):
-                url_list.append(self.url_format(url))
-
-            self.custom_feed_url_list = url_list
-
-        if 'Samples Feed' in indicator_feeds:
-            self.scope_type = scope_type
-
-            if not sample_query:
-                return_error(f'{SOURCE_NAME} - Samples Query can not be empty for Samples Feed')
-            try:
-                self.sample_query = json.loads(sample_query)
-            except Exception:
-                return_error(f'{SOURCE_NAME} - Samples Query is not a well formed JSON object')
-
         self.verify = not insecure
         if proxy:
             handle_proxy()
 
-    def url_format(self, url):
-        """Make sure the URL is in the format:
-        https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID}/{Name}
-
-        Args:
-            url(str): The URL to format.
-
-        Returns:
-            str. The reformatted URL.
-        """
-        if "https://autofocus.paloaltonetworks.com/IOCFeed/" in url:
-            url = url.replace("https://autofocus.paloaltonetworks.com/IOCFeed/",
-                              "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/")
-
-        elif "autofocus.paloaltonetworks.com/IOCFeed/" in url:
-            url = url.replace("autofocus.paloaltonetworks.com/IOCFeed/",
-                              "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/")
-
-        return url
-
-    def daily_custom_http_request(self, feed_type) -> list:
-        """The HTTP request for daily and custom feeds.
-
-        Args:
-            feed_type(str): The feed type (Daily / Custom feed / Samples feed).
-
+    def daily_http_request(self) -> list:
+        """The HTTP request for daily feeds.
         Returns:
             list. A list of indicators fetched from the feed.
         """
@@ -128,66 +79,14 @@ class Client(BaseClient):
             'Content-Type': "application/json"
         }
 
-        if feed_type == "Daily Threat Feed":
-            urls = [DAILY_FEED_BASE_URL]
-
-        else:
-            urls = self.custom_feed_url_list
-
-        indicator_list = []  # type:List
-        for url in urls:
-            res = requests.request(
-                method="GET",
-                url=url,
-                verify=self.verify,
-                headers=headers
-            )
-            res.raise_for_status()
-            indicator_list.extend(res.text.split('\n'))
-
-        return indicator_list
-
-    def sample_http_request(self) -> list:
-        """The HTTP request for the samples feed.
-
-        Args:
-
-        Returns:
-            list. A list of indicators fetched from the feed.
-        """
-        request_body = {
-            'apiKey': self.api_key,
-            'artifactSource': 'af',
-            'scope': self.scope_type,
-            'query': self.sample_query,
-            'type': 'scan',
-        }
-
-        initiate_sample_res = requests.request(
-            method="POST",
-            headers={'Content-Type': "application/json"},
-            url=SAMPLE_FEED_REQUEST_BASE_URL,
+        res = requests.request(
+            method="GET",
+            url=DAILY_FEED_BASE_URL,
             verify=self.verify,
-            json=request_body
+            headers=headers
         )
-        initiate_sample_res.raise_for_status()
-
-        af_cookie = initiate_sample_res.json()['af_cookie']
-        time.sleep(20)
-
-        get_results_res = requests.request(
-            method="POST",
-            url=SAMPLE_FEED_RESPONSE_BASE_URL + af_cookie,
-            verify=self.verify,
-            json={'apiKey': self.api_key}
-        )
-        get_results_res.raise_for_status()
-
-        indicator_list = []  # type:List
-
-        for single_sample in get_results_res.json().get('hits'):
-            indicator_list.extend(self.create_indicators_from_single_sample_response(single_sample))
-
+        res.raise_for_status()
+        indicator_list = res.text.split('\n')
         return indicator_list
 
     @staticmethod
@@ -442,27 +341,6 @@ def module_test_command(client: Client, args: dict):
         except Exception:
             exception_list.append("Could not fetch Daily Threat Feed\n"
                                   "\nCheck your API key and your connection to AutoFocus.")
-
-    if 'Custom Feed' in indicator_feeds:
-        client.indicator_feeds = ['Custom Feed']
-        url_list = client.custom_feed_url_list
-        for url in url_list:
-            client.custom_feed_url_list = [url]
-            try:
-                client.build_iterator(1, 0)
-            except Exception:
-                exception_list.append(f"Could not fetch Custom Feed {url}\n"
-                                      f"\nCheck your API key the URL for the feed and Check "
-                                      f"if they are Enabled in AutoFocus.")
-
-    if 'Samples Feed' in indicator_feeds:
-        client.indicator_feeds = ['Samples Feed']
-        try:
-            client.build_iterator(1, 0)
-        except Exception:
-            exception_list.append("Could not fetch Samples Feed\n"
-                                  "\nCheck your instance configuration and your connection to AutoFocus.")
-
     if len(exception_list) > 0:
         raise Exception("\n".join(exception_list))
 
