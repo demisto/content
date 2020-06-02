@@ -505,3 +505,5 @@ inputs:
   required: false
   description: the device group for which to return results. for panorama only!
 outputs: []
+tests:
+  - PAN-OS DAG Configuration Test
