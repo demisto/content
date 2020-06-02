@@ -2955,7 +2955,6 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "Google Chronicle Backstory": "Issue 22720",
         "XFE_v2": "Issue 22715",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "AlphaSOC Wisdom": "API key has expired",
