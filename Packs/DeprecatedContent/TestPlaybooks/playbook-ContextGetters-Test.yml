@@ -19,6 +19,7 @@ tasks:
       - "1"
       - "3"
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -26,6 +27,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 3b9762a2-4911-4632-8989-f5b7fb534b46
@@ -36,7 +42,7 @@ tasks:
       name: ExtractEmail
       description: Extract Emails from the given text and place them both as output
         and in the context of a playbook. If given an object, will convert to JSON.
-      scriptName: ExtractEmail
+      script: ExtractEmail
       type: regular
       iscommand: false
       brand: ""
@@ -44,7 +50,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      text: mail1@gmail.com,mail2@yahoo.com,mail3@aol.com
+      text:
+        simple: mail1@gmail.com,mail2@yahoo.com,mail3@aol.com
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -52,6 +60,11 @@ tasks:
           "y": 230
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: cea56ee7-aca9-4240-86b7-e2cc6ad3c97c
@@ -62,7 +75,7 @@ tasks:
       name: ExtractHash
       description: Extract md5, sha1, sha256 from the given text and place them both
         as output and in the context of a playbook
-      scriptName: ExtractHash
+      script: ExtractHash
       type: regular
       iscommand: false
       brand: ""
@@ -73,7 +86,9 @@ tasks:
       - "14"
       - "16"
     scriptarguments:
-      text: fe3aacae7fda163c2b628a08ba67585b,427602bfaed3b5bcec58c4957d123cd7312a8f3b,ba8b644d5b7cdc28c99b3aa35bccf9098b2cdd366cc57200050ecf17e86fe561
+      text:
+        simple: fe3aacae7fda163c2b628a08ba67585b,427602bfaed3b5bcec58c4957d123cd7312a8f3b,ba8b644d5b7cdc28c99b3aa35bccf9098b2cdd366cc57200050ecf17e86fe561
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -81,6 +96,11 @@ tasks:
           "y": 229
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: b679f00b-e759-47fc-861b-aa49e9179126
@@ -91,7 +111,7 @@ tasks:
       name: ExtractIP
       description: Extract IPs from the given text and place them both as output and
         in the context of a playbook.
-      scriptName: ExtractIP
+      script: ExtractIP
       type: regular
       iscommand: false
       brand: ""
@@ -99,7 +119,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      text: 8.8.8.8,1.2.3.4,32.43.54.65
+      text:
+        simple: 8.8.8.8,1.2.3.4,32.43.54.65
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -107,6 +129,11 @@ tasks:
           "y": 231
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: f42ddce3-cb60-47b9-8512-d56bfdabe172
@@ -116,7 +143,7 @@ tasks:
       version: -1
       name: ContextGetEmails
       description: Gets all email addresses in context, excluding ones given.
-      scriptName: ContextGetEmails
+      script: ContextGetEmails
       type: regular
       iscommand: false
       brand: ""
@@ -124,8 +151,10 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      excludedEmails: ""
-      extend-context: testEmail=.
+      excludedEmails: {}
+      extend-context:
+        simple: testEmail=.
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -133,6 +162,11 @@ tasks:
           "y": 413
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 0cad0a19-49b9-4e13-8435-3489e7d70b0b
@@ -142,7 +176,7 @@ tasks:
       version: -1
       name: ContextGetIps
       description: Gets all IP addresses in context, excluding ones given.
-      scriptName: ContextGetIps
+      script: ContextGetIps
       type: regular
       iscommand: false
       brand: ""
@@ -150,8 +184,10 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      excludedIps: ""
-      extend-context: testIP=.
+      excludedIps: {}
+      extend-context:
+        simple: testIP=.
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -159,6 +195,11 @@ tasks:
           "y": 413
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 5041c983-a78d-43d8-80b0-d1a6c2a8c1b8
@@ -168,7 +209,7 @@ tasks:
       version: -1
       name: ContextGetHashes(MD5)
       description: Gets hashes (MD5,SHA1,SHA256) from context.
-      scriptName: ContextGetHashes
+      script: ContextGetHashes
       type: regular
       iscommand: false
       brand: ""
@@ -176,8 +217,11 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      extend-context: testMD5=.
-      hash: MD5
+      extend-context:
+        simple: testMD5=.
+      hash:
+        simple: MD5
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -185,6 +229,11 @@ tasks:
           "y": 413
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: 81c666e5-894f-4053-8866-3bab882eb053
@@ -199,7 +248,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: IsTrue
+      script: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -207,10 +256,13 @@ tasks:
       "yes":
       - "10"
     scriptarguments:
-      expectedValue: mail1@gmail.com,mail2@yahoo.com,mail3@aol.com
-      fields: ""
-      path: ""
-      value: ${.=val.testEmail.join() === 'mail1@gmail.com,mail2@yahoo.com,mail3@aol.com'}
+      expectedValue:
+        simple: mail1@gmail.com,mail2@yahoo.com,mail3@aol.com
+      fields: {}
+      path: {}
+      value:
+        simple: ${.=val.testEmail.join() === 'mail1@gmail.com,mail2@yahoo.com,mail3@aol.com'}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -218,6 +270,11 @@ tasks:
           "y": 593
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 6ae3ae12-7238-4427-88d9-529cd3185714
@@ -232,7 +289,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: IsTrue
+      script: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -240,10 +297,14 @@ tasks:
       "yes":
       - "11"
     scriptarguments:
-      expectedValue: 8.8.8.8,1.2.3.4,32.43.54.65
-      fields: ""
-      path: testIP
-      value: ${.=val.testIP.join() === '8.8.8.8,1.2.3.4,32.43.54.65'}
+      expectedValue:
+        simple: 8.8.8.8,1.2.3.4,32.43.54.65
+      fields: {}
+      path:
+        simple: testIP
+      value:
+        simple: ${.=val.testIP.join() === '8.8.8.8,1.2.3.4,32.43.54.65'}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -251,6 +312,11 @@ tasks:
           "y": 593
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: e08fc913-0b23-41ac-8061-6d405fc8e9e8
@@ -265,7 +331,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: IsTrue
+      script: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -273,10 +339,13 @@ tasks:
       "yes":
       - "21"
     scriptarguments:
-      expectedValue: c99a11a53a3748269e3f86d7ac38df11
-      fields: ""
-      path: ""
-      value: ${.=val.testMD5.join() === 'fe3aacae7fda163c2b628a08ba67585b'}
+      expectedValue:
+        simple: c99a11a53a3748269e3f86d7ac38df11
+      fields: {}
+      path: {}
+      value:
+        simple: ${.=val.testMD5.join() === 'fe3aacae7fda163c2b628a08ba67585b'}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -284,6 +353,11 @@ tasks:
           "y": 593
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: e5a0e7dd-69f4-4e4c-8aed-f374c7bd78f5
@@ -293,7 +367,7 @@ tasks:
       version: -1
       name: ContextGetExcludedEmails
       description: Gets all email addresses in context, excluding ones given.
-      scriptName: ContextGetEmails
+      script: ContextGetEmails
       type: regular
       iscommand: false
       brand: ""
@@ -301,8 +375,11 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      excludedEmails: mail3@aol.com
-      extend-context: testExcludedEmail=.
+      excludedEmails:
+        simple: mail3@aol.com
+      extend-context:
+        simple: testExcludedEmail=.
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -310,6 +387,11 @@ tasks:
           "y": 783
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: c0c75a1f-4ee0-48d6-88b9-a7ea4474c03f
@@ -319,7 +401,7 @@ tasks:
       version: -1
       name: ContextGetExcludedIps
       description: Gets all IP addresses in context, excluding ones given.
-      scriptName: ContextGetIps
+      script: ContextGetIps
       type: regular
       iscommand: false
       brand: ""
@@ -327,8 +409,11 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      excludedIps: 1.2.3.4
-      extend-context: testExcludedIP=.
+      excludedIps:
+        simple: 1.2.3.4
+      extend-context:
+        simple: testExcludedIP=.
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -336,6 +421,11 @@ tasks:
           "y": 783
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: bfdada19-2faf-4238-842c-3f347cb78713
@@ -350,7 +440,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: IsTrue
+      script: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -358,10 +448,13 @@ tasks:
       "yes":
       - "21"
     scriptarguments:
-      expectedValue: 8.8.8.8,32.43.54.65
-      fields: ""
-      path: ""
-      value: ${.=val.testExcludedIP.join() === '8.8.8.8,32.43.54.65'}
+      expectedValue:
+        simple: 8.8.8.8,32.43.54.65
+      fields: {}
+      path: {}
+      value:
+        simple: ${.=val.testExcludedIP.join() === '8.8.8.8,32.43.54.65'}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -369,6 +462,11 @@ tasks:
           "y": 974
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: c93ced11-8d73-4329-8e49-58999304c4b7
@@ -383,7 +481,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: IsTrue
+      script: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -391,10 +489,13 @@ tasks:
       "yes":
       - "21"
     scriptarguments:
-      expectedValue: mail1@gmail.com,mail2@yahoo.com
-      fields: ""
-      path: ""
-      value: ${.=val.testExcludedEmail.join() === 'mail1@gmail.com,mail2@yahoo.com'}
+      expectedValue:
+        simple: mail1@gmail.com,mail2@yahoo.com
+      fields: {}
+      path: {}
+      value:
+        simple: ${.=val.testExcludedEmail.join() === 'mail1@gmail.com,mail2@yahoo.com'}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -402,6 +503,11 @@ tasks:
           "y": 974
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: c7f0c056-e5ea-4843-8ee7-134e161c3c24
@@ -411,7 +517,7 @@ tasks:
       version: -1
       name: ContextGetHashes(SHA256)
       description: Gets hashes (MD5,SHA1,SHA256) from context.
-      scriptName: ContextGetHashes
+      script: ContextGetHashes
       type: regular
       iscommand: false
       brand: ""
@@ -419,8 +525,11 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      extend-context: testSHA256=.
-      hash: SHA256
+      extend-context:
+        simple: testSHA256=.
+      hash:
+        simple: SHA256
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -428,6 +537,11 @@ tasks:
           "y": 413
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: 3b376106-4161-4521-8d56-0b525ad332dd
@@ -437,7 +551,7 @@ tasks:
       version: -1
       name: ContextGetHashes(SHA1)
       description: Gets hashes (MD5,SHA1,SHA256) from context.
-      scriptName: ContextGetHashes
+      script: ContextGetHashes
       type: regular
       iscommand: false
       brand: ""
@@ -445,8 +559,11 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      extend-context: testSHA1=.
-      hash: SHA1
+      extend-context:
+        simple: testSHA1=.
+      hash:
+        simple: SHA1
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -454,6 +571,11 @@ tasks:
           "y": 413
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: 2146fa23-7efe-4d59-85e9-70d1353914d3
@@ -463,7 +585,7 @@ tasks:
       version: -1
       name: ContextGetHashes(all)
       description: Gets hashes (MD5,SHA1,SHA256) from context.
-      scriptName: ContextGetHashes
+      script: ContextGetHashes
       type: regular
       iscommand: false
       brand: ""
@@ -471,8 +593,10 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      extend-context: testHash=.
-      hash: ""
+      extend-context:
+        simple: testHash=.
+      hash: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -480,6 +604,11 @@ tasks:
           "y": 413
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 44aaeefe-fe7a-4831-898c-c9ee9c7dee98
@@ -494,7 +623,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: IsTrue
+      script: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -502,10 +631,13 @@ tasks:
       "yes":
       - "21"
     scriptarguments:
-      expectedValue: 2e6d76b398ef59f3041ef7eb30060a787e3c8d594747ed08b096d7eab608682d
-      fields: ""
-      path: ""
-      value: ${.=val.testHash.join() === 'fe3aacae7fda163c2b628a08ba67585b,427602bfaed3b5bcec58c4957d123cd7312a8f3b,ba8b644d5b7cdc28c99b3aa35bccf9098b2cdd366cc57200050ecf17e86fe561'}
+      expectedValue:
+        simple: 2e6d76b398ef59f3041ef7eb30060a787e3c8d594747ed08b096d7eab608682d
+      fields: {}
+      path: {}
+      value:
+        simple: ${.=val.testHash.join() === 'fe3aacae7fda163c2b628a08ba67585b,427602bfaed3b5bcec58c4957d123cd7312a8f3b,ba8b644d5b7cdc28c99b3aa35bccf9098b2cdd366cc57200050ecf17e86fe561'}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -513,6 +645,11 @@ tasks:
           "y": 593
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: 56898e08-611e-4b73-8854-024a016ac20b
@@ -527,7 +664,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: IsTrue
+      script: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -535,10 +672,12 @@ tasks:
       "yes":
       - "21"
     scriptarguments:
-      expectedValue: ""
-      fields: ""
-      path: ""
-      value: ${.=val.testSHA256.join() === 'ba8b644d5b7cdc28c99b3aa35bccf9098b2cdd366cc57200050ecf17e86fe561'}
+      expectedValue: {}
+      fields: {}
+      path: {}
+      value:
+        simple: ${.=val.testSHA256.join() === 'ba8b644d5b7cdc28c99b3aa35bccf9098b2cdd366cc57200050ecf17e86fe561'}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -546,6 +685,11 @@ tasks:
           "y": 593
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: 1e5affe0-c2dc-480f-8348-007b11c5a076
@@ -560,7 +704,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: IsTrue
+      script: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -568,10 +712,13 @@ tasks:
       "yes":
       - "21"
     scriptarguments:
-      expectedValue: DF2EFA060E335F97628CA39C9FEF5469AB3CB837, c99a11a53a3748269e3f86d7ac38df11,2e6d76b398ef59f3041ef7eb30060a787e3c8d594747ed08b096d7eab608682d
-      fields: ""
-      path: ""
-      value: ${.=val.testSHA1.join() === '427602bfaed3b5bcec58c4957d123cd7312a8f3b'}
+      expectedValue:
+        simple: DF2EFA060E335F97628CA39C9FEF5469AB3CB837, c99a11a53a3748269e3f86d7ac38df11,2e6d76b398ef59f3041ef7eb30060a787e3c8d594747ed08b096d7eab608682d
+      fields: {}
+      path: {}
+      value:
+        simple: ${.=val.testSHA1.join() === '427602bfaed3b5bcec58c4957d123cd7312a8f3b'}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -579,6 +726,11 @@ tasks:
           "y": 593
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
     taskid: e946d6e8-c7a7-46bf-8fd7-df4e246c826c
@@ -590,6 +742,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -597,6 +750,11 @@ tasks:
           "y": 1200
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -610,3 +768,4 @@ view: |-
     }
   }
 inputs: []
+outputs: []
