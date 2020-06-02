@@ -181,11 +181,21 @@ class Client(BaseClient):
         return response_content.decode(self.encoding).split('\n')
 
 
-def determine_indicator_type(indicator_type, default_indicator_type, value):
-    if not indicator_type and default_indicator_type:
-        indicator_type = default_indicator_type
-    elif not indicator_type and not default_indicator_type:
+def determine_indicator_type(indicator_type, default_indicator_type, auto_detect, value):
+    """
+    Detect the indicator type of the given value.
+    Args:
+        indicator_type: (str) Indicator type given in the config.
+        default_indicator_type: Indicator type which was inserted as a param of the integration by user.
+        auto_detect: (bool) True whether auto detection of the indicator type is wanted.
+        value: (str) The value which we'd like to get indicator type of.
+    Returns:
+        Str which stands for the indicator type after detection.
+    """
+    if auto_detect:
         indicator_type = auto_detect_indicator_type(value)
+    if not indicator_type:
+        indicator_type = default_indicator_type
     return indicator_type
 
 
@@ -234,7 +244,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     return fields_mapping
 
 
-def fetch_indicators_command(client: Client, default_indicator_type: str, **kwargs):
+def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
     config = client.feed_url_to_config or {}
@@ -249,7 +259,8 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                 if value:
                     raw_json['value'] = value
                     conf_indicator_type = config.get(url, {}).get('indicator_type')
-                    indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, value)
+                    indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
+                                                              value)
                     raw_json['type'] = indicator_type
                     indicator = {
                         'value': value,
@@ -264,7 +275,8 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
 def get_indicators_command(client, args):
     itype = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
-    indicators_list = fetch_indicators_command(client, itype)
+    auto_detect = args.get('auto_detect_type')
+    indicators_list = fetch_indicators_command(client, itype, auto_detect)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
@@ -287,9 +299,7 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client,
-                                                  '' if params.get('auto_detect_type') else
-                                                  params.get('indicator_type'))
+            indicators = fetch_indicators_command(client, params.get('indicator_type'), params.get('auto_detect_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)  # type: ignore
