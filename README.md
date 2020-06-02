@@ -1,4 +1,4 @@
-![Content logo](demisto_content_logo.png)
+![Content logo](xsoar_content_logo.png)
 
 [![CircleCI](https://circleci.com/gh/demisto/content.svg?style=svg)](https://circleci.com/gh/demisto/content)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/demisto/content.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/demisto/content/context:python)
