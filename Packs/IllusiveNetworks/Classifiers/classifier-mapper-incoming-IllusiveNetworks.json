@@ -1,17 +1,9 @@
 {
-    "brandName": "IllusiveNetworks",
-    "custom": true,
-    "defaultIncidentType": "",
-    "id": "4369e69a-35a4-4ec4-8fa2-8e9482e0c74d",
-    "keyTypeMap": {
-        "DECEPTION": "Illusive Networks Incident",
-        "DECOY_SUSPICIOUS_ACTIVITY": "Illusive Networks Incident",
-        "EXTERNAL": "Illusive Networks Incident",
-        "FAILED_UI_LOGIN": "Illusive Networks Incident",
-        "MALICIOUS_DNS": "Illusive Networks Incident",
-        "MALICIOUS_PROCESS": "Illusive Networks Incident",
-        "TRAP_FAILED_LOGIN": "Illusive Networks Incident"
-    },
+    "defaultIncidentType": "Illusive Networks Incident",
+    "id": "Illusive Networks-mapper",
+    "name": "Illusive Networks - Incoming Mapper",
+    "type": "classification",
+    "description": "Maps incoming Illusive Networks incident fields.",
     "mapping": {
         "Illusive Networks Incident": {
             "dontMapEventToLabels": false,
@@ -79,16 +71,6 @@
             }
         }
     },
-    "transformer": {
-        "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "incidentTypes",
-            "transformers": []
-        },
-        "simple": ""
-    },
-    "unclassifiedCases": {},
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }
