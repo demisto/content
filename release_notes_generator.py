@@ -1,4 +1,5 @@
 from __future__ import print_function
+import re
 import os
 import sys
 import json
@@ -6,7 +7,7 @@ import argparse
 
 from datetime import datetime
 from distutils.version import LooseVersion
-from demisto_sdk.commands.common.tools import print_error, get_pack_name, run_command
+from demisto_sdk.commands.common.tools import print_error, run_command
 
 
 IGNORE_RN = '-'
@@ -44,12 +45,14 @@ def get_all_modified_release_note_files(git_sha1):
 
 
 def get_pack_name_from_metdata(file_path):
-    pack_dir = get_pack_name(file_path)
-    pack_metadata_path = os.path.join(PACKS_DIR, pack_dir, PACK_METADATA)
-    with open(pack_metadata_path, 'r') as json_file:
-        pack_metadata = json.load(json_file)
-        pack_name = pack_metadata.get('name')
-    return pack_name
+    match = re.search(r'(.*)\/ReleaseNotes\/.*', file_path)
+    if match:
+        pack_metadata_path = os.path.join(match.group(1), PACK_METADATA)
+        with open(pack_metadata_path, 'r') as json_file:
+            pack_metadata = json.load(json_file)
+            pack_name = pack_metadata.get('name')
+        return pack_name
+    raise ValueError('Pack name was not found for file path {}'.format(file_path))
 
 
 def get_pack_version_from_path(file_path):
