@@ -679,7 +679,7 @@ def test_get_zone_command(mocker, args):
 def test_list_zones_command(mocker):
     okta_zone_json = json.dumps(okta_zone)
     mocker.patch.object(client, 'list_zones', return_value=okta_zone_json)
-    readable, outputs, _ = list_zones_command(client,  {})
+    readable, outputs, _ = list_zones_command(client, {})
     assert 'Test Zone' in readable
     assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
 
