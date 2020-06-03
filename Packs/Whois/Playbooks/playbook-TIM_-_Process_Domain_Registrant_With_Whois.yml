@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.5.0
 name: TIM - Process Domain Registrant With Whois
 description: This playbook compares the domain registrant against the Cortex XSOAR
-  list provided in the inputs. A registrant is the company or entity that owns the
+  list of approved registrants provided in the inputs. A registrant is the company or entity that owns the
   domain.
 starttaskid: "0"
 tasks:
@@ -106,7 +106,7 @@ tasks:
       version: -1
       name: FilterByList
       description: Checks whether the specified item is in a list. The default list
-        is the Cortex XSOAR Indicators Whitelist.
+        is the Cortex XSOAR Indicators Allow list.
       scriptName: FilterByList
       type: regular
       iscommand: false
@@ -185,7 +185,7 @@ tasks:
     task:
       id: 051e749a-0df6-4aed-8aa1-bbaad5b3f6a5
       version: -1
-      name: Set domains that couldnt be processed
+      name: Set domains that couldn't be processed
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -304,7 +304,7 @@ tasks:
       id: d619742c-2c27-4a60-8156-e877eba9030d
       version: -1
       name: Set domains by approved registrants
-      description: Domains whose registrant appears in the list defined in inputs.ApprovedregistrantsListName
+      description: Domains whose registrant appears in the list defined in the inputs.ApprovedregistrantsListName
         context key are added to ApprovedDomains in context.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -557,7 +557,7 @@ tasks:
       id: 66b81388-3784-4887-85e2-d4ac600e80f1
       version: -1
       name: Tag as approved registrant
-      description: tags the indicatorwith the approved_registrant tag.
+      description: Tags the indicator with the approved_registrant tag.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
