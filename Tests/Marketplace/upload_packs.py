@@ -39,7 +39,7 @@ def get_modified_packs(target_packs):
                          f"at the following path: {PACKS_FULL_PATH}"))
             sys.exit(1)
     elif target_packs.lower() == "modified":
-        cmd = "git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
+        cmd = "git diff --name-only HEAD..HEAD^ | grep -E 'Documentation/|Packs/'"
         modified_packs_path = run_command(cmd).splitlines()
         modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
         print(f"Number of modified packs is: {len(modified_packs)}")
