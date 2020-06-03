@@ -133,7 +133,7 @@ def update_alert(alert_id, data):
     """
 
     api_endpoint = "/alerts/alert/{}/".format(alert_id)
-    return http_request('PUT', api_endpoint, headers=DEFAULT_HEADERS, data=json.dumps(data))
+    return http_request('PUT', api_endpoint, data=json.dumps(data))
 
 
 def update_alert_command():
