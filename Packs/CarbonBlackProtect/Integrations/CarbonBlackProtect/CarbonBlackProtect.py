@@ -203,9 +203,16 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
                 reason = res.json()
             except ValueError:
                 reason = res.reason
+            except Exception:
+                reason = res.content
         return_error(f'Error in API call status code: {res.status_code}, reason: {reason}')
     if parse_json:
-        return res.json()
+        try:
+            return res.json()
+        except Exception as e:
+            LOG(str(e))
+            LOG.print_log()
+            return_error(f'Could not parse json response, Actual response is {res.content}')
     return res.content
 
 
