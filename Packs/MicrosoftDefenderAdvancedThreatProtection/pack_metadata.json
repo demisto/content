@@ -1,5 +1,5 @@
 {
-    "name": "MicrosoftDefenderAdvancedThreatProtection",
+    "name": "Microsoft Defender Advanced Threat Protection",
     "description": "Microsoft Defender Advanced ThreatProtection",
     "support": "xsoar",
     "currentVersion": "1.1.0",
