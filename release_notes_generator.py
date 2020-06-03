@@ -11,7 +11,7 @@ from distutils.version import LooseVersion
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning
 
 
-IGNORE_RN = r'<!--(.*?)-->'
+COMMENT_REGEX = r'<!--(.*?)-->'
 PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
 PACK_METADATA = 'pack_metadata.json'
@@ -64,37 +64,17 @@ def get_pack_version_from_path(file_path):
     return pack_version
 
 
-#### Scripts
-- __FakePack3_Script1__
-  This is a fake minor release note.
-- __FakePack3_Script2__
-- __FakePack3_Script3__
-- Another line.
-
-
-
-def format_rn(rn_file):
-    content_type_title_regex = r'####[^\n]*\n'
+def read_and_format_release_note(rn_file):
 
     with open(rn_file, 'r') as stream:
         release_notes = stream.read()
 
-    multiple_endlines = r'\n*'
-    release_notes = re.sub(multiple_endlines, '\n', release_notes)
+    ignored_rn_regex = re.compile(COMMENT_REGEX)
+    if ignored_rn_regex.match(release_notes):
+        return ''
 
     empty_lines_regex = r'\s*-\s*\n'
     release_notes = re.sub(empty_lines_regex, '', release_notes)
-
-    empty_paragraph_regex = r'({})({})*(?!)'.format(content_type_title_regex, item_regex)
-    match = re.search(empty_paragraph_regex, release_notes)
-    if match:
-
-
-
-    empty_paragraph_regex = r'{}[^a-zA-Z]*####'.format(content_type_title_regex)
-    release_notes = re.sub(empty_paragraph_regex, '', release_notes)
-
-
 
     return release_notes
 
@@ -114,10 +94,8 @@ def get_release_notes_dict(release_notes_files):
         pack_version = get_pack_version_from_path(file_path)
         pack_name = get_pack_name_from_metdata(file_path)
 
-        release_note = format_rn(rn)
-
-        ignored_file = re.compile(IGNORE_RN, release_note)
-        if release_note and not ignored_file:
+        release_note = read_and_format_release_note(file_path)
+        if release_note:
             release_notes_dict.setdefault(pack_name, {})[pack_version] = release_note
             print('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
         else:
