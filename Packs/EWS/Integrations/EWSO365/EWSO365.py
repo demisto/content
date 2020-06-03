@@ -124,6 +124,19 @@ ITEMS_RESULTS_HEADERS = [
 """ Classes """
 
 
+class ProxyAdapter(requests.adapters.HTTPAdapter):
+    def send(self, *args, **kwargs):
+        kwargs['proxies'] = handle_proxy()
+        return super().send(*args, **kwargs)
+
+
+# NoVerifyHTTPAdapter is a library insecure HTTPAdapter class
+class InsecureProxyAdapter(NoVerifyHTTPAdapter):
+    def send(self, *args, **kwargs):
+        kwargs['proxies'] = handle_proxy()
+        return super().send(*args, **kwargs)
+
+
 class EWSClient:
     def __init__(
         self,
@@ -152,7 +165,6 @@ class EWSClient:
         :param insecure: Trust any certificate (not secure)
         """
         BaseProtocol.TIMEOUT = int(request_timeout)
-        insecure = not insecure
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
@@ -160,7 +172,7 @@ class EWSClient:
             enc_key=client_secret,
             app_name=APP_NAME,
             base_url=self.ews_server,
-            verify=insecure,
+            verify=not insecure,
             proxy=proxy,
             self_deployed=self_deployed,
             scope="https://outlook.office.com/.default",
@@ -177,9 +189,7 @@ class EWSClient:
         self.protocol = BaseProtocol(self.config)
 
     def __prepare(self, insecure):
-        if insecure:
-            BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
-
+        BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if insecure else ProxyAdapter
         access_token = self.ms_client.get_access_token()
         oauth2_token = OAuth2Token({"access_token": access_token})
         self.credentials = credentials = OAuth2AuthorizationCodeCredentials(
@@ -274,7 +284,6 @@ class EWSClient:
             folders_map = account.root._folders_map
             if path in folders_map:
                 return account.root._folders_map[path]
-
         if is_public:
             folder_result = account.public_folders_root
         elif path == "AllItems":
@@ -1681,7 +1690,6 @@ def sub_main():
             error_message_simple = (
                 "Got timeout from the server. "
                 "Probably the server is not reachable with the current settings. "
-                "Check proxy parameter. If you are using server URL - change to server IP address. "
             )
 
         if not error_message_simple:
