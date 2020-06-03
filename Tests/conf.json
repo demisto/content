@@ -849,7 +849,6 @@
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
-                "AlienVault OTX v2",
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0"
