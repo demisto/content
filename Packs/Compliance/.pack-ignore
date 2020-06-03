@@ -1,0 +1,8 @@
+[file:incidentfield-possiblecauseofthebreach.json]
+ignore=IF107
+
+[file:incidentfield-isthedatasubjecttodpia.json]
+ignore=IF107
+
+[file:incidentfield-companyaddress.json]
+ignore=IF107
