@@ -436,7 +436,7 @@ def module_test_command(client: Client, args: dict):
     indicator_feeds = client.indicator_feeds
     exception_list = []  # type:List
     if 'Daily Threat Feed' in indicator_feeds:
-        raise Exception("Daily Thread is no longer supported by this feed,"
+        return_error("Daily Thread is no longer supported by this feed,"
                         " please configure the AutoFocus Daily Feed for this action")
     if 'Custom Feed' in indicator_feeds:
         client.indicator_feeds = ['Custom Feed']
