@@ -49,21 +49,91 @@ class Client(BaseClient):
         indicator_list = res.text.split('\n')
         return indicator_list
 
-    def create_indicators_from_response(self, feed_type, response):
+    def get_ip_type(self, indicator):
+        """
+        Indicates the correct IP of the given indicator.
+        Args:
+            indicator: (str) Will be checked according to it the type will be returned.
+        Returns:
+            Indicator Type of the given value.
+        """
+        if re.match(ipv4cidrRegex, indicator):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv6cidrRegex, indicator):
+            return FeedIndicatorType.IPv6CIDR
+
+        elif re.match(ipv4Regex, indicator):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6Regex, indicator):
+            return FeedIndicatorType.IPv6
+
+        else:
+            return None
+
+    def find_indicator_type(self, indicator):
+        """Infer the type of the indicator.
+        Args:
+            indicator(str): The indicator whose type we want to check.
+        Returns:
+            str. The type of the indicator.
+        """
+
+        # trying to catch X.X.X.X:portNum
+        if ':' in indicator and '/' not in indicator:
+            sub_indicator = indicator.split(':', 1)[0]
+            ip_type = self.get_ip_type(sub_indicator)
+            if ip_type:
+                return ip_type
+
+        ip_type = self.get_ip_type(indicator)
+        if ip_type:
+            # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
+            if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
+                return FeedIndicatorType.URL
+
+            else:
+                return ip_type
+
+        elif re.match(sha256Regex, indicator):
+            return FeedIndicatorType.File
+
+        # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
+        elif '/' in indicator:
+            return FeedIndicatorType.URL
+
+        else:
+            return FeedIndicatorType.Domain
+
+    def create_indicators_from_response(self, response):
+        """
+        Creates a list of indicators from a given response
+        Args:
+            response: List of dict that represent the response from the api
+        Returns:
+            List of indicators with the correct indicator type.
+        """
         parsed_indicators = []  # type:List
 
         for indicator in response:
             if indicator:
-                indicator_type = auto_detect_indicator_type(indicator)
+                indicator_type = self.find_indicator_type(indicator)
+
+                # catch ip of the form X.X.X.X:portNum and extract the IP without the port.
+                if indicator_type in [FeedIndicatorType.IP, FeedIndicatorType.CIDR,
+                                      FeedIndicatorType.IPv6CIDR, FeedIndicatorType.IPv6] and ":" in indicator:
+                    indicator = indicator.split(":", 1)[0]
+
                 parsed_indicators.append({
                     "type": indicator_type,
                     "value": indicator,
                     "rawJSON": {
                         'value': indicator,
                         'type': indicator_type,
-                        'service': feed_type
+                        'service': 'Daily Threat Feed'
                     },
-                    'fields': {'service': feed_type}
+                    'fields': {'service': 'Daily Threat Feed'}
                 })
 
         return parsed_indicators
@@ -74,8 +144,7 @@ class Client(BaseClient):
             list. A list of JSON objects representing indicators fetched from a feed.
         """
         response = self.daily_http_request()
-        parsed_indicators = self.create_indicators_from_response('Daily Threat Feed',
-                                                                 response)  # list of dict of indicators
+        parsed_indicators = self.create_indicators_from_response(response)  # list of dict of indicators
 
         # for get_indicator_command only
         if limit:
