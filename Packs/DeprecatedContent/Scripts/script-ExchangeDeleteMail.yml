@@ -1,6 +1,6 @@
 commonfields:
   id: ExchangeDeleteMail
-  version: 1
+  version: -1
 name: ExchangeDeleteMail
 script: |-
   //+ exchange/search.ps1
@@ -28,9 +28,8 @@ type: javascript
 tags:
 - exchange
 - email
-comment: Search all mailboxes on an Exchange server for a query and deletes all messages
-  in which query is satisfied. This script runs through the agent on a Windows machine,
-  pulls and executes a  PowerShell script - which talks to the Exchange server.
+comment: This script is deprecated. Please use the Exchange 2016 Compliance Search integration instead.
+deprecated: true
 system: true
 args:
 - name: query
