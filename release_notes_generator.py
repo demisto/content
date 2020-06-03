@@ -64,12 +64,40 @@ def get_pack_version_from_path(file_path):
     return pack_version
 
 
+#### Scripts
+- __FakePack3_Script1__
+  This is a fake minor release note.
+- __FakePack3_Script2__
+- __FakePack3_Script3__
+- Another line.
+
+
+
 def format_rn(rn_file):
-    # We remove here empty lines from the release notes
+    content_type_title_regex = r'####[^\n]*\n'
+
     with open(rn_file, 'r') as stream:
         release_notes = stream.read()
-        release_notes = re.sub(r'-\n|- \n|', '', release_notes)
-        release_notes = re.sub(r'####[^\n]*\n[^(?!PART)####|- \n|', '', release_notes)
+
+    multiple_endlines = r'\n*'
+    release_notes = re.sub(multiple_endlines, '\n', release_notes)
+
+    empty_lines_regex = r'\s*-\s*\n'
+    release_notes = re.sub(empty_lines_regex, '', release_notes)
+
+    empty_paragraph_regex = r'({})({})*(?!)'.format(content_type_title_regex, item_regex)
+    match = re.search(empty_paragraph_regex, release_notes)
+    if match:
+
+
+
+    empty_paragraph_regex = r'{}[^a-zA-Z]*####'.format(content_type_title_regex)
+    release_notes = re.sub(empty_paragraph_regex, '', release_notes)
+
+
+
+    return release_notes
+
 
 
 def get_release_notes_dict(release_notes_files):
