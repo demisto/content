@@ -492,6 +492,10 @@
             "playbookID": "Test CommonServer"
         },
         {
+            "playbookID": "Test-debug-mode",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
         },
