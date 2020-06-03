@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+	{
+            "integrations": "Humio",
+            "playbookID": "Humio-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
@@ -844,7 +849,6 @@
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
-                "AlienVault OTX v2",
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0"
@@ -2939,7 +2943,6 @@
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
         "Code42": "Instance not set up yet",
-        "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
@@ -2950,7 +2953,6 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "Google Chronicle Backstory": "Issue 22720",
         "XFE_v2": "Issue 22715",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "AlphaSOC Wisdom": "API key has expired",
@@ -2964,6 +2966,7 @@
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
+        "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
 
 
