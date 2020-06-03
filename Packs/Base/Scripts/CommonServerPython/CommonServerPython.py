@@ -39,7 +39,7 @@ if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
 else:
-    STRING_TYPES = (str, unicode)  # noqa: F821
+    STRING_TYPES = (str, unicode)  # type: ignore  # noqa:F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
@@ -376,8 +376,10 @@ def handle_proxy(
     if handle_insecure:
         if insecure_param_name is None:
             param_names = ('insecure', 'unsecure')
-        else:
+        elif isinstance(insecure_param_name, str):
             param_names = (insecure_param_name,)
+        else:
+            raise TypeError('`insecure_param_name` variable is not of type string or None.')
         for p in param_names:
             if demisto.params().get(p, False):
                 for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
@@ -1439,7 +1441,7 @@ def appendContext(key, data, dedup=False):
 
         elif isinstance(existing, dict):
             if isinstance(data, dict):
-                new_val = [existing, data]
+                new_val = [existing, data]  # type: ignore
             else:
                 new_val = data + existing  # will raise a self explanatory TypeError
 
@@ -1448,10 +1450,10 @@ def appendContext(key, data, dedup=False):
                 existing.extend(data)
             else:
                 existing.append(data)
-            new_val = existing
+            new_val = existing  # type: ignore
 
         else:
-            new_val = [existing, data]
+            new_val = [existing, data]  # type: ignore
 
         if dedup and isinstance(new_val, list):
             new_val = list(set(new_val))
@@ -2926,7 +2928,7 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs
+                outputs = self.outputs  # type: ignore
                 human_readable = (
                     self.readable_output
                 )  # prefix and key field not provided, human readable should
@@ -3499,7 +3501,7 @@ def get_demisto_version():
         return get_demisto_version._version
     if hasattr(demisto, 'demistoVersion'):
         version = demisto.demistoVersion()
-        get_demisto_version._version = version
+        get_demisto_version._version = version  # type: ignore
         return version
     else:
         raise AttributeError('demistoVersion attribute not found.')
