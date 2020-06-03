@@ -1,5 +1,5 @@
 import os
-from release_notes_generator import get_release_notes_dict, generate_release_notes_summary, PACKS_DIR
+from release_notes_generator import get_release_notes_dict, generate_release_notes_summary
 
 TEST_DATA_PATH = 'Tests/scripts/infrastructure_tests/tests_data/RN_tests_data'
 
