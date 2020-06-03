@@ -111,6 +111,7 @@ tasks:
       id: fed35557-6859-44e6-817a-ee0538819714
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1059,4 +1060,4 @@ inputs:
   playbookInputQuery: null
 outputs: []
 tests:
-  - No tests - Need to add
+  - MAR - Endpoint data collection test

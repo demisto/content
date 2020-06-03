@@ -1491,3 +1491,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - no test
