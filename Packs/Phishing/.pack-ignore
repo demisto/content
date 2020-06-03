@@ -7,6 +7,9 @@ ignore=BA101
 [file:Get_Original_Email_-_Gmail.yml]
 ignore=BA101
 
+[file:Phishing.yml]
+ignore=BA101
+
 [file:incidentfield-Email_Return_Path.json]
 ignore=IF107
 
