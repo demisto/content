@@ -15,6 +15,12 @@ requests.packages.urllib3.disable_warnings()
 SERVER_URL = 'https://sdpondemand.manageengine.com'
 VERSION = '/api/v3/'
 
+REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority',
+                  'service_category', 'requester', 'assets', 'site', 'group', 'technician', 'category', 'subcategory',
+                  'item', 'email_ids_to_notify', 'is_fcr', 'resources', 'udf_fields']
+FIELDS_WITH_NAME = ['request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority', 'service_category',
+                    'requester', 'site', 'group', 'technician', 'category', 'subcategory', 'item']
+
 
 class Client(BaseClient):
     """
@@ -27,13 +33,13 @@ class Client(BaseClient):
                                                                         'Authorization': 'Bearer ' + access_token})
 
     def http_request(self, method, url_suffix, params=None):
-        ok_codes = (200, 401)  # includes responses that are ok (200) and error responses that should be
+        ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
-            print(url_suffix)
-            print(params)
+            # print(url_suffix)
+            # print(params)
             res = self._http_request(method, url_suffix, resp_type='response', ok_codes=ok_codes, params=params)
-            if res.status_code == 200:
+            if res.status_code in [200, 201]:
                 try:
                     return res.json()
                 except ValueError as exception:
@@ -47,15 +53,15 @@ class Client(BaseClient):
                     err_msg = 'Unauthorized request - check server URL and access token -\n' + str(res)
                 raise DemistoException(err_msg)
 
-        except Exception as e:
+        except Exception as e:  # todo: change the exception handling
             if '<requests.exceptions.ConnectionError>' in e.args[0]:  # todo: check if this error happens
                 raise DemistoException('Connection error - Verify that the server URL parameter is correct and that '
                                        'you have access to the server from your host.\n')
-            raise e
+            raise Exception('fails here ' + e.args[0])
 
     def get_requests(self, request_id: str = None, params: dict = None):
         if request_id:
-            print(request_id, type(request_id))
+            # print(request_id, type(request_id))
             return self.http_request(method='GET', url_suffix=f'requests/{request_id}')
         else:
             return self.http_request(method='GET', url_suffix='requests', params=params)
@@ -87,10 +93,10 @@ def get_requests_command(client: Client, args: dict):
     filter_by = args.get('filter_by', None)
     list_info = create_list_info(start_index, row_count, search_fields, filter_by)
     input_data = {'input_data': f'{list_info}'}
-    print(client.get_requests(request_id, input_data))
+    # print(client.get_requests(request_id, input_data))
 
 
-def delete_request_command(client: Client, args: dict):
+def delete_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     """
     Delete the request with the given request_id
 
@@ -102,14 +108,59 @@ def delete_request_command(client: Client, args: dict):
         Demisto Outputs.
     """
     request_id = args.get('request_id')
-    print(client.http_request('DELETE', url_suffix=f'requests/{request_id}'))
+    result = client.http_request('DELETE', url_suffix=f'requests/{request_id}')
+    hr = f'### Successfully deleted request {request_id}'
+    return hr, {}, result
+
+
+def create_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+    """
+    Create a new request with the given args
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    query = args_to_query(args)
+    params = {'input_data': f'{query}'}
+    result = client.http_request('POST', url_suffix='requests', params=params)
+    request = result.get('request', None)
+    output = {}
+    context: dict = defaultdict(list)
+    if request:
+        for field in REQUEST_FIELDS:
+            value = request.get(field, None)
+            if value:
+                output[string_to_context_key(field)] = value
+
+    markdown = tableToMarkdown('Service Desk Plus request was successfully created', t=output)
+    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = output
+    return markdown, context, result
+
+
+def args_to_query(args: dict):
+    """
+    Converts the given demisto.args into the format required for the http request
+    """
+    request_fields = {}
+    for field in REQUEST_FIELDS:
+        value = args.get(field, None)
+        if value:
+            if field not in FIELDS_WITH_NAME or 'name' in value:
+                request_fields[field] = value
+            else:
+                request_fields[field] = {'name': value}
+    return {'request': request_fields}
 
 
 def create_list_info(start_index, row_count, search_fields, filter_by):
     list_info = {}
     if start_index is not None:
         list_info['start_index'] = start_index
-    if row_count is not None:  # checking 'if row_count' will cause skipping when row_count = 0
+    if row_count is not None:
         list_info['row_count'] = row_count
     if search_fields:
         list_info['search_fields'] = search_fields
@@ -149,7 +200,8 @@ def main():
 
     commands = {
         'service-desk-plus-requests-list': get_requests_command,
-        'service-desk-plus-request-delete': delete_request_command
+        'service-desk-plus-request-delete': delete_request_command,
+        'service-desk-plus-request-create': create_request_command
     }
 
     command = demisto.command()
@@ -163,6 +215,7 @@ def main():
         else:
             return_error('Command not found.')
     except Exception as e:
+        # raise e
         return_error(f'Failed to execute {command} command. Error: {e}')
 
 

@@ -89,6 +89,203 @@ script:
     description: Delete the request with the given id.
     execution: false
     name: service-desk-plus-request-delete
+  - arguments:
+    - default: false
+      description: Subject of this request
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - default: false
+      description: Description of this request
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of this request. Choose one of the listed options or provide
+        a dictionary representing a request_type object.
+      isArray: false
+      name: request_type
+      predefined:
+      - Incident
+      - Request For Information
+      - Service Request
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Impact of this request. Choose one of the listed options or provide
+        a dictionary representing an impact object.
+      isArray: false
+      name: impact
+      predefined:
+      - Affects Business
+      - Affects Department
+      - Affects Group
+      - Affects User
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Open
+      description: Indicates the current status of this request. Choose one of the
+        listed options or provide a dictionary representing a status object.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Closed
+      - On Hold
+      - Resolved
+      - Canceled
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The mode in which the request is created. Choose one of the listed
+        options or provide a dictionary representing a mode object.
+      isArray: false
+      name: mode
+      predefined:
+      - E-Mail
+      - Phone Call
+      - Web Form
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Level of the request. Choose one of the listed options or provide
+        a dictionary representing a level object.
+      isArray: false
+      name: level
+      predefined:
+      - Tier 1
+      - Tier 2
+      - Tier 3
+      - Tier 4
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Urgency of the request. Choose one of the listed options or provide
+        a dictionary representing an urgency object.
+      isArray: false
+      name: urgency
+      predefined:
+      - High
+      - Low
+      - Normal
+      - Urgent
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Priority of the request. Choose one of the listed options or provide
+        a dictionary representing a priority object.
+      isArray: false
+      name: priority
+      predefined:
+      - High
+      - Low
+      - Normal
+      - Medium
+      required: false
+      secret: false
+    - default: false
+      description: Service category to which this request belongs. String representing
+        the category's name.
+      isArray: false
+      name: service_category
+      required: false
+      secret: false
+    - default: false
+      description: Indicates the requester of this request. Type the name of the requester
+        as a string or a dictionary representing a requester object.
+      isArray: false
+      name: requester
+      required: false
+      secret: false
+    - default: false
+      description: Array of asset objects associated to this request
+      isArray: false
+      name: assets
+      required: false
+      secret: false
+    - default: false
+      description: Denotes the site to which this request belongs. Type a site name
+        or provide a dictionary representing a site object.
+      isArray: false
+      name: site
+      required: false
+      secret: false
+    - default: false
+      description: Group to which this request belongs. Type the name of the group
+        or a dictionary representing a group object.
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: Technician assigned to this request. Type the name of the technician
+        or a dictoinary representing a technician object.
+      isArray: false
+      name: technician
+      required: false
+      secret: false
+    - default: false
+      description: Category to which the request belongs. Fill in the name of the
+        category or a dictionary representing a category object.
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: Subcategory to which this request belongs. Fill in the name of
+        the subcategory or a dictionary representing a subcategory object.
+      isArray: false
+      name: subcategory
+      required: false
+      secret: false
+    - default: false
+      description: Item of this request. Fill in the item's name or a dictionary representing
+        an item object.
+      isArray: false
+      name: item
+      required: false
+      secret: false
+    - default: false
+      description: Array of Email ids, which nedds to be notified about the happenings
+        of this request
+      isArray: false
+      name: email_ids_to_notify
+      required: false
+      secret: false
+    - default: false
+      description: Boolean value indicating if the request has been marked as First
+        Call Resolution
+      isArray: false
+      name: is_fcr
+      required: false
+      secret: false
+    - default: false
+      description: Holds the resource data mapped to the request
+      isArray: false
+      name: resources
+      required: false
+      secret: false
+    - default: false
+      description: Holds udf fields' values associated with the request. Fill in a
+        dictionary with the udf fileds and values.
+      isArray: false
+      name: udf_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Create new requests
+    execution: false
+    name: service-desk-plus-request-create
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
