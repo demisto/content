@@ -39,4 +39,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![TIM - Process Domains With Whois](Insert the link to your image here)
+![TIM - Process Domains With Whois](https://raw.githubusercontent.com/demisto/content/ae4a642a09936929cc12c7a34d412987cacf8539/Packs/Whois/doc_files/TIM_-_Process_Domains_With_Whois.png)

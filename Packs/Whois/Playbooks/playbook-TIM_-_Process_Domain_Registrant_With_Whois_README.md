@@ -41,4 +41,4 @@ Cortex XSOAR recommends that you select a different delimiter. |  | Optional |
 
 ## Playbook Image
 ---
-![TIM - Process Domain Registrant With Whois](Insert the link to your image here)
+![TIM - Process Domain Registrant With Whois](https://raw.githubusercontent.com/demisto/content/ae4a642a09936929cc12c7a34d412987cacf8539/Packs/Whois/doc_files/TIM_-_Process_Domain_Registrant_With_Whois.png)
