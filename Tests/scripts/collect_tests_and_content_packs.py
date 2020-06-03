@@ -544,11 +544,26 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
     return packs_to_install
 
 
+def get_api_module_integrations(changed_api_modules, integration_set):
+    integration_to_version = {}
+    integration_ids_to_test = set([])
+    for integration in integration_set:
+        integration_data = list(integration.values())[0]
+        if integration_data.get('api_modules', '') in changed_api_modules:
+            file_path = integration_data.get('file_path')
+            integration_id = get_script_or_integration_id(file_path)
+            integration_ids_to_test.add(integration_id)
+            integration_to_version[integration_id] = (get_from_version(file_path), get_to_version(file_path))
+
+    return integration_ids_to_test, integration_to_version
+
+
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set):
     tests_set = set([])
     updated_script_names = set([])
     updated_playbook_names = set([])
     catched_scripts, catched_playbooks = set([]), set([])
+    changed_api_modules = set([])
 
     script_to_version = {}
     playbook_to_version = {}
@@ -574,6 +589,10 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
 
+        if checked_type(file_path, API_MODULE_REGEXES):
+            api_module_name = get_script_or_integration_id(file_path)
+            changed_api_modules.add(api_module_name)
+
     if not id_set:
         with open("./Tests/id_set.json", 'r') as conf_file:
             id_set = json.load(conf_file)
@@ -581,6 +600,11 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
+
+    if changed_api_modules:
+        integration_ids_to_test, integration_to_version_to_add = get_api_module_integrations(changed_api_modules, integration_set)
+        integration_ids = integration_ids.union(integration_ids_to_test)
+        integration_to_version = {**integration_to_version, **integration_to_version_to_add}
 
     deprecated_msgs = exclude_deprecated_entities(script_set, script_names,
                                                   playbook_set, playbook_names,
