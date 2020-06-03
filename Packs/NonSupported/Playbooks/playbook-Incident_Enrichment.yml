@@ -15,7 +15,6 @@ tasks:
     task:
       id: 37175990-2deb-4a44-8cdf-468f12cc97e3
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -24,6 +23,7 @@ tasks:
       - "1"
       - "2"
       - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -31,6 +31,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 285982a4-a0f0-44b9-8730-79b07de3cb70
@@ -48,7 +53,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      text: ${incident}
+      text:
+        simple: ${incident}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -56,6 +63,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: de780391-3d5e-452d-8da0-53075cc3770d
@@ -73,7 +85,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      text: ${incident}
+      text:
+        simple: ${incident}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -81,6 +95,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: cccb4d19-7cc7-46ee-85bd-4283b03ba932
@@ -98,7 +117,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      text: ${incident}
+      text:
+        simple: ${incident}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -106,6 +127,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: cb6e468c-f551-41d4-82c5-25891ed171d7
@@ -119,6 +145,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -126,6 +153,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -139,5 +171,6 @@ view: |-
     }
   }
 inputs: []
+outputs: []
 tests:
   - No tests - Deprecated

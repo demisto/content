@@ -20,6 +20,7 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -27,6 +28,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 295e9ac6-c665-4a4e-8d23-a0903a666143
@@ -47,8 +53,10 @@ tasks:
       "yes":
       - "5"
     scriptarguments:
-      value: ${Domain}
+      value:
+        simple: ${Domain}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -56,6 +64,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: ddaf36d8-5125-4b61-8f48-190aee2586f0
@@ -76,8 +89,10 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      value: ${File.MD5}
+      value:
+        simple: ${File.MD5}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -85,6 +100,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: ca2f470d-41dd-4d21-8c26-98a5169bc0cd
@@ -105,8 +125,10 @@ tasks:
       "yes":
       - "7"
     scriptarguments:
-      value: ${File.SHA1}
+      value:
+        simple: ${File.SHA1}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -114,6 +136,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 0f812845-70a9-4408-83cf-74c92d1915a2
@@ -134,8 +161,10 @@ tasks:
       "yes":
       - "8"
     scriptarguments:
-      value: ${File.SHA256}
+      value:
+        simple: ${File.SHA256}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -143,6 +172,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 892f37be-8fb0-493f-8c86-b64fedf6b049
@@ -160,9 +194,12 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      type: domain
-      value: ${Domain.Name}
+      type:
+        simple: domain
+      value:
+        simple: ${Domain.Name}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -170,6 +207,11 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 79c5b224-634c-4ea7-8604-a94bd0637419
@@ -188,9 +230,12 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      type: md5
-      value: ${File.MD5}
+      type:
+        simple: md5
+      value:
+        simple: ${File.MD5}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -198,6 +243,11 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: f42da4b9-e44a-47f7-8bd3-58ebc367fd29
@@ -215,9 +265,12 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      type: sha1
-      value: ${File.SHA1}
+      type:
+        simple: sha1
+      value:
+        simple: ${File.SHA1}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -225,6 +278,11 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 85fdaa12-b5f9-44c3-81e9-029353b53de2
@@ -242,9 +300,12 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      type: sha256
-      value: ${File.SHA256}
+      type:
+        simple: sha256
+      value:
+        simple: ${File.SHA256}
     continueonerror: true
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -252,6 +313,11 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: fee08a36-3893-425d-8329-77cea06d0d53
@@ -267,6 +333,7 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -274,6 +341,11 @@ tasks:
           "y": 865
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: ee1c2ef3-3993-4227-8e33-cd0baedeff6a
@@ -291,11 +363,14 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      filter: ""
-      limit: ""
-      offset: ""
-      query: ${FalconHostDevices}
-      value: ${FalconHostDevices}
+      filter: {}
+      limit: {}
+      offset: {}
+      query:
+        simple: ${FalconHostDevices}
+      value:
+        simple: ${FalconHostDevices}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -303,6 +378,11 @@ tasks:
           "y": 1185
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: ef5f10f1-f006-47d8-84b7-fed029b29add
@@ -320,15 +400,19 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      attachIDs: ""
-      bcc: ""
-      body: 'Hello,\nPlease review Demisto incident "${incident.name} # ${incident.id}
-        " - results are waiting for you.'
-      cc: ""
-      htmlBody: ""
-      noteEntryID: ""
-      subject: 'Demisto incident ${incident.name} # ${incident.id}'
-      to: ${incident.labels.AnalystEmail}
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: 'Hello,\nPlease review Demisto incident "${incident.name} # ${incident.id}
+          " - results are waiting for you.'
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Demisto incident ${incident.name} # ${incident.id}'
+      to:
+        simple: ${incident.labels.AnalystEmail}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -336,6 +420,11 @@ tasks:
           "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: 4fde6e6e-c916-4a95-83e0-d716d9e58435
@@ -351,6 +440,7 @@ tasks:
     nexttasks:
       '#none#':
       - "15"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -358,6 +448,11 @@ tasks:
           "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 6275c1bc-a359-444b-89aa-c6baf47db456
@@ -377,7 +472,9 @@ tasks:
       "yes":
       - "11"
     scriptarguments:
-      value: ${FalconHostDevices}
+      value:
+        simple: ${FalconHostDevices}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -385,6 +482,11 @@ tasks:
           "y": 1010
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: 063c114f-096a-476d-894c-18f3d802fc0f
@@ -397,6 +499,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -404,6 +507,11 @@ tasks:
           "y": 1710
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: 9ba5d50c-d454-4b3e-8149-847fdfff135c
@@ -424,7 +532,9 @@ tasks:
       "yes":
       - "17"
     scriptarguments:
-      value: ${modules(val.brand == 'FalconHost' && val.state == 'active')}
+      value:
+        simple: ${modules(val.brand == 'FalconHost' && val.state == 'active')}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -432,6 +542,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 06bbd1d4-24bf-4daa-8a57-b1925c9426ae
@@ -450,6 +565,7 @@ tasks:
       - "2"
       - "3"
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -457,6 +573,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -473,5 +594,6 @@ view: |-
     }
   }
 inputs: []
+outputs: []
 tests:
   - No test - old playbook

@@ -22,6 +22,7 @@ tasks:
     nexttasks:
       '#none#':
       - "49"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -29,6 +30,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 6bb644a4-ab7a-4f6c-82ff-c2543048a30d
@@ -38,13 +44,13 @@ tasks:
       version: -1
       description: ""
       name: Prepare
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -52,6 +58,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 3608118f-e307-4a7e-8478-a74fe26a8747
@@ -62,13 +73,13 @@ tasks:
       version: -1
       name: Trigger an update of our IoC repository from all available Threat Intel
         sources
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -76,6 +87,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 2ec8a165-89f6-44b7-8329-8258b97edec4
@@ -93,6 +109,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -100,6 +117,11 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: e0c2eca8-a6bd-4924-835b-4264c1d5a673
@@ -109,13 +131,13 @@ tasks:
       description: ""
       version: -1
       name: Hunt
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "5"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -123,6 +145,11 @@ tasks:
           "y": 865
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: efa206e7-f25b-44fe-8c31-8a8a8b322336
@@ -133,13 +160,13 @@ tasks:
       name: Query netflow records for traffic to C&C IPs
       description: Query the data repository where netflow records are continuously
         aggregated.
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "6"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -147,6 +174,11 @@ tasks:
           "y": 1010
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 4ddbe71f-9a61-4f7c-8dd4-50673f386a1a
@@ -156,13 +188,13 @@ tasks:
       version: -1
       description: ""
       name: Search web proxy logs for C&C URLs
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "7"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -170,6 +202,11 @@ tasks:
           "y": 1185
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: bbefe0d0-cde1-4f50-8bdc-f469f3c80264
@@ -179,13 +216,13 @@ tasks:
       version: -1
       description: ""
       name: Search the organization's DNS server logs for C&C domains
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "8"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -193,6 +230,11 @@ tasks:
           "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 388ef341-1a5b-4352-8328-2af51d604196
@@ -202,13 +244,13 @@ tasks:
       version: -1
       description: ""
       name: Search Endpoint monitoring infrastructure for communication with C&C IPs
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "9"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -216,6 +258,11 @@ tasks:
           "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: d36f548c-3e55-42e5-8059-73e1adf0371e
@@ -226,13 +273,13 @@ tasks:
       name: Search Firewall and IPS logs for C&C IPs
       description: Check if any traffic was attempted to a C&C IP and blocked by our
         Network Security controls such as Firewalls and IPSs
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "10"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -240,6 +287,11 @@ tasks:
           "y": 1710
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: e8beb59e-d7fd-4bc4-8c5d-f29bfa3370ce
@@ -249,13 +301,13 @@ tasks:
       version: -1
       description: ""
       name: Validate findings
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "11"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -263,6 +315,11 @@ tasks:
           "y": 1885
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: 20253d8e-c1d5-4918-82d1-aeac6837d061
@@ -272,7 +329,6 @@ tasks:
       version: -1
       description: ""
       name: Did we uncover any suspected C&C communication?
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -281,6 +337,7 @@ tasks:
       - "23"
       "yes":
       - "12"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -288,6 +345,11 @@ tasks:
           "y": 2030
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: 66696f7e-2a82-4d91-880d-a68502b214a5
@@ -299,13 +361,13 @@ tasks:
         tracking
       description: Have any of our IoCs appeared in a past investigation? What did
         we know about them then, and what was the conclusion?
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "13"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -313,6 +375,11 @@ tasks:
           "y": 2202
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: 45237e6a-0780-41c5-8f55-d6aeefda3db1
@@ -323,13 +390,13 @@ tasks:
       name: Review reputation data for each indicator
       description: Review displayed reputation data for IPs, domains and URLs using
         all reputation sources
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "14"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -337,6 +404,11 @@ tasks:
           "y": 2375
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 69cd0199-8b53-4358-89ed-63677ad5c20c
@@ -347,7 +419,6 @@ tasks:
       description: ""
       name: Is PassiveTotal Available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -357,8 +428,10 @@ tasks:
       "yes":
       - "15"
     scriptarguments:
-      brandname: ""
-      value: ${modules.brand(val==='PassiveTotal')}
+      brandname: {}
+      value:
+        simple: ${modules.brand(val==='PassiveTotal')}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -366,6 +439,11 @@ tasks:
           "y": 2550
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: 0f052e94-da1b-49b1-898f-4de332126b3f
@@ -376,13 +454,13 @@ tasks:
       name: Review PassiveTotal enrichment data for the indicators
       description: Has PassiveTotal marked the domain as "ever compromised"? Does
         it associate the domain with a known malware?
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "16"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -390,6 +468,11 @@ tasks:
           "y": 2737
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: 0d2eda66-3682-4884-892e-82d33324855d
@@ -400,7 +483,6 @@ tasks:
       description: ""
       name: Is CrowdStrike Intel Available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -410,8 +492,10 @@ tasks:
       "yes":
       - "17"
     scriptarguments:
-      brandname: ""
-      value: ${modules.brand(val==='FalconIntel')}
+      brandname: {}
+      value:
+        simple: ${modules.brand(val==='FalconIntel')}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -419,6 +503,11 @@ tasks:
           "y": 2918
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 2676407a-39f4-4dae-8f1e-b72e52bcd409
@@ -428,13 +517,13 @@ tasks:
       version: -1
       description: ""
       name: Get and review CrowdStrike indicator information
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "18"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -442,6 +531,11 @@ tasks:
           "y": 3083
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: 1127e16d-2f20-4090-89a2-e000f2cd9461
@@ -451,7 +545,6 @@ tasks:
       version: -1
       description: ""
       name: Do the found IoCs include domain names?
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -460,6 +553,7 @@ tasks:
       - "22"
       "yes":
       - "19"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -467,6 +561,11 @@ tasks:
           "y": 3289
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: a71b6494-370c-486a-84ac-1a3c58118c11
@@ -476,13 +575,13 @@ tasks:
       version: -1
       description: ""
       name: Review the domains' Whois information
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "20"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -490,6 +589,11 @@ tasks:
           "y": 3450
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: caae4dd9-e7c0-458c-84a9-90db5c2e6fac
@@ -499,13 +603,13 @@ tasks:
       version: -1
       description: ""
       name: Retrieve DNS history for these domains
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "21"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -513,6 +617,11 @@ tasks:
           "y": 3625
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
     taskid: c91818be-5898-46ee-8263-a2f531216e5e
@@ -523,13 +632,13 @@ tasks:
       description: ""
       name: Review IP reputation for the IPs to which this domain resolved at the
         time
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "22"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -537,6 +646,11 @@ tasks:
           "y": 3792
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
     taskid: 5823c9d5-90cc-41cf-87c5-7b94b692f96e
@@ -546,13 +660,13 @@ tasks:
       version: -1
       description: ""
       name: Summarize the list of validated malicious indicators
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "23"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -560,6 +674,11 @@ tasks:
           "y": 3973
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
     taskid: b7ee6752-2787-4142-8802-0d3ae23033c7
@@ -569,13 +688,13 @@ tasks:
       version: -1
       description: ""
       name: Respond
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "24"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -583,6 +702,11 @@ tasks:
           "y": 4189
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
     taskid: 9ac6e273-1fa9-42e3-8367-031ce8a663f3
@@ -592,7 +716,6 @@ tasks:
       version: -1
       description: ""
       name: Have any machines been confirmed as compromised?
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -601,6 +724,7 @@ tasks:
       - "35"
       "yes":
       - "25"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -608,6 +732,11 @@ tasks:
           "y": 4385
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
     taskid: 7b632ce1-d607-40a1-8704-1097f5df2e72
@@ -617,13 +746,13 @@ tasks:
       description: ""
       version: -1
       name: Isolate compromised hosts from network
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "26"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -631,6 +760,11 @@ tasks:
           "y": 4545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
     taskid: 1a83ba02-3043-423b-8f6e-b91e3ed5de09
@@ -642,13 +776,13 @@ tasks:
       description: Block access to the compromised user account in AD pending investigation
         and cleanup, after which the account will be reinstated by an Active Directory
         administrator with the required permissions.
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "27"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -656,6 +790,11 @@ tasks:
           "y": 4737
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
     taskid: bd9b46ea-07eb-46ee-8308-46888a11640b
@@ -667,13 +806,13 @@ tasks:
       description: If the machine contained any authentication keys, accounts to internal
         company resources and information systems, these should be locked and revoked,
         and reinstated later with new passwords.
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "28"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -681,6 +820,11 @@ tasks:
           "y": 4917
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
     taskid: 00d3bb90-f069-4f86-8b0d-b68573ec9ddc
@@ -691,7 +835,6 @@ tasks:
       version: -1
       name: Is Slack Available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -701,7 +844,9 @@ tasks:
       "yes":
       - "33"
     scriptarguments:
-      value: ${modules.brand(val==='slack')}
+      value:
+        simple: ${modules.brand(val==='slack')}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -709,6 +854,11 @@ tasks:
           "y": 5101
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
     taskid: e7c70fba-f94f-4a02-8041-ef0bbf35baf0
@@ -718,13 +868,13 @@ tasks:
       description: ""
       version: -1
       name: Retrieve the user's phone number from Active Directory
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "30"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -732,6 +882,11 @@ tasks:
           "y": 5305
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
     taskid: 9f4c6dba-dd4b-4673-86a8-19de7b29b237
@@ -742,7 +897,6 @@ tasks:
       version: -1
       name: Is Twilio Available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -752,8 +906,10 @@ tasks:
       "yes":
       - "32"
     scriptarguments:
-      brandname: ""
-      value: ${modules.brand(val==='Twilio')}
+      brandname: {}
+      value:
+        simple: ${modules.brand(val==='Twilio')}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -761,6 +917,11 @@ tasks:
           "y": 5481
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
     taskid: dcf67394-61f2-49bb-8e0d-bc4fe64777b8
@@ -770,13 +931,13 @@ tasks:
       version: -1
       description: ""
       name: Call the user and tell them that their machine is being isolated and investigated
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "34"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -784,6 +945,11 @@ tasks:
           "y": 5678
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
     taskid: 322e404d-bfed-49fd-824d-67dc96c95596
@@ -793,13 +959,13 @@ tasks:
       version: -1
       description: ""
       name: SMS the user that their machine is being isolated and investigated
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "34"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -807,6 +973,11 @@ tasks:
           "y": 5678
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
     taskid: 3c17b8bd-e79e-4a02-8b1d-83e10fd749a8
@@ -816,13 +987,13 @@ tasks:
       version: -1
       description: ""
       name: Tell the user on Slack that their machine is being isolated and investigated
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "34"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -830,6 +1001,11 @@ tasks:
           "y": 5305
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
     taskid: c43c578d-8337-42b4-8fbc-73e178f6d0d5
@@ -839,13 +1015,13 @@ tasks:
       version: -1
       description: ""
       name: Open separate incidents to further investigate each compromised host
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "35"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -853,6 +1029,11 @@ tasks:
           "y": 6075
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
     taskid: 789a66bc-3116-4084-8c04-61b840d818ce
@@ -862,13 +1043,13 @@ tasks:
       version: -1
       description: ""
       name: Remediate and Wrap up
-      issystemtask: true
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "36"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -876,6 +1057,11 @@ tasks:
           "y": 6234
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
     taskid: 6f288fd3-3fb2-49af-8036-96f1063cd098
@@ -885,7 +1071,6 @@ tasks:
       version: -1
       description: ""
       name: Have the machines been cleaned successfully?
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -894,6 +1079,7 @@ tasks:
       - "37"
       "yes":
       - "38"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -901,6 +1087,11 @@ tasks:
           "y": 6393
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
     taskid: ba3b890e-71b4-4f4d-8fd1-b33f295fd72e
@@ -910,13 +1101,13 @@ tasks:
       version: -1
       description: ""
       name: Open a ticket for IT to reimage the machine
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "39"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -924,6 +1115,11 @@ tasks:
           "y": 6587
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
     taskid: c3330605-13ed-4282-8d71-6150364e16d2
@@ -933,13 +1129,13 @@ tasks:
       version: -1
       description: ""
       name: Restore network access for cleaned up hosts
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "39"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -947,6 +1143,11 @@ tasks:
           "y": 6587
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "39":
     id: "39"
     taskid: bd76719e-c055-464d-868f-da361e6d134c
@@ -956,13 +1157,13 @@ tasks:
       version: -1
       description: ""
       name: Reinstate locked user accounts with new credentials
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "40"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -970,6 +1171,11 @@ tasks:
           "y": 6857
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
     taskid: a80fd4c5-d1b2-4095-88a8-242e4ae17db5
@@ -980,7 +1186,6 @@ tasks:
       description: ""
       name: Is Slack Available?
       scriptName: IsIntegrationAvailable
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -990,9 +1195,11 @@ tasks:
       "yes":
       - "45"
     scriptarguments:
-      brandname: slack
+      brandname:
+        simple: slack
     results:
     - brandInstances
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1000,6 +1207,11 @@ tasks:
           "y": 7028
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "41":
     id: "41"
     taskid: b195772e-ba3d-4283-8cd5-2103d953285d
@@ -1009,13 +1221,13 @@ tasks:
       version: -1
       description: ""
       name: Retrieve the user's phone number from Active Directory
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "42"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1023,6 +1235,11 @@ tasks:
           "y": 7244
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "42":
     id: "42"
     taskid: 18edd09f-be16-4da9-872c-3934845a255d
@@ -1033,7 +1250,6 @@ tasks:
       description: ""
       name: Is Twilio Available?
       scriptName: Exists
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -1043,8 +1259,10 @@ tasks:
       "yes":
       - "44"
     scriptarguments:
-      brandname: ""
-      value: ${modules.brand(val==='Twilio')}
+      brandname: {}
+      value:
+        simple: ${modules.brand(val==='Twilio')}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1052,6 +1270,11 @@ tasks:
           "y": 7434
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "43":
     id: "43"
     taskid: 2c7bfecc-9b5d-43ba-8e1b-a35265824fef
@@ -1061,13 +1284,13 @@ tasks:
       version: -1
       description: ""
       name: Call the user and tell them that their accounts have been reinstated
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "46"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1075,6 +1298,11 @@ tasks:
           "y": 7614
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "44":
     id: "44"
     taskid: 59e491df-f254-42fe-8e01-5956b8eba874
@@ -1085,13 +1313,13 @@ tasks:
       name: SMS the user that their account has been reinstated
       description: Optionally - include the temporary random password generated for
         the account. The user will have to choose a new password on first login.
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "46"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1099,6 +1327,11 @@ tasks:
           "y": 7614
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
     taskid: 5d519042-711d-4b60-826c-c3566049f1e6
@@ -1110,13 +1343,13 @@ tasks:
       description: Optionally - include the temporary random password generated for
         the account. The user will have to choose a new password on first login.
       script: slack|||slack-send
-      issystemtask: true
       type: regular
       iscommand: true
       brand: slack
     nexttasks:
       '#none#':
       - "46"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1124,6 +1357,11 @@ tasks:
           "y": 7244
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "46":
     id: "46"
     taskid: 1a2dbd58-f17d-437d-8573-54a8339d3ccb
@@ -1133,13 +1371,13 @@ tasks:
       version: -1
       description: ""
       name: Deploy validated IoCs with high confidence rating against future attacks
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "47"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1147,6 +1385,11 @@ tasks:
           "y": 8033
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "47":
     id: "47"
     taskid: e1c5da88-1515-496c-8501-1b5b4c504f93
@@ -1157,13 +1400,13 @@ tasks:
       name: Share the validated IoCs with partner organizations
       description: Include any information gleaned about attribution to a known threat
         actor, especially if the actor is known to be targeting your industrial sector.
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "48"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1171,6 +1414,11 @@ tasks:
           "y": 8237
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "48":
     id: "48"
     taskid: a5a8e072-2d12-46ad-8448-1c958924aa4d
@@ -1180,10 +1428,10 @@ tasks:
       version: -1
       description: ""
       name: Issue report to CISO by email
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1191,6 +1439,11 @@ tasks:
           "y": 8435
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "49":
     id: "49"
     taskid: a38ffd8c-2fc9-4c28-8726-a9f59033aaca
@@ -1200,13 +1453,14 @@ tasks:
       version: -1
       description: ""
       name: Expose Configured Integrations
-      script: ExposeModules
+      scriptName: ExposeModules
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -1214,6 +1468,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -1230,3 +1489,5 @@ view: |-
       }
     }
   }
+inputs: []
+outputs: []
