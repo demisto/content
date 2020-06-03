@@ -342,6 +342,22 @@ class TestChangelogCreation:
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
 
+    def test_clean_release_notes_lines(self):
+        original_rn = '''
+### Integration
+- __SomeIntegration__
+This is visible
+<!-- This is not -->
+'''
+        expected_rn = '''
+### Integration
+- __SomeIntegration__
+This is visible
+
+'''
+        clean_rn = Pack._clean_release_notes(original_rn)
+        assert expected_rn == clean_rn
+
 
 class TestImagesUpload:
     """ Test class for integration images upload.

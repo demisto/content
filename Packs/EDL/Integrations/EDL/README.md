@@ -1,11 +1,11 @@
-This integration provides External Dynamic List (EDL) as a service for the system indicators (Outbound feed).
+This integration provides External Dynamic List (EDL) as a service for the system indicators (Outbound feed). The feed content can then be sent to 3rd parties for improving their security alignment.
 
 
 ## Use Cases
 ---
 1. Generate feeds to be used on PAN-OS as External Dynamic Lists.
-2. Create External Dynamic Lists (EDLs) to track on AutoFocus the IP addresses, URLs and domains used by ransomware, known APT groups, and active malware campaigns.
-3. Create External Dynamic Lists to track the IPs and URLs used by Microsoft Office365, or used as tor exit nodes, or used by CDNs and cloud services.
+2. Create External Dynamic Lists (EDLs) of the IP addresses, URLs and domains used by ransomware, known APT groups, and active malware campaigns for tracking in AutoFocus.
+3. Create External Dynamic Lists to track IPs and URLs commonly used by Microsoft Office365 or CDNs and cloud services, or used as tor exit nodes.
 
 ## Configure EDL on Demisto
 
@@ -16,13 +16,14 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Indicator Query | The query to run to update its list. To view expected results, you can run the following command from the Demisto CLI `!findIndicators query=<your query>` | False |
+| Indicator Query | The query to run to update its list. To view expected results, you can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>` | False |
 | EDL Size | Max amount of entries in the service instance. | True |
-| Update EDL On Demand Only | When set to true, will only update the service indicators via **edl-update** command. | False |
+| Update EDL On Demand Only | When set to true, will only update the service indicators via the **edl-update** command. | False |
 | Refresh Rate | How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-| Listen Port | Will run the *External Dynamic List* on this port from within Demisto | True |
-| Certificate (Required for HTTPS) | HTTPS Certificate provided by pasting its value into this field. | False |
-| Private Key (Required for HTTPS | HTTPS private key provided by pasting its value into this field. | False |
+| Listen Port | By default HTTP, Will run the *External Dynamic List* on this port from within Cortex XSOAR | True |
+| Certificate (Required for HTTPS) | Configure a certificate for the EDL instance. The certificate is provided by pasting its value into this field. Use only when accesing the EDL instance by port. | False |
+| Private Key (Required for HTTPS) | Configure a private key. The private key is provided by pasting its value into this field. Use only when accesing the EDL instance by port. | False |
+| Credintials | Set user and password for accessing the EDL instance. (Only applicable when https is used and a certificate profile is configured on the pan-os edl object) | False |
 | Collapse IPs | Whether to collapse IPs, and if so - to ranges or CIDRs. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -30,14 +31,14 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 ### Access the EDL Service by Instance Name (HTTPS)
 **The route will be open without security hardening and might expose you to network risks.**
 
-To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
+To access the EDL service by instance name, make sure ***Instance execute external*** is enabled.
 
-1. In Demisto, go to **Settings > About > Troubleshooting**.
+1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
-3. In a web browser, go to **https://*<demisto_address>*/instance/execute/*<instance_name>*** .
+3. In a web browser, go to **https://*<cortex-xsoar_address>*/instance/execute/*<instance_name>*** .
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### edl-update
 ***
@@ -50,9 +51,9 @@ Updates values stored in the EDL (only avaialable On-Demand).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query used to retrieve indicators from the system. | Required | 
-| edl_size | The maximum number of entries in the EDL. If no value is provided, will use the value specified in the EDL Size parameter configured in the instance configuration. | Optional | 
-| print_indicators | Boolean | Required | 
+| query | The query used to retrieve indicators from the system. | Required |
+| edl_size | The maximum number of entries in the EDL. If no value is provided, will use the value specified in the EDL Size parameter configured in the instance configuration. | Optional |
+| print_indicators | Boolean | Required |
 | collapse_ips | Whether to collapse IPs, and if so - to ranges or CIDRs. | Optional |
 
 
