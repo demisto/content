@@ -389,7 +389,6 @@ def test_module(
     return 'ok', {}, []
 
 
-
 def upload_file_command(
         client: Client,
         file: str,
