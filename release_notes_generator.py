@@ -11,7 +11,7 @@ from distutils.version import LooseVersion
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning
 
 
-IGNORE_RN = '-'
+IGNORE_RN = r'<!--(.*?)-->'
 PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
 PACK_METADATA = 'pack_metadata.json'
@@ -64,6 +64,12 @@ def get_pack_version_from_path(file_path):
     return pack_version
 
 
+def format_rn(rn_file):
+    with open(rn_file, 'r') as stream:
+        release_notes = stream.read()
+        new_data = re.sub("-\n|--|\n-", '', release_notes)  # todo
+
+
 def get_release_notes_dict(release_notes_files):
     """ Gets a dictionary that holds the new/modified release notes content.
 
@@ -78,10 +84,10 @@ def get_release_notes_dict(release_notes_files):
         pack_version = get_pack_version_from_path(file_path)
         pack_name = get_pack_name_from_metdata(file_path)
 
-        with open(file_path, 'r') as rn:
-            release_note = rn.read()
+        release_note = format_rn(rn)
 
-        if release_note and release_note.strip() != IGNORE_RN:
+        ignored_file = re.compile(IGNORE_RN, release_note)
+        if release_note and not ignored_file:
             release_notes_dict.setdefault(pack_name, {})[pack_version] = release_note
             print('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
         else:
