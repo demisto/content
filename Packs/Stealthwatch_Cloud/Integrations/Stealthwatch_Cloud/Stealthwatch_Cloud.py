@@ -32,7 +32,7 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 
-def http_request(method, url_suffix, params_dict, headers, data=None):
+def http_request(method, url_suffix, params_dict=None, headers=DEFAULT_HEADERS, data=None):
     req_params = {}  # type: Dict[Any,Any]
     if params_dict is not None:
         req_params.update(params_dict)
@@ -133,7 +133,7 @@ def update_alert(alert_id, data):
     """
 
     api_endpoint = "/alerts/alert/{}/".format(alert_id)
-    return http_request('PATCH', api_endpoint, headers=DEFAULT_HEADERS, data=data)
+    return http_request('PUT', api_endpoint, headers=DEFAULT_HEADERS, data=json.dumps(data))
 
 
 def update_alert_command():
@@ -144,7 +144,7 @@ def update_alert_command():
     alert_id = args.get('alertID')
     update_params = {}
     # adding the possible params for update
-    possible_params = ['new_comment', 'tags', 'publish_time', 'snooze_settings', 'merit', 'assigned_to']
+    possible_params = ['new_comment', 'tags', 'publish_time', 'resolved', 'snooze_settings', 'merit', 'assigned_to']
     for param in possible_params:
         current_param = args.get(param, False)
         if current_param:
@@ -154,7 +154,6 @@ def update_alert_command():
         update_params['resolved_user'] = {
             'username': username
         }
-    update_params['resolved'] = args.get('resolved') == 'true'
 
     alert_data = update_alert(alert_id, update_params)
 
