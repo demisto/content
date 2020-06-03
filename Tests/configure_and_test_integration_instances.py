@@ -716,21 +716,22 @@ def main():
     username = secret_conf.get('username') if not username else username
     password = secret_conf.get('userPassword') if not password else password
 
-    testing_server = servers[0]  # test integration instances only on a single server
-    client = demisto_client.configure(base_url=testing_server, username=username, password=password,
-                                      verify_ssl=False)
+    if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
+        testing_server = servers[0]  # test integration instances only on a single server
+        client = demisto_client.configure(base_url=testing_server, username=username, password=password,
+                                          verify_ssl=False)
 
-    set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
-    print('Restarting servers to apply GCS server config ...')
-    ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                 '"sudo systemctl restart demisto"'
-    for server in servers:
-        try:
-            subprocess.check_output(
-                ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
-        except subprocess.CalledProcessError as exc:
-            print(exc.output)
-    print('Done restarting servers.')
+        set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
+        print('Restarting servers to apply GCS server config ...')
+        ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
+                     '"sudo systemctl restart demisto"'
+        for server in servers:
+            try:
+                subprocess.check_output(
+                    ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
+            except subprocess.CalledProcessError as exc:
+                print(exc.output)
+        print('Done restarting servers.')
 
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
@@ -871,18 +872,20 @@ def main():
         else:
             preupdate_success.add((instance_name, integration_of_instance))
 
-    threads_list = []
-    threads_prints_manager = ParallelPrintsManager(len(servers))
-    # For each server url we install content
-    for thread_index, server_url in enumerate(servers):
-        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
-        t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
-                           'prints_manager': threads_prints_manager,
-                           'thread_index': thread_index})
-        threads_list.append(t)
+    if LooseVersion(server_numeric_version) < LooseVersion('6.0.0'):
+        threads_list = []
+        threads_prints_manager = ParallelPrintsManager(len(servers))
+        # For each server url we install content
+        for thread_index, server_url in enumerate(servers):
+            client = demisto_client.configure(base_url=server_url, username=username,
+                                              password=password, verify_ssl=False)
+            t = Thread(target=update_content_on_demisto_instance,
+                       kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
+                               'prints_manager': threads_prints_manager,
+                               'thread_index': thread_index})
+            threads_list.append(t)
 
-    run_threads_list(threads_list)
+        run_threads_list(threads_list)
 
     # configure instances for new integrations
     new_integration_module_instances = []

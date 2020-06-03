@@ -21,7 +21,6 @@ configuration:
   required: false
 script:
   script: |-
-    // modify ipinfo to trigger its test
     var sendRequest = function(url, json) {
         var res = http(
                 url,
