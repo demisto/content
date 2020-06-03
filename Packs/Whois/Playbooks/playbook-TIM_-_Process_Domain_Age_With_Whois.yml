@@ -3,11 +3,11 @@ version: -1
 fromversion: 5.5.0
 name: TIM - Process Domain Age With Whois
 description: This playbook compares the domain creation time against a provided
-time value such as one month ago. The period can be configured within the
-playbook inputs MinimumAgeOfDomainMonths or MinimumAgeOfDomainHours. The playbook
-calculates the timestamp for the relevant period and compares it to the domain
-creation time value provided by Whois. The domains are outputted
-accordingly if they were created before or after the compared time, respectively.
+  time value such as one month ago. The period can be configured within the
+  playbook inputs MinimumAgeOfDomainMonths or MinimumAgeOfDomainHours. The playbook
+  calculates the timestamp for the relevant period and compares it to the domain
+  creation time value provided by Whois. The domains are outputted
+  accordingly if they were created before or after the compared time, respectively.
 starttaskid: "0"
 tasks:
   "0":
