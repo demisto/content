@@ -65,9 +65,11 @@ def get_pack_version_from_path(file_path):
 
 
 def format_rn(rn_file):
+    # We remove here empty lines from the release notes
     with open(rn_file, 'r') as stream:
         release_notes = stream.read()
-        new_data = re.sub("-\n|--|\n-", '', release_notes)  # todo
+        release_notes = re.sub(r'-\n|- \n|', '', release_notes)
+        release_notes = re.sub(r'####[^\n]*\n[^(?!PART)####|- \n|', '', release_notes)
 
 
 def get_release_notes_dict(release_notes_files):
