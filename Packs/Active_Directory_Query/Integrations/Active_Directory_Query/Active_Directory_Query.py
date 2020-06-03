@@ -98,15 +98,20 @@ def account_entry(person_object, custome_attributes):
         'Groups': person_object.get('memberOf')
     }
 
+    lower_cased_person_object_keys = {
+        person_object_key.lower(): person_object_key for person_object_key in person_object.keys()
+    }
+
     for attr in custome_attributes:
         try:
             account[attr] = person_object[attr]
         except KeyError as e:
-            lower_cased_attr = attr[0].lower() + attr[1:]
-            if lower_cased_attr in person_object:
-                account[lower_cased_attr] = person_object[lower_cased_attr]
+            lower_cased_custom_attr = attr.lower()
+            if lower_cased_custom_attr in lower_cased_person_object_keys:
+                cased_custom_attr = lower_cased_person_object_keys.get(lower_cased_custom_attr)
+                account[cased_custom_attr] = person_object[cased_custom_attr]
             else:
-                demisto.debug(f'Failed parsing custom attribute {attr}, error: {e}')
+                demisto.error(f'Failed parsing custom attribute {attr}, error: {e}')
 
     return account
 
