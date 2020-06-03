@@ -264,7 +264,8 @@ class Client(BaseClient):
             )
             endpoints = reply.get('reply')[search_from:search_to]
             for endpoint in endpoints:
-                endpoint['endpoint_id'] = endpoint.get('agent_id')
+                if not endpoint.get('endpoint_id'):
+                    endpoint['endpoint_id'] = endpoint.get('agent_id')
 
         else:
             filters = []

@@ -117,7 +117,7 @@ def test_get_endpoints(requests_mock):
 
     _, outputs, _ = get_endpoints_command(client, args)
     expected_output = {
-        'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == val.endpoint_id)':
+        'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)':
             get_endpoints_response.get('reply').get('endpoints')
     }
     assert expected_output == outputs
