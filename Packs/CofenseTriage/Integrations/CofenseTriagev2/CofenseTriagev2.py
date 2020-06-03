@@ -575,7 +575,7 @@ def main():
         }
 
         triage_instance = TriageInstance(
-            host=demisto.getParam("host").rstrip("/"),
+            host=demisto.getParam("host", "").rstrip("/"),
             token=demisto.getParam("token"),
             user=demisto.getParam("user"),
             disable_tls_verification=demisto.params().get("insecure", False),
