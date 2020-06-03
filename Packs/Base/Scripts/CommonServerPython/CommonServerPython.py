@@ -377,7 +377,7 @@ def handle_proxy(
         if insecure_param_name is None:
             param_names = ('insecure', 'unsecure')
         elif isinstance(insecure_param_name, str):
-            param_names = (insecure_param_name,)
+            param_names = (insecure_param_name,)  # type: ignore
         else:
             raise TypeError('`insecure_param_name` variable is not of type string or None.')
         for p in param_names:
@@ -3490,22 +3490,27 @@ def assign_params(keys_to_ignore=None, values_to_ignore=None, **kwargs):
         if value not in values_to_ignore and key not in keys_to_ignore
     }
 
-
-def get_demisto_version():
-    """Returns the Demisto version and build number.
-
-    :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
-    :rtype: ``dict``
+class GetDemistoVersion:
     """
-    if getattr(get_demisto_version, '_version', None):
-        return get_demisto_version._version
-    if hasattr(demisto, 'demistoVersion'):
-        version = demisto.demistoVersion()
-        get_demisto_version._version = version  # type: ignore
-        return version
-    else:
-        raise AttributeError('demistoVersion attribute not found.')
+    Callable class to replace get_demisto_version function
+    """
+    def __init__(self):
+        self._version = None
 
+    def __call__(self):
+        """Returns the Demisto version and build number.
+
+        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+        :rtype: ``dict``
+        """
+        if self._version is None:
+            if hasattr(demisto, 'demistoVersion'):
+                self._version = demisto.demistoVersion()
+            else:
+                raise AttributeError('demistoVersion attribute not found.')
+        return self._version
+
+get_demisto_version = GetDemistoVersion()
 
 def is_demisto_version_ge(version):
     """Utility function to check if current running integration is at a server greater or equal to the passed version
