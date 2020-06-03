@@ -116,7 +116,7 @@ def test_list_of_indicators_with_no_json_object():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=False)
+        indicators = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
         assert len(indicators) == 3
         assert indicators[0].get('value') == '1.1.1.1'
         assert indicators[0].get('type') == 'IP'

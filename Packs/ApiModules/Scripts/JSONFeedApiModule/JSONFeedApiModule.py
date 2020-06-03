@@ -100,7 +100,8 @@ def test_module(client, params) -> str:
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs) -> Union[Dict, List[Dict]]:
+def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs)\
+        -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
