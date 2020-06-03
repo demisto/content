@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 268876ff-639e-4006-874a-a79e02cc95bf
+    taskid: e2f0f3a2-eb36-44e4-83d8-671747784ce7
     type: start
     task:
-      id: 268876ff-639e-4006-874a-a79e02cc95bf
+      id: e2f0f3a2-eb36-44e4-83d8-671747784ce7
       version: -1
       name: ""
       iscommand: false
@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -24,17 +23,12 @@ tasks:
           "y": -112
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: 7db207a7-ad98-4343-8db3-80b8951302d4
+    taskid: fac3fc32-8742-4b7e-8825-c599a9627833
     type: regular
     task:
-      id: 7db207a7-ad98-4343-8db3-80b8951302d4
+      id: fac3fc32-8742-4b7e-8825-c599a9627833
       version: -1
       name: Create array in context
       description: Find all users associated with a role
@@ -46,13 +40,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      append: {}
-      key:
-        simple: myArray
-      roles: {}
-      value:
-        simple: ${.=function(obj){return ['value1','value2','value3']}(val)}
-    separatecontext: false
+      append: ""
+      key: myArray
+      roles: ""
+      value: ${.=function(obj){return ['value1','value2','value3']}(val)}
     view: |-
       {
         "position": {
@@ -60,17 +51,12 @@ tasks:
           "y": 224
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 803761a8-9be3-4bb7-8c0f-d4d305528f6f
+    taskid: 9e2e1318-804a-4921-8378-263b82298222
     type: condition
     task:
-      id: 803761a8-9be3-4bb7-8c0f-d4d305528f6f
+      id: 9e2e1318-804a-4921-8378-263b82298222
       version: -1
       name: Check existing value
       description: Look for value in a list
@@ -84,15 +70,11 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      array:
-        simple: ${myArray}
-      left: {}
-      list:
-        simple: ${myList}
-      right: {}
-      value:
-        simple: value2
-    separatecontext: false
+      array: ${myArray}
+      left: ""
+      list: ${myList}
+      right: ""
+      value: value2
     view: |-
       {
         "position": {
@@ -100,23 +82,17 @@ tasks:
           "y": 398
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: 5bfe9ed3-c070-46ff-8faa-1b5feebf7804
+    taskid: 1e25a61e-2dc9-453c-8e77-358de77b7466
     type: regular
     task:
-      id: 5bfe9ed3-c070-46ff-8faa-1b5feebf7804
+      id: 1e25a61e-2dc9-453c-8e77-358de77b7466
       version: -1
       name: Bad...
       type: regular
       iscommand: false
       brand: ""
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -124,17 +100,12 @@ tasks:
           "y": 571
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: cdf4eb33-c8f7-42f3-8c76-523fdb8384a7
+    taskid: bc351afb-8624-44dc-8aad-7c96ee9566ad
     type: condition
     task:
-      id: cdf4eb33-c8f7-42f3-8c76-523fdb8384a7
+      id: bc351afb-8624-44dc-8aad-7c96ee9566ad
       version: -1
       name: Check a non exist value
       scriptName: IsValueInArray
@@ -147,15 +118,11 @@ tasks:
       "yes":
       - "5"
     scriptarguments:
-      array:
-        simple: ${myArray}
-      left: {}
-      list:
-        simple: ${myList}
-      right: {}
-      value:
-        simple: value5
-    separatecontext: false
+      array: ${myArray}
+      left: ""
+      list: ${myList}
+      right: ""
+      value: value5
     view: |-
       {
         "position": {
@@ -163,23 +130,17 @@ tasks:
           "y": 697
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: c3d3732b-6cc6-4008-84d7-ceafa0bb66ea
+    taskid: 01f69064-3654-4af6-80a3-5665c404c9ba
     type: regular
     task:
-      id: c3d3732b-6cc6-4008-84d7-ceafa0bb66ea
+      id: 01f69064-3654-4af6-80a3-5665c404c9ba
       version: -1
       name: Bad...
       type: regular
       iscommand: false
       brand: ""
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -187,17 +148,12 @@ tasks:
           "y": 875
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: ab8aaac0-d242-463f-8be1-9fd800dcdb45
+    taskid: d114f093-6ab6-4f0a-8e71-cc8bf9e17d04
     type: condition
     task:
-      id: ab8aaac0-d242-463f-8be1-9fd800dcdb45
+      id: d114f093-6ab6-4f0a-8e71-cc8bf9e17d04
       version: -1
       name: 'Check two equal strings '
       scriptName: IsValueInArray
@@ -210,15 +166,11 @@ tasks:
       "yes":
       - "8"
     scriptarguments:
-      array:
-        simple: value
-      left: {}
-      list:
-        simple: value
-      right: {}
-      value:
-        simple: value
-    separatecontext: false
+      array: value
+      left: ""
+      list: value
+      right: ""
+      value: value
     view: |-
       {
         "position": {
@@ -226,23 +178,17 @@ tasks:
           "y": 1012
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
-    taskid: 0f19c80d-4cac-4848-83ef-5d2c0a09c8fa
+    taskid: 35493b65-809a-4b61-8632-ab4ec83589b5
     type: regular
     task:
-      id: 0f19c80d-4cac-4848-83ef-5d2c0a09c8fa
+      id: 35493b65-809a-4b61-8632-ab4ec83589b5
       version: -1
       name: Bad...
       type: regular
       iscommand: false
       brand: ""
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -250,17 +196,12 @@ tasks:
           "y": 1173
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
-    taskid: e770565c-9b81-4fbf-86af-a20be65283a3
+    taskid: 1407ba9c-7f56-44d9-81fc-1eacb6235a9a
     type: condition
     task:
-      id: e770565c-9b81-4fbf-86af-a20be65283a3
+      id: 1407ba9c-7f56-44d9-81fc-1eacb6235a9a
       version: -1
       name: 'Check two non equal strings '
       scriptName: IsValueInArray
@@ -273,15 +214,11 @@ tasks:
       "yes":
       - "9"
     scriptarguments:
-      array:
-        simple: value
-      left: {}
-      list:
-        simple: value
-      right: {}
-      value:
-        simple: other
-    separatecontext: false
+      array: value
+      left: ""
+      list: value
+      right: ""
+      value: other
     view: |-
       {
         "position": {
@@ -289,23 +226,17 @@ tasks:
           "y": 1351
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
     id: "9"
-    taskid: 36adc2a3-a170-4bc5-8f49-797fcbc6c895
+    taskid: 4b451ade-dae8-403f-8caf-44fd88d62e91
     type: regular
     task:
-      id: 36adc2a3-a170-4bc5-8f49-797fcbc6c895
+      id: 4b451ade-dae8-403f-8caf-44fd88d62e91
       version: -1
       name: Bad...
       type: regular
       iscommand: false
       brand: ""
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -313,17 +244,12 @@ tasks:
           "y": 1519
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
     id: "10"
-    taskid: 691e195e-0d5b-46fe-804a-3081e7652437
+    taskid: 96d3f556-19d5-44f1-8bc4-b7807cb80de3
     type: regular
     task:
-      id: 691e195e-0d5b-46fe-804a-3081e7652437
+      id: 96d3f556-19d5-44f1-8bc4-b7807cb80de3
       version: -1
       name: Close
       scriptName: CloseInvestigation
@@ -331,9 +257,8 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: {}
-      reason: {}
-    separatecontext: false
+      notes: ""
+      reason: ""
     view: |-
       {
         "position": {
@@ -341,17 +266,12 @@ tasks:
           "y": 2430
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: f7d82642-3594-4464-83ca-b72dc0c6c804
+    taskid: 275f5466-11e2-4e95-81b6-e150cea4b331
     type: condition
     task:
-      id: f7d82642-3594-4464-83ca-b72dc0c6c804
+      id: 275f5466-11e2-4e95-81b6-e150cea4b331
       version: -1
       name: Check empty array
       scriptName: IsValueInArray
@@ -364,14 +284,11 @@ tasks:
       "yes":
       - "12"
     scriptarguments:
-      array: {}
-      left: {}
-      list:
-        simple: value
-      right: {}
-      value:
-        simple: other
-    separatecontext: false
+      array: ""
+      left: ""
+      list: value
+      right: ""
+      value: other
     view: |-
       {
         "position": {
@@ -379,23 +296,17 @@ tasks:
           "y": 1729
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
-    taskid: 10326c52-dfe8-4cbb-8f5f-f35857707a3e
+    taskid: 9a4e6353-e317-45aa-86a1-ca03a740485b
     type: regular
     task:
-      id: 10326c52-dfe8-4cbb-8f5f-f35857707a3e
+      id: 9a4e6353-e317-45aa-86a1-ca03a740485b
       version: -1
       name: Bad...
       type: regular
       iscommand: false
       brand: ""
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -403,17 +314,12 @@ tasks:
           "y": 1893
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
-    taskid: ab42d7d4-0d3d-4dad-8fd1-448bc0adf9d8
+    taskid: ae168c25-afaa-4e35-8d5a-e7ff12f4f49b
     type: condition
     task:
-      id: ab42d7d4-0d3d-4dad-8fd1-448bc0adf9d8
+      id: ae168c25-afaa-4e35-8d5a-e7ff12f4f49b
       version: -1
       name: Check empty value
       scriptName: IsValueInArray
@@ -426,14 +332,11 @@ tasks:
       "yes":
       - "14"
     scriptarguments:
-      array:
-        simple: ${myArray}
-      left: {}
-      list:
-        simple: value
-      right: {}
-      value: {}
-    separatecontext: false
+      array: ${myArray}
+      left: ""
+      list: value
+      right: ""
+      value: ""
     view: |-
       {
         "position": {
@@ -441,23 +344,17 @@ tasks:
           "y": 2056
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "14":
     id: "14"
-    taskid: 9bd5ef1c-e627-4bab-81ba-ea2833c9bc70
+    taskid: c18d1e9d-4e7c-4bdc-8183-10207b84930f
     type: regular
     task:
-      id: 9bd5ef1c-e627-4bab-81ba-ea2833c9bc70
+      id: c18d1e9d-4e7c-4bdc-8183-10207b84930f
       version: -1
       name: Bad...
       type: regular
       iscommand: false
       brand: ""
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -465,11 +362,6 @@ tasks:
           "y": 2225
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -483,4 +375,3 @@ view: |-
     }
   }
 inputs: []
-outputs: []

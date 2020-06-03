@@ -1,0 +1,362 @@
+id: TestHttpPlaybook
+version: -1
+name: TestHttpPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bae78175-5537-4d07-8598-df64f70cd2a6
+    type: start
+    task:
+      id: bae78175-5537-4d07-8598-df64f70cd2a6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 855323a0-af57-4662-888b-55c6292775c6
+    type: regular
+    task:
+      id: 855323a0-af57-4662-888b-55c6292775c6
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: "yes"
+      key: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f8b40258-1c71-491e-866e-74c2bffb617e
+    type: regular
+    task:
+      id: f8b40258-1c71-491e-866e-74c2bffb617e
+      version: -1
+      name: Test GET method
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: ""
+      headers: ""
+      insecure: ""
+      method: GET
+      proxy: ""
+      url: https://postman-echo.com/get?foo1=bar1&foo2=bar2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 8fb961a2-92a8-4833-8b26-1d2c9ad1566e
+    type: regular
+    task:
+      id: 8fb961a2-92a8-4833-8b26-1d2c9ad1566e
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      field1: HttpRequest.Response.StatusCode
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: "200"
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 546
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 8161866a-b267-4cc2-8dca-79a529d8583c
+    type: regular
+    task:
+      id: 8161866a-b267-4cc2-8dca-79a529d8583c
+      version: -1
+      name: Test POST method
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      body: body test
+      headers: 'content-type: text/plain'
+      insecure: ""
+      method: POST
+      proxy: ""
+      url: https://postman-echo.com/post
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 728
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 6845cd45-0599-4fc0-8bf4-ff3d7a975303
+    type: regular
+    task:
+      id: 6845cd45-0599-4fc0-8bf4-ff3d7a975303
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      field1: HttpRequest.Response.[1].StatusCode
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: "200"
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 890
+        }
+      }
+  "6":
+    id: "6"
+    taskid: ee75f8ea-c029-4d0a-8816-5bac1424af60
+    type: regular
+    task:
+      id: ee75f8ea-c029-4d0a-8816-5bac1424af60
+      version: -1
+      name: Test PUT method
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body: PUT TEST
+      headers: ""
+      insecure: ""
+      method: PUT
+      proxy: ""
+      url: https://postman-echo.com/put
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1063
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 2b4b6ee1-e467-4950-8812-bfc0e26ccd5c
+    type: regular
+    task:
+      id: 2b4b6ee1-e467-4950-8812-bfc0e26ccd5c
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      field1: HttpRequest.Response.[2].StatusCode
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: "200"
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1221
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 884ddd9a-4791-41bd-81c7-96531cac508a
+    type: regular
+    task:
+      id: 884ddd9a-4791-41bd-81c7-96531cac508a
+      version: -1
+      name: Test DELETE request method
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      body: TEST DELETE
+      headers: ""
+      insecure: ""
+      method: DELETE
+      proxy: ""
+      url: https://postman-echo.com/delete
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1394
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 33f1e3e2-0517-47c6-8d42-37deb213a828
+    type: regular
+    task:
+      id: 33f1e3e2-0517-47c6-8d42-37deb213a828
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      field1: HttpRequest.Response.[3].StatusCode
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: "200"
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1564
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 18dd6da3-1991-4e71-8f14-2b408bda2502
+    type: regular
+    task:
+      id: 18dd6da3-1991-4e71-8f14-2b408bda2502
+      version: -1
+      name: Test authentication
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      body: ""
+      headers: ""
+      insecure: ""
+      method: GET
+      password: password
+      proxy: ""
+      url: https://postman-echo.com/basic-auth
+      username: postman
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1731
+        }
+      }
+  "11":
+    id: "11"
+    taskid: ff7fe6d0-2ea1-472e-807c-15041d8d5fd2
+    type: regular
+    task:
+      id: ff7fe6d0-2ea1-472e-807c-15041d8d5fd2
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      field1: HttpRequest.Response.[4].StatusCode
+      field2: ""
+      field3: ""
+      field4: ""
+      value1: "200"
+      value2: ""
+      value3: ""
+      value4: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1886
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1931,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []

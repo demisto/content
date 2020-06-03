@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9407849a-c88c-4039-8bf8-57b927260f2c
+    taskid: 01939321-b14d-4200-800b-27cfce1b36e7
     type: start
     task:
-      id: 9407849a-c88c-4039-8bf8-57b927260f2c
+      id: 01939321-b14d-4200-800b-27cfce1b36e7
       version: -1
       name: ""
       iscommand: false
@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -24,17 +23,12 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: 70ea876b-80a8-4cf9-85a7-82b52ed9282e
+    taskid: 958f4e13-e239-468c-81c7-4d6f05d5fd43
     type: regular
     task:
-      id: 70ea876b-80a8-4cf9-85a7-82b52ed9282e
+      id: 958f4e13-e239-468c-81c7-4d6f05d5fd43
       version: -1
       name: googleapps-list-users
       description: Retrieves a paginated list of either deleted users or all users
@@ -47,17 +41,16 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      custom-field-mask: {}
-      customer: {}
-      domain: {}
-      event: {}
-      max-results: {}
-      projection: {}
-      query: {}
-      show-deleted: {}
-      sort-order: {}
-      view-type-public-domain: {}
-    separatecontext: false
+      custom-field-mask: ""
+      customer: ""
+      domain: ""
+      event: ""
+      max-results: ""
+      projection: ""
+      query: ""
+      show-deleted: ""
+      sort-order: ""
+      view-type-public-domain: ""
     view: |-
       {
         "position": {
@@ -65,17 +58,12 @@ tasks:
           "y": 230
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: c403a460-e3fb-42a8-86bb-b30eabbcc9eb
+    taskid: 8a638dfd-6026-4425-8881-14f55485da96
     type: regular
     task:
-      id: c403a460-e3fb-42a8-86bb-b30eabbcc9eb
+      id: 8a638dfd-6026-4425-8881-14f55485da96
       version: -1
       name: VerifyContextFields
       scriptName: VerifyContextFields
@@ -83,17 +71,14 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      field1:
-        simple: ${Account.[1]}
-      field2:
-        simple: ${Account.[2]}
-      field3: {}
-      field4: {}
-      value1: {}
-      value2: {}
-      value3: {}
-      value4: {}
-    separatecontext: false
+      field1: ${Account.[1]}
+      field2: ${Account.[2]}
+      field3: ""
+      field4: ""
+      value1: ""
+      value2: ""
+      value3: ""
+      value4: ""
     view: |-
       {
         "position": {
@@ -101,11 +86,6 @@ tasks:
           "y": 410
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -119,4 +99,3 @@ view: |-
     }
   }
 inputs: []
-outputs: []

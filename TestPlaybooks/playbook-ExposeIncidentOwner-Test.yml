@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b86b1453-bf78-4555-876c-e6a34d113b59
+    taskid: 690111d9-9322-44ed-8992-496ac7c559a8
     type: start
     task:
-      id: b86b1453-bf78-4555-876c-e6a34d113b59
+      id: 690111d9-9322-44ed-8992-496ac7c559a8
       version: -1
       name: ""
       iscommand: false
@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -24,17 +23,12 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: 505a5981-74f6-43ca-897a-291edd09ab79
+    taskid: 3b3701b8-11b1-4214-8c22-f5f2f70a7236
     type: regular
     task:
-      id: 505a5981-74f6-43ca-897a-291edd09ab79
+      id: 3b3701b8-11b1-4214-8c22-f5f2f70a7236
       version: -1
       name: AssignAnalystToIncident
       description: |-
@@ -53,11 +47,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      assignBy: {}
-      email: {}
-      roles: {}
-      username: {}
-    separatecontext: false
+      assignBy: ""
+      email: ""
+      roles: ""
+      username: ""
     view: |-
       {
         "position": {
@@ -65,17 +58,12 @@ tasks:
           "y": 195
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 5435febf-58c9-492d-88e2-9e9fe43f8fa8
+    taskid: f6362785-ebac-4058-87a7-65eccc56683d
     type: regular
     task:
-      id: 5435febf-58c9-492d-88e2-9e9fe43f8fa8
+      id: f6362785-ebac-4058-87a7-65eccc56683d
       version: -1
       name: ExposeIncidentOwner
       description: Expose the incident owner into IncidentOwner context key
@@ -88,7 +76,6 @@ tasks:
       - "3"
     results:
     - IncidentOwner
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -96,17 +83,12 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: 660e7c80-8140-483c-80a6-b32f2d9d4deb
+    taskid: 02fb261a-c97d-4268-8053-d09970121237
     type: condition
     task:
-      id: 660e7c80-8140-483c-80a6-b32f2d9d4deb
+      id: 02fb261a-c97d-4268-8053-d09970121237
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal.
@@ -120,13 +102,10 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      left:
-        simple: ${incident.owner}
-      right:
-        simple: ${IncidentOwner.username}
+      left: ${incident.owner}
+      right: ${IncidentOwner.username}
     results:
     - AreValuesEqual
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -134,17 +113,12 @@ tasks:
           "y": 545
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: 96fe633d-c088-4b71-8ac0-ec49ffe79fd8
+    taskid: 745a7918-008b-47b4-8831-cbc632feac07
     type: regular
     task:
-      id: 96fe633d-c088-4b71-8ac0-ec49ffe79fd8
+      id: 745a7918-008b-47b4-8831-cbc632feac07
       version: -1
       name: Close
       scriptName: CloseInvestigation
@@ -152,9 +126,8 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: {}
-      reason: {}
-    separatecontext: false
+      notes: ""
+      reason: ""
     view: |-
       {
         "position": {
@@ -162,23 +135,17 @@ tasks:
           "y": 720
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: 1046b7f1-b263-41fa-8d40-08ea70e4d6e8
+    taskid: 3a4c52f3-d72a-4c93-80b9-53b8362457e6
     type: regular
     task:
-      id: 1046b7f1-b263-41fa-8d40-08ea70e4d6e8
+      id: 3a4c52f3-d72a-4c93-80b9-53b8362457e6
       version: -1
       name: Error
       type: regular
       iscommand: false
       brand: ""
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -186,11 +153,6 @@ tasks:
           "y": 720
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -204,4 +166,3 @@ view: |-
     }
   }
 inputs: []
-outputs: []
