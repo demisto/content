@@ -26,7 +26,7 @@ This playbook does not use any scripts.
 | ActionToPerform | This input specifies which action the playbook performs on the provided indicators. Possible input values can be
     AutoExclude
     TagIndicators |  | Optional |
-| TagValueForIndicators | This input specifies the tag value to apply to the indicators. |  | Optional |
+| TagValueForIndicators | This input specifies the tag value to apply to the indicators. An example value can be whitelist review |  | Optional |
 | OpenIncidentToReviewIndicatorsManually | This input determines if processed indicators that have the whitelist review tag are reviewed in a new incident. To create an incident, enter any value other than 'No'. | No | Optional |
 | AutoExcludeReason | Provide the reason that will appear in the XSOAR exclusion |  | Optional |
 
