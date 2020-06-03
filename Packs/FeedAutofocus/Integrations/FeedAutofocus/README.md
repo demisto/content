@@ -1,5 +1,6 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
+The Daily Feed is deprecated and can be set using AutoFocus Daily Feed. 
 
 ## Configure AutoFocus Feed on Demisto
 

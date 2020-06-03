@@ -1,5 +1,6 @@
 ## AutoFocus Feed
-Gets Daily Threat Feed and Custom feeds from AutoFocus.
+Gets Custom feeds from AutoFocus.
+The Daily Feed is deprecated and can be set using AutoFocus Daily Feed. 
 
 For more information see the [AutoFocus documentation](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 
