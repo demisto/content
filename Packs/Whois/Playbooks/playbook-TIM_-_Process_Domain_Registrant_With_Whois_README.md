@@ -32,7 +32,7 @@ Cortex XSOAR recommends that you select a different delimiter. |  | Optional |
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| NonApprovedDomains | Domains for which the registrant isn't approved. | string |
+| DomainsNotApproved | Domains for which the registrant isn't approved. | string |
 | ApprovedDomains | Domains for which the registrant is approved. | string |
 | DomainsNotResolvedByWhois | Domains which Whois wasn't able to resolve. | string |
 
