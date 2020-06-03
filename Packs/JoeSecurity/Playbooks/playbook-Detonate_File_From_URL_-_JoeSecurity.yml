@@ -363,4 +363,4 @@ outputs:
   description: The actual score (only in case of report type=json).
   type: number
 tests:
-  - No tests
+  - JoeSecurityTestDetonation
