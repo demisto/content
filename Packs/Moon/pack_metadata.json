@@ -1,0 +1,20 @@
+{
+    "name": "Moon",
+    "description": "This is test integration",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "gachmoon8",
+    "url": "https://github.com/gachmoon8",
+    "email": "gachmoon8@gmail.com",
+    "created": "2020-06-03T06:22:58Z",
+    "categories": [
+        "Database"
+    ],
+    "tags": [
+        "python",
+        "integration",
+        "security"
+    ],
+    "useCases": [],
+    "keywords": []
+}
