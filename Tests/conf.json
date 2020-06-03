@@ -1106,6 +1106,14 @@
             "playbookID": "TestSkyformation"
         },
         {
+            "integrations": "CrowdStrike Falcon X",
+            "playbookID": "FalconX - Test-Detonate File"
+        },
+        {
+            "integrations": "CrowdStrike Falcon X",
+            "playbookID": "FalconX - Test-Detonate URL"
+        },
+        {
             "integrations": "okta",
             "playbookID": "okta_test_playbook",
             "timeout": 240
@@ -2877,6 +2885,7 @@
         "Zendesk": "No instance",
         "GuardiCore": "No instance",
         "Nessus": "No instance",
+        "CrowdStrike Falcon X": "No instance",
         "Cisco CloudLock": "No instance",
         "SentinelOne": "No instance",
         "Vectra v2": "No instance",

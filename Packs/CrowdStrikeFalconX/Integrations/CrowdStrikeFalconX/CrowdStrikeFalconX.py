@@ -1,11 +1,10 @@
-from typing import Dict, Callable, Tuple, Any, Union, List
+from typing import Dict, Tuple, List
 
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from requests import Response
 import traceback
 import shutil
 
@@ -69,7 +68,7 @@ class Client(BaseClient):
             file_name: str,
             is_confidential: str = "true",
             comment: str = ""
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param file: content of the uploaded sample in binary format
         :param file_name: name of the file
@@ -80,13 +79,16 @@ class Client(BaseClient):
         name = demisto.getFilePath(file)['name']
         try:
             shutil.copy(demisto.getFilePath(file)['path'], name)
-        except Exception:
+            with open(name, 'rb') as f:
+                url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
+                             f"&comment={comment}"
+                self._headers['Content-Type'] = 'application/octet-stream'
+                shutil.rmtree(file_name, ignore_errors=True)
+                return self._http_request("POST", url_suffix, files={'file': f})
+        except OSError:
             raise Exception('Failed to prepare file for upload.')
-        with open(name, 'rb') as f:
-            url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}&comment={comment}"
-            self._headers['Content-Type'] = 'application/octet-stream'
+        finally:
             shutil.rmtree(file_name, ignore_errors=True)
-            return self._http_request("POST", url_suffix, files={'file': f})
 
     def send_uploaded_file_to_sandbox_analysis(
             self,
@@ -99,7 +101,7 @@ class Client(BaseClient):
             submit_name: str,
             system_date: str,
             system_time: str
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param sha256: SHA256 ID of the sample, which is a SHA256 hash value
         :param environment_id: specifies the sandbox environment used for analysis
@@ -142,7 +144,7 @@ class Client(BaseClient):
             submit_name: str,
             system_date: str,
             system_time: str
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param url: a web page or file URL. It can be HTTP(S) or FTP.
         :param environment_id: specifies the sandbox environment used for analysis
@@ -177,7 +179,7 @@ class Client(BaseClient):
     def get_full_report(
             self,
             id: str
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param id: id of a submitted malware samples.
         :return: http response
@@ -191,7 +193,7 @@ class Client(BaseClient):
     def get_report_summary(
             self,
             id: str
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param id: id of a submitted malware samples.
         :return: http response
@@ -205,7 +207,7 @@ class Client(BaseClient):
     def get_analysis_status(
             self,
             ids: list
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param ids: ids of a submitted malware samples.
         :return: http response
@@ -221,7 +223,7 @@ class Client(BaseClient):
             id: str,
             name: str,
             accept_encoding: str
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
         :param name: the name given to your downloaded file
@@ -238,7 +240,7 @@ class Client(BaseClient):
 
     def check_quota_status(
             self
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :return: http response
         """
@@ -251,7 +253,7 @@ class Client(BaseClient):
             filter: str,
             offset: str,
             sort: str,
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param limit: maximum number of report IDs to return
         :param filter: optional filter and sort criteria in the form of an FQL query
@@ -274,7 +276,7 @@ class Client(BaseClient):
             filter: str,
             offset: str,
             sort: str,
-    ) -> Union[dict, str, Response]:
+    ) -> dict:
         """Creating the needed arguments for the http request
         :param limit: maximum number of report IDs to return
         :param filter: optional filter and sort criteria in the form of an FQL query
@@ -316,7 +318,7 @@ def add_outputs_from_dict(
 
 
 def parse_outputs(
-        api_res: Dict,
+        api_res: dict,
         meta_fields: list = [],
         quota_fields: list = [],
         resources_fields: list = [],
@@ -336,9 +338,9 @@ def parse_outputs(
     """
     if api_res.get("errors"):
         # if there is an error in the api result, return only the error
-        return {"errors": api_res.get("errors")[0]}
+        return {"errors": api_res.get("errors")}
 
-    api_res_meta, api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}, {}
+    api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}
     resources_group_outputs, sandbox_group_outputs = {}, {}
 
     api_res_meta = api_res.get("meta")
@@ -385,13 +387,14 @@ def test_module(
     return 'ok', {}, []
 
 
+
 def upload_file_command(
         client: Client,
         file: str,
         file_name: str,
         is_confidential: str = "true",
         comment: str = ""
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
     :param file: content of the uploaded sample in binary format
@@ -420,7 +423,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
         submit_name: str = "",
         system_date: str = "",
         system_time: str = ""
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Submit a sample SHA256 for sandbox analysis.
     :param client: the client object with an access token
     :param sha256: SHA256 ID of the sample, which is a SHA256 hash value
@@ -457,7 +460,7 @@ def send_url_to_sandbox_analysis_command(
         submit_name: str = "",
         system_date: str = "",
         system_time: str = ""
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Submit a URL or FTP for sandbox analysis.
     :param client: the client object with an access token
     :param url: a web page or file URL. It can be HTTP(S) or FTP.
@@ -485,7 +488,7 @@ def send_url_to_sandbox_analysis_command(
 def get_full_report_command(
         client: Client,
         ids: list
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -517,7 +520,7 @@ def get_full_report_command(
 def get_report_summary_command(
         client: Client,
         ids: list
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Get a short summary version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -540,7 +543,7 @@ def get_report_summary_command(
         ]
 
         sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
-                         "filetyp", "filesize", "sha256"]
+                          "filetyp", "filesize", "sha256"]
         filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
                                                    sandbox_fields=sandbox_fields))
 
@@ -551,7 +554,7 @@ def get_report_summary_command(
 def get_analysis_status_command(
         client: Client,
         ids: list
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Check the status of a sandbox analysis.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -579,7 +582,7 @@ def download_ioc_command(
         id: str,
         name: str = "",
         accept_encoding: str = ""
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Download IOC packs, PCAP files, and other analysis artifacts.
     :param client: the client object with an access token
     :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
@@ -595,7 +598,7 @@ def download_ioc_command(
 
 def check_quota_status_command(
         client: Client
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Search endpoint contains File Hash.
     :param client: the client object with an access token
     :return: Demisto outputs when entry_context and responses are lists
@@ -615,7 +618,7 @@ def find_sandbox_reports_command(
         filter: str = "",
         offset: str = "",
         sort: str = "",
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Find sandbox reports by providing an FQL filter and paging details.
     :param client: the client object with an access token
     :param limit: maximum number of report IDs to return
@@ -639,7 +642,7 @@ def find_submission_id_command(
         filter: str = "",
         offset: str = "",
         sort: str = "",
-) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[Union[dict, str, Response]]]:
+) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Find submission IDs for uploaded files by providing an FQL filter and paging details.
     :param client: the client object with an access token
     :param limit: maximum number of report IDs to return
@@ -668,7 +671,7 @@ def main():
         command = demisto.command()
         LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
         client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,
             'cs-fx-detonate-uploaded-file': send_uploaded_file_to_sandbox_analysis_command,
