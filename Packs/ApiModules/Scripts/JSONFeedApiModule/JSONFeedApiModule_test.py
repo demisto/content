@@ -19,7 +19,8 @@ def test_json_feed_no_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'])
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+                                              auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
