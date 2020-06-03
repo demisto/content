@@ -41,7 +41,7 @@ def test_release_notes_summary_two_packs():
 
     rn_summary = generate_release_notes_summary(rn_dict, VERSION, ASSET_ID)
 
-    assert VERSION in rn_summary and ASSET_ID in rn_summary
+    assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
     assert '## FakePack1 Pack v1.1.0' in rn_summary
     assert '- __FakePack1_Integration1__' in rn_summary
     assert 'This is a fake minor release note.' in rn_summary
@@ -74,8 +74,10 @@ def test_release_notes_summary_with_empty_lines_in_rn():
 
     rn_summary = generate_release_notes_summary(rn_dict, VERSION, ASSET_ID)
 
+    print(rn_summary)
+
     match = re.search(EMPTY_LINES_REGEX, rn_summary)
-    assert match and not match.groups()
+    assert match is None
 
 
 def test_release_notes_summary_with_ignored_rns():
@@ -108,3 +110,4 @@ def test_release_notes_summary_with_ignored_rns():
 
     assert '## FakePack4 Pack v1.1.0' in rn_summary
     assert '- __FakePack4_Script1__' in rn_summary
+

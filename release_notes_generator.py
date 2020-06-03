@@ -124,7 +124,10 @@ def generate_release_notes_summary(release_notes_dict, version, asset_id):
                                                        key=lambda pack_item: LooseVersion(pack_item[0])):
             release_notes += f'## {pack_name} Pack v{pack_version}\n' \
                              f'{pack_release_notes}\n' \
-                             f'---\n'
+                             f'---\n\n'
+
+    if release_notes.endswith('---\n\n'):
+        release_notes = release_notes[:-5]
 
     with open(RELEASE_NOTES_FILE, 'w') as outfile:
         outfile.write(release_notes)
