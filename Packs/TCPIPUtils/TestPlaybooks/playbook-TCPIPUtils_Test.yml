@@ -16,7 +16,6 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -24,11 +23,6 @@ tasks:
           "y": -140
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
     taskid: e0a74686-e777-42ef-8233-d24b739a2afa
@@ -47,9 +41,7 @@ tasks:
       - "2"
       - "4"
     scriptarguments:
-      ip:
-        simple: tcpiputils.com
-    separatecontext: false
+      ip: tcpiputils.com
     view: |-
       {
         "position": {
@@ -57,11 +49,6 @@ tasks:
           "y": 230
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
     taskid: c1402d0a-75cd-458e-895e-5f8f71dfa863
@@ -70,34 +57,24 @@ tasks:
       id: c1402d0a-75cd-458e-895e-5f8f71dfa863
       version: -1
       name: VerifyIPOutput
-      script: VerifyContextFields
+      scriptName: VerifyContextFields
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue:
-        simple: '"AS13335"'
-      extend-context: {}
-      field1:
-        simple: IP.ASN
-      field2:
-        simple: IP.Geo.Country
-      field3:
-        simple: IP.Address
-      field4: {}
-      fields: {}
-      path:
-        simple: IP.ASN
-      value:
-        simple: ' ${IP.ASN} ${IP.Address} ${IP.Geo.Country}${IP.Geo.Description}'
-      value1:
-        simple: ${IP.ASN}
-      value2:
-        simple: ${IP.Geo.Country}
-      value3:
-        simple: ${IP.Address}
-      value4: {}
-    separatecontext: false
+      expectedValue: '"AS13335"'
+      extend-context: ""
+      field1: IP.ASN
+      field2: IP.Geo.Country
+      field3: IP.Address
+      field4: ""
+      fields: ""
+      path: IP.ASN
+      value: ' ${IP.ASN} ${IP.Address} ${IP.Geo.Country}${IP.Geo.Description}'
+      value1: ${IP.ASN}
+      value2: ${IP.Geo.Country}
+      value3: ${IP.Address}
+      value4: ""
     view: |-
       {
         "position": {
@@ -105,11 +82,6 @@ tasks:
           "y": 477
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
     taskid: 04c5abc5-d6e2-4270-841d-9b933c325064
@@ -118,17 +90,14 @@ tasks:
       id: 04c5abc5-d6e2-4270-841d-9b933c325064
       version: -1
       name: VerifyContext
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Address,WHOIS,ASN
-      path:
-        simple: IP
-    separatecontext: false
+      expectedValue: ""
+      fields: Address,WHOIS,ASN
+      path: IP
     view: |-
       {
         "position": {
@@ -136,11 +105,6 @@ tasks:
           "y": 477
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
     taskid: 0bfe087f-2db5-4fe5-8558-026bec69711c
@@ -149,7 +113,7 @@ tasks:
       id: 0bfe087f-2db5-4fe5-8558-026bec69711c
       version: -1
       name: DeleteContext
-      script: DeleteContext
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
@@ -157,10 +121,8 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
+      all: "yes"
+      key: ""
     view: |-
       {
         "position": {
@@ -168,11 +130,6 @@ tasks:
           "y": 27
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -186,4 +143,3 @@ view: |-
     }
   }
 inputs: []
-outputs: []
