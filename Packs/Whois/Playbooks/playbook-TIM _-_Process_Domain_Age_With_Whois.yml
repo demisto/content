@@ -117,7 +117,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "39"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -333,7 +333,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "39"
     scriptarguments:
       append:
         simple: "true"
@@ -347,7 +347,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": -410
+          "y": -660
         }
       }
     note: false
@@ -775,7 +775,7 @@ tasks:
       '#default#':
       - "40"
       "yes":
-      - "28"
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -794,7 +794,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": -660
+          "y": -490
         }
       }
     note: false
@@ -822,7 +822,7 @@ tasks:
       {
         "position": {
           "x": 1110,
-          "y": -475
+          "y": -290
         }
       }
     note: false
@@ -863,7 +863,7 @@ tasks:
       {
         "position": {
           "x": 1110,
-          "y": -295
+          "y": -115
         }
       }
     note: false
