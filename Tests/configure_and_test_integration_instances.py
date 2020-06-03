@@ -791,7 +791,7 @@ def main():
     brand_new_integrations = []
 
     for test in tests_for_iteration:
-        testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
+        testing_client = demisto_client.configure(base_url=servers[0], username=username, password=password,
                                                   verify_ssl=False)
         integrations = get_integrations_for_test(test, skipped_integrations_conf)
         instance_names_conf = test.get('instance_names', [])
