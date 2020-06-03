@@ -284,7 +284,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Suspected PII data breach
-      description: Suspected PII data breach was found in your organization
+      description: A suspected PII data breach was found in your organization
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -603,7 +603,7 @@ tasks:
         simple: |-
           Hello,
           Please specify if you approve sending the data breach report to the Attorney General's office.
-           To approve sending the data breach report generated from Cortex XSOAR, click Yes.
+          To approve sending the data breach report generated from Cortex XSOAR, click Yes.
           To decline sending the data breach report generated from Cortex XSOAR, click No.
           If you decline to send the report, please generate a new report and forward it to your SOC team.
       methods:
@@ -886,7 +886,7 @@ tasks:
       version: -1
       name: Does law enforcement require delaying breach notification?
       description: |-
-        According to California law, breach notification may be delayed if a law enforcement agency determines that the notification will impede a criminal investigation.
+        According to Illinois law, breach notification may be delayed if a law enforcement agency determines that the notification will impede a criminal investigation.
         **Source: http://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=2702&ChapAct=815%C2%A0ILCS%C2%A0530/&ChapterID=67&ChapterName=BUSINESS+TRANSACTIONS&ActName=Personal+Information+Protection+Act.https://www.mintz.com/newsletter/2007/PrivSec-DataBreachLaws-02-07/state_data_breach_matrix.pdf.
       type: condition
       iscommand: false
@@ -1423,7 +1423,7 @@ tasks:
     task:
       id: 43c8a898-4533-445a-8372-134e55af7a12
       version: -1
-      name: breach does not contain California resident
+      name: breach does not contain Illinois resident
       type: title
       iscommand: false
       brand: ""
