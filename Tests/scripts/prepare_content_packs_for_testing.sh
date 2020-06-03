@@ -52,5 +52,5 @@ echo "Normalizing images paths to build bucket ..."
 python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
 echo "Finished normalizing images paths successfully."
 
-echo "Build bucket path is: $$BUCKET_FULL_TARGET_PATH"
+echo "Build bucket path is: $BUCKET_FULL_TARGET_PATH"
 echo "Finished preparing content packs for testing successfully."
