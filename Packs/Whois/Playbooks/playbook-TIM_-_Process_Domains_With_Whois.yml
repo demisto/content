@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.5.0
 name: TIM - Process Domains With Whois
 description: This playbook uses several sub playbooks to process and tag indicators
-  based on the Whois tool results.
+  based on the results of the Whois tool.
 starttaskid: "0"
 tasks:
   "0":
@@ -112,7 +112,7 @@ tasks:
       id: dbb7e5e0-66b2-48fc-8e23-0153e92fff2f
       version: -1
       name: Run Whois on domain indicators
-      description: Provides data enrichment for domains.
+      description: Enrich domains with data from the whois script.
       script: '|||whois'
       type: regular
       iscommand: true
@@ -200,7 +200,7 @@ tasks:
       version: -1
       name: TIM - Process Domain Registrant With Whois
       description: This playbook compares the domain registrant against the Cortex
-        XSOAR list provided in the inputs. A registrant is the company or entity that
+        XSOAR list of approved registrants provided in the inputs. A registrant is the company or entity that
         owns the domain.
       playbookName: TIM - Process Domain Registrant With Whois
       type: playbook
@@ -281,12 +281,12 @@ tasks:
       id: c3687b9a-158f-4fbe-89ec-3ae97d61a750
       version: -1
       name: TIM - Process Domain Age With Whois
-      description: This playbook compares the domain creation time against the a provided
+      description: This playbook compares the domain creation time against a provided
         time value such as one month ago. The period can be configured within the
         playbook inputs MinimumAgeOfDomainMonths or MinimumAgeOfDomainHours. The playbook
         calculates the timestamp for the relevant period and compares it to the domain
-        creation time value provided by Whois. The resulted domains will be outputted
-        accordingly if they were created before or after the compared time.
+        creation time value provided by Whois. The domains are outputted
+        accordingly if they were created before or after the compared time, respectively.
       playbookName: TIM - Process Domain Age With Whois
       type: playbook
       iscommand: false
@@ -366,7 +366,7 @@ inputs:
     Age With Whois playbook.
   playbookInputQuery: null
 outputs:
-- contextPath: NonApprovedDomains
+- contextPath: DomainsNotApproved
   description: Domains for which the registrant isn't approved.
   type: string
 - contextPath: ApprovedRegistrantDomains
@@ -376,14 +376,13 @@ outputs:
   description: Domains Not Resolved By Whois.
   type: string
 - contextPath: NewDomains
-  description: Domains their create value is after the tested date.
+  description: Domains whose create value is after the tested date.
   type: string
-- contextPath: NonNewDomains
-  description: Domains their create value is before the tested date.
+- contextPath: NotNewDomains
+  description: Domains whose create value is before the tested date.
   type: string
 - contextPath: DomainsNotProcessed
-  description: In case a playbook doesnt process the indicators. The indicators
-    will be outputted to this context path.
+  description: Domains that could not be processed for any reason are outputted to this context path.
   type: string
 quiet: true
 tests:
