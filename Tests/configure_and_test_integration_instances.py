@@ -761,15 +761,15 @@ def main():
     if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
         pack_ids = get_pack_ids_to_install()
         # install content packs in every server
-        try:
-            for server_url in servers:
+        for server_url in servers:
+            try:
                 client = demisto_client.configure(base_url=server_url, username=username, password=password,
                                                   verify_ssl=False)
                 search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, options.is_nightly)
-        except Exception as e:
-            prints_manager.add_print_job(str(e), print_error, 0)
-            prints_manager.execute_thread_prints(0)
-            installed_content_packs_successfully = False
+            except Exception as e:
+                prints_manager.add_print_job(str(e), print_error, 0)
+                prints_manager.execute_thread_prints(0)
+                installed_content_packs_successfully = False
 
     if new_integrations_files:
         new_integrations_names = get_integration_names_from_files(new_integrations_files)
