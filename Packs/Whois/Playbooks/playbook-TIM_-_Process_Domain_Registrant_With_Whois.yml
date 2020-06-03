@@ -89,7 +89,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1200
+          "y": 1420
         }
       }
     note: false
@@ -211,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1010
+          "y": 1230
         }
       }
     note: false
@@ -251,7 +251,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -950,
+          "x": -1260,
           "y": 480
         }
       }
@@ -287,8 +287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1050,
-          "y": 1010
+          "x": -1260,
+          "y": 1250
         }
       }
     note: false
@@ -339,8 +339,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
-          "y": 820
+          "x": -320,
+          "y": 1045
         }
       }
     note: false
@@ -391,8 +391,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 1000
+          "x": 240,
+          "y": 1220
         }
       }
     note: false
@@ -447,8 +447,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1050,
-          "y": 730
+          "x": -1260,
+          "y": 970
         }
       }
     note: false
@@ -470,13 +470,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - "28"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -240,
-          "y": 655
+          "x": -230,
+          "y": 670
         }
       }
     note: false
@@ -503,8 +503,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 655
+          "x": 240,
+          "y": 670
         }
       }
     note: false
@@ -576,8 +576,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
-          "y": 1000
+          "x": -320,
+          "y": 1220
         }
       }
     note: false
@@ -626,8 +626,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1050,
-          "y": 860
+          "x": -1260,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 51971516-ed0b-4150-8b78-d7ccbf90506b
+    type: condition
+    task:
+      id: 51971516-ed0b-4150-8b78-d7ccbf90506b
+      version: -1
+      name: Are there there domains with an approved registrant?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: List.In
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 875
         }
       }
     note: false
@@ -640,9 +677,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1505,
-        "width": 2160,
-        "x": -1050,
+        "height": 1725,
+        "width": 2370,
+        "x": -1260,
         "y": -240
       }
     }
