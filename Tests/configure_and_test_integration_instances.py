@@ -717,20 +717,19 @@ def main():
     password = secret_conf.get('userPassword') if not password else password
 
     if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
-        for testing_server in servers:
-            client = demisto_client.configure(base_url=testing_server, username=username, password=password,
+        for server in servers:
+            client = demisto_client.configure(base_url=server, username=username, password=password,
                                               verify_ssl=False)
             set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
             print('Restarting servers to apply GCS server config ...')
             ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                          '"sudo systemctl restart demisto"'
-            for server in servers:
-                try:
-                    subprocess.check_output(
-                        ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
-                except subprocess.CalledProcessError as exc:
-                    print(exc.output)
-            print('Done restarting servers.')
+            try:
+                subprocess.check_output(
+                    ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
+            except subprocess.CalledProcessError as exc:
+                print(exc.output)
+        print('Done restarting servers.')
 
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
