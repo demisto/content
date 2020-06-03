@@ -31,13 +31,18 @@ def check_assertions_on_release_notes_summary(rn_summary):
 def test_release_notes_generator():
     """
     Given
-    - A content repository with valid packs.
+    - A repository of two packs updates and release notes:
+      - FakePack1 with versions 1.0.1, 1.1.0 and 2.0.0
+      - FakePack2 with versions 1.0.1 and 1.1.0
 
     When
-    - Adding integrations and updating release notes.
+    - Generating a release notes summary file.
 
     Then
-    - Ensure release notes generator creates a valid summary.
+    - Ensure release notes generator creates a valid summary, by checking:
+      - the output of get_release_notes_dict() is a valid dict of (pack_name, dict(pack_version, release_note))
+      - the format of the release notes summary is as expected.
+      - the summary does not contain release notes that should be ignored.
     """
     release_notes_files = [
         os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_0_1.md'),
