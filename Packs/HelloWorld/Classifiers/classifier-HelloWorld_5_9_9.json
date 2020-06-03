@@ -1,0 +1,86 @@
+{
+    "brandName": "HelloWorld",
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9",
+    "custom": true,
+    "defaultIncidentType": "",
+    "id": "612fd5a2-31bf-4a83-8026-d4275ac5da55",
+    "keyTypeMap": {
+        "Hello World Alert": "Hello World Alert"
+    },
+    "mapping": {
+        "Hello World Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Hello World ID": {
+                    "complex": null,
+                    "simple": "alert_id"
+                },
+                "Hello World Status": {
+                    "complex": null,
+                    "simple": "alert_status"
+                },
+                "Hello World Type": {
+                    "complex": null,
+                    "simple": "alert_type"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "name"
+                            }
+                        },
+                        "operator": "startWith",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "Hello World Alert"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "name",
+            "transformers": [
+                {
+                    "args": {
+                        "from": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "0"
+                            }
+                        },
+                        "to": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "17"
+                            }
+                        }
+                    },
+                    "operator": "substring"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "unclassifiedCases": {},
+    "version": -1
+}

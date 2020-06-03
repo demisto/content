@@ -341,7 +341,7 @@
 <h5>Context Example</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png" alt="50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png" alt="50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/43cf97390b184fce1f2f08ebc92c7848c7bcc04a/docs/images/Integrations/ThreatConnect_50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
@@ -1065,7 +1065,7 @@
 <h5>Command Example</h5>
 <pre>!tc-get-indicator indicator=7.77.7.7</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png" alt="50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/43cf97390b184fce1f2f08ebc92c7848c7bcc04a/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png" alt="50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png"></p>
 <p><!-- remove the following comments to manually add an image: --> <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>

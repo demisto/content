@@ -34,8 +34,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | EDLServiceURL | The EDL service provides serval access methods to the EDL instance. By default, it uses a unique port, configured in the EDL Service integration, and an HTTP session. It is possible to either configure a certificate for the default option or to access the EDL by instance name, which is HTTPS by default.
 Please refer to the EDL Service integration tip for more information.
 EDLServiceURL input Examples:
-  1. if not configured with a certificate \-  http://cortex\-xsoar\_address
-  2. if configured with a certificate \- https://cortex\-xsoar\_address
+  1. if not configured with a certificate \-  `http://cortex-xsoar-address`
+  2. if configured with a certificate \- `https://cortex-xsoar-address`
 
 \* Depending on the access method to the EDL, the full URL of the EDL is constructed from this input, and by InstanceName OR by InstacePort and IndicatorQuery. The playbook identifies which access method is used from the playbook inputs and crafts the correct URL address.
 Full constructed URL examples:
