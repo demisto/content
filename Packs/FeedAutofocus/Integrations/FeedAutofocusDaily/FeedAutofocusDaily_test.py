@@ -31,3 +31,10 @@ def test_fetch_indicators_command(mocker):
     indicators = fetch_indicators_command(client, 9, 0)
     for i in range(0, 9):
         assert indicators[i]['type'] == TYPES[i]
+
+
+def test_type_finder():
+    client = Client(api_key="a", insecure=False, proxy=None)
+    for i in range(0, 9):
+        indicator_type = client.find_indicator_type(INDICATORS[i])
+        assert indicator_type == TYPES[i]
