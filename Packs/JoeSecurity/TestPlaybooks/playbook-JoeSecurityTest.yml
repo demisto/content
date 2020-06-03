@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fe8a38ba-3678-49b8-864e-0af5ce802f7b
+    taskid: 1a2344b9-8eec-4d74-8321-86ea155061e3
     type: start
     task:
-      id: fe8a38ba-3678-49b8-864e-0af5ce802f7b
+      id: 1a2344b9-8eec-4d74-8321-86ea155061e3
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: e1ecf1c9-8c05-4667-8587-eac5f85497d8
+    taskid: a22304d1-1b67-49bd-8228-30164e914e18
     type: regular
     task:
-      id: e1ecf1c9-8c05-4667-8587-eac5f85497d8
+      id: a22304d1-1b67-49bd-8228-30164e914e18
       version: -1
       name: Start fresh
       scriptName: DeleteContext
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 6aead7b3-fba8-47ca-8d50-997ac6bb6672
+    taskid: 122e393c-1a86-456d-832c-62b6d6df04a8
     type: regular
     task:
-      id: 6aead7b3-fba8-47ca-8d50-997ac6bb6672
+      id: 122e393c-1a86-456d-832c-62b6d6df04a8
       version: -1
       name: Validate instance is working
       script: '|||joe-is-online'
@@ -91,10 +91,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: be011ce9-674c-4c6f-8900-564664d0d127
+    taskid: 01075964-efb4-4e8b-883a-9ebe80f18019
     type: regular
     task:
-      id: be011ce9-674c-4c6f-8900-564664d0d127
+      id: 01075964-efb4-4e8b-883a-9ebe80f18019
       version: -1
       name: Analyse a file using a url without waiting
       script: Joe Security|||joe-analysis-submit-sample
@@ -127,10 +127,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 99cbc529-27bb-4aa9-882e-020e2603ea90
+    taskid: eaf6b493-8999-4e0f-8911-655b7171c191
     type: regular
     task:
-      id: 99cbc529-27bb-4aa9-882e-020e2603ea90
+      id: eaf6b493-8999-4e0f-8911-655b7171c191
       version: -1
       name: Analyse a url without waiting
       script: Joe Security|||joe-analysis-submit-url
@@ -163,10 +163,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 3472de9c-d647-45ae-8885-0d6d7b7cecfe
+    taskid: 8c329d46-2871-45c5-8f58-abbf3e109d9f
     type: regular
     task:
-      id: 3472de9c-d647-45ae-8885-0d6d7b7cecfe
+      id: 8c329d46-2871-45c5-8f58-abbf3e109d9f
       version: -1
       name: Get info on the file analysis
       script: Joe Security|||joe-analysis-info
@@ -194,10 +194,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 8d866797-8702-4561-813b-2e403dba09ce
+    taskid: c5268527-57eb-4b2f-8299-15a0877cc78c
     type: regular
     task:
-      id: 8d866797-8702-4561-813b-2e403dba09ce
+      id: c5268527-57eb-4b2f-8299-15a0877cc78c
       version: -1
       name: Get info on the URL analysis
       script: Joe Security|||joe-analysis-info
@@ -225,10 +225,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 11590e15-e28b-4ddb-837e-c81f5b5bb53e
+    taskid: e521c99c-6637-4dce-868a-e50f9f554327
     type: regular
     task:
-      id: 11590e15-e28b-4ddb-837e-c81f5b5bb53e
+      id: e521c99c-6637-4dce-868a-e50f9f554327
       version: -1
       name: Create sample file
       scriptName: FileCreateAndUpload
@@ -256,10 +256,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 2153bad8-4010-4a43-81ea-d6d7279d3c02
+    taskid: c6d7fe75-51b2-4a15-8ed7-75571736c09c
     type: regular
     task:
-      id: 2153bad8-4010-4a43-81ea-d6d7279d3c02
+      id: c6d7fe75-51b2-4a15-8ed7-75571736c09c
       version: -1
       name: Search command
       script: Joe Security|||joe-search
@@ -289,10 +289,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 8a5b01ab-7813-426e-8492-f4b216db8061
+    taskid: 3b34310d-2f40-4632-8c0a-e4e85ca3fe62
     type: regular
     task:
-      id: 8a5b01ab-7813-426e-8492-f4b216db8061
+      id: 3b34310d-2f40-4632-8c0a-e4e85ca3fe62
       version: -1
       name: Download url Report - XML
       script: Joe Security|||joe-download-report
@@ -306,7 +306,7 @@ tasks:
       type:
         simple: xml
       webid:
-        simple: ${Joe.Analysis.[0].WebID}
+        simple: ${Joe.Analysis(val.Status == "finished").[0].WebID}
     separatecontext: false
     view: |-
       {
@@ -322,10 +322,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 435f3653-ca9f-40bb-8ac8-0c40f57762fb
+    taskid: b9744543-1206-40eb-8bd3-6e155922266b
     type: regular
     task:
-      id: 435f3653-ca9f-40bb-8ac8-0c40f57762fb
+      id: b9744543-1206-40eb-8bd3-6e155922266b
       version: -1
       name: Download url Report - JSON
       script: Joe Security|||joe-download-report
@@ -336,7 +336,7 @@ tasks:
       type:
         simple: json
       webid:
-        simple: ${Joe.Analysis.[0].WebID}
+        simple: ${Joe.Analysis(val.Status == "finished").[0].WebID}
     separatecontext: false
     view: |-
       {
@@ -352,10 +352,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: becbcc89-df44-4c49-8be9-56466e129712
+    taskid: 6fd8d1d0-5a76-4869-8a9b-b5f4b6653b56
     type: regular
     task:
-      id: becbcc89-df44-4c49-8be9-56466e129712
+      id: 6fd8d1d0-5a76-4869-8a9b-b5f4b6653b56
       version: -1
       name: Download url Report - HTML
       script: Joe Security|||joe-download-report
@@ -366,7 +366,7 @@ tasks:
       type:
         simple: html
       webid:
-        simple: ${Joe.Analysis.[0].WebID}
+        simple: ${Joe.Analysis(val.Status == "finished").[0].WebID}
     separatecontext: false
     view: |-
       {
@@ -382,10 +382,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 0b0c629c-fa31-4320-8a05-491d047abc0c
+    taskid: e47c4860-7a47-4c37-802b-71eff53c9927
     type: condition
     task:
-      id: 0b0c629c-fa31-4320-8a05-491d047abc0c
+      id: e47c4860-7a47-4c37-802b-71eff53c9927
       version: -1
       name: verify output DBotScore.Indicator
       type: condition
