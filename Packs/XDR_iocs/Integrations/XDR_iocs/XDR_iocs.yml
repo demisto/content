@@ -24,7 +24,7 @@ configuration:
   hidden: false
   name: severity
   options:
-  - info
+  - 'info'
   - 'low'
   - 'med'
   - 'high'

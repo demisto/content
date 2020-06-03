@@ -39,7 +39,7 @@ class Client:
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
              'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
-        403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API'
+        403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.'
     }
 
     def __init__(self, params: Dict):
@@ -110,10 +110,9 @@ def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
     return url_suffix, _json
 
 
-def create_file_iocs_to_keep(file_path):
+def create_file_iocs_to_keep(file_path, batch_size: int = 200):
     with open(file_path, 'a') as _file:
         total_size: int = get_iocs_size()
-        batch_size: int = 200
         for i in range(0, ceil(total_size / batch_size)):
             iocs: List = get_iocs(page=i, size=batch_size)
             for ios in map(lambda x: x.get('value'), iocs):
@@ -121,10 +120,9 @@ def create_file_iocs_to_keep(file_path):
                 _file.write('\n')
 
 
-def create_file_sync(file_path):
+def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, 'a') as _file:
         total_size: int = get_iocs_size()
-        batch_size: int = 200
         for i in range(0, ceil(total_size / batch_size)):
             iocs: List = get_iocs(page=i, size=batch_size)
             for ios in map(lambda x: json.dumps(demisto_ioc_to_xdr(x)), iocs):
@@ -158,12 +156,12 @@ def demisto_reliability_to_xdr(reliability: str) -> str:
 
 def demisto_vendors_to_xdr(demisto_vendors) -> List[Dict]:
     xdr_vendors: List[Dict] = []
-    for vendor, data in demisto_vendors.items():
+    for module_id, data in demisto_vendors.items():
         reliability = demisto_reliability_to_xdr(data.get('reliability'))
         reputation = demisto_score_to_xdr.get(data.get('score'), 'UNKNOWN')
-        if vendor and reputation and reliability:
+        if module_id and reputation and reliability:
             xdr_vendors.append({
-                'vendor_name': vendor,
+                'vendor_name': data.get('sourceBrand', module_id),
                 'reputation': reputation,
                 'reliability': reliability
             })
@@ -185,15 +183,14 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         'indicator': ioc['value'],
         'severity': Client.severity,
         'type': demisto_types_to_xdr(ioc['indicator_type']),
-        'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN')
+        'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
+        'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
     }
-    if 'expiration' in ioc:
-        xdr_ioc['expiration_date'] = demisto_expiration_to_xdr(ioc['expiration'])
 
     # get last 'IndicatorCommentRegular'
-    comment = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', ioc.get('comments', [])), False)
+    comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
     if comment:
-        xdr_ioc['comment'] = comment
+        xdr_ioc['comment'] = comment.get('content')
     if ioc.get('aggregatedReliability'):
         xdr_ioc['reliability'] = ioc['aggregatedReliability'][0]
     vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
@@ -236,12 +233,11 @@ def create_last_iocs_query(from_date, to_date):
     return f'modified:>={from_date} and modified:<{to_date}'
 
 
-def get_last_iocs() -> List:
+def get_last_iocs(batch_size=200) -> List:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
     last_run: Dict = demisto.getIntegrationContext()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
     total_size = get_iocs_size(query)
-    batch_size = 200
     iocs: List = []
     for i in range(0, ceil(total_size / batch_size)):
         iocs.extend(get_iocs(query=query, page=i, size=batch_size))
@@ -259,7 +255,7 @@ def tim_insert_jsons(client: Client):
 
 def iocs_command(client: Client):
     command = demisto.command().split('-')[1]
-    indicators = demisto.args().get('indicator')
+    indicators = demisto.args().get('indicator', '')
     if command == 'enable':
         path, iocs = prepare_enable_iocs(indicators)
     else:   # command == 'disable'
@@ -269,11 +265,10 @@ def iocs_command(client: Client):
     return_outputs(f'indicators {indicators} {command}d.')
 
 
-def xdr_ioc_to_timeline(ioc: Dict) -> Dict:
-    status = ioc.get('RULE_STATUS', '').lower()
+def xdr_ioc_to_timeline(iocs: List) -> Dict:
     ioc_time_line = {
-        'Value': ioc.get('RULE_INDICATOR'),
-        'Message': f'indicator {status} in XDR.',
+        'Value': ','.join(iocs),
+        'Message': 'indicator updated in XDR.',
         'Category': 'Integration Update'
     }
     return ioc_time_line
@@ -288,7 +283,7 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
     return None
 
 
-def xdr_ioc_to_entry(ioc: Dict) -> Dict:
+def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     xdr_entry: Dict = {
         "status": ioc.get('RULE_STATUS', '').lower(),
@@ -299,7 +294,7 @@ def xdr_ioc_to_entry(ioc: Dict) -> Dict:
         "value": ioc.get('RULE_INDICATOR'),
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
-        "fields": {"XDR": xdr_entry},
+        "fields": {"xdr": xdr_entry},
         "rawJSON": ioc
     }
     return entry
@@ -315,7 +310,8 @@ def get_changes(client: Client):
     if iocs:
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
         demisto.setIntegrationContext(from_time)
-        demisto.createIndicators(list(map(xdr_ioc_to_entry, iocs)))
+        return_outputs('', timeline=xdr_ioc_to_timeline(list(map(lambda x: str(x.get('RULE_INDICATOR')), iocs))))
+        demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
 
 
 def main():
@@ -347,5 +343,5 @@ def main():
         return_error(str(error), error)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', 'builtins'):
     main()
