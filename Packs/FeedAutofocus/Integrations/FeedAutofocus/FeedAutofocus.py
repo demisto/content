@@ -436,13 +436,8 @@ def module_test_command(client: Client, args: dict):
     indicator_feeds = client.indicator_feeds
     exception_list = []  # type:List
     if 'Daily Threat Feed' in indicator_feeds:
-        client.indicator_feeds = ['Daily Threat Feed']
-        try:
-            client.build_iterator(1, 0)
-        except Exception:
-            exception_list.append("Could not fetch Daily Threat Feed\n"
-                                  "\nCheck your API key and your connection to AutoFocus.")
-
+        raise Exception("Daily Thread is no longer supported by this feed,"
+                        " please configure the FeedAutoFocusDaily for this action")
     if 'Custom Feed' in indicator_feeds:
         client.indicator_feeds = ['Custom Feed']
         url_list = client.custom_feed_url_list

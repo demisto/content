@@ -10,11 +10,7 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
-| indicator_feeds | The indicator feed. Choose the requested indicator feeds. The Custom Feeds and Daily Threat Feed. | True |
 | api_key | The AutoFocus API key. | True |
-| custom_feed_urls | The URL for the custom feed to fetch. This applies only in cases where a Custom Feed is requested. | False |
-| scope_type | The scope of the samples to be fetched. | False |
-| sample_query | The query that will be used to fetch the samples. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
 | feedExpirationPolicy | The feed's expiration policy. | False |
@@ -26,35 +22,6 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-#### Custom Feed info:
-To connect a custom AutoFocus feed you need to provide the Custom Feed URL.
-
-The Custom Feed URL should be in this form:
-https://autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Name}
-
-
-#### Samples Feed info:
-To connect a samples AutoFocus feed you need to provide the scope of the samples and the query for the samples.
-1. The scope can be either:
-    1. public - Samples available for all organizations.
-    2. private - Your own samples.
-    3. global - Both public and private samples.
-2. The samples query - is the query to be used to fetch the samples from AutoFocus.
-You can go to AutoFocus UI -> Search -> Sample -> Advanced -> Create your desired query -> API -> copy the query.
-`For example:
-{
-  "operator": "all",
-  "children": [
-    {
-      "field": "sample.create_date",
-      "operator": "is after",
-      "value": [
-        "30 days ago",
-        "30 days ago"
-      ]
-    }
-  ]
-}`
 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.

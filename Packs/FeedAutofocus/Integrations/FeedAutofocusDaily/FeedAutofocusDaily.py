@@ -3,10 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 # IMPORTS
-import re
 import requests
 from typing import List
-from datetime import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,19 +12,6 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 SOURCE_NAME = "AutoFocusFeedDaily"
 DAILY_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult'
-
-EPOCH_BASE = datetime.utcfromtimestamp(0)
-
-af_indicator_type_to_demisto = {
-    'Domain': FeedIndicatorType.Domain,
-    'Url': FeedIndicatorType.URL,
-    'IPv4': FeedIndicatorType.IP
-}
-
-
-def datetime_to_epoch(dt_to_convert):
-    delta_from_epoch_base = dt_to_convert - EPOCH_BASE
-    return int(delta_from_epoch_base.total_seconds() * 1000)
 
 
 class Client(BaseClient):
@@ -64,99 +49,12 @@ class Client(BaseClient):
         indicator_list = res.text.split('\n')
         return indicator_list
 
-    @staticmethod
-    def get_basic_raw_json(single_sample: dict):
-        single_sample_data = single_sample.get('_source', {})
-        artifacts = single_sample_data.get('artifact', [])
-
-        raw_json_data = {
-            'autofocus_id': single_sample.get('_id'),
-            'autofocus_region': [single_region.upper() for single_region in single_sample_data.get('region', [])],
-            'autofocus_tags': single_sample_data.get('tag', []),
-            'autofocus_tags_groups': single_sample_data.get('tag_groups', []),
-            'autofocus_num_matching_artifacts': len(artifacts),
-            'service': 'AutoFocus Samples Feed'
-        }
-
-        create_date = single_sample_data.get('create_date', None)
-        if create_date is not None:
-            create_date = datetime.strptime(create_date, '%Y-%m-%dT%H:%M:%S')
-            raw_json_data['autofocus_create_date'] = datetime_to_epoch(create_date)
-
-        update_date = single_sample_data.get('update_date', None)
-        if update_date is not None:
-            update_date = datetime.strptime(update_date, '%Y-%m-%dT%H:%M:%S')
-            raw_json_data['autofocus_update_date'] = datetime_to_epoch(update_date)
-
-        return raw_json_data
-
-
-
-
-    def get_ip_type(self, indicator):
-        if re.match(ipv4cidrRegex, indicator):
-            return FeedIndicatorType.CIDR
-
-        elif re.match(ipv6cidrRegex, indicator):
-            return FeedIndicatorType.IPv6CIDR
-
-        elif re.match(ipv4Regex, indicator):
-            return FeedIndicatorType.IP
-
-        elif re.match(ipv6Regex, indicator):
-            return FeedIndicatorType.IPv6
-
-        else:
-            return None
-
-    def find_indicator_type(self, indicator):
-        """Infer the type of the indicator.
-
-        Args:
-            indicator(str): The indicator whose type we want to check.
-
-        Returns:
-            str. The type of the indicator.
-        """
-
-        # trying to catch X.X.X.X:portNum
-        if ':' in indicator and '/' not in indicator:
-            sub_indicator = indicator.split(':', 1)[0]
-            ip_type = self.get_ip_type(sub_indicator)
-            if ip_type:
-                return ip_type
-
-        ip_type = self.get_ip_type(indicator)
-        if ip_type:
-            # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
-            if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
-                return FeedIndicatorType.URL
-
-            else:
-                return ip_type
-
-        elif re.match(sha256Regex, indicator):
-            return FeedIndicatorType.File
-
-        # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
-        elif '/' in indicator:
-            return FeedIndicatorType.URL
-
-        else:
-            return FeedIndicatorType.Domain
-
     def create_indicators_from_response(self, feed_type, response):
         parsed_indicators = []  # type:List
 
         for indicator in response:
             if indicator:
-                indicator_type = self.find_indicator_type(indicator)
-
-                # catch ip of the form X.X.X.X:portNum and extract the IP without the port.
-                if indicator_type in [FeedIndicatorType.IP, FeedIndicatorType.CIDR,
-                                      FeedIndicatorType.IPv6CIDR, FeedIndicatorType.IPv6] and ":" in indicator:
-                    indicator = indicator.split(":", 1)[0]
-
+                indicator_type = auto_detect_indicator_type(indicator)
                 parsed_indicators.append({
                     "type": indicator_type,
                     "value": indicator,
@@ -170,22 +68,14 @@ class Client(BaseClient):
 
         return parsed_indicators
 
-
-
-
-
-
-
-
-
-
     def build_iterator(self, limit=None, offset=None):
         """Builds a list of indicators.
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
         """
         response = self.daily_http_request()
-        parsed_indicators = self.create_indicators_from_response('Daily Threat Feed', response) #list of dict of indicators
+        parsed_indicators = self.create_indicators_from_response('Daily Threat Feed',
+                                                                 response)  # list of dict of indicators
 
         # for get_indicator_command only
         if limit:
