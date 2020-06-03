@@ -316,6 +316,16 @@ script:
         {from: 'start', to: 'StartTime'}
     ];
 
+    const processDataForFileContext = [
+        {from: 'process_name', to: 'Name'},
+        {from: 'process_md5', to: 'MD5'},
+        {from: 'path', to: 'Path'}
+    ];
+
+    const processDataForEndpointContext = [
+      {from: 'hostname', to: 'Hostname'}
+    ];
+
     function getProcessesRequest(query, rows, start, sort, facets) {
         let queryParams = {};
         if (query) {
@@ -366,12 +376,18 @@ script:
         }
         let processes = getProcessesRequest(query, args.rows, args.start, args.sort, args.facets);
         let title = 'CB Response - Get Processes';
-        let dataMap = processData;
-        let headers = dataMap.map(cn => cn.to);
-        let translatedData = mapObjFunction(dataMap)(processes);
-        let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
+        let processDataMap = processData;
+        let fileDataMap = processDataForFileContext;
+        let endpointDataMap = processDataForEndpointContext;
+        let headers = processDataMap.map(cn => cn.to);
+        let processTranslatedData = mapObjFunction(processDataMap)(processes);
+        let fileTranslatedData = mapObjFunction(fileDataMap)(processes);
+        let endpointTranslatedData = mapObjFunction(endpointDataMap)(processes);
+        let humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
         let context = {
-            'Process(val.CbID==obj.CbID)': createContext(translatedData)
+            'Process(val.CbID==obj.CbID)': createContext(processTranslatedData),
+            'File(val.Name==obj.Name)': createContext(fileTranslatedData),
+            'Endpoint(val.Hostname==obj.Hostname)': createContext(endpointTranslatedData)
         };
         return {
             Type: entryTypes.note,
@@ -1627,21 +1643,21 @@ script:
     - name: facet
       description: Return facet results. 'false' by default, set to 'true' for facets.
     outputs:
-    - contextPath: Process.MD5
-      description: Process MD5
-    - contextPath: Process.Hostname
-      description: Process Hostname
+    - contextPath: File.Name
+      description: File Name
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.Path
+      description: File Path
+    - contextPath: Endpoint.Hostname
+      description: Endpoint Hostname
     - contextPath: Process.CommandLine
       description: Process  Commandline
     - contextPath: Process.PID
       description: Process PID
-    - contextPath: Process.Path
-      description: Process Path
     - contextPath: Process.CbID
       description: Cb unique ID for this process instance - required (together with
         CbSegmentID) to fetch further info on a process.
-    - contextPath: Process.Name
-      description: Process Name
     - contextPath: Process.CbSegmentId
       description: Cb "segment" where this process instance is stored. Required to
         fetch further info on a process.
@@ -1999,5 +2015,6 @@ script:
       file containing the requested file and it's metadata.
   isfetch: true
   runonce: false
+  dockerimage: demisto/python:2.7.18.8715
 tests:
   - Carbon Black Response Test
