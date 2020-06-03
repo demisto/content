@@ -117,7 +117,7 @@ tasks:
       - "24"
     scriptarguments:
       delimiter:
-        simple: ${inputs.registrantListDelimiter}
+        simple: ${inputs.RegistrantListDelimiter}
       ignorecase:
         simple: "yes"
       listname:
