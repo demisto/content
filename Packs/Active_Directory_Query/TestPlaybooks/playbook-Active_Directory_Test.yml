@@ -495,7 +495,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4275
+          "y": 4450
         }
       }
     note: false
@@ -1017,7 +1017,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "32"
     scriptarguments:
       attributes:
         simple: PwdLastSet
@@ -1043,12 +1043,47 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "32":
+    id: "32"
+    taskid: 628ade45-d873-422c-8c31-6c1b5e5bf9a4
+    type: condition
+    task:
+      id: 628ade45-d873-422c-8c31-6c1b5e5bf9a4
+      version: -1
+      name: Verify PwdLastSet is in Account outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.pwdLastSet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4320,
+        "height": 4495,
         "width": 810,
         "x": 50,
         "y": 50

@@ -99,7 +99,14 @@ def account_entry(person_object, custome_attributes):
     }
 
     for attr in custome_attributes:
-        account[attr] = person_object[attr]
+        try:
+            account[attr] = person_object[attr]
+        except Exception as e:
+            lower_cased_attr = attr[0].lower() + attr[1:]
+            if lower_cased_attr in person_object:
+                account[lower_cased_attr] = person_object[lower_cased_attr]
+            else:
+                demisto.debug(f'Failed parsing custom attribute {attr}, error: {e}')
 
     return account
 
