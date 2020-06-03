@@ -1599,5 +1599,3 @@ script:
   subtype: python3
   type: python
 fromversion: 4.1.0
-tests:
-  - Test XDR Playbook
