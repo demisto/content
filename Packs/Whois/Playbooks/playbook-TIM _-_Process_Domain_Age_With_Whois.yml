@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": -225
+          "y": -240
         }
       }
     note: false
@@ -117,7 +117,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "28"
+      - "39"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -333,7 +333,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "7"
     scriptarguments:
       append:
         simple: "true"
@@ -347,7 +347,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": -660
+          "y": -410
         }
       }
     note: false
