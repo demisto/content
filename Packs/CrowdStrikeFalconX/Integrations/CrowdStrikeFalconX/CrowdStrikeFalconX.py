@@ -338,9 +338,10 @@ def parse_outputs(
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :return: a dict based on api_res with the wanted params only
     """
-    if api_res.get("errors"):
+    error = api_res.get("errors")
+    if error:
         # if there is an error in the api result, return only the error
-        return {"errors": api_res.get("errors")}
+        return error[0]
 
     api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}
     resources_group_outputs, sandbox_group_outputs = {}, {}
@@ -352,15 +353,17 @@ def parse_outputs(
     meta_group_outputs = add_outputs_from_dict(api_res_meta, meta_fields)
     quota_group_outputs = add_outputs_from_dict(api_res_quota, quota_fields)
 
-    if api_res.get("resources"):
+    resources = api_res.get("resources")
+    if resources:
         # depended on the command, the resources section can be a str list or a list that contains
         # only one argument which is a dict
-        if type(api_res.get("resources")[0]) == dict:
-            api_res_resources = api_res.get("resources")[0]
+        if type(resources[0]) == dict:
+            api_res_resources = resources[0]
             resources_group_outputs = add_outputs_from_dict(api_res_resources, resources_fields)
 
-            if api_res_resources and api_res_resources.get("sandbox"):
-                api_res_sandbox = api_res_resources.get("sandbox")[0]
+            sandbox = api_res_resources.get("sandbox")
+            if api_res_resources and sandbox:
+                api_res_sandbox = sandbox[0]
                 sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, sandbox_fields)
         else:
             # the resources section is a list of strings
@@ -382,11 +385,22 @@ def test_module(
     :return: ok if got a valid accesses token and not all the quota is used at the moment
     """
     output = client.check_quota_status()
-    total = output.get("meta").get("quota").get("total")
-    used = output.get("meta").get("quota").get("used")
-    if total <= used:
-        raise Exception(f"Quota limitation has been reached: {used}")
-    return 'ok', {}, []
+
+    error = output.get("errors")
+    if error:
+        return error[0]
+
+    meta = output.get("meta")
+    if meta is not None:
+        quota = meta.get("quota")
+        if quota is not None:
+            total = quota.get("total")
+            used = quota.get("used")
+            if total <= used:
+                raise Exception(f"Quota limitation has been reached: {used}")
+            else:
+                return 'ok', {}, []
+    raise Exception("Quota limitation is unreachable")
 
 
 def upload_file_command(
