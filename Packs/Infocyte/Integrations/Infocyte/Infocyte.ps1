@@ -53,7 +53,7 @@ function Get-InfocyteAlerts {
     if ($LastAlert) {
         $where = @{ id = @{ gt = $LastAlert.id } }
     }
-    $Alerts = Get-ICAlert -where $where
+    $Alerts = Get-ICAlert -where $where | Select-Object id, name, type, hostname, scanId, fileRepId, signed, managed,        createdOn, flagName, flagWeight, threatScore, threatWeight, threatName,        avPositives, avTotal, hasAvScan, synapse, size
 
     #$prefix = "Infocyte.Alert"
     $Output = @{
@@ -64,19 +64,19 @@ function Get-InfocyteAlerts {
                 type    = $Alerts.type    # "Autostart"
                 hostname    = $Alerts.hostname   # "pegasusactual"
                 scanId      = $Alerts.scanId     # "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
-                fileRepId   = $Alerts.fileRepId  # "a21c84c6bf2e21d69fa06daaf19b4cc34b589347"
+                sha1        = $Alerts.fileRepId  # "a21c84c6bf2e21d69fa06daaf19b4cc34b589347"
                 signed      = $Alerts.signed     # true,
                 managed     = $Alerts.managed       # null
                 createdOn   = $Alerts.createdOn     # "2020-05-28T05:57:18.403Z"
                 flagName    = $Alerts.flagname      # "Controlled Item"
                 flagWeight  = $Alerts.flagweight    # 8
                 threatScore = $Alerts.threatScore   # 9
-                threatWeight  = $Alerts.threatWeight  # 8
+                threatWeight = $Alerts.threatWeight  # 8
                 threatName  = $Alerts.threatName    # "Bad"
                 avPositives = $Alerts.avPositives   # 21
                 avTotal     = $Alerts.avTotal       # 85
                 hasAvScan   = $Alerts.hasAvScan     # $true
-                synapse     = $Alerts.synapse       # 1.08223234150638
+                synapse = $Alerts.synapse       # 1.08223234150638
                 size        = $Alerts. 45208
             }
         }
@@ -95,8 +95,20 @@ function Get-InfocyteScanResult {
     $scan.data.counts.total | Get-Member -Type NoteProperty | ForEach-Object { $totalCount += $scan.data.counts.total | Select-Object -ExpandProperty $_.Name }
     $hostCount = $scan.hostCount
 
+    $Hosts = Get-ICObject -Type Host -ScanId $scanId | Select-Object hostname, ip, osVersion
     if ($Scan) {
-        $Alerts = Get-ICAlert -where @{ scanId = $scanId }
+        $Alerts = Get-ICAlert -where @{ scanId = $scanId } | Select-Object id, name, type, hostname, scanId, fileRepId, signed, managed, createdOn, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, hasAvScan, synapse, size
+
+        # Handle counting for 1 item (powershell makes this hard)
+        if ($HostResult.alerts) {
+            if ($HostResult.alerts.count) {
+                $AlertCount = $HostResult.alerts.count
+            } else {
+                $AlertCount = 1
+            }
+        } else {
+            $AlertCount = 0
+        }
     }
 
     #$prefix = "Infocyte.Scan"
@@ -109,7 +121,9 @@ function Get-InfocyteScanResult {
                 hostCount          = $hostCount
                 objectCount        = $totalCount
                 compromisedObjects = $compromisedCount
+                hosts              = $Hosts
                 alerts             = $Alerts
+                alertCount         = $AlertCount
                 hostname           = $HostResult.hostname
                 ip                 = $HostResult.ip
             }
@@ -131,6 +145,16 @@ function Get-InfocyteHostScanResult {
     }
     #>
     $HostResult = Get-ICHostScanResult -scanId $demisto.Args()['scanId'] -hostname $hostname
+    # Handle counting for 1 item (powershell makes this hard)
+    if ($HostResult.alerts) {
+        if ($HostResult.alerts.count) {
+            $AlertCount = $HostResult.alerts.count
+        } else {
+            $AlertCount = 1
+        }
+    } else {
+        $AlertCount = 0
+    }
     #$prefix = "Infocyte.Scan"
     $output = @{
         Infocyte = @{
@@ -138,12 +162,11 @@ function Get-InfocyteHostScanResult {
                 scanId             = $HostResult.scanId
                 hostId             = $HostResult.hostId
                 os                 = $HostResult.osVersion
-                success            = $HostResult.failed
+                success            = $HostResult.success
                 compromised        = $HostResult.compromised
                 completedOn        = $HostResult.completedOn
-                objectCount        = $HostResult.totalCount
-                compromisedObjects = $HostResult.compromisedCount
-                alerts             = $HostResult.alerts
+                alerts             = $HostResult.alerts | Select-Object id, name, type, hostname, scanId, fileRepId, signed, managed, createdOn, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, hasAvScan, synapse, size
+                alertCount         = $AlertCount
                 hostname           = $HostResult.hostname
                 ip                 = $HostResult.ip
             }
@@ -174,7 +197,8 @@ function Get-InfocyteResponseResult {
                 extensionId = $HostResult.extensionId
                 extensionName = $HostResult.extensionName
                 os          = $HostResult.osVersion
-                success     = $HostResult.failed
+                success     = $HostResult.success
+                threatStatus = $HostResult.threatStatus
                 compromised = $HostResult.compromised
                 completedOn = $HostResult.completedOn
                 messages    = $HostResult.output
@@ -190,7 +214,6 @@ function Invoke-InfocyteResponse {
     param(
         [String]$ExtensionName
     )
-    
     $Ext = Get-ICExtension -where @{ name = $ExtensionName } | Select-Object -Last 1
 	if (-NOT $Ext) {
 		Throw "Extension with name $ExtensionName does not exist!"
@@ -251,7 +274,7 @@ function Main {
             "infocyte-get-hostscanresult" {
                 Get-InfocyteHostScanResult
             }
-            "infocyte-responseextension" {
+            "infocyte-run-response" {
                 Invoke-InfocyteResponse -ExtensionName $demisto.Args()['ExtensionName']
             }
             "infocyte-get-responseresult" {
