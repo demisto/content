@@ -1,4 +1,3 @@
-from typing import *  # noqa: F401
 import pickle
 import re
 import uuid
