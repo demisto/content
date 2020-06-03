@@ -24,15 +24,5 @@
     "certification": "certified",
     "useCases": [],
     "keywords": [],
-    "price": 0,
-    "dependencies": {
-		"Legacy": {
-			"display_name": "Legacy",
-			"mandatory": true
-		},
-		"Base": {
-			"display_name": "Base",
-			"mandatory": true
-		}
-	}
+    "price": 0
 }
