@@ -675,7 +675,7 @@ inputs:
 - key: TagValueForIndicators
   value: {}
   required: false
-  description: This input specifies the tag value to apply to the indicators.
+  description: This input specifies the tag value to apply to the indicators. An example value can be whitelist_review.
   playbookInputQuery: null
 - key: OpenIncidentToReviewIndicatorsManually
   value:
