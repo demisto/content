@@ -1264,9 +1264,9 @@
 <pre>!gvault-get-mail-results bucketName="85d7cacf-5d93-44e5-8d37-4ba6da342d02" viewID=0bebe0ec-ee41-4955-96b3-20d9408409c8/exportly-66079c37-0b33-4858-9239-7feead2199ae/mail_test_export412Z85Fs5q-metadata.xml
 </pre>
 <h5>Context Example</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/GoogleVault_mceclip3.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/GoogleVault_mceclip3.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/GoogleVault_mceclip2.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/GoogleVault_mceclip2.png"></p>
 <h3 id="h_42814557524231545908661668">17. Get the results of a Groups export</h3>
 <hr>
 <p>Get the results of a specified Groups export.</p>
@@ -1352,6 +1352,6 @@
 <pre>!gvault-get-groups-results bucketName="85d7cacf-5d93-44e5-8d37-4ba6da342d02" viewID="6e067f1d-7fac-4ab2-bd9f-eede4f32dd32/exportly-069b7a7b-0a3d-4fbf-b65d-fe54561e6eb2/Groups_Export_qQ3Ih4531388-metadata.xml" maxResult="30"
 </pre>
 <h5>Context Example</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/GoogleVault_mceclip1.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/GoogleVault_mceclip1.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/GoogleVault_mceclip0.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/GoogleVault_mceclip0.png"></p>
