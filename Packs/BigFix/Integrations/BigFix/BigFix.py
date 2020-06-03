@@ -2,6 +2,7 @@ import requests
 
 import demistomock as demisto
 from CommonServerPython import *
+import xml.etree.ElementTree as ET
 
 requests.packages.urllib3.disable_warnings()
 
@@ -181,7 +182,11 @@ def get_endpoints():
         return_error('Failed to get endpoints.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
             fullurl, res.status_code, res.content))
 
-    raw_endpoints = json.loads(xml2json(res.content))
+    demisto.debug('get endpoints response: {}'.format(str(res.content)))
+    parser = ET.XMLParser(encoding='utf-8')
+    tree = ET.fromstring(res.content, parser=parser)
+    raw_endpoints = json.loads(elem2json(tree, options={}))
+
     if (not raw_endpoints or not raw_endpoints.has_key('BESAPI')):
         return None
 
