@@ -612,6 +612,7 @@ tasks:
     nexttasks:
       '#default#':
       - "5"
+      "yes":
       - "38"
     separatecontext: false
     conditions:
