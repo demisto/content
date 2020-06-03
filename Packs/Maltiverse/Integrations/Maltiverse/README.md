@@ -251,9 +251,3 @@ For additional information please visit: https://whatis.maltiverse.com/
 
 ## Troubleshooting
 ---
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
-* 'The given IP was invalid'
-* 'Command not found.'
-* f'Failed to execute {command} command. Error: {e}'
