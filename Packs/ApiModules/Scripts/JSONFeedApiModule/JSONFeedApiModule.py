@@ -218,7 +218,8 @@ def feed_main(params, feed_name, prefix):
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
             limit = int(demisto.args().get('limit', 10))
-            indicators = fetch_indicators_command(client, indicator_type, feedTags)[:limit]
+            auto_detect = params.get('auto_detect_type')
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)[:limit]
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_outputs(hr, {}, indicators)
 

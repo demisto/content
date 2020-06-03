@@ -145,7 +145,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: True when Auto detection is wanted.
+      description: Select True when auto-detection for indicator types is wanted.
       isArray: false
       name: auto_detect_type
       predefined:

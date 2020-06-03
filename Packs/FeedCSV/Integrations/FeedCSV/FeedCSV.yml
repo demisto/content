@@ -53,7 +53,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Auto-detect indicator type
+  display: Auto detect indicator type
   name: auto_detect_type
   required: false
   type: 8
@@ -134,7 +134,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: True when Auto detection is wanted.
+      description: Select True when auto-detection for indicator types is wanted.
       isArray: false
       name: auto_detect_type
       predefined:
@@ -157,7 +157,6 @@ script:
       description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/jmespath:1.0.0.6980
-  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
