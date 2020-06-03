@@ -1,0 +1,615 @@
+id: FalconX - Detonate File
+version: -1
+name: FalconX - Detonate File
+description: |-
+  Detonates a File using the McAfee Advanced Threat Defense sandbox.
+  Advanced Threat Defense supports the following File Types:
+  32-bit Portable Executables (PE)files; 64-bit PE+files
+  exe, sys, dll, com, scr, cpl, ocx, cgi
+  Microsoft Office Suite documents
+  doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
+  Just Systems Ichitaro documents
+  jtd, jtdc
+  Adobe
+  pdf, swf
+  Compressed files
+  gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
+  Android application package
+  apk, Java, JAR, CLASS, Java Script, Java bin files
+  Image files
+  jpeg, png, gif
+  Other file types
+  cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
+    type: start
+    task:
+      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3f288a56-dd68-4d9b-83e6-f4bd2b7bd2c4
+    type: playbook
+    task:
+      id: 3f288a56-dd68-4d9b-83e6-f4bd2b7bd2c4
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: csfalconx
+          accessor: resource.id
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: cs-fx-get-analysis-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: csfalconx(val.resource.state !== 'success').resource.id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d28261ed-a72e-4276-81eb-b5e27a5ff98a
+    type: regular
+    task:
+      id: d28261ed-a72e-4276-81eb-b5e27a5ff98a
+      version: -1
+      name: CrowdStrike Falcon X Get Report
+      description: Get a full version of a sandbox report.
+      script: CrowdStrike Falcon X|||cs-fx-get-full-report
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ids:
+        simple: ${csfalconx.resource.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
+    type: title
+    task:
+      id: e589b774-3cee-4dff-8e14-788ef3590dfa
+      version: -1
+      name: Done
+      description: finished
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 16b7bc45-6b29-44fe-85ea-634e595f6c11
+    type: condition
+    task:
+      id: 16b7bc45-6b29-44fe-85ea-634e595f6c11
+      version: -1
+      name: Is CrowdStrike Falcon X enabled?
+      description: |
+        Verify that there is a valid instance of McAfee ATD enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike Falcon X
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d83a7da9-b232-452b-8756-30671b706db9
+    type: condition
+    task:
+      id: d83a7da9-b232-452b-8756-30671b706db9
+      version: -1
+      name: Filter taskId
+      description: Checks that valid files only have been sent to detonation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: csfalconx.resource.id(val != -1)
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 476cc589-1718-41ea-8f41-866508a28e15
+    type: condition
+    task:
+      id: 476cc589-1718-41ea-8f41-866508a28e15
+      version: -1
+      name: Is File type supported?
+      description: Check if file type is supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
+    type: regular
+    task:
+      id: 3814f559-a639-4e80-8d6e-c74b9e96e495
+      version: -1
+      name: Set File to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
+    type: condition
+    task:
+      id: 9b8022fc-dfd0-4806-8ead-65f53804065f
+      version: -1
+      name: Is there a File to Detonate?
+      description: Checks that there is a file in the playbook’s input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5e3cd0f7-f0a7-4d5e-834b-14e7756b23a4
+    type: regular
+    task:
+      id: 5e3cd0f7-f0a7-4d5e-834b-14e7756b23a4
+      version: -1
+      name: CrowdStrike Falcon X Upload File to Sandbox
+      description: Upload a file for sandbox analysis.
+      script: CrowdStrike Falcon X|||cs-fx-upload-file
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      comment: {}
+      file:
+        simple: ${inputs.File.EntryID}
+      file_name:
+        simple: inputs.File.EntryID
+      is_confidential: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 9726755c-cc9e-48fa-886e-8e0c1507f30f
+    type: regular
+    task:
+      id: 9726755c-cc9e-48fa-886e-8e0c1507f30f
+      version: -1
+      name: CrowdStrike FalconX Detonate Uploaded File
+      description: Submit a sample SHA256 for sandbox analysis.
+      script: CrowdStrike Falcon X|||cs-fx-detonate-uploaded-file
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action_script: {}
+      command_line: {}
+      document_password: {}
+      enable_tor:
+        simple: "false"
+      environment_id:
+        simple: '160: Windows 10'
+      sha256:
+        simple: ${csfalconx.resource.sha256}
+      submit_name: {}
+      system_date: {}
+      system_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 790,
+        "x": 50,
+        "y": 20
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: The file to detonate. File is taken from the context.
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+  playbookInputQuery: null
+outputs:
+- contextPath: ATD.Task.taskId
+  description: The task ID of the sample uploaded
+  type: string
+- contextPath: ATD.Task.jobId
+  description: The job ID of the sample uploaded
+  type: string
+- contextPath: ATD.Task.messageId
+  description: The message Id relevant to the sample uploaded
+  type: string
+- contextPath: ATD.Task.srcIp
+  description: Source IPv4 address
+  type: string
+- contextPath: ATD.Task.destIp
+  description: Destination IPv4 address
+  type: string
+- contextPath: ATD.Task.MD5
+  description: MD5 of the sample uploaded
+  type: string
+- contextPath: ATD.Task.SHA1
+  description: SHA1 of the sample uploaded
+  type: string
+- contextPath: ATD.Task.SHA256
+  description: SHA256 of the sample uploaded
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file
+  type: number
+- contextPath: InfoFile.Type
+  description: The type of the report file
+  type: string
+- contextPath: File
+  description: File object
+  type: unknown
+- contextPath: File.Malicious
+  description: File Malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBotScore object
+  type: unknown
+- contextPath: InfoFile
+  description: Report file object
+  type: unknown
+sourceplaybookid: ATD - Detonate File

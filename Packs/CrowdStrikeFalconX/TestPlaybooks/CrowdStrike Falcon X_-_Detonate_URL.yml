@@ -1,0 +1,375 @@
+id: FalconX - Detonate URL
+version: -1
+name: FalconX - Detonate URL
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    type: start
+    task:
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 35c807e9-9144-4a65-8cd4-a4ffe3715c6f
+    type: condition
+    task:
+      id: 35c807e9-9144-4a65-8cd4-a4ffe3715c6f
+      version: -1
+      name: Is CrowdStrike Falcon X enabled?
+      description: |
+        Verify that there is a valid instance of CrowdStrike enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike Falcon X
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    type: title
+    task:
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 0f6c1a40-1427-4d4a-8fbe-bc69f49b1de8
+    type: regular
+    task:
+      id: 0f6c1a40-1427-4d4a-8fbe-bc69f49b1de8
+      version: -1
+      name: CrowdStrike Falcon X Get Report
+      description: Get a full version of a sandbox report.
+      script: CrowdStrike Falcon X|||cs-fx-get-full-report
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ids:
+        simple: ${csfalconx.resource.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 2f30cbc5-cca8-4a5d-8574-f4e5fcd7d2e7
+    type: regular
+    task:
+      id: 2f30cbc5-cca8-4a5d-8574-f4e5fcd7d2e7
+      version: -1
+      name: CrowdStrike Falcon X Upload Sample
+      description: Submit a URL or FTP for sandbox analysis.
+      script: CrowdStrike Falcon X|||cs-fx-detonate-url
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      System Time: {}
+      action_script: {}
+      command_line: {}
+      document_password: {}
+      enable_tor: {}
+      environment_id:
+        simple: '160: Windows 10'
+      submit_name: {}
+      system_date: {}
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 6ffba508-37e1-4647-88ea-265cd5475d61
+    type: condition
+    task:
+      id: 6ffba508-37e1-4647-88ea-265cd5475d61
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks whether there's a file to detonate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 662d2be0-9a41-45ed-8748-db873e9cfe22
+    type: playbook
+    task:
+      id: 662d2be0-9a41-45ed-8748-db873e9cfe22
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: csfalconx
+          accessor: resource.id
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: cs-fx-get-analysis-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: csfalconx(val.resource.state !== 'success').resource.id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 677.5,
+        "x": 162.5,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+  playbookInputQuery: null
+- key: EnvironmentID
+  value:
+    simple: "100"
+  required: false
+  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
+    command.
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: "5"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: "30"
+  required: false
+  description: How much time to wait before a timeout occurs  (minutes)
+  playbookInputQuery: null
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+sourceplaybookid: detonate_url_-_crowdstrike

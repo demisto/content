@@ -1,0 +1,11 @@
+!cs-fx-upload-file file=4233@e410c722-fbdc-4606-88f6-5a6e464d6e6b file_name=test.pdf comment="example" is_confidential="true"
+!cs-fx-detonate-uploaded-file sha256="05cca3437abcb4057c157ed8b933b07fb198aa0fa0eb7f7c27e97029e9e0ad61" environment_id="160: Windows 10" action_script="default" command_line="command" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"
+#!cs-fx-detonate-url url="https://www.google.com" environment_id="160: Windows 10" action_script="default" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"
+!cs-fx-get-full-report ids="1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d"
+!cs-fx-get-report-summary ids="1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d"
+!cs-fx-get-analysis-status ids="1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d"
+#!cs-fx-download-ioc id="i1c9fe398b2294301aa3080ede8d77356_8cfaaf951fff412090df3d27d4b4193d" name="test" accept_encoding="gzip"
+!cs-fx-check-quota
+!cs-fx-find-reports filter="" offset=1 limit=50 sort="asc"
+!cs-fx-find-submission-id filter="" offset=1 limit=50 sort="asc"
+
