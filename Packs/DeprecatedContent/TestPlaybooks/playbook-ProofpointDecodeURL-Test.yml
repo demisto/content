@@ -17,7 +17,6 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,11 +24,6 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
     taskid: 5346b580-6253-4d7b-8eca-785e61e6af32
@@ -38,7 +32,7 @@ tasks:
       id: 5346b580-6253-4d7b-8eca-785e61e6af32
       version: -1
       name: Run ProofpointDecodeURL
-      script: ProofpointDecodeURL
+      scriptName: ProofpointDecodeURL
       type: regular
       iscommand: false
       brand: ""
@@ -46,10 +40,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      url:
-        simple: ${inputs.EncodedURL}
+      url: ${inputs.EncodedURL}
     continueonerror: true
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -57,11 +49,6 @@ tasks:
           "y": 195
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
     taskid: ad1da714-9bdb-4b32-8534-57cd4235d92c
@@ -70,7 +57,7 @@ tasks:
       id: ad1da714-9bdb-4b32-8534-57cd4235d92c
       version: -1
       name: Sleep for 1 minute (for downloading docker)
-      script: Sleep
+      scriptName: Sleep
       type: regular
       iscommand: false
       brand: ""
@@ -78,9 +65,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
+      seconds: "60"
     view: |-
       {
         "position": {
@@ -88,11 +73,6 @@ tasks:
           "y": 368
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
     taskid: 3c4cc490-463d-4767-8214-058a262a5258
@@ -101,7 +81,7 @@ tasks:
       id: 3c4cc490-463d-4767-8214-058a262a5258
       version: -1
       name: Run ProofpointDecodeURL again
-      script: ProofpointDecodeURL
+      scriptName: ProofpointDecodeURL
       type: regular
       iscommand: false
       brand: ""
@@ -109,9 +89,7 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      url:
-        simple: ${inputs.EncodedURL}
-    separatecontext: false
+      url: ${inputs.EncodedURL}
     view: |-
       {
         "position": {
@@ -119,11 +97,6 @@ tasks:
           "y": 545
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
     taskid: 414adf2d-d6d4-4c63-8799-6388498d254c
@@ -134,7 +107,7 @@ tasks:
       name: Check if URL decoded correctly
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
-      script: AreValuesEqual
+      scriptName: AreValuesEqual
       type: condition
       iscommand: false
       brand: ""
@@ -144,11 +117,10 @@ tasks:
       "yes":
       - "5"
     scriptarguments:
-      left:
-        simple: ${URL.Data}
-      right:
-        simple: ${inputs.DecodedURL}
-    separatecontext: false
+      left: ${URL.Data}
+      right: ${inputs.DecodedURL}
+    results:
+    - AreValuesEqual
     view: |-
       {
         "position": {
@@ -156,11 +128,6 @@ tasks:
           "y": 720
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
     taskid: 3f01b11b-aaa7-4767-86a7-637e1f9543c1
@@ -169,14 +136,13 @@ tasks:
       id: 3f01b11b-aaa7-4767-86a7-637e1f9543c1
       version: -1
       name: Close
-      script: CloseInvestigation
+      scriptName: CloseInvestigation
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: {}
-      reason: {}
-    separatecontext: false
+      notes: ""
+      reason: ""
     view: |-
       {
         "position": {
@@ -184,11 +150,6 @@ tasks:
           "y": 895
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
     taskid: 7c9a31d4-43e7-4ff0-862e-57946be7236d
@@ -200,7 +161,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -208,11 +168,6 @@ tasks:
           "y": 895
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -227,15 +182,8 @@ view: |-
   }
 inputs:
 - key: EncodedURL
-  value:
-    simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__click.email.runrocknroll.com_-3Fqs-3D3399a02bcfe05857350e94d66fd69e46a560a106e06d86e4a3b4662dfee779a80faed86d6690e500dbecd1c29c095d37a9e3b86fd3b2d4fe&d=DwMCAg&c=zUSW9Sw6oKY41zSJbj5J3w&r=iS3ZuoeZ1yaYppIXUoPsWqTPKlEYaBW589w4TanZDw4&m=54km3Jd2D7cQOiBejejbVtTEUvgMb4o5jdhpzsDRWzs&s=acsysafcaHo2XheywEUD3BREeLNfq1P6wtmHijY5bMg&e=
-  required: false
+  value: https://urldefense.proofpoint.com/v2/url?u=http-3A__click.email.runrocknroll.com_-3Fqs-3D3399a02bcfe05857350e94d66fd69e46a560a106e06d86e4a3b4662dfee779a80faed86d6690e500dbecd1c29c095d37a9e3b86fd3b2d4fe&d=DwMCAg&c=zUSW9Sw6oKY41zSJbj5J3w&r=iS3ZuoeZ1yaYppIXUoPsWqTPKlEYaBW589w4TanZDw4&m=54km3Jd2D7cQOiBejejbVtTEUvgMb4o5jdhpzsDRWzs&s=acsysafcaHo2XheywEUD3BREeLNfq1P6wtmHijY5bMg&e=
   description: ""
-  playbookInputQuery: null
 - key: DecodedURL
-  value:
-    simple: http://click.email.runrocknroll.com/?qs=3399a02bcfe05857350e94d66fd69e46a560a106e06d86e4a3b4662dfee779a80faed86d6690e500dbecd1c29c095d37a9e3b86fd3b2d4fe
-  required: false
+  value: http://click.email.runrocknroll.com/?qs=3399a02bcfe05857350e94d66fd69e46a560a106e06d86e4a3b4662dfee779a80faed86d6690e500dbecd1c29c095d37a9e3b86fd3b2d4fe
   description: ""
-  playbookInputQuery: null
-outputs: []
