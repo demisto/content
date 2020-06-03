@@ -1,0 +1,16 @@
+commonfields:
+  id: 5f415700-d8fc-46a4-82aa-d27cee9fa2af
+  version: 44
+name: MITREIndicatorsByOpenIncidents
+script: ''
+type: python
+tags:
+- widget
+comment: "This is a widget script returning MITRE indicators information for top indicators shown in incidents."
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.7.3.286
+runas: DBotWeakRole

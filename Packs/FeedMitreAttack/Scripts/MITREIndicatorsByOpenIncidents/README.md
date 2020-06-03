@@ -1,0 +1,1 @@
+This is a widget script returning MITRE indicators information for top indicators shown in incidents.
