@@ -157,6 +157,7 @@ script:
       description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/jmespath:1.0.0.6980
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
