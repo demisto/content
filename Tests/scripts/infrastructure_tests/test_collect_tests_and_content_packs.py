@@ -206,7 +206,7 @@ class TestChangedTestPlaybook:
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == set()
+        assert content_packs == {'fake_pack'}
 
     def test_changed_unrunnable_test__integration_fromversion(self, mocker):
         """
@@ -233,7 +233,7 @@ class TestChangedTestPlaybook:
         filterd_tests, content_packs = get_mock_test_list(two_before_ga, get_modified_files_ret, mocker)
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == set()
+        assert content_packs == {'fake_pack'}
 
         create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:
@@ -270,7 +270,7 @@ class TestChangedTestPlaybook:
 
         assert test_id in filterd_tests
         assert len(filterd_tests) == 1
-        assert content_packs == set()
+        assert content_packs == {'fake_pack'}
 
         create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:
@@ -397,7 +397,7 @@ class TestSampleTesting:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) == RANDOM_TESTS_NUM
-        assert content_packs == set()
+        assert content_packs == {'fake_pack'}
 
     def test_sample_tests__with_test(self, mocker):
         """
@@ -427,7 +427,7 @@ class TestChangedCommonTesting:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == set()
+        assert content_packs == {'fake_pack'}
 
 
 class TestPackageFilesModified:
@@ -453,7 +453,7 @@ class TestNoChange:
         filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == set()
+        assert content_packs == {'fake_pack'}
 
 
 def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
