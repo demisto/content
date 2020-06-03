@@ -504,7 +504,7 @@ class Client(BaseClient):
             resp_type='text'
         )
 
-    def list_zones(self, args):
+    def list_zones(self):
         uri = f'zones'
         return self._http_request(
             method='GET',
@@ -512,7 +512,7 @@ class Client(BaseClient):
             resp_type='text'
         )
 
-    def update_zone(self, args, zoneObject):
+    def update_zone(self, zoneObject):
         zoneID = zoneObject['id']
         uri = f'zones/{zoneID}'
 
@@ -997,7 +997,7 @@ def get_zone_command(client, args):
 
 
 def list_zones_command(client, args):
-    raw_response = client.list_zones(args)
+    raw_response = client.list_zones()
     if not raw_response:
         return 'No zones found.', {}, raw_response
     zones = json.loads(raw_response)
@@ -1013,22 +1013,20 @@ def list_zones_command(client, args):
     )
 
 
-def applyZoneUpdates(args, zoneObject):
+def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs):
     # If user provided a new zone name - set it
-    zoneName = args.get('zoneName', '')
     if zoneName:
         zoneObject["name"] = zoneName
 
     # Set IPs in CIDR mode. Single IPs will be added as /32.
-    gatewayIPs = argToList(args.get('gatewayIPs', ''))
     if gatewayIPs:
         CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in gatewayIPs]
         zoneObject["gateways"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
 
-    proxyIPs = argToList(args.get('proxyIPs', ''))
     if proxyIPs:
         CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in proxyIPs]
         zoneObject["proxies"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+
     return zoneObject
 
 
@@ -1042,10 +1040,12 @@ def update_zone_command(client, args):
         )
     zoneID = args.get('zoneID', '')
     zoneObject = json.loads(client.get_zone(args, zoneID))
+    zoneName = args.get('zoneName', '')
+    gatewayIPs = argToList(args.get('gatewayIPs', ''))
+    proxyIPs = argToList(args.get('proxyIPs', ''))
+    zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
 
-    zoneObject = applyZoneUpdates(args, zoneObject)
-
-    raw_response = client.update_zone(args, zoneObject)
+    raw_response = client.update_zone(zoneObject)
     if not raw_response:
         return 'Got empty response.', {}, raw_response
 
