@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AutoFocusDaily Feed
+  id: AutoFocus Daily Feed
   version: -1
 configuration:
 - display: Fetch indicators
@@ -72,8 +72,8 @@ configuration:
   required: false
   type: 8
 description: Use the AutoFocus Feeds integration to fetch daily indicators from AutoFocus.
-display: AutoFocusDaily Feed
-name: AutoFocusDaily Feed
+display: AutoFocus Daily Feed
+name: AutoFocus Daily Feed
 feedIncremental: true
 script:
   commands:
