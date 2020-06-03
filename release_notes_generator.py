@@ -79,7 +79,6 @@ def read_and_format_release_note(rn_file):
     return release_notes
 
 
-
 def get_release_notes_dict(release_notes_files):
     """ Gets a dictionary that holds the new/modified release notes content.
 
@@ -117,14 +116,13 @@ def generate_release_notes_summary(release_notes_dict, version, asset_id):
     """
     current_date = datetime.now().strftime(DATE_FORMAT)
     release_notes = f'# Cortex XSOAR Content Release Notes for version {version} ({asset_id})\n' \
-                    f'##### Published on {current_date}\n'
+        f'##### Published on {current_date}\n'
 
     for pack_name, pack_versions_dict in sorted(release_notes_dict.items()):
         for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
                                                        key=lambda pack_item: LooseVersion(pack_item[0])):
             release_notes += f'## {pack_name} Pack v{pack_version}\n' \
-                             f'{pack_release_notes}\n' \
-                             f'---\n\n'
+                f'{pack_release_notes}\n---\n\n'
 
     if release_notes.endswith('---\n\n'):
         release_notes = release_notes[:-5]
