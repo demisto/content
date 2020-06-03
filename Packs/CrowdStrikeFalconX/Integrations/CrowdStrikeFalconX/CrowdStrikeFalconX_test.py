@@ -63,7 +63,7 @@ FIND_SUBMISSION_ID_ARGS = {
 }
 
 
-@pytest.mark.parametrize('command, args, http_response, context',[
+@pytest.mark.parametrize('command, args, http_response, context', [
     (send_uploaded_file_to_sandbox_analysis_command, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS,
      SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT),
     (send_url_to_sandbox_analysis_command, SEND_URL_TO_SANDBOX_ANALYSIS_ARGS,
