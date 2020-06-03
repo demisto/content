@@ -2,12 +2,12 @@ id: TIM - Process Domain Age With Whois
 version: -1
 fromversion: 5.5.0
 name: TIM - Process Domain Age With Whois
-description: This playbook compares the domain creation time against the a provided
-  time value such as one month ago. The period can be configured within the playbook
-  inputs MinimumAgeOfDomainMonths or MinimumAgeOfDomainHours. The playbook calculates
-  the timestamp for the relevant period and compares it to the domain creation time
-  value provided by Whois. The resulted domains will be outputted accordingly if they
-  were created before or after the compared time.
+description: This playbook compares the domain creation time against a provided
+time value such as one month ago. The period can be configured within the
+playbook inputs MinimumAgeOfDomainMonths or MinimumAgeOfDomainHours. The playbook
+calculates the timestamp for the relevant period and compares it to the domain
+creation time value provided by Whois. The domains are outputted
+accordingly if they were created before or after the compared time, respectively.
 starttaskid: "0"
 tasks:
   "0":
@@ -183,7 +183,7 @@ tasks:
     task:
       id: 513e2f1d-3d12-455c-8066-0b80b9521937
       version: -1
-      name: Are the domains that were created after the tested time?
+      name: Are there domains that were created after the tested time?
       type: condition
       iscommand: false
       brand: ""
@@ -420,7 +420,7 @@ tasks:
     task:
       id: 5c6762fc-1621-47b5-8166-921a44253f16
       version: -1
-      name: Are the domains that were created before the tested time?
+      name: Are there domains that were created before the tested time?
       type: condition
       iscommand: false
       brand: ""
@@ -645,7 +645,7 @@ tasks:
       id: c2f1d75a-7c81-4286-8a43-e25c25376d3c
       version: -1
       name: Tag domain with no Whois resolution
-      description: tag indicator with no Whois result.
+      description: Tag domains with no Whois result.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -681,7 +681,7 @@ tasks:
       id: 0d20246e-2988-4596-8502-54ad1211a25d
       version: -1
       name: Tag domain as new
-      description: Tag indicator as new domain.
+      description: Tag domain as new.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -887,16 +887,16 @@ inputs:
 - key: MinimumAgeMonthValue
   value: {}
   required: false
-  description: The minimal month age of a domain to be considered a new domain. Specifying
-    the value 1 will mean that if the tested domain was registered less than a month
-    ago it will be considered a new domain.
+  description: The number of months that a domain must exist for it to be considered not new. For example, specifying
+    the value 1 means that if the tested domain was registered less than a month
+    ago, it will be considered a new domain.
   playbookInputQuery: null
 - key: MinimumAgeDayValue
   value: {}
   required: false
-  description: The minimal day age of a domain to be considered a new domain. Specifying
+  description: The number of days that a domain must exist for it to be considered not new. Specifying
     the value 1 will mean that if the tested domain was registered less than one day
-    ago it will be considered a new domain.
+    ago, it will be considered a new domain.
   playbookInputQuery: null
 - key: WhoisResults
   value: {}
@@ -905,16 +905,16 @@ inputs:
   playbookInputQuery: null
 outputs:
 - contextPath: NewDomains
-  description: Domains their create value is after the tested date.
+  description: Domains whose create value is after the tested date.
   type: string
 - contextPath: NotNewDomains
-  description: Domains their create value is before the tested date.
+  description: Domains whose create value is before the tested date.
   type: string
 - contextPath: DomainsNotResolvedByWhois
-  description: Domains Not Resolved By Whois.
+  description: Domains that could not be resolved by Whois.
   type: string
 - contextPath: DomainsNotProcessed
-  description: In case no time value to compare was provided all domains will be outputted
+  description: In case no time value to compare was provided, all domains will be outputted
     here.
   type: string
 quiet: true
