@@ -2,10 +2,9 @@ id: TIM - Indicators Exclusion By Related Incidents
 version: -1
 fromversion: 6.0.0
 name: TIM - Indicators Exclusion By Related Incidents
-description: This playbooks allows to filter indicators according to the number of
-  incidents the indicator is related to. The indicator query will be "investigationsCount:>=X"
-  where X is the number of related incidents to the indicator the user would like
-  to set.
+description: This playbooks allows you to filter indicators according to the number of
+  incidents the indicator is related to. The indicator query is "investigationsCount:>=X"
+  where X is the number of related incidents to the indicator that you set.
 starttaskid: "0"
 tasks:
   "0":
@@ -164,7 +163,7 @@ tasks:
       id: 3b2faf00-1df0-4dfd-8fc8-a7585ba16d97
       version: -1
       name: Open manual incident
-      description: Create new incident to manually review indicators for exclusion.
+      description: Create a new incident to manually review indicators for exclusion.
       script: Builtin|||createNewIncident
       type: regular
       iscommand: true
@@ -605,7 +604,7 @@ tasks:
       id: 444adddb-eb6b-4c1b-8beb-a4c2d77fb7bf
       version: -1
       name: Exclude indicators
-      description: Add indiacators to XSOAR exclusion list.
+      description: Add indicators to XSOAR exclusion list.
       script: Builtin|||excludeIndicators
       type: regular
       iscommand: true
@@ -669,14 +668,14 @@ inputs:
   value: {}
   required: false
   description: |-
-    This input will specify which action the playbook will perform on the provided indicators. Possible input values can be
-    AutoExclude
-    TagIndicators
+    This input specifies which action the playbook performs on the provided indicators. Possible input values can be
+        AutoExclude
+        TagIndicators
   playbookInputQuery: null
 - key: TagValueForIndicators
   value: {}
   required: false
-  description: This input will specify the tag value to apply for the indicators.
+  description: This input specifies the tag value to apply to the indicators.
   playbookInputQuery: null
 - key: OpenIncidentToReviewIndicatorsManually
   value:
@@ -689,8 +688,7 @@ inputs:
 - key: AutoExcludeReason
   value: {}
   required: false
-  description: 'Provide the exclusion reason that will appear in the XSOAR exclusion
-    page for the excluded indicators. '
+  description: Provide the reason that will appear in the XSOAR exclusion
   playbookInputQuery: null
 outputs: []
 quiet: true
