@@ -408,7 +408,7 @@ def get_reporter_command(triage_instance) -> None:
         return return_outputs(
             readable_output="Could not find reporter with matching ID",
             outputs=reporter_id,
-            raw_response=reporter.to_json()
+            raw_response=json.dumps(reporter.attrs)
         )
 
     camel_case_attrs = snake_to_camel_keys([reporter.attrs])[0]
@@ -420,7 +420,7 @@ def get_reporter_command(triage_instance) -> None:
             headerTransform=split_snake,
             removeNull=True,
         ),
-        raw_response=reporter.to_json()
+        raw_response=json.dumps(reporter.attrs)
     )
 
 
