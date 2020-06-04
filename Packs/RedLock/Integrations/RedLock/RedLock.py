@@ -39,11 +39,11 @@ def get_token():
     response_json = response.json()
     TOKEN = response_json.get('token')
     if not TOKEN:
-        message = f'Could not retrieve token from server: {response_json.get("message")}'
+        message = 'Could not retrieve token from server: {}'.format(response_json.get("message"))
         if response_json.get('message') == 'login_needs_customer_name':
             available_customer_names = [name.get('customerName') for name in response_json.get('customerNames')]
-            message = f'In order to login a customer name need to be configured. Available customer names: ' \
-                      f'{", ".join(available_customer_names)}'
+            message = 'In order to login a customer name need to be configured. Available customer names:'.format(
+                {", ".join(available_customer_names)})
         raise Exception(message)
     HEADERS['x-redlock-auth'] = TOKEN
 
