@@ -3,12 +3,13 @@ commonfields:
   id: CSVFeed
   version: -1
 configuration:
-- defaultvalue: 'true'
-  display: Fetch indicators
+- display: Fetch indicators
   name: feed
+  defaultvalue: true
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -33,6 +34,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
+  display: ""
   name: feedExpirationPolicy
   options:
   - never
@@ -43,6 +45,7 @@ configuration:
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
+  display: ""
   required: false
   type: 1
 - defaultvalue: '240'
@@ -57,14 +60,14 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+  defaultvalue: ""
 - additionalinfo: If selected, the indicator type will be auto detected for each indicator.
   defaultvalue: 'true'
   display: Auto detect indicator type
   name: auto_detect_type
   required: false
   type: 8
-- additionalinfo: Type of the indicator in the feed,
-  If auto-detect is checked then the value set as Indicator Type will be ignored.
+- additionalinfo: Type of the indicator in the feed, If auto-detect is checked then the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   required: false
@@ -177,4 +180,3 @@ script:
 tests:
 - CSV_Feed_Test
 fromversion: 5.5.0
-
