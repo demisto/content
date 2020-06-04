@@ -1,6 +1,6 @@
 ## [Unreleased]
-- Added details about direct messages and changing the app name to the README.
-- Update default "bot name", "bot icon" integration parameters to new brand name Cortex XSOAR (formerly Demisto).
+  - Added details about direct messages and changing the app name in the README file.
+  - Updated the default "bot name", "bot icon" integration parameters to the new name: Cortex XSOAR (formerly Demisto).
 
 ## [20.5.0] - 2020-05-12
 - Removed `Long Running Instance` from instance configuration.
