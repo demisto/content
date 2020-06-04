@@ -94,7 +94,8 @@ def whois(url: str) -> tuple:
     raw = http_request(method='GET',
                        url_suffix='/api/v1/whois',
                        params=params)
-
+    if 'error' in raw:
+        return_error(f'Error from JsonWhoIS: {raw["error"]}')
     # Build all ec
     ec = {
         'DomainStatus': raw.get('status'),
