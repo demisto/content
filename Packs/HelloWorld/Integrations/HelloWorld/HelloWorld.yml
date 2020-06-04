@@ -584,3 +584,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultClassifier: HelloWorld
+defaultMapperIn: HelloWorld-mapper

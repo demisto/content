@@ -2,7 +2,7 @@
     "name": "Prisma Cloud",
     "description": "Prisma Cloud Related Content",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
