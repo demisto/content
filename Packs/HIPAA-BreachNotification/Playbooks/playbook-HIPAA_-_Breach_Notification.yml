@@ -111,12 +111,13 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 473bc9cd-4816-4ca9-8cdd-baf00db40edf
+    taskid: 10852851-ae2f-4fe9-8238-1cba6482c757
     type: collection
     task:
-      id: 473bc9cd-4816-4ca9-8cdd-baf00db40edf
+      id: 10852851-ae2f-4fe9-8238-1cba6482c757
       version: -1
       name: Analyst review
+      description: Checks with the analyst if the key was not compromised
       type: collection
       iscommand: false
       brand: ""
@@ -184,12 +185,13 @@ tasks:
       totalanswers: 0
   "4":
     id: "4"
-    taskid: 6d30d72d-e4b8-4caf-81b1-75b7ff598b9c
+    taskid: 0efee354-35f5-4847-8f88-0a5c410a8f66
     type: condition
     task:
-      id: 6d30d72d-e4b8-4caf-81b1-75b7ff598b9c
+      id: 0efee354-35f5-4847-8f88-0a5c410a8f66
       version: -1
       name: Is the PHI secure?
+      description: Checks the analyst's answer if the key was compromised or not.
       type: condition
       iscommand: false
       brand: ""
@@ -946,12 +948,13 @@ tasks:
         simple: Suspected PHI data breach.Answers.2
   "8":
     id: "8"
-    taskid: 462947cd-9319-4934-8fcf-663a68e34485
+    taskid: b2c073d9-f66e-4245-83ce-897fff0effaa
     type: condition
     task:
-      id: 462947cd-9319-4934-8fcf-663a68e34485
+      id: b2c073d9-f66e-4245-83ce-897fff0effaa
       version: -1
       name: DPO confirmed the breach?
+      description: 'Checks the DPO answer if he confirms the breach. '
       type: condition
       iscommand: false
       brand: ""
@@ -1180,12 +1183,14 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 35bfd439-d83e-4069-8813-d416c2c92713
+    taskid: 6d27d46f-7234-490b-8634-5dbd0311f595
     type: condition
     task:
-      id: 35bfd439-d83e-4069-8813-d416c2c92713
+      id: 6d27d46f-7234-490b-8634-5dbd0311f595
       version: -1
       name: Get DPO Approval for the report
+      description: Asks the DPO for confirmation about the report sent from Cortex
+        XSOAR.
       type: condition
       iscommand: false
       brand: ""
@@ -1485,12 +1490,13 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 3ddb8d25-7260-4360-8b6d-cc11889200cd
+    taskid: 5b505da6-1900-40ff-80bf-cba6d85e9db3
     type: condition
     task:
-      id: 3ddb8d25-7260-4360-8b6d-cc11889200cd
+      id: 5b505da6-1900-40ff-80bf-cba6d85e9db3
       version: -1
       name: Choose way of update
+      description: Asks the analyst about the way to update the list of affected individuals.
       type: condition
       iscommand: false
       brand: ""
@@ -1512,12 +1518,13 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 2a4d9c90-7cd8-4b3d-8697-515fdaa64629
+    taskid: e49af60c-28f3-4142-89ae-762c187b5904
     type: regular
     task:
-      id: 2a4d9c90-7cd8-4b3d-8697-515fdaa64629
+      id: e49af60c-28f3-4142-89ae-762c187b5904
       version: -1
       name: Update the affected individual’s information grid manually
+      description: Update the affected individual’s information grid manually.
       type: regular
       iscommand: false
       brand: ""
@@ -1593,12 +1600,13 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 2f405e8d-9653-4648-8cc8-d2ce0654b16b
+    taskid: a4dd3175-b5a4-4815-8b19-daa391871f53
     type: condition
     task:
-      id: 2f405e8d-9653-4648-8cc8-d2ce0654b16b
+      id: a4dd3175-b5a4-4815-8b19-daa391871f53
       version: -1
       name: Does the file exist?
+      description: Checks if a file was attached to the incident.
       type: condition
       iscommand: false
       brand: ""
@@ -1732,12 +1740,14 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 5aa7d118-3d5c-4214-8b6b-c3fe1bd1f8e0
+    taskid: 9e85c0c6-b721-4547-8b4f-2e818135a6fc
     type: condition
     task:
-      id: 5aa7d118-3d5c-4214-8b6b-c3fe1bd1f8e0
+      id: 9e85c0c6-b721-4547-8b4f-2e818135a6fc
       version: -1
       name: Should the notification be sent automatically?
+      description: Checks base on the playbook inputs if notification to the affected
+        individuals should be sent automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -1928,12 +1938,14 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: 7ccdf450-e252-45c1-8da4-e5e22c68ddf7
+    taskid: 3c5284ed-add5-4945-8d0e-582b6020514b
     type: condition
     task:
-      id: 7ccdf450-e252-45c1-8da4-e5e22c68ddf7
+      id: 3c5284ed-add5-4945-8d0e-582b6020514b
       version: -1
-      name: Checks number of affected data subjects
+      name: Checks number of affected individuals
+      description: Checks the number of affected individuals, If more than 500 - a
+        notification in the local media is required.
       type: condition
       iscommand: false
       brand: ""
