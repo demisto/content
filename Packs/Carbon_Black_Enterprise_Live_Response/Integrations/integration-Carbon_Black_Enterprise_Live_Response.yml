@@ -2720,3 +2720,6 @@ script:
       type: boolean
     description: Executes an endpoint memory dump.
   runonce: false
+tests:
+  - Carbon Black Live Response Test
+fromversion: 3.6.1
