@@ -11,7 +11,7 @@ UPDATE_REQ_RESPONSE = {'result': 'updated successfully!'}
 class Client(BaseClient):
     def get_status_http_request(self):
         """
-        initiates an http request to get the service status
+        initiates an http request to get the service status todo: remove me
         """
         params = {'apikey': API_KEY}
         response = self._http_request(
