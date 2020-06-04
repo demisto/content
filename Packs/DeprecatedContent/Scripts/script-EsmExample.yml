@@ -1,6 +1,6 @@
 commonfields:
   id: EsmExample
-  version: 1
+  version: -1
 name: EsmExample
 script: |-
   var queryLimit = '100';
