@@ -195,7 +195,7 @@ class TriageReporter:
     Class representing an end user who has reported a suspicious message
 
     Model associations:
-    TriageReport - A reporter sumbitted by this user. A TriageReporter may have many TriageReports.
+    TriageReport - A reporter submitted by this user. A TriageReporter may have many TriageReports.
     """
 
     def __init__(self, triage_instance, reporter_id):
