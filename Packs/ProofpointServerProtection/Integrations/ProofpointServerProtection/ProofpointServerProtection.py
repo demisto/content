@@ -134,7 +134,7 @@ def quarantine_messages_command():
         return_error('At least one argument is required')
 
     response = quarantine_messages(folder, sender, subject, recipient)
-    soup = BeautifulSoup(response, 'lxml')
+    soup = BeautifulSoup(response, 'html.parser')
     # Get block_on class of type _qlist content
     block_on_class = soup.find('div', {'class': 'block_on', 'id': '_qlist'})
     # Get script tag content
@@ -350,7 +350,7 @@ def smart_search(data):
 
 def quarantine_folders_command():
     response = quarantine_folders()
-    soup = BeautifulSoup(response, 'lxml')
+    soup = BeautifulSoup(response, 'html.parser')
     # Get block_on class content
     class_block_on = soup.find('div', {'class': 'block_on'})
     # Get script tag content

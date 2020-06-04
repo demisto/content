@@ -4,6 +4,8 @@ Use the Proofpoint Protection Server integration to manage your email security a
 
 This integration was integrated and tested with version 8.11.12 of Proofpoint Protection Server.
 
+In order to use the integration, a user with admin role is required.
+
 ## Use Cases
 ---
 1. Manage senders list.
