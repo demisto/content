@@ -924,7 +924,7 @@ script:
       description: ID of the control graph of the behavior
       type: string
     - contextPath: CrowdStrikeHost.Detections.behaviors.cmdline
-      description: Commandline of the behavior
+      description: Command line of the behavior
       type: string
     - contextPath: CrowdStrikeHost.Detections.behaviors.confidence
       description: Confidence of the behavior
@@ -1052,7 +1052,7 @@ script:
       description: ID of the control graph of the behavior
       type: string
     - contextPath: CrowdStrikeHost.Detections.behaviors.cmdline
-      description: Commandline of the behavior
+      description: Command line of the behavior
       type: string
     - contextPath: CrowdStrikeHost.Detections.behaviors.confidence
       description: Confidence of the behavior
@@ -1106,7 +1106,7 @@ script:
       description: OS version of the device
       type: string
     - contextPath: CrowdStrikeHost.Detections.device.mac_address
-      description: MACAddress of the device
+      description: MAC address of the device
       type: string
     - contextPath: CrowdStrikeHost.Detections.device.local_ip
       description: Local IP of the device
@@ -1120,12 +1120,12 @@ script:
     - contextPath: CrowdStrikeHost.Detections.behaviors.technique
       description: Technique of the behavior
       type: string
-    description: Fetch details of a Crowdstrike Detection using the detection ID
+    description: Fetches details of a Crowdstrike Detection using the detection ID
   - name: cs-threatgraph-summary
     arguments:
     - name: ctg_id
       required: true
-      description: Crowd Strike threar grpah ID.
+      description: Crowd Strike threat graph ID.
       isArray: true
     outputs:
     - contextPath: CrowdStrikeHost.ThreatGraphSummary.customer_id
@@ -1148,12 +1148,12 @@ script:
       description: Threat graph scope.
       type: string
     - contextPath: CrowdStrikeHost.ThreatGraphSummary.timestamp
-      description: Timestamp.
+      description: Timestamp when the threat graph summary was created.
       type: string
     - contextPath: CrowdStrikeHost.ThreatGraphSummary.vertex_type
       description: Threat graph vertex type.
       type: string
-    description: Gets the details of Threat Graph Summary.
+    description: Gets the details of a threat graph summary.
   - name: cs-threatgraph-processes
     arguments:
     - name: process_id
@@ -1182,12 +1182,12 @@ script:
       description: Threat graph scope.
       type: string
     - contextPath: CrowdStrikeHost.ThreatGraphProcesses.timestamp
-      description: Timestamp.
+      description: Timestamp when the threat graph processes were created.
       type: string
     - contextPath: CrowdStrikeHost.ThreatGraphProcesses.vertex_type
       description: Threat graph vertex type.
       type: string
-    description: Gets the Summary of Threat Graph Processes.
+    description: Gets the summary of Threat Graph Processes.
   - name: cs-threatgraph-detections
     arguments:
     - name: detection_id
@@ -1215,12 +1215,12 @@ script:
       description: Threat graph scope.
       type: string
     - contextPath: CrowdStrikeHost.ThreatGraphDetections.timestamp
-      description: Timestamp.
+      description: Timestamp when the threat graph detections were created.
       type: string
     - contextPath: CrowdStrikeHost.ThreatGraphDetections.vertex_type
       description: Threat graph vertex type.
       type: string
-    description: Gets the Child Process Threat Graph Detections.
+    description: Gets the child process Threat Graph Detections.
   runonce: false
 tests:
 - No tests
