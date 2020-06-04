@@ -844,6 +844,7 @@ script:
   - arguments:
     - default: false
       defaultValue: object name or uid
+      description: object name or uid
       isArray: false
       name: identifier
       required: true
