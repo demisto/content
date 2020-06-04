@@ -122,9 +122,9 @@ jobs:
                 exit 0
             fi
 
-            # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+            # Run flake8 on all excluding Packs (Integraions and Scripts) - they will be handled in linting
             ./Tests/scripts/pyflake.sh *.py
-            find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
+            find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
             [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
             ./Tests/scripts/validate.sh
@@ -352,7 +352,7 @@ jobs:
                     export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
                 elif [ -n "${INSTANCE_TESTS}" ] ;
                   then
-                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+                    export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
 
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
@@ -476,9 +476,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
@@ -499,21 +499,22 @@ jobs:
                 echo "Not AMI run, can't run on this version"
             fi
       - run:
-          name: Run Tests - Server Master
+          name: Run Tests - Demisto Marketplace
           shell: /bin/bash
           when: always
+          no_output_timeout: 5h
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server Master"')
-            echo "Server Master filter=$TEMP"
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+            echo "Demisto Marketplace filter=$TEMP"
             if [[ "$TEMP" == "false" ]];
               then
                 echo "Skipping - instance was not setup"
@@ -521,7 +522,10 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                ./Tests/scripts/run_tests.sh "Server Master"
+                ./Tests/scripts/run_tests.sh "Demisto Marketplace"
+                export RETVAL=$?
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                exit $RETVAL
 
             else
                 echo "Not AMI run, can't run on this version"

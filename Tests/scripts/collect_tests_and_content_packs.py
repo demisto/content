@@ -1100,6 +1100,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         test = collect_ids(file_path)
         if test not in tests:
             tests.add(test)
+        packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
 
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
@@ -1128,8 +1129,8 @@ def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_se
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
     envs_to_test = {
-        'Server Master': True,
         'Demisto PreGA': True,
+        'Demisto Marketplace': True,
         'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf, id_set=id_set),
         'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf, id_set=id_set),
         'Demisto GA': is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf, id_set=id_set),
