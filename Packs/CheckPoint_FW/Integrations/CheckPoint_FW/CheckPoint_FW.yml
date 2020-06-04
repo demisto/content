@@ -53,10 +53,13 @@ script:
     name: checkpoint-host-list
     outputs:
     - contextPath: checkpoint.host.name
+      description: object name
       type: String
     - contextPath: checkpoint.host.uid
+      description: object uid
       type: String
     - contextPath: checkpoint.host.type
+      description: object type
       type: String
   - arguments:
     - default: false
@@ -74,32 +77,41 @@ script:
       description: host name
       type: Unknown
     - contextPath: checkpoint.host.uid
+      description: object uid
       type: String
     - contextPath: checkpoint.host.type
+      description: object type
       type: Unknown
     - contextPath: checkpoint.host.domain-name
+      description: domain name
       type: String
     - contextPath: checkpoint.host.domain-uid
+      description: domain uid
       type: String
     - contextPath: checkpoint.host.ipv4-address
+      description: IP address
       type: String
     - contextPath: checkpoint.host.ipv6-address
+      description: IP address
       type: String
     - contextPath: checkpoint.host.read-only
+      description: indicates if the object is read only
       type: Boolean
-    - contextPath: checkpoint.host.Meta-info-creation-time
-      type: Unknown
-    - contextPath: checkpoint.host.Meta-info-creator
+    - contextPath: checkpoint.host.meta-info-creator
+      description: indicates the creator of the object
       type: String
-    - contextPath: checkpoint.host.Meta-info-last-modifier
+    - contextPath: checkpoint.host.meta-info-last-modifier
+      description: indicates the last user modified the object
       type: Unknown
   - arguments:
     - default: false
+      description: name of the new host
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
+      description: ip address
       isArray: false
       name: ip_address
       required: true
@@ -108,6 +120,40 @@ script:
     description: Add new host
     execution: false
     name: checkpoint-host-add
+    outputs:
+    - contextPath: checkpoint.host.name
+      description: object name
+      type: String
+    - contextPath: checkpoint.host.uid
+      description: object uid
+      type: String
+    - contextPath: checkpoint.host.type
+      description: object type
+      type: String
+    - contextPath: checkpoint.host.domain-name
+      description: domain name
+      type: String
+    - contextPath: checkpoint.host.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: checkpoint.host.domain-type
+      description: domain type
+      type: String
+    - contextPath: checkpoint.host.meta-info-creator
+      description: indicates the creator of the object
+      type: String
+    - contextPath: checkpoint.host.meta-info-last-modifier
+      description: indicates the last user modifies the object
+      type: String
+    - contextPath: checkpoint.host.ipv4-address
+      description: ip address
+      type: String
+    - contextPath: checkpoint.host.ipv6-address
+      description: IP address
+      type: String
+    - contextPath: checkpoint.host.read-only
+      description: indicates if the object is read only
+      type: String
   - arguments:
     - default: false
       description: Object unique identifier or name
@@ -173,12 +219,16 @@ script:
       description: domain type
       type: String
     - contextPath: checkpoint.host.meta-info-creator
+      description: indicates the creator of the object
       type: String
     - contextPath: checkpoint.host.meta-info-last-modifier
+      description: indicates the last user modified the object
       type: String
     - contextPath: checkpoint.host.ipv4-address
+      description: IP address
       type: String
     - contextPath: checkpoint.host.read-only
+      description: IP address
       type: Boolean
   - arguments:
     - default: false
@@ -188,11 +238,13 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: delete host
     execution: false
     name: checkpoint-host-delete
     outputs:
     - contextPath: checkpoint.host.message
-      type: Unknown
+      description: operation status
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
@@ -253,10 +305,13 @@ script:
       description: domain type
       type: String
     - contextPath: checkpoint.group.meta-info-creator
+      description: indicates the creator of the object
       type: String
     - contextPath: checkpoint.group.meta-info-last-modifier
+      description: indicates the last user modified the object
       type: String
     - contextPath: checkpoint.group.read-only
+      description: indicates if the object is read only
       type: Boolean
   - arguments:
     - default: false
@@ -289,13 +344,16 @@ script:
       description: domain type
       type: String
     - contextPath: checkpoint.group.meta-info-creator
+      description: Indicates the object creator
       type: String
     - contextPath: checkpoint.group.meta-info-last-modifier
+      description: Indicates the last user modified the object
       type: String
     - contextPath: checkpoint.group.read-only
       description: Indicates whether the object is read-only
       type: Boolean
     - contextPath: checkpoint.group.groups-name
+      description: groups name
       type: Unknown
   - arguments:
     - default: false
@@ -354,10 +412,13 @@ script:
       description: domain type
       type: String
     - contextPath: checkpoint.group.meta-info-creator
+      description: Indicates the creator of the object
       type: String
     - contextPath: checkpoint.group.meta-info-last-modifier
+      description: Indicates the lasr user modified the object
       type: String
     - contextPath: checkpoint.group.read-only
+      description: Indicates if the object is read only
       type: Boolean
   - arguments:
     - default: false
@@ -384,6 +445,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
+      description: Number of the results to initially skip.
       isArray: false
       name: offset
       required: false
@@ -398,10 +460,10 @@ script:
       type: String
     - contextPath: checkpoint.address-range.uid
       description: object's uid
-      type: Unknown
+      type: String
     - contextPath: checkpoint.address-range.type
       description: Type of the object.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: object name
@@ -482,8 +544,10 @@ script:
       description: Indicates whether the object is read-only.
       type: Boolean
     - contextPath: checkpoint.address-range.meta-info-creator
+      description: Indicates the creator of the object
       type: String
     - contextPath: checkpoint.address-range.meta-info-last-modifier
+      description: Indicates the last user modified the object
       type: String
   - arguments:
     - default: false
@@ -616,41 +680,43 @@ script:
       description: object uid or name
       isArray: false
       name: identifier
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get data for a given list indicator
     execution: false
     name: checkpoint-threat-indicator-get
     outputs:
-    - contextPath: checkpoint.group.name
+    - contextPath: checkpoint.threat-indicator.name
       description: object name
       type: String
-    - contextPath: checkpoint.group.uid
+    - contextPath: checkpoint.threat-indicator.uid
       description: object uid
       type: String
-    - contextPath: checkpoint.group.type
+    - contextPath: checkpoint.threat-indicator.type
       description: object type
       type: String
-    - contextPath: checkpoint.group.domain-name
+    - contextPath: checkpoint.threat-indicator.domain-name
       description: Domain name
       type: String
-    - contextPath: checkpoint.group.domain-uid
+    - contextPath: checkpoint.threat-indicator.domain-uid
       description: object uid
       type: String
-    - contextPath: checkpoint.group.domain-type
+    - contextPath: checkpoint.threat-indicator.domain-type
       description: domain type
       type: Unknown
-    - contextPath: checkpoint.group.meta-info-creator
+    - contextPath: checkpoint.threat-indicator.meta-info-creator
       description: creator
       type: String
-    - contextPath: checkpoint.group.meta-info-last-modifier
+    - contextPath: checkpoint.threat-indicator.meta-info-last-modifier
+      description: Indicates the last user modified the object
       type: String
-    - contextPath: checkpoint.group.read-only
+    - contextPath: checkpoint.threat-indicator.read-only
       description: Indicates whether the object is read-only.
       type: Boolean
   - arguments:
     - default: false
+      description: threat indicator name
       isArray: false
       name: name
       required: true
@@ -669,7 +735,7 @@ script:
     outputs:
     - contextPath: checkpoint.threat-indicator.task-id
       description: Asynchronous task unique identifier.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: uid or name.
@@ -722,8 +788,10 @@ script:
       description: domain type
       type: String
     - contextPath: checkpoint.threat-indicator.meta-info-creator
+      description: Indicates the creator of the object
       type: String
     - contextPath: checkpoint.threat-indicator.meta-info-last-modifier
+      description: Indicates the last user modified the object
       type: String
     - contextPath: checkpoint.threat-indicator.read-only
       description: Indicates whether the object is read-only.
@@ -789,8 +857,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: |
-        Number of the results to initially skip.
+      description: Number of the results to initially skip.
       isArray: false
       name: offset
       required: false
@@ -852,10 +919,13 @@ script:
       description: Enable/Disable the rule.
       type: Boolean
     - contextPath: checkpoint.access-rule.layer
+      description: Layer that the rule belongs to identified by the name or UID.
       type: String
     - contextPath: checkpoint.access-rule.meta-info-creator
+      description: Indicated the object creator
       type: String
     - contextPath: checkpoint.access-rule.meta-info-last-modifier
+      description: Indicates the last user modofied the object
       type: String
   - arguments:
     - default: false
@@ -953,11 +1023,13 @@ script:
       description: Enable/Disable the rule.
       type: Boolean
     - contextPath: checkpoint.access-rule.layer
-      description: layer
+      description: Layer that the rule belongs to identified by the name or UID.
       type: String
     - contextPath: checkpoint.access-rule.meta-info-creator
+      description: Indicates the creator of the object
       type: String
     - contextPath: checkpoint.access-rule.meta-info-last-modifier
+      description: Indicates the last user modified the object
       type: String
   - arguments:
     - default: false
@@ -1005,10 +1077,10 @@ script:
       type: String
     - contextPath: checkpoint.application-site.uid
       description: objects uid
-      type: Unknown
+      type: String
     - contextPath: checkpoint.application-site.type
       description: objects type
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: Object name. Must be unique in the domain
@@ -1059,14 +1131,17 @@ script:
       description: domain uid
       type: String
     - contextPath: checkpoint.application-site.domain-type
+      description: domain name
       type: String
     - contextPath: checkpoint.application-site.url-list
       description: URLs that determine this particular application.
       type: String
-    - contextPath: checkpoint.application-site.Meta-info-creator
+    - contextPath: checkpoint.application-site.meta-info-creator
+      description: Indicates the creator of the object
       type: String
-    - contextPath: checkpoint.application-site.Meta-info-last-modifier
-      type: Unknown
+    - contextPath: checkpoint.application-site.meta-info-last-modifier
+      description: Indicates the last user modified this object
+      type: String
   - arguments:
     - default: false
       description: uid or name
@@ -1094,14 +1169,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' New name of the object.'
+      description: New name of the object.
       isArray: false
       name: new_name
       required: false
       secret: false
     - default: false
-      defaultValue: 'States whether the URL is defined as a Regular Expression or
-        not. '
+      description: 'States whether the URL is defined as a Regular Expression or not. '
       isArray: false
       name: urls_defined_as_regular_expression
       required: false
@@ -1135,6 +1209,7 @@ script:
       description: domain uid
       type: String
     - contextPath: checkpoint.application-site.domain-type
+      description: domain type
       type: String
     - contextPath: checkpoint.application-site.url-list
       description: URLs that determine this particular application.
@@ -1185,7 +1260,8 @@ script:
     name: checkpoint-install-policy
     outputs:
     - contextPath: checkpoint.instal-policy.task-id
-      type: Unknown
+      description: operation task ID
+      type: String
   dockerimage: demisto/python3.8.3.8715
   feed: false
   isfetch: false
