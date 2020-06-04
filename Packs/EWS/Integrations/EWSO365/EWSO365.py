@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -84,11 +84,6 @@ ACTION = "action"
 MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
-
-# error messages
-SEARCH_MAILBOXES_RBAC = (
-    "The RBAC role does require user context. The user context is missing."
-)
 
 # context paths
 CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} === obj.{0} || (val.{1} && obj.{1} && val.{1} === obj.{1}))".format(
@@ -393,7 +388,7 @@ class ExpandGroup(EWSService):
     def call(self, email_address, recursive_expansion=False):
         try:
             if recursive_expansion == "True":
-                group_members = {}  # type: dict
+                group_members: Dict = {}
                 self.expand_group_recursive(email_address, group_members)
                 return list(group_members.values())
             else:
@@ -413,7 +408,9 @@ class ExpandGroup(EWSService):
         elements = self._get_elements(payload=self.get_payload(email_address))
         return [self.parse_element(x) for x in elements]
 
-    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=set()):
+    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=None):
+        if dl_emails is None:
+            dl_emails = set()
         if email_address in non_dl_emails or email_address in dl_emails:
             return None
         dl_emails.add(email_address)
@@ -622,11 +619,11 @@ def email_ec(item):
 
 
 def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):
-    def parse_object_as_dict(object):
+    def parse_object_as_dict(obj):
         raw_dict = {}
-        if object is not None:
-            for field in object.FIELDS:
-                raw_dict[field.name] = getattr(object, field.name, None)
+        if obj is not None:
+            for field in obj.FIELDS:
+                raw_dict[field.name] = getattr(obj, field.name, None)
         return raw_dict
 
     def parse_folder_as_json(folder):
@@ -919,7 +916,7 @@ def fetch_emails_as_incidents(client: EWSClient):
             last_run.get(LAST_RUN_IDS, []), maxlen=client.last_run_ids_queue_size
         )
         incidents = []
-        incident = {}  # type: Dict[Any, Any]
+        incident: Dict[str, str] = {}
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
@@ -1356,17 +1353,18 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):
 
 
 def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbox=None):
+    account = client.get_account(target_mailbox)
     full_path = os.path.join(folder_path, new_folder_name)
     try:
-        if client.get_folder_by_path(full_path):
-            return (f"Folder {full_path} already exists",)
+        if client.get_folder_by_path(full_path, account):
+            return f"Folder {full_path} already exists",
     except Exception:
         pass
-    parent_folder = client.get_folder_by_path(folder_path)
+    parent_folder = client.get_folder_by_path(folder_path, account)
     f = Folder(parent=parent_folder, name=new_folder_name)
     f.save()
-    client.get_folder_by_path(full_path)
-    return (f"Folder {full_path} created successfully",)
+    client.get_folder_by_path(full_path, account)
+    return f"Folder {full_path} created successfully",
 
 
 def find_folders(client: EWSClient, target_mailbox=None):
@@ -1475,9 +1473,10 @@ def get_items(client: EWSClient, item_ids, target_mailbox=None):
 
 
 def get_folder(client: EWSClient, folder_path, target_mailbox=None, is_public=None):
+    account = client.get_account(target_mailbox)
     is_public = client.is_default_folder(folder_path, is_public)
     folder = folder_to_context_entry(
-        client.get_folder_by_path(folder_path, is_public=is_public)
+        client.get_folder_by_path(folder_path, account=account, is_public=is_public)
     )
     readable_output = tableToMarkdown(f"Folder {folder_path}", folder)
     output = {CONTEXT_UPDATE_FOLDER: folder}
@@ -1647,7 +1646,7 @@ def sub_main():
     except Exception as e:
         time.sleep(2)
         start_logging()
-        debug_log = log_stream.getvalue()  # type: ignore
+        debug_log = log_stream.getvalue()  # type: ignore[union-attr]
         error_message_simple = ""
 
         # Office365 regular maintenance case
