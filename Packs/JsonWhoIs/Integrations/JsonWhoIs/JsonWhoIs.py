@@ -47,9 +47,12 @@ def http_request(method, url_suffix, params=None, max_retry=3):
             break
         if trial == max_retry:  # type: ignore
             raise Exception(f'Error enrich url with JsonWhoIS API, status code {res.status_code}')  # type: ignore
-    raw = res.json()  # type: ignore
+    try:
+        raw = res.json()  # type: ignore
+    except ValueError:
+        raise DemistoException('Error from JsonWhoIs: Could not parse JSON from response.')
     if 'error' in raw:
-        raise DemistoException(f'Error from JsonWhoIS: {raw["error"]}')
+        raise DemistoException(f'Error from JsonWhoIs: {raw["error"]}')
     raise raw
 
 
