@@ -1,0 +1,36 @@
+!checkpoint-host-list
+!checkpoint-host-get identifier='test_host'
+!checkpoint-host-add identifier='test_host' ip_address='8.8.8.8'
+!checkpoint-host-update identifier='test_host'
+!checkpoint-host-delete identifier='test_host'
+
+!checkpoint-group-list
+!checkpoint-group-get identifier='test_group'
+!checkpoint-group-add identifier='test_group'
+!checkpoint-group-update identifier='test_group'
+!checkpoint-group-delete identifier='test_group'
+
+!checkpoint-address-range-list 
+!checkpoint-address-range-get 
+!checkpoint-address-range-add identifier='test_address_range' ip_address_first='8.8.8.8' ip_address_last='9.9.9.9'
+!checkpoint-address-range-update identifier='test_address_range'
+!checkpoint-address-range-delete identifier='test_address_range'
+
+!checkpoint-threat-indicator-list
+!checkpoint-threat-indicator-get name='test_threat_indicators'
+!checkpoint-threat-indicator-add name='test_threat_indicators' observables = [{"name": "My_Observable", "mail-to": "someone@somewhere.com"}]
+!checkpoint-threat-indicator-update name='test_threat_indicators'
+!checkpoint-threat-indicator-delete name='test_threat_indicators'
+
+!checkpoint-access-rule-list identifier='test_access_rule'
+!checkpoint-access-rule-add layer='Network' position='top' name='test_access_rule'
+!checkpoint-access-rule-update identifier='test_access_rule' layer='Network'
+!checkpoint-access-rule-delete identifier='test_access_rule'
+
+!checkpoint-application-site-list 
+!checkpoint-application-site-add name='test_application_site' primary_category='Test Category'
+!checkpoint-application-site-update identifier='test_application_site'
+!checkpoint-application-site-delete name='test_application_site' primary_category='Test Category' identifier='www.cnet.com'
+
+!checkpoint-publish
+!checkpoint-install-policy policy_package='standard' targets='LAN-TEST'
