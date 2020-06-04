@@ -3,8 +3,8 @@ version: -1
 name: Process Email
 fromversion: 2.5.0
 description: Deprecated - We recommend using Process Email - Generic playbook instead.
-  Add email details into the relevant context entities and handle the case
-  where you have attached original emails.
+  Add email details into the relevant context entities and handle the case where you
+  have attached original emails.
 starttaskid: "0"
 tasks:
   "0":
@@ -21,6 +21,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -28,6 +29,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 0a3b6760-ffc7-4a5f-8042-47e9a15402ee
@@ -48,10 +54,12 @@ tasks:
       "yes":
       - "3"
     scriptarguments:
-      value: ${File(val.Type.toLowerCase().indexOf('composite document file v2 document')
-        >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension
-        == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf')
-        >= 0).EntryID}
+      value:
+        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2
+          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
+          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
+          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -59,6 +67,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 3ad45b93-5373-4303-8a74-fcaeba4c3344
@@ -73,10 +86,13 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      key: Email
-      value: '${incident.labels={To: val[''Email''], CC: val[''Email/cc''], From:
-        val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''],
-        HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+      key:
+        simple: Email
+      value:
+        simple: '${incident.labels={To: val[''Email''], CC: val[''Email/cc''], From:
+          val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''],
+          HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -84,6 +100,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: b7f50774-0497-4821-8910-02df73f2c91d
@@ -98,12 +119,14 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      entryid: ${File(val.Type.toLowerCase().indexOf('composite document file v2 document')
-        >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension
-        == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf')
-        >= 0).EntryID}
+      entryid:
+        simple: ${File(val.Type.toLowerCase().indexOf('composite document file v2
+          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
+          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
+          val.Type.toLowerCase().indexOf('crlf') >= 0).EntryID}
     results:
     - AttachmentName
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -111,6 +134,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -124,5 +152,6 @@ view: |-
     }
   }
 inputs: []
+outputs: []
 tests:
   - No tests - Deprecated playbook

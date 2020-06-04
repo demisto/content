@@ -21,6 +21,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -28,6 +29,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: cdd77c13-ca81-4c68-8679-19d08de8fb71
@@ -35,8 +41,8 @@ tasks:
     task:
       id: cdd77c13-ca81-4c68-8679-19d08de8fb71
       version: -1
-      description: Ask user regarding his/her failed login attempts
       name: Confirm failed login with user
+      description: Ask user regarding his/her failed login attempts
       scriptName: SlackAskUser
       clonedfrom: 7a39f05d-23c9-412d-8e36-3dd1ba0dd2f2
       type: regular
@@ -46,12 +52,16 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      message: We noticed failed-login attempts with your user ID, please confirm
-        it was your attempts
-      option1: ""
-      option2: ""
-      task: "3"
-      user: ${incident.labels.Email}
+      message:
+        simple: We noticed failed-login attempts with your user ID, please confirm
+          it was your attempts
+      option1: {}
+      option2: {}
+      task:
+        simple: "3"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -59,6 +69,11 @@ tasks:
           "y": 200
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 58679e35-4e24-4d2a-89ba-22fbd161f308
@@ -66,8 +81,8 @@ tasks:
     task:
       id: 58679e35-4e24-4d2a-89ba-22fbd161f308
       version: -1
-      description: Answer `yes` if failed login attempt made by the user
       name: Was the failed login attempt by the user?
+      description: Answer `yes` if failed login attempt made by the user
       iscommand: false
       brand: ""
     nexttasks:
@@ -75,6 +90,7 @@ tasks:
       - "4"
       "yes":
       - "5"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -82,6 +98,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: ce32bc35-0679-4b9b-842f-e4b0c942a157
@@ -96,18 +117,20 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      addLabels: ""
-      customFieldName: ""
-      customFieldValue: ""
-      details: ""
-      labels: ""
-      name: ""
-      owner: ""
-      playbook: ""
-      severity: High
-      stage: ""
-      type: ""
-      updatePlaybookForType: ""
+      addLabels: {}
+      customFieldName: {}
+      customFieldValue: {}
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity:
+        simple: High
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -115,6 +138,11 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 987f04ae-98f1-4e27-8ef3-1a4f459acaa2
@@ -132,11 +160,15 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      message: Should we reset your password?
-      option1: ""
-      option2: ""
-      task: "6"
-      user: ${incident.labels.Email}
+      message:
+        simple: Should we reset your password?
+      option1: {}
+      option2: {}
+      task:
+        simple: "6"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -144,6 +176,11 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 6b4648d9-512a-417c-86e6-d468d05c5b63
@@ -151,8 +188,8 @@ tasks:
     task:
       id: 6b4648d9-512a-417c-86e6-d468d05c5b63
       version: -1
-      description: Answer `yes` if password should be reset
       name: Should we reset the password?
+      description: Answer `yes` if password should be reset
       type: condition
       iscommand: false
       brand: ""
@@ -162,11 +199,15 @@ tasks:
       "yes":
       - "7"
     scriptarguments:
-      message: Would you like us to reset your password?
-      option1: ""
-      option2: ""
-      task: "6"
-      user: ${incident.labels.Email}
+      message:
+        simple: Would you like us to reset your password?
+      option1: {}
+      option2: {}
+      task:
+        simple: "6"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -174,6 +215,11 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: a12faaf4-cbbe-49ce-8539-f4ed61279deb
@@ -181,8 +227,8 @@ tasks:
     task:
       id: a12faaf4-cbbe-49ce-8539-f4ed61279deb
       version: -1
-      description: Expire user password
       name: Expire Password
+      description: Expire user password
       scriptName: ADExpirePassword
       clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
       type: regular
@@ -192,7 +238,9 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      username: ${incident.labels.User}
+      username:
+        simple: ${incident.labels.User}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -200,6 +248,11 @@ tasks:
           "y": 894
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 0531af1c-0b85-40c8-89c3-e1d22b064ad6
@@ -207,8 +260,8 @@ tasks:
     task:
       id: 0531af1c-0b85-40c8-89c3-e1d22b064ad6
       version: -1
-      description: Notify user that his/her password has been reset
       name: Notify User on Slack
+      description: Notify user that his/her password has been reset
       script: slack|||slack-send
       clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
       type: regular
@@ -218,12 +271,15 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      IgnoreAddURL: ""
-      channel: ""
-      entry: ""
-      group: ""
-      message: Your password was reset
-      to: ${incident.labels.Email}
+      IgnoreAddURL: {}
+      channel: {}
+      entry: {}
+      group: {}
+      message:
+        simple: Your password was reset
+      to:
+        simple: ${incident.labels.Email}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -231,6 +287,11 @@ tasks:
           "y": 1069
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: abd944e7-152b-4e45-8e2f-92cd19ea6bb4
@@ -245,8 +306,11 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: User verified he did the attempt
-      reason: Not an attack
+      notes:
+        simple: User verified he did the attempt
+      reason:
+        simple: Not an attack
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -254,6 +318,11 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -268,5 +337,7 @@ view: |-
       }
     }
   }
+inputs: []
+outputs: []
 tests:
   - no test - manual task
