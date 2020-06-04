@@ -1,2 +1,2 @@
 ## [Unreleased]
-Starting at Cortex XSOAR 4.5, the playbook uses newer versions of previously used playbooks.
+Starting with Demisto 4.5, this playbook uses newer versions of previously used playbooks.
