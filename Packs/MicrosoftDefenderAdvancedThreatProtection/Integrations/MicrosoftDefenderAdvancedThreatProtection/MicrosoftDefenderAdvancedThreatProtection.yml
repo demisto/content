@@ -59,6 +59,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use a self-deployed Azure Application
+  name: self_deployed
+  required: false
+  type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
