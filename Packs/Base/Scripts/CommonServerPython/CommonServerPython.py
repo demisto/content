@@ -149,6 +149,7 @@ class DBotScoreType(object):
     FILE = 'file'
     DOMAIN = 'domain'
     URL = 'url'
+    CVE = 'cve'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -162,7 +163,8 @@ class DBotScoreType(object):
             DBotScoreType.IP,
             DBotScoreType.FILE,
             DBotScoreType.DOMAIN,
-            DBotScoreType.URL
+            DBotScoreType.URL,
+            DBotScoreType.CVE
         )
 
 
@@ -1862,6 +1864,15 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
+def get_integration_name():
+    """
+    Getting calling integration's name
+    :return: Calling integration's name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('IntegrationBrand')
+
+
 class Common(object):
     class Indicator(object):
         """
@@ -1913,7 +1924,7 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name
+            self.integration_name = integration_name or get_integration_name()
             self.score = score
             self.malicious_description = malicious_description
 
@@ -2256,6 +2267,12 @@ class Common(object):
             self.published = published
             self.modified = modified
             self.description = description
+            self.dbot_score = Common.DBotScore(
+                indicator=id,
+                indicator_type=DBotScoreType.CVE,
+                integration_name=None,
+                score=Common.DBotScore.NONE
+            )
 
         def to_context(self):
             cve_context = {
@@ -2277,6 +2294,9 @@ class Common(object):
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
             }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
 
             return ret_value
 
