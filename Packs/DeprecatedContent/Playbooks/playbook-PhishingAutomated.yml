@@ -36,6 +36,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -43,6 +44,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: ea731eb3-f592-42f3-892a-6a7d48c42e4d
@@ -59,6 +65,7 @@ tasks:
       '#none#':
       - "94"
       - "99"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -66,6 +73,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 2e0a1bd6-0e9a-4906-843c-e4652ed671f2
@@ -80,16 +92,20 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      attachIDs: ""
-      bcc: ""
-      body: "Hi ${Account=val.DisplayName || val.Email.Address},\nWe've received your email
-        and are investigating.\nPlease do not touch the email until further notice.\n\nCordially,
-        \n  Your friendly neighborhood security team"
-      cc: ""
-      htmlBody: ""
-      noteEntryID: ""
-      subject: 'Re: Phishing Investigation - ${incident.name}'
-      to: ${incident.labels.Email/from}
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: "Hi ${Account=val.DisplayName || val.Email.Address},\nWe've received
+          your email and are investigating.\nPlease do not touch the email until further
+          notice.\n\nCordially, \n  Your friendly neighborhood security team"
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -97,6 +113,11 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: b2b1f385-7cff-427a-8882-2c18875c9a2e
@@ -114,7 +135,9 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      text: ${Email}
+      text:
+        simple: ${Email}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -122,6 +145,11 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: a846334e-5ccc-4d95-8244-d57ec36d6e2f
@@ -139,7 +167,9 @@ tasks:
       '#none#':
       - "72"
     scriptarguments:
-      text: ${Email}
+      text:
+        simple: ${Email}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -147,6 +177,11 @@ tasks:
           "y": 865
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
     taskid: c752c128-ee8f-4f94-877a-39bdb10a7d40
@@ -165,7 +200,9 @@ tasks:
       "yes":
       - "42"
     scriptarguments:
-      data: ${urls}
+      data:
+        simple: ${urls}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -173,6 +210,11 @@ tasks:
           "y": 1710
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
     taskid: 4440a41f-7d53-4a52-86bb-85b49b6722b4
@@ -188,6 +230,7 @@ tasks:
     nexttasks:
       '#none#':
       - "30"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -195,6 +238,11 @@ tasks:
           "y": 1885
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
     taskid: 7f2d8700-472f-4cfa-87e4-97681e5309fa
@@ -213,11 +261,12 @@ tasks:
       '#none#':
       - "89"
     scriptarguments:
-      distance: ""
-      domain: ${inputs.CompanyDomains}
-      sender: ${incident.labels.Email/from}
-    results:
-    - LevenshteinDistance
+      distance: {}
+      domain:
+        simple: ${inputs.CompanyDomains}
+      sender:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -225,6 +274,11 @@ tasks:
           "y": 2030
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
     taskid: 5778ac35-8936-4170-8cf6-8cc09c98a300
@@ -241,6 +295,7 @@ tasks:
     nexttasks:
       '#none#':
       - "32"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -248,6 +303,11 @@ tasks:
           "y": 2380
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
     taskid: 5445acdd-df36-403e-8635-a0cbc3bd3f04
@@ -264,6 +324,7 @@ tasks:
     nexttasks:
       '#none#':
       - "33"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -271,6 +332,11 @@ tasks:
           "y": 2555
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
     taskid: e76cfd73-35f3-4065-8e59-c37e365cd06c
@@ -287,6 +353,7 @@ tasks:
     nexttasks:
       '#none#':
       - "34"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -294,6 +361,11 @@ tasks:
           "y": 2730
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
     taskid: 3e30e515-bb4e-4b65-8d8c-a21a1e380126
@@ -309,6 +381,7 @@ tasks:
     nexttasks:
       '#none#':
       - "36"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -316,6 +389,11 @@ tasks:
           "y": 2905
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
     taskid: cceb5cd4-a661-434d-87d8-24b9988877c4
@@ -336,6 +414,7 @@ tasks:
       - "44"
       "yes":
       - "42"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -343,6 +422,11 @@ tasks:
           "y": 3050
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "42":
     id: "42"
     taskid: 103b416e-75c9-4628-8b32-0dbab7b0f7a8
@@ -359,8 +443,11 @@ tasks:
       '#none#':
       - "46"
     scriptarguments:
-      key: responseRequired
-      value: "yes"
+      key:
+        simple: responseRequired
+      value:
+        simple: "yes"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -368,6 +455,11 @@ tasks:
           "y": 3240
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "44":
     id: "44"
     taskid: aafb8c0f-765a-4bbb-81c9-b1435b795f2e
@@ -385,19 +477,23 @@ tasks:
       '#none#':
       - "45"
     scriptarguments:
-      attachIDs: ""
-      bcc: ""
-      body: |-
-        Hi ${Account=val.DisplayName || val.Email.Address},
-        We've concluded that the email you forwarded to us is safe.
-        Thank you for your alertness and your participation in keeping our organization secure.
-        Cordially,
-          Your security team
-      cc: ""
-      htmlBody: ""
-      noteEntryID: ""
-      subject: 'Re: Phishing Investigation - ${incident.name}'
-      to: ${incident.labels.Email/from}
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi ${Account=val.DisplayName || val.Email.Address},
+          We've concluded that the email you forwarded to us is safe.
+          Thank you for your alertness and your participation in keeping our organization secure.
+          Cordially,
+            Your security team
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -405,6 +501,11 @@ tasks:
           "y": 3225
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
     taskid: abf517ab-27b6-49a9-853d-41e56650a92a
@@ -419,9 +520,12 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: Concluded that this email is safe and sent a response to user notifying
-        them that they may proceed normally.
-      reason: Safe
+      notes:
+        simple: Concluded that this email is safe and sent a response to user notifying
+          them that they may proceed normally.
+      reason:
+        simple: Safe
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -429,6 +533,11 @@ tasks:
           "y": 3400
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "46":
     id: "46"
     taskid: 8a9ba010-09e1-4aa6-810f-859ae66768e6
@@ -446,19 +555,23 @@ tasks:
       '#none#':
       - "102"
     scriptarguments:
-      attachIDs: ""
-      bcc: ""
-      body: |-
-        Hi ${Account=val.DisplayName || val.Email.Address},
-        We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi ${Account=val.DisplayName || val.Email.Address},
+          We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
 
-        All the best,
-          Your security team
-      cc: ""
-      htmlBody: ""
-      noteEntryID: ""
-      subject: 'Re: Phishing Investigation - ${incident.name}'
-      to: ${incident.labels.Email/from}
+          All the best,
+            Your security team
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -466,6 +579,11 @@ tasks:
           "y": 3400
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "55":
     id: "55"
     taskid: 9892f321-ad3e-45ed-8abe-a4f29f29068a
@@ -485,11 +603,14 @@ tasks:
       "yes":
       - "101"
     scriptarguments:
-      key: AttachmentMD5
-      value: ${File(!(val.Type.toLowerCase().indexOf('composite document file v2 document')
-        >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Extension
-        == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 && val.Type.toLowerCase().indexOf('crlf')
-        >= 0)).EntryID}
+      key:
+        simple: AttachmentMD5
+      value:
+        simple: ${File(!(val.Type.toLowerCase().indexOf('composite document file v2
+          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
+          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
+          val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -497,6 +618,11 @@ tasks:
           "y": 3750
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "63":
     id: "63"
     taskid: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
@@ -512,6 +638,7 @@ tasks:
     nexttasks:
       '#none#':
       - "91"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -519,6 +646,11 @@ tasks:
           "y": 4100
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "71":
     id: "71"
     taskid: 75e0739e-4f37-4859-8ae2-857be0d57d6c
@@ -534,6 +666,7 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -541,6 +674,11 @@ tasks:
           "y": 530
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "72":
     id: "72"
     taskid: 03606952-f504-44b2-8371-5a548e395048
@@ -556,6 +694,7 @@ tasks:
     nexttasks:
       '#none#':
       - "97"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -563,6 +702,11 @@ tasks:
           "y": 1040
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "81":
     id: "81"
     taskid: 5359d876-c7b6-495c-8249-fd87d30d5663
@@ -581,6 +725,7 @@ tasks:
       - "100"
       "yes":
       - "42"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -588,6 +733,11 @@ tasks:
           "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "89":
     id: "89"
     taskid: a2f77d09-4dc1-431a-8d7f-538f3b285e56
@@ -607,7 +757,9 @@ tasks:
       "yes":
       - "42"
     scriptarguments:
-      value: ${LevenshteinDistance(val > 0 && val < 3}
+      value:
+        simple: ${LevenshteinDistance(val > 0 && val < 3}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -615,6 +767,11 @@ tasks:
           "y": 2205
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "91":
     id: "91"
     taskid: 2e785868-8ecb-47b8-8123-66e817a31f57
@@ -627,6 +784,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -634,6 +792,11 @@ tasks:
           "y": 4275
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "94":
     id: "94"
     taskid: bff69be5-924f-4eda-8264-83e9c2246ab6
@@ -651,9 +814,13 @@ tasks:
       '#none#':
       - "98"
     scriptarguments:
-      key: Account.Email.Address
-      value: ${incident.labels.Email/from}
-      append: true
+      append:
+        simple: "true"
+      key:
+        simple: Account.Email.Address
+      value:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -661,6 +828,11 @@ tasks:
           "y": 340
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "97":
     id: "97"
     taskid: 286c067d-78e0-4d90-8107-eec5625b4b82
@@ -677,6 +849,7 @@ tasks:
     nexttasks:
       '#none#':
       - "81"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -684,6 +857,11 @@ tasks:
           "y": 1185
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "98":
     id: "98"
     taskid: 6104b475-bee7-42aa-87c4-07c6e433a350
@@ -700,6 +878,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -707,6 +886,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "99":
     id: "99"
     taskid: abdcdddf-7b08-4c4a-8f29-842890ee1351
@@ -723,6 +907,7 @@ tasks:
     nexttasks:
       '#none#':
       - "71"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -730,6 +915,11 @@ tasks:
           "y": 340
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "100":
     id: "100"
     taskid: 27922299-5a0b-4525-8465-7c2efd9503b5
@@ -746,6 +936,7 @@ tasks:
     nexttasks:
       '#none#':
       - "23"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -753,6 +944,11 @@ tasks:
           "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "101":
     id: "101"
     taskid: 16dd2965-30b6-47dc-80bf-48f322e21e9c
@@ -769,6 +965,7 @@ tasks:
     nexttasks:
       '#none#':
       - "63"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -776,6 +973,11 @@ tasks:
           "y": 3925
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "102":
     id: "102"
     taskid: c932dac2-0738-4b68-8c30-1b27aa0dcda8
@@ -793,6 +995,7 @@ tasks:
     nexttasks:
       '#none#':
       - "55"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -800,6 +1003,11 @@ tasks:
           "y": 3575
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -818,8 +1026,12 @@ view: |-
   }
 inputs:
 - key: CompanyDomains
-  value: company.com
+  value:
+    simple: company.com
+  required: false
   description: The domains for the company to try and match closeness of sender. Comma
     separated.
+  playbookInputQuery: null
+outputs: []
 tests:
   - No test - Deprecated playbook
