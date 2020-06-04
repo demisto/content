@@ -1,12 +1,14 @@
 id: HIPAA - Breach Notification
 version: -1
 name: HIPAA - Breach Notification
-description: |-
-  This playbook is triggered by a HIPAA breach notification incident and follows through with the notification procedures.
-
-  DISCLAIMER: Please consult with your legal team before implementing this playbook.
-
-  ** Source: https://www.hhs.gov/hipaa/for-professionals/breach-notification/index.html
+description: "USA Health Insurance Portability and Accountability Act of 1996 (HIPAA)\
+  \ covers organizations that use, store, or process Private Health Information (PHI).\
+  \ \nThe HIPAA Breach Notification Rule requires companies that deal with health\
+  \ information to disclose cybersecurity breaches; the disclosure will include notification\
+  \ to individuals, to the media, and the Secretary.\nThis playbook is triggered by\
+  \ a HIPAA breach notification incident and follows through with the notification\
+  \ procedures.\n\nDISCLAIMER: Please consult with your legal team before implementing\
+  \ this playbook.\n\n** Source: https://www.hhs.gov/hipaa/for-professionals/breach-notification/index.html"
 starttaskid: "0"
 tasks:
   "0":
@@ -5577,4 +5579,4 @@ inputs:
 outputs: []
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- No tests
