@@ -280,8 +280,12 @@ class DemistoObject {
 }
 
 [DemistoObject]$demisto = [DemistoObject]::New()
-function global:Write-Host($UserInput) { $demisto.Log($UserInput) | Out-Null }
-function global:Write-Output($UserInput) { $demisto.Log($UserInput) | Out-Null }
+
+function global:Write-HostToLog($UserInput) { $demisto.Log($UserInput) | Out-Null }
+# we override Write-Host with a function which writes to the demisto.Log.
+# Incase there is need to undo this Alias, the integration/script can run the following command
+# Remove-Item 'Alias:Write-Host' -Force
+Set-Alias -Name 'Write-Host' -Value 'Write-HostToLog' -Scope Global
 
 # -----------------------------------------------------------------------
 # Utility Functions
