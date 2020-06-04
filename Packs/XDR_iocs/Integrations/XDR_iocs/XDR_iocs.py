@@ -33,7 +33,7 @@ demisto_score_to_xdr: Dict[int, str] = {
 
 class Client:
     severity: str = ''
-    query: str = 'type:File and (sha256:* or (-sha1:* and md5:*)) or type:Domain or type:IP'
+    query: str = 'type:File or type:Domain or type:IP'
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
@@ -125,8 +125,8 @@ def create_file_sync(file_path, batch_size: int = 200):
         total_size: int = get_iocs_size()
         for i in range(0, ceil(total_size / batch_size)):
             iocs: List = get_iocs(page=i, size=batch_size)
-            for ios in map(lambda x: json.dumps(demisto_ioc_to_xdr(x)), iocs):
-                _file.write(ios)
+            for ioc in map(lambda x: json.dumps(demisto_ioc_to_xdr(x)), iocs):
+                _file.write(ioc)
                 _file.write('\n')
 
 
@@ -170,7 +170,7 @@ def demisto_vendors_to_xdr(demisto_vendors) -> List[Dict]:
 
 def demisto_types_to_xdr(_type: str) -> str:
     xdr_type = _type.upper()
-    if xdr_type == 'FILE':
+    if xdr_type.startswith('FILE'):
         return 'HASH'
     elif xdr_type == 'DOMAIN':
         return 'DOMAIN_NAME'

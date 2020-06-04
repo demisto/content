@@ -302,6 +302,11 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "XDR iocs",
+            "playbookID": "XDR iocs - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Cloaken",
             "playbookID": "Cloaken-Test"
         },

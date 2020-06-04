@@ -31,8 +31,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: the query to collect indicators.
-  defaultvalue: type:File and (sha256:* or (-sha1:* and md5:*)) or type:Domain or
-    type:IP
+  defaultvalue: type:File or type:Domain or type:IP
   display: query
   hidden: false
   name: query
@@ -148,4 +147,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- No tests
+- XDR iocs - Test
