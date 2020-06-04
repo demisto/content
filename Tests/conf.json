@@ -323,7 +323,7 @@
         },
         {
             "integrations": "Cofense Triage v2",
-            "playbookID": "Cofense Triage Test"
+            "playbookID": "Cofense Triage v2 Test"
         },
         {
             "integrations": "Akamai WAF",

@@ -195,7 +195,7 @@ script:
         - contextPath: Cofense.Reporter.UpdatedAt
           description: Reporter last-updated date.
           type: string
-        - contextPath: Cofense.Reporter.CreditibilityScore
+        - contextPath: Cofense.Reporter.CredibilityScore
           description: Reporter credibility score.
           type: number
         - contextPath: Cofense.Reporter.ReportsCount
@@ -328,4 +328,4 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - Cofense Triage Test
+  - Cofense Triage v2 Test
