@@ -1,6 +1,6 @@
-Use Prisma Access integration to run SSH CLI commands and query the connection states for all tunnels. If any tunnels are down - Escalates to manual task for remediation and provides recommendations on next steps in the task description.
+Use the Prisma Access integration to run SSH CLI commands and query the connection states for all tunnels. If any tunnels are down - the playbook escalates to a manual task for remediation and provides recommendations on next steps in the task description.
 
-Can be run as a job or triggered from incoming event to confirm an initial suspicion (such as a tunnel log from Cortex Data Lake) to validate that there is actually still an issue before calling in engineers.
+The playbook can be run as a job, or triggered from an incoming event to confirm an initial suspicion (such as a tunnel log from Cortex Data Lake) to validate that the issue still exists.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
