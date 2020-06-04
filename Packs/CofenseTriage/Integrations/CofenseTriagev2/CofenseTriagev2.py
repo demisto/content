@@ -228,7 +228,7 @@ def split_snake(string: str) -> str:
 
 
 def parse_triage_date(date: str):
-    # datetime.fromisoformat only supports a subset of ISO-8601.
+    # datetime from isoformat only supports a subset of ISO-8601.
     # See https://discuss.python.org/t/parse-z-timezone-suffix-in-datetime/2220
     if date.endswith('Z'):
         date = date[:-1] + '+00:00'
@@ -247,9 +247,9 @@ def test_function(triage_instance) -> None:
                 "API call to Cofense Triage failed. Please check integration configuration.\n"
                 "Reason: {response.reason}",
             )
-    except Exception as ex:
-        demisto.debug(str(ex))
-        raise ex
+    except Exception as err:
+        demisto.debug(str(err))
+        raise err
 
 
 def fetch_reports(triage_instance) -> None:
@@ -513,11 +513,11 @@ def get_report_png_by_id_command(triage_instance) -> None:
     orig_png = get_report_png_by_id(triage_instance, report_id)
 
     if set_white_bg:
-        inbuf = BytesIO()
-        inbuf.write(orig_png)
-        inbuf.seek(0)
+        in_buffer = BytesIO()
+        in_buffer.write(orig_png)
+        in_buffer.seek(0)
 
-        image = Image.open(inbuf)
+        image = Image.open(in_buffer)
         canvas = Image.new(
             'RGBA', image.size, (255, 255, 255, 255)
         )  # Empty canvas colour (r,g,b,a)
@@ -525,16 +525,16 @@ def get_report_png_by_id_command(triage_instance) -> None:
             image, mask=image
         )  # Paste the image onto the canvas, using it's alpha channel as mask
 
-        outbuf = BytesIO()
-        canvas.save(outbuf, format="PNG")
-        outbuf.seek(0)
+        out_buffer = BytesIO()
+        canvas.save(out_buffer, format="PNG")
+        out_buffer.seek(0)
 
-        imgdata = outbuf.getvalue()
+        image_data = out_buffer.getvalue()
     else:
-        imgdata = orig_png
+        image_data = orig_png
 
     cf_file = fileResult(
-        "cofense_report_{}.png".format(report_id), imgdata, entryTypes["image"]
+        "cofense_report_{}.png".format(report_id), image_data, entryTypes["image"]
     )
     demisto.results(
         {
