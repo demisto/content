@@ -349,7 +349,7 @@ script:
 
 
     if (params['proxy'] === undefined){
-      params['proxy'] = true
+      params['proxy'] = true;
     }
     // The command input arg holds the command sent from the user.
     switch (command) {
