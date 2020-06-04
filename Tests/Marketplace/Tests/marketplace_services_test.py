@@ -258,7 +258,7 @@ class TestChangelogCreation:
         dummy_pack.current_version = '2.0.2'
         mocker.patch("Tests.Marketplace.marketplace_services.print_color")
         mocker.patch("os.path.exists", return_value=True)
-        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
+        dir_list = ['1_0_0.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
@@ -290,7 +290,7 @@ class TestChangelogCreation:
         mocker.patch("Tests.Marketplace.marketplace_services.print_error")
         mocker.patch("Tests.Marketplace.marketplace_services.print_color")
         mocker.patch("os.path.exists", return_value=True)
-        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
+        dir_list = ['1_0_0.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
@@ -323,7 +323,7 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
         mocker.patch("Tests.Marketplace.marketplace_services.print_color")
-        dir_list = ['1_0_1.md', '2_0_0.md']
+        dir_list = ['1_0_0.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
