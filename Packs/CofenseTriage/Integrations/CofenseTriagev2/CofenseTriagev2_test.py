@@ -241,10 +241,17 @@ class TestCofenseTriage:
         CofenseTriagev2.get_attachment_command(triage_instance)
 
         demisto_results = CofenseTriagev2.demisto.results.call_args_list[0][0]
-        assert demisto_results[0]["FileID"] == "/path/to/temp/file"
-        assert demisto_results[0]["File"] == "my_great_file"
-        assert demisto_results[0]["EntryContext"] == {
-            "Cofense.Attachment(val.ID == obj.ID)": {"ID": "5"}
+        assert demisto_results[0] == {
+            "EntryContext": {
+                "Cofense.Attachment(val.ID == obj.ID)": {
+                    "Contents": "",
+                    "ContentsFormat": "text",
+                    "Type": "what",
+                    "File": "my_great_file",
+                    "FileID": "/path/to/temp/file",
+                    "ID": "5",
+                }
+            }
         }
 
     def test_get_reporter_command(self, requests_mock, triage_instance):
@@ -264,14 +271,16 @@ class TestCofenseTriage:
             "| 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 3 | 2019-04-12T02:59:22.287Z | false |\n"  # noqa: 501
         )
         assert demisto_results[0]["Contents"] == {
-            "id": 111,
-            "email": "reporter1@example.com",
-            "created_at": "2019-04-12T02:58:17.401Z",
-            "updated_at": "2019-04-12T02:59:22.287Z",
-            "credibility_score": 0,
-            "reports_count": 3,
-            "last_reported_at": "2016-02-18T00:24:45.000Z",
-            "vip": False,
+            "Cofense.Reporter(val.Id && val.Id == obj.Id)": {
+                "ID": 111,
+                "Email": "reporter1@example.com",
+                "CreatedAt": "2019-04-12T02:58:17.401Z",
+                "UpdatedAt": "2019-04-12T02:59:22.287Z",
+                "CredibilityScore": 0,
+                "ReportsCount": 3,
+                "LastReportedAt": "2016-02-18T00:24:45.000Z",
+                "Vip": False,
+            }
         }
 
     def test_get_report_by_id_command(self, requests_mock, triage_instance):

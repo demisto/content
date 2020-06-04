@@ -408,20 +408,19 @@ def get_reporter_command(triage_instance) -> None:
         return return_outputs(
             readable_output="Could not find reporter with matching ID",
             outputs=reporter_id,
+            raw_response=reporter
         )
 
-    demisto.results(
-        {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["markdown"],
-            "Contents": reporter.attrs,
-            "HumanReadable": tableToMarkdown(
-                "Reporter Results:",
-                reporter.attrs,
-                headerTransform=split_snake,
-                removeNull=True,
-            ),
-        }
+    camel_case_attrs = snake_to_camel_keys([reporter.attrs])[0]
+    return_outputs(
+        outputs={"Cofense.Reporter(val.Id && val.Id == obj.Id)": camel_case_attrs},
+        readable_output=tableToMarkdown(
+            "Reporter Results:",
+            reporter.attrs,
+            headerTransform=split_snake,
+            removeNull=True,
+        ),
+        raw_response=reporter
     )
 
 
@@ -431,13 +430,16 @@ def get_attachment_command(triage_instance) -> None:
 
     res = triage_instance.request(f'attachment/{attachment_id}', raw_response=True)
 
-    context_data = {'ID': attachment_id}
-
-    result = fileResult(file_name, res.content)
-    result.update(
-        {'EntryContext': {'Cofense.Attachment(val.ID == obj.ID)': context_data}}
+    demisto.results(
+        {
+            'EntryContext': {
+                'Cofense.Attachment(val.ID == obj.ID)': {
+                    **fileResult(file_name, res.content),
+                    **{'ID': attachment_id},
+                }
+            }
+        }
     )
-    demisto.results(result)
 
 
 def get_report_by_id_command(triage_instance) -> None:

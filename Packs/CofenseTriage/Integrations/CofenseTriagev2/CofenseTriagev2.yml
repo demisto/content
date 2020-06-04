@@ -183,10 +183,22 @@ script:
           required: true
           description: ID of the reporter.
       outputs:
-        - contextPath: Cofense.Report.ID
+        - contextPath: Cofense.Reporter.ID
           description: ID of the reporter.
-        - contextPath: Cofense.Report.Email
+        - contextPath: Cofense.Reporter.Email
           description: Reporter email address.
+        - contextPath: Cofense.Reporter.CreatedAt
+          description: Reporter creation date
+        - contextPath: Cofense.Reporter.UpdatedAt
+          description: Reporter last-updated date
+        - contextPath: Cofense.Reporter.CreditibilityScore
+          description: Reporter credibility score.
+        - contextPath: Cofense.Reporter.ReportsCount
+          description: Number of reports
+        - contextPath: Cofense.Reporter.LastReportedAt
+          description: Date of most recent report
+        - contextPath: Cofense.Reporter.VIP
+          description: Whether Reporter is a VIP
       description: Retrieves Email address of the reporter by ID
     - name: cofense-get-report-by-id
       arguments:
