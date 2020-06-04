@@ -1221,7 +1221,6 @@ script:
         catch(err) {
             throw "Failed to get information on the file";
         }
-        //throw JSON.stringify(fileInfo,null,'\t');
         if (command.status === 'error') {
             throw 'File not found on the endpoint';
         }
