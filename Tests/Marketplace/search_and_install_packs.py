@@ -46,10 +46,6 @@ def create_dependencies_data_structure(response_data, dependants_ids, dependenci
     next_call_dependants_ids = []
 
     for dependency in response_data:
-        # empty currentVersion field indicates the pack isn't installed yet
-        if dependency.get('currentVersion'):
-            continue
-
         dependants = dependency.get('dependants', {})
         for dependant in dependants.keys():
             is_required = dependants[dependant].get('level', '') == 'required'
