@@ -9,7 +9,7 @@ Use the  Prisma Cloud (RedLock) Threat Defense integration to manage alerts fro
     *   **Server URL**: URL of RedLlock server.
     *   **Username**
     *   **Password**
-    *   **Customer name** - Required only if there are more than one environment configured for the given instance. 
+    *   **Customer name** - Required if there are more than one environment configured for the given instance. 
     The customer name appears in the user panel under the user email 
     *   **Use system proxy settings**
     *   **Trust any certificate (not secure)**
