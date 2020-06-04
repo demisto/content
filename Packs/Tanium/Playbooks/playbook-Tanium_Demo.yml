@@ -19,6 +19,7 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -26,6 +27,11 @@ tasks:
           "y": 54
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 3533d2be-a90d-4f93-8630-c169d790254d
@@ -44,7 +50,9 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      question: ${Tanium.SavedQuestions.query_text}
+      question:
+        simple: ${Tanium.SavedQuestions.query_text}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -52,6 +60,11 @@ tasks:
           "y": 669
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: d7609125-e21f-4871-8d72-518017ea0b93
@@ -71,7 +84,9 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      question: Get all machines with processes starting with "EC"
+      question:
+        simple: Get all machines with processes starting with "EC"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -79,6 +94,11 @@ tasks:
           "y": 830
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 6553c9ee-e178-4084-8718-5e2fdc549fed
@@ -96,8 +116,10 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      id: ""
-      name: Tanium Client Versions
+      id: {}
+      name:
+        simple: Tanium Client Versions
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -105,6 +127,11 @@ tasks:
           "y": 338
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: a4aaa5eb-3724-43fe-86e5-c8e7363743ed
@@ -122,8 +149,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      id: ""
-      name: Running Applications
+      id: {}
+      name:
+        simple: Running Applications
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -131,6 +160,11 @@ tasks:
           "y": 508
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: 474a6415-eb35-4137-8977-c60db94ac520
@@ -146,6 +180,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -153,6 +188,11 @@ tasks:
           "y": 198
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: c6202d75-3923-44df-86e6-a685195739c8
@@ -168,6 +208,7 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -175,6 +216,11 @@ tasks:
           "y": 998
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: b05fd6d0-3e6d-40a9-81b3-58888214b896
@@ -189,11 +235,13 @@ tasks:
       iscommand: true
       brand: Tanium
     scriptarguments:
-      action_filters: ""
-      action_options: ""
-      get_results: ""
-      package: USB Write Protect - Set to On
-      package_args: ""
+      action_filters: {}
+      action_options: {}
+      get_results: {}
+      package:
+        simple: USB Write Protect - Set to On
+      package_args: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -201,6 +249,12 @@ tasks:
           "y": 1152
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -214,5 +268,6 @@ view: |-
     }
   }
 inputs: []
+outputs: []
 tests:
   - No test

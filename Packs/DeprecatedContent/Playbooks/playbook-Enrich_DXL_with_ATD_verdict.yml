@@ -21,6 +21,7 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -28,6 +29,11 @@ tasks:
           "y": -19
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: da777ade-9576-497d-864a-11802267cf01
@@ -47,9 +53,11 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      left: ""
-      right: ""
-      value: ${File.Malicious}
+      left: {}
+      right: {}
+      value:
+        simple: ${File.Malicious}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -57,6 +65,11 @@ tasks:
           "y": 302
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 6e8c6fbc-ebf0-45a8-841f-29e6e259ce73
@@ -71,8 +84,9 @@ tasks:
       brand: ""
       description: ""
     scriptarguments:
-      notes: ""
-      reason: ""
+      notes: {}
+      reason: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -80,6 +94,11 @@ tasks:
           "y": 689
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: c50351fa-76f1-43ce-852a-de0c66d9535b
@@ -96,6 +115,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -103,6 +123,11 @@ tasks:
           "y": 118
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 9d489c78-8d21-4906-8121-e42a2bcfa69f
@@ -120,8 +145,11 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      payload: ${File(val.Malicious).MD5} ${File(val.Malicious).SHA1} ${File(val.Malicious).SHA256}
-      topic: MALICIOUS_FILE
+      payload:
+        simple: ${File(val.Malicious).MD5} ${File(val.Malicious).SHA1} ${File(val.Malicious).SHA256}
+      topic:
+        simple: MALICIOUS_FILE
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -129,6 +157,12 @@ tasks:
           "y": 486
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -142,5 +176,6 @@ view: |-
     }
   }
 inputs: []
+outputs: []
 tests:
 - No test
