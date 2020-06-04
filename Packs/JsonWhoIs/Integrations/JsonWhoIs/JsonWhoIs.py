@@ -95,7 +95,7 @@ def whois(url: str) -> tuple:
                        url_suffix='/api/v1/whois',
                        params=params)
     if 'error' in raw:
-        return_error(f'Error from JsonWhoIS: {raw["error"]}')
+        raise DemistoException(f'Error from JsonWhoIS: {raw["error"]}')
     # Build all ec
     ec = {
         'DomainStatus': raw.get('status'),
