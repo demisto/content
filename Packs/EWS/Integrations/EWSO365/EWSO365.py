@@ -60,6 +60,8 @@ warnings.filterwarnings("ignore")
 """ Constants """
 
 APP_NAME = "ms-ews-o365"
+FOLDER_ID_LEN = 120
+MAX_INCIDENTS_PER_FETCH = 50
 
 # move results
 MOVED_TO_MAILBOX = "movedToMailbox"
@@ -147,7 +149,7 @@ class EWSClient:
         folder="Inbox",
         is_public_folder=False,
         request_timeout="120",
-        max_fetch="50",
+        max_fetch=MAX_INCIDENTS_PER_FETCH,
         self_deployed=True,
         insecure=True,
         proxy=False,
@@ -180,7 +182,7 @@ class EWSClient:
         self.folder_name = folder
         self.is_public_folder = is_public_folder
         self.access_type = kwargs.get('access_type') or IMPERSONATION
-        self.max_fetch = min(50, int(max_fetch))
+        self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
         self.client_id = client_id
         self.client_secret = client_secret
@@ -280,7 +282,7 @@ class EWSClient:
         if account is None:
             account = self.get_account()
         # handle exchange folder id
-        if len(path) == 120:
+        if len(path) == FOLDER_ID_LEN:
             folders_map = account.root._folders_map
             if path in folders_map:
                 return account.root._folders_map[path]
@@ -421,7 +423,7 @@ class ExpandGroup(EWSService):
                 member["mailboxType"] == "PublicDL"
                 or member["mailboxType"] == "PrivateDL"
             ):
-                self.expand_group_recursive(member["mailbox"], non_dl_emails, dl_emails)
+                self.expand_group_recursive(member.get("mailbox"), non_dl_emails, dl_emails)
             else:
                 if member["mailbox"] not in non_dl_emails:
                     non_dl_emails[member["mailbox"]] = member
@@ -1565,8 +1567,11 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
         return file_result
 
 
-def test_module(client: EWSClient):
+def test_module(client: EWSClient, max_fetch):
     try:
+        if int(max_fetch) > MAX_INCIDENTS_PER_FETCH:
+            return_error(f'Error - Max incidents per fetch cannot be greater than {MAX_INCIDENTS_PER_FETCH}. '
+                         f'You provided: {max_fetch}')
         account = client.get_account()
         if not account.root.effective_rights.read:  # pylint: disable=E1101
             raise Exception(
@@ -1625,7 +1630,7 @@ def sub_main():
         # system commands:
         if command == "test-module":
             is_test_module = True
-            demisto.results(test_module(client))
+            demisto.results(test_module(client, params.get('max_fetch')))
         elif command == "fetch-incidents":
             incidents = fetch_emails_as_incidents(client)
             demisto.incidents(incidents)

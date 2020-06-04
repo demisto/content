@@ -1,4 +1,3 @@
-fromversion: 5.0.0
 category: Messaging
 commonfields:
   id: EWSO365
@@ -19,13 +18,13 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- display: Email Address
-  additionalinfo: Mailbox to run commands on, and to fetch incidents from.
+- additionalinfo: Mailbox to run commands on, and to fetch incidents from.
+  display: Email Address
   name: default_target_mailbox
   required: true
   type: 0
-- defaultvalue: Inbox
-  additionalinfo: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing.
+- additionalinfo: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing.
+  defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents
   name: folder
   required: true
@@ -44,7 +43,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: '50'
-  display: Max incidents per fetch
+  display: Max incidents per fetch (up to 50)
   name: max_fetch
   required: false
   type: 0
@@ -1059,3 +1058,4 @@ script:
 tests:
 - pyEWS_Test
 - EWS search-mailbox test
+fromversion: 5.0.0
