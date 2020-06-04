@@ -492,6 +492,10 @@
             "playbookID": "Test CommonServer"
         },
         {
+            "playbookID": "Test-debug-mode",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
         },
@@ -2229,7 +2233,7 @@
         },
         {
             "integrations": "Cisco Spark",
-            "playbookID": "Cisco Spark Test"
+            "playbookID": "Cisco Spark Test New"
         },
         {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
