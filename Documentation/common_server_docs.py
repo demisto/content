@@ -244,7 +244,7 @@ def main(argv):
     if is_error_js or is_error_py or is_error_ps or not final_docs:
         print("Errors found in common server docs.")
         sys.exit(1)
-    with open('./Documentation/doc-CommonServer.json', 'w') as fp:
+    with open('./Packs/Base/Docs/doc-CommonServer.json', 'w') as fp:
         final_docs += js_doc
         final_docs += py_doc
         final_docs += ps_doc
