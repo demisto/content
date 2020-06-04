@@ -17,11 +17,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: fd8bd558-b5ef-4e3c-8065-1ab83b5f1c51
+      id: 9355e318-8324-466b-8fb4-4074ccd511fe
       iscommand: false
       name: ""
       version: -1
-    taskid: fd8bd558-b5ef-4e3c-8065-1ab83b5f1c51
+    taskid: 9355e318-8324-466b-8fb4-4074ccd511fe
     timertriggers: []
     type: start
     view: |-
@@ -46,13 +46,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8bb6f951-8547-4b60-8ffa-c807d2b23c69
+      id: 4d9fdb93-3ca3-448b-8eeb-535d341f59ef
       iscommand: true
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 8bb6f951-8547-4b60-8ffa-c807d2b23c69
+    taskid: 4d9fdb93-3ca3-448b-8eeb-535d341f59ef
     timertriggers: []
     type: regular
     view: |-
@@ -89,13 +89,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cb3dc5e1-f48b-45d3-8940-8017f99e1194
+      id: a0ef4168-fe72-4591-869a-aa553465b72a
       iscommand: true
       name: xdr-get-incidents
       script: '|||xdr-get-incidents'
       type: regular
       version: -1
-    taskid: cb3dc5e1-f48b-45d3-8940-8017f99e1194
+    taskid: a0ef4168-fe72-4591-869a-aa553465b72a
     timertriggers: []
     type: regular
     view: |-
@@ -140,12 +140,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e4c64f65-105f-409e-8dc6-7d14f8ad6f3b
+      id: e6af4d9d-1aaf-45b6-8d1c-8bdbf1fbf86a
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: e4c64f65-105f-409e-8dc6-7d14f8ad6f3b
+    taskid: e6af4d9d-1aaf-45b6-8d1c-8bdbf1fbf86a
     timertriggers: []
     type: condition
     view: |-
@@ -171,13 +171,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d7ff5abe-df5c-4aa6-861f-ec525cd06f71
+      id: f3137c58-fdc7-4cfe-8d12-6edea202715c
       iscommand: true
       name: xdr-get-incident-extra-data
       script: '|||xdr-get-incident-extra-data'
       type: regular
       version: -1
-    taskid: d7ff5abe-df5c-4aa6-861f-ec525cd06f71
+    taskid: f3137c58-fdc7-4cfe-8d12-6edea202715c
     timertriggers: []
     type: regular
     view: |-
@@ -214,13 +214,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9fc133c0-42c8-4746-8d6a-917a8f810c2c
+      id: 37df27a3-05f5-4de2-8e0e-b1e2f36b9c7a
       iscommand: true
       name: xdr-update-incident
       script: '|||xdr-update-incident'
       type: regular
       version: -1
-    taskid: 9fc133c0-42c8-4746-8d6a-917a8f810c2c
+    taskid: 37df27a3-05f5-4de2-8e0e-b1e2f36b9c7a
     timertriggers: []
     type: regular
     view: |-
@@ -262,13 +262,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e474972d-4f6f-4004-80e7-11b9899e632c
+      id: 6cdbae07-a4e1-4029-84fa-9bcc3327fe0d
       iscommand: true
       name: xdr-insert-parsed-alert
       script: '|||xdr-insert-parsed-alert'
       type: regular
       version: -1
-    taskid: e474972d-4f6f-4004-80e7-11b9899e632c
+    taskid: 6cdbae07-a4e1-4029-84fa-9bcc3327fe0d
     timertriggers: []
     type: regular
     view: |-
@@ -293,13 +293,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1d65c534-04b0-4ad9-87fd-678b060365f3
+      id: a9fac6eb-5fd0-476f-831c-5789a22aaf3a
       iscommand: true
       name: xdr-insert-cef-alerts
       script: '|||xdr-insert-cef-alerts'
       type: regular
       version: -1
-    taskid: 1d65c534-04b0-4ad9-87fd-678b060365f3
+    taskid: a9fac6eb-5fd0-476f-831c-5789a22aaf3a
     timertriggers: []
     type: regular
     view: |-
@@ -324,13 +324,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 983fdbc3-c4a4-46a6-8f73-bbfb0dedd9bd
+      id: ef67ef33-4848-4c03-88cf-d83d6cf01c90
       iscommand: true
       name: xdr-isolate-endpoint
       script: '|||xdr-isolate-endpoint'
       type: regular
       version: -1
-    taskid: 983fdbc3-c4a4-46a6-8f73-bbfb0dedd9bd
+    taskid: ef67ef33-4848-4c03-88cf-d83d6cf01c90
     timertriggers: []
     type: regular
     view: |-
@@ -355,13 +355,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 140b12ba-318e-48e9-854e-592f462742fa
+      id: 0eb4df46-64f8-459b-86e0-572f4fea3515
       iscommand: true
       name: xdr-unisolate-endpoint
       script: '|||xdr-unisolate-endpoint'
       type: regular
       version: -1
-    taskid: 140b12ba-318e-48e9-854e-592f462742fa
+    taskid: 0eb4df46-64f8-459b-86e0-572f4fea3515
     timertriggers: []
     type: regular
     view: |-
@@ -401,13 +401,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8e81c1f0-4336-411a-8309-8e12df508e55
+      id: ad23f640-061a-4808-8649-487716541214
       iscommand: true
       name: xdr-get-endpoints
       script: '|||xdr-get-endpoints'
       type: regular
       version: -1
-    taskid: 8e81c1f0-4336-411a-8309-8e12df508e55
+    taskid: ad23f640-061a-4808-8649-487716541214
     timertriggers: []
     type: regular
     view: |-
@@ -450,12 +450,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 747f7660-9b66-4d84-8b60-9f95b5a35230
+      id: 7496a0ca-9f0d-4737-8ee4-af1c7415c067
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 747f7660-9b66-4d84-8b60-9f95b5a35230
+    taskid: 7496a0ca-9f0d-4737-8ee4-af1c7415c067
     timertriggers: []
     type: condition
     view: |-
@@ -477,13 +477,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0777b7e0-8f8d-4ace-88d6-96175aaecba5
+      id: 3eac9fc0-8fb0-4dc9-8178-992e77203152
       iscommand: true
       name: xdr-get-distribution-versions
       script: '|||xdr-get-distribution-versions'
       type: regular
       version: -1
-    taskid: 0777b7e0-8f8d-4ace-88d6-96175aaecba5
+    taskid: 3eac9fc0-8fb0-4dc9-8178-992e77203152
     timertriggers: []
     type: regular
     view: |-
@@ -518,12 +518,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c85e4ad5-38c6-4404-8ed1-5e7f24220fc9
+      id: 69d299b3-d921-47cf-8152-80a9a3cd73bc
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: c85e4ad5-38c6-4404-8ed1-5e7f24220fc9
+    taskid: 69d299b3-d921-47cf-8152-80a9a3cd73bc
     timertriggers: []
     type: condition
     view: |-
@@ -560,13 +560,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c71e70d7-9896-4a54-8a44-ecb8d8c7348e
+      id: dca70b3c-5bcc-4f1b-8786-3156727412a3
       iscommand: true
       name: xdr-create-distribution
       script: '|||xdr-create-distribution'
       type: regular
       version: -1
-    taskid: c71e70d7-9896-4a54-8a44-ecb8d8c7348e
+    taskid: dca70b3c-5bcc-4f1b-8786-3156727412a3
     timertriggers: []
     type: regular
     view: |-
@@ -601,12 +601,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f3274772-bf16-49ea-8ca2-bd416bab8409
+      id: 049e8330-1afe-443b-869f-7ccd349ce4f6
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: f3274772-bf16-49ea-8ca2-bd416bab8409
+    taskid: 049e8330-1afe-443b-869f-7ccd349ce4f6
     timertriggers: []
     type: condition
     view: |-
@@ -633,13 +633,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a22877f5-8f64-4cb2-8417-b7fc698e2ce2
+      id: ec2b489a-fc34-475a-80f4-5176ca075065
       iscommand: true
       name: xdr-get-distribution-url
       script: '|||xdr-get-distribution-url'
       type: regular
       version: -1
-    taskid: a22877f5-8f64-4cb2-8417-b7fc698e2ce2
+    taskid: ec2b489a-fc34-475a-80f4-5176ca075065
     timertriggers: []
     type: regular
     view: |-
@@ -669,12 +669,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d43c9959-e9c3-4049-820c-16139c883843
+      id: ed313752-24c0-4d75-8d67-e56c7c33945b
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: d43c9959-e9c3-4049-820c-16139c883843
+    taskid: ed313752-24c0-4d75-8d67-e56c7c33945b
     timertriggers: []
     type: condition
     view: |-
@@ -699,13 +699,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: dbde960d-19a9-427f-8896-7fda47e97d13
+      id: d62689f5-ded4-4dbe-8440-96ca4b78580e
       iscommand: true
       name: xdr-get-create-distribution-status
       script: '|||xdr-get-create-distribution-status'
       type: regular
       version: -1
-    taskid: dbde960d-19a9-427f-8896-7fda47e97d13
+    taskid: d62689f5-ded4-4dbe-8440-96ca4b78580e
     timertriggers: []
     type: regular
     view: |-
@@ -746,12 +746,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1763298e-215e-4004-8e2f-0754b2ee4f7f
+      id: 4c4e0329-3a96-4e8b-80df-4ee37b9f0901
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 1763298e-215e-4004-8e2f-0754b2ee4f7f
+    taskid: 4c4e0329-3a96-4e8b-80df-4ee37b9f0901
     timertriggers: []
     type: condition
     view: |-
@@ -789,13 +789,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2a7136f8-79dc-4014-8929-c51ec88b30b3
+      id: 0406e70a-94d6-4d45-89f2-70eded44c87f
       iscommand: true
       name: xdr-get-audit-management-logs
       script: '|||xdr-get-audit-management-logs'
       type: regular
       version: -1
-    taskid: 2a7136f8-79dc-4014-8929-c51ec88b30b3
+    taskid: 0406e70a-94d6-4d45-89f2-70eded44c87f
     timertriggers: []
     type: regular
     view: |-
@@ -833,12 +833,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 12f24b5c-bac1-4fb9-8927-56e395e29a67
+      id: 70a198c1-491f-4f22-80fb-608e8c6bf7dc
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 12f24b5c-bac1-4fb9-8927-56e395e29a67
+    taskid: 70a198c1-491f-4f22-80fb-608e8c6bf7dc
     timertriggers: []
     type: condition
     view: |-
@@ -878,13 +878,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1c6c528b-3a83-4991-85a0-9b32655f9638
+      id: c7d9dfcb-07a1-4fae-8140-cf322be8ed14
       iscommand: true
       name: xdr-get-audit-agent-reports
       script: '|||xdr-get-audit-agent-reports'
       type: regular
       version: -1
-    taskid: 1c6c528b-3a83-4991-85a0-9b32655f9638
+    taskid: c7d9dfcb-07a1-4fae-8140-cf322be8ed14
     timertriggers: []
     type: regular
     view: |-
@@ -922,12 +922,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e035d694-ac71-4c44-8f5c-e61e13bbdccd
+      id: 31afe79e-32c1-42d8-8147-fe3ca4058155
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: e035d694-ac71-4c44-8f5c-e61e13bbdccd
+    taskid: 31afe79e-32c1-42d8-8147-fe3ca4058155
     timertriggers: []
     type: condition
     view: |-
@@ -946,12 +946,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f37cf51e-b894-4639-8e06-f79396f6f8f5
+      id: 562290eb-0d5a-4d24-8dc7-cbded688a67b
       iscommand: false
       name: Test Done
       type: title
       version: -1
-    taskid: f37cf51e-b894-4639-8e06-f79396f6f8f5
+    taskid: 562290eb-0d5a-4d24-8dc7-cbded688a67b
     timertriggers: []
     type: title
     view: |-
@@ -1016,12 +1016,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9f526736-aacf-4976-8470-6c4ca2b73343
+      id: fbcad57e-344c-4cdc-84e8-bd4b07697a33
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 9f526736-aacf-4976-8470-6c4ca2b73343
+    taskid: fbcad57e-344c-4cdc-84e8-bd4b07697a33
     timertriggers: []
     type: condition
     view: |-
@@ -1053,13 +1053,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5fe3acf9-3946-4a3f-8923-2606c890485f
+      id: 25c16991-1bdb-489a-80cd-be88c0091445
       iscommand: false
       name: Save incident id
       script: Set
       type: regular
       version: -1
-    taskid: 5fe3acf9-3946-4a3f-8923-2606c890485f
+    taskid: 25c16991-1bdb-489a-80cd-be88c0091445
     timertriggers: []
     type: regular
     view: |-
@@ -1089,13 +1089,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0a6f27da-5a54-4245-812b-35ea421d2e9a
+      id: c8f0f96a-1b36-40f7-8334-01a4736bb12f
       iscommand: false
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 0a6f27da-5a54-4245-812b-35ea421d2e9a
+    taskid: c8f0f96a-1b36-40f7-8334-01a4736bb12f
     timertriggers: []
     type: regular
     view: |-
@@ -1131,13 +1131,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: aa57f300-08cd-4164-8474-ce3e1946f1df
+      id: 89b9c63f-8b18-4054-8994-89ff54428f51
       iscommand: true
       name: xdr-get-incidents
       script: '|||xdr-get-incidents'
       type: regular
       version: -1
-    taskid: aa57f300-08cd-4164-8474-ce3e1946f1df
+    taskid: 89b9c63f-8b18-4054-8994-89ff54428f51
     timertriggers: []
     type: regular
     view: |-
@@ -1178,12 +1178,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 666ef98c-e358-47f3-80cf-c6025d6ee7c3
+      id: f169eea2-8fa4-469c-8496-c72b0a2cab3a
       iscommand: false
       name: Verify updated values
       type: condition
       version: -1
-    taskid: 666ef98c-e358-47f3-80cf-c6025d6ee7c3
+    taskid: f169eea2-8fa4-469c-8496-c72b0a2cab3a
     timertriggers: []
     type: condition
     view: |-
@@ -1216,13 +1216,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7ff2df84-2c98-49d3-8aff-0832b019da8b
+      id: 24ff66cb-1608-47ba-843e-d07847feeea0
       iscommand: true
       name: xdr-update-incident
       script: '|||xdr-update-incident'
       type: regular
       version: -1
-    taskid: 7ff2df84-2c98-49d3-8aff-0832b019da8b
+    taskid: 24ff66cb-1608-47ba-843e-d07847feeea0
     timertriggers: []
     type: regular
     view: |-
@@ -1255,13 +1255,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 05197bae-0549-47c6-8f4a-bb33dfbe08fc
+      id: 2d5419ec-5638-4c7a-89c3-fb33dc440611
       iscommand: false
       name: Set 2 CEF alerts to context
       script: Set
       type: regular
       version: -1
-    taskid: 05197bae-0549-47c6-8f4a-bb33dfbe08fc
+    taskid: 2d5419ec-5638-4c7a-89c3-fb33dc440611
     timertriggers: []
     type: regular
     view: |-
@@ -1305,13 +1305,13 @@ tasks:
         by multiple fields will be concatenated using AND condition (OR is not supported).
         Maximum result set size is 100. Offset is the zero-based number of endpoint
         from the start of the result set (start by counting from 0).
-      id: 1b96679f-0992-481c-82b2-227e95f582b6
+      id: 54fe0083-3e51-45bd-8097-db2d203b690c
       iscommand: true
       name: Get Endpoint f8a2f58846b542579c12090652e79f3d
       script: '|||xdr-get-endpoints'
       type: regular
       version: -1
-    taskid: 1b96679f-0992-481c-82b2-227e95f582b6
+    taskid: 54fe0083-3e51-45bd-8097-db2d203b690c
     timertriggers: []
     type: regular
     view: |-
@@ -1346,12 +1346,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d627b141-6f4c-4928-87ce-8cc184d0690f
+      id: 8a3140eb-1c78-4bb2-8778-6367d4c3ba8e
       iscommand: false
       name: To isolate ?
       type: condition
       version: -1
-    taskid: d627b141-6f4c-4928-87ce-8cc184d0690f
+    taskid: 8a3140eb-1c78-4bb2-8778-6367d4c3ba8e
     timertriggers: []
     type: condition
     view: |-
@@ -1386,12 +1386,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 844dfdbf-49f2-4911-875b-24294587a2a2
+      id: 174dbc0a-1d7d-45bf-8a4e-364455969582
       iscommand: false
       name: To unisolate?
       type: condition
       version: -1
-    taskid: 844dfdbf-49f2-4911-875b-24294587a2a2
+    taskid: 174dbc0a-1d7d-45bf-8a4e-364455969582
     timertriggers: []
     type: condition
     view: |-
@@ -1413,12 +1413,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 92120c5c-7ad2-4bab-8da0-173506068f28
+      id: 7abc47d8-83cb-4815-8863-893b60f9f145
       iscommand: false
       name: Isolation done
       type: title
       version: -1
-    taskid: 92120c5c-7ad2-4bab-8da0-173506068f28
+    taskid: 7abc47d8-83cb-4815-8863-893b60f9f145
     timertriggers: []
     type: title
     view: |-
@@ -1462,13 +1462,13 @@ tasks:
         will be concatenated using AND condition (OR is not supported). Maximum result
         set size is 100. Offset is the zero-based number of endpoint from the start
         of the result set (start by counting from 0).
-      id: 02ed4821-c1d1-4387-83b6-f722f2a6b94c
+      id: 8cb29931-71eb-428f-86c3-4ee447d07724
       iscommand: true
       name: xdr-get-endpoints
       script: Cortex XDR - IR|||xdr-get-endpoints
       type: regular
       version: -1
-    taskid: 02ed4821-c1d1-4387-83b6-f722f2a6b94c
+    taskid: 8cb29931-71eb-428f-86c3-4ee447d07724
     timertriggers: []
     type: regular
     view: |-
@@ -1484,8 +1484,12 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: PaloAltoNetworksXDR.Endpoint
-          operator: hasLength
+              complex:
+                accessor: Endpoint
+                root: PaloAltoNetworksXDR
+                transformers:
+                - operator: count
+          operator: greaterThanOrEqual
           right:
             value:
               simple: "3"
@@ -1501,12 +1505,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ffacf444-8535-465a-8029-5070ecf01873
+      id: dc496915-021f-421a-8ead-af206b54f671
       iscommand: false
       name: Check the number of endpoints in context
       type: condition
       version: -1
-    taskid: ffacf444-8535-465a-8029-5070ecf01873
+    taskid: dc496915-021f-421a-8ead-af206b54f671
     timertriggers: []
     type: condition
     view: |-
