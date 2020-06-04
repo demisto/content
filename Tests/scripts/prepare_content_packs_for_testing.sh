@@ -26,8 +26,9 @@ GCS_MARKET_BUCKET="marketplace-dist"
 GCS_BUILD_BUCKET="marketplace-ci-build"
 SOURCE_PATH="content/packs"
 TARGET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/content/packs"
-echo "Copying master files at: $SOURCE_PATH to target path: $TARGET_PATH ..."
-gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$GCS_BUILD_BUCKET/$TARGET_PATH"
+BUCKET_FULL_TARGET_PATH="gs://$GCS_BUILD_BUCKET/$TARGET_PATH"
+echo "Copying master files at: $SOURCE_PATH to target path: $BUCKET_FULL_TARGET_PATH ..."
+gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "$BUCKET_FULL_TARGET_PATH"
 echo "Finished copying successfully."
 
 echo "Updating modified content packs in the bucket ..."
@@ -56,4 +57,5 @@ fi
 #python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
 #echo "Finished normalizing images paths successfully."
 
+echo "Build bucket path is: $BUCKET_FULL_TARGET_PATH"
 echo "Finished preparing content packs for testing successfully."
