@@ -157,7 +157,7 @@ script:
       outputs:
         - contextPath: File.Size
           description: File size.
-          type: string
+          type: number
         - contextPath: File.Type
           description: 'File type, for example: "PE", "txt"'
           type: string
