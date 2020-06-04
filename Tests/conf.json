@@ -492,6 +492,10 @@
             "playbookID": "Test CommonServer"
         },
         {
+            "playbookID": "Test-debug-mode",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
         },
@@ -1997,7 +2001,7 @@
             ]
         },
         {
-            "integrations": "McAfee Active Response",
+            "integrations": ["epo", "McAfee Active Response"],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
@@ -2012,8 +2016,7 @@
             "fromversion": "4.5.0",
             "timeout": 1700
         },
-        {
-            "integrations": "McAfee Active Response",
+        {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
         },
@@ -2229,7 +2232,7 @@
         },
         {
             "integrations": "Cisco Spark",
-            "playbookID": "Cisco Spark Test"
+            "playbookID": "Cisco Spark Test New"
         },
         {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
