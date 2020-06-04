@@ -434,3 +434,5 @@ outputs:
 - contextPath: Uptycs.Children.upt_remove_time
   description: time that the process was removed
   type: date
+tests:
+  - TestUptycs
