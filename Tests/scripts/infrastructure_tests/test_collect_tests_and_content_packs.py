@@ -238,8 +238,8 @@ class TestChangedTestPlaybook:
         create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
-        assert filter_envs.get('Server Master') is True
         assert filter_envs.get('Demisto PreGA') is True
+        assert filter_envs.get('Demisto Marketplace') is True
         assert filter_envs.get('Demisto two before GA') is False
         assert filter_envs.get('Demisto one before GA') is True
         assert filter_envs.get('Demisto GA') is True
@@ -275,8 +275,8 @@ class TestChangedTestPlaybook:
         create_filter_envs_file(filterd_tests, two_before_ga, one_before_ga, ga, TestConf(MOCK_CONF), MOCK_ID_SET)
         with open("./Tests/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
-        assert filter_envs.get('Server Master') is True
         assert filter_envs.get('Demisto PreGA') is True
+        assert filter_envs.get('Demisto Marketplace') is True
         assert filter_envs.get('Demisto two before GA') is False
         assert filter_envs.get('Demisto one before GA') is False
         assert filter_envs.get('Demisto GA') is True
