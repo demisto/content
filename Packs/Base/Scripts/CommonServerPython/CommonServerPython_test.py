@@ -640,6 +640,52 @@ def test_logger_replace_strs(mocker):
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
+SENSITIVE_PARAM = {
+    'app': None,
+    'authentication': {
+        'credential': '',
+        'credentials': {
+            'id': '',
+            'locked': False,
+            'modified': '0001-01-01T00: 00: 00Z',
+            'name': '',
+            'password': 'cred_pass',
+            'sortValues': None,
+            'sshkey': 'ssh_key_secret',
+            'sshkeyPass': 'ssh_key_secret_pass',
+            'user': '',
+            'vaultInstanceId': '',
+            'version': 0,
+            'workgroup': ''
+        },
+        'identifier': 'admin',
+        'password': 'ident_pass',
+        'passwordChanged': False
+    },
+}
+
+
+def test_logger_replace_strs_credentials(mocker):
+    mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
+    ilog = IntegrationLogger()
+    # log some secrets
+    ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh pass: ssh_key_secret_pass. ident: ident_pass:')
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+        assert s not in ilog.messages[0]
+
+
+def test_debug_logger_replace_strs(mocker):
+    mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
+    debug_logger = DebugLogger()
+    debug_logger.int_logger.set_buffering(True)
+    debug_logger.log_start_debug()
+    msg = debug_logger.int_logger.messages[0]
+    assert 'debug-mode started' in msg
+    assert 'Params:' in msg
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+        assert s not in msg
+
+
 def test_is_mac_address():
     from CommonServerPython import is_mac_address
 

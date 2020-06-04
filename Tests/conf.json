@@ -492,6 +492,10 @@
             "playbookID": "Test CommonServer"
         },
         {
+            "playbookID": "Test-debug-mode",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
         },
@@ -849,7 +853,6 @@
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
-                "AlienVault OTX v2",
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0"
@@ -2230,7 +2233,7 @@
         },
         {
             "integrations": "Cisco Spark",
-            "playbookID": "Cisco Spark Test"
+            "playbookID": "Cisco Spark Test New"
         },
         {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
@@ -2945,7 +2948,6 @@
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
         "Code42": "Instance not set up yet",
-        "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
