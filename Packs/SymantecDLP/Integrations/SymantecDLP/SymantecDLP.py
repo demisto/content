@@ -665,12 +665,12 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
             if fetch_limit == 0:
                 break
             fetch_limit -= 1
-            incident_details = json.loads(json.dumps(helpers.serialize_object(client.service.incidentDetail(
+            incident_details = json.dumps(helpers.serialize_object(client.service.incidentDetail(
                 incidentId=incident_id
-            )[0]), default=datetime_to_iso_format))
-            incident_creation_time = incident_details.get('incident', {}).get('incidentCreationDate')
+            )[0]), default=datetime_to_iso_format)
+            incident_creation_time = json.loads(incident_details).get('incident', {}).get('incidentCreationDate')
             incident: dict = {
-                'rawJSON': json.dumps(incident_details),
+                'rawJSON': incident_details,
                 'name': f'Symantec DLP incident {incident_id}',
                 'occurred': incident_creation_time
             }
