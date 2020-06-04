@@ -595,7 +595,6 @@ def main():
             pack.cleanup()
             continue
 
-        # if should_sign_pack:
         task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name
