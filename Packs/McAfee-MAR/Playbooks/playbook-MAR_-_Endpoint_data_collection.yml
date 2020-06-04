@@ -24,6 +24,7 @@ tasks:
       '#none#':
       - "1"
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -31,6 +32,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 528a058d-8c60-46dc-80b0-8139b45eeafd
@@ -50,7 +56,9 @@ tasks:
       "yes":
       - "2"
     scriptarguments:
-      value: ${modules(val.brand=="epo")}
+      value:
+        simple: ${modules(val.brand=="epo")}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -58,6 +66,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 5c61873e-d9e2-4967-8776-82db5c05628b
@@ -75,7 +88,9 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      searchText: ${inputs.Hostname}
+      searchText:
+        simple: ${inputs.Hostname}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -83,6 +98,11 @@ tasks:
           "y": 355
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: fed35557-6859-44e6-817a-ee0538819714
@@ -91,10 +111,11 @@ tasks:
       id: fed35557-6859-44e6-817a-ee0538819714
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -102,6 +123,11 @@ tasks:
           "y": 1710
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 71f42a72-b2e7-479a-86e7-bc6ff218671e
@@ -121,7 +147,9 @@ tasks:
       "yes":
       - "26"
     scriptarguments:
-      value: ${modules(val.brand=="McAfee Active Response")}
+      value:
+        simple: ${modules(val.brand=="McAfee Active Response")}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -129,6 +157,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: d3c21d0d-fc2a-4ba5-8bb9-da70f49ae96c
@@ -146,13 +179,20 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,Processes
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,Processes
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -160,6 +200,11 @@ tasks:
           "y": 835
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: 98827aec-511a-4f30-8fdb-04240496380d
@@ -177,13 +222,20 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,ScheduledTasks
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,ScheduledTasks
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -191,6 +243,11 @@ tasks:
           "y": 660
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: 38ad462f-1c16-4c4a-8cd8-446e19c24694
@@ -208,13 +265,20 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,Services
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,Services
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -222,6 +286,11 @@ tasks:
           "y": 1010
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: 6e9fb885-21b5-417d-800c-e02aa81cb91f
@@ -239,13 +308,20 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,CommandLineHistory
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,CommandLineHistory
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -253,6 +329,11 @@ tasks:
           "y": 1185
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: 69f8efa1-8783-4165-8ce4-2f5e0f3db937
@@ -270,13 +351,20 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,CurrentFlow
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,CurrentFlow
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -284,6 +372,11 @@ tasks:
           "y": 660
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: 08612fec-a2cb-4b1c-8a10-e8148722075f
@@ -301,13 +394,20 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,DNSCache
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,DNSCache
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -315,6 +415,11 @@ tasks:
           "y": 835
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 5479417e-4e95-422a-8e92-4f585f40fd50
@@ -332,13 +437,20 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,EnvironmentVariables
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,EnvironmentVariables
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -346,6 +458,11 @@ tasks:
           "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: cd3926a0-6157-4ef3-8fd1-86b6cbd79e7c
@@ -363,13 +480,20 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,LocalGroups
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,LocalGroups
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -377,6 +501,11 @@ tasks:
           "y": 1185
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 0287ca41-8587-4bb2-84d6-4824b5133df1
@@ -394,13 +523,20 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,LoggedInUsers
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,LoggedInUsers
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -408,6 +544,11 @@ tasks:
           "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: c781977e-2b17-4273-86c2-246912262601
@@ -425,13 +566,20 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,NetworkShares
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,NetworkShares
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -439,6 +587,11 @@ tasks:
           "y": 1010
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: ebfbc02e-b674-4899-8586-ea8621533c3b
@@ -456,13 +609,20 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,InteractiveSessions
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,InteractiveSessions
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -470,6 +630,11 @@ tasks:
           "y": 1185
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: 79f385d1-1aa0-47f9-84de-f0b579492151
@@ -487,13 +652,20 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,NetworkInterfaces
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,NetworkInterfaces
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -501,6 +673,11 @@ tasks:
           "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
     taskid: c35f205c-5c9a-4846-85b9-0a11e1b9f5ad
@@ -518,13 +695,20 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,UsbConnectedStorageDevices
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,UsbConnectedStorageDevices
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -532,6 +716,11 @@ tasks:
           "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
     taskid: cac5062b-32b7-4789-8f25-c28ea0e40873
@@ -549,13 +738,20 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,UserProfiles
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,UserProfiles
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -563,6 +759,11 @@ tasks:
           "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
     taskid: 00e3cf95-5dda-411c-8ec5-027ba3348a21
@@ -580,13 +781,20 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,Software
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,Software
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -594,6 +802,11 @@ tasks:
           "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
     taskid: 4afc3a44-f5f9-462a-8f41-dc697c9366e2
@@ -611,13 +824,20 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,NetworkSessions
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,NetworkSessions
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -625,6 +845,11 @@ tasks:
           "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
     taskid: e7fcd15d-3273-4163-803e-26d5e76f712e
@@ -642,13 +867,20 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      collector: Processes
-      collectors: HostInfo,Startup
-      filter-by: hostname
-      filter-operator: Equals
-      filter-value: ${inputs.Hostname}
-      filter_collector: HostInfo
-      outputs: ""
+      collector:
+        simple: Processes
+      collectors:
+        simple: HostInfo,Startup
+      filter-by:
+        simple: hostname
+      filter-operator:
+        simple: Equals
+      filter-value:
+        simple: ${inputs.Hostname}
+      filter_collector:
+        simple: HostInfo
+      outputs: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -656,6 +888,11 @@ tasks:
           "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
     taskid: 41252036-b29b-4a75-82e7-68fe3fa9b0a5
@@ -674,6 +911,7 @@ tasks:
       - "28"
       - "29"
       - "30"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -681,6 +919,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
     taskid: 23bbdc19-0b43-4b5e-8d2b-939183909e09
@@ -696,6 +939,7 @@ tasks:
     nexttasks:
       '#none#':
       - "15"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -703,6 +947,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
     taskid: bf8c2f0a-d98b-4059-82db-a9f06f937177
@@ -718,6 +967,7 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -725,6 +975,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
     taskid: abee0804-81a8-45da-8fab-a3792b165c49
@@ -740,6 +995,7 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -747,6 +1003,11 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
     taskid: c5ff2c93-f30c-45eb-87b7-bcd676d1e7a2
@@ -762,6 +1023,7 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -769,6 +1031,12 @@ tasks:
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -785,7 +1053,11 @@ view: |-
   }
 inputs:
 - key: Hostname
-  value: ${Endpoint.Hostname}
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
   description: Hostname to run on
+  playbookInputQuery: null
+outputs: []
 tests:
-  - No tests - Need to add
+  - MAR - Endpoint data collection test

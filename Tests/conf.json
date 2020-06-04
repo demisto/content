@@ -2001,7 +2001,7 @@
             ]
         },
         {
-            "integrations": "McAfee Active Response",
+            "integrations": ["epo", "McAfee Active Response"],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
@@ -2016,8 +2016,7 @@
             "fromversion": "4.5.0",
             "timeout": 1700
         },
-        {
-            "integrations": "McAfee Active Response",
+        {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
         },

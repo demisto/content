@@ -22,6 +22,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -29,6 +30,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 230eed7b-c702-4c0f-87f0-700bd9d630b1
@@ -38,7 +44,6 @@ tasks:
       version: -1
       description: ""
       name: Determine list of devices to be backed up
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -46,8 +51,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      key: chkpdevicestobackup
-      value: ""
+      key:
+        simple: chkpdevicestobackup
+      value: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -55,6 +62,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 6eb6a468-79cc-460b-8e2c-cada1799b034
@@ -65,7 +77,6 @@ tasks:
       description: ""
       name: Trigger backup on each device
       scriptName: CPCreateBackup
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -73,9 +84,11 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      devices: ${chkpdevicestobackup}
+      devices:
+        simple: ${chkpdevicestobackup}
     results:
     - CheckpointBackup
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -83,6 +96,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 143e5bcf-7746-409b-8c53-ff761a2d4b99
@@ -93,7 +111,6 @@ tasks:
       description: ""
       name: Show status for initiated backup tasks
       scriptName: CPShowBackupStatus
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -101,10 +118,13 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      devices: ${chkpbackupstarted}
-      waittimeout: "5"
+      devices:
+        simple: ${chkpbackupstarted}
+      waittimeout:
+        simple: "5"
     results:
     - CheckpointBackup
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -112,6 +132,11 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 1e1e3c6f-5703-47ea-8d70-871327266a2b
@@ -122,7 +147,6 @@ tasks:
       description: ""
       name: Have any backups failed?
       scriptName: UtilAnyResults
-      issystemtask: true
       type: condition
       iscommand: false
       brand: ""
@@ -132,7 +156,9 @@ tasks:
       "yes":
       - "5"
     scriptarguments:
-      data: ${devicesbackuperror}
+      data:
+        simple: ${devicesbackuperror}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -140,6 +166,11 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
@@ -150,7 +181,6 @@ tasks:
       description: ""
       name: Open ticket on ServiceNow with list of problematic devices
       scriptName: SNOpenTicket
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -158,11 +188,14 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      assignmentgroup: ""
-      category: ""
-      comments: ${devicesbackuperror}
-      shortdescription: Checkpoint configuration backups - Failed
-      subcategory: ""
+      assignmentgroup: {}
+      category: {}
+      comments:
+        simple: ${devicesbackuperror}
+      shortdescription:
+        simple: Checkpoint configuration backups - Failed
+      subcategory: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -170,6 +203,11 @@ tasks:
           "y": 903
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 36723772-43f0-4619-872f-f54d53770054
@@ -180,7 +218,6 @@ tasks:
       description: ""
       name: Retrieve the backup files from the devices
       scriptName: SCPPullFiles
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -188,7 +225,9 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      systems2files: ${devicesbackupfiles}
+      systems2files:
+        simple: ${devicesbackupfiles}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -196,6 +235,11 @@ tasks:
           "y": 1097
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: d187c4cc-630c-4edd-8048-40678669101b
@@ -206,7 +250,6 @@ tasks:
       description: ""
       name: Email a report of backup results
       scriptName: SendEmail
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
@@ -214,13 +257,16 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      attachIDs: ""
-      bcc: ""
-      body: ${backupsreporttext}
-      cc: ""
-      htmlBody: ""
-      subject: Demisto - Checkpoint Backup Report
-      to: ""
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: ${backupsreporttext}
+      cc: {}
+      htmlBody: {}
+      subject:
+        simple: Demisto - Checkpoint Backup Report
+      to: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -228,6 +274,11 @@ tasks:
           "y": 1291
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
@@ -238,13 +289,14 @@ tasks:
       description: ""
       name: CloseInvestigation
       scriptName: CloseInvestigation
-      issystemtask: true
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: ""
-      reason: Done
+      notes: {}
+      reason:
+        simple: Done
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -252,6 +304,11 @@ tasks:
           "y": 1485
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -264,5 +321,7 @@ view: |-
       }
     }
   }
+inputs: []
+outputs: []
 tests:
   - No test - old playbook
