@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added support for 3 commands from the Threat graph API:
+Added support for 3 commands from the Threat Graph API:
   - ***cs-threatgraph-summary***
   - ***cs-threatgraph-processes***
   - ***cs-threatgraph-detections***
