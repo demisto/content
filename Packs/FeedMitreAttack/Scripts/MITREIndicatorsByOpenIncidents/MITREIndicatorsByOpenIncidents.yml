@@ -1,7 +1,8 @@
 commonfields:
   id: 5f415700-d8fc-46a4-82aa-d27cee9fa2af
-  version: 44
+  version: -1
 name: MITREIndicatorsByOpenIncidents
+fromversion: 5.5.0
 script: ''
 type: python
 tags:
@@ -14,3 +15,5 @@ pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
+tests:
+  - No test.

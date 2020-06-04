@@ -1,7 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-res = demisto.executeCommand("demisto-api-post", { "uri": "statistics/widgets/query", "body": json.dumps({"dataType": "indicators",
+res = demisto.executeCommand("demisto-api-post", { "uri": "statistics/widgets/query", "body":
+    json.dumps({"dataType": "indicators",
                 "widgetType": "bar",
                 "query": "type:\"MITRE ATT\u0026CK\" and investigationsCount:\u003e0","params": {
                     "groupBy": [
@@ -20,10 +21,11 @@ for v in res[0]['Contents']['response']:
         indicators.append({
             'Value': ind['value'],
             'Name': ind['CustomFields']['mitrename'],
-            'ID': ind['CustomFields']['mitreid'],
+            'Phase Name': ind['CustomFields']['mitrekillchainphases'][0]['phase_name'],
             'Description': ind['CustomFields']['mitredescription'],
 
         })
 
-temp = tableToMarkdown('MITRE ATT&CK techniques by open Incidents', indicators, headers=['Value', 'Name', 'ID', 'Description'])
+temp = tableToMarkdown('MITRE ATT&CK techniques by open Incidents', indicators,
+                       headers=['Value', 'Name', 'Phase Name', 'Description'])
 return_outputs(temp)
