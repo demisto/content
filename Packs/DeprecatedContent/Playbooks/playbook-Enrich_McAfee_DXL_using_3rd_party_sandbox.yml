@@ -21,6 +21,7 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -28,6 +29,11 @@ tasks:
           "y": -19
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: a57644c8-775a-42ad-8800-3ac1a1d138cd
@@ -47,9 +53,11 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      left: ""
-      right: ""
-      value: ${File.Malicious}
+      left: {}
+      right: {}
+      value:
+        simple: ${File.Malicious}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -57,6 +65,11 @@ tasks:
           "y": 302
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: b27ad1bb-4eff-482e-82e1-ba2d4f5c2443
@@ -71,8 +84,9 @@ tasks:
       brand: ""
       description: ""
     scriptarguments:
-      notes: ""
-      reason: ""
+      notes: {}
+      reason: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -80,6 +94,11 @@ tasks:
           "y": 689
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 37bc441a-8053-49ea-8abf-2ffae14fe359
@@ -97,8 +116,11 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      payload: ${File(val.Malicious).MD5} ${File(val.Malicious).SHA1} ${File(val.Malicious).SHA256}
-      topic: MALICIOUS_FILE
+      payload:
+        simple: ${File(val.Malicious).MD5} ${File(val.Malicious).SHA1} ${File(val.Malicious).SHA256}
+      topic:
+        simple: MALICIOUS_FILE
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -106,6 +128,11 @@ tasks:
           "y": 486
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: bfffbaa1-a550-47bd-8e84-e6c941cde205
@@ -122,6 +149,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -129,6 +157,12 @@ tasks:
           "y": 122
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -142,5 +176,6 @@ view: |-
     }
   }
 inputs: []
+outputs: []
 tests:
-- Wildfire Test
+- no test

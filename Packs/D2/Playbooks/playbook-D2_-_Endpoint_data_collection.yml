@@ -26,6 +26,7 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -33,6 +34,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: ffd5619d-eb26-4f14-8d71-b62e1e6bc97d
@@ -50,16 +56,21 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      arch: ""
-      credentialSet: ${inputs.Credentials}
-      dmbPort: ""
-      host: ${inputs.Host}
-      name: ${inputs.Host}
-      os: ${inputs.OS}
-      password: ""
-      sshPort: ""
-      username: ""
-      workgroup: ""
+      arch: {}
+      credentialSet:
+        simple: ${inputs.Credentials}
+      dmbPort: {}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: ${inputs.Host}
+      os:
+        simple: ${inputs.OS}
+      password: {}
+      sshPort: {}
+      username: {}
+      workgroup: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -67,6 +78,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: a3cd0e59-5d57-4782-8795-0ea3811ec4d6
@@ -84,8 +100,10 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      arguments: ""
-      commandName: D2Processes
+      arguments: {}
+      commandName:
+        simple: D2Processes
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -93,6 +111,11 @@ tasks:
           "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 7411d33a-9c1c-494f-8422-c972b524abe2
@@ -110,8 +133,10 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      arguments: ""
-      commandName: D2Hardware
+      arguments: {}
+      commandName:
+        simple: D2Hardware
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -119,6 +144,11 @@ tasks:
           "y": 857
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 34499d4a-e00a-4886-8882-e5bcddf3a892
@@ -135,6 +165,7 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -142,6 +173,11 @@ tasks:
           "y": 1008
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: bfdb339a-a8b5-4b46-822c-23b4d515787e
@@ -162,7 +198,9 @@ tasks:
       "yes":
       - "3"
     scriptarguments:
-      value: ${inputs.Host}
+      value:
+        simple: ${inputs.Host}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -170,6 +208,11 @@ tasks:
           "y": 196
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 51867be7-4781-4482-87aa-2181e138b651
@@ -189,7 +232,9 @@ tasks:
       "yes":
       - "11"
     scriptarguments:
-      value: ${inputs.Path}
+      value:
+        simple: ${inputs.Path}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -197,6 +242,11 @@ tasks:
           "y": 1040
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: 6289197b-4aa9-4e44-8b96-d5abd1a9dbb3
@@ -214,8 +264,10 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      filepath: ${File.Path}
-      using: ""
+      filepath:
+        simple: ${File.Path}
+      using: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -223,6 +275,11 @@ tasks:
           "y": 1330
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: b58ccd0e-1dbf-474b-8c8c-9de42f74d7bb
@@ -235,6 +292,7 @@ tasks:
       iscommand: false
       brand: ""
       description: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -242,6 +300,11 @@ tasks:
           "y": 1668
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 3d43e539-869a-4386-8395-2e7c6e2c91bc
@@ -258,6 +321,7 @@ tasks:
       '#none#':
       - "4"
       - "15"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -265,6 +329,11 @@ tasks:
           "y": 529
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: 3a82031b-c9ed-4dff-8336-12c8279afc02
@@ -284,10 +353,13 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      left: ${inputs.OS}
-      right: Windows
+      left:
+        simple: ${inputs.OS}
+      right:
+        simple: Windows
     results:
     - AreValuesEqual
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -295,6 +367,12 @@ tasks:
           "y": 691
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -315,17 +393,29 @@ view: |-
   }
 inputs:
 - key: Host
-  value: ${Endpoint.Hostname}
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
   description: Deploy D2 on target Host
+  playbookInputQuery: null
 - key: OS
-  value: windows
+  value:
+    simple: windows
+  required: false
   description: The default OS type of target host
+  playbookInputQuery: null
 - key: Credentials
-  value: Admin
+  value:
+    simple: Admin
+  required: false
   description: Name of the credential set from Demisto Settings -> Integrations ->
     Credentials
+  playbookInputQuery: null
 - key: Path
-  value: ""
+  value: {}
+  required: false
   description: If initialized, D2 will try and collect the file at target path
+  playbookInputQuery: null
+outputs: []
 tests:
   - No Test

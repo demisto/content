@@ -27,6 +27,7 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -34,6 +35,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 1bf80041-9e03-4daf-861c-a709df537687
@@ -53,9 +59,11 @@ tasks:
       "yes":
       - "3"
     scriptarguments:
-      left: ""
-      right: ""
-      value: ${modules(val.brand=="McAfee Threat Intelligence Exchange")}
+      left: {}
+      right: {}
+      value:
+        simple: ${modules(val.brand=="McAfee Threat Intelligence Exchange")}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -63,6 +71,11 @@ tasks:
           "y": 340
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
@@ -82,9 +95,11 @@ tasks:
       "yes":
       - "6"
     scriptarguments:
-      left: ""
-      right: ""
-      value: ${modules(val.brand=="epo")}
+      left: {}
+      right: {}
+      value:
+        simple: ${modules(val.brand=="epo")}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -92,6 +107,11 @@ tasks:
           "y": 1080
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: c906e63c-45c5-4540-8f42-b74db1943725
@@ -109,7 +129,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      file: ${inputs.Hash}
+      file:
+        simple: ${inputs.Hash}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -117,6 +139,11 @@ tasks:
           "y": 519
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: c283821d-46ac-4b77-8728-9bc136f0c729
@@ -129,6 +156,7 @@ tasks:
       iscommand: false
       brand: ""
       description: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -136,6 +164,11 @@ tasks:
           "y": 1492
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: adfc3709-ca91-4ac0-8c2b-179c44d30403
@@ -155,7 +188,9 @@ tasks:
       "yes":
       - "8"
     scriptarguments:
-      value: ${File.References.AgentGuid}
+      value:
+        simple: ${File.References.AgentGuid}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -163,6 +198,11 @@ tasks:
           "y": 703
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 6b8b1d0c-fae5-4779-83a2-9b0e5edbd983
@@ -180,8 +220,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      searchText: ${File.References.AgentGuid}
-      taskID: ""
+      searchText:
+        simple: ${File.References.AgentGuid}
+      taskID: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -189,6 +231,11 @@ tasks:
           "y": 1326
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: a08baee9-a402-4bc8-8cae-77c4c144d889
@@ -204,6 +251,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -211,6 +259,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
@@ -226,6 +279,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -233,6 +287,12 @@ tasks:
           "y": 956
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -251,10 +311,14 @@ view: |-
   }
 inputs:
 - key: Hash
-  value: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
-    b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+  value:
+    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
+      b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+  required: false
   description: |-
     The Hash to hunt (Could be MD5,SHA1,SHA256).
     Default is set to all hashes
+  playbookInputQuery: null
+outputs: []
 tests:
   - No test

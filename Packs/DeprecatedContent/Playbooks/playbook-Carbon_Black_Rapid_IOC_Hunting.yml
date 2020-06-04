@@ -13,13 +13,14 @@ tasks:
     task:
       id: 729a5739-da09-4d2f-8a3c-abc427e3efd2
       version: -1
-      description: "Playbook start point"
       name: ""
+      description: Playbook start point
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -27,6 +28,11 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 1a3ea7e1-aaf3-4df0-89f6-70e2680bda7a
@@ -44,9 +50,11 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      md5: ${File.MD5}
+      md5:
+        simple: ${File.MD5}
     results:
     - found_file_locations
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -54,6 +62,11 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: c687c04f-ba90-4572-800a-923193bacc32
@@ -74,7 +87,9 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      value: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
+      value:
+        simple: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -82,6 +97,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 189b725f-2b0a-42cc-8148-95395f810983
@@ -89,11 +109,12 @@ tasks:
     task:
       id: 189b725f-2b0a-42cc-8148-95395f810983
       version: -1
-      description: "Done"
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -101,6 +122,11 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: a4a842fc-727c-4a64-883d-873968708ded
@@ -121,7 +147,9 @@ tasks:
       "yes":
       - "1"
     scriptarguments:
-      value: ${File.MD5}
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -129,6 +157,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -144,3 +177,6 @@ view: |-
     }
   }
 inputs: []
+outputs: []
+tests:
+ - no test
