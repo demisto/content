@@ -155,26 +155,26 @@ script:
           required: true
           description: ID of the attachment.
       outputs:
-        - contextPath: Cofense.Attachment.ID
-          description: The ID number of the report that contains the attachment.
+        - contextPath: File.Size
+          description: File size.
           type: string
-        - contextPath: Cofense.File.Size
-          description: The date and time (in UTC) when the threat was found on the device.
+        - contextPath: File.Type
+          description: 'File type, for example: "PE", "txt"'
           type: string
-        - contextPath: Cofense.File.EntryID
-          description: The file path where the threat was found on the device.
+        - contextPath: File.EntryID
+          description: The file entry ID.
           type: string
-        - contextPath: Cofense.File.Name
-          description: The name of the threat.
+        - contextPath: File.Name
+          description: File name.
           type: string
-        - contextPath: Cofense.File.SHA1
-          description: The SHA1 hash of the threat.
+        - contextPath: File.SHA1
+          description: File SHA1 hash.
           type: string
-        - contextPath: Cofense.File.SHA256
-          description: The SHA256 hash of the threat.
+        - contextPath: File.SHA256
+          description: File SHA256 hash.
           type: string
-        - contextPath: Cofense.File.MD5
-          description: The MD5 hash of the threat.
+        - contextPath: File.MD5
+          description: File MD5 hash.
           type: string
       description: 'Retrieves an attachment by the attachment ID number. '
     - name: cofense-get-reporter
