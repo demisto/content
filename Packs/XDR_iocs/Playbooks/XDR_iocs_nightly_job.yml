@@ -1,0 +1,106 @@
+id: XDR iocs nightly job
+version: -1
+name: XDR iocs nightly job
+starttaskid: "0"
+description: "Remove deleted IOCs from XDR"
+fromversion: "5.5.0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 35169d55-7b93-4dce-852c-afe023287d2f
+    type: start
+    task:
+      id: 35169d55-7b93-4dce-852c-afe023287d2f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 24950e26-1bdc-416f-8626-0871ee778374
+    type: regular
+    task:
+      id: 24950e26-1bdc-416f-8626-0871ee778374
+      version: -1
+      name: xdr-iocs-iocs-to-keep
+      description: |-
+        Update all iocs to keep and delete the other.
+        run this one a day in 01:00 - 3:00 utc time.
+      script: XDR iocs|||xdr-iocs-iocs-to-keep
+      type: regular
+      iscommand: true
+      brand: XDR iocs
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 0e2ad4b4-33d0-4454-8cc9-a646c7c53f35
+    type: title
+    task:
+      id: 0e2ad4b4-33d0-4454-8cc9-a646c7c53f35
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 475,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No tests

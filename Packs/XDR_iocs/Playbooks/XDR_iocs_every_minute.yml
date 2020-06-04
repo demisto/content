@@ -1,0 +1,104 @@
+id: XDR iocs every minute
+version: -1
+name: XDR iocs every minute
+starttaskid: "0"
+description: "Push IOCs to XDR"
+fromversion: "5.5.0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f6fe681-0309-40b5-81e5-bf1875fdf7c7
+    type: start
+    task:
+      id: 3f6fe681-0309-40b5-81e5-bf1875fdf7c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b28b3d9c-f3eb-4c6d-88b3-063b2aa5e593
+    type: regular
+    task:
+      id: b28b3d9c-f3eb-4c6d-88b3-063b2aa5e593
+      version: -1
+      name: xdr-push-iocs
+      description: Push new iocs to XDR run this ones a min.
+      script: XDR iocs|||xdr-push-iocs
+      type: regular
+      iscommand: true
+      brand: XDR iocs
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ac49142d-ba55-43d2-82f9-9fd78f6f376e
+    type: title
+    task:
+      id: ac49142d-ba55-43d2-82f9-9fd78f6f376e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No tests
