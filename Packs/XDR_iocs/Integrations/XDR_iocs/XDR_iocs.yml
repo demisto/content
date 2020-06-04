@@ -30,7 +30,8 @@ configuration:
   - 'high'
   required: true
   type: 15
-- defaultvalue: type:File and (sha256:* or (-sha1:* and md5:*)) or type:Domain or
+- additionalinfo: the query to collect indicators.
+  defaultvalue: type:File and (sha256:* or (-sha1:* and md5:*)) or type:Domain or
     type:IP
   display: query
   hidden: false
@@ -99,15 +100,17 @@ name: XDR iocs
 script:
   commands:
   - deprecated: false
-    description: run once when configure the integration (do NOT use this twice!).
+    description: |-
+      Run once when configure the integration (do NOT run this twice!).
+      will all the indicators that was synced with XDR and then resync.
     execution: false
     name: xdr-iocs-sync
   - deprecated: false
     description: |-
       Update all iocs to keep and delete the other.
-      run this one a day in 01:00 - 3:00 utc time.
+      run this ones a day in 01:00 - 3:00 utc time.
     execution: false
-    name: xdr-iocs-iocs-to-keep
+    name: xdr-iocs-to-keep
   - deprecated: false
     description: Push new iocs to XDR run this ones a min.
     execution: false
@@ -134,10 +137,6 @@ script:
     description: Disable iocs in XDR server
     execution: false
     name: xdr-disable-iocs
-  - deprecated: false
-    description: pull changes from XDR
-    execution: false
-    name: xdr-iocs-get-changes
   dockerimage: demisto/python3:3.8.3.8347
   feed: true
   isfetch: false

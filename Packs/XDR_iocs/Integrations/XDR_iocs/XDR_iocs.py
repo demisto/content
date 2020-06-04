@@ -100,13 +100,13 @@ def prepare_get_changes(time_stamp: int) -> Tuple[str, Dict]:
 
 def prepare_enable_iocs(iocs: str) -> Tuple[str, List]:
     url_suffix: str = 'enable_iocs'
-    _json: List = iocs.split(',')
+    _json: List = argToList(iocs)
     return url_suffix, _json
 
 
 def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
     url_suffix: str = 'disable_iocs'
-    _json: List = iocs.split(',')
+    _json: List = argToList(iocs)
     return url_suffix, _json
 
 
@@ -325,12 +325,11 @@ def main():
     client = Client(params)
     commands = {
         'xdr-iocs-sync': sync,
-        'xdr-iocs-iocs-to-keep': iocs_to_keep,
+        'xdr-iocs-to-keep': iocs_to_keep,
         'xdr-enable-iocs': iocs_command,
         'xdr-disable-iocs': iocs_command,
         'xdr-push-iocs': tim_insert_jsons,
         'fetch-indicators': get_changes,
-        'xdr-iocs-get-changes': get_changes,
     }
 
     command = demisto.command()
