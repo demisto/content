@@ -13,11 +13,12 @@ configuration:
   name: port
   required: true
   type: 0
-- display: Administrator user name.
+- display: username
   name: username
   required: true
-  type: 0
+  type: 9
 - display: Trust any certificate (not secure)
+  hidden: false
   name: insecure
   required: false
   type: 8
@@ -26,10 +27,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- hidden: false
-  name: passworda
-  required: true
-  type: 9
 description: Read information and to send commands to the Check Point Firewall server.
 display: CheckPoint Firewall - V2
 name: CheckPoint
@@ -55,20 +52,11 @@ script:
     execution: false
     name: checkpoint-host-list
     outputs:
-    - contextPath: checkpoint.host.from
-      description: From which element number the query was done
-      type: Number
-    - contextPath: checkpoint.host.to
-      description: To which element number the query was done.
-      type: Unknown
-    - contextPath: checkpoint.host.total
-      description: Total number of elements returned by the query.
-      type: Unknown
-    - contextPath: checkpoint.host.object-name
+    - contextPath: checkpoint.host.name
       type: String
-    - contextPath: checkpoint.host.object-uid
+    - contextPath: checkpoint.host.uid
       type: String
-    - contextPath: checkpoint.host.object-type
+    - contextPath: checkpoint.host.type
       type: String
   - arguments:
     - default: false
@@ -113,10 +101,11 @@ script:
       secret: false
     - default: false
       isArray: false
-      name: ip
+      name: ip_address
       required: true
       secret: false
     deprecated: false
+    description: Add new host
     execution: false
     name: checkpoint-host-add
   - arguments:
@@ -161,6 +150,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: update host changes
     execution: false
     name: checkpoint-host-update
     outputs:
@@ -182,17 +172,11 @@ script:
     - contextPath: checkpoint.host.domain-type
       description: domain type
       type: String
-    - contextPath: checkpoint.host.meta-info-creation-time
-      type: Unknown
     - contextPath: checkpoint.host.meta-info-creator
       type: String
     - contextPath: checkpoint.host.meta-info-last-modifier
       type: String
-    - contextPath: checkpoint.host.meta-info-last-modify-time
-      type: String
     - contextPath: checkpoint.host.ipv4-address
-      type: String
-    - contextPath: checkpoint.host.meta-info-last-modify-time
       type: String
     - contextPath: checkpoint.host.read-only
       type: Boolean
@@ -209,16 +193,6 @@ script:
     outputs:
     - contextPath: checkpoint.host.message
       type: Unknown
-  - arguments:
-    - default: false
-      description: the command to execute
-      isArray: false
-      name: command
-      required: true
-      secret: false
-    deprecated: false
-    execution: false
-    name: checkpoint-command
   - arguments:
     - default: false
       defaultValue: '50'
@@ -239,22 +213,13 @@ script:
     execution: false
     name: checkpoint-group-list
     outputs:
-    - contextPath: checkpoint.group.from
-      description: From which element number the query was done.
-      type: Number
-    - contextPath: checkpoint.group.to
-      description: To which element number the query was done.
-      type: Number
-    - contextPath: checkpoint.group.total
-      description: Total number of elements returned by the query.
-      type: Number
-    - contextPath: checkpoint.group.object-name
+    - contextPath: checkpoint.group.name
       description: object's name
       type: String
-    - contextPath: checkpoint.group.object-uid
+    - contextPath: checkpoint.group.uid
       description: object's uid
       type: String
-    - contextPath: checkpoint.group.object-type
+    - contextPath: checkpoint.group.type
       description: Type of the object
       type: String
   - arguments:
@@ -287,13 +252,9 @@ script:
     - contextPath: checkpoint.group.domain-type
       description: domain type
       type: String
-    - contextPath: checkpoint.group.meta-info-creation-time
-      type: Unknown
     - contextPath: checkpoint.group.meta-info-creator
       type: String
     - contextPath: checkpoint.group.meta-info-last-modifier
-      type: String
-    - contextPath: checkpoint.group.meta-info-last-modify-time
       type: String
     - contextPath: checkpoint.group.read-only
       type: Boolean
@@ -327,9 +288,6 @@ script:
     - contextPath: checkpoint.group.domain-type
       description: domain type
       type: String
-    - contextPath: checkpoint.group.meta-info-creation-time
-      description: creation time
-      type: Unknown
     - contextPath: checkpoint.group.meta-info-creator
       type: String
     - contextPath: checkpoint.group.meta-info-last-modifier
@@ -395,13 +353,9 @@ script:
     - contextPath: checkpoint.group.domain-type
       description: domain type
       type: String
-    - contextPath: checkpoint.group.meta-info-creation-time
-      type: Unknown
     - contextPath: checkpoint.group.meta-info-creator
       type: String
     - contextPath: checkpoint.group.meta-info-last-modifier
-      type: String
-    - contextPath: checkpoint.group.meta-info-last-modify-time
       type: String
     - contextPath: checkpoint.group.read-only
       type: Boolean
@@ -422,6 +376,7 @@ script:
       type: String
   - arguments:
     - default: false
+      defaultValue: '50'
       description: The maximal number of returned results.
       isArray: false
       name: limit
@@ -438,22 +393,13 @@ script:
     execution: false
     name: checkpoint-address-range-list
     outputs:
-    - contextPath: checkpoint.address-range.from
-      description: From which element number the query was done.
-      type: Number
-    - contextPath: checkpoint.address-range.to
-      description: To which element number the query was done.
-      type: Number
-    - contextPath: checkpoint.address-range.total
-      description: Total number of elements returned by the query.
-      type: Number
-    - contextPath: checkpoint.address-range.object-name
+    - contextPath: checkpoint.address-range.name
       description: object's name
       type: String
-    - contextPath: checkpoint.address-range.object-uid
+    - contextPath: checkpoint.address-range.uid
       description: object's uid
       type: Unknown
-    - contextPath: checkpoint.address-range.object-type
+    - contextPath: checkpoint.address-range.type
       description: Type of the object.
       type: Unknown
   - arguments:
@@ -535,9 +481,6 @@ script:
     - contextPath: checkpoint.address-range.read-only
       description: Indicates whether the object is read-only.
       type: Boolean
-   - contextPath: checkpoint.address-range.meta-info-creation-time
-      description: creation time
-      type: Unknown
     - contextPath: checkpoint.address-range.meta-info-creator
       type: String
     - contextPath: checkpoint.address-range.meta-info-last-modifier
@@ -552,13 +495,13 @@ script:
     - default: false
       description: First IP address in the range. IPv4 or IPv6 address.
       isArray: false
-      name: first_ip
+      name: ip_address_first
       required: false
       secret: false
     - default: false
       description: Last IP address in the range. IPv4 or IPv6 address.
       isArray: false
-      name: last_ip
+      name: ip_address_last
       required: false
       secret: false
     - default: false
@@ -659,21 +602,15 @@ script:
     execution: false
     name: checkpoint-threat-indicator-list
     outputs:
-    - contextPath: checkpoint.group.from
-      description: from which element number the query was done
-      type: Number
-    - contextPath: checkpoint.group.to
-      description: To which element number the query was done
-      type: Number
-    - contextPath: checkpoint.group.total
-      description: Total nuber of elements returned by the query
-      type: Number
-    - contextPath: checkpoint.group.object-name
+    - contextPath: checkpoint.threat-indicator.name
       description: object name
       type: String
-    - contextPath: checkpoint.group.object-uid
+    - contextPath: checkpoint.threat-indicator.uid
       description: object uid
-      type: Unknown
+      type: String
+    - contextPath: checkpoint.threat-indicator.type
+      description: object type
+      type: String
   - arguments:
     - default: false
       description: object uid or name
@@ -704,16 +641,11 @@ script:
     - contextPath: checkpoint.group.domain-type
       description: domain type
       type: Unknown
-    - contextPath: checkpoint.group.meta-info-creation-time
-      description: Creation time
-      type: Unknown
     - contextPath: checkpoint.group.meta-info-creator
       description: creator
       type: String
     - contextPath: checkpoint.group.meta-info-last-modifier
       type: String
-    - contextPath: checkpoint.group.meta-info-last-modify-time
-      type: Unknown
     - contextPath: checkpoint.group.read-only
       description: Indicates whether the object is read-only.
       type: Boolean
@@ -789,9 +721,6 @@ script:
     - contextPath: checkpoint.threat-indicator.domain-type
       description: domain type
       type: String
-    - contextPath: checkpoint.threat-indicator.meta-info-creation-time
-      description: creation time
-      type: Unknown
     - contextPath: checkpoint.threat-indicator.meta-info-creator
       type: String
     - contextPath: checkpoint.threat-indicator.meta-info-last-modifier
@@ -871,21 +800,12 @@ script:
     execution: false
     name: checkpoint-access-rule-list
     outputs:
-    - contextPath: checkpoint.access-rulebase.object-name
+    - contextPath: checkpoint.access-rule.name
       description: object name
       type: String
-    - contextPath: checkpoint.access-rulebase.object-uid
+    - contextPath: checkpoint.access-rule.uid
       description: object uid
       type: String
-    - contextPath: checkpoint.access-rulebase.from
-      description: From which element number the query was done.
-      type: Number
-    - contextPath: checkpoint.access-rulebase.to
-      description: To which element number the query was done.
-      type: Number
-    - contextPath: checkpoint.access-rulebase.total
-      description: Total number of elements returned by the query.
-      type: Unknown
   - arguments:
     - default: false
       description: Layer that the rule belongs to identified by the name or UID.
@@ -933,9 +853,6 @@ script:
       type: Boolean
     - contextPath: checkpoint.access-rule.layer
       type: String
-   - contextPath: checkpoint.access-rule.meta-info-creation-time
-      description: creation time
-      type: Unknown
     - contextPath: checkpoint.access-rule.meta-info-creator
       type: String
     - contextPath: checkpoint.access-rule.meta-info-last-modifier
@@ -960,6 +877,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: 'true'
       description: Enable/Disable the rule.
       isArray: false
       name: enabled
@@ -1037,8 +955,6 @@ script:
     - contextPath: checkpoint.access-rule.layer
       description: layer
       type: String
-    - contextPath: checkpoint.access-rule.meta-info-creation-time
-      type: String
     - contextPath: checkpoint.access-rule.meta-info-creator
       type: String
     - contextPath: checkpoint.access-rule.meta-info-last-modifier
@@ -1057,6 +973,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Delete access rule
     execution: false
     name: checkpoint-access-rule-delete
     outputs:
@@ -1083,24 +1000,15 @@ script:
     execution: false
     name: checkpoint-application-site-list
     outputs:
-    - contextPath: checkpoint.application-site.object-name
+    - contextPath: checkpoint.application-site.name
       description: objects name
       type: String
-    - contextPath: checkpoint.application-site.object-uid
+    - contextPath: checkpoint.application-site.uid
       description: objects uid
       type: Unknown
-    - contextPath: checkpoint.application-site.object-type
+    - contextPath: checkpoint.application-site.type
       description: objects type
       type: Unknown
-    - contextPath: checkpoint.application-site.from
-      description: From which element number the query was done.
-      type: Number
-    - contextPath: checkpoint.application-site.to
-      description: To which element number the query was done.
-      type: Number
-    - contextPath: checkpoint.application-site.total
-      description: Total number of elements returned by the query.
-      type: Number
   - arguments:
     - default: false
       description: Object name. Must be unique in the domain
@@ -1125,6 +1033,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Add application site
     execution: false
     name: checkpoint-application-site-add
     outputs:
@@ -1154,8 +1063,6 @@ script:
     - contextPath: checkpoint.application-site.url-list
       description: URLs that determine this particular application.
       type: String
-    - contextPath: checkpoint.application-site.Meta-info-creation-time
-      type: Unknown
     - contextPath: checkpoint.application-site.Meta-info-creator
       type: String
     - contextPath: checkpoint.application-site.Meta-info-last-modifier
@@ -1247,6 +1154,38 @@ script:
     - contextPath: checkpoint.application-site.message
       description: Operation status.
       type: String
+  - deprecated: false
+    description: publish changes
+    execution: false
+    name: checkpoint-publish
+  - arguments:
+    - default: false
+      description: The name of the Policy Package to be installed.
+      isArray: false
+      name: policy_package
+      required: true
+      secret: false
+    - default: false
+      description: On what targets to execute this command. Targets may be identified
+        by their name, or object unique identifier.
+      isArray: false
+      name: targets
+      required: true
+      secret: false
+    - default: false
+      defaultValue: 'True'
+      description: Set to be true in order to install the Access Control policy.
+      isArray: false
+      name: access
+      required: false
+      secret: false
+    deprecated: false
+    description: intsalling policy
+    execution: false
+    name: checkpoint-install-policy
+    outputs:
+    - contextPath: checkpoint.instal-policy.task-id
+      type: Unknown
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: false
