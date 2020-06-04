@@ -1,8 +1,8 @@
 {
 	"id": "mail-listener",
 	"name": "Mail Listener - Classifier",
-    "type": "classification",
-    "description": "Classifies phishing email messages.",
+	"type": "classification",
+	"description": "Classifies phishing email messages.",
 	"version": -1,
 	"defaultIncidentType": "Phishing",
 	"transformer": {
