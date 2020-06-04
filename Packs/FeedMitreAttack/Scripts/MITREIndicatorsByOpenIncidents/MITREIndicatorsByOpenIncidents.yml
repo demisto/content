@@ -1,5 +1,5 @@
 commonfields:
-  id: 5f415700-d8fc-46a4-82aa-d27cee9fa2af
+  id: MITREIndicatorsByOpenIncidents
   version: -1
 name: MITREIndicatorsByOpenIncidents
 fromversion: 5.5.0
