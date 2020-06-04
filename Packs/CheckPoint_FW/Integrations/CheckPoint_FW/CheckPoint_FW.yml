@@ -1186,7 +1186,7 @@ script:
     outputs:
     - contextPath: checkpoint.instal-policy.task-id
       type: Unknown
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3.8.3.8715
   feed: false
   isfetch: false
   longRunning: false
