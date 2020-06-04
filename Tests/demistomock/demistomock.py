@@ -5,6 +5,7 @@ import logging
 import uuid
 
 integrationContext = {}
+integrationContextVersioned = {}
 is_debug = False  # type: bool
 
 exampleIncidents = [
@@ -493,6 +494,31 @@ def setIntegrationContext(context):
 
 def getIntegrationContext():
     return integrationContext
+
+def setIntegrationContextVersioned(context, version=-1, sync=False):
+    """
+    Set the integration context with a version.
+    Args:
+        context: The context to set.
+        version: The context version to set. If the version is older than the current, an error will be thrown.
+        sync: Whether to save the context to the DB right away. If false,
+         the context will be saved at the end of the command.
+
+    """
+    global integrationContextVersioned
+    integrationContextVersioned = context
+
+
+def getIntegrationContextVersioned(refresh=False):
+    """
+    Get the integration context with a version
+    Args:
+        refresh: Whether to get the integration context straight from the DB and not from the instance memory.
+
+    Returns:
+        Dict with a key of context and a key of version.
+    """
+    return integrationContextVersioned
 
 
 def incidents(incidents=None):

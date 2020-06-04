@@ -226,14 +226,13 @@ def find_mirror_by_investigation() -> dict:
     return mirror
 
 
-def set_to_latest_integration_context(context: dict, wait: bool = False):
+def set_to_latest_integration_context(context: dict, sync: bool = False):
     """
     Sets a key value pair to the integration context right after getting it to have the latest context.
     :param context: A dictionary of keys and values to set.
-    :param wait: Whether to wait before the operation.
+    :param sync: Whether to make a versioned request.
     """
-    if wait:
-        time.sleep(5)
+
 
     integration_context = demisto.getIntegrationContext()
 
