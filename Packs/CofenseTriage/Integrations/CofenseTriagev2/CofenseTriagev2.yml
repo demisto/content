@@ -185,20 +185,28 @@ script:
       outputs:
         - contextPath: Cofense.Reporter.ID
           description: ID of the reporter.
+          type: number
         - contextPath: Cofense.Reporter.Email
           description: Reporter email address.
+          type: string
         - contextPath: Cofense.Reporter.CreatedAt
-          description: Reporter creation date
+          description: Reporter creation date.
+          type: string
         - contextPath: Cofense.Reporter.UpdatedAt
-          description: Reporter last-updated date
+          description: Reporter last-updated date.
+          type: string
         - contextPath: Cofense.Reporter.CreditibilityScore
           description: Reporter credibility score.
+          type: number
         - contextPath: Cofense.Reporter.ReportsCount
-          description: Number of reports
+          description: Number of reports.
+          type: number
         - contextPath: Cofense.Reporter.LastReportedAt
-          description: Date of most recent report
+          description: Date of most recent report.
+          type: string
         - contextPath: Cofense.Reporter.VIP
-          description: Whether Reporter is a VIP
+          description: Whether Reporter is a VIP.
+          type: bool
       description: Retrieves Email address of the reporter by ID
     - name: cofense-get-report-by-id
       arguments:
@@ -207,11 +215,14 @@ script:
           description: ID of the report
       outputs:
         - contextPath: Cofense.Report.ID
-          description: ID number of the report
+          description: ID number of the report.
+          type: number
         - contextPath: Cofense.Report.EmailAttachments
           description: Email attachments.
+          type: string
         - contextPath: Cofense.Report.EmailAttachments.id
           description: Email attachment ID.
+          type: string
         - contextPath: Cofense.Report.Tags
           description: Report tags.
           type: string
@@ -223,7 +234,7 @@ script:
           type: number
         - contextPath: Cofense.Report.CreatedAt
           description: Report creation date.
-          type: date
+          type: string
         - contextPath: Cofense.Report.ReportedAt
           description: Reporting time.
           type: string
