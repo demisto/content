@@ -513,10 +513,6 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
-            if [[ -z "${NIGHTLY}" ]]; then
-              echo "Skipping for non nightly run"
-              exit 0
-            fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
             echo "Demisto Marketplace filter=$TEMP"
             if [[ "$TEMP" == "false" ]];
