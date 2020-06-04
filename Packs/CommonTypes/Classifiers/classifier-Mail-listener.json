@@ -1,6 +1,6 @@
 {
 	"id": "mail-listener",
-    "name": "Mail Listener - Classifier",
+	"name": "Mail Listener - Classifier",
     "type": "classification",
     "description": "Classifies phishing email messages.",
 	"version": -1,
