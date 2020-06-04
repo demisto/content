@@ -2795,7 +2795,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "CheckPoint_FW",
+            "integrations": "CheckPoint",
             "playbookID": "checkpoint-testplaybook",
         }
     ],
