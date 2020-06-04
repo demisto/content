@@ -44,8 +44,7 @@ def clear_version_cache():
     Clear the version cache at end of the test (in case we mocked demisto.serverVersion)
     """
     yield
-    if hasattr(get_demisto_version, '_version'):
-        delattr(get_demisto_version, '_version')
+    get_demisto_version._version = None
 
 
 def test_xml():
@@ -820,7 +819,7 @@ def test_get_demisto_version(mocker, clear_version_cache):
     assert not is_demisto_version_ge('5.5.0')
 
 
-def test_is_demisto_version_ge_4_5(mocker):
+def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
     get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
     get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
     assert not is_demisto_version_ge('5.0.0')
@@ -915,7 +914,7 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
-    def test_return_command_results(self):
+    def test_return_command_results(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
 
         dbot_score = Common.DBotScore(
@@ -970,7 +969,7 @@ class TestCommandResults:
             }
         }
 
-    def test_multiple_indicators(self):
+    def test_multiple_indicators(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
         dbot_score1 = Common.DBotScore(
             indicator='8.8.8.8',
@@ -1053,7 +1052,7 @@ class TestCommandResults:
             }
         }
 
-    def test_return_list_of_items(self):
+    def test_return_list_of_items(self, clear_version_cache):
         from CommonServerPython import CommandResults, EntryFormat, EntryType
         tickets = [
             {
