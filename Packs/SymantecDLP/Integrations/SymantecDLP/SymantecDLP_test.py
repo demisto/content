@@ -255,6 +255,7 @@ def test_get_cache_path():
 
 def test_self_signed_insecure_ssl(mocker):
     # test that we fail on an error other than certificate when insecure is True
+    os.environ['REQUESTS_CA_BUNDLE'] = '/etc/ssl/certs/ca-certificates.crt'
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'https://self-signed.badssl.com/',
         'insecure': True
