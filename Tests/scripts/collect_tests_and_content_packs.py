@@ -1129,8 +1129,8 @@ def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_se
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
     envs_to_test = {
-        'Server Master': True,
         'Demisto PreGA': True,
+        'Demisto Marketplace': True,
         'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf, id_set=id_set),
         'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf, id_set=id_set),
         'Demisto GA': is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf, id_set=id_set),
