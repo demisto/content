@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 from requests import Session
-from zeep import Client
+from zeep import Client, Settings
 from zeep.transports import Transport
 from requests.auth import AuthBase, HTTPBasicAuth
 from zeep import helpers
@@ -670,7 +670,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
             )[0]), default=datetime_to_iso_format))
             incident_creation_time = incident_details.get('incident', {}).get('incidentCreationDate')
             incident: dict = {
-                'rawJSON': incident_details,
+                'rawJSON': json.dumps(incident_details),
                 'name': f'Symantec DLP incident {incident_id}',
                 'occurred': incident_creation_time
             }
@@ -719,7 +719,8 @@ def main():
     session.verify = verify_ssl
     cache: SqliteCache = SqliteCache(path=get_cache_path(), timeout=None)
     transport: Transport = Transport(session=session, cache=cache)
-    client: Client = Client(wsdl=wsdl, transport=transport)
+    settings: Settings = Settings(strict=False, xsd_ignore_sequence_order=True)
+    client: Client = Client(wsdl=wsdl, transport=transport, settings=settings)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
