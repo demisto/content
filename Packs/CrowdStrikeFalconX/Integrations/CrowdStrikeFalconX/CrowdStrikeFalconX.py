@@ -700,7 +700,7 @@ def main():
             'cs-fx-find-submission-id': find_submission_id_command
         }
         if command in commands:
-            return_outputs(*commands[command](client, **demisto.args()))
+            return_outputs(*commands[command](client, **demisto.args()))  # type: ignore[operator]
         else:
             raise NotImplementedError(f'{command} is not an existing CrowdStrike Falcon X command')
     except Exception as err:

@@ -156,7 +156,7 @@ tasks:
     task:
       id: 2f30cbc5-cca8-4a5d-8574-f4e5fcd7d2e7
       version: -1
-      name: CrowdStrike Falcon X Upload Sample
+      name: CrowdStrike Falcon X Detonate URL
       description: Submit a URL or FTP for sandbox analysis.
       script: CrowdStrike Falcon X|||cs-fx-detonate-url
       type: regular
