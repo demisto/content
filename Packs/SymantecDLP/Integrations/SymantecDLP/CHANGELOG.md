@@ -1,4 +1,6 @@
 ## [Unreleased]
+- Updated the Docker image.
+- Improved cached DB initialization to support off-line deployments.
 
 
 ## [20.5.0] - 2020-05-12
