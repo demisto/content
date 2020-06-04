@@ -1,5 +1,3 @@
-import pytest
-
 from CheckPoint import format_list_objects, format_add_object, \
     format_update_object, format_delete_object
 
