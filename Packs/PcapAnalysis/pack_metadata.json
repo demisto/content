@@ -1,6 +1,6 @@
 {
-    "name": "Pcap Analysis",
-    "description": "Analyse your pcap file.",
+    "name": "PCAP Analysis",
+    "description": "Analyse your PCAP file.",
     "support": "demisto",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

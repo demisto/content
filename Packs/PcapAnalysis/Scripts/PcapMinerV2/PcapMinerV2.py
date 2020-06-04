@@ -20,6 +20,8 @@ COMMAND_REGEX = r'Command: (.+)'
 SNAME_REGEX = r'SNameString: (.+)'
 MESSAGE_CODE = r'Message Code: (.+)'
 RESPONSE_CODE = r'Response code: (.+)'
+ALL_SUPPORTED_PROTOCOLS = ['HTTP', 'DNS', 'LLMNR', 'SYSLOG', 'SMTP', 'NETBIOS', 'ICMP', 'KERBEROS',
+                           'TELNET', 'SSH', 'IRC', 'FTP', 'SMB2']
 
 
 class PCAP():
@@ -382,14 +384,14 @@ class PCAP():
             'EndTime': formatEpochDate(self.max_time),
             'Protocols': list(self.last_layer)
         }
-        ec = {'PcapResults(val.EntryID == obj.EntryID)': general_context}
+        ec = {'PCAPResults(val.EntryID == obj.EntryID)': general_context}
         for protocol in self.extracted_protocols:
             if self.protocol_data[protocol]:
-                ec[f'PcapResults{protocol}'] = list(self.protocol_data[protocol].values())  # type: ignore
+                ec[f'PCAPResults{protocol}'] = list(self.protocol_data[protocol].values())  # type: ignore
         if 'ICMP' in self.extracted_protocols and self.icmp_data:
             ec[f'PcapResultsICMP'] = list(self.icmp_data)  # type: ignore
         if 'KERBEROS' in self.extracted_protocols and self.kerb_data:
-            ec[f'PcapResultsKERBEROS'] = self.kerb_data  # type: ignore
+            ec[f'PCAPResultsKERBEROS'] = self.kerb_data  # type: ignore
         if 'SSH' in self.extracted_protocols:
             temp = {
                 'EntryID': self.entry_id,
@@ -397,13 +399,13 @@ class PCAP():
                 'ServerProtocols': list(self.ssh_data['ServerProtocols']),
                 'KeyExchangeMessageCode': list(self.ssh_data['KeyExchangeMessageCode'])
             }
-            ec['PcapResultsSSH'] = assign_params(**temp)
+            ec['PCAPResultsSSH'] = assign_params(**temp)
         if 'TELNET' in self.extracted_protocols:
-            ec['PcapResultsTelnet'] = {'Commands': list(self.telnet_commands),
+            ec['PCAPResultsTelnet'] = {'Commands': list(self.telnet_commands),
                                        'Data': list(self.telnet_data),
                                        'EntryID': self.entry_id}
         if is_flows:
-            ec['PcapResultsFlow'] = flows_to_ec(self.flows)
+            ec['PCAPResultsFlow'] = flows_to_ec(self.flows)
         if is_reg_extract:
             general_context['IP'] = list(self.ips_extracted)
             general_context['URL'] = list(self.urls_extracted)
@@ -717,6 +719,8 @@ def main():
 
     conversation_number_to_display = int(args.get('convs_to_display', '15'))
     extracted_protocols = argToList(args.get('protocol_output', ''))
+    if 'All' in extracted_protocols:
+        extracted_protocols = ALL_SUPPORTED_PROTOCOLS
     is_flows = True
     is_reg_extract = args.get('extract_strings', 'False') == 'True'
     pcap_filter = args.get('pcap_filter', '')
