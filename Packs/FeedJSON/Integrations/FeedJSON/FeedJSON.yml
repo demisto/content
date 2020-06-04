@@ -8,7 +8,9 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -18,7 +20,8 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: F - Reliability cannot be judged
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
   options:
@@ -31,6 +34,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -40,6 +44,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -52,12 +57,14 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: 'true'
+- additionalinfo: If selected, the indicator type will be auto detected for each indicator.
+  defaultvalue: 'true'
   display: Auto detect indicator type
   name: auto_detect_type
   required: false
   type: 8
-- display: Indicator Type
+- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
+  display: Indicator Type
   name: indicator_type
   required: false
   type: 0
@@ -65,11 +72,15 @@ configuration:
   name: credentials
   required: false
   type: 9
-- display: JMESPath Extractor
+- additionalinfo: JMESPath expression for extracting the indicators. You can use http://jmespath.org/
+    to identify the proper expression.
+  display: JMESPath Extractor
   name: extractor
   required: true
   type: 0
-- display: JSON Indicator Attribute
+- additionalinfo: The JSON attribute that holds the indicator value. Default value
+    is 'indicator'.
+  display: JSON Indicator Attribute
   name: indicator
   required: false
   type: 0
@@ -81,11 +92,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
 - display: Tags
+  hidden: false
   name: feedTags
   required: false
   type: 0
@@ -102,21 +117,12 @@ script:
       name: limit
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Select True when auto-detection for indicator types is wanted.
-      isArray: false
-      name: auto_detect_type
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     deprecated: false
     description: Gets the feed indicators.
     execution: false
     name: json-get-indicators
   dockerimage: demisto/jmespath:1.0.0.6980
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false

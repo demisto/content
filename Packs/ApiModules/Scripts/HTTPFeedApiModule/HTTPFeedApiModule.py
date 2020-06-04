@@ -381,7 +381,7 @@ def get_indicators_command(client: Client, args):
     itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
     feed_tags = args.get('feedTags')
-    auto_detect = args.get('auto_detect_type')
+    auto_detect = demisto.params().get('auto_detect_type')
     indicators_list = fetch_indicators_command(client, feed_tags, itype, auto_detect)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])

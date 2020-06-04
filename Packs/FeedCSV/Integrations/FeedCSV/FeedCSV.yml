@@ -8,7 +8,8 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
+- additionalinfo: Indicators from this integration instance will be marked with this
+  defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -18,7 +19,8 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: F - Reliability cannot be judged
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
   options:
@@ -48,16 +50,22 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-- defaultvalue: 'true'
+- additionalinfo: If selected, the indicator type will be auto detected for each indicator.
+  defaultvalue: 'true'
   display: Auto detect indicator type
   name: auto_detect_type
   required: false
   type: 8
-- display: Indicator Type
+- additionalinfo: Type of the indicator in the feed,
+  If auto-detect is checked then the value set as Indicator Type will be ignored.
+  display: Indicator Type
   name: indicator_type
   required: false
   type: 0
@@ -69,43 +77,54 @@ configuration:
   name: credentials
   required: false
   type: 9
-- defaultvalue: '20'
+- additionalinfo: Time (in seconds) before HTTP requests timeout.
+  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
   type: 0
-- display: Ignore Regex
+- additionalinfo: Python regular expression for lines to ignore.
+  display: Ignore Regex
   name: ignore_regex
   required: false
   type: 0
-- defaultvalue: value
+- additionalinfo: The names to apply to the fields in the CSV feed. The name for the field containing the indicator should be "value".
+  defaultvalue: value
   display: Field Names
   name: fieldnames
   required: false
   type: 0
-- defaultvalue: ','
+- additionalinfo: A one-character string used to separate fields. For example, a comma
+    ",".
+  defaultvalue: ','
   display: Delimiter
   name: delimiter
   required: false
   type: 0
-- display: Double quote
+- additionalinfo: Controls how instances of quotechar in a field should themselves
+    be quoted. When True, the character is doubled.
+  display: Double quote
   name: doublequote
   required: false
   type: 8
-- display: Escape character
+- additionalinfo: A one-character string used by the writer to escape the delimiter.
+  display: Escape character
   name: escapechar
   required: false
   type: 0
-- defaultvalue: '"'
+- additionalinfo: A one-character string used to quote fields containing special characters.
+  defaultvalue: '"'
   display: Quote Character
   name: quotechar
   required: false
   type: 0
-- display: Skip Initial Space
+- additionalinfo: When "True", whitespace immediately following the delimiter is ignored.
+  display: Skip Initial Space
   name: skipinitialspace
   required: false
   type: 8
-- display: Trust any certificate (not secure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -132,16 +151,6 @@ script:
       name: indicator_type
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Select True when auto-detection for indicator types is wanted.
-      isArray: false
-      name: auto_detect_type
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
@@ -157,6 +166,7 @@ script:
       description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/jmespath:1.0.0.6980
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -167,3 +177,4 @@ script:
 tests:
 - CSV_Feed_Test
 fromversion: 5.5.0
+

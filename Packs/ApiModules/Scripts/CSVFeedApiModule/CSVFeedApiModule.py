@@ -275,7 +275,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
 def get_indicators_command(client, args):
     itype = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
-    auto_detect = args.get('auto_detect_type')
+    auto_detect = demisto.params().get('auto_detect_type')
     indicators_list = fetch_indicators_command(client, itype, auto_detect)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
