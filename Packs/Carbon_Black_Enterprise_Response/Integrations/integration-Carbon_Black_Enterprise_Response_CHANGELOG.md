@@ -1,5 +1,9 @@
 ## [Unreleased]
--
+Added new context outputs for the ***cb-get-processes*** command:
+    - **File.Name**
+    - **File.MD5**
+    - **File.Path**
+    - **Endpoint.Hostname**
 
 
 ## [20.3.3] - 2020-03-18
