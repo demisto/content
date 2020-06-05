@@ -1829,125 +1829,125 @@ script:
     arguments: []
     outputs:
     - contextPath: Okta.Zone.created
-      description: 'Zone creation timestamp e.g. 2020-04-06T22:23:12.000Z'
+      description: 'Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.'
       type: Date
     - contextPath: Okta.Zone.gateways.type
-      description: 'Gateways IP entry type e.g. CIDR'
+      description: 'Gateways IP entry type, e.g., CIDR.'
       type: String
     - contextPath: Okta.Zone.gateways.value
-      description: 'Gateways IP entry value e.g. 34.103.1.108/32'
+      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
       type: String
     - contextPath: Okta.Zone.id
-      description: 'Okta Zone ID e.g. nzoqsmcx1qWYJ6wYF0h7'
+      description: 'Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
       type: String
     - contextPath: Okta.Zone.lastUpdated
-      description: 'Zone last update timestamp e.g. 2020-04-06T22:23:12.000Z'
+      description: 'Zone last update timestamp, e.g., 2020-04-06T22:23:12.000Z.'
       type: Date
     - contextPath: Okta.Zone.name
-      description: 'Zone name'
+      description: 'Zone name.'
       type: String
     - contextPath: Okta.Zone.proxies.type
       description: 'Proxies IP entry type e.g. CIDR'
       type: String
     - contextPath: Okta.Zone.proxies.value
-      description: 'Proxies IP entry value e.g. 34.103.1.108/32'
+      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
       type: Unknown
     - contextPath: Okta.Zone.status
-      description: 'Zone status e.g. ACTIVE'
+      description: 'Zone status, e.g., ACTIVE.'
       type: String
     - contextPath: Okta.Zone.system
-      description: 'true if this is a system zone, false if user-created'
+      description: 'True if this is a system zone, false if user-created.'
       type: Number
     - contextPath: Okta.Zone.type
-      description: 'Zone type e.g. IP'
+      description: 'Zone type, e.g., IP.'
       type: String
     description: Get an Okta Zone object
   - name: okta-update-zone
     arguments:
     - name: zoneID
       required: true
-      description: Zone ID to update e.g. nzoqsmcx1qWYJ6wYF0h7
+      description: Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.
     - name: zoneName
-      description: Update the Zone Name
+      description: Updates the zone name.
     - name: gatewayIPs
-      description: Update Gateway IPs - CIDR (1.1.0.0/16) or single IP (2.2.2.2)
+      description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
       isArray: true
     - name: proxyIPs
-      description: Update Proxy IPs - CIDR (1.1.0.0/16) or single IP (2.2.2.2)
+      description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
       isArray: true
     outputs:
     - contextPath: Okta.Zone.created
-      description: 'Zone creation timestamp e.g. 2020-04-06T22:23:12.000Z'
+      description: 'Zone creation timestamp, e.g., 2020-04-06T22:23:12.000Z.'
       type: Date
     - contextPath: Okta.Zone.gateways.type
-      description: 'Gateways IP entry type e.g. CIDR'
+      description: 'Gateways IP entry type, e.g., CIDR.'
       type: String
     - contextPath: Okta.Zone.gateways.value
-      description: 'Gateways IP entry value e.g. 34.103.1.108/32'
+      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
       type: String
     - contextPath: Okta.Zone.id
-      description: 'Okta Zone ID e.g. nzoqsmcx1qWYJ6wYF0h7'
+      description: 'Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
       type: String
     - contextPath: Okta.Zone.lastUpdated
-      description: 'Zone last update timestamp e.g. 2020-04-06T22:23:12.000Z'
+      description: 'Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.'
       type: Date
     - contextPath: Okta.Zone.name
-      description: 'Zone name'
+      description: 'Zone name.'
       type: String
     - contextPath: Okta.Zone.proxies.type
-      description: 'Proxies IP entry type e.g. CIDR'
+      description: 'Proxies IP entry type, e.g., CIDR.'
       type: String
     - contextPath: Okta.Zone.proxies.value
-      description: 'Proxies IP entry value e.g. 34.103.1.108/32'
+      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
       type: Unknown
     - contextPath: Okta.Zone.status
-      description: 'Zone status e.g. ACTIVE'
+      description: 'Zone status, e.g., ACTIVE.'
       type: String
     - contextPath: Okta.Zone.system
-      description: 'true if this is a system zone, false if user-created'
+      description: 'True if this is a system zone, false if user-created.'
       type: Number
     - contextPath: Okta.Zone.type
-      description: 'Zone type e.g. IP'
+      description: 'Zone type, e.g., IP.'
       type: String
     description: Update an Okta Zone
   - name: okta-get-zone
     arguments:
     - name: zoneID
       required: true
-      description: Zone ID to get e.g. nzoqsmcx1qWYJ6wYF0h7
+      description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7
     outputs:
     - contextPath: Okta.Zone.created
-      description: 'Zone creation timestamp e.g. 2020-04-06T22:23:12.000Z'
+      description: 'Zone creation timestamp, in the format 2020-04-06T22:23:12.000Z.'
       type: Date
     - contextPath: Okta.Zone.gateways.type
-      description: 'Gateways IP entry type e.g. CIDR'
+      description: 'Gateways IP entry type, e.g., CIDR.'
       type: String
     - contextPath: Okta.Zone.gateways.value
-      description: 'Gateways IP entry value e.g. 34.103.1.108/32'
+      description: 'Gateways IP entry value, e.g., 34.103.1.108/32.'
       type: String
     - contextPath: Okta.Zone.id
-      description: 'Okta Zone ID e.g. nzoqsmcx1qWYJ6wYF0h7'
+      description: 'Okta Zone ID, e.g., nzoqsmcx1qWYJ6wYF0h7.'
       type: String
     - contextPath: Okta.Zone.lastUpdated
-      description: 'Zone last update timestamp e.g. 2020-04-06T22:23:12.000Z'
+      description: 'Zone last update timestamp, in the format 2020-04-06T22:23:12.000Z.'
       type: Date
     - contextPath: Okta.Zone.name
-      description: 'Zone name'
+      description: 'Zone name.'
       type: String
     - contextPath: Okta.Zone.proxies.type
-      description: 'Proxies IP entry type e.g. CIDR'
+      description: 'Proxies IP entry type, e.g., CIDR.'
       type: String
     - contextPath: Okta.Zone.proxies.value
-      description: 'Proxies IP entry value e.g. 34.103.1.108/32'
+      description: 'Proxies IP entry value, e.g., 34.103.1.108/32.'
       type: Unknown
     - contextPath: Okta.Zone.status
-      description: 'Zone status e.g. ACTIVE'
+      description: 'Zone status, e.g,. ACTIVE.'
       type: String
     - contextPath: Okta.Zone.system
-      description: 'true if this is a system zone, false if user-created'
+      description: 'True if this is a system zone, false if user-created.'
       type: Number
     - contextPath: Okta.Zone.type
-      description: 'Zone type e.g. IP'
+      description: 'Zone type, e.g., IP.'
       type: String
     description: Get a Zone by its ID
   dockerimage: demisto/python3:3.8.2.6981
