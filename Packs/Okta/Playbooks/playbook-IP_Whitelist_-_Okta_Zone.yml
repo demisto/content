@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dffb9f4e-421d-4d2d-8129-adf2e159eb9b
+    taskid: 6b98b1ad-9cba-44cf-8113-be7beece394a
     type: start
     task:
-      id: dffb9f4e-421d-4d2d-8129-adf2e159eb9b
+      id: 6b98b1ad-9cba-44cf-8113-be7beece394a
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +37,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: fbd848d4-62cd-432c-8063-c3bddea861a2
+    taskid: d1f0c0ea-52c7-4205-8d23-c981908fefef
     type: title
     task:
-      id: fbd848d4-62cd-432c-8063-c3bddea861a2
+      id: d1f0c0ea-52c7-4205-8d23-c981908fefef
       version: -1
       name: Whitelist IPs on Okta (Zone Gateways)
       type: title
@@ -65,10 +65,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 75837fe5-729f-4711-8743-d28a57f20dc5
+    taskid: 1ff33616-3cb5-40c3-8136-0a54d99070f7
     type: regular
     task:
-      id: 75837fe5-729f-4711-8743-d28a57f20dc5
+      id: 1ff33616-3cb5-40c3-8136-0a54d99070f7
       version: -1
       name: Add indicator Tag
       description: commands.local.cmd.set.indicator
@@ -207,10 +207,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: f0e9eef2-1676-4d59-8186-53b6224dd15d
+    taskid: 36612cd2-feea-4fce-888e-8c2aa268d63d
     type: title
     task:
-      id: f0e9eef2-1676-4d59-8186-53b6224dd15d
+      id: 36612cd2-feea-4fce-888e-8c2aa268d63d
       version: -1
       name: Done
       description: commands.local.cmd.close.inv
@@ -232,10 +232,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 57f76c0f-45b2-4f53-8473-545fbbccf848
+    taskid: 830f0b19-576d-4aaf-81df-c4bc0b1a0253
     type: regular
     task:
-      id: 57f76c0f-45b2-4f53-8473-545fbbccf848
+      id: 830f0b19-576d-4aaf-81df-c4bc0b1a0253
       version: -1
       name: Map IPs as CIDR ranges
       description: Sets a value into the context with the given context key
@@ -277,10 +277,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: b18acb81-448a-445e-8a8b-91ff36401b55
+    taskid: 943f5208-bda4-44a3-8441-cbd4e4866b7d
     type: regular
     task:
-      id: b18acb81-448a-445e-8a8b-91ff36401b55
+      id: 943f5208-bda4-44a3-8441-cbd4e4866b7d
       version: -1
       name: Remove indicator Tag
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -324,10 +324,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: ae86fc86-546a-42d4-87dd-8fdfdc30bd13
+    taskid: fc3ba922-5683-4dad-83ea-bf1a6d015c1d
     type: regular
     task:
-      id: ae86fc86-546a-42d4-87dd-8fdfdc30bd13
+      id: fc3ba922-5683-4dad-83ea-bf1a6d015c1d
       version: -1
       name: Compare IP list with current Okta whitelist
       description: Compare  two lists and put the differences in context.
@@ -361,10 +361,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 0f2a2cb6-f7c6-4ff3-8d6f-8790e7c25452
+    taskid: f30ec674-ae48-4bd8-895f-d3d065321b48
     type: condition
     task:
-      id: 0f2a2cb6-f7c6-4ff3-8d6f-8790e7c25452
+      id: f30ec674-ae48-4bd8-895f-d3d065321b48
       version: -1
       name: Is Okta V2 integration enabled?
       type: condition
@@ -401,12 +401,12 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Okta v2_dev
+                        simple: Okta v2
                 accessor: brand
             iscontext: true
           right:
             value:
-              simple: Okta v2_dev
+              simple: Okta v2
     view: |-
       {
         "position": {
@@ -421,16 +421,17 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 3c4a125a-d684-4940-8344-82f78da184f2
+    taskid: f9a8dbfd-8968-4795-8d34-4126abb93cba
     type: condition
     task:
-      id: 3c4a125a-d684-4940-8344-82f78da184f2
+      id: f9a8dbfd-8968-4795-8d34-4126abb93cba
       version: -1
-      name: Any IPs to add that are not already in Okta?
+      name: List Sync - Any IPs to be added?
+      description: Check whether any IPs in the playbook input are not already in
+        the Okta Zone and therefore need to be added during the list sync.
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "13"
@@ -459,16 +460,18 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 76a3a732-c164-4715-82c1-3d13fc7f149b
+    taskid: dd8d57c1-87b0-4ca2-826f-550a067a3792
     type: condition
     task:
-      id: 76a3a732-c164-4715-82c1-3d13fc7f149b
+      id: dd8d57c1-87b0-4ca2-826f-550a067a3792
       version: -1
-      name: Any IPs currently in Okta Zone that are not in the new list ?
+      name: List Sync - Any IPs to be removed?
+      description: Check whether any IPs are in the Okta Zone that are not included
+        in the current playbook input and therefore need to be removed during the
+        list sync.
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "13"
@@ -497,10 +500,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 7f0ea537-2f55-4a2a-8d83-440d20e66685
+    taskid: 6e0c309f-574a-499b-850d-d4f1dfbf5d8e
     type: condition
     task:
-      id: 7f0ea537-2f55-4a2a-8d83-440d20e66685
+      id: 6e0c309f-574a-499b-850d-d4f1dfbf5d8e
       version: -1
       name: Found a zone with the requested ID?
       type: condition
@@ -547,10 +550,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 913f5473-094b-4f01-86de-bb8c18281d6b
+    taskid: 5dc772c4-26a7-4dad-8057-f7a802e36e4a
     type: title
     task:
-      id: 913f5473-094b-4f01-86de-bb8c18281d6b
+      id: 5dc772c4-26a7-4dad-8057-f7a802e36e4a
       version: -1
       name: Zone not found
       type: title
@@ -575,10 +578,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 55bd3499-0bc1-466e-8a41-4920846ba252
+    taskid: 4a5cf339-b643-45c3-856b-c7cfdc4ffa83
     type: regular
     task:
-      id: 55bd3499-0bc1-466e-8a41-4920846ba252
+      id: 4a5cf339-b643-45c3-856b-c7cfdc4ffa83
       version: -1
       name: Engineer - Fix Zone ID and rerun
       type: regular
@@ -600,10 +603,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 076951f7-b342-4f0e-89c4-acb8efede50c
+    taskid: 996b88e9-f916-4438-817b-80bf81219a39
     type: regular
     task:
-      id: 076951f7-b342-4f0e-89c4-acb8efede50c
+      id: 996b88e9-f916-4438-817b-80bf81219a39
       version: -1
       name: Get Okta Zone
       description: Get a Zone by its ID
@@ -634,10 +637,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 18cbf921-c357-4c4d-89bf-c7b8ca8921f7
+    taskid: 48694f8c-1a12-4a80-8847-7ea84f81b15a
     type: regular
     task:
-      id: 18cbf921-c357-4c4d-89bf-c7b8ca8921f7
+      id: 48694f8c-1a12-4a80-8847-7ea84f81b15a
       version: -1
       name: Update Okta Zone with CIDR values
       description: Update an Okta Zone
@@ -673,6 +676,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "33_13_#default#": 0.1,
       "35_20_yes": 0.46
     },
     "paper": {
