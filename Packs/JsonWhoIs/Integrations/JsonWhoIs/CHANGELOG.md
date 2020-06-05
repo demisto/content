@@ -1,5 +1,5 @@
 ## [Unreleased]
-Prints an error when returned from the API.
+Prints an error when an error is returned from the API.
 
 ## [20.5.0] - 2020-05-12
 -
