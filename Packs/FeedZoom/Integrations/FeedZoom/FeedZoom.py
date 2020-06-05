@@ -39,7 +39,7 @@ class Client(BaseClient):
         try:
             pattern = re.compile('([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]{1,2}))')
             raw_data: List = sum([cell.get_text(strip=True, separator=" ").split(" ")
-                                for cell in soup.select(".pure-table tbody tr td")], [])
+                                for cell in soup.select(".pure-table tbody tr td")], [])  # noqa
             ips = list(set(filter(pattern.match, raw_data)))
             for ip in ips:
                 result.append({
