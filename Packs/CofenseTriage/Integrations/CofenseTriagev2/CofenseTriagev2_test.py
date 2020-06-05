@@ -1,11 +1,11 @@
-from CofenseTriagev2.CofenseTriagev2 import TriageRequestFailedError
-from CofenseTriagev2.CofenseTriagev2 import TriageReport
-from CofenseTriagev2.CofenseTriagev2 import TriageReporter
-
-import pytest
-from freezegun import freeze_time
 import datetime
 from unittest.mock import patch
+
+import pytest
+from CofenseTriagev2.CofenseTriagev2 import TriageReport
+from CofenseTriagev2.CofenseTriagev2 import TriageReporter
+from CofenseTriagev2.CofenseTriagev2 import TriageRequestFailedError
+from freezegun import freeze_time
 
 
 def fixture_from_file(fname):
@@ -91,7 +91,8 @@ class TestCofenseTriage:
         set_demisto_arg("match_priority", 2)
         set_demisto_arg("tags", "")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",  # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",
+            # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
         requests_mock.get(
@@ -104,8 +105,8 @@ class TestCofenseTriage:
         demisto_incidents = CofenseTriagev2.demisto.incidents.call_args_list[0][0][0]
         assert len(demisto_incidents) == 2
         assert (
-            demisto_incidents[0]["name"]
-            == "cofense triage report 13363: Phishing Simulation"
+                demisto_incidents[0]["name"]
+                == "cofense triage report 13363: Phishing Simulation"
         )
         assert demisto_incidents[0]["occurred"] == "2020-03-19T16:43:09.715Z"
         assert demisto_incidents[0]["severity"] == 1
@@ -121,7 +122,7 @@ class TestCofenseTriage:
 
     @freeze_time("2000-10-31")
     def test_fetch_reports_already_fetched(
-        self, mocker, requests_mock, triage_instance
+            self, mocker, requests_mock, triage_instance
     ):
         set_demisto_args(
             {
@@ -133,7 +134,8 @@ class TestCofenseTriage:
             }
         )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",  # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",
+            # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
         requests_mock.get(
@@ -161,7 +163,8 @@ class TestCofenseTriage:
         set_demisto_arg("max_matches", 10)
         set_demisto_arg("verbose", "")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00",  # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00",
+            # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
 
@@ -173,7 +176,8 @@ class TestCofenseTriage:
             "### Reports:\n"
             "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: 501
             "|---|---|---|---|---|---|---|---|---|---|---|---|\n"  # noqa: 501
-            "| 5 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: 501
+            "| 5 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"
+        # noqa: 501
         )
 
     @freeze_time("2000-10-31")
@@ -185,7 +189,8 @@ class TestCofenseTriage:
         set_demisto_arg("max_matches", 10)
         set_demisto_arg("verbose", "")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00",  # noqa: 501
+            "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-24+00%3A00%3A00%2B00%3A00",
+            # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
 
@@ -207,8 +212,8 @@ class TestCofenseTriage:
             ({"url": "nah"}, []),
             ({"created_at": parse_triage_date("2055-03-19T16:43:09.715Z")}, []),
             (
-                {"created_at": parse_triage_date("1999-03-19T16:43:09.715Z")},
-                [13363, 13392],
+                    {"created_at": parse_triage_date("1999-03-19T16:43:09.715Z")},
+                    [13363, 13392],
             ),
             ({"file_hash": "123"}, [13363]),
             ({"file_hash": "1234"}, [13363]),
@@ -218,7 +223,7 @@ class TestCofenseTriage:
         ],
     )
     def test_search_reports_filtering(
-        self, requests_mock, triage_instance, filter_attrs, expected_found_report_ids
+            self, requests_mock, triage_instance, filter_attrs, expected_found_report_ids
     ):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports?start_date=2000-10-31+00%3A00%3A00",  # noqa: 501
@@ -260,7 +265,8 @@ class TestCofenseTriage:
             "### Reporter Results:\n"
             "|Created At|Credibility Score|Email|Id|Last Reported At|Reports Count|Updated At|Vip|\n"
             "|---|---|---|---|---|---|---|---|\n"
-            "| 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 3 | 2019-04-12T02:59:22.287Z | false |\n"  # noqa: 501
+            "| 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 3 | 2019-04-12T02:59:22.287Z | false |\n"
+        # noqa: 501
         )
         assert demisto_results[0]["Contents"] == {
             "Cofense.Reporter(val.Id && val.Id == obj.Id)": {
@@ -294,11 +300,12 @@ class TestCofenseTriage:
             "### Report Summary:\n"
             "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: 501
             "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: 501
+            "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | From: Sender <sender@example.com><br>Reply-To: \"sender@example.com\" <sender@example.com><br>Date: Wednesday, March 18, 2020 at 3:34 PM<br>To: recipient@example.com<br>Subject: suspicious subject<br>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a> | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"
+        # noqa: 501
         )
 
     def test_get_report_by_id_command_with_attachment(
-        self, requests_mock, triage_instance
+            self, requests_mock, triage_instance
     ):
         set_demisto_arg("report_id", "6")
         set_demisto_arg("verbose", "false")
@@ -322,7 +329,8 @@ class TestCofenseTriage:
             "### Report Summary:\n"
             "|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Subject|Reported At|Reporter Id|Sha256|\n"  # noqa: 501
             "|---|---|---|---|---|---|---|---|---|---|---|\n"
-            "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"  # noqa: 501
+            "| 7 | 2020-03-19T16:43:09.715Z | {'id': 18054, 'report_id': 13363, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 7286, 'email_attachment_payload': {'id': 7082, 'md5': '123', 'sha256': '1234', 'mime_type': 'image/png; charset=binary'}} | 13363 | Processed | 1 | 111 | suspicious subject | 2020-03-19T16:42:22.000Z | 5331 | 222 |\n"
+        # noqa: 501
         )
 
     def test_get_all_reporters(self, requests_mock, triage_instance):
@@ -346,7 +354,8 @@ class TestCofenseTriage:
         set_demisto_arg("page", "what")
         set_demisto_arg("per_page", "what")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what",  # noqa: 501
+            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what",
+            # noqa: 501
             text=fixture_from_file("threat_indicators.json"),
         )
 
@@ -362,7 +371,7 @@ class TestCofenseTriage:
         )
 
     def test_get_threat_indicators_command_not_found(
-        self, requests_mock, triage_instance
+            self, requests_mock, triage_instance
     ):
         set_demisto_arg("type", "what")
         set_demisto_arg("level", "what")
@@ -371,7 +380,8 @@ class TestCofenseTriage:
         set_demisto_arg("page", "what")
         set_demisto_arg("per_page", "what")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what",  # noqa: 501
+            "https://some-triage-host/api/public/v1/triage_threat_indicators?type=what&level=what&start_date=what&end_date=what&page=what&per_page=what",
+            # noqa: 501
             text="[]",
         )
 
@@ -424,7 +434,7 @@ class TestTriageInstance:
         assert triage_instance.request("processed_reports") == {}
 
     def test_request_malformed_json(
-        self, mocker, requests_mock, triage_instance, fixture_from_file
+            self, mocker, requests_mock, triage_instance, fixture_from_file
     ):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/processed_reports",
@@ -438,16 +448,16 @@ class TestTriageInstance:
 
     def test_api_url(self, triage_instance):
         assert (
-            triage_instance.api_url("endpoint")
-            == "https://some-triage-host/api/public/v1/endpoint"
+                triage_instance.api_url("endpoint")
+                == "https://some-triage-host/api/public/v1/endpoint"
         )
         assert (
-            triage_instance.api_url("/endpoint")
-            == "https://some-triage-host/api/public/v1/endpoint"
+                triage_instance.api_url("/endpoint")
+                == "https://some-triage-host/api/public/v1/endpoint"
         )
         assert (
-            triage_instance.api_url("///endpoint/edit?query_string&")
-            == "https://some-triage-host/api/public/v1/endpoint/edit?query_string&"
+                triage_instance.api_url("///endpoint/edit?query_string&")
+                == "https://some-triage-host/api/public/v1/endpoint/edit?query_string&"
         )
 
 
@@ -488,7 +498,7 @@ class TestTriageReport:
         assert report.attachment is None
 
     def test_attachment_present(
-        self, mocker, requests_mock, triage_instance, fixture_from_file
+            self, mocker, requests_mock, triage_instance, fixture_from_file
     ):
         requests_mock.get(
             "https://some-triage-host/api/public/v1/reports/6",
