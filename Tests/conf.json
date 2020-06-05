@@ -2803,6 +2803,10 @@
             "integrations": "Endace",
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Azure AD Connect Health Feed",
+            "playbookID": "FeedAzureADConnectHealth_Test"
         }
     ],
     "skipped_tests": {
