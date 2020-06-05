@@ -669,16 +669,14 @@ def test_get_logs_command(mocker):
         ({'zoneID': 'nzoqsmcx1qWYJ6wYF7q0'})
     ])
 def test_get_zone_command(mocker, args):
-    okta_zone_json = json.dumps(okta_zone)
-    mocker.patch.object(client, 'get_zone', return_value=okta_zone_json)
+    mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     readable, outputs, _ = get_zone_command(client, args)
     assert 'Test Zone' in readable
     assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
 
 
 def test_list_zones_command(mocker):
-    okta_zone_json = json.dumps(okta_zone)
-    mocker.patch.object(client, 'list_zones', return_value=okta_zone_json)
+    mocker.patch.object(client, 'list_zones', return_value=okta_zone)
     readable, outputs, _ = list_zones_command(client, {})
     assert 'Test Zone' in readable
     assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
@@ -692,8 +690,8 @@ def test_list_zones_command(mocker):
 def test_update_zone_command(mocker, args):
     my_okta_zone = okta_zone
     my_okta_zone['name'] = 'NewZoneName'
-    mocker.patch.object(client, 'get_zone', return_value=json.dumps(okta_zone))
-    mocker.patch.object(client, 'update_zone', return_value=json.dumps(my_okta_zone))
+    mocker.patch.object(client, 'get_zone', return_value=okta_zone)
+    mocker.patch.object(client, 'update_zone', return_value=my_okta_zone)
     readable, outputs, _ = update_zone_command(client, args)
     assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
 

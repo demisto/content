@@ -496,20 +496,18 @@ class Client(BaseClient):
             resp_type='text'
         )
 
-    def get_zone(self, args, zoneID):
+    def get_zone(self, zoneID):
         uri = f'zones/{zoneID}'
         return self._http_request(
             method='GET',
-            url_suffix=uri,
-            resp_type='text'
+            url_suffix=uri
         )
 
     def list_zones(self):
-        uri = f'zones'
+        uri = 'zones'
         return self._http_request(
             method='GET',
-            url_suffix=uri,
-            resp_type='text'
+            url_suffix=uri
         )
 
     def update_zone(self, zoneObject):
@@ -519,7 +517,6 @@ class Client(BaseClient):
         return self._http_request(
             method='PUT',
             url_suffix=uri,
-            resp_type='text',
             data=json.dumps(zoneObject)
         )
 
@@ -980,19 +977,18 @@ def clear_user_sessions_command(client, args):
 
 
 def get_zone_command(client, args):
-    raw_response = client.get_zone(args, args.get('zoneID', ''))
+    raw_response = client.get_zone(args.get('zoneID', ''))
     if not raw_response:
         return 'No zones found.', {}, raw_response
-    zones = json.loads(raw_response)
-    readable_output = tableToMarkdown('Okta Zones', zones, headers=[
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
                                       'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
     outputs = {
-        'Okta.Zone(val.id && val.id === obj.id)': createContext(zones)
+        'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
     }
     return (
         readable_output,
         outputs,
-        zones
+        raw_response
     )
 
 
@@ -1000,16 +996,15 @@ def list_zones_command(client, args):
     raw_response = client.list_zones()
     if not raw_response:
         return 'No zones found.', {}, raw_response
-    zones = json.loads(raw_response)
-    readable_output = tableToMarkdown('Okta Zones', zones, headers=[
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
                                       'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
     outputs = {
-        'Okta.Zone(val.id && val.id === obj.id)': createContext(zones)
+        'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
     }
     return (
         readable_output,
         outputs,
-        zones
+        raw_response
     )
 
 
@@ -1039,27 +1034,29 @@ def update_zone_command(client, args):
             'Nothing to update'
         )
     zoneID = args.get('zoneID', '')
-    zoneObject = json.loads(client.get_zone(args, zoneID))
-    zoneName = args.get('zoneName', '')
-    gatewayIPs = argToList(args.get('gatewayIPs', ''))
-    proxyIPs = argToList(args.get('proxyIPs', ''))
-    zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
+    zoneObject = client.get_zone(zoneID)
+    if zoneID == zoneObject.get('id'):
+        zoneName = args.get('zoneName', '')
+        gatewayIPs = argToList(args.get('gatewayIPs', ''))
+        proxyIPs = argToList(args.get('proxyIPs', ''))
+        zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
 
-    raw_response = client.update_zone(zoneObject)
-    if not raw_response:
-        return 'Got empty response.', {}, raw_response
+        raw_response = client.update_zone(zoneObject)
+        if not raw_response:
+            return 'Got empty response.', {}, raw_response
 
-    zones = json.loads(raw_response)
-    readable_output = tableToMarkdown('Okta Zones', zones, headers=[
-                                      'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
-    outputs = {
-        'Okta.Zone(val.id && val.id === obj.id)': createContext(zones)
-    }
-    return (
-        readable_output,
-        outputs,
-        raw_response
-    )
+        readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+                                          'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+        outputs = {
+            'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+    else:
+        return 'No zone found in Okta with this ID.', {}, {}
 
 
 def main():
