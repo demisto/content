@@ -135,3 +135,7 @@ def test_commands(command, args, response, expected_result, mocker):
     mocker.patch.object(client, '_http_request', return_value=response)
     res = command(client, args)
     assert expected_result == res[1]
+
+
+def test_search_command_verify_args_passed_to_build_mql_query():
+    search_command(headers=['bug1', 'bug2', 'toomanybugs'])
