@@ -2713,14 +2713,14 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": ["PrismaAccess", "Prisma Access Egress IP feed"],
+            "integrations": ["Prisma Access", "Prisma Access Egress IP feed"],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
             "nightly": true
         },
         {
-            "integrations": "PrismaAccess",
+            "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2754,8 +2754,8 @@
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "SNDBOX_Test": "Issue 24349",
-        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
-        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
+        "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
         "Test-Shodan_v2": "Issue 23370",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
@@ -2814,7 +2814,7 @@
         "MxToolBox": "No instance",
         "Traps": "Issue 24122",
         "Skyformation": "No instance, old partner",
-        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
+        "Prisma Access": "Instance will be provided soon by Lior and Prasen",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
