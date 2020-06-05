@@ -45,7 +45,7 @@ class Client(BaseClient):
 
         try:
             pattern = re.compile("(https?:\/\/|\*\.)(\w+\.|\w+-\w+\.){1,3}\w{2,3}")
-            scraped_urls: List = [subs(pattern.match(cell.text).group(0)) for cell in soup.select(
+            scraped_urls: List = [subs(pattern.match(cell.text).group(0)) for cell in soup.select(  # type: ignore # noqa
                 "tbody tr td li") if pattern.match(cell.text)]
             for url in scraped_urls:
                 result.append({
