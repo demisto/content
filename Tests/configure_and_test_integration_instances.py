@@ -17,11 +17,13 @@ from Tests.test_integration import __get_integration_config, __test_integration_
     __disable_integrations_instances
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
     run_command, get_last_release_version, checked_type, get_yaml, str2bool
-from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager
+from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager, \
+    get_server_numeric_version
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, \
     BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
 from demisto_sdk.commands.common.tools import server_version_compare
+
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
@@ -63,49 +65,14 @@ def determine_servers_urls(ami_env):
 
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
-        env_to_instance_dns = [{env.get('Role'): env.get('InstanceDNS')} for env in env_results]
-        instances_dns = [env.get(ami_env) for env in env_to_instance_dns if ami_env in env]
+
+    instances_dns = [env.get('InstanceDNS') for env in env_results if ami_env in env.get('Role', '')]
+
     server_urls = []
     for dns in instances_dns:
-        server_url = dns if dns.startswith('http') else ('https://{}'.format(dns) if
-                                                         dns else '')
+        server_url = dns if not dns or dns.startswith('http') else f'https://{dns}'
         server_urls.append(server_url)
     return server_urls
-
-
-def get_server_numeric_version(ami_env, prints_manager):
-    """
-    Gets the current server version
-    Arguments:
-        ami_env: (str)
-            AMI version name.
-        prints_manager: (ParallelPrintsManager)
-            Print manager object.
-
-    Returns:
-        (str) Server numeric version
-    """
-    images_file_name = './Tests/images_data.txt'
-    if not os.path.isfile(images_file_name):
-        prints_manager.add_print_job('Did not find image data file.', print_warning, 0)
-        return '99.99.98'  # latest
-    with open(images_file_name, 'r') as image_data_file:
-        image_data = [line for line in image_data_file if line.startswith(ami_env)]
-        if len(image_data) != 1:
-            warning_message = 'Did not get one image data for server version, got {}'.format(image_data)
-            prints_manager.add_print_job(warning_message, print_warning, 0)
-            return '99.99.98'
-        else:
-            server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-            if server_numeric_version:
-                server_numeric_version = server_numeric_version[0]
-            else:
-                server_numeric_version = '99.99.98'  # latest
-            server_image_message = 'Server image info: {}'.format(image_data[0])
-            prints_manager.add_print_job(server_image_message, print_color, 0, LOG_COLORS.GREEN)
-            server_version_message = 'Server version: {}'.format(server_numeric_version)
-            prints_manager.add_print_job(server_version_message, print_color, 0, LOG_COLORS.GREEN)
-            return server_numeric_version
 
 
 def check_test_version_compatible_with_server(test, server_version, prints_manager):
@@ -701,15 +668,15 @@ def main():
     password = options.password
     ami_env = options.ami_env
     git_sha1 = options.git_sha1
-    servers = determine_servers_urls(ami_env)
     conf_path = options.conf
     secret_conf_path = options.secret
     branch_name = options.branch
     ci_build_number = options.build_number
 
+    servers = determine_servers_urls(ami_env)
+    server_numeric_version = get_server_numeric_version(ami_env)
+
     prints_manager = ParallelPrintsManager(1)
-    server_numeric_version = get_server_numeric_version(ami_env, prints_manager)
-    prints_manager.execute_thread_prints(0)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
