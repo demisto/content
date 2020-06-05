@@ -138,4 +138,8 @@ def test_commands(command, args, response, expected_result, mocker):
 
 
 def test_search_command_verify_args_passed_to_build_mql_query():
-    search_command(headers=['bug1', 'bug2', 'toomanybugs'])
+    args = {
+        'headers': 'bug1,bug2,toomanybugs'
+    }
+    client = Client(base_url='https://apps.fireeye.com/helix')
+    search_command(client, args)
