@@ -1,218 +1,95 @@
 id: FeedAzureADConnectHealth_Test
-version: 2
 name: FeedAzureADConnectHealth_Test
-starttaskid: "0"
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: c7ee934b-3ac0-4c66-855c-6d0e1c51732f
+  '0':
+    id: '0'
+    taskid: '0'
     type: start
     task:
-      id: c7ee934b-3ac0-4c66-855c-6d0e1c51732f
+      id: '0'
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
+    view: '{"position": {"x": 50, "y": 50}}'
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 04f90c56-cec8-48d5-89b8-91a68b3985df
+  '1':
+    id: 1
+    taskid: '1'
     type: regular
     task:
-      id: 04f90c56-cec8-48d5-89b8-91a68b3985df
+      id: '1'
       version: -1
       name: DeleteContext
+      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
+    view: '{"position": {"x": 50, "y": 200}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 87e1eac0-0669-4e80-8b41-33d88f838a0b
+  '2':
+    id: 2
+    taskid: '2'
     type: regular
     task:
-      id: 87e1eac0-0669-4e80-8b41-33d88f838a0b
+      id: '2'
       version: -1
       name: azure-ad-health-get-indicators
-      script: '|||intune-get-indicators'
+      description: ''
+      script: '|||azure-ad-health-get-indicators'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
-    scriptarguments:
-      extend-context:
-        simple: first_object=raw_response.[0]
-      limit:
-        simple: "1"
+      - '3'
+    scriptarguments: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
+    view: '{"position": {"x": 50, "y": 400}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: a3fc07ae-8493-476b-81f7-3ab08ad24e1b
+  '3':
+    id: '3'
+    taskid: '3'
     type: title
     task:
-      id: a3fc07ae-8493-476b-81f7-3ab08ad24e1b
+      id: '3'
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
+    view: '{"position": {"x": 50, "y": 600}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: b9759e5d-9c52-46f9-856e-5de566dad0a7
-    type: condition
-    task:
-      id: b9759e5d-9c52-46f9-856e-5de566dad0a7
-      version: -1
-      name: verify azure-ad-health-get-indicators
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: first_object
-                accessor: type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: first_object
-                accessor: value
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: first_object
-                accessor: rawJSON
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: d0bc159a-f1b4-44bf-8fee-f6045570a919
-    type: regular
-    task:
-      id: d0bc159a-f1b4-44bf-8fee-f6045570a919
-      version: -1
-      name: PrintErrorEntry
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      message:
-        simple: Verifying intune-get-indicators failed
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 910,
-        "width": 760,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
