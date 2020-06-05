@@ -38,7 +38,6 @@ class Client(BaseClient):
         soup = BeautifulSoup(r, 'html.parser')
 
         def subs(text):
-            # patterns = (('comp', 'com p'), ('comm', 'com m'), ('comf', 'com f'), ('\*\.', ''), ('\n', ''))
             patterns = (('comp', 'com p'), ('comm', 'com m'), ('comf', 'com f'), ('\n', ''))
             for e in patterns:
                 text = re.sub(e[0], e[1], text)
@@ -54,9 +53,6 @@ class Client(BaseClient):
                     'type': FeedIndicatorType.DomainGlob if '*' in url else FeedIndicatorType.URL,
                     "FeedURL": self._base_url
                 })
-
-            # pattern = re.compile("(https?:\/\/|\*\.)(\w+\.|\w+-\w+\.){1,3}\w{2,3}")
-            # indicators = [subs(pattern.match(cell.text).group(0)) for cell in soup.select("tbody tr td li") if pattern.match(cell.text)]
 
         except requests.exceptions.SSLError as err:
             demisto.debug(str(err))
