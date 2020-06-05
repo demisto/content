@@ -9,7 +9,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Okta V2
+* Okta_v2
 
 ### Scripts
 * CompareLists
@@ -17,8 +17,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 * okta-get-zone
-* setIndicator
 * okta-update-zone
+* setIndicator
 * removeIndicatorField
 
 ## Playbook Inputs
@@ -35,4 +35,6 @@ This playbook does not use any sub-playbooks.
 ---
 There are no outputs for this playbook.
 
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/8d73e1dad4ba0f299d87526fac1b85e1a76792a7/Packs/IPWhitelisting/doc_files/IP_Whitelist_-_Okta_Zone.png)
+## Playbook Image
+---
+![IP Whitelist - Okta Zone](https://raw.githubusercontent.com/demisto/content/6fdbbd10fd0505cfe5e2664b2733cdf6c5a19192/Packs/Okta/doc_files/IP_Whitelist_-_Okta_Zone.png)
