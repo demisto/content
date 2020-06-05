@@ -26,7 +26,6 @@ REPORT = ATTACHES + "{}/{}/{}/polygon_report/"
 REPORT_EXPORT = ATTACHES + "{}/{}/{}/polygon_report_export/"
 PCAP_EXPORT = ATTACHES + '{}/{}/{}/dump.pcap/dump.pcap/polygon_report_file_download/'
 VIDEO_EXPORT = ATTACHES + '{}/{}/{}/shots/video.webm/video.webm/polygon_report_file_download/'
-URL_FILE_EXPORT = ATTACHES + '{}/{}/{}/binary/url.txt/polygon_report_file_download/'
 HASH_REPUTATION = API + 'reports/check_hash/{}/{}/'
 
 
@@ -99,6 +98,8 @@ class Client:
         if resp.status_code != 200:
             if resp.status_code == 400:
                 raise ValueError(f"Bad request: {resp.json()['messages']}")
+            elif resp.status_code == 423:
+                raise ValueError("TDS is being updated, please try again later")
             raise ValueError(f"Error in API call to TDS server: {resp.status_code}. Reason: {resp.text}")
         if decode:
             try:
@@ -184,9 +185,7 @@ class Client:
         if self._check_report_available(file):
             return self._http_request(
                 method='get',
-                url_suffix=URL_FILE_EXPORT.format(tds_analysis_id,
-                                                  file["analgin_result"]["commit"],
-                                                  file["analgin_result"]["reports"][0]["id"]),
+                url_suffix=file["file_url"][1:],
                 decode=False
             )
         raise ValueError("No reports found")
@@ -244,14 +243,17 @@ def drop_prefix(id_with_prefix):
 def serialize_report_info(report, analysis_type):
     res = {
         "Verdict": "Malicious" if report["info"]["verdict"] else "Benign",
-        "Probability": "{:.2f}%".format(report["info"]["probability"]),
-        "Families": ", ".join(report["info"]["families"]),
-        "Score": report["info"]["score"],
         "Started": report["info"]["started"],
         "Analyzed": report["info"]["ended"],
         "Internet-connection": "Available" if report["info"]["internet_available"] else "Unavailable",
-        "DumpExists": any(map(lambda vals: len(vals) > 0, report["network"].values()))
     }
+    if report['info']['verdict']:
+        res.update({
+            "Probability": "{:.2f}%".format(report["info"]["probability"]),
+            "Families": ", ".join(report["info"]["families"]),
+            "Score": report["info"]["score"],
+            "DumpExists": any(map(lambda vals: len(vals) > 0, report["network"].values()))
+        })
     if analysis_type == FILE_TYPE:
         res.update({
             "Type": report["target"]["file"]["type"]
@@ -263,10 +265,10 @@ def serialize_report_info(report, analysis_type):
     return res
 
 
-def serialize_analysis_info(info, analysis_type):
+def serialize_analysis_info(info, analysis_type, report):
     res = {
         'ID': analysis_type + str(info["id"]),
-        'Status': 'In Progress' if info['verdict'] is None else 'Finished',
+        'Status': 'Finished' if report else 'In Progress',
         'Result': info['verdict']
     }
     if analysis_type == FILE_TYPE:
@@ -430,7 +432,7 @@ def analysis_info_command(client, args):
     for tds_analysis_id in tds_analysis_id_array:
         analysis_type = tds_analysis_id[0]
         res = client.get_analysis_info(drop_prefix(tds_analysis_id))
-        analysis_info = serialize_analysis_info(res['file'], analysis_type)
+        analysis_info = serialize_analysis_info(res['file'], analysis_type, report='report' in res)
         indicators = []
         if 'report' in res:
             if analysis_type == URL_TYPE:
