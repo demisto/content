@@ -1,4 +1,3 @@
-elasticcommonfields: {}
 id: ThreatQ - Test
 version: -1
 name: ThreatQ - Test
@@ -7,11 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 493baf25-a0bc-4858-857a-1c3b43c2976c
+    taskid: 068d4444-a200-4421-80a8-495d32082215
     type: start
     task:
-      elasticcommonfields: {}
-      id: 493baf25-a0bc-4858-857a-1c3b43c2976c
+      id: 068d4444-a200-4421-80a8-495d32082215
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -34,11 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ad3edc6d-6cd4-4b58-8e39-524565d2f1e3
+    taskid: b7a6c6fc-eb9d-49ad-876b-44d357bac7a4
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ad3edc6d-6cd4-4b58-8e39-524565d2f1e3
+      id: b7a6c6fc-eb9d-49ad-876b-44d357bac7a4
       version: -1
       name: Create adversary with sources
       description: Creates a new adversary in ThreatQ.
@@ -64,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1247.5,
-          "y": 2030
+          "x": 162.5,
+          "y": 5325
         }
       }
     note: false
@@ -75,11 +72,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 43019a88-d8ba-4c3a-8b11-16278e7eed2b
+    taskid: fb59751e-5163-4964-8a01-c16b5e8fa744
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 43019a88-d8ba-4c3a-8b11-16278e7eed2b
+      id: fb59751e-5163-4964-8a01-c16b5e8fa744
       version: -1
       name: Add a source to the adversary
       description: Adds a source to an object in ThreatQ.
@@ -103,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 2205
+          "x": 162.5,
+          "y": 5500
         }
       }
     note: false
@@ -114,11 +110,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 2911835d-16e6-4dc4-84b4-23f5d62b60ed
+    taskid: 179c4616-172d-40dc-88cc-6149ffab2992
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 2911835d-16e6-4dc4-84b4-23f5d62b60ed
+      id: 179c4616-172d-40dc-88cc-6149ffab2992
       version: -1
       name: Delete a source of the adversary
       description: Deletes a source from an object in ThreatQ.
@@ -158,8 +153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 2555
+          "x": 162.5,
+          "y": 5850
         }
       }
     note: false
@@ -169,11 +164,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 970a838a-f80b-4d1f-8834-ca40adc5082b
+    taskid: d7802ac2-fbb0-4122-8c30-ed78c24173f1
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 970a838a-f80b-4d1f-8834-ca40adc5082b
+      id: d7802ac2-fbb0-4122-8c30-ed78c24173f1
       version: -1
       name: Update indicator status
       description: Updates an indicator status in ThreatQ.
@@ -197,8 +191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 2380
+          "x": 162.5,
+          "y": 3780
         }
       }
     note: false
@@ -208,11 +202,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 19319c3e-9400-41df-8f64-ad1d5c479db6
+    taskid: 4395689d-ed2c-4271-8096-7cad18a3b549
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 19319c3e-9400-41df-8f64-ad1d5c479db6
+      id: 4395689d-ed2c-4271-8096-7cad18a3b549
       version: -1
       name: Link adversary + indicator
       description: Links two objects together in ThreatQ.
@@ -246,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3225
+          "x": 162.5,
+          "y": 6520
         }
       }
     note: false
@@ -257,11 +250,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 5007a27b-d5db-400e-8468-6475851db8db
+    taskid: b6df9bcd-3197-4fc2-8588-a5473e6a84e9
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 5007a27b-d5db-400e-8468-6475851db8db
+      id: b6df9bcd-3197-4fc2-8588-a5473e6a84e9
       version: -1
       name: Run generic command - domain
       description: |-
@@ -290,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 515
+          "x": 162.5,
+          "y": 1915
         }
       }
     note: false
@@ -301,11 +293,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 72eec0f4-1e14-47de-8e3f-3277abe4f074
+    taskid: d7793b29-00d3-4506-8e4d-0115cb8069f1
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 72eec0f4-1e14-47de-8e3f-3277abe4f074
+      id: d7793b29-00d3-4506-8e4d-0115cb8069f1
       version: -1
       name: Run generic command - ip
       description: Checks the reputation of an IP address in ThreatQ.
@@ -331,8 +322,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 515
+          "x": 162.5,
+          "y": 1215
         }
       }
     note: false
@@ -342,11 +333,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: a8cc814c-d6ce-4ce3-8fef-470f3f0aa921
+    taskid: 21235fc9-c57b-4456-894d-58db900abd76
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a8cc814c-d6ce-4ce3-8fef-470f3f0aa921
+      id: 21235fc9-c57b-4456-894d-58db900abd76
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -356,10 +346,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
-      - "18"
-      - "13"
-      - "21"
       - "22"
     scriptarguments:
       all:
@@ -372,7 +358,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 162.5,
           "y": 340
         }
       }
@@ -383,11 +369,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: a0126aac-a585-48b9-8bce-066ce13dcb9c
+    taskid: 902de0ab-bba6-4a49-8b08-08b36ec4027c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a0126aac-a585-48b9-8bce-066ce13dcb9c
+      id: 902de0ab-bba6-4a49-8b08-08b36ec4027c
       version: -1
       name: Run generic command - email
       description: Checks the reputation of an email address in ThreatQ.
@@ -407,8 +392,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 515
+          "x": 162.5,
+          "y": 1565
         }
       }
     note: false
@@ -418,11 +403,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 8ffbac8c-94b7-4750-8607-b79e7544547e
+    taskid: 384806e4-981a-4912-8171-98772ddaa2c0
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 8ffbac8c-94b7-4750-8607-b79e7544547e
+      id: 384806e4-981a-4912-8171-98772ddaa2c0
       version: -1
       name: Run generic command - file
       description: Checks the reputation of a file in ThreatQ.
@@ -446,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 515
+          "x": 162.5,
+          "y": 865
         }
       }
     note: false
@@ -457,11 +441,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: afe37731-5bd0-43b0-82d2-992cd696823b
+    taskid: b770912e-b661-4c24-8f57-14b8cc3f1f24
     type: regular
     task:
-      elasticcommonfields: {}
-      id: afe37731-5bd0-43b0-82d2-992cd696823b
+      id: b770912e-b661-4c24-8f57-14b8cc3f1f24
       version: -1
       name: Run generic command - url
       description: Checks the reputation of a URL in ThreatQ.
@@ -487,7 +470,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 162.5,
           "y": 515
         }
       }
@@ -498,11 +481,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 7c9a8647-f2e0-4a77-8a43-0fd93d965177
+    taskid: 41f40123-1581-443e-8739-3726358757ed
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 7c9a8647-f2e0-4a77-8a43-0fd93d965177
+      id: 41f40123-1581-443e-8739-3726358757ed
       version: -1
       name: Verify domain context
       description: |-
@@ -564,8 +546,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 162.5,
+          "y": 2090
         }
       }
     note: false
@@ -575,11 +557,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 1aa30799-3dd0-473b-8f30-1386cd337b41
+    taskid: 280440fc-3ffb-499e-843e-19ec31cef0d0
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 1aa30799-3dd0-473b-8f30-1386cd337b41
+      id: 280440fc-3ffb-499e-843e-19ec31cef0d0
       version: -1
       name: Verify email context
       description: Email is in the database, therefore ThreatQ contains now data.
@@ -588,7 +569,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "99"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -631,8 +612,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 690
+          "x": 162.5,
+          "y": 1740
         }
       }
     note: false
@@ -642,11 +623,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 61a3c9e9-bede-47f4-8102-967192967b57
+    taskid: 29a8787d-bb0a-43b8-888a-7e3b6e1893e2
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 61a3c9e9-bede-47f4-8102-967192967b57
+      id: 29a8787d-bb0a-43b8-888a-7e3b6e1893e2
       version: -1
       name: Verify IP context
       description: |-
@@ -659,7 +639,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "99"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -696,8 +676,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 690
+          "x": 162.5,
+          "y": 1390
         }
       }
     note: false
@@ -707,11 +687,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 3f9dac14-aed2-4432-889a-0a264564b88a
+    taskid: 1a9fce7d-a77f-46a6-8ce8-610e2fda7a22
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 3f9dac14-aed2-4432-889a-0a264564b88a
+      id: 1a9fce7d-a77f-46a6-8ce8-610e2fda7a22
       version: -1
       name: Verify file context
       description: File as SHA1 type exists, therefore ThreatQ has size 3
@@ -720,7 +699,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "99"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -760,8 +739,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 690
+          "x": 162.5,
+          "y": 1040
         }
       }
     note: false
@@ -771,11 +750,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 075b7187-e0a4-4fbe-869e-590a95e42425
+    taskid: e46ecd01-2204-4da7-8ccd-808b70733858
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 075b7187-e0a4-4fbe-869e-590a95e42425
+      id: e46ecd01-2204-4da7-8ccd-808b70733858
       version: -1
       name: Verify URL context
       type: condition
@@ -783,7 +761,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "99"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -801,7 +779,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 162.5,
           "y": 690
         }
       }
@@ -812,11 +790,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: ea4acd68-3bba-4558-8494-ab0fc0a6fcf4
+    taskid: 6d34fa06-fc92-4b24-8bc0-222f78b699b8
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ea4acd68-3bba-4558-8494-ab0fc0a6fcf4
+      id: 6d34fa06-fc92-4b24-8bc0-222f78b699b8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -827,7 +804,6 @@ tasks:
     nexttasks:
       '#none#':
       - "107"
-      - "108"
     scriptarguments:
       all:
         simple: "yes"
@@ -839,8 +815,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1010
+          "x": 162.5,
+          "y": 2410
         }
       }
     note: false
@@ -850,11 +826,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: d78463ea-dae1-4825-8dba-3a88e3232d30
+    taskid: d34c3e7c-3049-4848-8353-b54a5220fc26
     type: regular
     task:
-      elasticcommonfields: {}
-      id: d78463ea-dae1-4825-8dba-3a88e3232d30
+      id: d34c3e7c-3049-4848-8353-b54a5220fc26
       version: -1
       name: Create indicator with attributes
       description: Creates a new indicator in ThreatQ.
@@ -883,8 +858,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 572.5,
-          "y": 1680
+          "x": 50,
+          "y": 3080
         }
       }
     note: false
@@ -894,11 +869,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: a51c4ac1-ba4a-4f93-844b-f8c7186ce378
+    taskid: b2e5d913-ca26-4750-8c76-59d059711fc8
     type: regular
     task:
-      elasticcommonfields: {}
-      id: a51c4ac1-ba4a-4f93-844b-f8c7186ce378
+      id: b2e5d913-ca26-4750-8c76-59d059711fc8
       version: -1
       name: Get indicator related adversaries
       description: Retrieve related adversaries from an object in ThreatQ.
@@ -922,8 +896,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3400
+          "x": 162.5,
+          "y": 6695
         }
       }
     note: false
@@ -933,11 +907,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: d10d5f6e-8063-4dee-8125-ae1401a41e81
+    taskid: e8c9b246-ac2d-48af-845c-cc4a6cebcdda
     type: condition
     task:
-      elasticcommonfields: {}
-      id: d10d5f6e-8063-4dee-8125-ae1401a41e81
+      id: e8c9b246-ac2d-48af-845c-cc4a6cebcdda
       version: -1
       name: Verify linking
       description: Check whether the values provided in arguments are equal. If either
@@ -952,14 +925,18 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
                 root: ThreatQ
                 accessor: Indicator.RelatedAdversary.ID
                 transformers:
-                - operator: FirstArrayElement
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
             iscontext: true
           right:
             value:
@@ -972,8 +949,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3575
+          "x": 162.5,
+          "y": 6870
         }
       }
     note: false
@@ -983,11 +960,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: ca76fe83-cd32-4ee4-80d7-9dc53f8cfc33
+    taskid: 8e8e629f-c525-433e-81ad-b3e98842f997
     type: condition
     task:
-      elasticcommonfields: {}
-      id: ca76fe83-cd32-4ee4-80d7-9dc53f8cfc33
+      id: 8e8e629f-c525-433e-81ad-b3e98842f997
       version: -1
       name: Verify score update
       type: condition
@@ -1011,8 +987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 2730
+          "x": 162.5,
+          "y": 4130
         }
       }
     note: false
@@ -1022,11 +998,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 57c41474-8b82-4031-83a6-b658f72ee107
+    taskid: 44fc4cec-689f-4463-8c97-a4c5dfd7a4fb
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 57c41474-8b82-4031-83a6-b658f72ee107
+      id: 44fc4cec-689f-4463-8c97-a4c5dfd7a4fb
       version: -1
       name: Update context (search by ID)
       description: Searches for an object by object type and ID. Generic and DBotScore
@@ -1049,8 +1024,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 2380
+          "x": 162.5,
+          "y": 5675
         }
       }
     note: false
@@ -1060,11 +1035,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: effa7df3-c139-4f12-824b-e82d78baf050
+    taskid: b5706755-f3f8-4720-8e9d-5476c0853e74
     type: regular
     task:
-      elasticcommonfields: {}
-      id: effa7df3-c139-4f12-824b-e82d78baf050
+      id: b5706755-f3f8-4720-8e9d-5476c0853e74
       version: -1
       name: Update context (search by ID)
       description: Searches for an object by object type and ID. Generic and DBotScore
@@ -1087,8 +1061,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 2730
+          "x": 162.5,
+          "y": 6025
         }
       }
     note: false
@@ -1098,11 +1072,10 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 3bb58ce0-df34-48d7-82c8-b462dc556895
+    taskid: 10bd63cb-6935-41fe-8c62-cc1493d33afd
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 3bb58ce0-df34-48d7-82c8-b462dc556895
+      id: 10bd63cb-6935-41fe-8c62-cc1493d33afd
       version: -1
       name: Verify delete source
       type: condition
@@ -1138,8 +1111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 2905
+          "x": 162.5,
+          "y": 6200
         }
       }
     note: false
@@ -1149,11 +1122,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: 95ea5824-137f-4c8b-8d9c-c2a5849b1445
+    taskid: 5da5cebc-2f3c-457f-87e4-32a2daa74b41
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 95ea5824-137f-4c8b-8d9c-c2a5849b1445
+      id: 5da5cebc-2f3c-457f-87e4-32a2daa74b41
       version: -1
       name: Delete adversary
       description: Deletes an object in ThreatQ.
@@ -1175,8 +1147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4625
+          "x": 162.5,
+          "y": 7920
         }
       }
     note: false
@@ -1186,11 +1158,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: bb51d465-e90d-4391-868c-4ec0f48d36a1
+    taskid: 36a3a8eb-00c1-49d3-8a50-cf9582b7c29d
     type: regular
     task:
-      elasticcommonfields: {}
-      id: bb51d465-e90d-4391-868c-4ec0f48d36a1
+      id: 36a3a8eb-00c1-49d3-8a50-cf9582b7c29d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1212,8 +1183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4800
+          "x": 162.5,
+          "y": 8095
         }
       }
     note: false
@@ -1223,11 +1194,10 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: d42c93f6-88f5-4fa6-8c0b-dcc8d7bd1216
+    taskid: e4be1b0f-4de7-479a-825a-1a5e7cc29497
     type: regular
     task:
-      elasticcommonfields: {}
-      id: d42c93f6-88f5-4fa6-8c0b-dcc8d7bd1216
+      id: e4be1b0f-4de7-479a-825a-1a5e7cc29497
       version: -1
       name: Unlink adversary + indicator
       description: Unlinks two objects in ThreatQ.
@@ -1261,8 +1231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3750
+          "x": 162.5,
+          "y": 7045
         }
       }
     note: false
@@ -1272,11 +1242,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: aa0f512c-fd5b-4295-83ff-7d622cfa6e95
+    taskid: 1f08f13c-ddc9-4c20-879a-7481e916cc7d
     type: condition
     task:
-      elasticcommonfields: {}
-      id: aa0f512c-fd5b-4295-83ff-7d622cfa6e95
+      id: 1f08f13c-ddc9-4c20-879a-7481e916cc7d
       version: -1
       name: Verify unlinking
       description: Check whether the values provided in arguments are equal. If either
@@ -1301,8 +1270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4450
+          "x": 162.5,
+          "y": 7745
         }
       }
     note: false
@@ -1312,11 +1281,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: bbb132e3-e928-46af-8fa9-43ce7507e222
+    taskid: dc5403b2-b1a7-4020-8dda-06eeaa0f1f7f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: bbb132e3-e928-46af-8fa9-43ce7507e222
+      id: dc5403b2-b1a7-4020-8dda-06eeaa0f1f7f
       version: -1
       name: Update context - indicator (search by ID)
       description: Searches for an object by object type and ID. Generic and DBotScore
@@ -1339,8 +1307,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 2555
+          "x": 162.5,
+          "y": 3955
         }
       }
     note: false
@@ -1350,11 +1318,10 @@ tasks:
     quietmode: 0
   "72":
     id: "72"
-    taskid: 67a6692b-c9b4-4756-8a76-ad8e8574530a
+    taskid: 721f979b-2d9f-418c-82ad-179d73d4538f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 67a6692b-c9b4-4756-8a76-ad8e8574530a
+      id: 721f979b-2d9f-418c-82ad-179d73d4538f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1376,8 +1343,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3925
+          "x": 162.5,
+          "y": 7220
         }
       }
     note: false
@@ -1387,11 +1354,10 @@ tasks:
     quietmode: 0
   "73":
     id: "73"
-    taskid: 80583cb3-21ac-467f-8d13-5e5f4e75dba9
+    taskid: 7fa8767e-2078-48b2-8f2c-73e12222f5b5
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 80583cb3-21ac-467f-8d13-5e5f4e75dba9
+      id: 7fa8767e-2078-48b2-8f2c-73e12222f5b5
       version: -1
       name: Get adversary related indicators
       description: Retrieves related indicators for an object in ThreatQ.
@@ -1415,8 +1381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4275
+          "x": 162.5,
+          "y": 7570
         }
       }
     note: false
@@ -1426,11 +1392,10 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: 10c5d66a-facb-4464-81cd-2ca700f3e870
+    taskid: 108f2e21-09cb-4c03-8104-31cd3702d10a
     type: title
     task:
-      elasticcommonfields: {}
-      id: 10c5d66a-facb-4464-81cd-2ca700f3e870
+      id: 108f2e21-09cb-4c03-8104-31cd3702d10a
       version: -1
       name: Done
       type: title
@@ -1440,8 +1405,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5325
+          "x": 162.5,
+          "y": 9815
         }
       }
     note: false
@@ -1451,11 +1416,10 @@ tasks:
     quietmode: 0
   "75":
     id: "75"
-    taskid: 2cb66d2f-6515-4ecc-885f-b9347d376387
+    taskid: 58b493a9-d09e-4fa4-85c0-64017311b431
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 2cb66d2f-6515-4ecc-885f-b9347d376387
+      id: 58b493a9-d09e-4fa4-85c0-64017311b431
       version: -1
       name: Update context  - adversary (Search by name)
       description: Searches for objects by name in the ThreatQ repository.
@@ -1476,8 +1440,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4100
+          "x": 162.5,
+          "y": 7395
         }
       }
     note: false
@@ -1487,11 +1451,10 @@ tasks:
     quietmode: 0
   "80":
     id: "80"
-    taskid: 22fd29af-9de6-463b-8b6a-02c92b6cc3d0
+    taskid: 854cad55-394b-4a84-85e8-01468e734dba
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 22fd29af-9de6-463b-8b6a-02c92b6cc3d0
+      id: 854cad55-394b-4a84-85e8-01468e734dba
       version: -1
       name: Update indicator score
       description: Modifies an indicator's score in ThreatQ. The final indicator score
@@ -1514,8 +1477,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 2205
+          "x": 162.5,
+          "y": 3605
         }
       }
     note: false
@@ -1525,11 +1488,10 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: b947b37d-b417-46eb-84c6-ea829015fb8a
+    taskid: 02462aa1-f767-4c8c-84b8-e8788aee176d
     type: condition
     task:
-      elasticcommonfields: {}
-      id: b947b37d-b417-46eb-84c6-ea829015fb8a
+      id: 02462aa1-f767-4c8c-84b8-e8788aee176d
       version: -1
       name: Verify status update
       type: condition
@@ -1537,7 +1499,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "115"
+      - "108"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1553,8 +1515,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 2905
+          "x": 162.5,
+          "y": 4305
         }
       }
     note: false
@@ -1564,11 +1526,10 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: 6b2156a5-1174-4747-8cb1-4c643af878fd
+    taskid: 4a7dee04-d310-4e22-8e77-9fac4899aba4
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 6b2156a5-1174-4747-8cb1-4c643af878fd
+      id: 4a7dee04-d310-4e22-8e77-9fac4899aba4
       version: -1
       name: Edit indicator
       description: Updates an indicator in ThreatQ.
@@ -1592,8 +1553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1855
+          "x": 162.5,
+          "y": 3255
         }
       }
     note: false
@@ -1603,11 +1564,10 @@ tasks:
     quietmode: 0
   "84":
     id: "84"
-    taskid: 5ec160b6-0748-48c6-8dfe-71b3d68dc10e
+    taskid: c4a13196-8ce4-4733-8f2c-46e2a0aaeeb2
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 5ec160b6-0748-48c6-8dfe-71b3d68dc10e
+      id: c4a13196-8ce4-4733-8f2c-46e2a0aaeeb2
       version: -1
       name: Verify indicator editing
       type: condition
@@ -1633,8 +1593,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 2030
+          "x": 162.5,
+          "y": 3430
         }
       }
     note: false
@@ -1644,11 +1604,10 @@ tasks:
     quietmode: 0
   "92":
     id: "92"
-    taskid: 0fb621a1-e93a-489d-8676-456e5ca15c73
+    taskid: bc8bfc0a-48d2-4a89-8942-754249664f1a
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 0fb621a1-e93a-489d-8676-456e5ca15c73
+      id: bc8bfc0a-48d2-4a89-8942-754249664f1a
       version: -1
       name: Get all events
       description: Retrieves all events in ThreatQ.
@@ -1670,8 +1629,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4975
+          "x": 162.5,
+          "y": 8270
         }
       }
     note: false
@@ -1681,11 +1640,10 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: 3b83c3ac-1a52-4bd4-8660-dee91323bd27
+    taskid: 59e46806-ef4e-4260-8cd6-2a21a96a7a27
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 3b83c3ac-1a52-4bd4-8660-dee91323bd27
+      id: 59e46806-ef4e-4260-8cd6-2a21a96a7a27
       version: -1
       name: Verify get-all-events commands
       type: condition
@@ -1693,7 +1651,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "74"
+      - "123"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1706,8 +1664,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5150
+          "x": 162.5,
+          "y": 8445
         }
       }
     note: false
@@ -1717,11 +1675,10 @@ tasks:
     quietmode: 0
   "99":
     id: "99"
-    taskid: e2be5cfd-8242-46b0-8b9f-ac5ceb1b4e5c
+    taskid: 17b2e918-6848-4f20-854e-2225f1ce711d
     type: title
     task:
-      elasticcommonfields: {}
-      id: e2be5cfd-8242-46b0-8b9f-ac5ceb1b4e5c
+      id: 17b2e918-6848-4f20-854e-2225f1ce711d
       version: -1
       name: ThreatQ Commands Tests
       type: title
@@ -1734,8 +1691,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 865
+          "x": 162.5,
+          "y": 2265
         }
       }
     note: false
@@ -1745,11 +1702,10 @@ tasks:
     quietmode: 0
   "101":
     id: "101"
-    taskid: 6c1a9965-db0f-4ed7-8fbb-e8633214de28
+    taskid: 2a311ccf-ecda-4746-8f67-f64a99b39a7e
     type: title
     task:
-      elasticcommonfields: {}
-      id: 6c1a9965-db0f-4ed7-8fbb-e8633214de28
+      id: 2a311ccf-ecda-4746-8f67-f64a99b39a7e
       version: -1
       name: Generic Commands Tests
       type: title
@@ -1762,7 +1718,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -1773,11 +1729,10 @@ tasks:
     quietmode: 0
   "107":
     id: "107"
-    taskid: c7185b1a-5210-40ae-844d-7c55a87a93b2
+    taskid: 26774924-92a8-4b8e-86c5-70bf30d4ef68
     type: title
     task:
-      elasticcommonfields: {}
-      id: c7185b1a-5210-40ae-844d-7c55a87a93b2
+      id: 26774924-92a8-4b8e-86c5-70bf30d4ef68
       version: -1
       name: Indicator Commands
       type: title
@@ -1790,8 +1745,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1185
+          "x": 162.5,
+          "y": 2585
         }
       }
     note: false
@@ -1801,11 +1756,10 @@ tasks:
     quietmode: 0
   "108":
     id: "108"
-    taskid: 63e6c92c-c053-4d3b-820e-3f7b39a95057
+    taskid: d03a7005-8713-4f2a-81ef-8455cdaa6366
     type: title
     task:
-      elasticcommonfields: {}
-      id: 63e6c92c-c053-4d3b-820e-3f7b39a95057
+      id: d03a7005-8713-4f2a-81ef-8455cdaa6366
       version: -1
       name: Adversary Commands
       type: title
@@ -1818,8 +1772,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 1520
+          "x": 162.5,
+          "y": 4480
         }
       }
     note: false
@@ -1829,11 +1783,10 @@ tasks:
     quietmode: 0
   "111":
     id: "111"
-    taskid: 624a526d-a769-4c86-8a9e-aaa1ac511824
+    taskid: 52300036-e335-4e09-8fb8-5b712fff282c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 624a526d-a769-4c86-8a9e-aaa1ac511824
+      id: 52300036-e335-4e09-8fb8-5b712fff282c
       version: -1
       name: Search adversary
       description: Searches for objects by name in the ThreatQ repository.
@@ -1854,8 +1807,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 1680
+          "x": 162.5,
+          "y": 4625
         }
       }
     note: false
@@ -1865,11 +1818,10 @@ tasks:
     quietmode: 0
   "112":
     id: "112"
-    taskid: 1479408c-b846-4e07-8b30-4fc558a02829
+    taskid: 0ba055ac-5793-4f39-8129-105bfb604de8
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 1479408c-b846-4e07-8b30-4fc558a02829
+      id: 0ba055ac-5793-4f39-8129-105bfb604de8
       version: -1
       name: Does adversary exist?
       type: condition
@@ -1879,7 +1831,7 @@ tasks:
       '#default#':
       - "1"
       "yes":
-      - "6"
+      - "122"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1892,8 +1844,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 1855
+          "x": 162.5,
+          "y": 4800
         }
       }
     note: false
@@ -1903,11 +1855,10 @@ tasks:
     quietmode: 0
   "113":
     id: "113"
-    taskid: 2dd9a685-d140-4d62-8b97-a8411e41b439
+    taskid: a92a9064-bbff-4ab4-85ae-a03a58f53b83
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 2dd9a685-d140-4d62-8b97-a8411e41b439
+      id: a92a9064-bbff-4ab4-85ae-a03a58f53b83
       version: -1
       name: Search indicator
       description: Searches for objects by name in the ThreatQ repository.
@@ -1928,8 +1879,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1330
+          "x": 162.5,
+          "y": 2730
         }
       }
     note: false
@@ -1939,11 +1890,10 @@ tasks:
     quietmode: 0
   "114":
     id: "114"
-    taskid: 8a4d32bb-3fa1-428c-8a78-35cd503a8220
+    taskid: 4593db77-77a7-4237-863a-21c875572f4b
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 8a4d32bb-3fa1-428c-8a78-35cd503a8220
+      id: 4593db77-77a7-4237-863a-21c875572f4b
       version: -1
       name: Does indicator exist?
       type: condition
@@ -1966,8 +1916,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 1505
+          "x": 162.5,
+          "y": 2905
         }
       }
     note: false
@@ -1977,11 +1927,10 @@ tasks:
     quietmode: 0
   "115":
     id: "115"
-    taskid: e1c20ef4-df92-4bfe-8e0f-e2fb66a96e0f
+    taskid: a96488b9-41b3-4de5-80d4-a39660b7dbd5
     type: title
     task:
-      elasticcommonfields: {}
-      id: e1c20ef4-df92-4bfe-8e0f-e2fb66a96e0f
+      id: a96488b9-41b3-4de5-80d4-a39660b7dbd5
       version: -1
       name: Indicator and Adversary Linking
       type: title
@@ -1994,8 +1943,334 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3080
+          "x": 162.5,
+          "y": 6375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "116":
+    id: "116"
+    taskid: e36a0266-e53a-47b2-87d2-f528e4aaf359
+    type: regular
+    task:
+      id: e36a0266-e53a-47b2-87d2-f528e4aaf359
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "117":
+    id: "117"
+    taskid: 43e7314c-f427-4031-867f-da7216593f21
+    type: regular
+    task:
+      id: 43e7314c-f427-4031-867f-da7216593f21
+      version: -1
+      name: get ip 8.8.8.8
+      description: Checks the reputation of an IP address in ThreatQ.
+      script: ThreatQ v2|||ip
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "118":
+    id: "118"
+    taskid: 8dfc71f5-c9de-4825-8bb8-7e37ab8023ae
+    type: regular
+    task:
+      id: 8dfc71f5-c9de-4825-8bb8-7e37ab8023ae
+      version: -1
+      name: get ip 10.50.0.1
+      description: Checks the reputation of an IP address in ThreatQ.
+      script: ThreatQ v2|||ip
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 10.50.0.1
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "119":
+    id: "119"
+    taskid: 6d4069bd-e838-4787-8413-f0e71df18d13
+    type: condition
+    task:
+      id: 6d4069bd-e838-4787-8413-f0e71df18d13
+      version: -1
+      name: Check context is incremented
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "120"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: ThreatQ.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "120":
+    id: "120"
+    taskid: 36e04854-e607-4f08-85f8-fe2c9a66b2a7
+    type: regular
+    task:
+      id: 36e04854-e607-4f08-85f8-fe2c9a66b2a7
+      version: -1
+      name: get ip 8.8.8.8 again
+      description: Checks the reputation of an IP address in ThreatQ.
+      script: ThreatQ v2|||ip
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "121":
+    id: "121"
+    taskid: 382a7e3e-c2c6-4da6-8e45-9d06cfc63321
+    type: condition
+    task:
+      id: 382a7e3e-c2c6-4da6-8e45-9d06cfc63321
+      version: -1
+      name: Check indicator with same value is not duplicated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: ThreatQ.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "122":
+    id: "122"
+    taskid: 61ae83a2-42ee-4fb2-8a2e-dfef63b331f4
+    type: regular
+    task:
+      id: 61ae83a2-42ee-4fb2-8a2e-dfef63b331f4
+      version: -1
+      name: Delete adversary
+      description: Deletes an object in ThreatQ.
+      script: ThreatQ v2|||threatq-delete-object
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Adversary.ID}
+      obj_type:
+        simple: adversary
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "123":
+    id: "123"
+    taskid: 164a9afc-22f4-4582-80e2-9c61123d17c3
+    type: title
+    task:
+      id: 164a9afc-22f4-4582-80e2-9c61123d17c3
+      version: -1
+      name: Context test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "116"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "124":
+    id: "124"
+    taskid: 962b9aba-f793-42ff-8a3a-d20625f274b4
+    type: regular
+    task:
+      id: 962b9aba-f793-42ff-8a3a-d20625f274b4
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: ThreatQ.Adversary.ID
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 5150
         }
       }
     note: false
@@ -2008,8 +2283,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5340,
-        "width": 2100,
+        "height": 9830,
+        "width": 605,
         "x": 50,
         "y": 50
       }

@@ -3,56 +3,10 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import urllib3
 import jmespath
-import tldextract
 from typing import List, Dict, Union, Optional
 
 # disable insecure warnings
 urllib3.disable_warnings()
-
-
-def auto_detect_indicator_type(indicator_value):
-    """Infer the type of the indicator.
-    Args:
-        indicator_value(str): The indicator whose type we want to check.
-    Returns:
-        str. The type of the indicator.
-    """
-    if re.match(ipv4cidrRegex, indicator_value):
-        return FeedIndicatorType.CIDR
-
-    if re.match(ipv6cidrRegex, indicator_value):
-        return FeedIndicatorType.IPv6CIDR
-
-    if re.match(ipv4Regex, indicator_value):
-        return FeedIndicatorType.IP
-
-    if re.match(ipv6Regex, indicator_value):
-        return FeedIndicatorType.IPv6
-
-    if re.match(sha256Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(urlRegex, indicator_value):
-        return FeedIndicatorType.URL
-
-    if re.match(md5Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(sha1Regex, indicator_value):
-        return FeedIndicatorType.File
-
-    if re.match(emailRegex, indicator_value):
-        return FeedIndicatorType.Email
-
-    try:
-        if tldextract.extract(indicator_value).suffix:
-            if '*' in indicator_value:
-                return FeedIndicatorType.DomainGlob
-            return FeedIndicatorType.Domain
-    except Exception:
-        pass
-
-    return None
 
 
 class Client:

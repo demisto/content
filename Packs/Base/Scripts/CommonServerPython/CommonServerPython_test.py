@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext
+    appendContext, auto_detect_indicator_type, handle_proxy
 
 try:
     from StringIO import StringIO
@@ -1240,6 +1240,7 @@ class TestBaseClient:
                                         retries=1,
                                         status_list_to_retry=[401])
         assert res['url'] == url
+
     RETRIES_NEGATIVE_TESTS_INPUT = [
         ('get', 400), ('get', 401), ('get', 500),
         ('put', 400), ('put', 401), ('put', 500),
@@ -1601,6 +1602,7 @@ def test_batch(iterable, sz, expected):
 
 regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.1.1/24', False),
     (ipv4Regex, '192.168.a.1', False),
     (ipv4Regex, '192.168..1.1', False),
     (ipv4Regex, '192.256.1.1', False),
@@ -1768,3 +1770,71 @@ def test_append_context(mocker, context_mock, data_mock, key, expected_answer):
         with raises(TypeError) as e:
             appendContext(key, data_mock)
             assert expected_answer in e.value
+
+
+INDICATOR_VALUE_AND_TYPE = [
+    ('3fec1b14cea32bbcd97fad4507b06888', "File"),
+    ('1c8893f75089a27ca6a8d49801d7aa6b64ea0c6167fe8b1becfe9bc13f47bdc1', 'File'),
+    ('castaneda-thornton.com', 'Domain'),
+    ('192.0.0.1', 'IP'),
+    ('test@gmail.com', 'Email'),
+    ('e775eb1250137c0b83d4e7c4549c71d6f10cae4e708ebf0b5c4613cbd1e91087', 'File'),
+    ('test@yahoo.com', 'Email'),
+    ('http://test.com', 'URL'),
+    ('11.111.11.11/11', 'CIDR'),
+    ('CVE-0000-0000', 'CVE'),
+    ('dbot@demisto.works', 'Email'),
+    ('37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com', 'Email'),
+    ('dummy@recipient.com', 'Email'),
+    ('image003.gif@01CF4D7F.1DF62650', 'Email'),
+    ('bruce.wayne@pharmtech.zz', 'Email'),
+    ('joe@gmail.com', 'Email'),
+    ('koko@demisto.com', 'Email'),
+    ('42a5e275559a1651b3df8e15d3f5912499f0f2d3d1523959c56fc5aea6371e59', 'File'),
+    ('10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e', 'File'),
+    ('52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
+    ('c8092abd8d581750c0530fa1fc8d8318', 'File'),
+    ('fe80:0000:0000:0000:91ba:7558:26d3:acde', 'IPv6'),
+    ('fd60:e22:f1b9::2', 'IPv6'),
+    ('2001:db8:0000:0000:0000:0000:0000:0000', 'IPv6'),
+    ('112.126.94.107', 'IP'),
+    ('a', None),
+    ('*castaneda-thornton.com', 'DomainGlob')
+]
+
+
+@pytest.mark.parametrize('indicator_value, indicatory_type', INDICATOR_VALUE_AND_TYPE)
+def test_auto_detect_indicator_type(indicator_value, indicatory_type):
+    """
+        Given
+            - Indicator value
+            - Indicator type
+
+        When
+        - Trying to detect the type of an indicator.
+
+        Then
+        -  Run the auto_detect_indicator_type and validate that the indicator type the function returns is as expected.
+    """
+    if sys.version_info.major == 3 and sys.version_info.minor == 8:
+        assert auto_detect_indicator_type(indicator_value) == indicatory_type
+    else:
+        try:
+            auto_detect_indicator_type(indicator_value)
+        except Exception as e:
+            assert str(e) == "Missing tldextract module, In order to use the auto detect function please" \
+                             " use a docker image with it installed such as: demisto/jmespath"
+
+
+def test_handle_proxy(mocker):
+    os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+    mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+    handle_proxy()
+    assert os.getenv('REQUESTS_CA_BUNDLE') is None
+    os.environ['REQUESTS_CA_BUNDLE'] = '/test2.pem'
+    mocker.patch.object(demisto, 'params', return_value={})
+    handle_proxy()
+    assert os.environ['REQUESTS_CA_BUNDLE'] == '/test2.pem'  # make sure no change
+    mocker.patch.object(demisto, 'params', return_value={'unsecure': True})
+    handle_proxy()
+    assert os.getenv('REQUESTS_CA_BUNDLE') is None

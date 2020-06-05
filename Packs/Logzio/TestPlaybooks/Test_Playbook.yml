@@ -1,0 +1,219 @@
+id: Logzio - Test
+version: -1
+name: Logzio - Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: c12ad47e-9397-483a-8422-2c3e39760f7b
+    type: start
+    task:
+      id: c12ad47e-9397-483a-8422-2c3e39760f7b
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: cafbaec2-922f-412a-807c-981143882d27
+    type: regular
+    task:
+      id: cafbaec2-922f-412a-807c-981143882d27
+      version: -1
+      name: logzio-search-logs
+      description: Returns logs from your Logz.io Operations account by Lucene query
+      script: Logz.io|||logzio-search-logs
+      type: regular
+      iscommand: true
+      brand: Logz.io
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      from_time: {}
+      query:
+        simple: '"mcafee_epo" OR "mcafee"'
+      size: {}
+      to_time: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    evidencedata:
+      description:
+        simple: 'Query result:'
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 1a9d4993-d4fa-4e5c-86bf-77390472c150
+    type: regular
+    task:
+      id: 1a9d4993-d4fa-4e5c-86bf-77390472c150
+      version: -1
+      name: logzio-get-logs-by-event-id
+      description: Returns the raw logs that triggered the security rule in Logz.io.
+      script: Logz.io|||logzio-get-logs-by-event-id
+      type: regular
+      iscommand: true
+      brand: Logz.io
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      id:
+        simple: 40f7ef83-6169-45cf-aeca-f4a508686eb4
+      size: {}
+      timeout:
+        simple: '100'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 651b6b24-ebca-42d2-8af0-cdfcb537db1f
+    type: regular
+    task:
+      id: 651b6b24-ebca-42d2-8af0-cdfcb537db1f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 62dc591a-5e6a-4c33-8d67-5be4ea0f63b3
+    type: condition
+    task:
+      id: 62dc591a-5e6a-4c33-8d67-5be4ea0f63b3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Logzio.Result
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: cd219d89-5973-47d4-89eb-99f450499913
+    type: condition
+    task:
+      id: cd219d89-5973-47d4-89eb-99f450499913
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Logzio.Result
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 75004855-7ea8-4246-889f-6512933ffad2
+    type: title
+    task:
+      id: 75004855-7ea8-4246-889f-6512933ffad2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: eeb175b9-f278-4764-8488-6df59a3959e3
+    type: regular
+    task:
+      id: eeb175b9-f278-4764-8488-6df59a3959e3
+      version: -1
+      name: FetchIncidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Logz.io
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+sourceplaybookid: c7e76c8e-a825-4d0f-8999-77b9b6861930
+fromversion: 5.0.0
+description: ''
