@@ -1,6 +1,6 @@
 import pytest
 from collections import OrderedDict
-from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client
+from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -113,3 +113,16 @@ def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
     client = Client(indicator_type='ip', api_token='123', services=['fusion'], threshold=threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
+
+
+def test_fetch_indicators_command(mocker):
+    indicator_type = 'ip'
+    client = Client(indicator_type=indicator_type, api_token='dummytoken', services='fusion')
+    mocker.patch(
+        'FeedRecordedFuture.Client.build_iterator',
+        return_value=[{
+            'Name': '192.168.1.1',
+            'Risk': '4'
+        }]
+    )
+    fetch_indicators_command(client, indicator_type)

@@ -281,7 +281,7 @@ def format_risk_string(risk_string):
     return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
 
 
-def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
+def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
         client(Client): Recorded Future Feed client.
@@ -377,7 +377,7 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, client.indicator_type, None)
+            indicators = fetch_indicators_command(client, client.indicator_type)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
