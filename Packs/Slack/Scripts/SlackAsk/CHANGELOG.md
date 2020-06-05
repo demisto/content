@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added an option to include which user answered and what his response is.
+Added an option to include which user responded, and what the response was.
 
 
 ## [20.4.0] - 2020-04-14
