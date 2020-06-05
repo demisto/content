@@ -91,7 +91,8 @@ class TestCofenseTriage:
         set_demisto_arg("match_priority", 2)
         set_demisto_arg("tags", "")
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&"
+            "match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",
             # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
@@ -104,10 +105,7 @@ class TestCofenseTriage:
 
         demisto_incidents = CofenseTriagev2.demisto.incidents.call_args_list[0][0][0]
         assert len(demisto_incidents) == 2
-        assert (
-                demisto_incidents[0]["name"]
-                == "cofense triage report 13363: Phishing Simulation"
-        )
+        assert demisto_incidents[0]["name"] == "cofense triage report 13363: Phishing Simulation"
         assert demisto_incidents[0]["occurred"] == "2020-03-19T16:43:09.715Z"
         assert demisto_incidents[0]["severity"] == 1
         assert len(demisto_incidents[0]["rawJSON"]) == 1931
@@ -134,7 +132,8 @@ class TestCofenseTriage:
             }
         )
         requests_mock.get(
-            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",
+            "https://some-triage-host/api/public/v1/processed_reports?category_id=5&"
+            "match_priority=2&tags=&start_date=2000-10-30+00%3A00%3A00",
             # noqa: 501
             text=fixture_from_file("processed_reports.json"),
         )
@@ -447,19 +446,9 @@ class TestTriageInstance:
             assert e.message == "Could not parse result from Cofense Triage (200)"
 
     def test_api_url(self, triage_instance):
-        assert (
-                triage_instance.api_url("endpoint")
-                == "https://some-triage-host/api/public/v1/endpoint"
-        )
-        assert (
-                triage_instance.api_url("/endpoint")
-                == "https://some-triage-host/api/public/v1/endpoint"
-        )
-        assert (
-                triage_instance.api_url("///endpoint/edit?query_string&")
-                == "https://some-triage-host/api/public/v1/endpoint/edit?query_string&"
-        )
-
+        assert triage_instance.api_url("endpoint") == "https://some-triage-host/api/public/v1/endpoint"
+        assert triage_instance.api_url("/endpoint") == "https://some-triage-host/api/public/v1/endpoint"
+        assert triage_instance.api_url("///endpoint/edit?query_string&") == "https://some-triage-host/api/public/v1/endpoint/edit?query_string&"  # noqa 501
 
 class TestTriageReport:
     def test_attrs(self, requests_mock, triage_instance, fixture_from_file):
