@@ -37,16 +37,16 @@ class Client(BaseClient):
         soup = BeautifulSoup(r, 'html.parser')
 
         try:
-            pattern = re.compile('([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]{1,2}))')
             raw_data: List = sum([cell.get_text(strip=True, separator=" ").split(" ")
-                                for cell in soup.select(".pure-table tbody tr td")], [])  # noqa
-            ips = list(set(filter(pattern.match, raw_data)))
-            for ip in ips:
-                result.append({
-                    "value": ip,
-                    'type': FeedIndicatorType.CIDR,
-                    "FeedURL": self._base_url
-                })
+                                 for cell in soup.select(".pure-table tbody tr td")], [])
+            cidrs = list(set(raw_data))
+            for cidr in cidrs:
+                if re.match(ipv4cidrRegex, cidr):
+                    result.append({
+                        "value": cidr,
+                        'type': FeedIndicatorType.CIDR,
+                        "FeedURL": self._base_url
+                    })
 
         except requests.exceptions.SSLError as err:
             demisto.debug(str(err))
