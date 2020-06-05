@@ -295,18 +295,19 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
         iterator = client.build_iterator(service, indicator_type)
         for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
             raw_json = dict(item)
-            evidence_details = json.loads(item.get('EvidenceDetails')).get('EvidenceDetails')
-            raw_json['EvidenceDetails'] = evidence_details
-            raw_json['RiskString'] = format_risk_string(item.get('RiskString'))
             raw_json['value'] = value = item.get('Name')
             raw_json['type'] = get_indicator_type(indicator_type, item)
             raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
             raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(item['Risk'])
             lower_case_evidence_details_keys = []
-            for rule in evidence_details:
-                rule = dict((k.lower(), v) for k, v in rule.items())
-                lower_case_evidence_details_keys.append(rule)
-
+            evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
+            if evidence_details:
+                raw_json['EvidenceDetails'] = evidence_details
+                for rule in evidence_details:
+                    rule = dict((k.lower(), v) for k, v in rule.items())
+                    lower_case_evidence_details_keys.append(rule)
+            if isinstance(item.get('RiskString'), str):
+                raw_json['RiskString'] = format_risk_string(item.get('RiskString'))
             indicators.append({
                 "value": value,
                 "type": raw_json['type'],
