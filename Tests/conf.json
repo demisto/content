@@ -2839,7 +2839,7 @@
         },
         {
             "integrations": "Zoom Feed",
-            "playbookID": "<TestPlaybook ID>"
+            "playbookID": "FeedZoom_Test"
         }
 
     ],
