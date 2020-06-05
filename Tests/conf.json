@@ -2006,7 +2006,7 @@
             ]
         },
         {
-            "integrations": "McAfee Active Response",
+            "integrations": ["epo", "McAfee Active Response"],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
@@ -2021,8 +2021,7 @@
             "fromversion": "4.5.0",
             "timeout": 1700
         },
-        {
-            "integrations": "McAfee Active Response",
+        {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
         },
@@ -2775,14 +2774,14 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": ["PrismaAccess", "Prisma Access Egress IP feed"],
+            "integrations": ["Prisma Access", "Prisma Access Egress IP feed"],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
             "nightly": true
         },
         {
-            "integrations": "PrismaAccess",
+            "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",

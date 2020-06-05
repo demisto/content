@@ -1,4 +1,6 @@
 from __future__ import print_function
+
+import ast
 import os
 import json
 import signal
@@ -194,16 +196,24 @@ class MITMProxy:
     def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
         client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
                                           verify_ssl=False)
+        system_conf_response = demisto_client.generic_request_func(
+            self=client,
+            path='/system/config',
+            method='GET'
+        )
+
+        system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
+
         http_proxy = https_proxy = proxy
         if proxy:
             http_proxy = 'http://' + proxy
             https_proxy = 'http://' + proxy
+        system_conf.update({
+            'http_proxy': http_proxy,
+            'https_proxy': https_proxy
+        })
         data = {
-            'data':
-                {
-                    'http_proxy': http_proxy,
-                    'https_proxy': https_proxy
-                },
+            'data': system_conf,
             'version': -1
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
