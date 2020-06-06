@@ -828,9 +828,10 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:
-        prints_manager.add_print_job(f'~~ Thread {thread_index}failed ~~\n{str(exc)}\n{traceback.format_exc()}',
+        prints_manager.add_print_job(f'~~ Thread {thread_index + 1} failed ~~\n{str(exc)}\n{traceback.format_exc()}',
                                      print_error, thread_index)
-        failed_playbooks.append(f'~~ Thread {thread_index} failed ~~')
+        prints_manager.execute_thread_prints(thread_index)
+        failed_playbooks.append(f'~~ Thread {thread_index + 1} failed ~~')
         raise
 
     finally:
