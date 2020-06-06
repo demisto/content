@@ -670,29 +670,51 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
              build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
 
 
-def get_and_print_server_numeric_version(tests_settings):
-    if tests_settings.is_local_run or not os.path.isfile('./Tests/images_data.txt'):
-        # TODO: verify this logic, it's a workaround because the test_image file does not exist on local run
-        return '99.99.98'  # latest
-    with open('./Tests/images_data.txt', 'r') as image_data_file:
-        image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
-        if len(image_data) != 1:
-            print('Did not get one image data for server version, got {}'.format(image_data))
-            return '99.99.98'  # latest
+def get_server_numeric_version(ami_env, is_local_run=False):
+    """
+    Gets the current server version
+    Arguments:
+        ami_env: (str)
+            AMI version name.
+        is_local_run: (bool)
+            when running locally, assume latest version.
 
-        server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-        if server_numeric_version:
-            server_numeric_version = server_numeric_version[0]
-        else:
-            server_numeric_version = '99.99.98'  # latest
+    Returns:
+        (str) Server numeric version
+    """
+    default_version = '99.99.98'
+    env_results_path = './env_results.json'
+    if is_local_run:
+        print_color(f'Local run, assuming server version is {default_version}', LOG_COLORS.GREEN)
+        return default_version
 
-        if server_numeric_version.count('.') == 1:
-            server_numeric_version += ".0"
+    if not os.path.isfile(env_results_path):
+        print_warning(f'Did not find {env_results_path} file, assuming server version is {default_version}.')
+        return default_version
 
-        print('Server image info: {}'.format(image_data[0]))
-        print('Server version: {}'.format(server_numeric_version))
+    with open(env_results_path, 'r') as json_file:
+        env_results = json.load(json_file)
 
-        return server_numeric_version
+    instances_ami_names = set([env.get('AmiName') for env in env_results if ami_env in env.get('Role', '')])
+    if len(instances_ami_names) != 1:
+        print_warning(f'Did not get one AMI Name, got {instances_ami_names}.'
+                      f' Assuming server version is {default_version}')
+        return default_version
+
+    instances_ami_name = list(instances_ami_names)[0]
+    extracted_version = re.findall(r'Demisto-(?:Circle-CI|MarketPlace)-Content-[\w-]+-([\d.]+)-[\d]{5}',
+                                   instances_ami_name)
+    if extracted_version:
+        server_numeric_version = extracted_version[0]
+    else:
+        server_numeric_version = default_version
+
+    # make sure version is three-part version
+    if server_numeric_version.count('.') == 1:
+        server_numeric_version += ".0"
+
+    print_color(f'Server version: {server_numeric_version}', LOG_COLORS.GREEN)
+    return server_numeric_version
 
 
 def get_instances_ips_and_names(tests_settings):
@@ -862,7 +884,8 @@ def manage_tests(tests_settings):
         tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
 
     """
-    tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
+    tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
+                                                                     tests_settings.is_local_run)
     instances_ips = get_instances_ips_and_names(tests_settings)
     is_nightly = tests_settings.nightly
     number_of_instances = len(instances_ips)
