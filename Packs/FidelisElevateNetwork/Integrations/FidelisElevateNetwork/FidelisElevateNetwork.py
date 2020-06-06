@@ -1030,6 +1030,8 @@ def request_dpath(alert_id):
     if res.get('decodingPaths'):
         dpath = res.get('decodingPaths')[0]
         link_path = dpath.get('linkPath')
+    else:
+        raise Exception('Could not find the file path.')
 
     return link_path
 
