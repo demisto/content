@@ -57,7 +57,7 @@ def search_by_query(client, args):
         "NozomiGuardian": {"Queries": nozomi_ec}
     }
 
-    human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Queries'], name=title)
+    human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Queries'], name=title,headers='Query Results')
     return [human_readable, context_entry, raws]
 
 
