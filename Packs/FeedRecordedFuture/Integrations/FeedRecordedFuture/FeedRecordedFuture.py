@@ -297,8 +297,11 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             raw_json = dict(item)
             raw_json['value'] = value = item.get('Name')
             raw_json['type'] = get_indicator_type(indicator_type, item)
-            raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
-            raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(item['Risk'])
+            score = 0
+            risk = item.get('Risk')
+            if isinstance(risk, str) and risk.isdigit():
+                raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
+                raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(item['Risk'])
             lower_case_evidence_details_keys = []
             evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
             if evidence_details:
@@ -306,8 +309,9 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
                 for rule in evidence_details:
                     rule = dict((k.lower(), v) for k, v in rule.items())
                     lower_case_evidence_details_keys.append(rule)
-            if isinstance(item.get('RiskString'), str):
-                raw_json['RiskString'] = format_risk_string(item.get('RiskString'))
+            risk_string = item.get('RiskString')
+            if isinstance(risk_string, str):
+                raw_json['RiskString'] = format_risk_string(risk_string)
             indicators.append({
                 "value": value,
                 "type": raw_json['type'],

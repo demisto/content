@@ -116,13 +116,21 @@ def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
 
 
 def test_fetch_indicators_command(mocker):
+    """
+    Given:
+     - Recorded Future Feed client initialized with ip indicator type
+     - Iterator which returns entry of IP object with name only
+
+    When:
+     - Fetching indicators
+
+    Then:
+     - Verify the fetch runs successfully.
+    """
     indicator_type = 'ip'
     client = Client(indicator_type=indicator_type, api_token='dummytoken', services='fusion')
     mocker.patch(
         'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{
-            'Name': '192.168.1.1',
-            'Risk': '4'
-        }]
+        return_value=[{'Name': '192.168.1.1'}]
     )
     fetch_indicators_command(client, indicator_type)
