@@ -316,7 +316,7 @@ class Client(BaseClient):
                                            params=params)
         return violation_data
 
-    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str, max_incidents: str = 0)\
+    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str, max_incidents: str = '50')\
             -> Dict:
         """List all incidents by sending a GET request.
 
