@@ -113,6 +113,20 @@ def get_user_info_soap_request(token, username, domain):
            '</soap:Envelope>'
 
 
+def search_records_by_report_soap_request(token, report_guid):
+    return '<?xml version="1.0" encoding="utf-8"?>' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '    <soap:Body>' + \
+           '        <SearchRecordsByReport xmlns="http://archer-tech.com/webservices/">' + \
+           f'            <sessionToken>{token}</sessionToken>' + \
+           f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
+           '            <pageNumber>1</pageNumber>' + \
+           '        </SearchRecordsByReport>' + \
+           '    </soap:Body>' + \
+           '</soap:Envelope>'
+
+
 def search_records_soap_request(token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
                                 numeric_operator='', sort_by_field='', max_results=10, is_descending=True):
     request_body =  '<?xml version="1.0" encoding="UTF-8"?>' + \
@@ -212,7 +226,12 @@ SOAP_COMMANDS = {'archer-get-reports':
                      {'soapAction': 'http://archer-tech.com/webservices/ExecuteSearch',
                       'urlSuffix': 'rsaarcher/ws/search.asmx',
                       'soapBody': search_records_soap_request,
-                      'outputPath': 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult'}
+                      'outputPath': 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult'},
+                 'archer-search-records-by-report':
+                     {'soapAction': 'http://archer-tech.com/webservices/SearchRecordsByReport',
+                      'urlSuffix': 'rsaarcher/ws/search.asmx',
+                      'soapBody': search_records_by_report_soap_request,
+                      'outputPath': 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult'}
                  }
 
 
@@ -271,7 +290,6 @@ class Client(BaseClient):
         headers = {'SOAPAction': req_data['soapAction'], 'Content-Type': 'text/xml; charset=utf-8'}
         token = self.get_token()
         body = req_data['soapBody'](token, **kwargs)
-
         res = self._http_request('Post', req_data['urlSuffix'], headers=headers,
                                   data=body, ok_codes=[200], resp_type='content')
         return extract_from_xml(res, req_data['outputPath']), res
@@ -321,6 +339,8 @@ class Client(BaseClient):
             level_fields = list(filter(lambda m: m['level'] == level_id, levels))
             if level_fields:
                 level_fields = level_fields[0]['mapping']
+            else:
+                return {}, res, errors
 
             for _id, field in content_obj.get('FieldContents').items():
                 field_data = level_fields.get(str(_id))
@@ -366,14 +386,13 @@ class Client(BaseClient):
             'name': f'RSA Archer Incident: {record_item.get("Id")}',
             'details': json.dumps(record_item),
             'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            # 'labels': labels,
+            'labels': labels,
             'rawJSON': json.dumps(raw_record)
         }
         return incident, incident_created_time
 
     def search_records(self, app_id, fields_to_display, field_to_search, search_value,
                        numeric_operator='', date_operator='', max_results=10):
-
         level_data = self.get_level_by_app_id(app_id)[0]
         fields_xml = ''
         search_field_name = ''
@@ -381,7 +400,9 @@ class Client(BaseClient):
         fields_mapping = level_data['mapping']
         for field in fields_mapping.keys():
             field_name = fields_mapping[field]['Name']
-            if field_name in fields_to_display:
+            if not fields_to_display:
+                fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
+            elif field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
             if field_name == field_to_search:
                 search_field_name = field_name
@@ -397,14 +418,16 @@ class Client(BaseClient):
         if not res:
             return [], raw_res
 
-        res = json.loads(xml2json(res))
+        records = self.xml_to_records(res, fields_mapping)
+        return records, raw_res
 
+    def xml_to_records(self, xml_response, fields_mapping):
+        res = json.loads(xml2json(xml_response))
+        records = []
         if res.get('Records') and res['Records'].get('Record'):
             records_data = res['Records']['Record']
             if isinstance(records_data, dict):
                 records_data = [records_data]
-
-            records = []
 
             for item in records_data:
                 record = {'Id': item.get('@contentId')}
@@ -433,8 +456,7 @@ class Client(BaseClient):
 
                     record[field_name] = field_value
                 records.append({'record': record, 'raw': item})
-            return records, raw_res
-        return [], raw_res
+        return records
 
     def get_sub_form_id(self, app_id, field_id, value_for_sub_form):
         level_data = self.get_level_by_app_id(app_id)[0]
@@ -642,7 +664,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
     field_contents = generate_field_contents(fields_values, level_data['mapping'])
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
-    print(json.dumps(body))
+
     res = client.do_request('Post', f'rsaarcher/api/core/content', data=body)
 
     errors = get_errors_from_res(res)
@@ -671,7 +693,6 @@ def update_record_command(client: Client, args: Dict[str, str]):
     field_contents = generate_field_contents(fields_values,  level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId':  level_data['level'], 'FieldContents': field_contents}}
-    print(body)
     res = client.do_request('Put', f'rsaarcher/api/core/content', data=body)
 
     errors = get_errors_from_res(res)
@@ -833,7 +854,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     fields_to_display = argToList(args.get('fields-to-display'))
     fields_to_get = argToList(args.get('fields-to-get'))
 
-    if 'Id' not in fields_to_get:
+    if fields_to_get and 'Id' not in fields_to_get:
         fields_to_get.append('Id')
 
     if not all(f in fields_to_get for f in fields_to_display):
@@ -851,6 +872,35 @@ def search_records_command(client: Client, args: Dict[str, str]):
     markdown = tableToMarkdown('Search records results:', hr)
     context: dict = {'Archer.Record(val.Id && val.Id == obj.Id)': records}
     return_outputs(markdown, context, {})
+
+
+def search_records_by_report_command(client: Client, args: Dict[str, str]):
+    report_guid = args.get('report-guid')
+    res, raw_res = client.do_soap_request('archer-search-records-by-report', report_guid=report_guid)
+    if not res:
+        return_outputs(f'No records found for report {report_guid}', {}, json.loads(xml2json(raw_res)))
+        return
+
+    raw_records = json.loads(xml2json(res))
+    records = []
+    if raw_records.get('Records') and raw_records['Records'].get('Record'):
+        level_id = raw_records['Records']['Record'][0]['@levelId']
+
+        level_res = client.do_request('GET', f'rsaarcher/api/core/system/fielddefinition/level/{level_id}')
+        fields = {}
+        for field in level_res:
+            if field.get('RequestedObject') and field.get('IsSuccessful'):
+                field_item = field.get('RequestedObject')
+                field_id = str(field_item.get('Id'))
+                fields[field_id] = {'Type': field_item.get('Type'),
+                                    'Name': field_item.get('Name')}
+
+        records = client.xml_to_records(res, fields)
+        records = list(map(lambda x: x['record'], records))
+
+    markdown = tableToMarkdown('Search records by report results:', records)
+    context: dict = {'Archer.Record(val.Id && val.Id == obj.Id)': records}
+    return_outputs(markdown, context, json.loads(xml2json(raw_res)))
 
 
 def fetch_incidents(client, last_run, first_fetch_time, params):
@@ -871,7 +921,7 @@ def fetch_incidents(client, last_run, first_fetch_time, params):
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
 
-    last_fetch = last_fetch + timedelta(minutes = (time_offset * -1))
+    last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
 
     records, raw_res = client.search_records(app_id, fields_to_display, date_field,
                                              last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -920,7 +970,8 @@ def main():
         'archer-upload-file': upload_file_command,
         'archer-get-file': download_file_command,
         'archer-list-users': list_users_command,
-        'archer-search-records': search_records_command
+        'archer-search-records': search_records_command,
+        'archer-search-records-by-report': search_records_by_report_command
     }
 
     command = demisto.command()

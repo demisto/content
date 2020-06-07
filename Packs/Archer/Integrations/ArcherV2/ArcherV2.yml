@@ -304,6 +304,15 @@ script:
     deprecated: false
     execution: false
     name: archer-search-records
+  - arguments:
+    - default: false
+      isArray: false
+      name: report-guid
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: archer-search-records-by-report
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
