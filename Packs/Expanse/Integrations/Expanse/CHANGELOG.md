@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 - Added support for filtering incident creation by Expanse Exposure severity level.
 
 ## [20.5.0] - 2020-05-12
