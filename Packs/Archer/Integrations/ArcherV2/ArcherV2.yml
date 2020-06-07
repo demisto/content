@@ -214,15 +214,6 @@ script:
   - arguments:
     - default: false
       isArray: false
-      name: user-info
-      required: true
-      secret: false
-    deprecated: false
-    execution: false
-    name: archer-get-user-id
-  - arguments:
-    - default: false
-      isArray: false
       name: entry-id
       required: true
       secret: false

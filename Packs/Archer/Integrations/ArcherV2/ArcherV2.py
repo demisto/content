@@ -217,11 +217,6 @@ SOAP_COMMANDS = {'archer-get-reports':
                       'urlSuffix': 'rsaarcher/ws/search.asmx',
                       'soapBody': get_search_options_soap_request,
                       'outputPath': 'Envelope.Body.GetSearchOptionsByGuidResponse.GetSearchOptionsByGuidResult'},
-                 'archer-get-user-id':
-                     {'soapAction': 'http://archer-tech.com/webservices/LookupDomainUserId',
-                      'urlSuffix': 'rsaarcher/ws/accesscontrol.asmx',
-                      'soapBody': get_user_info_soap_request,
-                      'outputPath': 'response.Envelope.Body.LookupDomainUserIdResponse.LookupDomainUserIdResult'},
                  'archer-search-records':
                      {'soapAction': 'http://archer-tech.com/webservices/ExecuteSearch',
                       'urlSuffix': 'rsaarcher/ws/search.asmx',
@@ -766,16 +761,6 @@ def get_value_list_command(client: Client, args: Dict[str, str]):
             return_outputs(markdown, context, values_list_res)
 
 
-def get_user_id_command(client: Client, args: Dict[str, str]):
-    user_info = args.get('user-info')
-    user_info = user_info.split('/')
-    res, raw_res = client.do_soap_request('archer-get-user-id',
-                                     domain=user_info[0].lower(), username=user_info[1].lower())
-    res = json.loads(xml2json(res))
-
-    return_outputs(res, {}, raw_res)
-
-
 def upload_file_command(client: Client, args: Dict[str, str]):
     entry_id = args.get('entry-id')
     file_name, file_bytes = get_file(entry_id)
@@ -966,7 +951,6 @@ def main():
         'archer-get-search-options-by-guid': search_options_command,
         'archer-reset-cache': reset_cache_command,
         'archer-get-valuelist': get_value_list_command,
-        'archer-get-user-id': get_user_id_command,
         'archer-upload-file': upload_file_command,
         'archer-get-file': download_file_command,
         'archer-list-users': list_users_command,
