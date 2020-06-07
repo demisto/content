@@ -1,6 +1,6 @@
 
 XDR handle indicators  
-This integration was integrated and tested with version 5.0 of XDR
+This integration was integrated and tested with Branch: stable-50 of XDR
 ## Configure XDR iocs on Cortex XSOAR  
   
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.  
