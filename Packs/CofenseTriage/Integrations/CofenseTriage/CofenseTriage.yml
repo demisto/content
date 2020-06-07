@@ -2,8 +2,9 @@ commonfields:
   id: Cofense Triage
   version: -1
 name: Cofense Triage
-description: Use the Cofense Triage integration to manage reports and attachments.
-display: Cofense Triage
+description: Deprecated - We recommend using Cofense Triage v2 instead.
+display: Cofense Triage - Deprecated
+deprecated: true
 category: Data Enrichment & Threat Intelligence
 configuration:
   - display: Server URL (e.g., https://192.168.0.1)
@@ -241,8 +242,8 @@ script:
         - contextPath: Cofense.Report.Sha256
           description: SHA256 hash of the file.
       description: 'Retrieves a report by the report ID number. '
-  dockerimage: demisto/python3:3.7.2.200
+  dockerimage: demisto/python3:3.8.3.8715
   isfetch: true
   runonce: false
 tests:
-  - Cofense Triage Test
+  - No test
