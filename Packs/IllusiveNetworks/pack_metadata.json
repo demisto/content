@@ -3,15 +3,14 @@
     "description": "Illusive Description",
     "support": "partner",
     "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Illusive Networks",
     "url": "https://www.illusivenetworks.com",
     "email": "support@illusivenetworks.com",
     "categories": [
         "Deception"
     ],
-    "tags": [
-    ],
+    "tags": [],
     "created": "2020-03-19T09:39:30Z",
     "updated": "2020-03-19T09:39:30Z",
     "beta": false,
