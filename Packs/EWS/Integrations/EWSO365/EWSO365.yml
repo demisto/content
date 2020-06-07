@@ -597,16 +597,6 @@ script:
       name: target-mailbox
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to find Public Folders.
-      isArray: false
-      name: is-public
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
     deprecated: false
     description: Retrieves information for folders for a specified mailbox. Only folders
       with read permissions will be returned. Your visual folders on the mailbox,
@@ -895,16 +885,6 @@ script:
         folder "AllItems".
       isArray: false
       name: folder-path
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether the folder is a Public Folder. Default is "False".
-      isArray: false
-      name: is-public
-      predefined:
-      - 'True'
-      - 'False'
       required: false
       secret: false
     deprecated: false
