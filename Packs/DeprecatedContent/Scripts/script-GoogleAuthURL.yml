@@ -27,7 +27,7 @@ script: |
 type: javascript
 tags:
 - google apps
-comment: Generate a Google auth URL to authenticate for a given list of scopes
+comment: This script is deprecated. The demistobot endpoint is no longer supported.
 enabled: true
 deprecated: true
 args:
