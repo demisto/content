@@ -35,4 +35,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![TIM - Indicator Auto Processing](Insert the link to your image here)
+![TIM - Indicator Auto Processing](https://raw.githubusercontent.com/demisto/content/6f04c51b684254576bcfba3c0ec3df07eb91f26e/Packs/TIM_Processing/doc_files/TIM_-_Indicator_Auto_Processing%20.png)
