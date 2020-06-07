@@ -1,0 +1,20 @@
+commonfields:
+  id: TestPyLogging
+  version: -1
+name: TestPyLogging
+script: |
+  import logging
+
+  root_logger = logging.getLogger()
+
+  logging.debug("this is a logging test")
+  demisto.results("done debug test. handlers: {}".format(root_logger.handlers))
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.3.286
+runas: DBotWeakRole
+fromversion: 5.0.0
