@@ -3,6 +3,7 @@ version: -1
 name: EWS_O365_test
 fromversion: 5.0.0
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
