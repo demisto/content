@@ -2050,7 +2050,7 @@ script:
       required: true
       description: Indicator Value
     description: Get Owner for Indicator
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.7951
+  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.8854
   runonce: false
   subtype: python3
 tests:
