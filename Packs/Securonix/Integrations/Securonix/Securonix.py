@@ -801,8 +801,8 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     to_ = args.get('to') if 'to_' in args else datetime.now()
     to_epoch = date_to_timestamp(to_, date_format=timestamp_format)
     incident_types = str(args.get('incident_types')) if 'incident_types' in args else 'opened'
-    max = str(args.get('max', '50'))
-    incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types, max)
+    max_incidents = str(args.get('max', '50'))
+    incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types, max_incidents)
 
     total_incidents = incidents.get('totalIncidents')
     if not total_incidents or float(total_incidents) <= 0.0:
@@ -1251,7 +1251,7 @@ def main():
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time', '1 hour')
             incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
-            max_fetch = int(params().get('max_fetch', 50))
+            max_fetch = int(params.get('max_fetch', '50'))
             max_fetch = str(min(50, max_fetch))  # fetch size should no exceed 50
             incidents = fetch_incidents(client, fetch_time, incident_status, max_fetch, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
