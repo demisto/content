@@ -21,7 +21,7 @@ tags:
 - server
 - analytics
 - exabeam
-comment: Retrieve timeline of a user
+comment: This script is deprecated. Use the Exabeam integration instead.
 system: true
 deprecated: true
 args:
