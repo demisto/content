@@ -3,12 +3,13 @@ import re
 import os
 import sys
 import json
+import glob
 import argparse
 import requests
 
 from datetime import datetime
 from distutils.version import LooseVersion
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning
+from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, get_dict_from_file
 
 
 COMMENT_REGEX = r'<!--(.*?)-->'
@@ -16,7 +17,96 @@ PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
 PACK_METADATA = 'pack_metadata.json'
 PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
-RELEASE_NOTES_FILE = 'packs-release-notes.md'
+
+LAYOUT_TYPE_TO_NAME = {
+    "details": "Summary",
+    "edit": "New/Edit",
+    "close": "Close",
+    "quickView": "Quick View",
+    "indicatorsDetails": "Indicator Details",
+    "mobile": "Mobile",
+}
+
+
+def get_new_packs(git_sha1):
+    """ Gets all the existing modified/added file paths in the format */ReleaseNotes/*.md.
+
+        Args:
+            git_sha1 (str): The branch to make the diff with.
+
+        Returns:
+            (list) A list of the new/modified release notes file paths.
+        """
+    diff_cmd = f'git diff --diff-filter=A --name-only {git_sha1} */{PACK_METADATA}'
+    try:
+        diff_result = run_command(diff_cmd, exit_on_error=False)
+    except RuntimeError:
+        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
+                    'If you\'re not on a fork, run "git merge origin/master".\n'
+                    'If you are on a fork, first set https://github.com/demisto/content to be '
+                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+                    'these steps will merge your branch with content master as a base.')
+        sys.exit(1)
+
+    pack_paths = [os.path.dirname(file_path) for file_path in diff_result.split('\n')
+                  if file_path.startswith(PACKS_DIR)]
+    return pack_paths
+
+
+def get_new_entity_record(entity_path : str) -> (str, str):
+    data, _ = get_dict_from_file(entity_path)
+
+    if 'layouts' in entity_path.lower():
+        layout_kind = LAYOUT_TYPE_TO_NAME.get(data.get('kind', ''))
+        type_id = data.get('typeId', '')
+        return f'{type_id} - {layout_kind}', ''
+
+    name = data.get('name', '')
+    if not name:
+        print_error(f'missing name for {entity_path}')
+
+    # script entities has "comment" instead of "description"
+    description = data.get('description', '') or data.get('comment', '')
+    if not description:
+        print_warning(f'missing description for {entity_path}')
+
+    return name, description
+
+
+def get_pack_entities(pack_path):
+    print(f'Processing "{pack_path}" files:')
+    pack_entities = (glob.glob(f'{pack_path}/*/*.json') +
+                     glob.glob(f'{pack_path}/*/*.yml') +
+                     glob.glob(f'{pack_path}/*/*/*.yml'))
+    pack_entities.sort()
+
+    entities_data = {}
+    for entity_path in pack_entities:
+        # ignore test files
+        if 'test' in entity_path.lower():
+            print(f'skipping test file: {entity_path}')
+            continue
+
+        match = re.match(f'{pack_path}/([^/]*)/.*', entity_path)
+        if match:
+            entity_type = match.group(1)
+        else:
+            # should not get here
+            entity_type = 'Extras'
+
+        name, description = get_new_entity_record(entity_path)
+        entities_data.setdefault(entity_type, {})[name] = description
+
+    release_notes = ''
+    for entity_type, entities_description in sorted(entities_data.items()):
+        release_notes += f'\n#### {entity_type}\n'
+        for name, description in entities_description.items():
+            release_notes += f'##### {name}\n - {description}\n'
+
+    print('Finished processing pack')
+    return release_notes
 
 
 def get_all_modified_release_note_files(git_sha1):
@@ -28,7 +118,7 @@ def get_all_modified_release_note_files(git_sha1):
     Returns:
         (list) A list of the new/modified release notes file paths.
     """
-    diff_cmd = 'git diff --diff-filter=AM --name-only {} {}'.format(git_sha1, PACKS_RN_FILES_FORMAT)
+    diff_cmd = f'git diff --diff-filter=AM --name-only {git_sha1} {PACKS_RN_FILES_FORMAT}'
     try:
         diff_result = run_command(diff_cmd, exit_on_error=False)
     except RuntimeError:
@@ -45,27 +135,30 @@ def get_all_modified_release_note_files(git_sha1):
     return release_notes_files
 
 
-def get_pack_name_from_metdata(file_path):
+def get_pack_name_from_metdata(pack_path):
+    pack_metadata_path = os.path.join(pack_path, PACK_METADATA)
+    with open(pack_metadata_path, 'r') as json_file:
+        pack_metadata = json.load(json_file)
+        pack_name = pack_metadata.get('name')
+
+    return pack_name
+
+
+def get_pack_name_from_release_note(file_path):
     match = re.search(r'(.*)/ReleaseNotes/.*', file_path)
     if match:
-        pack_metadata_path = os.path.join(match.group(1), PACK_METADATA)
-        with open(pack_metadata_path, 'r') as json_file:
-            pack_metadata = json.load(json_file)
-            pack_name = pack_metadata.get('name')
-
-        return pack_name
+        return get_pack_name_from_metdata(match.group(1))
 
     raise ValueError('Pack name was not found for file path {}'.format(file_path))
 
 
 def get_pack_version_from_path(file_path):
-    # example: from filepath `<path>/1_0_1.md`, the next line will produce `1.0.1`
+    # example: from file path `<path>/1_0_1.md`, the next line will produce `1.0.1`
     pack_version = os.path.basename(os.path.splitext(file_path)[0]).replace('_', '.')
     return pack_version
 
 
 def read_and_format_release_note(rn_file):
-
     with open(rn_file, 'r') as stream:
         release_notes = stream.read()
 
@@ -90,8 +183,8 @@ def get_release_notes_dict(release_notes_files):
     """
     release_notes_dict = {}
     for file_path in release_notes_files:
+        pack_name = get_pack_name_from_release_note(file_path)
         pack_version = get_pack_version_from_path(file_path)
-        pack_name = get_pack_name_from_metdata(file_path)
 
         release_note = read_and_format_release_note(file_path)
         if release_note:
@@ -103,13 +196,16 @@ def get_release_notes_dict(release_notes_files):
     return release_notes_dict
 
 
-def generate_release_notes_summary(release_notes_dict, version, asset_id):
+def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, version, asset_id,
+                                   release_notes_file):
     """ Creates a release notes summary markdown file.
 
     Args:
-        release_notes_dict (dict): A mapping from pack names to dictionaries of pack versions to release notes.
+        new_packs_release_notes (dict): A mapping from pack names to pack summary.
+        modified_release_notes_dict (dict): A mapping from pack names to dictionaries of pack versions to release notes.
         version (str): Content version.
         asset_id (str): The asset ID.
+        release_notes_file (str): release notes output file path
 
     Returns:
         (str). The release notes summary string.
@@ -118,16 +214,24 @@ def generate_release_notes_summary(release_notes_dict, version, asset_id):
     release_notes = f'# Cortex XSOAR Content Release Notes for version {version} ({asset_id})\n' \
         f'##### Published on {current_date}\n'
 
-    for pack_name, pack_versions_dict in sorted(release_notes_dict.items()):
+    if new_packs_release_notes:
+        release_notes += '## New Content\n'
+        for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
+            release_notes += f'### {pack_name} Pack v1.0.0\n' \
+                             f'{pack_summary}\n---\n\n'
+
+    if modified_release_notes_dict:
+        release_notes += '## Improved Content\n'
+    for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
         for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
                                                        key=lambda pack_item: LooseVersion(pack_item[0])):
-            release_notes += f'## {pack_name} Pack v{pack_version}\n' \
+            release_notes += f'### {pack_name} Pack v{pack_version}\n' \
                 f'{pack_release_notes}\n---\n\n'
 
     if release_notes.endswith('---\n\n'):
         release_notes = release_notes[:-5]
 
-    with open(RELEASE_NOTES_FILE, 'w') as outfile:
+    with open(release_notes_file, 'w') as outfile:
         outfile.write(release_notes)
 
     return release_notes
@@ -204,12 +308,21 @@ def main():
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
     arg_parser.add_argument('asset_id', help='Asset ID')
+    arg_parser.add_argument('--output', help='Output file, default is ./packs-release-notes.md',
+                            default='./packs-release-notes.md')
     arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
 
-    release_notes_files = get_all_modified_release_note_files(args.git_sha1)
-    release_notes_dict = get_release_notes_dict(release_notes_files)
-    release_notes = generate_release_notes_summary(release_notes_dict, args.version, args.asset_id)
+    new_packs = get_new_packs(args.git_sha1)
+    new_packs_release_notes = {}
+    for pack in new_packs:
+        pack_name = get_pack_name_from_metdata(pack)
+        new_packs_release_notes[pack_name] = get_pack_entities(pack)
+
+    modified_release_notes = get_all_modified_release_note_files(args.git_sha1)
+    modified_release_notes_dict = get_release_notes_dict(modified_release_notes)
+    release_notes = generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict,
+                                                   args.version, args.asset_id, args.output)
     create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token)
 
 

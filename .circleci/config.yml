@@ -173,12 +173,12 @@ jobs:
               then
                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
                 # new release notes summary generator in packs format
-                python3 release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --github-token $GITHUB_TOKEN
+                python3 release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md --github-token $GITHUB_TOKEN
 
               else
                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
                 # new release notes summary generator in packs format
-                python3 release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM
+                python3 release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md
             fi
       - run:
           name: Common Server Documentation
