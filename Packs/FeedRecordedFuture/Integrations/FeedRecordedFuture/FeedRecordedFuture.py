@@ -300,8 +300,8 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             score = 0
             risk = item.get('Risk')
             if isinstance(risk, str) and risk.isdigit():
-                raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
-                raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(item['Risk'])
+                raw_json['score'] = score = client.calculate_indicator_score(risk)
+                raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
             lower_case_evidence_details_keys = []
             evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
             if evidence_details:
