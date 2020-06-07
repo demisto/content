@@ -1,0 +1,61 @@
+{
+    "id": "QRadar-mapper",
+    "name": "QRadar - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps QRadar event fields.",
+    "version": -1,
+	"defaultIncidentType": "",
+	"mapping": {
+		"Access": {
+			"internalMapping": {
+				"Dest NT Domain": {
+					"simple": "",
+					"complex": {
+						"root": "destination_networks",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": null,
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Src NT Domain": {
+					"simple": "source_network",
+					"complex": null
+				},
+				"Src User": {
+					"simple": "offense_source",
+					"complex": null
+				},
+				"details": {
+					"simple": "description",
+					"complex": null
+				},
+				"occurred": {
+					"simple": "",
+					"complex": {
+						"root": "start_time",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "number.TimeStampToDate",
+								"args": {}
+							}
+						]
+					}
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"fromVersion": "6.0.0"
+}
