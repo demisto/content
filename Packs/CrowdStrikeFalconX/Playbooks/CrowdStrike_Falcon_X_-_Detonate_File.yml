@@ -613,3 +613,4 @@ outputs:
   description: Report file object
   type: unknown
 sourceplaybookid: ATD - Detonate File
+fromversion: 5.0.0

@@ -3,7 +3,7 @@ commonfields:
   id: CrowdStrike Falcon X
   version: -1
 configuration:
-- display: Username
+- display: Client ID
   name: credentials
   required: true
   type: 9
@@ -48,6 +48,16 @@ script:
       isArray: false
       name: file
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      isArray: false
+      name: submit_file
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
       secret: false
     deprecated: false
     description: Upload a file for sandbox analysis.
@@ -144,7 +154,7 @@ script:
     deprecated: false
     description: Submit a sample SHA256 for sandbox analysis.
     execution: false
-    name: cs-fx-detonate-uploaded-file
+    name: cs-fx-submit-uploaded-file
     outputs:
     - contextPath: 'csfalconx.resource.id '
       description: Analysis ID
@@ -371,9 +381,8 @@ script:
     - contextPath: csfalconx.resource.ioc_broad_maec
       description: ID of IOC pack to download
       type: String
-  - arguments:
-    deprecated: false
-    description: Search endpoint contains File Hash
+  - deprecated: false
+    description: Shows the total and the in use quota.
     execution: false
     name: cs-fx-check-quota
     outputs:
@@ -549,7 +558,7 @@ script:
     deprecated: false
     description: Submit a URL or FTP for sandbox analysis.
     execution: false
-    name: cs-fx-detonate-url
+    name: cs-fx-submit-url
     outputs:
     - contextPath: csfalconx.resource.id
       description: Analysis ID
@@ -602,4 +611,4 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests - no instance
+- No tests - no instance

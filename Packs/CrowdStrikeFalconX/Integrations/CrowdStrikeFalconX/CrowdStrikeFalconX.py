@@ -408,7 +408,8 @@ def upload_file_command(
         file: str,
         file_name: str,
         is_confidential: str = "true",
-        comment: str = ""
+        comment: str = "",
+        submit_file: str = "no"
 ) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
@@ -416,6 +417,7 @@ def upload_file_command(
     :param file_name: name of the file
     :param is_confidential: defines visibility of this file in Falcon MalQuery, either via the API or the Falcon console
     :param comment: a descriptive comment to identify the file for other users
+    :param submit_file: if "yes" run cs-fx-submit-uploaded-file for the uploaded file
     :return: Demisto outputs when entry_context and responses are lists
     """
     response = client.upload_file(file, file_name, is_confidential, comment)
@@ -424,7 +426,12 @@ def upload_file_command(
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
     entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
-    return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
+    if submit_file == "no":
+        return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
+
+    else:
+        sha256 = str(filtered_outputs.get("sha256"))
+        return send_uploaded_file_to_sandbox_analysis_command(client, sha256, "160: Windows 10")
 
 
 def send_uploaded_file_to_sandbox_analysis_command(
@@ -689,8 +696,8 @@ def main():
         commands = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,
-            'cs-fx-detonate-uploaded-file': send_uploaded_file_to_sandbox_analysis_command,
-            'cs-fx-detonate-url': send_url_to_sandbox_analysis_command,
+            'cs-fx-submit-uploaded-file': send_uploaded_file_to_sandbox_analysis_command,
+            'cs-fx-submit-url': send_url_to_sandbox_analysis_command,
             'cs-fx-get-full-report': get_full_report_command,
             'cs-fx-get-report-summary': get_report_summary_command,
             'cs-fx-get-analysis-status': get_analysis_status_command,

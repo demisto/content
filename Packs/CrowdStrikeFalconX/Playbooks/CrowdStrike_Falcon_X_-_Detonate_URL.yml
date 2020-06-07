@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -309,26 +310,26 @@ inputs:
       accessor: Data
   required: false
   description: URL to detonate.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EnvironmentID
   value:
     simple: "100"
   required: false
   description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
     command.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "5"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "30"
   required: false
   description: How much time to wait before a timeout occurs  (minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file
@@ -372,4 +373,4 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
-sourceplaybookid: detonate_url_-_crowdstrike
+fromversion: 5.0.0
