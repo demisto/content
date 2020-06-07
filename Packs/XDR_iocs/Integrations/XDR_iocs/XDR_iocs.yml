@@ -45,7 +45,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance are marked with this
+- additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   display: Indicator Reputation
   name: feedReputation
