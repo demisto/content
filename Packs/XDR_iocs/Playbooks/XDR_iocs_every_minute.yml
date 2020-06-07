@@ -40,7 +40,7 @@ tasks:
       id: b28b3d9c-f3eb-4c6d-88b3-063b2aa5e593
       version: -1
       name: xdr-push-iocs
-      description: Push new iocs to XDR run this ones a min.
+      description: Push new IOCs to XDR. This runs once a min.
       script: XDR iocs|||xdr-push-iocs
       type: regular
       iscommand: true
