@@ -1,11 +1,11 @@
 args:
   - default: false
-    description: The user id for the shift (eg. johndoe)
+    description: The user ID for which to get the number of on-call hours for the shift (e.g. johndoe).
     isArray: false
     name: userId
     required: false
     secret: false
-comment: Retrieves number of on-call hours per user.
+comment: Retrieves the number of on-call hours per user.
 commonfields:
   id: GetShiftsPerUser
   version: -1
