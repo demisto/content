@@ -1,10 +1,10 @@
 
 XDR handle indicators  
 This integration was integrated and tested with Branch: stable-50 of XDR
-## Configure XDR iocs on Cortex XSOAR  
+## Configure Cortex XDR - IOC on Cortex XSOAR  
   
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.  
-2. Search for XDR iocs.  
+2. Search for Cortex XDR - IOC.  
 3. Click **Add instance** to create and configure a new integration instance.  
   
 | **Parameter** | **Description** | **Required** |  
@@ -74,14 +74,14 @@ There is no context output for this command.
   >sync with XDR completed.
   
   
-### xdr-push-iocs  
+### xdr-iocs-push
 ***  
 Push new iocs to XDR run this ones a min.  
   
   
 #### Base Command  
   
-`xdr-push-iocs`  
+`xdr-iocs-push`  
 #### Input  
   
 There are no input arguments for this command.  
@@ -91,20 +91,20 @@ There are no input arguments for this command.
 There is no context output for this command.  
   
 #### Command Example  
-```xdr-push-iocs```  
+```xdr-iocs-push```  
   
 #### Human Readable Output  
   
   
   
-### xdr-enable-iocs  
+### xdr-iocs-enable  
 ***  
 Enable iocs in XDR server  
   
   
 #### Base Command  
   
-`xdr-enable-iocs`  
+`xdr-iocs-enable`  
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
@@ -116,20 +116,20 @@ Enable iocs in XDR server
 There is no context output for this command.  
   
 #### Command Example  
-```!xdr-enable-iocs indicator=11.11.11.11```  
+```!xdr-iocs-enable indicator=11.11.11.11```  
     
 #### Human Readable Output  
   
 >indicators 11.11.11.11 enabled.  
   
-### xdr-disable-iocs  
+### xdr-iocs-disable  
 ***  
 Disable iocs in XDR server  
   
   
 #### Base Command  
   
-`xdr-disable-iocs`  
+`xdr-iocs-disable`  
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
@@ -141,9 +141,8 @@ Disable iocs in XDR server
 There is no context output for this command.  
   
 #### Command Example  
-```!xdr-disable-iocs indicator=22.22.22.22```  
+```!xdr-iocs-disable indicator=22.22.22.22```  
   
 #### Human Readable Output  
   
 >indicators 22.22.22.22 disabled.  
-  

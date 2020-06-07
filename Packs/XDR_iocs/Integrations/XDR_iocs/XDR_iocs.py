@@ -334,9 +334,9 @@ def main():
         'test-module': module_test,
         'xdr-iocs-sync': sync,
         'xdr-iocs-to-keep': iocs_to_keep,
-        'xdr-enable-iocs': iocs_command,
-        'xdr-disable-iocs': iocs_command,
-        'xdr-push-iocs': tim_insert_jsons,
+        'xdr-iocs-enable': iocs_command,
+        'xdr-iocs-disable': iocs_command,
+        'xdr-iocs-push': tim_insert_jsons,
         'fetch-indicators': get_changes,
     }
 

@@ -1,6 +1,6 @@
-id: XDR iocs nightly job
+id: Cortex XDR - IOCs nightly job
 version: -1
-name: XDR iocs nightly job
+name: Cortex XDR - IOCs nightly job
 description: Remove deleted IOCs from XDR
 starttaskid: "0"
 tasks:
@@ -42,10 +42,10 @@ tasks:
       description: |-
         Update all IOCs to keep and delete the other.
         Run this one time per day in 01:00 - 3:00 UTC time.
-      script: XDR iocs|||xdr-iocs-to-keep
+      script: '|||xdr-iocs-to-keep'
       type: regular
       iscommand: true
-      brand: XDR iocs
+      brand: ''
     nexttasks:
       '#none#':
       - "3"

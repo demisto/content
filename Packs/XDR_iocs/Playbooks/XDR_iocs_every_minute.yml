@@ -1,6 +1,6 @@
-id: XDR iocs every minute
+id: Cortex XDR - IOCs every minute
 version: -1
-name: XDR iocs every minute
+name: Cortex XDR - IOCs every minute
 description: Push IOCs to XDR
 starttaskid: "0"
 tasks:
@@ -38,12 +38,12 @@ tasks:
     task:
       id: 7c863a42-c2ac-420c-8a44-779c074ae6dd
       version: -1
-      name: xdr-push-iocs
+      name: Push new IOCs to XDR. This runs once a min.
       description: Push new IOCs to XDR. This runs once a min.
-      script: XDR iocs|||xdr-push-iocs
+      script: '|||xdr-iocs-push'
       type: regular
       iscommand: true
-      brand: XDR iocs
+      brand: ''
     nexttasks:
       '#none#':
       - "3"

@@ -1,6 +1,6 @@
 {
-  "name": "XDR iocs",
-  "description": "XDR iocs",
+  "name": "Cortex XDR - IOC",
+  "description": "Cortex XDR - IOC",
   "support": "xsoar",
   "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",

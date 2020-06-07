@@ -537,7 +537,7 @@ class TestXDRIOCToDemisto:
                 'RULE_STATUS': 'ENABLED', 'BS_STATUS': 'DONE', 'BS_TS': 1591165801784, 'BS_RETRIES': 1,
                 'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'DOMAIN_NAME', 'RULE_INDICATOR': 'test.co.il',
                 'REPUTATION': 'SUSPICIOUS', 'RELIABILITY': 'A',
-                'VENDORS': [{'vendor_name': 'XDR iocs', 'reputation': 'SUSPICIOUS', 'reliability': 'A'}],
+                'VENDORS': [{'vendor_name': 'Cortex XDR - IOC', 'reputation': 'SUSPICIOUS', 'reliability': 'A'}],
                 'KLASS': None,
                 'IS_DEFAULT_TTL': False, 'RULE_TTL': -1, 'MARKED_DELETED': 0
             },

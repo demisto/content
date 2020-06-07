@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: XDR iocs
+  id: Cortex XDR - IOC
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -85,6 +85,7 @@ configuration:
 - display: ''
   name: feedIncremental
   defaultvalue: true
+  hidden: true
   required: false
   type: 8
 - display: Feed Fetch Interval
@@ -98,9 +99,9 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-description: XDR handele indicators
-display: XDR iocs
-name: XDR iocs
+description: Cortex XDR - IOC handles indicators
+display: Cortex XDR - IOC
+name: Cortex XDR - IOC
 script:
   commands:
   - deprecated: false
@@ -118,7 +119,7 @@ script:
   - deprecated: false
     description: Push new IOCs to XDR. This runs every minute.
     execution: false
-    name: xdr-push-iocs
+    name: xdr-iocs-push
   - arguments:
     - default: false
       description: The indicator to enable.
@@ -129,7 +130,7 @@ script:
     deprecated: false
     description: Enables IOCs in the XDR server.
     execution: false
-    name: xdr-enable-iocs
+    name: xdr-iocs-enable
   - arguments:
     - default: false
       description: The indicator to enable.
@@ -140,7 +141,7 @@ script:
     deprecated: false
     description: Disables IOCs in the XDR server.
     execution: false
-    name: xdr-disable-iocs
+    name: xdr-iocs-disable
   dockerimage: demisto/python3:3.8.3.8715
   feed: true
   isfetch: false
@@ -152,4 +153,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- XDR iocs - Test
+- Cortex XDR - IOC - Test
