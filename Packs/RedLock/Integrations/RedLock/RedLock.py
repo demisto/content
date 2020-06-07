@@ -67,6 +67,9 @@ def req(method, path, data, param_data):
                 statuses = json.loads(response.headers.get('x-redlock-status'))  # type: ignore
                 for status in statuses:
                     text += '\n%s [%s]' % (status.get('i18nKey', ''), status.get('subject', ''))
+                    # Handle case for no remediation details
+                    if status['i18nKey'] == 'remediation_unavailable':
+                        return False
             except Exception:
                 pass
         raise Exception('Error in API call to RedLock service [%d] - %s' % (response.status_code, text))
@@ -373,6 +376,51 @@ def translate_severity(alert):
     return 0
 
 
+def get_remediation_details():
+    """
+    Retrieve remediation details for a given alert
+    """
+    alert_ids = argToList(demisto.getArg('alert-id'))
+    payload = {'alerts': alert_ids, 'filter': {}}
+    handle_filters(payload['filter'])
+    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+
+    if not alert_ids:
+        return_error('You must specify the alert-id to retrieve with CLI remediation')
+
+    md_data = []
+    context = []
+    response = req('POST', 'alert/remediation', payload, None)
+
+    if response:
+        for alert_id in alert_ids:
+            details = {
+                'ID': alert_id,
+                'Remediation': {
+                    'CLI': response['alertIdVsCliScript'][alert_id],
+                    'Description': response['cliDescription']
+                }
+            }
+            human_readable_details = {
+                'ID': details['ID'],
+                'RemediationCLI': details['Remediation']['CLI'],
+                'RemediationDescription': details['Remediation']['Description']
+            }
+            context.append(details)
+            md_data.append(human_readable_details)
+
+        MD = tableToMarkdown("Remediation Details", md_data)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response,
+            'EntryContext': {'Redlock.Alert(val.ID == obj.ID)': context},
+            'HumanReadable': MD
+        })
+    else:
+        demisto.results('No Remediation Details Found')
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
@@ -424,6 +472,8 @@ try:
         dismiss_alerts()
     elif demisto.command() == 'redlock-reopen-alerts':
         reopen_alerts()
+    elif demisto.command() == 'redlock-get-remediation-details':
+        get_remediation_details()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
     else:
