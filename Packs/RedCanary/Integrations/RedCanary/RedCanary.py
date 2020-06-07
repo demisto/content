@@ -320,7 +320,7 @@ def get_unacknowledged_detections(t, per_page=50):
             attributes = detection.get('attributes', {})
             # If 'last_acknowledged_at' and 'last_acknowledged_by' are in attributes,
             # the detection is acknowledged and should not create a new incident.
-            if attributes.get('last_acknowledged_at') and attributes.get('last_acknowledged_by'):
+            if not (attributes.get('last_acknowledged_at') and attributes.get('last_acknowledged_by')):
                 yield detection
 
         page += 1
@@ -330,7 +330,6 @@ def get_unacknowledged_detections(t, per_page=50):
 @logger
 def detection_to_incident(raw_detection):
     detection = detection_to_context(raw_detection)
-    detection['Timeline'] = get_full_timeline(detection['ID'])
 
     return {
         'type': 'RedCanaryDetection',
