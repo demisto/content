@@ -41,8 +41,8 @@ tasks:
       version: -1
       name: xdr-iocs-iocs-to-keep
       description: |-
-        Update all iocs to keep and delete the other.
-        run this one a day in 01:00 - 3:00 utc time.
+        Determines which IOCs are kept and which are deleted.
+        This runs once a day between 01:00 - 3:00 utc time.
       script: XDR iocs|||xdr-iocs-iocs-to-keep
       type: regular
       iscommand: true
