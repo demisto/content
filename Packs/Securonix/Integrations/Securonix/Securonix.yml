@@ -41,6 +41,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: '50'
+  display: The maximum number of incidents to fetch each time. Maximum is 50.
+  name: max_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -531,6 +536,13 @@ script:
         multiple selections.
       isArray: false
       name: incident_types
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximun number of incident to retrieve.
+      isArray: false
+      name: max
       required: false
       secret: false
     deprecated: false
