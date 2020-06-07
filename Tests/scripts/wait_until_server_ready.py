@@ -62,6 +62,7 @@ def main():
                                 f'Spot instance was dropped by amazon, if raised often - report to team leader.')
                     instance_ips_to_poll.remove(ami_instance_ip)
                     failure = True
+                    continue
                 except Exception as exp:
                     print_warning(f'{ami_instance_name} encountered an error: {str(exp)}\n'
                                   f'Will retry this step later.')
