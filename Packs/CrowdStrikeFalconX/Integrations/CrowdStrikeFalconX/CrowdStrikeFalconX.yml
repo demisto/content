@@ -52,6 +52,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
+      description: Submit the given file to the sandbox.
       isArray: false
       name: submit_file
       predefined:
