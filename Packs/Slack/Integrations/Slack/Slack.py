@@ -49,6 +49,11 @@ POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
 }
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 CONTEXT_UPDATE_RETRY_TIMES = 3
+OBJECTS_TO_KEYS = {
+    'mirrors': 'investigation_id',
+    'questions': 'entitlement',
+    'users': 'id'
+}
 
 ''' GLOBALS '''
 
@@ -227,41 +232,45 @@ def find_mirror_by_investigation() -> dict:
     return mirror
 
 
-def set_to_latest_integration_context(context: dict, sync: bool = False):
+def set_to_latest_integration_context(context: dict, object_keys: dict, sync: bool = False, attempt = 0):
     """
     Sets a key value pair to the integration context right after getting it to have the latest context.
     :param context: A dictionary of keys and values to set.
     :param sync: Whether to make a versioned request.
     """
 
+    if attempt == CONTEXT_UPDATE_RETRY_TIMES:
+        raise Exception('Slack - failed updating integration context. Max retry attempts exceeded.')
+
     integration_context_versioned = demisto.getIntegrationContextVersioned(sync)
-    integration_context = {}
     version = -1
     if sync:
         version = integration_context_versioned['version']
-    integration_context = integration_context['context']
+    integration_context = integration_context_versioned['context']
+    demisto.info(f'Slack - Attempting to update the integration context with version {version}.')
 
     for key, value in context.items():
         demisto.debug(f'Slack - updating context value: {key} = {value}')
         integration_context[key] = json.dumps(value)
 
-    demisto.info('Slack - Updating integration context.')
     demisto.debug(f'Slack - integration context: {str(integration_context)}')
-    updated = False
-    retry_times = 0
-    while not updated and retry_times < CONTEXT_UPDATE_RETRY_TIMES:
-        try:
-            demisto.setIntegrationContextVersioned(integration_context, version, sync)
-            updated = True
-        except ValueError:
-            latest_integration_context_versioned = demisto.getIntegrationContextVersioned(sync)
-            version = latest_integration_context_versioned['version']
-            integration_context = latest_integration_context_versioned['context']
-            for key, value in context.items():
-                latest_object = json.loads(integration_context.get(key, '[]'))
-                updated_object = context[key]
-                merged_context = merge_lists(latest_object, updated_object, 'entitlement')
+    try:
+        demisto.setIntegrationContextVersioned(integration_context, version, sync)
+    except ValueError:
+        demisto.info(f'Slack - Failed updating integration context with version {version}. Retrying.'
+                     f' Attempts left - {CONTEXT_UPDATE_RETRY_TIMES - attempt}')
+        latest_integration_context_versioned = demisto.getIntegrationContextVersioned(sync)
+        integration_context = latest_integration_context_versioned['context']
+        merged_context = {}
+        for key, value in context.items():
+            latest_object = json.loads(integration_context.get(key, '[]'))
+            updated_object = context[key]
+            merged_list = merge_lists(latest_object, updated_object, object_keys[key])
+            merged_context[key] = merged_list
 
+        set_to_latest_integration_context(merged_context, object_keys, True, attempt + 1)
+
+    demisto.info('Slack - successfully updated integration context.')
 
 
 def set_name_and_icon(body, method):
