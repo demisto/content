@@ -503,7 +503,6 @@ def get_related_entities_command():
 
     ec = {}
     if response and ('error' not in response):
-        hr = []  # type: list
         entity_result_type = entity_result_type.split(',')
         entity_types = []  # type: list
         if 'All' in entity_result_type:
@@ -581,7 +580,7 @@ def get_related_entities_command():
             related_entities_ec['URL'] = url_outputs
 
         if hr_md:
-            hr_md = '### Recorded Future related entities to ' + entity_value + '\n' + hr
+            hr_md = '### Recorded Future related entities to ' + entity_value + '\n' + hr_md
             if entity_type == 'ip':
                 ec[outputPaths['ip']] = {
                     'Address': entity_value,

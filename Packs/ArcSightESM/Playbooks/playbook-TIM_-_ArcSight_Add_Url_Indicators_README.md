@@ -10,7 +10,6 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 * ArcSight ESM v2
-* Builtin
 
 ### Scripts
 This playbook does not use any scripts.
@@ -22,14 +21,14 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| ArcSightBlackListUrlActiveListID | ID of the black list Url Active List resource as appears in ArcSight. |  |  | Optional |
-| ArcsightBlackUrlValueFieldName | The name of the black list Active List field to insert the Url value to. |  |  | Optional |
-| ArcSightWhiteListUrlActiveListID | ID of the white list Url Active List resource as appears in ArcSight. |  |  | Optional |
-| ArcsightWhiteListUrlValueFieldName | The name of the white list Active List field to insert the Url value to. |  |  | Optional |
-| ArcSightWatchListUrlActiveListID | ID of the watch list Url Active List resource as appears in ArcSight. |  |  | Optional |
-| ArcsightWatchListUrlValueFieldName | The name of the watch list Active List field to insert the Url value to. |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| ArcSightBlackListUrlActiveListID | ID of the black list Url Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightBlackUrlValueFieldName | The name of the black list Active List field to insert the Url value to. |  | Optional |
+| ArcSightWhiteListUrlActiveListID | ID of the white list Url Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightWhiteListUrlValueFieldName | The name of the white list Active List field to insert the Url value to. |  | Optional |
+| ArcSightWatchListUrlActiveListID | ID of the watch list Url Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightWatchListUrlValueFieldName | The name of the watch list Active List field to insert the Url value to. |  | Optional |
 
 ## Playbook Outputs
 ---

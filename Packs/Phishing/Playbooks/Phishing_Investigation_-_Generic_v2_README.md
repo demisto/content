@@ -24,7 +24,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Scripts
 * DBotPredictPhishingWords
 * AssignAnalystToIncident
-* SendEmail
 * CheckEmailAuthenticity
 * Set
 
@@ -53,4 +52,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing_Investigation_Generic_v2](https://raw.githubusercontent.com/demisto/content/7a20daa4d3560df3be0d2f3f41c00d43ac1a1e23/Packs/Phishing/doc_files/Phishing_Investigation_Generic_v2.png)
+![Phishing_Investigation_Generic_v2](https://github.com/demisto/content/raw/4000f5d617a0929a78095a6bb3aa90279b9ee527/Packs/Phishing/doc_files/Phishing_Investigation_Generic_v2.png)

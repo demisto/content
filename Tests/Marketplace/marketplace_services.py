@@ -2,11 +2,15 @@ import json
 import os
 import subprocess
 import fnmatch
+import re
 import shutil
 import yaml
+import google.auth
+from google.cloud import storage
 import enum
 import base64
 import urllib.parse
+import warnings
 from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
@@ -28,10 +32,34 @@ class GCPConfig(object):
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
+    PRODUCTION_BUCKET = "marketplace-dist"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    CORE_PACKS_LIST = [BASE_PACK]  # cores packs list
+    CORE_PACKS_LIST = [BASE_PACK,
+                       "Rasterize",
+                       "DemistoRESTAPI",
+                       "DemistoLocking",
+                       "ImageOCR",
+                       "WhereIsTheEgg",
+                       "FeedAutofocus",
+                       "AutoFocus",
+                       "UrlScan",
+                       "Active_Directory_Query",
+                       "FeedTAXII",
+                       "VirusTotal",
+                       "Whois",
+                       "Phishing",
+                       "CommonScripts",
+                       "CommonPlaybooks",
+                       "CommonTypes",
+                       "CommonDashboards",
+                       "CommonReports",
+                       "CommonWidgets",
+                       "TIM_Processing",
+                       "TIM_SIEM",
+                       "HelloWorld"
+                       ]  # cores packs list
 
 
 class Metadata(object):
@@ -66,22 +94,24 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def pack_displayed_items(cls):
-        return [
+        return {
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
-        ]
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+        }
 
     @classmethod
     def yml_supported_folders(cls):
-        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
+        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
+                PackFolders.TEST_PLAYBOOKS.value}
 
     @classmethod
     def json_supported_folders(cls):
-        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
                 PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.REPORTS.value]
+                PackFolders.WIDGETS.value}
 
 
 class PackStatus(enum.Enum):
@@ -286,10 +316,21 @@ class Pack(object):
             dependency_integration_images = dependency_data.get('integrations', [])
 
             for dependency_integration in dependency_integration_images:
-                if dependency_integration not in pack_integration_images:
+                dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
+                dependency_pack_name = os.path.basename(
+                    os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
+
+                if dependency_pack_name not in display_dependencies_images:
+                    continue  # skip if integration image is not part of displayed pack
+
+                if dependency_integration not in pack_integration_images:  # avoid duplicates in list
                     pack_integration_images.append(dependency_integration)
 
         return pack_integration_images
+
+    @staticmethod
+    def _clean_release_notes(changelog_lines):
+        return re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
 
     @staticmethod
     def _parse_pack_dependencies(first_level_dependencies, all_level_pack_dependencies_data):
@@ -394,14 +435,11 @@ class Pack(object):
         pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
                                                    author=user_metadata.get('author', ''))
         pack_metadata['authorImage'] = author_image
-        pack_metadata['beta'] = get_valid_bool(user_metadata.get('beta', False))
-        pack_metadata['deprecated'] = get_valid_bool(user_metadata.get('deprecated', False))
         pack_metadata['certification'] = user_metadata.get('certification', Metadata.CERTIFIED)
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
-        pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
+        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
@@ -441,7 +479,8 @@ class Pack(object):
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
             else:
-                raise Exception(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
+                print_warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
+                continue
 
         return dependencies_data_result
 
@@ -630,6 +669,7 @@ class Pack(object):
 
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
+                            changelog_lines = self._clean_release_notes(changelog_lines)
                         version_changelog = {'releaseNotes': changelog_lines,
                                              'displayName': latest_release_notes,
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
@@ -688,11 +728,13 @@ class Pack(object):
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
-                PackFolders.INDICATOR_TYPES.value: "reputation"
+                PackFolders.INDICATOR_TYPES.value: "reputation",
+                PackFolders.LAYOUTS.value: "layout",
+                PackFolders.CLASSIFIERS.value: "classifier",
+                PackFolders.WIDGETS.value: "widget"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
-                pack_dirs[:] = [d for d in pack_dirs if d not in PackFolders.TEST_PLAYBOOKS.value]
                 current_directory = root.split(os.path.sep)[-1]
 
                 folder_collected_items = []
@@ -792,6 +834,23 @@ class Pack(object):
                             'reputationScriptName': content_item.get('reputationScriptName', ""),
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
+                    elif current_directory == PackFolders.LAYOUTS.value:
+                        folder_collected_items.append({
+                            'typeId': content_item.get('typeId', ""),
+                            'kind': content_item.get('kind', ""),
+                            'version': 'v2' if 'tabs' in content_item.get('layout', {}) else 'v1'
+                        })
+                    elif current_directory == PackFolders.CLASSIFIERS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name') or content_item.get('id', ""),
+                            'description': content_item.get('description', '')
+                        })
+                    elif current_directory == PackFolders.WIDGETS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'dataType': content_item.get('dataType', ""),
+                            'widgetType': content_item.get('widgetType', "")
+                        })
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
@@ -839,7 +898,8 @@ class Pack(object):
         finally:
             return task_status, user_metadata
 
-    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path):
+    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
+                        packs_dependencies_mapping):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -850,6 +910,7 @@ class Pack(object):
             public url.
             author_image (str): uploaded public gcs path to author image.
             index_folder_path (str): downloaded index folder directory path.
+            packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -859,6 +920,16 @@ class Pack(object):
 
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
+
+            if 'dependencies' not in user_metadata:
+                user_metadata['dependencies'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('dependencies', {})
+                print(f"Adding auto generated dependencies for {self._pack_name} pack")
+
+            if 'displayedImages' not in user_metadata:
+                user_metadata['displayedImages'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('displayedImages', [])
+                print(f"Adding auto generated display images for {self._pack_name} pack")
 
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
@@ -1109,6 +1180,33 @@ class Pack(object):
 
 
 # HELPER FUNCTIONS
+
+def init_storage_client(service_account=None):
+    """Initialize google cloud storage client.
+
+    In case of local dev usage the client will be initialized with user default credentials.
+    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
+
+    Args:
+        service_account (str): full path to service account json.
+
+    Return:
+        storage.Client: initialized google cloud storage client.
+    """
+    if service_account:
+        storage_client = storage.Client.from_service_account_json(service_account)
+        print("Created gcp service account")
+
+        return storage_client
+    else:
+        # in case of local dev use, ignored the warning of non use of service account.
+        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
+        credentials, project = google.auth.default()
+        storage_client = storage.Client(credentials=credentials, project=project)
+        print("Created gcp private account")
+
+        return storage_client
+
 
 def input_to_list(input_data, capitalize_input=False):
     """ Helper function for handling input list or str from the user.

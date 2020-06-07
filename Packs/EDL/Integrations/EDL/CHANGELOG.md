@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 
+## [20.5.2] - 2020-05-26
+  - Removed the *panos_compatible* parameter. All indicators exported by this integrations will be PAN-OS compatible.
+  - Added request parameters that are passed in the URL.
+
 ## [20.5.0] - 2020-05-12
   - Removed `Long Running Instance` from instance configuration.
   - Set the listener host to 0.0.0.0 in order to handle IPv6.

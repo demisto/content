@@ -1,26 +1,19 @@
 {
-    "name": "Google Cloud Functions",
-    "description": "",
-    "support": "Cortex XSOAR",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "categories": [
-        "Utilities"
-    ],
-    "tags": [
-        "Google",
-        "Google Cloud"
-    ],
-    "created": "2020-04-02T07:37:03Z",
-    "updated": "2020-04-02T07:37:03Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "price": "0",
-    "dependencies": {}
+  "name": "Google Cloud Functions",
+  "description": "Google Cloud Functions",
+  "support": "Cortex XSOAR",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-02T07:37:03Z",
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [
+    "Google",
+    "Google Cloud"
+  ],
+  "useCases": [],
+  "keywords": []
 }

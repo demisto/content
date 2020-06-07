@@ -40,14 +40,11 @@ class TestMetadataParsing:
         assert parsed_metadata['supportDetails']['email'] == 'test@test.com'
         assert parsed_metadata['author'] == 'Cortex XSOAR'
         assert 'authorImage' in parsed_metadata
-        assert not parsed_metadata['beta']
-        assert not parsed_metadata['deprecated']
         assert 'certification' in parsed_metadata
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == '5.5.0'
-        assert 'serverLicense' in parsed_metadata
         assert parsed_metadata['currentVersion'] == '2.3.0'
-        assert parsed_metadata['tags'] == ["Tag Number One", "Tag Number Two"]
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two"]
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
         assert 'integrations' in parsed_metadata
@@ -70,8 +67,6 @@ class TestMetadataParsing:
         assert parsed_metadata['support'] == Metadata.XSOAR_SUPPORT
         assert parsed_metadata['supportDetails']['url'] == Metadata.XSOAR_SUPPORT_URL
         assert parsed_metadata['author'] == Metadata.XSOAR_AUTHOR
-        assert not parsed_metadata['beta']
-        assert not parsed_metadata['deprecated']
         assert parsed_metadata['certification'] == Metadata.CERTIFIED
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == "dummy_server_version"
@@ -346,6 +341,22 @@ class TestChangelogCreation:
         dummy_path = 'Irrelevant/Test/Path'
         result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
         assert result is True
+
+    def test_clean_release_notes_lines(self):
+        original_rn = '''
+### Integration
+- __SomeIntegration__
+This is visible
+<!-- This is not -->
+'''
+        expected_rn = '''
+### Integration
+- __SomeIntegration__
+This is visible
+
+'''
+        clean_rn = Pack._clean_release_notes(original_rn)
+        assert expected_rn == clean_rn
 
 
 class TestImagesUpload:
