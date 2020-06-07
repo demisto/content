@@ -15,3 +15,8 @@ pipx inject mitmproxy python-dateutil
 echo "'mitmproxy' installed and 'python-dateutil' dependency injected"
 echo "mitmproxy dependencies setup completed"
 echo "--------------------------------------"
+
+echo "increasing MaxStartups in sshd_config to prevent the 'ssh_exchange_identification: Connection closed by remote host' error"
+sudo sed -i "s/#MaxStartups 10:30:100/MaxStartups 20:30:100/g" /etc/ssh/sshd_config
+echo "restarting sshd"
+sudo kill -SIGHUP $(pgrep -f "sshd -D")
