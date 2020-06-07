@@ -374,3 +374,5 @@ outputs:
   description: The actual score
   type: number
 fromversion: 5.0.0
+tests:
+ -  No tests

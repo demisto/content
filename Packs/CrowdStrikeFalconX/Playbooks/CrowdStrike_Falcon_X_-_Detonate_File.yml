@@ -614,3 +614,6 @@ outputs:
   type: unknown
 sourceplaybookid: ATD - Detonate File
 fromversion: 5.0.0
+tests:
+ -  No tests
+
