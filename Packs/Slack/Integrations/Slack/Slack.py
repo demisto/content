@@ -48,6 +48,7 @@ POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
     (60, ): 5
 }
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+CONTEXT_UPDATE_RETRY_TIMES = 3
 
 ''' GLOBALS '''
 
@@ -233,8 +234,12 @@ def set_to_latest_integration_context(context: dict, sync: bool = False):
     :param sync: Whether to make a versioned request.
     """
 
-
-    integration_context = demisto.getIntegrationContext()
+    integration_context_versioned = demisto.getIntegrationContextVersioned(sync)
+    integration_context = {}
+    version = -1
+    if sync:
+        version = integration_context_versioned['version']
+    integration_context = integration_context['context']
 
     for key, value in context.items():
         demisto.debug(f'Slack - updating context value: {key} = {value}')
@@ -242,7 +247,21 @@ def set_to_latest_integration_context(context: dict, sync: bool = False):
 
     demisto.info('Slack - Updating integration context.')
     demisto.debug(f'Slack - integration context: {str(integration_context)}')
-    demisto.setIntegrationContext(integration_context)
+    updated = False
+    retry_times = 0
+    while not updated and retry_times < CONTEXT_UPDATE_RETRY_TIMES:
+        try:
+            demisto.setIntegrationContextVersioned(integration_context, version, sync)
+            updated = True
+        except ValueError:
+            latest_integration_context_versioned = demisto.getIntegrationContextVersioned(sync)
+            version = latest_integration_context_versioned['version']
+            integration_context = latest_integration_context_versioned['context']
+            for key, value in context.items():
+                latest_object = json.loads(integration_context.get(key, '[]'))
+                updated_object = context[key]
+                merged_context = merge_lists(latest_object, updated_object, 'entitlement')
+
 
 
 def set_name_and_icon(body, method):
