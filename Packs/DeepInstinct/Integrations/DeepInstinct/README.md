@@ -3,11 +3,7 @@
 
 Deep Instinct
 This integration was integrated and tested with version 2.3.1.17 of Deep Instinct
-## Deep Instinct Playbook
----
 
-## Use Cases
----
 
 ## Configure Deep Instinct on Demisto
 ---
@@ -1018,12 +1014,3 @@ There is no context output for this command.
 
 ##### Human Readable Output
 ok
-
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
