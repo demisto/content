@@ -2,7 +2,6 @@ from Okta_v2 import Client, get_user_command, get_group_members_command, create_
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
     get_zone_command, list_zones_command, update_zone_command
 import pytest
-import json
 
 
 client = Client(base_url="demisto.com")
