@@ -724,9 +724,8 @@ def main():
 
     installed_content_packs_successfully = True
 
-    prints_manager.add_print_job('Sleeping for 1 minute...', print_error, 0)
+    prints_manager.add_print_job('Sleeping for 1 minute...', print_warning, 0)
     prints_manager.execute_thread_prints(0)
-
     sleep(60)
 
     if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
