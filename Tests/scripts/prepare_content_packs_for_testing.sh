@@ -59,7 +59,7 @@ fi
 #python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
 #echo "Finished normalizing images paths successfully."
 
-echo -e "\nBrowse to the build bucket with this address:
+echo -e "\nBrowse to the build bucket with this address:"
 echo "https://console.cloud.google.com/storage/browser/$BUCKET_FULL_TARGET_PATH\n"
 echo "Finished preparing content packs for testing successfully."
 
