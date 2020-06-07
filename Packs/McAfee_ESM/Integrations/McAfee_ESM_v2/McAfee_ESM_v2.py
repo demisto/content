@@ -155,13 +155,17 @@ class McAfeeESMClient(BaseClient):
         demisto.log(f'{looking_for} is not a {looking_in}(status).')
         return {}
 
-    def get_user_list(self, row: bool = False) -> Tuple[str, Dict, Dict]:
+    def get_user_list(self, raw: bool = False) -> Tuple[str, Dict, Dict]:
+        """
+        :param raw: ignore the human outputs if True
+        :return: list of all Users
+        """
         path = 'userGetUserList'
         headers = ['ID', 'Name', 'Email', 'Groups', 'IsMaster', 'IsAdmin', 'SMS']
         result = self.__request(path, data={"authPW": {"value": self.__password}})
         context_entry: List = [Dict] * len(result)
         human_readable = ''
-        if not row:
+        if not raw:
             for i in range(len(result)):
                 context_entry[i] = {
                     'ID': result[i].get('id'),
@@ -178,6 +182,10 @@ class McAfeeESMClient(BaseClient):
         return human_readable, {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry}, result
 
     def get_organization_list(self, raw: bool = False) -> Tuple[str, Dict, List[Dict]]:
+        """
+        :param raw: ignore the human outputs if True
+        :return: list of all organizations
+        """
         path = 'caseGetOrganizationList'
         result = self.__request(path)
         entry: List = [None] * len(result)
@@ -195,6 +203,10 @@ class McAfeeESMClient(BaseClient):
         return human_readable, context_entry, result
 
     def get_case_list(self, start_time: str = None, raw: bool = False) -> Tuple[str, Dict, List]:
+        """
+        :param raw: ignore the human outputs if True
+        :return: list of all Users
+        """
         path = 'caseGetCaseList'
         since = self.args.get('since', '1 year')
         context_entry = []
@@ -634,6 +646,13 @@ class McAfeeESMClient(BaseClient):
 
 
 def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
+    """
+
+    :param incidents_list: list of al incidents
+    :param start_id: id to start from
+    :param limit: limit
+    :return: the filtered incidents
+    """
     incidents_list = [incident for incident in incidents_list if int(incident.get('id', 0)) > start_id]
     incidents_list.sort(key=lambda case: int(case.get('id', 0)), reverse=True)
     if limit != 0:
@@ -643,6 +662,11 @@ def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
 
 
 def expected_errors(error: DemistoException) -> bool:
+    """
+
+    :param error: the error
+    :return: if the error is not real error
+    """
     expected_error: List[str] = [
         'qryGetResults failed with error[Error deserializing EsmQueryResults, see logs for more information ' +  # noqa: W504
         '(Error deserializing EsmQueryResults, see logs for more information ' +  # noqa: W504
@@ -654,7 +678,13 @@ def expected_errors(error: DemistoException) -> bool:
 
 
 def time_format(current_time: str, difference: int = 0) -> str:
-    to_return: str
+    """
+
+    :param current_time: the current time in the current format
+    :param difference: the time zone offset
+    :return: the time in the new format and in UTC time
+    """
+    to_return: str = ''
     try:
         to_return = convert_time_format(current_time, difference=difference, mcafee_format='%Y/%m/%d %H:%M:%S')
     except ValueError as error:
