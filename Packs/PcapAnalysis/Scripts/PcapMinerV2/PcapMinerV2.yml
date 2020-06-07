@@ -7,8 +7,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: What protocols to output as context. Could be multiple protocols separated
-    by commas. If left empty will not output any protocols to context.
+  description: A comma-separated list of protocols to output as context. If empty, will not output any protocols to context.
   isArray: true
   name: protocol_output
   predefined:
@@ -29,7 +28,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Whether to  extract IP, URL and Email from PCAP file.
+  description: Whether to extract IP, URL, and Email from PCAP file. Can be "True" or "False". 
   isArray: false
   name: extract_strings
   predefined:
@@ -50,7 +49,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The name of the PCAP file to save to the war room after applying the
+  description: The name of the PCAP file to save to the War Room after applying the
     `pcap_filter` (i.e. `filtered_file.pcap`).
   isArray: false
   name: filtered_file_name
@@ -64,7 +63,7 @@ args:
   secret: false
 - default: false
   defaultValue: '15'
-  description: Number of conversatinos to display.
+  description: Number of conversations to display. The default is 15.
   isArray: false
   name: convs_to_display
   required: false
@@ -79,7 +78,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Output to context the source and destination IPs in the PCAP file.
+  description: Output to context the source and destination IPs in the PCAP file. Can be "True" or "False". The default is "False".
   isArray: false
   name: extract_ips
   predefined:
@@ -88,8 +87,8 @@ args:
   required: false
   secret: false
 comment: |-
-  PcapMIner V2 allows to parse pcap files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
-  This automation takes about a minute to process 20,000 packets (which is approximatly 10MB). If you want to mine large files you can either:
+  PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
+  This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
   a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
   b) Copy the automation and change the `default timeout` parameter to match your needs.
 commonfields:
@@ -141,10 +140,10 @@ outputs:
   description: The duration of the flow (in seconds).
   type: String
 - contextPath: PcapResultsFlow.EndTime
-  description: The date time the flow ended.
+  description: The date/time the flow ended.
   type: Date
 - contextPath: PcapResultsFlow.StartTime
-  description: The date time the flow started.
+  description: The date/time the flow started.
   type: Date
 - contextPath: PcapResults.URL
   description: The URLs extracted from the file.
@@ -156,8 +155,8 @@ outputs:
   description: The emails extracted from the file.
   type: String
 - contextPath: PcapResults.Regex
-  description: The regular expressions specified in `extract_regex`,extracted from
-    the file
+  description: The regular expressions specified in `extract_regex` extracted from
+    the file.
   type: String
 - contextPath: PcapResultsHTTP.ResponseStatusCode
   description: The response code.
@@ -166,10 +165,10 @@ outputs:
   description: The request version.
   type: String
 - contextPath: PcapResultsHTTP.RequestCacheControl
-  description: The chache control of the request.
+  description: The cache control of the request.
   type: String
 - contextPath: PcapResultsHTTP.ResponseDate
-  description: The time and date of the response.
+  description: The date/time of the response.
   type: Date
 - contextPath: PcapResultsHTTP.RequestMethod
   description: The request method.
@@ -190,16 +189,16 @@ outputs:
   description: The response version.
   type: String
 - contextPath: PcapResultsHTTP.ID
-  description: The ID of the http interaction.
+  description: The ID of the HTTP interaction.
   type: String
 - contextPath: PcapResultsHTTP.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsHTTP.RequestURI
   description: The request URI.
   type: String
 - contextPath: PcapResultsHTTP.ResponseContentLength
-  description: The length of the rescponse content.
+  description: The length of the response content.
   type: String
 - contextPath: PcapResultsHTTP.ResponseCodeDesc
   description: The code description of the response.
@@ -217,19 +216,19 @@ outputs:
   description: The type of the DNS request.
   type: String
 - contextPath: PcapResultsDNS.ID
-  description: The DNS's packet ID.
+  description: The DNS packet ID.
   type: String
 - contextPath: PcapResultsDNS.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResults.Protocols
-  description: List of protocls found in the PCAP.
+  description: List of protocols found in the PCAP.
   type: String
 - contextPath: PcapResultsSMTP.From
-  description: Who the mail is from.
+  description: The mail sender.
   type: String
 - contextPath: PcapResultsSMTP.To
-  description: To whom the mail is.
+  description: The mail recipients.
   type: String
 - contextPath: PcapResultsSMTP.Subject
   description: The mail subject.
@@ -241,145 +240,145 @@ outputs:
   description: The SMTP packet's ID.
   type: String
 - contextPath: PcapResultsSMTP.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsKERBEROS.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsKERBEROS.Realm
-  description: The KERBEROS's realm.
+  description: The KERBEROS realm.
   type: String
 - contextPath: PcapResultsKERBEROS.SName
-  description: The KERBEROS's SName.
+  description: The KERBEROS SName.
   type: String
 - contextPath: PcapResultsKERBEROS.CName
-  description: The KERBEROS's CName.
+  description: The KERBEROS CName.
   type: String
 - contextPath: PcapResultsTelnet.Data
-  description: The Telnet data.
+  description: The telnet data.
   type: String
 - contextPath: PcapResultsTelnet.Commands
   description: The telnet commands.
   type: String
 - contextPath: PcapResultsTelnet.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsLLMNR.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsLLMNR.QueryClass
-  description: The LLMNR's query class.
+  description: The LLMNR query class.
   type: String
 - contextPath: PcapResultsLLMNR.QueryName
-  description: The LLMNR's query name.
+  description: The LLMNR query name.
   type: String
 - contextPath: PcapResultsLLMNR.Questions
   description: The LLMNR questions.
   type: String
 - contextPath: PcapResultsLLMNR.ID
-  description: The LLMNR's packet ID.
+  description: The LLMNR packet ID.
   type: String
 - contextPath: PcapResultsLLMNR.QueryType
-  description: The LLMNR's query type.
+  description: The LLMNR query type.
   type: String
 - contextPath: PcapResultsSYSLOG.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsSYSLOG.ID
-  description: The  SYSLOGS's packet ID.
+  description: The SYSLOGS packet ID.
   type: String
 - contextPath: PcapResultsSYSLOG.Message
-  description: The  SYSLOGS's message.
+  description: The SYSLOGS message.
   type: String
 - contextPath: PcapResultsSYSLOG.Hostname
-  description: The  SYSLOGS's host name.
+  description: The SYSLOGS host name.
   type: String
 - contextPath: PcapResultsSYSLOG.Timestamp
-  description: The  SYSLOGS's time stamp.
+  description: The SYSLOGS time stamp.
   type: String
 - contextPath: PcapResultsSMB2.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsSMB2.ID
-  description: The  SMB2's packet ID.
+  description: The SMB2 packet ID.
   type: String
 - contextPath: PcapResultsSMB2.UserName
-  description: The  SMB2's user name.
+  description: The SMB2 user name.
   type: String
 - contextPath: PcapResultsSMB2.Domain
-  description: The  SMB2's domain.
+  description: The SMB2 domain.
   type: String
 - contextPath: PcapResultsSMB2.HostName
-  description: The  SMB2's host name.
+  description: The SMB2 host name.
   type: String
 - contextPath: PcapResultsSMB2.Command
-  description: The  SMB2's command.
+  description: The SMB2 command.
   type: String
 - contextPath: PcapResultsSMB2.FileName
-  description: The  SMB2's file name.
+  description: The SMB2 file name.
   type: String
 - contextPath: PcapResultsSMB2.Tree
-  description: The  SMB2's tree.
+  description: The SMB2 tree.
   type: String
 - contextPath: PcapResultsNETBIOS.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsNETBIOS.ID
-  description: The  NETIOS's packet ID.
+  description: The NETIOS packet ID.
   type: String
 - contextPath: PcapResultsNETBIOS.Name
-  description: The  NETIOS's name.
+  description: The NETIOS name.
   type: String
 - contextPath: PcapResultsNETBIOS.Type
-  description: The  NETIOS's type.
+  description: The NETIOS type.
   type: String
 - contextPath: PcapResultsNETBIOS.Class
-  description: The  NETIOS's class.
+  description: The NETIOS class.
   type: String
 - contextPath: PcapResultsIRC.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsIRC.ID
-  description: The  IRC's packet ID.
+  description: The IRC packet ID.
   type: String
 - contextPath: PcapResultsIRC.RequestCommand
-  description: The  IRC's request command.
+  description: The IRC request command.
   type: String
 - contextPath: PcapResultsIRC.RequestTrailer
-  description: The  IRC's request trailer.
+  description: The IRC request trailer.
   type: String
 - contextPath: PcapResultsIRC.RequestPrefix
-  description: The  IRC's request prefix.
+  description: The IRC request prefix.
   type: String
 - contextPath: PcapResultsIRC.RequestParameters
-  description: The  IRC's request parameters.
+  description: The IRC request parameters.
   type: String
 - contextPath: PcapResultsIRC.ResponseCommand
-  description: The  IRC's response command.
+  description: The IRC response command.
   type: String
 - contextPath: PcapResultsIRC.ResponseTrailer
-  description: The  IRC's response trailers.
+  description: The IRC response trailers.
   type: String
 - contextPath: PcapResultsIRC.ResponsePrefix
-  description: The  IRC's response prefix.
+  description: The IRC response prefix.
   type: String
 - contextPath: PcapResultsIRC.ResponseParameters
-  description: The  IRC's response parameters.
+  description: The IRC response parameters.
   type: String
 - contextPath: PcapResultsFTP.EntryID
-  description: The PCAP's entry ID.
+  description: The PCAP entry ID.
   type: String
 - contextPath: PcapResultsFTP.ID
-  description: The  FTP's packet ID.
+  description: The FTP packet ID.
   type: String
 - contextPath: PcapResultsFTP.RequestCommand
-  description: The  FTP's request command.
+  description: The FTP request command.
   type: String
 - contextPath: PcapResultsFTP.ResponseArgs
-  description: The  FTP's response arguments.
+  description: The FTP response arguments.
   type: String
 - contextPath: PcapResultsFTP.ResponseCode
-  description: The  FTP's response code.
+  description: The FTP response code.
   type: String
 - contextPath: PcapResultsICMP
   description: ICMP data.
