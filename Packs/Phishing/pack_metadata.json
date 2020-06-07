@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "A solution for the investingation of phishing incidents.",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.2.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,6 +16,8 @@
         "Email",
         "Spam"
     ],
-    "useCases": ["Phishing"],
+    "useCases": [
+        "Phishing"
+    ],
     "keywords": []
 }
