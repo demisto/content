@@ -121,7 +121,7 @@ def filter_tests_with_incompatible_version(tests, server_version, prints_manager
     return filtered_tests
 
 
-def configure_integration_instance(integration, client, prints_manager):
+def configure_integration_instance(integration, client, prints_manager, server_host):
     """
     Configure an instance for an integration
 
@@ -141,7 +141,8 @@ def configure_integration_instance(integration, client, prints_manager):
                                  print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
     integration_instance_name = integration.get('instance_name', '')
-    integration_params = integration.get('params')
+    changes_map = {'%%SERVER_HOST%%': server_host}
+    integration_params = change_placeholders_to_values(changes_map, integration.get('params'))
     is_byoi = integration.get('byoi', True)
     validate_test = integration.get('validate_test', True)
 
@@ -811,7 +812,7 @@ def main():
 
         module_instances = []
         for integration in integrations_to_configure:
-            module_instance = configure_integration_instance(integration, testing_client, prints_manager)
+            module_instance = configure_integration_instance(integration, testing_client, prints_manager, servers[0])
             if module_instance:
                 module_instances.append(module_instance)
 
@@ -867,7 +868,8 @@ def main():
     # configure instances for new integrations
     new_integration_module_instances = []
     for integration in brand_new_integrations:
-        new_integration_module_instance = configure_integration_instance(integration, testing_client, prints_manager)
+        new_integration_module_instance = configure_integration_instance(integration, testing_client, prints_manager,
+                                                                         servers[0])
         if new_integration_module_instance:
             new_integration_module_instances.append(new_integration_module_instance)
 

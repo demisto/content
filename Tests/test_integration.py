@@ -407,6 +407,37 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
     return success, failure_message
 
 
+def set_server_keys(client, prints_manager, integration_params, integration_name):
+    if 'server_keys' not in integration_params:
+        return
+
+    prints_manager.add_print_job(f'Setting server keys for integration {integration_name}',
+                                 print_color, 0, LOG_COLORS.GREEN)
+
+    data = {
+        'data': {},
+        'version': -1
+    }
+
+    for key, value in integration_params.get('server_keys'):
+        data['data'][key] = value
+
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                                        method='POST', body=data)
+
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error(
+            'failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return
+
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = "Failed to set server keys " + str(status_code) + '\n' + message
+        print_error(msg)
+
+
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_instance_name,
                                   integration_params, is_byoi, prints_manager, validate_test=True, thread_index=0):
@@ -440,6 +471,9 @@ def __create_integration_instance(client, integration_name, integration_instance
         'passwordProtected': False,
         'version': 0
     }
+
+    # set server keys
+    set_server_keys(client, prints_manager, module_configuration, configuration['name'])
 
     # set module params
     for param_conf in module_configuration:
