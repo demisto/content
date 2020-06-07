@@ -59,8 +59,9 @@ fi
 #python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
 #echo "Finished normalizing images paths successfully."
 
-echo "Build bucket path is: https://console.cloud.google.com/storage/browser/$BUCKET_FULL_TARGET_PATH"
-echo "Finished preparing content packs for testing successfully.\n"
+echo -e "\nBrowse to the build bucket with this address:
+echo "https://console.cloud.google.com/storage/browser/$BUCKET_FULL_TARGET_PATH\n"
+echo "Finished preparing content packs for testing successfully."
 
-echo "if you want to connect this build bucket to your test machine, add this server config:"
+echo -e "\nIf you want to connect this build bucket to your test machine, add this server config:"
 echo "marketplace.bootstrap.bypass.url: https://storage.googleapis.com/$BUCKET_FULL_TARGET_PATH"
