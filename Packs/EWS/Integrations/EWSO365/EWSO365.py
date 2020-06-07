@@ -28,7 +28,6 @@ from exchangelib.errors import (
     ErrorMailboxStoreUnavailable,
     ErrorMailboxMoveInProgress,
     ErrorNameResolutionNoResults,
-    ErrorInvalidPropertyRequest,
     MalformedResponseError,
 )
 from exchangelib.items import Item, Message, Contact
