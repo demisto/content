@@ -30,7 +30,7 @@ configuration:
   - 'high'
   required: true
   type: 15
-- additionalinfo: the query to collect indicators.
+- additionalinfo: The query used to collect indicators.
   defaultvalue: type:File or type:Domain or type:IP
   display: query
   hidden: false
@@ -45,7 +45,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
+- additionalinfo: Indicators from this integration instance are marked with this
     reputation
   display: Indicator Reputation
   name: feedReputation
@@ -101,7 +101,7 @@ script:
   - deprecated: false
     description: |-
       Run once when you configure the integration (do NOT run this twice!).
-      will all the indicators that was synced with XDR and then resync.
+      will all the indicators that were synced with XDR and then resync.
     execution: false
     name: xdr-iocs-sync
   - deprecated: false
