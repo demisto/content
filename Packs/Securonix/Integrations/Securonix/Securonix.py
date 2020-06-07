@@ -1251,8 +1251,8 @@ def main():
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time', '1 hour')
             incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
-            max_fetch = int(params.get('max_fetch', '50'))
-            max_fetch = str(min(50, max_fetch))  # fetch size should no exceed 50
+            max_fetch = str(params.get('max_fetch', '50'))
+            max_fetch = str(min('50', max_fetch))  # fetch size should no exceed 50
             incidents = fetch_incidents(client, fetch_time, incident_status, max_fetch, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
         elif command in commands:
