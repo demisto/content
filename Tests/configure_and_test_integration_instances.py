@@ -276,7 +276,7 @@ def get_content_version_details(client, ami_name, prints_manager, thread_index):
 def change_placeholders_to_values(changes_map, config_item):
     item_as_string = json.dumps(config_item)
     for key, value in changes_map.items():
-        item_as_string.replace(key, value)
+        item_as_string = item_as_string.replace(key, value)
     return json.loads(item_as_string)
 
 
