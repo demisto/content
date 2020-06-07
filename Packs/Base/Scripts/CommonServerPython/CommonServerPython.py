@@ -370,7 +370,7 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         if insecure_param_name is None:
             param_names = ('insecure', 'unsecure')
         else:
-            param_names = (insecure_param_name, )
+            param_names = (insecure_param_name, )  # type: ignore[assignment]
         for p in param_names:
             if demisto.params().get(p, False):
                 for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
@@ -1250,7 +1250,7 @@ def appendContext(key, data, dedup=False):
 
         elif isinstance(existing, dict):
             if isinstance(data, dict):
-                new_val = [existing, data]
+                new_val = [existing, data]  # type: ignore[assignment]
             else:
                 new_val = data + existing  # will raise a self explanatory TypeError
 
@@ -1259,10 +1259,10 @@ def appendContext(key, data, dedup=False):
                 existing.extend(data)
             else:
                 existing.append(data)
-            new_val = existing
+            new_val = existing  # type: ignore[assignment]
 
         else:
-            new_val = [existing, data]
+            new_val = [existing, data]  # type: ignore[assignment]
 
         if dedup and isinstance(new_val, list):
             new_val = list(set(new_val))
@@ -2629,7 +2629,7 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs
+                outputs = self.outputs  # type: ignore[assignment]
                 human_readable = self.readable_output  # prefix and key field not provided, human readable should
 
         return_entry = {
