@@ -3,7 +3,7 @@ Cortex XDR is the world's first detection and response app that natively integra
 
 ### Generate an API Key and API Key ID
 1. In your Cortex XDR platform, go to **Settings**.
-2. Click the **+New Key** button in the top right corner
+2. Click the **+New Key** button in the top right corner.
 3. Generate a key of type **Advanced**.
 4. Copy and paste the key.
 5. From the ID column, copy the Key ID.
@@ -13,7 +13,7 @@ Cortex XDR is the world's first detection and response app that natively integra
 2. Click the **Copy URL** button in the top right corner.
 
 ### Query
-the query to find indicators.
+The query to find indicators.
 
-### important
-Do not use more then one instance (instances will override each other).
+### Important
+Do not use more then one instance. Instances will override each other.
