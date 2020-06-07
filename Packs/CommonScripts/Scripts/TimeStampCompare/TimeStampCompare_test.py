@@ -1,11 +1,11 @@
-from TimeStampCompare import compare_times, time_stamp_compare_command, EQUAL, BEFORE, AFTER, parse, DT_STRING
+from TimeStampCompare import compare_times, time_stamp_compare_command, EQUAL, BEFORE, AFTER, DT_STRING, dateparser
 
 
 def test_compare_times():
-    compared_time = parse("2020-02-01T00:00:00")
-    equal_tested_time = parse("2020-02-01T00:00:00")
-    before_tested_time = parse("2002-02-01T00:00:00")
-    after_tested_time = parse("2021-02-01T00:00:00")
+    compared_time = dateparser.parse("2020-02-01T00:00:00")
+    equal_tested_time = dateparser.parse("2020-02-01T00:00:00")
+    before_tested_time = dateparser.parse("2002-02-01T00:00:00")
+    after_tested_time = dateparser.parse("2021-02-01T00:00:00")
 
     assert compare_times(compared_time, equal_tested_time) == EQUAL
     assert compare_times(compared_time, before_tested_time) == AFTER
@@ -24,11 +24,11 @@ def test_command():
         {
             "ComparedTime": "2020-02-01T00:00:00",
             "Result": "after",
-            "TestedTime": "2020-01-01T00:00:00"
+            "TestedTime": "01-01-2020 00:00:00"
         },
         {
-            "ComparedTime": "2019-12-31T00:00:00",
+            "ComparedTime": "31.12.2019",
             "Result": "before",
-            "TestedTime": "2020-01-01T00:00:00"
+            "TestedTime": "01-01-2020 00:00:00"
         }
     ]
