@@ -1116,8 +1116,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
             print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         else:
             print_warning("Running Sanity check only")
-            tests.add('DocumentationTest')  # test with integration configured
             tests.add('TestCommonPython')  # test with no integration configured
+            tests.add('HelloWorld-Test')  # test with integration configured
+            packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
