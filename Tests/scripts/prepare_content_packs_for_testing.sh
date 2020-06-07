@@ -25,10 +25,12 @@ echo "Auth loaded successfully."
 GCS_MARKET_BUCKET="marketplace-dist"
 GCS_BUILD_BUCKET="marketplace-ci-build"
 SOURCE_PATH="content/packs"
-TARGET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/content/packs"
-BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
-echo "Copying master files at: $SOURCE_PATH to target path: gs://$BUCKET_FULL_TARGET_PATH ..."
-gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUCKET_FULL_TARGET_PATH"
+BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
+TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
+PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
+BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
+echo "Copying master files at: $SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
+gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH"
 echo "Finished copying successfully."
 
 echo "Updating modified content packs in the bucket ..."
@@ -57,5 +59,9 @@ fi
 #python3 ./Tests/Marketplace/normalize_gcs_paths.py -sb $TARGET_PATH -b $GCS_BUILD_BUCKET -s $KF
 #echo "Finished normalizing images paths successfully."
 
-echo "Build bucket path is: https://console.cloud.google.com/storage/browser/$BUCKET_FULL_TARGET_PATH"
+echo -e "\nBrowse to the build bucket with this address:"
+echo -e "https://console.cloud.google.com/storage/browser/$BUCKET_FULL_TARGET_PATH\n"
 echo "Finished preparing content packs for testing successfully."
+
+echo -e "\nIf you want to connect this build bucket to your test machine, add this server config:"
+echo "marketplace.bootstrap.bypass.url: https://storage.googleapis.com/$BUCKET_FULL_TARGET_PATH"
