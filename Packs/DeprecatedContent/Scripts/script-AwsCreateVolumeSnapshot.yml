@@ -19,9 +19,7 @@ script: |2
 type: python
 tags:
 - Amazon Web Services
-comment: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use
-  snapshots for backups, to make copies of EBS volumes, and to save data before shutting
-  down an instance.
+comment: This script is deprecated. Use the AWS-EC2 integration instead.
 system: true
 args:
 - default: true

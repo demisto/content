@@ -1,6 +1,5 @@
 id: Phishing - Core
 version: -1
-fromversion: 4.5.0
 name: Phishing - Core
 description: |-
   Provides a basic response to phishing incidents. Playbook features:
@@ -19,9 +18,9 @@ tasks:
       id: 7bd69024-bbe7-4712-8144-eed5dd7f8f21
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -87,55 +86,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 039f7bf6-391a-4ce0-865c-6db56f2d87e2
-    type: condition
-    task:
-      id: 039f7bf6-391a-4ce0-865c-6db56f2d87e2
-      version: -1
-      name: Is there a URL?
-      description: Checks if there is at least one URL involved in the incident.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: URL
-                transformers:
-                - operator: uniq
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "6":
     id: "6"
-    taskid: ad30e977-22d9-42e1-8b54-ebd88ef609e7
+    taskid: 7569cad0-10ba-4304-8454-9a7d284fc3d1
     type: regular
     task:
-      id: ad30e977-22d9-42e1-8b54-ebd88ef609e7
+      id: 7569cad0-10ba-4304-8454-9a7d284fc3d1
       version: -1
       name: Get screenshots of URLs
       description: Uses the Rasterize integration to create screenshots (images) of
         the URLs involved in the incident.
+      tags:
+      - url_screenshots
       script: '|||rasterize'
       type: regular
       iscommand: true
@@ -145,6 +107,7 @@ tasks:
       - "8"
     scriptarguments:
       height: {}
+      max_page_load_time: {}
       type: {}
       url:
         complex:
@@ -152,6 +115,7 @@ tasks:
           accessor: Data
           transformers:
           - operator: uniq
+      wait_time: {}
       width: {}
     reputationcalc: 1
     continueonerror: true
@@ -159,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1330
+          "x": 180,
+          "y": 1100
         }
       }
     note: false
@@ -168,14 +132,15 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 7880d264-1c2e-4d82-8cce-6b0474677d25
+    taskid: ef3d4e3d-bb3f-4841-85b8-298fd1d3a23d
     type: condition
     task:
-      id: 7880d264-1c2e-4d82-8cce-6b0474677d25
+      id: ef3d4e3d-bb3f-4841-85b8-298fd1d3a23d
       version: -1
       name: Can we take URL screenshots?
-      description: Checks whether the user opted to get screenshots of URLs in the
-        playbook's "GetURLScreenshots" input. Checks whether the Rasterize integration is enabled.
+      description: Checks whether URLs exist in context, whether the user opted to
+        get screenshots of URLs in the playbook's "GetURLScreenshots" input, and whether
+        the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -221,11 +186,16 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1140
+          "y": 920
         }
       }
     note: false
@@ -233,10 +203,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 1812b1ae-cb94-49ff-886a-f6b0a20fa922
+    taskid: 0f33de09-e7bd-41f6-882c-8fec0fb52159
     type: condition
     task:
-      id: 1812b1ae-cb94-49ff-886a-f6b0a20fa922
+      id: 0f33de09-e7bd-41f6-882c-8fec0fb52159
       version: -1
       name: Are there indicators with scores?
       description: Checks whether there is at least one indicator with a DBotScore.
@@ -264,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1490
+          "y": 1270
         }
       }
     note: false
@@ -360,7 +330,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1700
+          "y": 1500
         }
       }
     note: false
@@ -523,7 +493,7 @@ tasks:
       {
         "position": {
           "x": -20,
-          "y": 1980
+          "y": 1760
         }
       }
     note: false
@@ -686,7 +656,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1980
+          "y": 1760
         }
       }
     note: false
@@ -849,7 +819,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 1980
+          "y": 1760
         }
       }
     note: false
@@ -863,7 +833,8 @@ tasks:
       id: f2f75cd9-b60b-4884-862e-7cf58e61d3a5
       version: -1
       name: Manually investigate the incident
-      description: Pauses the playbook so the analyst can investigate the incdent, and manually resume the playbook when necessary.
+      description: Pauses the playbook so the analyst can investigate the incdent,
+        and manually resume the playbook when necessary.
       type: regular
       iscommand: false
       brand: ""
@@ -875,7 +846,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2150
+          "y": 1930
         }
       }
     note: false
@@ -889,8 +860,8 @@ tasks:
       id: 1ce7d809-989d-4089-866b-61b187f69f23
       version: -1
       name: Is the email malicious or benign?
-      description: Pauses the playbook so the analyst can decides whether the investigated email is
-        malicious or benign.
+      description: Pauses the playbook so the analyst can decides whether the investigated
+        email is malicious or benign.
       type: condition
       iscommand: false
       brand: ""
@@ -904,7 +875,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2320
+          "y": 2100
         }
       }
     note: false
@@ -954,7 +925,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 2510
+          "y": 2290
         }
       }
     note: false
@@ -999,7 +970,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 2510
+          "y": 2290
         }
       }
     note: false
@@ -1013,8 +984,8 @@ tasks:
       id: aeef0938-0752-477d-8b54-d4a3cfdaefc1
       version: -1
       name: Manually remediate the incident
-      description: Pauses the playbook so the analyst can manually remediate the
-        incident, and manually resume the playbook.
+      description: Pauses the playbook so the analyst can manually remediate the incident,
+        and manually resume the playbook.
       tags:
       - manual
       type: regular
@@ -1028,7 +999,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 2690
+          "y": 2470
         }
       }
     note: false
@@ -1061,7 +1032,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2880
+          "y": 2660
         }
       }
     note: false
@@ -1075,14 +1046,14 @@ tasks:
       id: a5999ec8-500c-408d-818c-2517e0c1cc15
       version: -1
       name: Extract Indicators From File - Generic v2
-      description: ""
       playbookName: Extract Indicators From File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - "7"
     scriptarguments:
       File:
         complex:
@@ -1254,15 +1225,13 @@ view: |-
     "linkLabelsPosition": {
       "23_21_#default#": 0.34,
       "23_24_yes": 0.3,
-      "5_7_yes": 0.52,
-      "5_8_#default#": 0.51,
       "7_6_yes": 0.44,
       "7_8_#default#": 0.51,
       "8_11_#default#": 0.73
     },
     "paper": {
       "dimensions": {
-        "height": 2925,
+        "height": 2705,
         "width": 1320,
         "x": -20,
         "y": 50
@@ -1274,9 +1243,9 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether the user wants the Rasterize integration to produce
-    images of URLs that are involved in the incident. If "True", screenshots
-    will be taken.
+  description: Whether the user wants the Rasterize integration to produce images
+    of URLs that are involved in the incident. If "True", screenshots will be taken.
 outputs: []
+fromversion: 4.5.0
 tests:
-  - Phishing - Core - Test
+- Phishing - Core - Test

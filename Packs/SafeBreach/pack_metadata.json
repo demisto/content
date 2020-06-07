@@ -2,7 +2,7 @@
     "name": "SafeBreach - Breach and Attack Simulation platform",
     "description": "SafeBreach automatically executes thousands of breach methods from its\n  extensive and growing Hacker\u2019s Playbook\u2122 to validate security control effectiveness.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "SafeBreach",
     "url": "https://www.safebreach.com",
     "email": "support@safebreach.com",
