@@ -1,23 +1,23 @@
 args:
 - default: false
-  description: Time to compare with
+  description: Timestamp to compare to the list of timestamps.
   isArray: false
   name: tested_time
   required: true
   secret: false
 - default: false
-  description: Values to compare the against the tested_time, we are checking each value and determining whether it's before/after/equal to the tested_time.
+  description: Values to compare the tested_time against. The script checks each value and determines whether it's before/after/equal to the tested_time.
   isArray: true
   name: values_to_compare
   required: true
   secret: false
 - default: false
-  description: Time format of the times you entered, by default we are on automatic parsing - this should be used for cases like DD/MM/YYYY. Automatic parsing will detect fromats like: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z
+  description: Time format of the times you entered. By default, the script uses automatic parsing. This should be used for cases like DD/MM/YYYY. Automatic parsing will detect formats such as: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z
   isArray: false
   name: time_format
   required: false
   secret: false
-comment: Compare a single timestamp to a list of timestamps;
+comment: Compares a single timestamp to a list of timestamps.
 commonfields:
   id: TimeStampCompare
   version: -1
@@ -31,7 +31,7 @@ outputs:
   description: The compared time
   type: Date
 - contextPath: TimeStampCompare.Result
-  description: Whether the tested time was before/after/equal as the comapred time.
+  description: Whether the tested time was before, after, or equal to the comapred time.
   type: String
 script: '-'
 subtype: python3
