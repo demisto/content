@@ -1,14 +1,14 @@
-from CrowdStrikeFalconX import Client,\
+from CrowdStrikeFalconX import Client, handle_errors,\
     send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
     get_full_report_command, get_report_summary_command, get_analysis_status_command,\
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command
 from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT,\
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT,\
-    FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT
+    FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT
 from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE,\
     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE,\
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE,\
-    GET_ANALYSIS_STATUS_HTTP_RESPONSE
+    GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE
 import pytest
 
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS = {
@@ -97,3 +97,21 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
 
     _, outputs, _ = command(client, **args)
     assert outputs == context
+
+"""
+@pytest.mark.parametrize('http_response, output', [
+    (MULTI_ERRORS_HTTP_RESPONSE, MULTIPLE_ERRORS_RESULT),
+    (NO_ERRORS_HTTP_RESPONSE, "")
+])
+def test_handle_errors(http_response, output):
+    Unit test
+    Given
+    - raw response of the http request
+    When
+    - there are or there are no errors
+    Then
+    - show the handle_errors function result - an error united string
+    - in case the function doesn't return an empty string an error will be return
+    errors = handle_errors(http_response.get("errors"))
+    assert (errors == output)
+"""

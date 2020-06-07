@@ -35,6 +35,17 @@ def convert_environment_id_string_to_int(
         raise Exception('Invalid environment id option')
 
 
+def handle_errors(
+        errors: list
+) -> str:
+    """
+    Converting the errors of the API to a string, in case there are no error, return an empty string
+    :param errors: each error is a dict with the keys code and message
+    :return: errors converted to single str
+    """
+    return '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
+
+
 class Client(BaseClient):
     """
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
@@ -338,10 +349,11 @@ def parse_outputs(
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :return: a dict based on api_res with the wanted params only
     """
-    error = api_res.get("errors")
-    if error:
-        # if there is an error in the api result, return only the error
-        return error[0]
+    api_errors = api_res.get("errors")
+    errors = handle_errors(api_errors)
+    if errors:
+        # return_error(errors)
+        return {"errors": {"errors": errors}}
 
     api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}
     resources_group_outputs, sandbox_group_outputs = {}, {}

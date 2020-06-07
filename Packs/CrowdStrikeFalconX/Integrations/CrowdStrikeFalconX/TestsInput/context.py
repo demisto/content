@@ -96,3 +96,5 @@ GET_FULL_REPORT_CONTEXT = {
             'sha256': 'sha256'
         }]
 }
+
+MULTIPLE_ERRORS_RESULT = "403: access denied, authorization failed\n401: test error #1\n402: test error #2"

@@ -645,6 +645,33 @@ GET_ANALYSIS_STATUS_HTTP_RESPONSE = {
     ]
 }
 
+MULTI_ERRORS_HTTP_RESPONSE = {
+    "errors": [
+        {
+            "code": 403,
+            "message": "access denied, authorization failed"
+        },
+        {
+            "code": 401,
+            "message": "test error #1"
+        },
+        {
+            "code": 402,
+            "message": "test error #2"
+        }
+    ],
+    "meta": {
+        "powered_by": "crowdstrike-api-gateway",
+        "query_time": 0.000654734,
+        "trace_id": "39f1573c-7a51-4b1a-abaa-92d29f704afd"
+    }
+}
 
-def test_1():
-    print(json.dumps(GET_FULL_REPORT_HTTP_RESPONSE, indent=4, sort_keys=True))
+NO_ERRORS_HTTP_RESPONSE = {
+    "errors": [],
+    "meta": {
+        "powered_by": "crowdstrike-api-gateway",
+        "query_time": 0.000654734,
+        "trace_id": "39f1573c-7a51-4b1a-abaa-92d29f704afd"
+    }
+}
