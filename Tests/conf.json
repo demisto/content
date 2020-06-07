@@ -322,8 +322,8 @@
             "playbookID": "AlienVaultOTX Test"
         },
         {
-            "integrations": "Cofense Triage",
-            "playbookID": "Cofense Triage Test"
+            "integrations": "Cofense Triage v2",
+            "playbookID": "Cofense Triage v2 Test"
         },
         {
             "integrations": "Akamai WAF",
@@ -490,6 +490,10 @@
         },
         {
             "playbookID": "Test CommonServer"
+        },
+        {
+            "playbookID": "Test-debug-mode",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "CIRCL",
@@ -849,7 +853,6 @@
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
-                "AlienVault OTX v2",
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0"
@@ -1998,7 +2001,7 @@
             ]
         },
         {
-            "integrations": "McAfee Active Response",
+            "integrations": ["epo", "McAfee Active Response"],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
@@ -2013,8 +2016,7 @@
             "fromversion": "4.5.0",
             "timeout": 1700
         },
-        {
-            "integrations": "McAfee Active Response",
+        {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
         },
@@ -2230,7 +2232,7 @@
         },
         {
             "integrations": "Cisco Spark",
-            "playbookID": "Cisco Spark Test"
+            "playbookID": "Cisco Spark Test New"
         },
         {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
@@ -2767,14 +2769,14 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": ["PrismaAccess", "Prisma Access Egress IP feed"],
+            "integrations": ["Prisma Access", "Prisma Access Egress IP feed"],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
             "nightly": true
         },
         {
-            "integrations": "PrismaAccess",
+            "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2840,7 +2842,6 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
-        "Cofense Triage Test": "Creds only works on demo4",
         "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
@@ -2861,6 +2862,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
         "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
