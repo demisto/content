@@ -320,7 +320,7 @@ def get_unacknowledged_detections(t, per_page=50):
             attributes = detection.get('attributes', {})
             # If 'last_acknowledged_at' or 'last_acknowledged_by' are in attributes,
             # the detection is acknowledged and should not create a new incident.
-            if attributes.get('last_acknowledged_at') is None or attributes.get('last_acknowledged_by') is None:
+            if attributes.get('last_acknowledged_at') is None and attributes.get('last_acknowledged_by') is None:
                 yield detection
 
         page += 1
