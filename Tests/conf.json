@@ -304,7 +304,8 @@
         {
             "integrations": "XDR iocs",
             "playbookID": "XDR iocs - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.5.0",
+            "timeout": 300
         },
         {
             "integrations": "Cloaken",

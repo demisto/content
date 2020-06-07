@@ -86,7 +86,7 @@ configuration:
   name: feedIncremental
   defaultvalue: true
   required: false
-  type: 1
+  type: 8
 - display: Feed Fetch Interval
   name: feedFetchInterval
   required: false

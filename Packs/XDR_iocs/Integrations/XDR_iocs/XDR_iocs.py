@@ -329,7 +329,6 @@ def main():
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
-
     client = Client(params)
     commands = {
         'test-module': module_test,

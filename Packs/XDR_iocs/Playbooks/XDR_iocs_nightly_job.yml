@@ -1,21 +1,19 @@
 id: XDR iocs nightly job
 version: -1
 name: XDR iocs nightly job
+description: Remove deleted IOCs from XDR
 starttaskid: "0"
-description: "Remove deleted IOCs from XDR"
-fromversion: "5.5.0"
 tasks:
   "0":
     id: "0"
-    taskid: 35169d55-7b93-4dce-852c-afe023287d2f
+    taskid: 3c3a1ca1-a1cc-4d9d-833d-0ac6c9695a31
     type: start
     task:
-      id: 35169d55-7b93-4dce-852c-afe023287d2f
+      id: 3c3a1ca1-a1cc-4d9d-833d-0ac6c9695a31
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -34,22 +32,22 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 24950e26-1bdc-416f-8626-0871ee778374
+    taskid: e93c0a7d-a0ad-4e65-8827-6aa1f5e6518b
     type: regular
     task:
-      id: 24950e26-1bdc-416f-8626-0871ee778374
+      id: e93c0a7d-a0ad-4e65-8827-6aa1f5e6518b
       version: -1
-      name: xdr-iocs-iocs-to-keep
+      name: xdr-iocs-to-keep
       description: |-
-        Determines which IOCs are kept and which are deleted.
-        This runs once a day between 01:00 - 3:00 utc time.
-      script: XDR iocs|||xdr-iocs-iocs-to-keep
+        Update all IOCs to keep and delete the other.
+        Run this one time per day in 01:00 - 3:00 UTC time.
+      script: XDR iocs|||xdr-iocs-to-keep
       type: regular
       iscommand: true
       brand: XDR iocs
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     separatecontext: false
     view: |-
       {
@@ -65,22 +63,55 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 0e2ad4b4-33d0-4454-8cc9-a646c7c53f35
+    taskid: 0ca0c273-28b0-45a6-828c-482b7b5844e1
     type: title
     task:
-      id: 0e2ad4b4-33d0-4454-8cc9-a646c7c53f35
+      id: 0ca0c273-28b0-45a6-828c-482b7b5844e1
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 460
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 36f868bb-0f72-4f93-862c-bff94064fe3a
+    type: regular
+    task:
+      id: 36f868bb-0f72-4f93-862c-bff94064fe3a
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      closeNotes: {}
+      closeReason: {}
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
         }
       }
     note: false
@@ -93,7 +124,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 475,
+        "height": 635,
         "width": 380,
         "x": 450,
         "y": 50
@@ -102,5 +133,3 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-  - No tests
