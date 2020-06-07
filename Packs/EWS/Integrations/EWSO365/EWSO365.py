@@ -1628,6 +1628,11 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
 
 
 def parse_incident_from_item(item):
+    """
+    Parses an incident from an item
+    :param item: item to parse
+    :return: Parsed item
+    """
     incident = {}
     labels = []
 
@@ -1783,6 +1788,12 @@ def parse_incident_from_item(item):
 
 
 def fetch_emails_as_incidents(client: EWSClient, last_run):
+    """
+    Fetch incidents
+    :param client: EWS Client
+    :param last_run: last run dict
+    :return:
+    """
     last_run = get_last_run(client, last_run)
 
     try:
@@ -1837,12 +1848,12 @@ def fetch_last_emails(
         client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None
 ):
     """
-
-    :param client:
-    :param folder_name:
-    :param since_datetime:
-    :param exclude_ids:
-    :return:
+    Fetches last emails
+    :param client: EWS client
+    :param (Optional) folder_name: folder name to pull from
+    :param (Optional) since_datetime: items will be searched after this datetime
+    :param (Optional) exclude_ids: exclude ids from fetch
+    :return: list of exchangelib.Items
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
     if since_datetime:
@@ -1864,6 +1875,16 @@ def fetch_last_emails(
 
 
 def test_module(client: EWSClient, max_fetch):
+    """
+    test-module
+    * Max incidents per fetch <= MAX_INCIDENTS_PER_FETCH
+    * Account can be retrieved
+    * Account has read rights
+    * Test access to fetch folder
+    :param client: EWS Client
+    :param max_fetch: Max fetches per incident
+    :return: "ok"
+    """
     try:
         if int(max_fetch) > MAX_INCIDENTS_PER_FETCH:
             return_error(f'Error - Max incidents per fetch cannot be greater than {MAX_INCIDENTS_PER_FETCH}. '
