@@ -1,8 +1,6 @@
 <p>
 Symantec Data Loss Prevention let's you discover, monitor and protect your sensitive corporate information.
 </p>
-</ul><h2>Detailed Description</h2>
-<p>Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.</p>
 <h2>Fetch Incidents</h2>
 <p>The Symantec Data Loss Prevention integration is configured to fetch incidents and integrate them into Demisto's incidents and has the fetch limit parameter.</p>
 <h2>Configure Symantec Data Loss Prevention on Demisto</h2>

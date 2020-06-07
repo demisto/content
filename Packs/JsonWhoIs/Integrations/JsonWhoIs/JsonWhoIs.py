@@ -47,7 +47,15 @@ def http_request(method, url_suffix, params=None, max_retry=3):
             break
         if trial == max_retry:  # type: ignore
             raise Exception(f'Error enrich url with JsonWhoIS API, status code {res.status_code}')  # type: ignore
-    return res.json()  # type: ignore
+    if res is None:
+        raise DemistoException('Error from JsonWhoIs: Could not get a result from the API.')
+    try:
+        raw = res.json()
+    except ValueError:
+        raise DemistoException(f'Error from JsonWhoIs: Could not parse JSON from response. {res.text}')
+    if 'error' in raw:
+        raise DemistoException(f'Error from JsonWhoIs: {raw["error"]}')
+    raise raw
 
 
 def dict_by_ec(cur_dict: dict):
@@ -94,7 +102,6 @@ def whois(url: str) -> tuple:
     raw = http_request(method='GET',
                        url_suffix='/api/v1/whois',
                        params=params)
-
     # Build all ec
     ec = {
         'DomainStatus': raw.get('status'),

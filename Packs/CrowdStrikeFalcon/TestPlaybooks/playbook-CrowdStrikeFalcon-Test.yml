@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 11da572b-d3e4-4fbd-808c-1f417395fc30
+    taskid: 3e20bf2e-cb18-4178-8efe-caa9e28b41b2
     type: start
     task:
-      id: 11da572b-d3e4-4fbd-808c-1f417395fc30
+      id: 3e20bf2e-cb18-4178-8efe-caa9e28b41b2
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b7ba7676-3078-46e3-8128-0ae003caeef0
+    taskid: 554d6588-213b-4d3e-8f8c-d942c38a6703
     type: regular
     task:
-      id: b7ba7676-3078-46e3-8128-0ae003caeef0
+      id: 554d6588-213b-4d3e-8f8c-d942c38a6703
       version: -1
       name: Fetch from instance
       scriptName: FetchFromInstance
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 489d4591-4790-4f82-8c4f-620365af58c7
+    taskid: 470a8a05-50c8-47e6-8d36-ce973abdc94d
     type: regular
     task:
-      id: 489d4591-4790-4f82-8c4f-620365af58c7
+      id: 470a8a05-50c8-47e6-8d36-ce973abdc94d
       version: -1
       name: Get detections by filter
       script: '|||cs-falcon-search-detection'
@@ -95,10 +95,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: ae1e50c1-bbac-4166-8dd7-ce7fa9628474
+    taskid: 2bb78f10-176c-4ace-859c-2862b513a442
     type: condition
     task:
-      id: ae1e50c1-bbac-4166-8dd7-ce7fa9628474
+      id: 2bb78f10-176c-4ace-859c-2862b513a442
       version: -1
       name: Assert detections were fetched
       type: condition
@@ -137,10 +137,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 22600588-7b3c-4244-8dbc-4e3e2cefb67a
+    taskid: 9526ce2e-9a6b-4216-845d-b7d803051e39
     type: regular
     task:
-      id: 22600588-7b3c-4244-8dbc-4e3e2cefb67a
+      id: 9526ce2e-9a6b-4216-845d-b7d803051e39
       version: -1
       name: Get behavior
       script: '|||cs-falcon-get-behavior'
@@ -152,7 +152,7 @@ tasks:
       - "5"
     scriptarguments:
       behavior_id:
-        simple: "5702"
+        simple: "10197"
     separatecontext: false
     view: |-
       {
@@ -168,12 +168,12 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 3405e0c7-e9a5-4a5c-8b5b-cf6be0040fd5
+    taskid: 0c5b6fff-a2e8-4fea-819b-4bc2cd8e6434
     type: condition
     task:
-      id: 3405e0c7-e9a5-4a5c-8b5b-cf6be0040fd5
+      id: 0c5b6fff-a2e8-4fea-819b-4bc2cd8e6434
       version: -1
-      name: Assert 'NGAV' scenario
+      name: Assert 'suspicious_activity' scenario
       type: condition
       iscommand: false
       brand: ""
@@ -193,7 +193,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: NGAV
+              simple: suspicious_activity
     view: |-
       {
         "position": {
@@ -208,10 +208,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 6d9f5236-f872-424b-86b0-f1b8b9ae0438
+    taskid: b36b37a0-434b-48ca-8683-6243354bdf4e
     type: regular
     task:
-      id: 6d9f5236-f872-424b-86b0-f1b8b9ae0438
+      id: b36b37a0-434b-48ca-8683-6243354bdf4e
       version: -1
       name: Get multiple devices
       script: '|||cs-falcon-search-device'
@@ -245,10 +245,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: a75e1835-6c4e-4066-89a2-06350584debc
+    taskid: 8b89d67a-947a-4e31-8f45-e9308846af86
     type: condition
     task:
-      id: a75e1835-6c4e-4066-89a2-06350584debc
+      id: 8b89d67a-947a-4e31-8f45-e9308846af86
       version: -1
       name: Assert devices were fetched
       type: condition
@@ -287,10 +287,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 4d1d9ed6-a9af-4683-8125-cf6a5d027d97
+    taskid: dabf9864-0516-41de-8b0b-bfc4c58fe1cc
     type: title
     task:
-      id: 4d1d9ed6-a9af-4683-8125-cf6a5d027d97
+      id: dabf9864-0516-41de-8b0b-bfc4c58fe1cc
       version: -1
       name: Done
       type: title
@@ -311,10 +311,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: e20d55a4-bb06-4ef5-8802-487830b1efea
+    taskid: c0d9e042-0146-4d7e-863f-c00c6f62dad2
     type: regular
     task:
-      id: e20d55a4-bb06-4ef5-8802-487830b1efea
+      id: c0d9e042-0146-4d7e-863f-c00c6f62dad2
       version: -1
       name: Clear context
       scriptName: DeleteContext

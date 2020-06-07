@@ -33,9 +33,23 @@ def get_token():
         'username': demisto.getParam('credentials')['identifier'],
         'password': demisto.getParam('credentials')['password']
     })
+
     if response.status_code != requests.codes.ok:
         raise Exception('Error authenticating to RedLock service [%d] - %s' % (response.status_code, response.text))
-    TOKEN = response.json()['token']
+    try:
+        response_json = response.json()
+        TOKEN = response_json.get('token')
+        if not TOKEN:
+            demisto.debug(json.dumps(response_json))
+            message = 'Could not retrieve token from server: {}'.format(response_json.get("message"))
+            if response_json.get('message') == 'login_needs_customer_name':
+                available_customer_names = [name.get('customerName') for name in response_json.get('customerNames')]
+                message = 'In order to login a customer name need to be configured. Available customer names: {}'.format(
+                    {", ".join(available_customer_names)})
+            raise Exception(message)
+    except ValueError as exception:
+        demisto.log(exception)
+        raise Exception('Could not parse API response.')
     HEADERS['x-redlock-auth'] = TOKEN
 
 

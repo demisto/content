@@ -285,3 +285,5 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+tests:
+  - no test
