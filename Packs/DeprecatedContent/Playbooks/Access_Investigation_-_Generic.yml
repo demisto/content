@@ -2,6 +2,7 @@ id: access_investigation_-_generic
 version: -1
 name: Access Investigation - Generic
 fromversion: 3.6.0
+toversion: 4.4.9
 description: |-
   This playbook investigates an access incident by gathering user and IP information.
 

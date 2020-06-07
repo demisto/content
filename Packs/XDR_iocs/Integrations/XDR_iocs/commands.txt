@@ -1,0 +1,5 @@
+!xdr-iocs-sync
+!xdr-iocs-to-keep
+!xdr-enable-iocs indicator=11.11.11.11
+!xdr-disable-iocs indicator=22.22.22.22
+!xdr-push-iocs
