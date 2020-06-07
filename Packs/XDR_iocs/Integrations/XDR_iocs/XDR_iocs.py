@@ -314,6 +314,14 @@ def get_changes(client: Client):
         demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
 
 
+def module_test(client: Client):
+    ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
+    path, requests_kwargs = prepare_get_changes(ts)
+    requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
+    client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
+    demisto.results('ok')
+
+
 def main():
     # """
     # Executes an integration command
@@ -324,6 +332,7 @@ def main():
 
     client = Client(params)
     commands = {
+        'test-module': module_test,
         'xdr-iocs-sync': sync,
         'xdr-iocs-to-keep': iocs_to_keep,
         'xdr-enable-iocs': iocs_command,
