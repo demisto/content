@@ -1,5 +1,4 @@
-This playbooks allows you to filter indicators according to the number of incidents the indicator is related to. The indicator query is "investigationsCount:>=X" where X is the number of related incidents to the indicator that you set.
-
+This playbooks allows you to exclude indicators according to the number of incidents the indicator is related to. The indicator query is "investigationsCount:>=X" where X is the number of related incidents to the indicator that you set. Excluded indicators are located in the Cortex XSOAR exclusion list and are removed from all of their related incidents and future ones. The purpose of excluding these indicators is to reduce the amount internal and common indicators appearing in many incidents and showing only relevant indicators. Creating exclusions can also accelerate performance. 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
