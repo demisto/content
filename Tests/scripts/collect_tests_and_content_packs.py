@@ -22,7 +22,6 @@ from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_versi
     collect_ids, get_script_or_integration_id, LOG_COLORS, print_error, print_color, \
     print_warning, server_version_compare  # noqa: E402
 
-
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
 PACKS_SCRIPT_REGEX = r'{}/([^/]+)/{}/(script-[^\\/]+)\.yml$'.format(PACKS_DIR, SCRIPTS_DIR)
@@ -32,7 +31,6 @@ FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
     PACKS_DIR, INTEGRATIONS_DIR)
 FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
     PACKS_DIR, SCRIPTS_DIR)
-
 
 TEST_DATA_INTEGRATION_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_integrations\/.*\.yml'
 INTEGRATION_REGEXES = [
@@ -602,7 +600,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     integration_set = id_set['integrations']
 
     if changed_api_modules:
-        integration_ids_to_test, integration_to_version_to_add = get_api_module_integrations(changed_api_modules, integration_set)
+        integration_ids_to_test, integration_to_version_to_add = get_api_module_integrations(changed_api_modules,
+                                                                                             integration_set)
         integration_ids = integration_ids.union(integration_ids_to_test)
         integration_to_version = {**integration_to_version, **integration_to_version_to_add}
 
@@ -1077,7 +1076,8 @@ def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
     return content_packs
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
+def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None,
+                                               id_set=None):
     """Create a test list that should run"""
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files(files_string)
@@ -1122,6 +1122,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if changed_common:
         tests.add('TestCommonPython')
 
+    if 'NonSupported' in packs_to_install:
+        packs_to_install.remove("NonSupported")
+
     return tests, packs_to_install
 
 
@@ -1131,8 +1134,10 @@ def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_se
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf, id_set=id_set),
-        'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf, id_set=id_set),
+        'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf,
+                                                      id_set=id_set),
+        'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf,
+                                                      id_set=id_set),
         'Demisto GA': is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf, id_set=id_set),
     }
     print("Creating filter_envs.json with the following envs: {}".format(envs_to_test))

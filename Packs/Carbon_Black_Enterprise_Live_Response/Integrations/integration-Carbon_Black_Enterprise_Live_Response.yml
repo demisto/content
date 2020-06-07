@@ -136,7 +136,6 @@ script:
             }
         }
         let result = http(BASE_URL + path + querystring, request, params.insecure, params.proxy);
-
         if (!ignoredStatusCodes || ignoredStatusCodes.indexOf(result.StatusCode) === -1) {
             if (result.StatusCode < 200 || result.StatusCode >= 300) {
                 if (result.StatusCode === 404) {
@@ -454,6 +453,7 @@ script:
     }
 
     function downloadFileRequest(sessionId, fileId) {
+        var headers = {Accept: ['*/*']};
         if (!sessionId) {
             throw 'Session ID is required';
         }
@@ -461,13 +461,13 @@ script:
             throw 'File ID is required';
         }
         let path = `/session/${sessionId}/file/${fileId}/content`;
-        return sendRequest(path, 'GET');
+        return sendRequest(path, 'GET', null, headers);
     }
 
     function downloadFileEntry(sessionId, fileId) {
         let fileInfo = listFilesRequest(sessionId, fileId);
         let fileContentResponse = downloadFileRequest(sessionId, fileId);
-        let fileEntryId = saveFile(fileContentResponse.Body);
+        let fileEntryId = saveFile(fileContentResponse.Bytes);
         let fileName = fileInfo.file_name.split('\\').pop();
         return {
             Type: entryTypes.file,
@@ -1221,7 +1221,6 @@ script:
         catch(err) {
             throw "Failed to get information on the file";
         }
-        //throw JSON.stringify(fileInfo,null,'\t');
         if (command.status === 'error') {
             throw 'File not found on the endpoint';
         }
@@ -1764,7 +1763,8 @@ script:
     - name: file-id
       required: true
       description: File ID
-    description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint instead.
+    description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint
+      instead.
   - name: cb-file-info
     arguments:
     - name: session
@@ -2089,6 +2089,7 @@ script:
       description: The pid of the executed process.
     description: Run executable on the endpoint.
   - name: cb-memdeump
+    deprecated: true
     arguments:
     - name: session
       description: The session ID.
@@ -2097,8 +2098,8 @@ script:
         a new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: 'The full path, including file name, to save the resulting memory dump on the endpoint
-      (example - c:\\temp\\dump_file.dmp).'
+      description: The full path, including file name, to save the resulting memory
+        dump on the endpoint (example - c:\\temp\\dump_file.dmp).
     - name: compress
       description: An optional parameter to specify whether to compress resulting
         memory dump.
@@ -2134,7 +2135,6 @@ script:
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Boolean flag indicating if memory dump is in progress.
     description: Deprecated - use cb-memdump instead.
-    deprecated: true
   - name: cb-command-create
     deprecated: true
     arguments:
@@ -2671,12 +2671,12 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provide the sensor ID to run the command with
-        a new session. The session will be created and closed automatically.
+      description: The sensor ID.  Provide the sensor ID to run the command with a
+        new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: 'The full path, including file name, to save the resulting memory dump on the endpoint, for example,
-      c:\\temp\\dump_file.dmp).'
+      description: The full path, including file name, to save the resulting memory
+        dump on the endpoint, for example, c:\\temp\\dump_file.dmp).
     - name: compress
       auto: PREDEFINED
       predefined:
@@ -2691,7 +2691,8 @@ script:
       predefined:
       - "yes"
       - "no"
-      description: Whether to cancel the command if still in "pending" status after timeout. Can be "yes" or "no".
+      description: Whether to cancel the command if still in "pending" status after
+        timeout. Can be "yes" or "no".
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
