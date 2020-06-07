@@ -1,186 +1,91 @@
-<!-- HTML_DOC -->
-<p>Use the  Prisma Cloud (RedLock) Threat Defense integration to manage alerts from Microsoft Azure, Google Cloud Platform, and AWS.</p>
-<h2>Configure the Prisma Cloud (RedLock) Integration on Demisto</h2>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Prisma Cloud (RedLock).</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
-<ul>
-<li>
-<strong>Name</strong>: A textual name for the integration instance.</li>
-<li>
-<strong>Server URL</strong>: URL of RedLlock server.</li>
-<li><strong>Username</strong></li>
-<li><strong>Password</strong></li>
-<li><strong>Customer name</strong></li>
-<li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-<li><strong>Fetch only incidents matching this rule name</strong></li>
-<li><strong>Fetch only incidents with this severity</strong></li>
-<li><strong>Fetch Incidents</strong></li>
-<li><strong>Incident type</strong></li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs and token.</li>
-</ol>
-<h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_95612196841530795631871">Search RedLock alerts: redlock-search-alerts</a></li>
-<li><a href="#h_696049476181530796105219">Get RedLock alert details: redlock-get-alert-details</a></li>
-<li><a href="#h_256874257371530796584869">Dismiss RedLock alerts: redlock-dismiss-alerts</a></li>
-<li><a href="#h_321535839611530796763100">Reopen RedLock alerts: redlock-reopen-alerts</a></li>
-<li><a href="#h_463885917901530796933580">List all Redlock alerts: redlock-list-alert-filters</a></li>
-</ol>
-<hr>
-<h3 id="h_95612196841530795631871">1. Search RedLock alerts</h3>
-<p>Searches RedLock for all alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-search-alerts</code></p>
-<h5>Input</h5>
-<table style="height: 271px; width: 744px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Input Parameter</strong></td>
-<td style="width: 535px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-from</td>
-<td style="width: 535px;">Search start time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-to</td>
-<td style="width: 535px;">Search end time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-value</td>
-<td style="width: 535px;">Amount of units to go back in time</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-unit</td>
-<td style="width: 535px;">The search unit. The types <em>login</em> and <em>epoch</em> are only available if <em>timeRangeValue</em> is blank.</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-name</td>
-<td style="width: 535px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-label</td>
-<td style="width: 535px;">Policy label</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-compliance-standard</td>
-<td style="width: 535px;">Policy compliance standard</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-account</td>
-<td style="width: 535px;">Cloud account</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-region</td>
-<td style="width: 535px;">Cloud region</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-rule-name</td>
-<td style="width: 535px;">Name of the alert rule</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-id</td>
-<td style="width: 535px;">Resource ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-name</td>
-<td style="width: 535px;">Resource name</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-type</td>
-<td style="width: 535px;">Resource type</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-status</td>
-<td style="width: 535px;">Alert status</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-id</td>
-<td style="width: 535px;">Alert ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-type</td>
-<td style="width: 535px;">Cloud type</td>
-</tr>
-<tr>
-<td style="width: 210px;">risk-grade</td>
-<td style="width: 535px;">Risk grade</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-type</td>
-<td style="width: 535px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-severity</td>
-<td style="width: 535px;">Policy severity</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 180px;"><strong>Path</strong></td>
-<td style="width: 565px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.ID</td>
-<td style="width: 565px;">ID of returned alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Status</td>
-<td style="width: 565px;">Status of returned alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.AlertTime</td>
-<td style="width: 565px;">Time of alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.ID</td>
-<td style="width: 565px;">Policy ID</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Name</td>
-<td style="width: 565px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Type</td>
-<td style="width: 565px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Severity</td>
-<td style="width: 565px;">Policy severity</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Remediable</td>
-<td style="width: 565px;">Whether or not the policy is remediable</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.RiskDetail.Rating</td>
-<td style="width: 565px;">Risk rating</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.RiskDetail.Score</td>
-<td style="width: 565px;">Risk score</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Metadata.CountOfAlerts</td>
-<td style="width: 565px;">Number of alerts found</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!redlock-search-alerts time-range-date-from="05/19/2018" time-range-date-to="06/26/2018"</code></p>
-<h5>Raw Output</h5>
-<pre>[
+Use the  Prisma Cloud (RedLock) Threat Defense integration to manage alerts from Microsoft Azure, Google Cloud Platform, and AWS.
+
+## Configure the Prisma Cloud (RedLock) Integration on Demisto
+
+1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2.  Search for Prisma Cloud (RedLock).
+3.  Click **Add instance** to create and configure a new integration instance.  
+    *   **Name**: A textual name for the integration instance.
+    *   **Server URL**: URL of RedLlock server.
+    *   **Username**
+    *   **Password**
+    *   **Customer name**
+    *   **Use system proxy settings**
+    *   **Trust any certificate (not secure)**
+    *   **Fetch only incidents matching this rule name**
+    *   **Fetch only incidents with this severity**
+    *   **Fetch Incidents**
+    *   **Incident type**
+4.  Click **Test** to validate the URLs and token.
+
+## Commands
+
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+1.  Search RedLock alerts: redlock-search-alerts
+2.  Get RedLock alert details: redlock-get-alert-details
+3.  Dismiss RedLock alerts: redlock-dismiss-alerts
+4.  Reopen RedLock alerts: redlock-reopen-alerts
+5.  List all Redlock alerts: redlock-list-alert-filters
+
+
+### 1. Search RedLock alerts
+
+Searches RedLock for all alerts.
+
+##### Base Command
+
+`redlock-search-alerts`
+
+##### Input
+
+|Input Parameter|Description|
+|--- |--- |
+|time-range-date-from|Search start time (MM/DD/YYYY)|
+|time-range-date-to|Search end time (MM/DD/YYYY)|
+|time-range-value|Amount of units to go back in time|
+|time-range-unit|The search unit. The types login and epoch are only available if timeRangeValue is blank.|
+|policy-name|Policy name|
+|policy-label|Policy label|
+|policy-compliance-standard|Policy compliance standard|
+|cloud-account|Cloud account|
+|cloud-region|Cloud region|
+|alert-rule-name|Name of the alert rule|
+|resource-id|Resource ID|
+|resource-name|Resource name|
+|resource-type|Resource type|
+|alert-status|Alert status|
+|alert-id|Alert ID|
+|cloud-type|Cloud type|
+|risk-grade|Risk grade|
+|policy-type|Policy type|
+|policy-severity|Policy severity|
+
+
+##### Context Output
+
+|Path|Description|
+|--- |--- |
+|Redlock.Alert.ID|ID of returned alert|
+|Redlock.Alert.Status|Status of returned alert|
+|Redlock.Alert.AlertTime|Time of alert|
+|Redlock.Alert.Policy.ID|Policy ID|
+|Redlock.Alert.Policy.Name|Policy name|
+|Redlock.Alert.Policy.Type|Policy type|
+|Redlock.Alert.Policy.Severity|Policy severity|
+|Redlock.Alert.Policy.Remediable|Whether or not the policy is remediable|
+|Redlock.Alert.RiskDetail.Rating|Risk rating|
+|Redlock.Alert.RiskDetail.Score|Risk score|
+|Redlock.Metadata.CountOfAlerts|Number of alerts found|
+
+
+##### Command Example
+
+`!redlock-search-alerts time-range-date-from="05/19/2018" time-range-date-to="06/26/2018"`
+
+##### Raw Output
+```json
+[
 	{
 		"AlertTime": 1527208131469,
 		"ID": "P-120",
@@ -446,86 +351,51 @@
 		"Status": "open"
 	}
 ]
-</pre>
-<h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/39116813/42449980-5bcee498-838b-11e8-81a7-34c2d4650b03.jpg" alt="playground - war room 2018-07-09 15-11-24" width="749" height="341"></p>
-<hr>
-<h3 id="h_696049476181530796105219">2. Get RedLock alert details</h3>
-<p>Get details for RedLock alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-get-alert-details</code></p>
-<h5>Input</h5>
-<table style="height: 271px; width: 744px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Input Parameter</strong></td>
-<td style="width: 535px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-id</td>
-<td style="width: 535px;">Alert ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">detailed</td>
-<td style="width: 535px;">Enables retrieving the entire or trimmed alert model</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 180px;"><strong>Path</strong></td>
-<td style="width: 565px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.ID</td>
-<td style="width: 565px;">ID of returned alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Status</td>
-<td style="width: 565px;">Status of returned alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.AlertTime</td>
-<td style="width: 565px;">Time of alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.ID</td>
-<td style="width: 565px;">Policy ID</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Name</td>
-<td style="width: 565px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Type</td>
-<td style="width: 565px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Severity</td>
-<td style="width: 565px;">Policy severity</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Remediable</td>
-<td style="width: 565px;">Whether or not the policy is remediable</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.RiskDetail.Rating</td>
-<td style="width: 565px;">Risk rating</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.RiskDetail.Score</td>
-<td style="width: 565px;">Risk score</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!redlock-get-alert-details alert-id="P-120"</code></p>
-<h5>Raw Output</h5>
-<pre>{
+```
+
+##### War Room Output
+
+![playground - war room 2018-07-09 15-11-24](https://user-images.githubusercontent.com/39116813/42449980-5bcee498-838b-11e8-81a7-34c2d4650b03.jpg)
+
+
+### 2. Get RedLock alert details
+
+Get details for RedLock alerts.
+
+##### Base Command
+
+`redlock-get-alert-details`
+
+##### Input
+
+|Input Parameter|Description|
+|--- |--- |
+|alert-id|Alert ID|
+|detailed|Enables retrieving the entire or trimmed alert model|
+
+##### Context Output
+
+|Path|Description|
+|--- |--- |
+|Redlock.Alert.ID|ID of returned alert|
+|Redlock.Alert.Status|Status of returned alert|
+|Redlock.Alert.AlertTime|Time of alert|
+|Redlock.Alert.Policy.ID|Policy ID|
+|Redlock.Alert.Policy.Name|Policy name|
+|Redlock.Alert.Policy.Type|Policy type|
+|Redlock.Alert.Policy.Severity|Policy severity|
+|Redlock.Alert.Policy.Remediable|Whether or not the policy is remediable|
+|Redlock.Alert.RiskDetail.Rating|Risk rating|
+|Redlock.Alert.RiskDetail.Score|Risk score|
+
+
+##### Command Example
+
+`!redlock-get-alert-details alert-id="P-120"`
+
+##### Raw Output
+```json
+{
 	"AlertTime": 1527208131469,
 	"ID": "P-120",
 	"Policy": {
@@ -547,253 +417,144 @@
 	},
 	"Status": "dismissed"
 }
-</pre>
-<h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/39116813/42450437-c86ac6d4-838c-11e8-95bb-3358f3ba33e5.jpg" alt="playground - artifact viewer 2018-07-09 15-28-04" width="750" height="1299"></p>
-<hr>
-<h3 id="h_256874257371530796584869">3. Dismiss RedLock alerts</h3>
-<p>Dismisses the specified RedLock alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-dismiss-alerts</code></p>
-<h5>Input</h5>
-<table style="height: 271px; width: 744px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Input Parameter</strong></td>
-<td style="width: 535px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-id</td>
-<td style="width: 535px;">Alert ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">dismissal-note</td>
-<td style="width: 535px;">Reason for dismissal</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-from</td>
-<td style="width: 535px;">Search start time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-to</td>
-<td style="width: 535px;">Search end time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-value</td>
-<td style="width: 535px;">Amount of units to go back in time</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-unit</td>
-<td style="width: 535px;">The search unit. The types <em>login</em> and <em>epoch</em> are only available if <em>timeRangeValue</em> is blank.</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-name</td>
-<td style="width: 535px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-label</td>
-<td style="width: 535px;">Policy label</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-compliance-standard</td>
-<td style="width: 535px;">Policy compliance standard</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-account</td>
-<td style="width: 535px;">Cloud account</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-region</td>
-<td style="width: 535px;">Cloud region</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-rule-name</td>
-<td style="width: 535px;">Name of the alert rule</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-id</td>
-<td style="width: 535px;">Resource ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-name</td>
-<td style="width: 535px;">Resource name</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-type</td>
-<td style="width: 535px;">Resource type</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-status</td>
-<td style="width: 535px;">Alert status</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-type</td>
-<td style="width: 535px;">Cloud type</td>
-</tr>
-<tr>
-<td style="width: 210px;">risk-grade</td>
-<td style="width: 535px;">Risk grade</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-type</td>
-<td style="width: 535px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-severity</td>
-<td style="width: 535px;">Policy severity</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-id</td>
-<td style="width: 535px;">Policy IDs (comma-separated string)</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 180px;"><strong>Path</strong></td>
-<td style="width: 565px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.ID</td>
-<td style="width: 565px;">ID of the dismissed alerts</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!redlock-dismiss-alerts alert-id="P-120" dismissal-note="Dismiss"</code></p>
-<h5>Raw Output</h5>
-<pre>[
+```
+
+##### War Room Output
+
+![playground - artifact viewer 2018-07-09 15-28-04](https://user-images.githubusercontent.com/39116813/42450437-c86ac6d4-838c-11e8-95bb-3358f3ba33e5.jpg)
+
+
+### 3. Dismiss RedLock alerts
+
+Dismisses the specified RedLock alerts.
+
+##### Base Command
+
+`redlock-dismiss-alerts`
+
+##### Input
+
+|Input Parameter|Description|
+|--- |--- |
+|alert-id|Alert ID|
+|dismissal-note|Reason for dismissal|
+|time-range-date-from|Search start time (MM/DD/YYYY)|
+|time-range-date-to|Search end time (MM/DD/YYYY)|
+|time-range-value|Amount of units to go back in time|
+|time-range-unit|The search unit. The types login and epoch are only available if timeRangeValue is blank.|
+|policy-name|Policy name|
+|policy-label|Policy label|
+|policy-compliance-standard|Policy compliance standard|
+|cloud-account|Cloud account|
+|cloud-region|Cloud region|
+|alert-rule-name|Name of the alert rule|
+|resource-id|Resource ID|
+|resource-name|Resource name|
+|resource-type|Resource type|
+|alert-status|Alert status|
+|cloud-type|Cloud type|
+|risk-grade|Risk grade|
+|policy-type|Policy type|
+|policy-severity|Policy severity|
+|policy-id|Policy IDs (comma-separated string)|
+
+
+##### Context Output
+
+|Path|Description|
+|--- |--- |
+|Redlock.Alert.ID|ID of the dismissed alerts|
+
+
+##### Command Example
+
+`!redlock-dismiss-alerts alert-id="P-120" dismissal-note="Dismiss"`
+
+##### Raw Output
+```json
+[
 	"P-120"
 ]
-</pre>
-<h5>War Room Output</h5>
-<pre>Alerts dismissed successfully. Dismissal Note: Dismiss.</pre>
-<hr>
-<h3 id="h_321535839611530796763100">4. Reopen RedLock alerts: redlock-reopen-alerts</h3>
-<p>Reopens dismissed alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-dismiss-alerts</code></p>
-<h5>Input</h5>
-<table style="height: 271px; width: 744px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Input Parameter</strong></td>
-<td style="width: 535px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-id</td>
-<td style="width: 535px;">Alert ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-from</td>
-<td style="width: 535px;">Search start time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-to</td>
-<td style="width: 535px;">Search end time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-value</td>
-<td style="width: 535px;">Amount of units to go back in time</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-unit</td>
-<td style="width: 535px;">The search unit. The types <em>login</em> and <em>epoch</em> are only available if <em>timeRangeValue</em> is blank.</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-name</td>
-<td style="width: 535px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-label</td>
-<td style="width: 535px;">Policy label</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-compliance-standard</td>
-<td style="width: 535px;">Policy compliance standard</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-account</td>
-<td style="width: 535px;">Cloud account</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-region</td>
-<td style="width: 535px;">Cloud region</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-rule-name</td>
-<td style="width: 535px;">Name of the alert rule</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-id</td>
-<td style="width: 535px;">Resource ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-name</td>
-<td style="width: 535px;">Resource name</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-type</td>
-<td style="width: 535px;">Resource type</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-status</td>
-<td style="width: 535px;">Alert status</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-type</td>
-<td style="width: 535px;">Cloud type</td>
-</tr>
-<tr>
-<td style="width: 210px;">risk-grade</td>
-<td style="width: 535px;">Risk grade</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-type</td>
-<td style="width: 535px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-severity</td>
-<td style="width: 535px;">Policy severity</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 180px;"><strong>Path</strong></td>
-<td style="width: 565px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.ID</td>
-<td style="width: 565px;">ID of the reopened alerts</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!redlock-reopen-alerts alert-id="P-120"</code></p>
-<h5>Raw Output</h5>
-<pre>[
+```
+
+##### War Room Output
+
+Alerts dismissed successfully. Dismissal Note: Dismiss.
+
+
+### 4. Reopen RedLock alerts: redlock-reopen-alerts
+
+Reopens dismissed alerts.
+
+##### Base Command
+
+`redlock-dismiss-alerts`
+
+##### Input
+
+|Input Parameter|Description|
+|--- |--- |
+|alert-id|Alert ID|
+|time-range-date-from|Search start time (MM/DD/YYYY)|
+|time-range-date-to|Search end time (MM/DD/YYYY)|
+|time-range-value|Amount of units to go back in time|
+|time-range-unit|The search unit. The types login and epoch are only available if timeRangeValue is blank.|
+|policy-name|Policy name|
+|policy-label|Policy label|
+|policy-compliance-standard|Policy compliance standard|
+|cloud-account|Cloud account|
+|cloud-region|Cloud region|
+|alert-rule-name|Name of the alert rule|
+|resource-id|Resource ID|
+|resource-name|Resource name|
+|resource-type|Resource type|
+|alert-status|Alert status|
+|cloud-type|Cloud type|
+|risk-grade|Risk grade|
+|policy-type|Policy type|
+|policy-severity|Policy severity|
+
+
+##### Context Output
+
+|Path|Description|
+|--- |--- |
+|Redlock.Alert.ID|ID of the reopened alerts|
+
+
+##### Command Example
+
+`!redlock-reopen-alerts alert-id="P-120"`
+
+##### Raw Output
+```json
+[
 	"P-120"
 ]
-</pre>
-<h5>War Room Output</h5>
-<pre>Alerts re-opened successfully.</pre>
-<hr>
-<h3 id="h_463885917901530796933580">5. List all RedLock alerts</h3>
-<p>Lists all RedLock alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-list-alert-filters</code></p>
-<h5>Input</h5>
-<p>There is no input for this command.</p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/39116813/42451747-c934f072-8390-11e8-948d-a6ed094f5b04.jpg" alt="playground - artifact viewer 2018-07-09 15-54-29" width="749" height="366"></p>
+```
+
+##### War Room Output
+
+Alerts re-opened successfully.
+
+* * *
+
+### 5. List all RedLock alerts
+
+Lists all RedLock alerts.
+
+##### Base Command
+
+`redlock-list-alert-filters`
+
+##### Input
+
+There is no input for this command.
+
+##### Context Output
+
+There is no context output for this command.
+
+##### War Room Output
+
+![playground - artifact viewer 2018-07-09 15-54-29](https://user-images.githubusercontent.com/39116813/42451747-c934f072-8390-11e8-948d-a6ed094f5b04.jpg)

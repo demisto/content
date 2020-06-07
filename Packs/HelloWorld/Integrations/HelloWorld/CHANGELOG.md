@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Changed category to Utilities
 
 ## [20.5.0] - 2020-05-12
 New changes to HelloWorld:

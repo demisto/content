@@ -104,10 +104,10 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- additionalinfo: Select Backstory alert type to create actionable incident. Available
+- additionalinfo: Select Chronicle alert type to create actionable incident. Available
     options are Assets with alerts and IOC Domain matches (Default).
   defaultvalue: IOC Domain matches
-  display: Backstory Alert Type (Select the type of data to consider for fetch incidents).
+  display: Chronicle Alert Type (Select the type of data to consider for fetch incidents).
   hidden: false
   name: backstory_alert_type
   options:
@@ -133,11 +133,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Google Chronicle Backstory integration to retrieve Asset alerts
+description: Use the Chronicle integration to retrieve Asset alerts
   or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based
   on the indicator accessed. This integration also provides reputation and threat
   enrichment of indicators observed in the enterprise.
-display: Google Chronicle Backstory
+display: Chronicle
 name: Google Chronicle Backstory
 script:
   commands:
@@ -549,7 +549,7 @@ script:
       description: The source of the alert.
       type: String
     - contextPath: GoogleChronicleBackstory.Alert.AlertInfo.Timestamp
-      description: The time of the alert in Backstory.
+      description: The time of the alert in Chronicle.
       type: String
     - contextPath: GoogleChronicleBackstory.Alert.AlertCounts
       description: The total number of alerts.
