@@ -183,7 +183,7 @@ def install_packs(client, host, prints_manager, packs_to_install, request_timeou
                                                                             _request_timeout=request_timeout)
 
         if 200 <= status_code < 300:
-            message = 'Packs were successfully installed!'
+            message = 'Packs were successfully installed!\n'
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
@@ -278,7 +278,7 @@ def upload_zipped_packs(client, host, prints_manager):
                                                                    header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
-            message = 'All packs from {} were successfully installed!'.format(packs_zip_path)
+            message = 'All packs from {} were successfully installed!\n'.format(packs_zip_path)
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
