@@ -3,22 +3,22 @@ commonfields:
   id: EWSO365
   version: -1
 configuration:
-- additionalinfo: ID can be received from the admin consent - see Detailed Instructions.
+- additionalinfo: ID can be received from the admin consent procedure - see Detailed Instructions.
   display: ID / Application ID
   name: client_id
   required: true
   type: 4
-- additionalinfo: Token can be received from the admin consent - see Detailed Instructions.
+- additionalinfo: Token can be received from the admin consent procedure - see Detailed Instructions.
   display: Token / Tenant ID
   name: tenant_id
   required: true
   type: 4
-- additionalinfo: Key can be received from the admin consent - see Detailed Instructions.
+- additionalinfo: Key can be received from the admin consent procedure - see Detailed Instructions.
   display: Key / Application Secret
   name: client_secret
   required: true
   type: 4
-- additionalinfo: Mailbox to run commands on, and to fetch incidents from.
+- additionalinfo: Mailbox to run commands on and to fetch incidents from.
   display: Email Address
   name: default_target_mailbox
   required: true
@@ -178,7 +178,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list (or array) of attachment IDs to delete. If empty, all
+      description: A comma-separated list (or array) of attachment IDs to delete. If empty, all
         attachments will be deleted from the message.
       isArray: true
       name: attachment-ids
@@ -248,7 +248,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the target folder is a public folder.
+      description: Whether the target folder is a public folder. Can be "True" or "False".
       isArray: false
       name: is-public
       predefined:
@@ -317,7 +317,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The folder path in which to search. If empty, searches all the
+      description: The folder path in which to search. If empty, searches all
         folders in the mailbox.
       isArray: false
       name: folder-path
@@ -325,7 +325,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of results to return.
+      description: Maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
@@ -338,7 +338,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the folder is a Public Folder?
+      description: Whether the folder is a public folder. Can be "True" or "False".
       isArray: false
       name: is-public
       predefined:
@@ -355,7 +355,7 @@ script:
       secret: false
     - default: false
       defaultValue: all
-      description: A CSV list of fields to retrieve.
+      description: A comma-separated list of fields to retrieve.
       isArray: true
       name: selected-fields
       predefined:
@@ -399,7 +399,7 @@ script:
       description: List of email recipients addresses.
       type: Unknown
     - contextPath: EWS.Items.receivedBy
-      description: Email received by address.
+      description: Received by address of the email.
       type: Unknown
     - contextPath: EWS.Items.messageId
       description: Email message ID.
@@ -431,7 +431,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of results to return.
+      description: Maximum number of results to return. The default is 50.
       isArray: false
       name: limit
       required: false
@@ -491,7 +491,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: A CSV list of message IDs. Run the py-ews-delete-items command
+      description: A comma-separated list of message IDs. Run the py-ews-delete-items command
         to retrieve the message IDs
       isArray: false
       name: message-ids
@@ -514,7 +514,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the target folder is a Public Folder.
+      description: Whether the target folder is a Public Folder. Can be "True" or "False".
       isArray: false
       name: is-public
       predefined:
@@ -570,7 +570,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'yes'
-      description: Whether to move the item from the original folder to the junk folder.
+      description: Whether to move the item from the original folder to the junk folder. Can be "yes" or "no". The default is "yes".
       isArray: false
       name: move-items
       predefined:
@@ -611,10 +611,10 @@ script:
       description: Folder ID.
       type: string
     - contextPath: EWS.Folders.totalCount
-      description: Number of items in folder.
+      description: Number of items in the folder.
       type: Unknown
     - contextPath: EWS.Folders.unreadCount
-      description: Number of unread items in folder
+      description: Number of unread items in the folder.
       type: number
     - contextPath: EWS.Folders.changeKey
       description: Folder change key.
@@ -631,7 +631,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of items to return.
+      description: Maximum number of items to return. The default is 50.
       isArray: false
       name: limit
       required: false
@@ -644,7 +644,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the folder is a Public Folder. Default is 'False'.
+      description: Whether the folder is a public folder. Can be "True" or "False". The default is "False".
       isArray: false
       name: is-public
       predefined:
@@ -657,7 +657,7 @@ script:
       defaultValue: 'no'
       description: If the email item contains another email as an attachment (EML
         or MSG file), whether to retrieve the EML/MSG file attachment. Can be "yes"
-        or "no". Default is "no".
+        or "no". The default is "no".
       isArray: false
       name: get-internal-item
       predefined:
@@ -727,13 +727,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A CSV list if item IDs.
+      description: A comma-separated list if item IDs.
       isArray: true
       name: item-ids
       required: true
       secret: false
     - default: false
-      description: The mailbox on which to run the command on.
+      description: The mailbox on which to run the command.
       isArray: false
       name: target-mailbox
       required: false
@@ -850,7 +850,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the destination folder is a Public Folder. Default is "False".
+      description: Whether the destination folder is a Public Folder. Can be "True" or "False". Default is "False".
       isArray: false
       name: is-public
       predefined:
@@ -874,7 +874,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The mailbox on which to apply the search.
+      description: The mailbox on which to run the search.
       isArray: false
       name: target-mailbox
       required: false
@@ -920,7 +920,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Whether to enable recursive expansion. Default is "False".
+      description: Whether to enable recursive expansion. Can be "True" or "False". Default is "False".
       isArray: false
       name: recursive-expansion
       predefined:
@@ -936,7 +936,7 @@ script:
     name: ews-expand-group
   - arguments:
     - default: false
-      description: A CSV list of item IDs.
+      description: A comma-separated list of item IDs.
       isArray: true
       name: item-ids
       required: true
@@ -989,7 +989,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves items by item ID and uploads it's content as eml file.
+    description: Retrieves items by item ID and uploads its content as an EML file.
     execution: false
     name: ews-get-items-as-eml
     outputs:

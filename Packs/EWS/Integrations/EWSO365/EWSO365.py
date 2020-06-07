@@ -219,7 +219,7 @@ class EWSClient:
     def get_account(self, target_mailbox=None):
         """
         Request an account from EWS
-        :param target_mailbox: (Optional) Mailbox associated with the requested account
+        :param (Optional) target_mailbox: Mailbox associated with the requested account
         :return: exchangelib Account
         """
         if not target_mailbox:
@@ -271,7 +271,7 @@ class EWSClient:
         Request attachments for an item
         :param item_id: item_id of the item to retrieve attachments from
         :param account: EWS account or target_mailbox associated with that account
-        :param attachment_ids: (Optional) attachment_ids: attachment_ids to retrieve
+        :param (Optional) attachment_ids: attachment_ids: attachment_ids to retrieve
         :return: list of exchangelib Item.attachments
         """
         item = self.get_item_from_mailbox(account, item_id)
@@ -684,9 +684,9 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     """
     Parses an exchangelib item as a dict
     :param item: exchangelib.Item to parse
-    :param email_address: (Optinal) string mailbox
-    :param camel_case: Is camel case
-    :param compact_fields: Is compact fields
+    :param (Optional) email_address: string mailbox
+    :param (Optional) camel_case: Is camel case
+    :param (Optional) compact_fields: Is compact fields
     :return: Item as a dict
     """
     def parse_object_as_dict(obj):
@@ -882,6 +882,13 @@ def parse_attachment_as_dict(item_id, attachment):
 
 
 def get_entry_for_item_attachment(item_id, attachment, target_email):
+    """
+    Creates a note entry for an item attachment
+    :param item_id: Item id
+    :param attachment: exchangelib attachment
+    :param target_email: target email
+    :return: note entry dict for item attachment
+    """
     item = attachment.item
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(
@@ -933,6 +940,14 @@ def get_searchable_mailboxes(client: EWSClient):
 def delete_attachments_for_message(
     client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
 ):
+    """
+    Deletes attachments for a given message
+    :param client: EWS Client
+    :param item_id: item id
+    :param (Optional) target_mailbox: target mailbox
+    :param (Optional) attachment_ids: attachment ids to delete
+    :return: entries that were delted
+    """
     attachments = client.get_attachments_for_item(
         item_id, target_mailbox, attachment_ids
     )
@@ -971,6 +986,14 @@ def delete_attachments_for_message(
 def fetch_attachments_for_message(
     client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
 ):
+    """
+    Fetches attachments for a message
+    :param client: EWS Client
+    :param item_id: item id
+    :param (Optional) target_mailbox: target mailbox
+    :param (Optional) attachment_ids: attachment ids
+    :return: list of parsed entries
+    """
     account = client.get_account(target_mailbox)
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
@@ -1007,6 +1030,16 @@ def move_item_between_mailboxes(
     source_mailbox=None,
     is_public=None,
 ):
+    """
+    Moves item between mailboxes
+    :param client: EWS Client
+    :param item_id: item id
+    :param destination_mailbox: destination mailbox
+    :param destination_folder_path: destination folder path
+    :param (Optional) source_mailbox: source mailbox
+    :param (Optional) is_public: is the destination folder public
+    :return: Output tuple
+    """
     source_account = client.get_account(source_mailbox)
     destination_account = client.get_account(destination_mailbox)
     is_public = client.is_default_folder(destination_folder_path, is_public)
@@ -1031,6 +1064,15 @@ def move_item_between_mailboxes(
 def move_item(
     client: EWSClient, item_id, target_folder_path, target_mailbox=None, is_public=None
 ):
+    """
+    Moves an item within the same mailbox
+    :param client: EWS Client
+    :param item_id: item id
+    :param target_folder_path: target folder path
+    :param (Optional) target_mailbox: mailbox containing the item
+    :param (Optional) is_public: is the destination folder public
+    :return: Output tuple
+    """
     account = client.get_account(target_mailbox)
     is_public = client.is_default_folder(target_folder_path, is_public)
     target_folder = client.get_folder_by_path(target_folder_path, is_public=is_public)
@@ -1050,6 +1092,14 @@ def move_item(
 
 
 def delete_items(client: EWSClient, item_ids, delete_type, target_mailbox=None):
+    """
+    Delete items in a mailbox
+    :param client: EWS Client
+    :param item_ids: items ids to delete
+    :param delete_type: delte type soft/hard
+    :param (Optional) target_mailbox: mailbox containinf the items
+    :return: Output tuple
+    """
     deleted_items = []
     item_ids = argToList(item_ids)
     items = client.get_items_from_mailbox(target_mailbox, item_ids)
@@ -1092,6 +1142,18 @@ def search_items_in_mailbox(
     is_public=None,
     selected_fields="all",
 ):
+    """
+    Search items in mailbox
+    :param client: EWS Client
+    :param (Optional) query: query to execute
+    :param (Optional) message_id: message ids to search
+    :param (Optional) folder_path: folder path to search
+    :param (Optional) limit: max amount of items to fetch
+    :param (Optional) target_mailbox: mailbox containing the items
+    :param (Optional) is_public: is the targeted folder public
+    :param (Optional) selected_fields: Selected fields
+    :return: Output tuple
+    """
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
@@ -1158,6 +1220,12 @@ def search_items_in_mailbox(
 
 
 def get_out_of_office_state(client: EWSClient, target_mailbox=None):
+    """
+    Retrieve get out of office state of the targeted mailbox
+    :param client: EWS Client
+    :param (Optional) target_mailbox: target mailbox
+    :return: Output tuple
+    """
     account = client.get_account(target_mailbox)
     oof = account.oof_settings
     oof_dict = {
@@ -1183,6 +1251,15 @@ def recover_soft_delete_item(
     target_mailbox=None,
     is_public=None,
 ):
+    """
+    Recovers soft deleted items
+    :param client: EWS Client
+    :param message_ids: Message ids to recover
+    :param (Optional) target_folder_path: target folder path
+    :param (Optional) target_mailbox: target mailbox
+    :param (Optional) is_public: is the target folder public
+    :return:
+    """
     account = client.get_account(target_mailbox)
     is_public = client.is_default_folder(target_folder_path, is_public)
     target_folder = client.get_folder_by_path(target_folder_path, account, is_public)
@@ -1214,6 +1291,13 @@ def recover_soft_delete_item(
 
 
 def get_contacts(client: EWSClient, limit, target_mailbox=None):
+    """
+    Retrieve contacts of the target mailbox or client mailbox
+    :param client: EWS Client
+    :param limit: max amount of contacts to retrieve
+    :param (Optional) target_mailbox: Target mailbox
+    :return:
+    """
     def parse_physical_address(address):
         result = {}
         for attr in ["city", "country", "label", "state", "street", "zipcode"]:
@@ -1263,6 +1347,14 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):
 
 
 def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbox=None):
+    """
+    Creates a folder in the target mailbox or the client mailbox
+    :param client: EWS Client
+    :param new_folder_name: new folder name
+    :param folder_path: path of the new folder
+    :param (Optional) target_mailbox: target mailbox
+    :return: Output tuple
+    """
     account = client.get_account(target_mailbox)
     full_path = os.path.join(folder_path, new_folder_name)
     try:
@@ -1278,6 +1370,12 @@ def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbo
 
 
 def find_folders(client: EWSClient, target_mailbox=None):
+    """
+    Finds folders in the mailbox
+    :param client: EWS Client
+    :param (Optional) target_mailbox: target mailbox
+    :return: Output tuple
+    """
     account = client.get_account(target_mailbox)
     root = account.root
     if client.is_public_folder:
@@ -1293,6 +1391,14 @@ def find_folders(client: EWSClient, target_mailbox=None):
 
 
 def mark_item_as_junk(client: EWSClient, item_id, move_items, target_mailbox=None):
+    """
+    Marks item as junk in the target mailbox or client mailbox
+    :param client: EWS Client
+    :param item_id: item ids to mark as junk
+    :param move_items: "yes" or "no" - to move or not to move to trash
+    :param (Optional) target_mailbox: target mailbox
+    :return:
+    """
     account = client.get_account(target_mailbox)
     move_items = move_items.lower() == "yes"
     ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
@@ -1317,6 +1423,16 @@ def get_items_from_folder(
     is_public=None,
     get_internal_item="no",
 ):
+    """
+    Retrieve items from folder path
+    :param client: EWS Client
+    :param folder_path: folder path
+    :param (Optional) limit: max amount of items to retrieve
+    :param (Optional) target_mailbox: target mailbox
+    :param (Optional) is_public: is the folder public
+    :param (Optional) get_internal_item: should also retrieve internal items ("no" by default)
+    :return: Output tuple
+    """
     account = client.get_account(target_mailbox)
     limit = int(limit)
     get_internal_item = get_internal_item == "yes"
@@ -1364,6 +1480,13 @@ def get_items_from_folder(
 
 
 def get_items(client: EWSClient, item_ids, target_mailbox=None):
+    """
+    Get items from target mailbox or client mailbox
+    :param client: EWS Client
+    :param item_ids: item ids to retrieve
+    :param (Optional) target_mailbox: target mailbox to retrieve items from
+    :return:
+    """
     item_ids = argToList(item_ids)
     account = client.get_account(target_mailbox)
     items = client.get_items_from_mailbox(account, item_ids)
@@ -1383,6 +1506,14 @@ def get_items(client: EWSClient, item_ids, target_mailbox=None):
 
 
 def get_folder(client: EWSClient, folder_path, target_mailbox=None, is_public=None):
+    """
+    Retrieve a folder from the target mailbox or client mailbox
+    :param client: EWS Client
+    :param folder_path: folder path to retrieve
+    :param (Optional) target_mailbox: target mailbox
+    :param (Optional) is_public: is the folder public
+    :return:
+    """
     account = client.get_account(target_mailbox)
     is_public = client.is_default_folder(folder_path, is_public)
     folder = folder_to_context_entry(
@@ -1394,6 +1525,11 @@ def get_folder(client: EWSClient, folder_path, target_mailbox=None, is_public=No
 
 
 def folder_to_context_entry(f):
+    """
+    Create a context entry from a folder response
+    :param f: folder response
+    :return: dict context entry
+    """
     try:
         f_entry = {
             "name": f.name,
@@ -1421,6 +1557,14 @@ def folder_to_context_entry(f):
 def mark_item_as_read(
     client: EWSClient, item_ids, operation="read", target_mailbox=None
 ):
+    """
+    Marks item as read
+    :param client: EWS Client
+    :param item_ids: items ids to mark as read
+    :param (Optional) operation: operation to execute
+    :param (Optional) target_mailbox: target mailbox
+    :return: Output tuple
+    """
     marked_items = []
     item_ids = argToList(item_ids)
     items = client.get_items_from_mailbox(target_mailbox, item_ids)
@@ -1446,6 +1590,13 @@ def mark_item_as_read(
 
 
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
+    """
+    Retrieve item as an eml
+    :param client: EWS Client
+    :param item_id: Item id to retrieve
+    :param (Optional) target_mailbox: target mailbox
+    :return: Output tuple
+    """
     account = client.get_account(target_mailbox)
     item = client.get_item_from_mailbox(account, item_id)
 
