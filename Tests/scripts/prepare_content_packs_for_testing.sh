@@ -60,7 +60,7 @@ fi
 #echo "Finished normalizing images paths successfully."
 
 echo -e "\nBrowse to the build bucket with this address:"
-echo "https://console.cloud.google.com/storage/browser/$BUCKET_FULL_TARGET_PATH\n"
+echo -e "https://console.cloud.google.com/storage/browser/$BUCKET_FULL_TARGET_PATH\n"
 echo "Finished preparing content packs for testing successfully."
 
 echo -e "\nIf you want to connect this build bucket to your test machine, add this server config:"
