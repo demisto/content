@@ -254,7 +254,7 @@ def tim_insert_jsons(client: Client):
 
 
 def iocs_command(client: Client):
-    command = demisto.command().split('-')[1]
+    command = demisto.command().split('-')[-1]
     indicators = demisto.args().get('indicator', '')
     if command == 'enable':
         path, iocs = prepare_enable_iocs(indicators)
