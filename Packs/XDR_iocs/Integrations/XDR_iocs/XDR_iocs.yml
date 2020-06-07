@@ -82,6 +82,11 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
+- display: ''
+  name: feedIncremental
+  defaultvalue: true
+  required: false
+  type: 1
 - display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
