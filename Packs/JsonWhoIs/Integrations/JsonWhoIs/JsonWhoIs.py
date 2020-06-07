@@ -50,7 +50,7 @@ def http_request(method, url_suffix, params=None, max_retry=3):
     if res is None:
         raise DemistoException('Error from JsonWhoIs: Could not get a result from the API.')
     try:
-        raw = res.json()  # type: ignore
+        raw = res.json()
     except ValueError:
         raise DemistoException(f'Error from JsonWhoIs: Could not parse JSON from response. {res.text}')
     if 'error' in raw:
