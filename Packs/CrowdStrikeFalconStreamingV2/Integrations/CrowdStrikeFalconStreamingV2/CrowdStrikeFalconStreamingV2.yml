@@ -69,6 +69,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
-beta: true
 tests:
   - No test
