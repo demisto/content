@@ -273,7 +273,14 @@ def get_content_version_details(client, ami_name, prints_manager, thread_index):
     return result_object.get('release', ''), result_object.get('assetId', 0)
 
 
-def set_integration_params(integrations, secret_params, instance_names):
+def change_placeholders_to_values(changes_map, config_item):
+    item_as_string = json.dumps(config_item)
+    for key, value in changes_map.items():
+        item_as_string.replace(key, value)
+    return json.loads(item_as_string)
+
+
+def set_integration_params(integrations, secret_params, instance_names, server_host):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -311,7 +318,8 @@ def set_integration_params(integrations, secret_params, instance_names):
                 found_matching_instance = False
                 for item in integration_params:
                     if item.get('instance_name', 'Not Found') in instance_names:
-                        matched_integration_params = item
+                        changes_map = {'%%SERVER_HOST%%': server_host}
+                        matched_integration_params = change_placeholders_to_values(changes_map, item)
                         found_matching_instance = True
 
                 if not found_matching_instance:
@@ -784,9 +792,9 @@ def main():
 
         # set params for new integrations and [modified + unchanged] integrations, then add the new ones
         # to brand_new_integrations list for later use
-        new_ints_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf)
+        new_ints_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf, servers[0])
         ints_to_configure_params_set = set_integration_params(integrations_to_configure, secret_params,
-                                                              instance_names_conf)
+                                                              instance_names_conf, servers[0])
         if not new_ints_params_set:
             prints_manager.add_print_job(
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
