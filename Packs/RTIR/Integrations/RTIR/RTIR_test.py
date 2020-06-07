@@ -138,6 +138,15 @@ Attachments: 504: mimecast-get-remediation-incident.log (text/plain / 3.5k)
 
 
 def test_parse_attachments_list():
+    """
+        Test attachment list parsing
+        Given:
+            - Attachment list raw response
+        When:
+            - Trying to parse that response
+        Then:
+            - Ensure response is parsed into a list of tuples with id, name, type, size
+    """
     from RTIR import parse_attachments_list
     response = parse_attachments_list(RAW_ATTACHMENTS_LIST)
     expected = [('504', 'mimecast-get-remediation-incident.log', 'text/plain', '3.5k'),
@@ -161,7 +170,16 @@ attachment content"""
 
 
 def test_parse_attachment_content():
+    """
+        Test attachment content
+        Given:
+            - Attachment content raw response
+        When:
+            - Trying to parse that response
+        Then:
+            - Ensure response is parsed into a string with all that comes after the "Content: "
+    """
     from RTIR import parse_attachment_content
-    response = parse_attachment_content(RAW_ATTACHMENT_CONTENT)
+    response = parse_attachment_content('1234', RAW_ATTACHMENT_CONTENT)
     expected = 'some multiline\nattachment content'
     assert response == expected
