@@ -100,40 +100,40 @@ script:
   commands:
   - deprecated: false
     description: |-
-      Run once when configure the integration (do NOT run this twice!).
+      Run once when you configure the integration (do NOT run this twice!).
       will all the indicators that was synced with XDR and then resync.
     execution: false
     name: xdr-iocs-sync
   - deprecated: false
     description: |-
-      Update all iocs to keep and delete the other.
-      run this ones a day in 01:00 - 3:00 utc time.
+      Update all IOCs to keep and delete the other.
+      Run this one time per day in 01:00 - 3:00 UTC time.
     execution: false
     name: xdr-iocs-to-keep
   - deprecated: false
-    description: Push new iocs to XDR run this ones a min.
+    description: Push new IOCs to XDR. This runs every minute.
     execution: false
     name: xdr-push-iocs
   - arguments:
     - default: false
-      description: The indicator to enable
+      description: The indicator to enable.
       isArray: true
       name: indicator
       required: true
       secret: false
     deprecated: false
-    description: Enable iocs in XDR server
+    description: Enables IOCs in the XDR server.
     execution: false
     name: xdr-enable-iocs
   - arguments:
     - default: false
-      description: The indicator to enable
+      description: The indicator to enable.
       isArray: true
       name: indicator
       required: true
       secret: false
     deprecated: false
-    description: Disable iocs in XDR server
+    description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-disable-iocs
   dockerimage: demisto/python3:3.8.3.8715
