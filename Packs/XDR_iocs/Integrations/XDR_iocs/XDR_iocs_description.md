@@ -1,5 +1,5 @@
 ## Cortex XDR - IOC
-Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+Use the Cortex XDR - IOCs feed integration to sync indicators from XSOAR to XDR..
 
 ### Generate an API Key and API Key ID
 1. In your Cortex XDR platform, go to **Settings**.
