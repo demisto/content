@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 from json import JSONDecodeError
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Any
 
 from bson.objectid import ObjectId
 from pymongo import MongoClient
@@ -9,23 +9,25 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 from pymongo.errors import OperationFailure
 from pymongo.results import InsertManyResult, UpdateResult, DeleteResult
+from pymongo.cursor import Cursor
 
 CONTEXT_KEY = 'MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)'
 
 
 class Client:
     def __init__(
-        self,
-        urls: List[str],
-        username: str,
-        password: str,
-        database: str,
-        ssl: bool = False,
-        insecure: bool = False,
-        timeout: int = 5000
+            self,
+            urls: List[str],
+            username: str,
+            password: str,
+            database: str,
+            ssl: bool = False,
+            insecure: bool = False,
+            timeout: int = 5000
     ):
         if insecure and not ssl:
-            raise DemistoException(f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
+            raise DemistoException(
+                f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
         if not insecure and not ssl:
             self._client = MongoClient(
                 urls, username=username, password=password, ssl=ssl, socketTimeoutMS=timeout
@@ -53,16 +55,19 @@ class Client:
         for alert_id in alert_ids:
             results = collection_obj.find({'_id': ObjectId(alert_id)})
             entries.extend([self.normalize_id(entry) for entry in results])
+        entries = self.datetime_to_str(entries)
         return entries
 
     def query(self, collection: str, query: dict, limit: int = 50) -> List[dict]:
         collection_obj = self.get_collection(collection)
         entries = collection_obj.find(query).limit(limit)
-        return [self.normalize_id(entry) for entry in entries]
+        entries = self.datetime_to_str(entries)
+        entries = [self.normalize_id(entry) for entry in entries]
+        return entries
 
     @staticmethod
     def normalize_id(entry: dict):
-        ''' Convert ObjectID to str in given dict
+        """ Convert ObjectID to str in given dict
 
         Args:
             entry:
@@ -73,37 +78,72 @@ class Client:
         Examples:
             >>> Client.normalize_id({'_id': ObjectId('5e4412f230c5b8f63a7356ba')})
             {'_id': '5e4412f230c5b8f63a7356ba'}
-        '''
+        """
         entry['_id'] = str(entry.pop('_id'))
         return entry
 
+    @classmethod
+    def datetime_to_str(cls, obj: Any) -> Any:
+        """ Converts any object with date value of type datetime to str
+
+        Args:
+            obj: The object contains possible date values.
+
+        Returns:
+            All Dates from type datetime converted to str in this format - %Y-%m-%dT%H:%M:%S.000Z
+
+        Examples:
+            >>> Client.datetime_to_str(datetime.strptime('2020-05-19T09:05:28.000Z', '%Y-%m-%dT%H:%M:%S.000Z'))
+            '2020-05-19T09:05:28.000Z'
+            >>> Client.datetime_to_str([datetime.strptime('2020-05-19T09:05:28.000Z', '%Y-%m-%dT%H:%M:%S.000Z')])
+            ['2020-05-19T09:05:28.000Z']
+            >>> Client.datetime_to_str({'date': datetime.strptime('2020-05-19T09:05:28.000Z', '%Y-%m-%dT%H:%M:%S.000Z')})
+            {'date': '2020-05-19T09:05:28.000Z'}
+        """
+        if isinstance(obj, Cursor):
+            return cls.datetime_to_str(list(obj))
+        if isinstance(obj, list):
+            return [cls.datetime_to_str(item) for item in obj]
+        if isinstance(obj, dict):
+            return {cls.datetime_to_str(k): cls.datetime_to_str(v) for k, v in obj.items()}
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        else:
+            return obj
+
     def insert_entry(self, collection: str, entries: List[dict]) -> InsertManyResult:
         collection_object = self.get_collection(collection)
-        return collection_object.insert_many(entries)
+        raw = collection_object.insert_many(entries)
+        return self.datetime_to_str(raw)
 
     def update_entry(self, collection, filter, update, update_one) -> UpdateResult:
         collection_object = self.get_collection(collection)
         if update_one:
-            return collection_object.update_one(filter, update)
-        return collection_object.update_many(filter, update)
+            raw = collection_object.update_one(filter, update)
+        else:
+            raw = collection_object.update_many(filter, update)
+        return self.datetime_to_str(raw)
 
     def delete_entry(self, collection, filter, delete_one) -> DeleteResult:
         collection_object = self.get_collection(collection)
         if delete_one:
-            return collection_object.delete_one(filter)
-        return collection_object.delete_many(filter)
+            raw = collection_object.delete_one(filter)
+        else:
+            raw = collection_object.delete_many(filter)
+        return self.datetime_to_str(raw)
 
     def create_collection(self, collection) -> Collection:
-        return self.db.create_collection(collection)
+        raw = self.db.create_collection(collection)
+        return self.datetime_to_str(raw)
 
     def drop_collection(self, collection):
         return self.db.drop_collection(collection)
 
 
 def convert_id_to_object_id(
-    entries: Union[List[dict], dict]
+        entries: Union[List[dict], dict]
 ) -> Union[List[dict], dict]:
-    ''' Converts list or dict with `_id` key of type str to ObjectID
+    """ Converts list or dict with `_id` key of type str to ObjectID
 
     Args:
         entries: The object contains list or dict with possible `_id` key.
@@ -117,7 +157,7 @@ def convert_id_to_object_id(
 
         >>> convert_id_to_object_id({'_id': '5e4412f230c5b8f63a7356ba'})
         {'_id': ObjectId('5e4412f230c5b8f63a7356ba')}
-    '''
+    """
 
     def _convert(entry: dict):
         if '_id' in entry:
@@ -127,6 +167,27 @@ def convert_id_to_object_id(
     if isinstance(entries, list):
         return [_convert(entry) for entry in entries]
     return _convert(entries)
+
+
+def convert_str_to_datetime(entries: dict) -> dict:
+    """ Converts list or dict with date values of type str to Datetime.
+
+    Args:
+        entries: The object contains list or dict with possible dates value.
+
+    Returns:
+        All Dates converted to Datetime.
+    """
+    # regex for finding timestamp in string
+    regex_for_timestamp = re.compile(r'\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?')
+    for key, value in entries.items():
+        for match in regex_for_timestamp.findall(str(value)):
+            try:
+                entries[key] = datetime.strptime(match, '%Y-%m-%dT%H:%M:%S.000Z')
+            except ValueError as e:
+                raise DemistoException(str(e))
+
+    return entries
 
 
 def convert_object_id_to_str(entries: List[ObjectId]) -> List[str]:
@@ -157,7 +218,7 @@ def test_module(client: Client, **kwargs) -> Tuple[str, dict]:
 
 
 def get_entry_by_id_command(
-    client: Client, collection: str, object_id: str, **kwargs
+        client: Client, collection: str, object_id: str, **kwargs
 ) -> Tuple[str, dict, list]:
     raw_response = client.get_entry_by_id(collection, argToList(object_id))
     if raw_response:
@@ -178,12 +239,12 @@ def get_entry_by_id_command(
 
 
 def search_query(
-    client: Client, collection: str, query: str, limit: str, **kwargs
+        client: Client, collection: str, query: str, limit: str, **kwargs
 ) -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
-        query_json = json.loads(query)
-        raw_response = client.query(collection, query_json, int(limit))
+        query_json = validate_json_objects(json.loads(query))
+        raw_response = client.query(collection, query_json, int(limit))  # type: ignore
     except JSONDecodeError:
         raise DemistoException('The `query` argument is not a valid json.')
     if raw_response:
@@ -203,11 +264,12 @@ def search_query(
 
 
 def insert_entry_command(
-    client: Client, collection: str, entry: str, **kwargs
+        client: Client, collection: str, entry: str, **kwargs
 ) -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
-        entry_json = json.loads(entry)
+        entry_json = validate_json_objects(json.loads(entry))
+
         if not isinstance(entry_json, list):
             entry_json = [entry_json]
         entries = convert_id_to_object_id(entry_json)
@@ -231,21 +293,34 @@ def insert_entry_command(
         raise DemistoException('The `entry` argument is not a valid json.')
 
 
+def validate_json_objects(json_obj: Union[dict, list]) -> Union[dict, list]:
+    """ Validate that all objects in the json are according to MongoDB convention.
+
+    Args:
+        json_obj: The json to send to MongoDB
+
+    Returns:
+        valid json according to MongoDB convention.
+    """
+    valid_mongodb_json = convert_str_to_datetime(convert_id_to_object_id(json_obj))  # type: ignore
+    return valid_mongodb_json
+
+
 def update_entry_command(
-    client: Client,
-    collection: str,
-    filter: str,
-    update: str,
-    update_one=False,
-    **kwargs,
+        client: Client,
+        collection: str,
+        filter: str,
+        update: str,
+        update_one=False,
+        **kwargs,
 ) -> Tuple[str, None]:
     try:
-        json_filter = json.loads(filter)
-        json_filter = convert_id_to_object_id(json_filter)
+        json_filter = validate_json_objects(json.loads(filter))
+
     except JSONDecodeError:
         raise DemistoException('The `filter` argument is not a valid json.')
     try:
-        json_update = json.loads(update)
+        json_update = validate_json_objects(json.loads(update))
     except JSONDecodeError:
         raise DemistoException('The `update` argument is not a valid json.')
     response = client.update_entry(
@@ -260,7 +335,7 @@ def update_entry_command(
 
 
 def delete_entry_command(
-    client: Client, collection, filter, delete_one, **kwargs
+        client: Client, collection, filter, delete_one, **kwargs
 ) -> Tuple[str, None]:
     try:
         json_filter = json.loads(filter)
@@ -274,7 +349,7 @@ def delete_entry_command(
 
 
 def create_collection_command(
-    client: Client, collection: str, **kwargs
+        client: Client, collection: str, **kwargs
 ) -> Tuple[str, None]:
     if client.is_collection_in_db(collection):
         raise DemistoException(f'Collection \'{collection}\' is already exists')
@@ -302,14 +377,14 @@ def list_collections_command(client: Client, **kwargs) -> Tuple[str, dict, list]
 
 
 def drop_collection_command(
-    client: Client, collection: str, **kwargs
+        client: Client, collection: str, **kwargs
 ) -> Tuple[str, None]:
     response = client.drop_collection(collection)
     if (
-        hasattr(response, 'acknowledged')
-        and not response.acknowledged
-        or isinstance(response, dict)
-        and not response.get('ok') == 1.0
+            hasattr(response, 'acknowledged')
+            and not response.acknowledged
+            or isinstance(response, dict)
+            and not response.get('ok') == 1.0
     ):
         raise DemistoException('Error occurred when trying to drop collection entries.')
     return f'MongoDB: Collection \'{collection}` has been successfully dropped.', None

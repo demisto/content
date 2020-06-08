@@ -411,7 +411,7 @@ tasks:
       public: {}
       timeout: {}
       url:
-        simple: https://www.batticaloa.mc.gov.lk/
+        simple: https://www.google.com
     separatecontext: false
     view: |-
       {
@@ -445,7 +445,7 @@ tasks:
       - "17"
     scriptarguments:
       expectedValue:
-        simple: https://www.batticaloa.mc.gov.lk/
+        simple: https://www.google.com
       fields: {}
       path:
         simple: URL.Data
