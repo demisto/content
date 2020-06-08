@@ -2825,7 +2825,6 @@
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "Traps": "Issue 24122",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
@@ -2875,6 +2874,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
         "Cisco Umbrella Investigate": "Issue 24338",
         "Deep Instinct": "The partner didn't provide an instance",
