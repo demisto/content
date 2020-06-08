@@ -16,5 +16,5 @@ def main():
 from CSVFeedApiModule import *  # noqa: E402
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
