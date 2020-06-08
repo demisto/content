@@ -292,6 +292,16 @@ script:
       name: fields-to-get
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      isArray: false
+      name: full-data
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
     deprecated: false
     execution: false
     name: archer-search-records
