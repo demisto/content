@@ -1,6 +1,7 @@
 id: hashIncidentFields-test
 version: 8
-name: hashIncidentFields-test 
+name: hashIncidentFields-test
+description: test playbook for hashIncidentFields
 starttaskid: "0"
 tasks:
   "0":
@@ -221,3 +222,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.5.0

@@ -2797,6 +2797,11 @@
             "integrations": "Endace",
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "hashIncidentFields",
+            "fromversion": "4.5.0",
+            "timeout": 60000
         }
     ],
     "skipped_tests": {

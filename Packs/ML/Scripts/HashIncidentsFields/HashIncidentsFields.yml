@@ -97,6 +97,9 @@ args:
   name: contextKeys
   required: false
   secret: false
+comment: |-
+  Hash fields from incident list
+  Search for incidents by arguments with an option to hash some of its fields
 commonfields:
   id: HashIncidentsFields
   version: -1
@@ -114,3 +117,9 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
+fromversion: 4.5.0
+tests:
+- hashIncidentFields-test
+tags:
+- incidents
+- ml
