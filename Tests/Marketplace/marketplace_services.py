@@ -403,7 +403,7 @@ class Pack(object):
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version):
+                             dependencies_data, server_min_version, build_number):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -414,6 +414,7 @@ class Pack(object):
             author_image (str): gcs uploaded author image
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
             server_min_version (str): server minimum version found during the iteration over content items.
+            build_number (str): circleCI build number.
 
         Returns:
             dict: parsed pack metadata.
@@ -439,6 +440,7 @@ class Pack(object):
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
+        pack_metadata['versionInfo'] = build_number
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
@@ -626,7 +628,7 @@ class Pack(object):
 
         Args:
             index_folder_path (str): Path to the unzipped index json.
-            build_number (str): circleCI build number, used as an index revision.
+            build_number (str): circleCI build number.
         Returns:
             bool: whether the operation succeeded.
         """
@@ -658,10 +660,14 @@ class Pack(object):
                             changelog = json.load(changelog_file)
 
                             if latest_release_notes in changelog:
-                                shutil.copyfile(changelog_index_path,
-                                                os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
-                                print_warning(f"Found existing release notes for version: {latest_release_notes} "
-                                              f"in the {self._pack_name} pack.")
+                                changelog[latest_release_notes][  # update latest release notes build numbers
+                                    'displayName'] = f'{latest_release_notes} - {build_number}'
+                                # write back the updated build number to the changelog in pack the folder
+                                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
+                                    json.dump(changelog, pack_changelog, indent=4)
+
+                                print(f"Found existing release notes for version: {latest_release_notes} "
+                                      f"in the {self._pack_name} pack.")
                                 task_status = True
                                 return task_status
 
@@ -680,8 +686,23 @@ class Pack(object):
                             json.dump(changelog, f, indent=4)
 
                 else:  # will enter only on initial version and release notes folder still was not created
-                    shutil.copyfile(changelog_index_path, os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
-                    print(f"Keeping existing {Pack.CHANGELOG_JSON} of {self._pack_name} pack.")
+                    with open(changelog_index_path, "r") as changelog_file:
+                        changelog = json.load(changelog_file)
+
+                    if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
+                        print_error(
+                            f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
+                        task_status = False
+                        return task_status
+
+                    changelog[Pack.PACK_INITIAL_VERSION][  # update latest release notes build numbers
+                        'displayName'] = f'{Pack.PACK_INITIAL_VERSION} - {build_number}'
+                    # write back the updated build number to the changelog in pack the folder
+                    with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
+                        json.dump(changelog, pack_changelog, indent=4)
+
+                    print(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
+                          f"in the {self._pack_name} pack.")
 
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
                 changelog = {}
@@ -900,7 +921,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping):
+                        packs_dependencies_mapping, build_number):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -912,6 +933,7 @@ class Pack(object):
             author_image (str): uploaded public gcs path to author image.
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
+            build_number (str): build_number (str): circleCI build number.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -941,7 +963,8 @@ class Pack(object):
                                                            integration_images=integration_images,
                                                            author_image=author_image,
                                                            dependencies_data=dependencies_data,
-                                                           server_min_version=self.server_min_version)
+                                                           server_min_version=self.server_min_version,
+                                                           build_number=build_number)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata

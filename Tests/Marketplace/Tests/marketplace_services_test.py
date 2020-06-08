@@ -29,7 +29,8 @@ class TestMetadataParsing:
         """
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0")
+                                                    dependencies_data={}, server_min_version="5.5.0",
+                                                    build_number="dummy_build_number")
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -59,7 +60,8 @@ class TestMetadataParsing:
         """
         parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version")
+                                                    dependencies_data={}, server_min_version="dummy_server_version",
+                                                    build_number="dummy_build_number")
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -81,7 +83,8 @@ class TestMetadataParsing:
         mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version")
+                                                    dependencies_data={}, server_min_version="dummy_server_version",
+                                                    build_number="dummy_build_number")
 
         assert parsed_metadata['price'] == expected
 

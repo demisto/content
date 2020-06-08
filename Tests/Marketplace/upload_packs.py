@@ -577,7 +577,8 @@ def main():
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
-                                           packs_dependencies_mapping=packs_dependencies_mapping)
+                                           packs_dependencies_mapping=packs_dependencies_mapping,
+                                           build_number=build_number)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
