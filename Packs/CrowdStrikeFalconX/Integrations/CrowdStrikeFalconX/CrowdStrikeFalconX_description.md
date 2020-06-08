@@ -1,5 +1,6 @@
 ## CrowdStrike Falcon X
-In order to crate a client ID and client secret (the password in the integration) please use the instructions here:
+In order to crate a client ID and client secret (the password in the integration) please use the instructions here: 
+[CrowdStrike Falcon X API Client and keys](https://falcon.crowdstrike.com/support/api-clients-and-keys).
 
 The submitting file process contains 2 commands:
 * cs-fx-upload-file

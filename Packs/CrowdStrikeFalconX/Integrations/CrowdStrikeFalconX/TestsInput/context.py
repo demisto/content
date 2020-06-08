@@ -1,3 +1,5 @@
+from CommonServerPython import DemistoException
+
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT = {
     'csfalconx.resource(val.id === obj.id)':
         [{'id': 'id',
@@ -97,4 +99,4 @@ GET_FULL_REPORT_CONTEXT = {
         }]
 }
 
-MULTIPLE_ERRORS_RESULT = "403: access denied, authorization failed\n401: test error #1\n402: test error #2"
+MULTIPLE_ERRORS_RESULT = DemistoException('403: access denied, authorization failed\n401: test error #1\n402: test error #2')

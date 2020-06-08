@@ -1,4 +1,4 @@
-from CrowdStrikeFalconX import Client, handle_errors,\
+from CrowdStrikeFalconX import Client,\
     send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
     get_full_report_command, get_report_summary_command, get_analysis_status_command,\
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command
@@ -10,6 +10,16 @@ from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTT
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE,\
     GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE
 import pytest
+
+
+class ResMocker:
+    def __init__(self, http_response):
+        self.http_response = http_response
+        self.ok = False
+
+    def json(self):
+        return self.http_response
+
 
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS = {
     "sha256": "sha256",
@@ -98,20 +108,25 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
     _, outputs, _ = command(client, **args)
     assert outputs == context
 
-"""
+
 @pytest.mark.parametrize('http_response, output', [
     (MULTI_ERRORS_HTTP_RESPONSE, MULTIPLE_ERRORS_RESULT),
     (NO_ERRORS_HTTP_RESPONSE, "")
 ])
-def test_handle_errors(http_response, output):
-    Unit test
+def test_handle_errors(http_response, output, mocker):
+    """Unit test
     Given
     - raw response of the http request
     When
     - there are or there are no errors
     Then
-    - show the handle_errors function result - an error united string
-    - in case the function doesn't return an empty string an error will be return
-    errors = handle_errors(http_response.get("errors"))
-    assert (errors == output)
-"""
+    - show the exception content
+    """
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+    try:
+        mocker.patch.object(client._session, 'request', return_value=ResMocker(http_response))
+        _, output, _ = check_quota_status_command(client)
+    except Exception as e:
+        assert (str(e) == str(output))

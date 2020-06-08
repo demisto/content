@@ -46,17 +46,161 @@ def handle_errors(
     return '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
 
 
-class Client(BaseClient):
+class Client:
     """
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
     """
 
     def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool):
-        super().__init__(base_url=server_url, verify=use_ssl, proxy=proxy)
+        self._base_url = server_url
+        self._verify = use_ssl
+        self._ok_codes = tuple()  # type: ignore[var-annotated]
         self._username = username
         self._password = password
+        self._session = requests.Session()
         self._token = self._generate_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
+        if not proxy:
+            self._session.trust_env = False
+
+    def _is_status_code_valid(self, response, ok_codes=None):
+        """If the status code is OK, return 'True'.
+
+        :type response: ``requests.Response``
+        :param response: Response from API after the request for which to check the status.
+
+        :type ok_codes: ``tuple`` or ``list``
+        :param ok_codes:
+            The request codes to accept as OK, for example: (200, 201, 204). If you specify
+            "None", will use response.ok.
+
+        :return: Whether the status of the response is valid.
+        :rtype: ``bool``
+        """
+        # Get wanted ok codes
+        status_codes = ok_codes if ok_codes else self._ok_codes
+        if status_codes:
+            return response.status_code in status_codes
+        return response.ok
+
+    def _http_request(self, method, url_suffix, full_url=None, headers=None,
+                      json_data=None, params=None, data=None, files=None,
+                      timeout=10, resp_type='json', ok_codes=None, return_empty_response=False, **kwargs):
+        """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+        :type method: ``str``
+        :param method: The HTTP method, for example: GET, POST, and so on.
+
+        :type url_suffix: ``str``
+        :param url_suffix: The API endpoint.
+
+        :type full_url: ``str``
+        :param full_url:
+            Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+            make a request to an address outside of the scope of the integration
+            API.
+
+        :type headers: ``dict``
+        :param headers: Headers to send in the request. If None, will use self._headers.
+
+        :type params: ``dict``
+        :param params: URL parameters to specify the query.
+
+        :type data: ``dict``
+        :param data: The data to send in a 'POST' request.
+
+        :type json_data: ``dict``
+        :param json_data: The dictionary to send in a 'POST' request.
+
+        :type files: ``dict``
+        :param files: The file data to send in a 'POST' request.
+
+        :type timeout: ``float`` or ``tuple``
+        :param timeout:
+            The amount of time (in seconds) that a request will wait for a client to
+            establish a connection to a remote machine before a timeout occurs.
+            can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+
+        :type resp_type: ``str``
+        :param resp_type:
+            Determines which data format to return from the HTTP request. The default
+            is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+             to return the full response object.
+
+        :type ok_codes: ``tuple``
+        :param ok_codes:
+            The request codes to accept as OK, for example: (200, 201, 204). If you specify
+            "None", will use self._ok_codes.
+
+        :return: Depends on the resp_type parameter
+        :rtype: ``dict`` or ``str`` or ``requests.Response``
+        """
+        try:
+            # Replace params if supplied
+            address = full_url if full_url else urljoin(self._base_url, url_suffix)
+            headers = headers if headers else self._headers
+            # Execute
+            res = self._session.request(
+                method,
+                address,
+                verify=self._verify,
+                params=params,
+                data=data,
+                json=json_data,
+                files=files,
+                headers=headers,
+                timeout=timeout,
+                **kwargs
+            )
+            # Handle error responses gracefully
+            if not self._is_status_code_valid(res, ok_codes):
+                try:
+                    # Try to parse json error response
+                    error_entry = res.json()
+                    err_msg = handle_errors(error_entry.get("errors"))
+                    raise DemistoException(err_msg)
+                except ValueError:
+                    err_msg += '\n{}'.format(res.text)
+                    raise DemistoException(err_msg)
+
+            is_response_empty_and_successful = (res.status_code == 204)
+            if is_response_empty_and_successful and return_empty_response:
+                return res
+
+            resp_type = resp_type.lower()
+            try:
+                if resp_type == 'json':
+                    return res.json()
+                if resp_type == 'text':
+                    return res.text
+                if resp_type == 'content':
+                    return res.content
+                if resp_type == 'xml':
+                    ET.parse(res.text)
+                return res
+            except ValueError as exception:
+                raise DemistoException("Failed to parse json object from response:" + str(res.content), exception)
+        except requests.exceptions.ConnectTimeout as exception:
+            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                      ' is incorrect or that the Server is not accessible from your host.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.SSLError as exception:
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                      ' the integration configuration.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ProxyError as exception:
+            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                      ' selected, try clearing the checkbox.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ConnectionError as exception:
+            # Get originating Exception in Exception chain
+            error_class = str(exception.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                      'Verify that the server URL parameter' \
+                      ' is correct and that you have access to the server from your host.' \
+                .format(err_type, exception.errno, exception.strerror)
+            raise DemistoException(err_msg, exception)
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
@@ -349,12 +493,6 @@ def parse_outputs(
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :return: a dict based on api_res with the wanted params only
     """
-    api_errors = api_res.get("errors")
-    errors = handle_errors(api_errors)
-    if errors:
-        return_error(errors)
-        #return {"errors": {"errors": errors}}
-
     api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}
     resources_group_outputs, sandbox_group_outputs = {}, {}
 
@@ -548,6 +686,14 @@ def get_full_report_command(
                                                    sandbox_fields=sandbox_fields))
 
     entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+
+    if not filtered_outputs_list:
+        # if there are no results, the sample is still being analyzed
+        no_results_message = 'There are no results yet, the sample might still being analyzed.' \
+                             ' Please wait to download the report.\n' \
+                             'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
+        return no_results_message, entry_context, response_list
+
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list), entry_context, response_list
 
 
@@ -578,10 +724,20 @@ def get_report_summary_command(
 
         sandbox_fields = ["environment_id", "environment_description", "threat_score", "submit_url", "submission_type",
                           "filetyp", "filesize", "sha256"]
-        filtered_outputs_list.append(parse_outputs(response, resources_fields=resources_fields,
-                                                   sandbox_fields=sandbox_fields))
+        outputs = parse_outputs(response, resources_fields=resources_fields, sandbox_fields=sandbox_fields)
+        if outputs:
+            # no need to add empty dict
+            filtered_outputs_list.append(outputs)
 
     entry_context = {f'csfalconx.resource(val.id === obj.id)': filtered_outputs_list}
+
+    if not filtered_outputs_list:
+        # if there are no results, the sample is still being analyzed
+        no_results_message = 'There are no results yet, the sample might still being analyzed.' \
+                             ' Please wait to download the report.\n' \
+                             'You can use cs-fx-get-analysis-status to check the status of a sandbox analysis.'
+        return no_results_message, entry_context, response_list
+
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs_list), entry_context, response_list
 
 
@@ -624,7 +780,10 @@ def download_ioc_command(
     :param accept_encoding: format used to compress your downloaded file
     :return: Demisto outputs when entry_context and responses are lists
     """
-    response = client.download_ioc(id, name, accept_encoding)
+    try:
+        response = client.download_ioc(id, name, accept_encoding)
+    except Exception as a:
+        print(a)
     entry_context = {f'csfalconx.resource(val.id === obj.id)': [response]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", response), entry_context, [response]
@@ -723,7 +882,7 @@ def main():
         else:
             raise NotImplementedError(f'{command} is not an existing CrowdStrike Falcon X command')
     except Exception as err:
-        return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
+        return_error(f'Unexpected error:\n{str(err)}', error=traceback.format_exc())
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
