@@ -164,7 +164,9 @@ tasks:
       id: 3748e1e4-d9eb-4fd0-8aef-c61bedce4981
       version: -1
       name: xdr-iocs-sync
-      description: run once when configure the integration (do NOT use this twice!).
+      description: |-
+        Run once when you configure the integration (do NOT run this twice!).
+        will all the indicators that were synced with XDR and then resync.
       script: 'xdr-iocs-sync'
       type: regular
       iscommand: true
@@ -172,6 +174,9 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    scriptarguments:
+      firstTime:
+        simple: "true"
     separatecontext: false
     view: |-
       {

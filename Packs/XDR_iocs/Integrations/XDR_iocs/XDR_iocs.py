@@ -248,7 +248,7 @@ def get_last_iocs(batch_size=200) -> List:
 
 def tim_insert_jsons(client: Client):
     indicators = demisto.args().get('indicator', '').split(',')
-    if not indicators:
+    if not indicators or indicators == ['']:
         iocs = get_last_iocs()
     else:
         iocs = []
@@ -376,19 +376,20 @@ def main():
         'xdr-iocs-disable': iocs_command,
         'xdr-iocs-push': tim_insert_jsons,
     }
-
-    command = demisto.command()
-    try:
-        if command == 'fetch-indicators':
-            fetch_indicators(client, params.get('autoSync', False))
-        elif command in commands:
-            commands[command](client)
-        elif command == 'xdr-iocs-sync':
-            xdr_iocs_sync_command(client, demisto.args().get('firstTime', False))
-        else:
-            raise NotImplementedError(command)
-    except Exception as error:
-        return_error(str(error), error)
+    sync(client)
+    # xdr_iocs_sync_command(client, demisto.args().get('firstTime', True))
+    # command = demisto.command()
+    # try:
+    #     if command == 'fetch-indicators':
+    #         fetch_indicators(client, params.get('autoSync', False))
+    #     elif command in commands:
+    #         commands[command](client)
+    #     elif command == 'xdr-iocs-sync':
+    #         xdr_iocs_sync_command(client, demisto.args().get('firstTime', False))
+    #     else:
+    #         raise NotImplementedError(command)
+    # except Exception as error:
+    #     return_error(str(error), error)
 
 
 if __name__ in ('__main__', 'builtins'):
