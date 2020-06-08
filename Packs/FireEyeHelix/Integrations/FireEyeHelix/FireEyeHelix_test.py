@@ -135,3 +135,23 @@ def test_commands(command, args, response, expected_result, mocker):
     mocker.patch.object(client, '_http_request', return_value=response)
     res = command(client, args)
     assert expected_result == res[1]
+
+
+def test_search_command_verify_args_passed_to_build_mql_query(mocker):
+    """
+    Given:
+     - FireEye Helix integration client
+     - `headers` argument given to the search command
+
+    When:
+     - Running the search command
+
+    Then:
+     - Ensure the command runs without raising exception that build_mql_query() got unexpected `headers` argument
+    """
+    args = {
+        'headers': 'bug1,bug2,toomanybugs'
+    }
+    client = Client(base_url='https://apps.fireeye.com/helix')
+    mocker.patch.object(client, '_http_request', return_value={})
+    search_command(client, args)

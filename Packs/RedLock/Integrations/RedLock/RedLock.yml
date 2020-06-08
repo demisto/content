@@ -198,7 +198,7 @@ script:
     - contextPath: Redlock.Metadata.CountOfAlerts
       description: The number of alerts found
       type: number
-    description: Search alerts on the RedLock platform
+    description: Search alerts on the Prisma Cloud (RedLock) platform
   - name: redlock-get-alert-details
     arguments:
     - name: alert-id
@@ -482,6 +482,21 @@ script:
   - name: redlock-list-alert-filters
     arguments: []
     description: List the acceptable filters and values for alerts
+  - name: redlock-get-remediation-details
+    description: Gets remediation details for the given alert.
+    outputs:
+    - contextPath: Redlock.Alert.Remediation.Description
+      description: Description of CLI remediation instructions.
+      type: string
+    - contextPath: Redlock.Alert.ID
+      description: The ID of the alert to which the remediation details apply.
+      type: string
+    - contextPath: Redlock.Alert.Remediation.CLI
+      description: The exact CLI command string.
+      type: string
+    arguments:
+    - name: alert-id
+      description: The alert ID for which to get remediation details.
   isfetch: true
   runonce: false
 defaultClassifier: RedLock
