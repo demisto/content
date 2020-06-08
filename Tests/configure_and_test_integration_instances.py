@@ -725,6 +725,11 @@ def main():
     installed_content_packs_successfully = True
 
     if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
+        # sleep for one minute before starting to search and install packs to ensure bucket is ready
+        prints_manager.add_print_job('Sleeping for 1 minute...', print_warning, 0)
+        prints_manager.execute_thread_prints(0)
+        sleep(60)
+
         pack_ids = get_pack_ids_to_install()
         # install content packs in every server
         for server_url in servers:
