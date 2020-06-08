@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import fnmatch
+import re
 import shutil
 import yaml
 import google.auth
@@ -52,8 +53,12 @@ class GCPConfig(object):
                        "CommonScripts",
                        "CommonPlaybooks",
                        "CommonTypes",
+                       "CommonDashboards",
+                       "CommonReports",
+                       "CommonWidgets",
                        "TIM_Processing",
-                       "TIM_SIEM"
+                       "TIM_SIEM",
+                       "HelloWorld"
                        ]  # cores packs list
 
 
@@ -98,7 +103,8 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def yml_supported_folders(cls):
-        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value}
+        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
+                PackFolders.TEST_PLAYBOOKS.value}
 
     @classmethod
     def json_supported_folders(cls):
@@ -321,6 +327,10 @@ class Pack(object):
                     pack_integration_images.append(dependency_integration)
 
         return pack_integration_images
+
+    @staticmethod
+    def _clean_release_notes(changelog_lines):
+        return re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
 
     @staticmethod
     def _parse_pack_dependencies(first_level_dependencies, all_level_pack_dependencies_data):
@@ -660,6 +670,7 @@ class Pack(object):
 
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
+                            changelog_lines = self._clean_release_notes(changelog_lines)
                         version_changelog = {'releaseNotes': changelog_lines,
                                              'displayName': f'{latest_release_notes} - {build_number}',
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
@@ -725,7 +736,6 @@ class Pack(object):
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
-                pack_dirs[:] = [d for d in pack_dirs if d not in PackFolders.TEST_PLAYBOOKS.value]
                 current_directory = root.split(os.path.sep)[-1]
 
                 folder_collected_items = []

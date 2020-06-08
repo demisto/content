@@ -46,7 +46,7 @@ def get_modified_packs(target_packs):
         # return only modified packs between two commits
         return modified_packs
     elif target_packs and isinstance(target_packs, str):
-        modified_packs = {p.strip() for p in target_packs.split(',')}
+        modified_packs = {p.strip() for p in target_packs.split(',') if p not in IGNORED_FILES}
         print(f"Number of selected packs to upload is: {len(modified_packs)}")
         # return only packs from csv list
         return modified_packs
@@ -595,7 +595,6 @@ def main():
             pack.cleanup()
             continue
 
-        # if should_sign_pack:
         task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name
