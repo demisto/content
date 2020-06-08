@@ -233,15 +233,15 @@ tasks:
     task:
       id: a6785055-98d6-4b2e-8da8-c2e0c6b90887
       version: -1
-      name: Search Endpoints By Hash - TIE
+      name: Search Endpoints By Hash - McAfee TIE
       description: |-
         Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
 
         Input:
-        * Hash (default, takes all deferent hashes from context)
+        * Hash (default, takes all different hashes from context)
 
         Output:
-        * All agents that files with "Hash" has been executed on (TIE)
+        * All endpoints with TIE on which the file with the hash was found.
         * Enrich Agents info from ePO
       playbookName: Search Endpoints By Hash - TIE
       type: playbook
