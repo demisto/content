@@ -1,6 +1,6 @@
 commonfields:
   id: VolDlllist
-  version: 1
+  version: -1
 name: VolDlllist
 script: |-
   var cmdline = 'dlllist -p ' + args.pid;
