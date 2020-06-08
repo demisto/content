@@ -2806,7 +2806,8 @@
         },
         {
             "integrations": "Azure AD Connect Health Feed",
-            "playbookID": "FeedAzureADConnectHealth_Test"
+            "playbookID": "FeedAzureADConnectHealth_Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
