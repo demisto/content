@@ -3785,7 +3785,7 @@ def batch(iterable, batch_size=1):
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
 
-def safe_get(dict_object: dict, *keys, key_return_value = None):
+def safe_get(dict_object, *keys, key_return_value = None):
     """ Recursive safe get query, If keys found return value othewisw return None
 
     Args:
