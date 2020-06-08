@@ -3,16 +3,16 @@ commonfields:
   id: GoogleKubernetesEngine
   version: -1
 configuration:
-- display: JSON credentials
+- display: JSON credentials - Paste of the json credentials file.
   name: credentials_json
   required: true
   type: 4
-- display: Test project
+- display: Test project -  used only for test button.
   hidden: false
   name: test_project
   required: true
   type: 0
-- display: Test zone
+- display: Test zone - used only for test button.
   hidden: false
   name: test_zone
   required: true

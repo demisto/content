@@ -9,6 +9,7 @@ from google.cloud.container_v1 import ClusterManagerClient
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
 from google.cloud.container_v1 import enums
+from google.oauth2 import service_account
 # Local packages
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -57,15 +58,8 @@ def google_client_setup(json_configuration: str) -> ClusterManagerClient:
     Returns:
         ClusterManagerClient: client manager.
     """
-    temp_configuration_file = Path.cwd() / 'credentials_service_account.json'
-    try:
-        # Create temp file to apply the clientt from - doesn't support file like object
-        temp_configuration_file.write_text(json_configuration)
-        # Create client
-        client = ClusterManagerClient.from_service_account_json(filename=temp_configuration_file)
-    finally:
-        # Remove file
-        temp_configuration_file.unlink()
+    credentials = service_account.Credentials.from_service_account_info(json.loads(json_configuration))
+    client = ClusterManagerClient(credentials=credentials)
 
     return client
 
