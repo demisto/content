@@ -54,7 +54,7 @@ reflect the answer back to Demisto.</p>
     </tr>
     <tr>
       <td>reply</td>
-      <td>The reply to send to the user. Default is "Thank you for your response.".</td>
+      <td>The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply (i.e. "Thank you {user}. You have answered {response}."). Default is "Thank you for your response.".</td>
       <td>Optional</td>
     </tr>
     <tr>

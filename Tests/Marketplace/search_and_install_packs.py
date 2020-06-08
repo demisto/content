@@ -46,10 +46,6 @@ def create_dependencies_data_structure(response_data, dependants_ids, dependenci
     next_call_dependants_ids = []
 
     for dependency in response_data:
-        # empty currentVersion field indicates the pack isn't installed yet
-        if dependency.get('currentVersion'):
-            continue
-
         dependants = dependency.get('dependants', {})
         for dependant in dependants.keys():
             is_required = dependants[dependant].get('level', '') == 'required'
@@ -187,7 +183,7 @@ def install_packs(client, host, prints_manager, packs_to_install, request_timeou
                                                                             _request_timeout=request_timeout)
 
         if 200 <= status_code < 300:
-            message = 'Packs were successfully installed!'
+            message = 'Packs were successfully installed!\n'
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
@@ -282,7 +278,7 @@ def upload_zipped_packs(client, host, prints_manager):
                                                                    header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
-            message = 'All packs from {} were successfully installed!'.format(packs_zip_path)
+            message = 'All packs from {} were successfully installed!\n'.format(packs_zip_path)
             prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(0)
         else:
@@ -315,7 +311,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
 
-        packs_to_install = ['Base', 'DeveloperTools']  # we save all the packs we want to install, to avoid duplications
+        packs_to_install = ['Base', 'DeveloperTools',
+                            'GenericSQL']  # we save all the packs we want to install, to avoid duplications
         installation_request_body = []  # the packs to install, in the request format
         for pack_id in packs_to_install:
             add_pack_to_installation_request(pack_id, installation_request_body)
