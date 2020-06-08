@@ -100,7 +100,7 @@ def test_fetch_incidents_is_already_fetched(mocker):
     client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies')
     mocker.patch.object(client, 'list_incidents_request', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client, fetch_time='1 hour', incident_status='open', max_fetch='50',
-                                last_run={'already_fetched': {'100107'}, 'time': "2020-06-07T08:32:41.679579Z"})
+                                last_run={'already_fetched': ['100107'], 'time': "2020-06-07T08:32:41.679579Z"})
     assert len(incidents) == 0
 
 

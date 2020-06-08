@@ -1141,7 +1141,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status, max_fetch)
 
     if securonix_incidents:
-        already_fetched = last_run.get('already_fetched', set())
+        already_fetched = last_run.get('already_fetched', [])
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         for incident in incidents_items:
             incident_id = str(incident.get('incidentId', 0))
@@ -1154,7 +1154,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
                     'severity': incident_priority_to_dbot_score(incident.get('priority')),
                     'rawJSON': json.dumps(incident)
                 })
-                already_fetched.add(str(incident_id))  # add already fetched incidents ids to the set
+                already_fetched.append(str(incident_id))  # add already fetched incidents ids to the set
 
         if incidents_items:
             now = timestamp_to_datestring(incidents_items[-1].get('lastUpdateDate'))
@@ -1162,7 +1162,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
             now = datetime.now().strftime(timestamp_format)
         new_last_run.update({'time': now, 'already_fetched': already_fetched})
 
-    demisto.setLastRun(new_last_run)
+    demisto.setLastRun({'value': json.dumps(new_last_run)})
     return demisto_incidents
 
 
@@ -1253,7 +1253,8 @@ def main():
             incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
             max_fetch = str(params.get('max_fetch', '50'))
             max_fetch = str(min('50', max_fetch))  # fetch size should no exceed 50
-            incidents = fetch_incidents(client, fetch_time, incident_status, max_fetch, last_run=demisto.getLastRun())
+            last_run = json.loads(demisto.getLastRun().get('value', '{}'))
+            incidents = fetch_incidents(client, fetch_time, incident_status, max_fetch, last_run=last_run)
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
