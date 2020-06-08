@@ -26,6 +26,64 @@ RES_WITH_ERRORS = {'ValidationMessages': [
     {'ResourcedMessage': 'The Type field is a required field.'},
     {'ResourcedMessage': 'The Device Name field is a required field.'}]}
 
+
+GET_RECORD_RES_failed = {'ValidationMessages': [{'ResourcedMessage': 'No resource found.'}]}
+
+GET_RECORD_RES_SUCCESS = {
+                "Links": [],
+                "RequestedObject": {
+                    "Id": 1010,
+                    "LevelId": 123,
+                    "FieldContents": {
+                        "2": {
+                            "Type": 1,
+                            "Value": "The device name",
+                            "FieldId": 2
+                        }
+                    }
+                },
+                "IsSuccessful": True,
+                "ValidationMessages": []
+            }
+
+INCIDENT_RECORD = {
+    "record": {
+        "Id": "227602",
+        "Status": "New",
+        "Name": "Incident 01",
+        "Date/Time Reported": "2018-03-26T10:03:32.243Z"
+    },
+    "raw": {
+        "@contentId": "227602",
+        "@levelId": "67",
+        "@levelGuid": "b0c2d9a1-167c-4fee-ad91-4b4e7b098b4b",
+        "@moduleId": "75",
+        "@parentId": "0",
+        "Field": [
+            {
+                "@id": "302",
+                "@guid": "3ec0f462-4c17-4036-b0fa-2f04f3aba3d0",
+                "@type": "4",
+                "ListValues": {
+                    "ListValue": {
+                        "@id": "466",
+                        "@displayName": "New",
+                        "#text": "New"
+                    }
+                }
+            },
+            {
+                "@id": "305",
+                "@guid": "9c5e3de1-299b-430f-998a-185ad86e2e79",
+                "@type": "3",
+                "@xmlConvertedValue": "2018-03-26T10:03:32.243Z",
+                "#text": "26/03/2018 06:03:32"
+            }
+        ]
+    }
+}
+
+
 def test_extract_from_xml():
     field_id = extract_from_xml(XML_FOR_TEST, 'Envelope.Body.GetValueListForField.fieldId')
     assert field_id == '6969'
@@ -51,3 +109,33 @@ def test_generate_field_contents():
 def test_get_errors_from_res():
     errors = get_errors_from_res(RES_WITH_ERRORS)
     assert errors == 'The Type field is a required field.\nThe Device Name field is a required field.'
+
+
+def test_get_record_failed(requests_mock):
+    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+                       json={'RequestedObject': {'SessionToken': 'session-id'}})
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/content/1010', json=GET_RECORD_RES_failed)
+    client = Client(BASE_URL, '', '', '', '')
+    record, res, errors = client.get_record(75,1010)
+    assert errors == 'No resource found.'
+    assert record == {}
+
+
+def test_get_record_success(requests_mock):
+    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+                       json={'RequestedObject': {'SessionToken': 'session-id'}})
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/content/1010', json=GET_RECORD_RES_SUCCESS)
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/level/module/1', json=GET_LEVEL_RES)
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+    client = Client(BASE_URL, '', '', '', '')
+    record, res, errors = client.get_record(1, 1010)
+    assert errors is None
+    assert record == {'Device Name': 'The device name', 'Id': 1010}
+
+
+def test_record_to_incident():
+    client = Client(BASE_URL, '', '', '', '')
+    incident, incident_created_time = client.record_to_incident(INCIDENT_RECORD, 75, 'Date/Time Reported')
+    assert incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ') == '2018-03-26T10:03:32Z'
+    assert incident['name'] == 'RSA Archer Incident: 227602'
+    assert incident['occurred'] == '2018-03-26T10:03:32Z'

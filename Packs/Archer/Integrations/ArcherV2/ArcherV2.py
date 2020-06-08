@@ -317,7 +317,7 @@ class Client(BaseClient):
     def get_record(self, app_id, record_id):
         res = self.do_request('GET', f'rsaarcher/api/core/content/{record_id}')
 
-        if not isinstance(res,dict):
+        if not isinstance(res, dict):
             res = res.json()
 
         errors = get_errors_from_res(res)
@@ -340,7 +340,6 @@ class Client(BaseClient):
                     field_value = field.get('IpAddressBytes')
                 else:
                     field_value = field.get('Value')
-
                 if field_value:
                     record[field_data.get('Name')] = field_value
 
@@ -662,10 +661,12 @@ def create_record_command(client: Client, args: Dict[str, str]):
 def delete_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('record-id')
     res = client.do_request('Delete', f'rsaarcher/api/core/content/{record_id}')
-    if res.get('IsSuccessful'):
-        return f'Record {record_id} deleted successfully', {}, res
-    else:
-        return_error('Delete record failed')
+
+    errors = get_errors_from_res(res)
+    if errors:
+        return_error(errors)
+    return_outputs(f'Record {record_id} deleted successfully', {}, res)
+
 
 
 def update_record_command(client: Client, args: Dict[str, str]):
