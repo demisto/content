@@ -1,8 +1,6 @@
-id: search_endpoints_by_hash_-_generic
+id: Search Endpoints By Hash - Generic V2
 version: -1
-name: Search Endpoints By Hash - Generic
-fromversion: 4.5.0
-system: true
+name: Search Endpoints By Hash - Generic V2
 description: Hunt using available tools
 starttaskid: "0"
 tasks:
@@ -13,10 +11,10 @@ tasks:
     task:
       id: c485e19b-c83a-48e4-892c-8bd91e17ced2
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -41,10 +39,10 @@ tasks:
       version: -1
       name: Search Endpoints By Hash - CrowdStrike
       playbookName: Search Endpoints By Hash - CrowdStrike
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -76,42 +74,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 5937d882-8964-48b8-834d-1e6f3d83b189
-    type: playbook
-    task:
-      id: 5937d882-8964-48b8-834d-1e6f3d83b189
-      version: -1
-      name: Search Endpoints By Hash - Carbon Black Response
-      playbookName: Search Endpoints By Hash - Carbon Black Response
-      description: ""
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      Hash:
-        complex:
-          root: inputs
-          accessor: MD5Hash
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "8":
     id: "8"
     taskid: 912e992b-d3bd-4353-8177-5ea207ef2ac6
@@ -121,10 +83,10 @@ tasks:
       version: -1
       name: Search Endpoints By Hash - Carbon Black Protection
       playbookName: Search Endpoints By Hash - Carbon Black Protection
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -157,9 +119,9 @@ tasks:
       version: -1
       name: MD5 Only
       type: title
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -183,9 +145,9 @@ tasks:
       version: -1
       name: MD5 / SHA1 / SHA256
       type: title
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -218,8 +180,8 @@ tasks:
       '#default#':
       - "14"
       "yes":
-      - "7"
       - "8"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -249,10 +211,10 @@ tasks:
       id: f2a05482-2b17-4a09-8813-be48459935c3
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -315,10 +277,10 @@ tasks:
       id: 974d2e04-3c66-445c-844d-be5ebdbc218e
       version: -1
       name: No MD5
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -342,10 +304,10 @@ tasks:
       version: -1
       name: Search Endpoints By Hash - Cybereason
       playbookName: Search Endpoints By Hash - Cybereason
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -371,11 +333,46 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 0776ac69-dbd9-4a61-8b55-7d721d2dafe7
+    type: playbook
+    task:
+      id: 0776ac69-dbd9-4a61-8b55-7d721d2dafe7
+      version: -1
+      name: Search Endpoints By Hash - Carbon Black Response V2
+      playbookName: Search Endpoints By Hash - Carbon Black Response V2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Hash:
+        complex:
+          root: File
+          accessor: MD5
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "11_12_#default#": 0.2,
-      "11_7_yes": 0.5,
+      "11_16_yes": 0.47,
       "11_8_yes": 0.58
     },
     "paper": {
@@ -416,5 +413,6 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+fromversion: 4.5.0
 tests:
-  - No test - tests exist for sub playbooks
+- No tests
