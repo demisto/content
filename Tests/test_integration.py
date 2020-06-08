@@ -455,7 +455,10 @@ def __create_integration_instance(client, integration_name, integration_instance
     if not module_configuration:
         module_configuration = []
 
-    instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'),
+    if 'integrationInstanceName' in integration_params:
+        instance_name = integration_params['integrationInstanceName']
+    else:
+        instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'),
                                         str(uuid.uuid4()))
     # define module instance
     module_instance = {
