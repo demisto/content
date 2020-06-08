@@ -3794,7 +3794,8 @@ def safe_get(dict_object: dict, *keys, key_return_value = None):
         *keys: keys for recursive get.
 
     Returns:
-        Optional[str]: Value found.
+        :return: Value from recursive get.
+        :rtype: ``obj``
     """
     for key in keys:
         try:
