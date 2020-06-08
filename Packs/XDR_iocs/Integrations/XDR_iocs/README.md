@@ -1,4 +1,4 @@
-Use the Cortex XDR - IOCs feed integration to sync indicators from XSOAR to XDR.
+Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back.
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 
 This integration was integrated and tested with Branch: stable-50 of XDR.
