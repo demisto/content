@@ -511,8 +511,8 @@ def main():
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
-                query=fetch_query,
-                page=max_fetch,
+                fetch_query=fetch_query,
+                max_fetch=max_fetch,
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
