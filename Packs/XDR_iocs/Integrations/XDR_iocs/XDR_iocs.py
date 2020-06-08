@@ -248,7 +248,9 @@ def get_last_iocs(batch_size=200) -> List:
 
 
 def tim_insert_jsons(client: Client):
-    iocs = get_last_iocs()
+    iocs = argToList(demisto.args().get('indicator', ''))
+    if not iocs:
+        iocs = get_last_iocs()
     path = 'tim_insert_jsons/'
     requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)

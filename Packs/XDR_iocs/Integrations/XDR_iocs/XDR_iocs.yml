@@ -130,8 +130,16 @@ script:
       will all the indicators that were synced with XDR and then resync.
     execution: false
     name: xdr-iocs-sync
-  - deprecated: false
-    description: Push new IOCs to XDR. This runs every minute.
+  - arguments:
+    - default: false
+      description: the indicators
+      isArray: true
+      name: indicator
+      required: false
+      secret: false
+    deprecated: false
+    description: Push new IOCs to XDR. run This every minute (without indicator argument)
+      or ioc trigerd (using indicator argument).
     execution: false
     name: xdr-iocs-push
   - arguments:
