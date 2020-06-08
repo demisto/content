@@ -472,7 +472,7 @@ def __create_integration_instance(client, integration_name, integration_instance
     }
 
     # set server keys
-    set_server_keys(client, prints_manager, configuration.get('params', {}), configuration['name'])
+    set_server_keys(client, prints_manager, integration_params, configuration['name'])
 
     # set module params
     for param_conf in module_configuration:
