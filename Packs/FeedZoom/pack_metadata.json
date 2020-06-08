@@ -1,6 +1,6 @@
 {
     "name": "Zoom Feed",
-    "description": "Zoom IPv4 Feed",
+    "description": "Indicators feed from Zoom",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -12,5 +12,8 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [
+        "Zoom",
+        "Feed"
+    ]
 }

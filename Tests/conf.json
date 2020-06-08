@@ -2839,7 +2839,8 @@
         },
         {
             "integrations": "Zoom Feed",
-            "playbookID": "FeedZoom_Test"
+            "playbookID": "FeedZoom_Test",
+            "fromversion": "5.5.0"
         }
 
     ],
