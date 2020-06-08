@@ -159,8 +159,8 @@ tasks:
     task:
       id: 00c09fd8-6352-4b6c-8e7a-5a2459544fc7
       version: -1
-      name: Is there MD5 to hunt?
-      description: Checks if there is MD5 to hunt
+      name: Is there an MD5 hash to hunt?
+      description: Checks if there is an MD5 hash to hunt.
       type: condition
       iscommand: false
       brand: ""
