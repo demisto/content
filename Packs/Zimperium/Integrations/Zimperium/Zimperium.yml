@@ -1,0 +1,256 @@
+category: Network Security
+commonfields:
+  id: Zimperium
+  version: -1
+configuration:
+- defaultvalue: https://domain.zimperium.com
+  display: Server URL (e.g. https://domain.zimperium.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Zimperium is a mobile security platform that generates alerts based on
+  anomalous or unauthorized activities detected on a user's mobile device.
+display: Zimperium
+name: Zimperium
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: eventId==*
+      description: Search events query.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Retreive event full details.
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Number of events to retreive in each page.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Search events.
+    execution: false
+    name: zimperium-events-search
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: objectId==*
+      description: Search users query.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Number of users to retreive in each page.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Search users.
+    execution: false
+    name: zimperium-users-search
+  - arguments:
+    - default: false
+      description: Object ID.
+      isArray: false
+      name: object_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve details for a single user.
+    execution: false
+    name: zimperium-user-get-by-id
+  - arguments:
+    - default: false
+      defaultValue: deviceId==*
+      description: Search users query.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Number of users to retreive in each page.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Search devices.
+    execution: false
+    name: zimperium-devices-search
+  - arguments:
+    - default: false
+      description: Device ID.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      description: Zimperium ID.
+      isArray: false
+      name: zdid
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve details for a single device.
+    execution: false
+    name: zimperium-device-get-by-id
+  - arguments:
+    - default: false
+      defaultValue: 1 day
+      description: from_last_update, time format?????
+      isArray: false
+      name: from_last_update
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to exclude deleted devices. Default is True.
+      isArray: false
+      name: exclude_deleted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Number of devices to retreive in each page.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve Devices from Greater than Last Updated.
+    execution: false
+    name: zimperium-devices-get-last-updated
+  - arguments:
+    - default: false
+      description: Application name.
+      isArray: false
+      name: app_name
+      required: false
+      secret: false
+    - default: false
+      description: Application hash.
+      isArray: false
+      name: app_hash
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve appliction classification.
+    execution: false
+    name: zimperium-app-classification-get
+  - arguments:
+    - default: false
+      description: Bundle ID.
+      isArray: false
+      name: bundle_id
+      required: false
+      secret: false
+    - default: false
+      description: ITunes ID.
+      isArray: false
+      name: itunes_id
+      required: false
+      secret: false
+    - default: false
+      description: Application hash.
+      isArray: false
+      name: app_hash
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a report.
+    execution: false
+    name: zimperium-report-get
+  - arguments:
+    - default: false
+      description: ID of the entry containing the file to upload.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Upload application file for analysis.
+    execution: false
+    name: zimperium-app-upload-for-analysis
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
