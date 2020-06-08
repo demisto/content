@@ -4,7 +4,7 @@ commonfields:
 name: Digital Defense FrontlineVM
 display: Digital Defense FrontlineVM
 category: Vulnerability Management
-description: Use the Digital Defense Frontline VM to identify and evaluate the security
+description: Use the Digital Defense FrontlineVM to identify and evaluate the security
   and business risks of network devices and applications deployed as premise, cloud,
   or hybrid network-based implementations.
 configuration:
@@ -162,7 +162,7 @@ script:
       description: The IP address end range of the asset to scan.
     - name: scan_name
       description: The name of this scan to run in FrontlineVM. Default value will
-        be "Cortex XSOAR Scan [<asset_ip_address>]"
+        be "Cortex XSOAR Scan [<asset_ip_address>]. Limited to 100 characters."
     outputs:
     - contextPath: FrontlineVM.Scan.ID
       description: The ID number of the scan.

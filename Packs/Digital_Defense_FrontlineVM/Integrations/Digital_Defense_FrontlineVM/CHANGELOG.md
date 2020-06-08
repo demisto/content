@@ -1,9 +1,7 @@
 ## [Unreleased]
-### Integrations
-- __Digital Defense FrontlineVM__
-  - Update to frontline-scan-asset command
-    - Update default scan name from 'Demisto Scan' to 'Cortex XSOAR Scan'
-    - scan_name argument added for users to define their own scan name
+- Update to frontline-scan-asset command
+  - Update default scan name from 'Demisto Scan' to 'Cortex XSOAR Scan'
+  - scan_name argument added for users to define their own scan name
 
 ## [20.5.0] - 2020-05-12
 -
