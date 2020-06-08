@@ -255,3 +255,30 @@ RESPONSE_DEVICE_GET_BY_ID = {
     "riskPosture": "Normal",
     "vulnerabilities": []
 }
+RESPONSE_APP_CLASSIFICATION_GET = [
+    {
+        "objectId": "d28bf74c-c978-488e-a7e4-e15f4d864927",
+        "systemToken": "joseph",
+        "hash": "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092",
+        "modifiedDate": "2018-12-14 12:37:52 UTC",
+        "classification": "Legitimate",
+        "name": "Test",
+        "version": "2.1.3",
+        "score": 0.00,
+        "privacyEnum": 0,
+        "securityEnum": 1,
+        "processState": "AVAILABLE",
+        "deviceCount": 0,
+        "metadata": {
+            "name": "Test",
+            "bundleId": "com.apple.Test",
+            "applicationSize": 10600448,
+            "id": "045c470c-e6f4-3b86-9da6-5b1005c8459f",
+            "version": "2.1.3",
+            "hash": "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092",
+            "platform": "iOS"
+        },
+        "securityRisk": "Medium",
+        "privacyRisk": "Low"
+    }
+]
