@@ -131,7 +131,8 @@ script:
     execution: false
     name: xdr-iocs-sync
   - arguments:
-    - default: falseIOCs to push. leave empty to push all recently modified IOCs.the indicators
+    - default: false
+      description: IOCs to push. leave empty to push all recently modified IOCs.the indicators
       isArray: true
       name: indicator
       required: false
