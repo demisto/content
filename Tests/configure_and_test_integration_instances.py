@@ -159,7 +159,7 @@ def configure_integration_instance(integration, client, prints_manager, server_h
         prints_manager.execute_thread_prints(0)
         return None
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
-                                                          integration_instance_name, is_byoi)
+                                                          integration_instance_name, is_byoi, client, prints_manager)
     return module_instance
 
 
@@ -380,8 +380,39 @@ def set_module_params(param_conf, integration_params):
     return param_conf
 
 
+def __set_server_keys(client, prints_manager, integration_params, integration_name):
+    if 'server_keys' not in integration_params:
+        return
+
+    prints_manager.add_print_job(f'Setting server keys for integration: {integration_name}',
+                                 print_color, 0, LOG_COLORS.GREEN)
+
+    data = {
+        'data': {},
+        'version': -1
+    }
+
+    for key, value in integration_params.get('server_keys').items():
+        data['data'][key] = value
+
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                                        method='POST', body=data)
+
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error(
+            'failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return
+
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = "Failed to set server keys " + str(status_code) + '\n' + message
+        print_error(msg)
+
+
 def set_integration_instance_parameters(integration_configuration, integration_params, integration_instance_name,
-                                        is_byoi):
+                                        is_byoi, client, prints_manager):
     """Set integration module values for integration instance creation
 
     The integration_configuration and integration_params should match, in that
@@ -400,6 +431,10 @@ def set_integration_instance_parameters(integration_configuration, integration_p
             provided in the conf.json
         is_byoi: (bool)
             If the integration is byoi or not
+        client: (demisto_client)
+            The client to connect to
+        prints_manager: (ParallelPrintsManager)
+            Print manager object
 
     Returns:
         (dict): The configured module instance to send to the Demisto server for
@@ -409,8 +444,11 @@ def set_integration_instance_parameters(integration_configuration, integration_p
     if not module_configuration:
         module_configuration = []
 
-    instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'),
-                                        str(uuid.uuid4()))
+    if 'integrationInstanceName' in integration_params:
+        instance_name = integration_params['integrationInstanceName']
+    else:
+        instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
+
     # define module instance
     module_instance = {
         'brand': integration_configuration['name'],
@@ -425,6 +463,9 @@ def set_integration_instance_parameters(integration_configuration, integration_p
         'passwordProtected': False,
         'version': 0
     }
+
+    # set server keys
+    __set_server_keys(client, prints_manager, integration_params, integration_configuration['name'])
 
     # set module params
     for param_conf in module_configuration:

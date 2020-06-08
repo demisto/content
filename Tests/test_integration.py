@@ -407,7 +407,7 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
     return success, failure_message
 
 
-def set_server_keys(client, prints_manager, integration_params, integration_name):
+def __set_server_keys(client, prints_manager, integration_params, integration_name):
     if 'server_keys' not in integration_params:
         return
 
@@ -503,7 +503,7 @@ def __create_integration_instance(client, integration_name, integration_instance
     }
 
     # set server keys
-    set_server_keys(client, prints_manager, integration_params, configuration['name'])
+    __set_server_keys(client, prints_manager, integration_params, configuration['name'])
 
     # set module params
     for param_conf in module_configuration:
