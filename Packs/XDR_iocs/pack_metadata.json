@@ -1,6 +1,6 @@
 {
   "name": "Cortex XDR - IOC",
-  "description": "Cortex XDR - IOC",
+  "description": "Sync your indicators with Cortex XDR.",
   "support": "xsoar",
   "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",
