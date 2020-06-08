@@ -58,9 +58,13 @@ def main():
                 try:
                     res = requests.request(method=method, url=(host + path), verify=False)
                 except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
-                    print_error(f'{ami_instance_name} encountered an error: {str(exp)}\n'
-                                f'Spot instance was dropped by amazon, if raised often - report to team leader.')
-                    instance_ips_to_poll.remove(ami_instance_ip)
+                    # print_error(f'{ami_instance_name} encountered an error: {str(exp)}\n'
+                    #             f'Spot instance was dropped by amazon, if raised often - report to team leader.')
+                    print_error(f'{ami_instance_name} encountered an error: {str(exp)}')
+                    if SETUP_TIMEOUT != 60 * 10:  # noqa: F823
+                        print_warning('Setting SETUP_TIMEOUT to 10 minutes.')
+                        SETUP_TIMEOUT = 60 * 10
+                    # instance_ips_to_poll.remove(ami_instance_ip)
                     failure = True
                     continue
                 except Exception as exp:
@@ -68,6 +72,9 @@ def main():
                                   f'Will retry this step later.')
                     continue
                 if res.status_code == 200:
+                    if SETUP_TIMEOUT != 60 * 60:
+                        print(f'Resetting SETUP_TIMEOUT to an hour.')
+                        SETUP_TIMEOUT = 60 * 60
                     print(f'[{datetime.datetime.now()}] {ami_instance_name} is ready to use')
                     # ready_ami_list.append(ami_instance_name)
                     instance_ips_to_poll.remove(ami_instance_ip)
