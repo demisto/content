@@ -1,11 +1,11 @@
-import re
+import demistomock as demisto
+from CommonServerPython import *
+
 from typing import Any, Callable, Dict, List, Tuple
 
 import urllib3
 from bs4 import BeautifulSoup
-
-import demistomock as demisto
-from CommonServerPython import *
+import re
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -49,9 +49,9 @@ class Client(BaseClient):
                 "tbody tr td li") if pattern.match(cell.text)]
             for url in scraped_urls:
                 result.append({
-                    "value": url,
+                    'value': url,
                     'type': FeedIndicatorType.DomainGlob if '*' in url else FeedIndicatorType.URL,
-                    "FeedURL": self._base_url
+                    'FeedURL': self._base_url
                 })
 
         except requests.exceptions.SSLError as err:
@@ -106,9 +106,10 @@ def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> L
         for key, val in item.items():
             raw_data.update({key: val})
         indicator_obj = {
-            "value": value,
-            "type": type_,
-            "rawJSON": raw_data,
+            'value': value,
+            'type': type_,
+            'service': 'Azure AD Connect Health Feed',
+            'rawJSON': raw_data,
         }
         if feed_tags:
             indicator_obj['fields'] = {
