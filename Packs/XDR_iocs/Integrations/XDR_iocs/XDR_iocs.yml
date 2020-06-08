@@ -21,13 +21,14 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
+  additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you wish to use a playbook to sync indicators.
   display: Auto Sync
   name: autoSync
   required: false
   type: 8
 - additionalinfo: Map the desired severity that will be set to each indicator
       sent to Cortex XDR.
-  display: XDR severity
+  display: Cortex XDR Severity
   hidden: false
   name: severity
   options:
@@ -37,9 +38,9 @@ configuration:
   - high
   required: true
   type: 15
-- additionalinfo: The query used to collect indicators.
+- additionalinfo: The query used to collect indicators to be synced from Cortex XSOAR to Cortex XDR.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
-  display: query
+  display: Sync Query
   hidden: false
   name: query
   required: true
