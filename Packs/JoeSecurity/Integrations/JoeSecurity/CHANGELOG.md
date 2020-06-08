@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Fixed a bug that running "joe-analysis-info" on URL not returns a DBotScore.Indicator.
+- Fixed a bug in **joe-analysis-info** command that wasn't returning a DBotScore.Indicator when was given a URL.
 
 ## [20.5.0] - 2020-05-12
 -
