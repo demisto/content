@@ -2825,6 +2825,7 @@
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
+        "Traps": "Issue 24122",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
