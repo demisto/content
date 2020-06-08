@@ -476,9 +476,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
@@ -508,9 +508,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
