@@ -186,7 +186,7 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
             user = users_filter[0]
             if add_to_context:
                 users.append(user)
-                set_to_latest_integration_context({'users': users})
+                set_to_latest_integration_context({'users': users}, object_keys=OBJECTS_TO_KEYS)
         else:
             return {}
 
@@ -286,7 +286,7 @@ def set_to_latest_integration_context(context: dict, object_keys: dict = None, s
         demisto.info(f'Slack - Failed updating integration context with version {version}.'
                      f' Attempts left - {CONTEXT_UPDATE_RETRY_TIMES - attempt}')
 
-        set_to_latest_integration_context(integration_context, object_keys, sync, version, attempt)
+        set_to_latest_integration_context(integration_context, object_keys, sync, attempt)
 
     demisto.info(f'Slack - successfully updated integration context. New version is {version}')
 
@@ -304,8 +304,11 @@ def update_context(context: dict, object_keys: dict, sync: bool) -> tuple:
     for key, value in context.items():
         latest_object = json.loads(integration_context.get(key, '[]'))
         updated_object = context[key]
-        merged_list = merge_lists(latest_object, updated_object, object_keys[key])
-        merged_context[key] = merged_list
+        if key in object_keys:
+            merged_list = merge_lists(latest_object, updated_object, object_keys[key])
+            merged_context[key] = merged_list
+        else:
+            merged_context[key] = updated_object
 
     return merged_context, version
 
@@ -560,7 +563,7 @@ def mirror_investigation():
                 bot_id = integration_context['bot_id']
             else:
                 bot_id = get_bot_id()
-                set_to_latest_integration_context({'bot_id': bot_id})
+                set_to_latest_integration_context({'bot_id': bot_id}, object_keys=OBJECTS_TO_KEYS)
 
             invite_users_to_conversation(conversation_id, [bot_id])
 
@@ -629,7 +632,7 @@ def mirror_investigation():
 
     mirrors.append(mirror)
 
-    set_to_latest_integration_context({'mirrors': mirrors, 'conversations': conversations})
+    set_to_latest_integration_context({'mirrors': mirrors, 'conversations': conversations}, object_keys=OBJECTS_TO_KEYS)
 
     if kick_admin:
         body = {
@@ -849,7 +852,8 @@ def check_for_mirrors():
             else:
                 users = original_users
 
-            set_to_latest_integration_context({'mirrors': mirrors, 'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            set_to_latest_integration_context({'mirrors': updated_mirrors, 'users': users},
+                                              OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
@@ -1173,7 +1177,7 @@ async def listen(**payload):
                                                     auto_close)
                         mirror['mirrored'] = True
                         mirrors.append(mirror)
-                        set_to_latest_integration_context({'mirrors': mirrors})
+                        set_to_latest_integration_context({'mirrors': mirrors}, object_keys=OBJECTS_TO_KEYS)
 
                 investigation_id = mirror['investigation_id']
                 await handle_text(client, investigation_id, text, user)
@@ -1198,7 +1202,7 @@ async def get_user_by_id_async(client, user_id):
         }
         user = (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
         users.append(user)
-        set_to_latest_integration_context({'users': users})
+        set_to_latest_integration_context({'users': users}, object_keys=OBJECTS_TO_KEYS)
 
     return user
 
@@ -1251,7 +1255,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
                 demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                                  task_id)
                 questions.remove(question_filter[0])
-                set_to_latest_integration_context({'questions': questions})
+                set_to_latest_integration_context({'questions': questions}, object_keys=OBJECTS_TO_KEYS)
 
                 return reply
 
@@ -1409,7 +1413,7 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
         'default_response': default_response
     })
 
-    set_to_latest_integration_context({'questions': questions})
+    set_to_latest_integration_context({'questions': questions}, object_keys=OBJECTS_TO_KEYS)
 
 
 def slack_send_file():
@@ -1632,7 +1636,7 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
                     if not conversation:
                         return_error('Could not find the Slack conversation {}'.format(destination_name))
                     conversations.append(conversation)
-                    set_to_latest_integration_context({'conversations': conversations})
+                    set_to_latest_integration_context({'conversations': conversations}, object_keys=OBJECTS_TO_KEYS)
                     conversation_id = conversation.get('id')
 
             if conversation_id:
@@ -1671,7 +1675,7 @@ def set_channel_topic():
             mirror = mirrors.pop(mirrors.index(mirror))
             mirror['channel_topic'] = topic
             mirrors.append(mirror)
-            set_to_latest_integration_context({'mirrors': mirrors})
+            set_to_latest_integration_context({'mirrors': mirrors}, object_keys=OBJECTS_TO_KEYS)
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
@@ -1708,7 +1712,7 @@ def rename_channel():
             mirror = mirrors.pop(mirrors.index(mirror))
             mirror['channel_name'] = new_name
             mirrors.append(mirror)
-            set_to_latest_integration_context({'mirrors': mirrors})
+            set_to_latest_integration_context({'mirrors': mirrors}, object_keys=OBJECTS_TO_KEYS)
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
@@ -1746,7 +1750,7 @@ def close_channel():
             for mirror in channel_mirrors:
                 mirrors.remove(mirror)
 
-            set_to_latest_integration_context({'mirrors': mirrors})
+            set_to_latest_integration_context({'mirrors': mirrors}, object_keys=OBJECTS_TO_KEYS)
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
