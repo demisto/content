@@ -150,3 +150,6 @@ ignore=BA101
 
 [file:playbook-PhishingAutomated.yml]
 ignore=BA101
+
+[file:Access_Investigation_-_Generic.yml]
+ignore=BA101
