@@ -2,7 +2,7 @@
 # IMPORTS #
 ###########
 # STD packages
-from typing import Dict, Callable, Tuple, Any, Optional, Lis
+from typing import Dict, Callable, Tuple, Any, Optional, List
 # 3-rd party packages
 from google.cloud.container_v1 import ClusterManagerClient
 from google.protobuf.json_format import MessageToDict
