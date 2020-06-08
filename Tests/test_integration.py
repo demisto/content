@@ -438,6 +438,32 @@ def set_server_keys(client, prints_manager, integration_params, integration_name
         print_error(msg)
 
 
+def __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index=0):
+    try:
+        int_resp = demisto_client.generic_request_func(self=client, method='POST',
+                                                       path='/settings/integration/search',
+                                                       body={'size': 1000})
+        int_instances = ast.literal_eval(int_resp[0])
+    except requests.exceptions.RequestException as conn_err:
+        error_message = 'Failed to delete integrations instance, error trying to communicate with demisto server: ' \
+                        '{} '.format(conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
+        return
+    if int(int_resp[1]) != 200:
+        error_message = 'Get integration instance failed with status code: {}'.format(int_resp[1])
+        prints_manager.add_print_job(error_message, print_error, thread_index)
+        return
+    if 'instances' not in int_instances:
+        prints_manager.add_print_job("No integrations instances found to delete", print, thread_index)
+        return
+
+    for instance in int_instances['instances']:
+        if instance.get('name') == instance_name:
+            prints_manager.add_print_job(f'Deleting integration instance {instance_name} since it is defined by name',
+                                         print_color, thread_index, message_color=LOG_COLORS.GREEN)
+            __delete_integration_instance(client, instance.get('id'), prints_manager, thread_index)
+
+
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_instance_name,
                                   integration_params, is_byoi, prints_manager, validate_test=True, thread_index=0):
@@ -457,9 +483,10 @@ def __create_integration_instance(client, integration_name, integration_instance
 
     if 'integrationInstanceName' in integration_params:
         instance_name = integration_params['integrationInstanceName']
+        __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index)
     else:
-        instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'),
-                                        str(uuid.uuid4()))
+        instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
+
     # define module instance
     module_instance = {
         'brand': configuration['name'],
