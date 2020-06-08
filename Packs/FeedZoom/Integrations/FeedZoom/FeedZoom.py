@@ -3,7 +3,6 @@ from CommonServerPython import *
 from typing import Dict, List, Tuple, Any, Callable
 
 import urllib3
-import re
 from bs4 import BeautifulSoup
 
 # disable insecure warnings
@@ -39,13 +38,13 @@ class Client(BaseClient):
         try:
             raw_data: List = sum([cell.get_text(strip=True, separator=" ").split(" ")
                                  for cell in soup.select(".pure-table tbody tr td")], [])
-            cidrs = list(set(raw_data))
-            for cidr in cidrs:
-                if re.match(ipv4cidrRegex, cidr):
+            indicators = list(set(raw_data))
+            for indicator in indicators:
+                if auto_detect_indicator_type(indicator):
                     result.append({
-                        "value": cidr,
-                        'type': FeedIndicatorType.CIDR,
-                        "FeedURL": self._base_url
+                        'value': indicator,
+                        'type': auto_detect_indicator_type(indicator),
+                        'FeedURL': self._base_url
                     })
 
         except requests.exceptions.SSLError as err:
@@ -100,9 +99,10 @@ def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> L
         for key, val in item.items():
             raw_data.update({key: val})
         indicator_obj = {
-            "value": value,
-            "type": type_,
-            "rawJSON": raw_data,
+            'value': value,
+            'type': type_,
+            'service': 'Zoom Feed',
+            'rawJSON': raw_data
         }
         if feed_tags:
             indicator_obj['fields'] = {
