@@ -27,6 +27,6 @@
   {
     "body": "\u003col\u003e\n  \u003cli\u003e\n    \u003cstrong\u003eTest\u003cbr\u003e\u003c/strong\u003etest\n  \u003c/li\u003e\n\u003c/ol\u003e",
     "language": "powershell",
-    "editorType": "automation"
+    "editorType": "automation- test"
   }
 ]
