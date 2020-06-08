@@ -129,3 +129,5 @@ script:
   runonce: false
   subtype: python3
 fromversion: 5.0.0
+tests:
+  - Logzio - Test
