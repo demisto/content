@@ -1,7 +1,5 @@
 id: TAXII_Feed_Test
 version: -1
-contentitemfields:
-  propagationLabels: []
 name: TAXII_Feed_Test
 starttaskid: "0"
 tasks:
@@ -15,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -30,6 +29,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: c3764c40-9251-4198-85cb-cc403a040f1b
@@ -47,22 +47,23 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      initial_interval:
+        simple: 4 days
       limit:
         simple: "10"
-      initial_interval:
-        simple: "4 days"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 2956dd1c-409d-4154-8837-37195cefb1c1
@@ -114,13 +115,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
@@ -138,13 +140,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
@@ -160,7 +163,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     scriptarguments:
       all:
         simple: "yes"
@@ -180,12 +183,167 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 27212618-f0b0-4a00-8432-0588d7a9d6e1
+    type: regular
+    task:
+      id: 27212618-f0b0-4a00-8432-0588d7a9d6e1
+      version: -1
+      name: createNewIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source:
+        simple: taxiitest
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type:
+        simple: URL
+      updateddate: {}
+      username: {}
+      value:
+        simple: www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 910,
         "width": 380,
         "x": 50,
         "y": 50
@@ -194,4 +352,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 8b67d530-5b0f-4085-82b9-4429228f211e
+fromversion: 4.1.0
