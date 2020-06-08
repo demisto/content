@@ -408,7 +408,8 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
 
 
 def set_server_keys(client, prints_manager, integration_params, integration_name):
-    prints_manager.add_print_job(f'Setting server keys for integration {integration_name}:\n{integration_params}',
+    prints_manager.add_print_job(f'Setting server keys for integration {integration_name}:\n'
+                                 f'{type(integration_params["server_keys"])}',
                                  print_color, 0, LOG_COLORS.GREEN)
     if 'server_keys' not in integration_params:
         return
@@ -418,7 +419,7 @@ def set_server_keys(client, prints_manager, integration_params, integration_name
         'version': -1
     }
 
-    for key, value in integration_params.get('server_keys'):
+    for key, value in json.loads(integration_params.get('server_keys')):
         data['data'][key] = value
 
     response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
