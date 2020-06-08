@@ -408,11 +408,10 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
 
 
 def set_server_keys(client, prints_manager, integration_params, integration_name):
+    prints_manager.add_print_job(f'Setting server keys for integration {integration_name}:\n{integration_params}',
+                                 print_color, 0, LOG_COLORS.GREEN)
     if 'server_keys' not in integration_params:
         return
-
-    prints_manager.add_print_job(f'Setting server keys for integration {integration_name}',
-                                 print_color, 0, LOG_COLORS.GREEN)
 
     data = {
         'data': {},
