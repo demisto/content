@@ -149,7 +149,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disables IOCs in the XDR server.
+    description: Enables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-enable
   - arguments:
