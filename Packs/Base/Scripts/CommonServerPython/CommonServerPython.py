@@ -3785,6 +3785,25 @@ def batch(iterable, batch_size=1):
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
 
+def safe_get(dict_object: dict, *keys, key_return_value = None):
+    """ Recursive safe get query, If keys found return value othewisw return None
+
+    Args:
+        key_return_value: Value to return when no key availble
+        dict_object: dictionary to query.
+        *keys: keys for recursive get.
+
+    Returns:
+        Optional[str]: Value found.
+    """
+    for key in keys:
+        try:
+            dict_object = dict_object[key]
+        except KeyError:
+            return key_return_value
+
+    return dict_object
+
 
 class DemistoException(Exception):
     pass
