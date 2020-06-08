@@ -933,7 +933,7 @@ class Pack(object):
             author_image (str): uploaded public gcs path to author image.
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
-            build_number (str): build_number (str): circleCI build number.
+            build_number (str): circleCI build number.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
