@@ -179,13 +179,26 @@ class Client(BaseClient):
 
         return result
 
-    def events_search_request(self):
+    def events_search_request(self, query: str, size: str, page: str, verbose: bool):
         """Search events by sending a GET request.
 
+        Args:
+            query: devices search query.
+            size: response size.
+            page: response page.
+            verbose: whether to include full event details.
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET', url_suffix=f'/events/public/search', headers=self._headers)
+        params = {
+            'rsql': query,
+            'size': size,
+            'page': page,
+            'includeFullEventDetail': verbose,
+        }
+
+        return self._http_request(method='GET', url_suffix=f'/events/public/search', headers=self._headers,
+                                  params=params)
 
 
 def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
@@ -397,10 +410,26 @@ def events_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    return client.events_search_request(args)
+    query = str(args.get('query', 'eventId==*'))
+    size = str(args.get('size', '10'))
+    page = str(args.get('page', '0'))
+    verbose = args.get('verbose') == 'false'
+
+    events = client.events_search_request(query, size, page, verbose)
+
+    events_data = events.get('content')
+    table_name = ''
+    if not events.get('last'):
+        table_name = f' (To get the next users, run the command with the next page)'
+    headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
+    human_readable = tableToMarkdown(name=f"Users{table_name}:", t=events_data, headers=headers, removeNull=True)
+    entry_context = {f'Zimperium.Users(val.objectId === obj.objectId)': events_data}
+
+    return human_readable, entry_context, events
 
 
-def fetch_incidents(client, last_run, first_fetch_time):
+def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, fetch_query: str = 'eventId==*',
+                    max_fetch: str = '50'):
     """
     This function will execute each interval (default is 1 minute).
 
@@ -408,6 +437,8 @@ def fetch_incidents(client, last_run, first_fetch_time):
         client (Client): Zimperium client
         last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
         first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
+        fetch_query: events query
+        max_fetch: max events to fetch
 
     Returns:
         next_run: This will be last_run in the next fetch-incidents
@@ -424,7 +455,9 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     latest_created_time = last_fetch
     incidents = []
-    events = client.events_search_request()
+
+    events = client.events_search_request(query=fetch_query, size=max_fetch, page='0', verbose=False)
+
     for event in events:
         incident_created_time = dateparser.parse(event['created_time'])
         incident = {
@@ -451,8 +484,11 @@ def main():
     api_key = params.get('api_key')
     base_url = urljoin(params.get('url'), '/api/v1/')
     verify = not params.get('insecure', False)
-    # How much time before the first fetch to retrieve incidents
+
+    # fetch params
     first_fetch_time = params.get('fetch_time', '3 days').strip()
+    max_fetch = min('50', params.get('max_fetch', '50'))
+    fetch_query = params.get('fetch_query', 'eventId==*')
 
     command = demisto.command()
     LOG(f'Command being called is {demisto.command()}')
@@ -474,7 +510,10 @@ def main():
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
+                first_fetch_time=first_fetch_time,
+                query=fetch_query,
+                page=max_fetch,
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command in commands:

@@ -16,6 +16,16 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: eventId==*
+  display: Fetch query
+  name: fetch_query
+  required: false
+  type: 0
+- defaultvalue: 50
+  display: Max fetch
+  name: max_fetch
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -254,3 +264,4 @@ script:
   type: python
 tests:
 - No tests
+fromversion: 5.0.0
