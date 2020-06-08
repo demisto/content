@@ -65,9 +65,6 @@ def hash_incident():
             'FileFormat': output_format,
         }
     }
-    entry = {}
-
-
     return entry
 
 
