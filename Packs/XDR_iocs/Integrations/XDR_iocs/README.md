@@ -1,4 +1,3 @@
-
 Use the Cortex XDR - IOCs feed integration to sync indicators from XSOAR to XDR.
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 
@@ -53,33 +52,9 @@ There is no context output for this command.
   
 >sync with XDR completed.  
   
-### xdr-iocs-iocs-to-keep  
-***  
-Update all iocs to keep and delete the other.  
-run this ones a day in 01:00 - 3:00 utc time.  
-  
-  
-#### Base Command  
-  
-`xdr-iocs-to-keep`  
-#### Input  
-  
-There are no input arguments for this command.  
-  
-#### Context Output  
-  
-There is no context output for this command.  
-  
-#### Command Example  
-```xdr-iocs-to-keep```  
-  
-#### Human Readable Output  
-  >sync with XDR completed.
-  
-  
 ### xdr-iocs-push
 ***  
-Push new iocs to XDR run this ones a min.  
+Push new IOCs to XDR. run This every minute (without indicator argument) or ioc trigerd (using indicator argument).
   
   
 #### Base Command  
@@ -87,8 +62,11 @@ Push new iocs to XDR run this ones a min.
 `xdr-iocs-push`  
 #### Input  
   
-There are no input arguments for this command.  
-  
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator | the indicators | Optional | 
+
+
 #### Context Output  
   
 There is no context output for this command.  
@@ -97,7 +75,7 @@ There is no context output for this command.
 ```xdr-iocs-push```  
   
 #### Human Readable Output  
-  
+>push success.
   
   
 ### xdr-iocs-enable  

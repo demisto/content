@@ -179,6 +179,7 @@ def demisto_types_to_xdr(_type: str) -> str:
 
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
+    demisto.error(ioc)
     xdr_ioc: Dict = {
         'indicator': ioc['value'],
         'severity': Client.severity,
@@ -186,7 +187,6 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
         'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
     }
-
     # get last 'IndicatorCommentRegular'
     comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
     if comment:
@@ -248,12 +248,18 @@ def get_last_iocs(batch_size=200) -> List:
 
 
 def tim_insert_jsons(client: Client):
-    iocs = argToList(demisto.args().get('indicator', ''))
-    if not iocs:
+    indicators = demisto.args().get('indicator', '').split(',')
+    if not indicators:
         iocs = get_last_iocs()
+    else:
+        iocs = []
+        for indicator in indicators:
+            iocs.append(demisto.searchIndicators(query=f'value:{indicator}').get('iocs')[0])
+
     path = 'tim_insert_jsons/'
     requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+    return_outputs('push success.')
 
 
 def iocs_command(client: Client):
@@ -360,7 +366,6 @@ def main():
     # """
     # Executes an integration command
     # """
-    print(demisto.getLastRun())
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
@@ -383,6 +388,7 @@ def main():
         else:
             raise NotImplementedError(command)
     except Exception as error:
+        pass
         return_error(str(error), error)
 
 
