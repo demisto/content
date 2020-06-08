@@ -582,7 +582,7 @@ class TestCommands:
                 Then:
                     - Verify enable command is called.
             """
-            mocker.patch.object(demisto, 'command', return_value='xdr-enable-iocs')
+            mocker.patch.object(demisto, 'command', return_value='xdr-iocs-enable')
             mocker.patch.object(demisto, 'args', return_value={'indicator': '11.11.11.11'})
             mocker.patch('XDR_iocs.Client.http_request', return_value={})
             outputs = mocker.patch('XDR_iocs.return_outputs')
@@ -601,7 +601,7 @@ class TestCommands:
                     - Verify disable command is called.
             """
 
-            mocker.patch.object(demisto, 'command', return_value='xdr-disable-iocs')
+            mocker.patch.object(demisto, 'command', return_value='xdr-iocs-disable')
             mocker.patch.object(demisto, 'args', return_value={'indicator': '11.11.11.11'})
             mocker.patch('XDR_iocs.Client.http_request', return_value={})
             outputs = mocker.patch('XDR_iocs.return_outputs')
