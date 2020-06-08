@@ -25,8 +25,8 @@ configuration:
   name: autoSync
   required: false
   type: 8
-- additionalinfo: please map the desired severity that will be set to each indicator
-      sent to Cortex XDR
+- additionalinfo: Map the desired severity that will be set to each indicator
+      sent to Cortex XDR.
   display: XDR severity
   hidden: false
   name: severity
@@ -131,31 +131,29 @@ script:
     execution: false
     name: xdr-iocs-sync
   - arguments:
-    - default: false
-      description: the indicators
+    - default: falseIOCs to push. leave empty to push all recently modified IOCs.the indicators
       isArray: true
       name: indicator
       required: false
       secret: false
     deprecated: false
-    description: Push new IOCs to XDR. run This every minute (without indicator argument)
-      or ioc trigerd (using indicator argument).
+    description: Push modified IOCs to Cortex XDR.
     execution: false
     name: xdr-iocs-push
   - arguments:
     - default: false
-      description: In the first run firstTime should be True.
-      isArray: false
-      name: firstTime
-      required: false
+      description: The indicator to enable.
+      isArray: true
+      name: indicator
+      required: true
       secret: false
     deprecated: false
-    description: Enables IOCs in the XDR server.
+    description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-enable
   - arguments:
     - default: false
-      description: The indicator to enable.
+      description: The indicator to disable.
       isArray: true
       name: indicator
       required: true

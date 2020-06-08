@@ -179,7 +179,6 @@ def demisto_types_to_xdr(_type: str) -> str:
 
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
-    demisto.error(ioc)
     xdr_ioc: Dict = {
         'indicator': ioc['value'],
         'severity': Client.severity,
@@ -332,25 +331,26 @@ def module_test(client: Client):
 
 
 def fetch_indicators(client: Client, auto_sync: bool = False):
-    if demisto.getIntegrationContext() and auto_sync:
+    if not demisto.getIntegrationContext() and auto_sync:
         xdr_iocs_sync_command(client, first_time=True)
     else:
         get_changes(client)
         if auto_sync:
             tim_insert_jsons(client)
             if iocs_to_keep_time():
+                # first_time=False will call iocs_to_keep
                 xdr_iocs_sync_command(client)
 
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
-    if first_time:
+    if first_time or not demisto.getIntegrationContext():
         sync(client)
     else:
         iocs_to_keep(client)
 
 
 def iocs_to_keep_time():
-    hour, minute = demisto.getIntegrationContext()['iocs_to_keep_time']
+    hour, minute = demisto.getIntegrationContext().get('iocs_to_keep_time', (0, 0))
     time_now = datetime.now(timezone.utc)
     return time_now.hour == hour and time_now.min == minute
 
@@ -388,7 +388,6 @@ def main():
         else:
             raise NotImplementedError(command)
     except Exception as error:
-        pass
         return_error(str(error), error)
 
 
