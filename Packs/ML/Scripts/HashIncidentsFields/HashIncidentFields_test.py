@@ -1,4 +1,3 @@
-import pytest
 from CommonServerPython import *
 from HashIncidentsFields import hash_incident
 import json
@@ -83,6 +82,7 @@ incident3 = {
     'attachment': [{'name': 'Test word1 word2'}]
 }
 
+
 def dt_res(context, keys_to_search):
     keys_list = keys_to_search.split('.')
     context_key_value = None
@@ -115,6 +115,7 @@ def dt_res(context, keys_to_search):
             context_key_value = context.get(key)
     return context_key_value
 
+
 def execute_command(command, args=None):
     if command == 'GetIncidentsByQuery':
         entry = {}
@@ -141,15 +142,19 @@ def test_lenght(mocker):
     result = hash_incident()
     assert len(result['Contents']) == 3
 
+
 def test_hash(mocker):
     args = dict(default_args)
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     result = hash_incident()
     assert result['Contents'][0]['name'] == incident1['name']
-    assert result['Contents'][0]['status'] == hashlib.md5(str(incident1['status']).encode('utf-8')).hexdigest()
-    assert result['Contents'][0]['created'] == hashlib.md5(str(incident1['created']).encode('utf-8')).hexdigest()
-    assert result['Contents'][0]['labels'][0]['type'] == hashlib.md5(str(incident1['labels'][0]['type']).encode('utf-8')).hexdigest()
+    assert result['Contents'][0]['status'] == \
+           hashlib.md5(str(incident1['status']).encode('utf-8')).hexdigest()
+    assert result['Contents'][0]['created'] == \
+           hashlib.md5(str(incident1['created']).encode('utf-8')).hexdigest()
+    assert result['Contents'][0]['labels'][0]['type'] == \
+           hashlib.md5(str(incident1['labels'][0]['type']).encode('utf-8')).hexdigest()
     assert list(result['Contents'][0]['labels'][0].keys()) == ['type', 'value']
 
 
@@ -160,4 +165,4 @@ def test_context(mocker):
     mocker.patch.object(demisto, 'dt', side_effect=dt_res)
     result = hash_incident()
     assert result['Contents'][0]['context']['simpleValue'] == 'simple'
-    assert result.get('Contents')[0].get('context').get('simpleListValue') == None
+    assert result.get('Contents')[0].get('context').get('simpleListValue') is None

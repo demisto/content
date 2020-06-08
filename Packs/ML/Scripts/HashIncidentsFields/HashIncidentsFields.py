@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
-#from CommonServerUserPython import *
+# from CommonServerUserPython import *
 import hashlib
 import pickle
 import uuid
+
 
 def hash_multiple(value):
     if isinstance(value, list):
@@ -17,6 +18,7 @@ def hash_multiple(value):
         return value
     else:
         return hashlib.md5(str(value).encode('utf-8')).hexdigest()
+
 
 def get_context(incident_id):
     res = demisto.executeCommand("getContext", {'id': incident_id})
