@@ -4,7 +4,6 @@ This script is used to create a filter_file.txt file which will run only the nee
 Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
 import os
-import re
 import sys
 import json
 import glob
@@ -34,9 +33,8 @@ FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
 
 TEST_DATA_INTEGRATION_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_integrations\/.*\.yml'
 INTEGRATION_REGEXES = [
-    INTEGRATION_REGEX,
-    BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_PY_REGEX,
+    PACKS_INTEGRATION_PS_TEST_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
 TEST_DATA_SCRIPT_YML_REGEX = r'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/.*.yml'
@@ -44,8 +42,7 @@ SCRIPT_REGEXES = [
     TEST_DATA_SCRIPT_YML_REGEX
 ]
 INCIDENT_FIELD_REGEXES = [
-    INCIDENT_FIELD_REGEX,
-    PACKS_INCIDENT_FIELDS_REGEX
+    PACKS_INCIDENT_FIELD_JSON_REGEX
 ]
 FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
     FILE_IN_INTEGRATIONS_DIR_REGEX,
@@ -55,20 +52,19 @@ FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
 ]
 CHECKED_TYPES_REGEXES = [
     # Integrations
-    INTEGRATION_REGEX,
-    INTEGRATION_YML_REGEX,
-    BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_PY_REGEX,
     PACKS_INTEGRATION_YML_REGEX,
+    PACKS_INTEGRATION_NON_SPLIT_YML_REGEX,
+    PACKS_INTEGRATION_PS_REGEX,
+
     # Scripts
-    SCRIPT_REGEX,
-    SCRIPT_YML_REGEX,
     PACKS_SCRIPT_REGEX,
     PACKS_SCRIPT_YML_REGEX,
+    PACKS_SCRIPT_NON_SPLIT_YML_REGEX,
+
     # Playbooks
     PLAYBOOK_REGEX,
-    BETA_PLAYBOOK_REGEX,
-    PACKS_PLAYBOOK_YML_REGEX
+    PLAYBOOK_YML_REGEX
 ]
 
 # File names
@@ -159,8 +155,7 @@ def get_modified_files(files_string):
             # reputations.json
             elif re.match(INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
                     re.match(PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(PACKS_INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE):
+                    re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
             elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
