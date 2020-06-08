@@ -1,5 +1,7 @@
-Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back.
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+
+Use the Cortex XDR - IOCs feed integration to sync indicators between Cortex XSOAR and Cortex XDR. The integration will sync indicators according to the fetch interval defined. At each interval the integration will push new and modified indicators (selected according to the defined **Sync Query**) from Cortex XSOAR to Cortex XDR. Additionally, the integration will check if there are manual modifications of indicators on Cortex XDR and sync back to Cortex XSOAR. Once daily the integration will perform a *complete sync* which will also remove indicators, which have been deleted/expired in Cortex XSOAR, from Cortex XDR. 
+
 
 This integration was integrated and tested with Branch: stable-50 of XDR.
 
@@ -15,8 +17,8 @@ This integration was integrated and tested with Branch: stable-50 of XDR.
 | apikey_id | API Key ID | True |  
 | apikey | API Key | True |  
 | feed | Fetch indicators | False |  
-| severity | the severity in XDR | True |  
-| query | query | True |  
+| severity | the severity in Cortex XDR | True |  
+| query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
 | proxy | Use system proxy settings | False |  
 | feedReputation | Indicator Reputation | False |  
@@ -48,7 +50,7 @@ There is no context output for this command.
   
 #### Command Example  
 ```!xdr-iocs-sync```  
-  #### Human Readable Output  
+#### Human Readable Output  
   
 >sync with XDR completed.  
   
