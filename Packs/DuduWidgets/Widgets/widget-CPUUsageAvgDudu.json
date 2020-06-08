@@ -2,7 +2,7 @@
   "id": "cpu-current-usage-dudu",
   "version": -1,
   "fromVersion": "3.5.0",
-  "name": "CPU Current Usage",
+  "name": "CPU Current Usage - DUDU",
   "dataType": "system",
   "widgetType": "number",
   "query": "cpu.usedPercent",
