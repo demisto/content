@@ -6,6 +6,7 @@ from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
 from distutils.util import strtobool
+from distutils.version import LooseVersion
 import asyncio
 import concurrent
 import requests
@@ -49,6 +50,8 @@ POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
 }
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 CONTEXT_UPDATE_RETRY_TIMES = 3
+DEFAULT_SERVER_VERSION = '5.0.0'
+MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
 OBJECTS_TO_KEYS = {
     'mirrors': 'investigation_id',
     'questions': 'entitlement',
@@ -76,6 +79,7 @@ BOT_NAME: str
 BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
+SYNC_CONTEXT: bool
 
 ''' HELPER FUNCTIONS '''
 
@@ -139,17 +143,17 @@ def merge_lists(original_list: List[dict], updated_list: List[dict], key: str) -
     return list(original_dict.values())
 
 
-def get_user_by_name(user_to_search: str, update_context: bool = True) -> dict:
+def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     """
     Gets a slack user by a user name
     :param user_to_search: The user name or email
-    :param update_context Whether to update the integration context
+    :param add_to_context Whether to update the integration context
     :return: A slack user object
     """
 
     user: dict = {}
     users: list = []
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(SYNC_CONTEXT)
 
     user_to_search = user_to_search.lower()
     if integration_context.get('users'):
@@ -180,7 +184,7 @@ def get_user_by_name(user_to_search: str, update_context: bool = True) -> dict:
 
         if users_filter:
             user = users_filter[0]
-            if update_context:
+            if add_to_context:
                 users.append(user)
                 set_to_latest_integration_context({'users': users})
         else:
@@ -221,7 +225,7 @@ def find_mirror_by_investigation() -> dict:
     mirror: dict = {}
     investigation = demisto.investigation()
     if investigation:
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_integration_context(SYNC_CONTEXT)
         if integration_context.get('mirrors'):
             mirrors = json.loads(integration_context['mirrors'])
             investigation_filter = list(filter(lambda m: investigation.get('id') == m['investigation_id'],
@@ -232,7 +236,28 @@ def find_mirror_by_investigation() -> dict:
     return mirror
 
 
-def set_to_latest_integration_context(context: dict, object_keys: dict, sync: bool = False, attempt = 0):
+def set_integration_context(context, sync: bool = False, version: int = -1) -> dict:
+    if is_versioned_context_available():
+        return demisto.setIntegrationContextVersioned(context, version, sync)
+    else:
+        return demisto.setIntegrationContext(context)
+
+
+def get_integration_context(sync: bool = False) -> dict:
+    if is_versioned_context_available():
+        return demisto.getIntegrationContextVersioned(sync)
+    else:
+        return demisto.getIntegrationContext()
+
+
+def is_versioned_context_available() -> bool:
+    server_version = DEFAULT_SERVER_VERSION
+    if hasattr(demisto, 'demistoVersion'):
+        server_version = demisto.demistoVersion().get('version')
+    return LooseVersion(server_version) >= LooseVersion(MIN_VERSION_FOR_VERSIONED_CONTEXT)
+
+
+def set_to_latest_integration_context(context: dict, object_keys: dict = None, sync: bool = False, attempt: int = 0):
     """
     Sets a key value pair to the integration context right after getting it to have the latest context.
     :param context: A dictionary of keys and values to set.
@@ -242,35 +267,47 @@ def set_to_latest_integration_context(context: dict, object_keys: dict, sync: bo
     if attempt == CONTEXT_UPDATE_RETRY_TIMES:
         raise Exception('Slack - failed updating integration context. Max retry attempts exceeded.')
 
-    integration_context_versioned = demisto.getIntegrationContextVersioned(sync)
-    version = -1
-    if sync:
-        version = integration_context_versioned['version']
-    integration_context = integration_context_versioned['context']
-    demisto.info(f'Slack - Attempting to update the integration context with version {version}.')
+    # Update the latest context and get the new version
+    integration_context, version = update_context(context, object_keys, sync)
 
     for key, value in context.items():
         demisto.debug(f'Slack - updating context value: {key} = {value}')
         integration_context[key] = json.dumps(value)
 
+    demisto.info(f'Slack - Attempting to update the integration context with version {version}.')
     demisto.debug(f'Slack - integration context: {str(integration_context)}')
+
+    # Attempt to update integration context with a version. If we get a ValueError (DB Version), the version is too old.
+    # Then we need to try again.
+    attempt = attempt + 1
     try:
-        demisto.setIntegrationContextVersioned(integration_context, version, sync)
+        set_integration_context(integration_context, version, sync)
     except ValueError:
-        demisto.info(f'Slack - Failed updating integration context with version {version}. Retrying.'
+        demisto.info(f'Slack - Failed updating integration context with version {version}.'
                      f' Attempts left - {CONTEXT_UPDATE_RETRY_TIMES - attempt}')
-        latest_integration_context_versioned = demisto.getIntegrationContextVersioned(sync)
+
+        set_to_latest_integration_context(integration_context, object_keys, sync, version, attempt)
+
+    demisto.info(f'Slack - successfully updated integration context. New version is {version}')
+
+
+def update_context(context: dict, object_keys: dict, sync: bool) -> tuple:
+    latest_integration_context_versioned = get_integration_context(sync)
+    if sync and is_versioned_context_available():
         integration_context = latest_integration_context_versioned['context']
-        merged_context = {}
-        for key, value in context.items():
-            latest_object = json.loads(integration_context.get(key, '[]'))
-            updated_object = context[key]
-            merged_list = merge_lists(latest_object, updated_object, object_keys[key])
-            merged_context[key] = merged_list
+        version = latest_integration_context_versioned['version'] + 1
+    else:
+        integration_context = latest_integration_context_versioned
+        version = -1
 
-        set_to_latest_integration_context(merged_context, object_keys, True, attempt + 1)
+    merged_context = {}
+    for key, value in context.items():
+        latest_object = json.loads(integration_context.get(key, '[]'))
+        updated_object = context[key]
+        merged_list = merge_lists(latest_object, updated_object, object_keys[key])
+        merged_context[key] = merged_list
 
-    demisto.info('Slack - successfully updated integration context.')
+    return merged_context, version
 
 
 def set_name_and_icon(body, method):
@@ -371,7 +408,7 @@ async def get_slack_name(slack_id: str, client) -> str:
     if not slack_id:
         return ''
 
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(True)
     prefix = slack_id[0]
     slack_name = ''
 
@@ -484,7 +521,7 @@ def mirror_investigation():
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
         return_error('Can not perform this action in playground.')
 
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(SYNC_CONTEXT)
 
     if not integration_context or not integration_context.get('mirrors', []):
         mirrors: list = []
@@ -639,7 +676,7 @@ def check_for_answers():
     Checks for answered questions
     """
 
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(SYNC_CONTEXT)
     questions = integration_context.get('questions', [])
     users = integration_context.get('users', [])
     if questions:
@@ -716,11 +753,8 @@ def check_for_answers():
                             user.get('profile', {}).get('email'))
 
     if updated_questions:
-        integration_context = demisto.getIntegrationContext()
-        latest_questions = json.loads(integration_context.get('questions', '[]'))
-        questions = merge_lists(latest_questions, updated_questions, 'entitlement')
         questions = list(filter(lambda q: q.get('remove', False) is False, questions))
-        set_to_latest_integration_context({'users': users, 'questions': questions})
+        set_to_latest_integration_context({'users': users, 'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
@@ -779,7 +813,7 @@ def check_for_mirrors():
     """
     Checks for newly created mirrors and handles the mirroring process
     """
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(SYNC_CONTEXT)
     if integration_context.get('mirrors'):
         mirrors = json.loads(integration_context['mirrors'])
         updated_mirrors = []
@@ -808,12 +842,14 @@ def check_for_mirrors():
                     demisto.info('Could not mirror {}'.format(mirror['investigation_id']))
 
         if updated_mirrors:
-            integration_context = demisto.getIntegrationContext()
-            original_mirrors = json.loads(integration_context.get('mirrors', '[]'))
+            integration_context = get_integration_context(SYNC_CONTEXT)
             original_users = json.loads(integration_context.get('users', '[]'))
-            mirrors = merge_lists(original_mirrors, updated_mirrors, 'investigation_id')
-            users = merge_lists(original_users, updated_users, 'id')
-            set_to_latest_integration_context({'mirrors': mirrors, 'users': users})
+            if updated_users:
+                users = merge_lists(original_users, updated_users, 'id')
+            else:
+                users = original_users
+
+            set_to_latest_integration_context({'mirrors': mirrors, 'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
@@ -1109,7 +1145,7 @@ async def listen(**payload):
             await handle_dm(user, text, client)
         else:
             channel_id = data.get('channel')
-            integration_context = demisto.getIntegrationContext()
+            integration_context = get_integration_context(SYNC_CONTEXT)
             if not integration_context or 'mirrors' not in integration_context:
                 return
 
@@ -1150,7 +1186,7 @@ async def listen(**payload):
 async def get_user_by_id_async(client, user_id):
     user: dict = {}
     users: list = []
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(SYNC_CONTEXT)
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
         user_filter = list(filter(lambda u: u['id'] == user_id, users))
@@ -1202,7 +1238,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
 
         return 'Thank you for your response.'
     else:
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_integration_context(SYNC_CONTEXT)
         questions = integration_context.get('questions', [])
         if questions and thread_id:
             questions = json.loads(questions)
@@ -1360,7 +1396,7 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
     :param expiry: The question expiration date.
     :param default_response: The response to send if the question times out.
     """
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(SYNC_CONTEXT)
     questions = integration_context.get('questions', [])
     if questions:
         questions = json.loads(integration_context['questions'])
@@ -1555,7 +1591,7 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     :return: The Slack send response.
     """
 
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(SYNC_CONTEXT)
     conversations: list = []
     mirrors: list = []
     if integration_context:
@@ -1630,7 +1666,7 @@ def set_channel_topic():
         if mirror:
             channel_id = mirror.get('channel_id', '')
             # We need to update the topic in the mirror
-            integration_context = demisto.getIntegrationContext()
+            integration_context = get_integration_context(SYNC_CONTEXT)
             mirrors = json.loads(integration_context['mirrors'])
             mirror = mirrors.pop(mirrors.index(mirror))
             mirror['channel_topic'] = topic
@@ -1667,7 +1703,7 @@ def rename_channel():
         if mirror:
             channel_id = mirror.get('channel_id', '')
             # We need to update the name in the mirror
-            integration_context = demisto.getIntegrationContext()
+            integration_context = get_integration_context(SYNC_CONTEXT)
             mirrors = json.loads(integration_context['mirrors'])
             mirror = mirrors.pop(mirrors.index(mirror))
             mirror['channel_name'] = new_name
@@ -1701,7 +1737,7 @@ def close_channel():
         if mirror:
             channel_id = mirror.get('channel_id', '')
             # We need to update the topic in the mirror
-            integration_context = demisto.getIntegrationContext()
+            integration_context = get_integration_context(SYNC_CONTEXT)
             mirrors = json.loads(integration_context['mirrors'])
             mirror = mirrors.pop(mirrors.index(mirror))
             channel_id = mirror['channel_id']
@@ -1841,13 +1877,13 @@ def long_running_main():
     asyncio.run(start_listening())
 
 
-def init_globals():
+def init_globals(command_name: str = ''):
     """
     Initializes global variables according to the integration parameters
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
-    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT
+    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, SYNC_CONTEXT
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -1858,13 +1894,17 @@ def init_globals():
         # Use default SSL context
         SSL_CONTEXT = None
 
-    loop = asyncio.get_event_loop()
-    if not loop._default_executor:  # type: ignore[attr-defined]
-        demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
-        loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
+    if command_name != 'long-running-execution':
+        loop = asyncio.get_event_loop()
+        if not loop._default_executor:  # type: ignore[attr-defined]
+            demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
+            loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
+        SYNC_CONTEXT = False
+    else:
+        SYNC_CONTEXT = True
 
-    BOT_TOKEN = demisto.params().get('bot_token')
-    ACCESS_TOKEN = demisto.params().get('access_token')
+    BOT_TOKEN = demisto.params().get('bot_token', '')
+    ACCESS_TOKEN = demisto.params().get('access_token', '')
     PROXIES = handle_proxy()
     proxy_url = demisto.params().get('proxy_url')
     PROXY_URL = proxy_url or PROXIES.get('http')  # aiohttp only supports http proxy
@@ -1905,7 +1945,6 @@ def main():
     """
     if is_debug_mode():
         os.environ['PYTHONASYNCIODEBUG'] = "1"
-    init_globals()
 
     commands = {
         'test-module': test_module,
@@ -1925,8 +1964,11 @@ def main():
         'slack-get-user-details': get_user,
     }
 
+    command_name = demisto.command()
+
+    init_globals(command_name)
+
     try:
-        command_name = demisto.command()
         command_func = commands[command_name]
         command_func()
     except Exception as e:

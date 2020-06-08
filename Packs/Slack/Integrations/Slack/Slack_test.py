@@ -329,7 +329,7 @@ def setup(mocker):
 
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
-
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '5.0.0'})
     set_integration_context({
         'mirrors': MIRRORS,
         'users': USERS,
