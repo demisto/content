@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.5.2] - 2020-05-26
 Fixed an issue where some emails were not fetched as incidents.

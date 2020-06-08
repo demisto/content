@@ -263,6 +263,9 @@ class Client(BaseClient):
                 json_data={}
             )
             endpoints = reply.get('reply')[search_from:search_to]
+            for endpoint in endpoints:
+                if not endpoint.get('endpoint_id'):
+                    endpoint['endpoint_id'] = endpoint.get('agent_id')
 
         else:
             filters = []
@@ -843,7 +846,7 @@ def get_endpoints_command(client, args):
 
     return (
         tableToMarkdown('Endpoints', endpoints),
-        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == val.endpoint_id)': endpoints},
+        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints},
         endpoints
     )
 
@@ -974,7 +977,7 @@ def isolate_endpoint_command(client, args):
         f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
         f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
         f' and look at the [is_isolated] field.',
-        {f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == val.endpoint_id)': endpoint_id},
+        {f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
         None
     )
 
@@ -1015,7 +1018,7 @@ def unisolate_endpoint_command(client, args):
         f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
         f'To check the endpoint isolation status please run: !xdr-get-endpoints endpoint_id_list={endpoint_id}'
         f' and look at the [is_isolated] field.',
-        {f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == val.endpoint_id)': endpoint_id},
+        {f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
         None
     )
 
