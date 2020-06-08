@@ -233,7 +233,7 @@ def create_ps_documentation(path, origin, language):
 
 
 def main(argv):
-    js_doc, is_error_js = create_js_documentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs',
+    js_doc, is_error_js = create_js_documentation('./Packs/Base/Docs/commonServerJsDoc.json', 'CommonServerJs',
                                                   'javascript')
     py_doc, is_error_py = create_py_documentation('./Packs/Base/Scripts/CommonServerPython/CommonServerPython.py',
                                                   'CommonServerPython', 'python')
