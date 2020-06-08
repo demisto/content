@@ -352,8 +352,8 @@ def parse_outputs(
     api_errors = api_res.get("errors")
     errors = handle_errors(api_errors)
     if errors:
-        # return_error(errors)
-        return {"errors": {"errors": errors}}
+        return_error(errors)
+        #return {"errors": {"errors": errors}}
 
     api_res_quota, api_res_resources, api_res_sandbox = {}, {}, {}
     resources_group_outputs, sandbox_group_outputs = {}, {}
