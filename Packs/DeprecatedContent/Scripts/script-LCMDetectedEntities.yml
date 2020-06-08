@@ -21,7 +21,7 @@ subtype: python2
 deprecated: true
 tags:
 - lightcyber
-comment: Shows detected entities from LightCyber Magna.
+comment: This script is deprecated. LightCyber Magna is no longer available.
 system: true
 scripttarget: 0
 dependson:
