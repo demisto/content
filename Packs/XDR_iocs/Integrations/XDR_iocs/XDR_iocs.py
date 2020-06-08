@@ -33,7 +33,7 @@ demisto_score_to_xdr: Dict[int, str] = {
 
 class Client:
     severity: str = ''
-    query: str = 'type:File or type:Domain or type:IP'
+    query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
@@ -213,8 +213,9 @@ def sync(client: Client):
     requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
     path: str = 'sync_tim_iocs'
     client.http_request(path, requests_kwargs)
-    demisto.setIntegrationContext({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
-                                   'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)})
+    demisto.setIntegrationContext({'iocs_to_keep_time': create_iocs_to_keep_time()})
+    demisto.setLastRun({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
+                        'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)})
     return_outputs('sync with XDR completed.')
 
 
@@ -235,14 +236,14 @@ def create_last_iocs_query(from_date, to_date):
 
 def get_last_iocs(batch_size=200) -> List:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-    last_run: Dict = demisto.getIntegrationContext()
+    last_run: Dict = demisto.getLastRun()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
     total_size = get_iocs_size(query)
     iocs: List = []
     for i in range(0, ceil(total_size / batch_size)):
         iocs.extend(get_iocs(query=query, page=i, size=batch_size))
     last_run['time'] = current_run
-    demisto.setIntegrationContext(last_run)
+    demisto.setLastRun(last_run)
     return iocs
 
 
@@ -301,7 +302,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
 
 
 def get_changes(client: Client):
-    from_time: Dict = demisto.getIntegrationContext()
+    from_time: Dict = demisto.getLastRun()
     if not from_time:
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
@@ -309,7 +310,7 @@ def get_changes(client: Client):
     iocs: List = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     if iocs:
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
-        demisto.setIntegrationContext(from_time)
+        demisto.setLastRun(from_time)
         return_outputs('', timeline=xdr_ioc_to_timeline(list(map(lambda x: str(x.get('RULE_INDICATOR')), iocs))))
         demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
 
@@ -322,28 +323,61 @@ def module_test(client: Client):
     demisto.results('ok')
 
 
+def fetch_indicators(client: Client, auto_sync: bool = False):
+    if demisto.getIntegrationContext() and auto_sync:
+        xdr_iocs_sync_command(client, first_time=True)
+    else:
+        get_changes(client)
+        if auto_sync:
+            tim_insert_jsons(client)
+            if iocs_to_keep_time():
+                xdr_iocs_sync_command(client)
+
+
+def xdr_iocs_sync_command(client: Client, first_time: bool = False):
+    if first_time:
+        sync(client)
+    else:
+        iocs_to_keep(client)
+
+
+def iocs_to_keep_time():
+    hour, minute = demisto.getIntegrationContext()['iocs_to_keep_time']
+    time_now = datetime.now(timezone.utc)
+    return time_now.hour == hour and time_now.min == minute
+
+
+def create_iocs_to_keep_time():
+    offset = secrets.randbelow(115)
+    hour, minute, = divmod(offset, 60)
+    hour += 1
+    return hour, minute
+
+
 def main():
     # """
     # Executes an integration command
     # """
+    print(demisto.getLastRun())
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
     client = Client(params)
     commands = {
         'test-module': module_test,
-        'xdr-iocs-sync': sync,
-        'xdr-iocs-to-keep': iocs_to_keep,
         'xdr-iocs-enable': iocs_command,
         'xdr-iocs-disable': iocs_command,
         'xdr-iocs-push': tim_insert_jsons,
-        'fetch-indicators': get_changes,
     }
 
     command = demisto.command()
     try:
-        if command in commands:
+        if command == 'fetch-indicators':
+            fetch_indicators(client, params.get('autoSync', False))
+        elif command in commands:
             commands[command](client)
+        elif command == 'xdr-iocs-sync':
+            xdr_iocs_sync_command(client, demisto.args().get('firstTime', False))
         else:
             raise NotImplementedError(command)
     except Exception as error:

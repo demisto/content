@@ -16,9 +16,5 @@ Cortex XDR is the world's first detection and response app that natively integra
 ### Query
 The query to find indicators.
 
-### Playbooks
-Configure **Cortex XDR - IOC every minute** to run every minute.
-Configure **Cortex XDR - IOC nightly job** to run every night (1:00 - 3:00 in UTC).
-
 ### Important
 Do not use more then one instance. Instances will override each other.

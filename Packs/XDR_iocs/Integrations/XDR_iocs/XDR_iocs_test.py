@@ -630,7 +630,7 @@ class TestCommands:
 
     def test_tim_insert_jsons(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value={'time': '2020-06-03T00:00:00Z'})
+        mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2020-06-03T00:00:00Z'})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'json')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         mocker.patch('XDR_iocs.return_outputs')
@@ -638,7 +638,7 @@ class TestCommands:
         assert http_request.call_args.kwargs['url_suffix'] == 'tim_insert_jsons/', 'tim_insert_jsons command url changed'
 
     def test_get_changes(self, mocker):
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
+        mocker.patch.object(demisto, 'getLastRun', return_value={'ts': 1591142400000})
         mocker.patch.object(demisto, 'createIndicators', return_value={'ts': 1591142400000})
         xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)

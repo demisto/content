@@ -20,18 +20,23 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: the severity in XDR
+- defaultvalue: 'true'
+  display: Auto Sync
+  name: autoSync
+  required: false
+  type: 8
+- display: XDR severity
   hidden: false
   name: severity
   options:
-  - 'info'
-  - 'low'
-  - 'med'
-  - 'high'
+  - info
+  - low
+  - med
+  - high
   required: true
   type: 15
 - additionalinfo: The query used to collect indicators.
-  defaultvalue: type:File or type:Domain or type:IP
+  defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: query
   hidden: false
   name: query
@@ -50,10 +55,10 @@ configuration:
   display: Indicator Reputation
   name: feedReputation
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -61,12 +66,12 @@ configuration:
   display: Source Reliability
   name: feedReliability
   options:
-    - A - Completely reliable
-    - B - Usually reliable
-    - C - Fairly reliable
-    - D - Not usually reliable
-    - E - Unreliable
-    - F - Reliability cannot be judged
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
   required: true
   type: 15
 - display: ''
@@ -82,51 +87,57 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- display: ''
-  name: feedIncremental
-  defaultvalue: true
+- defaultvalue: 'true'
   hidden: true
+  name: feedIncremental
   required: false
   type: 8
 - display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this
-    feed. This means that if an indicator from this feed is on the exclusion list, the
-    indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-description: Use the Cortex XDR - IOCs feed integration to sync indicators from XSOAR to XDR.
-  Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+description: Use the Cortex XDR - IOCs feed integration to sync indicators from XSOAR
+  to XDR. Cortex XDR is the world's first detection and response app that natively
+  integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Cortex XDR - IOC
 name: Cortex XDR - IOC
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: In the first sync you will need set to true
+      isArray: false
+      name: firstTime
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Run once when you configure the integration (do NOT run this twice!).
       will all the indicators that were synced with XDR and then resync.
     execution: false
     name: xdr-iocs-sync
   - deprecated: false
-    description: |-
-      Update all IOCs to keep and delete the other.
-      Run this one time per day in 01:00 - 3:00 UTC time.
-    execution: false
-    name: xdr-iocs-to-keep
-  - deprecated: false
     description: Push new IOCs to XDR. This runs every minute.
     execution: false
     name: xdr-iocs-push
   - arguments:
     - default: false
-      description: The indicator to enable.
-      isArray: true
-      name: indicator
-      required: true
+      description: In the first run firstTime should be True.
+      isArray: false
+      name: firstTime
+      required: false
       secret: false
     deprecated: false
     description: Enables IOCs in the XDR server.
@@ -152,6 +163,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - Cortex XDR - IOC - Test
+fromversion: 5.5.0
