@@ -46,7 +46,7 @@ configuration:
   required: false
   type: 15
 - display: Fetch alerts with type
-  additionalinfo: Comma-separated lsit of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
+  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
   name: alert_type
   required: false
   type: 0
