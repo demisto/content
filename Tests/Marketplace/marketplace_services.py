@@ -28,7 +28,8 @@ class GCPConfig(object):
     """ Google cloud storage basic configurations
 
     """
-    STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
+    STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
+    IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
@@ -1099,15 +1100,21 @@ class Pack(object):
                 image_name = os.path.basename(image_path)
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
-                print(f"Uploading {self._pack_name} pack integration image: {image_name}")
 
+                print(f"Uploading {self._pack_name} pack integration image: {image_name}")
                 with open(image_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
-                    uploaded_integration_images.append({
-                        'name': image_data.get('display_name', ''),
-                        'imagePath': urllib.parse.quote(pack_image_blob.name) if GCPConfig.USE_GCS_RELATIVE_PATH
-                        else pack_image_blob.public_url
-                    })
+
+                if GCPConfig.USE_GCS_RELATIVE_PATH:
+                    image_gcs_path = urllib.parse.quote(
+                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, image_name))
+                else:
+                    image_gcs_path = pack_image_blob.public_url
+
+                uploaded_integration_images.append({
+                    'name': image_data.get('display_name', ''),
+                    'imagePath': image_gcs_path
+                })
 
             print(f"Uploaded {len(pack_local_images)} images for {self._pack_name} pack.")
         except Exception as e:
@@ -1144,12 +1151,15 @@ class Pack(object):
                 with open(author_image_path, "rb") as author_image_file:
                     pack_author_image_blob.upload_from_file(author_image_file)
 
-                author_image_storage_path = pack_author_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH \
-                    else pack_author_image_blob.public_url
+                if GCPConfig.USE_GCS_RELATIVE_PATH:
+                    author_image_storage_path = urllib.parse.quote(
+                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME))
+                else:
+                    author_image_storage_path = pack_author_image_blob.public_url
 
                 print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
             elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
-                author_image_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.BASE_PACK,
+                author_image_storage_path = os.path.join(GCPConfig.IMAGES_BASE_PATH, GCPConfig.BASE_PACK,
                                                          Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
                 if not GCPConfig.USE_GCS_RELATIVE_PATH:
