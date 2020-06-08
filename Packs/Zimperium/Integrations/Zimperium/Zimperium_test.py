@@ -1,6 +1,6 @@
 import pytest
 from Zimperium import Client, events_search, users_search, user_get_by_id, devices_search, device_get_by_id, \
-    devices_get_last_updated, app_classification_get, report_get, app_upload_for_analysis
+    app_classification_get
 from test_data.response_constants import RESPONSE_SEARCH_EVENTS, RESPONSE_SEARCH_USERS, RESPONSE_USER_GET_BY_ID, \
     RESPONSE_SEARCH_DEVICES, RESPONSE_DEVICE_GET_BY_ID, RESPONSE_APP_CLASSIFICATION_GET
 from test_data.result_constants import EXPECTED_SEARCH_EVENTS, EXPECTED_SEARCH_USERS, EXPECTED_USER_GET_BY_ID, \
