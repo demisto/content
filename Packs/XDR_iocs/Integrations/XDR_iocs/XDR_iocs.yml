@@ -25,7 +25,9 @@ configuration:
   name: autoSync
   required: false
   type: 8
-- display: XDR severity
+- additionalinfo: please map the desired severity that will be set to each indicator
+      sent to Cortex XDR
+  display: XDR severity
   hidden: false
   name: severity
   options:
