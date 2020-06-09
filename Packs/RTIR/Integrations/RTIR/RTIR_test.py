@@ -5,8 +5,8 @@ import demistomock as demisto
 class DotDict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
-    __setattr__ = dict.__setitem__  # type: ignore[assignment]
-    __delattr__ = dict.__delitem__  # type: ignore[assignment]
+    __setattr__ = dict.__setitem__  # noqa: type: ignore[assignment]
+    __delattr__ = dict.__delitem__  # noqa: type: ignore[assignment]
 
 
 def test_query_formatting(mocker):
