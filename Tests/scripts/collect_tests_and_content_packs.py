@@ -1109,12 +1109,6 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
-
-    # get all modified packs - not just tests related
-    modified_packs = get_modified_packs(files_string)
-    if modified_packs:
-        packs_to_install = packs_to_install.union(modified_packs)
-
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
@@ -1153,6 +1147,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if 'NonSupported' in packs_to_install:
         packs_to_install.remove("NonSupported")
 
+    # get all modified packs - not just tests related
+    modified_packs = get_modified_packs(files_string)
+    if modified_packs:
+        packs_to_install = packs_to_install.union(modified_packs)
+
     return tests, packs_to_install
 
 
@@ -1185,7 +1184,7 @@ def create_test_file(is_nightly, skip_save=False):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
-
+            x = get_modified_packs(files_string)
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")

@@ -479,7 +479,7 @@ def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_r
     branch_name = 'BranchA'
     if get_modified_files_ret is not None:
         mocker.patch(
-            'Tests.scripts.collect_tests_and_content_packs.get_modified_files',
+            'Tests.scripts.collect_tests_and_content_packs.get_modified_files_for_testing',
             return_value=get_modified_files_ret
         )
     tests, content_packs = get_test_list_and_content_packs_to_install(
