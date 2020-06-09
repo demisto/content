@@ -11,7 +11,7 @@ configuration:
 - display: Username
   name: username
   required: true
-  type: 9
+  type: 0
 - display: Password
   name: password
   required: true
@@ -44,20 +44,23 @@ script:
       name: employee_id
       required: false
       secret: false
-    - default: 50
+    - default: true
+      defaultValue: "50"
       description: The maximum number of results to return.
       isArray: false
       name: count
       required: false
       secret: false
-    - default: '1'
+    - default: true
+      defaultValue: "1"
       description: The page from which to get the employees data.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: '3'
-      description: <FILL HERE>
+    - default: true
+      defaultValue: "3"
+      description: Number of managers to show.
       isArray: false
       name: managers
       required: false
@@ -67,8 +70,200 @@ script:
     execution: false
     name: workday-list-workers
     outputs:
-    - contextPath: Workday.Worker.id
-      description: Worker ID.
+    - contextPath: Workday.Worker.Worker_ID
+      description: The ID for the employee or contingent worker.
+      type: String
+    - contextPath: Workday.Worker.User_ID
+      description: Text attribute identifying User Name.
+      type: String
+    - contextPath: Workday.Worker.Country
+      description: The worker Country.
+      type: String
+    - contextPath: Workday.Worker.Legal_First_Name
+      description: The First Name (Given Name) for a worker.
+      type: String
+    - contextPath: Workday.Worker.Legal_Last_Name
+      description: The Last Name (Family Name) for a worker.
+      type: String
+    - contextPath: Workday.Worker.Preferred_First_Name
+      description: The First Name (Preferred Name) for a worker.
+      type: String
+    - contextPath: Workday.Worker.Preferred_Last_Name
+      description: The Last Name (Preferred Name) for a worker.
+      type: String
+    - contextPath: Workday.Worker.Position_ID
+      description: Text attribute identifying Position ID.
+      type: String
+    - contextPath: Workday.Worker.Position_Title
+      description: Text attribute identifying Position Title.
+      type: String
+    - contextPath: Workday.Worker.Business_Title
+      description: Business title for the position.
+      type: String
+    - contextPath: Workday.Worker.Start_Date
+      description: Date the Worker first started work in this Position.
+      type: String
+    - contextPath: Workday.Worker.End_Employment_Reason_Reference
+      description: Termination/End Additional Job Reason.
+      type: String
+    - contextPath: Workday.Worker.Worker_Type
+      description: The worker type for the position.
+      type: String
+    - contextPath: Workday.Worker.Position_Time_Type
+      description: Position time type.
+      type: String
+    - contextPath: Workday.Worker.Scheduled_Weekly_Hours
+      description: Scheduled Weekly Hours for Position.
+      type: String
+    - contextPath: Workday.Worker.Default_Weekly_Hours
+      description: Standard Weekly Hours for Position.
+      type: String
+    - contextPath: Workday.Worker.Full_Time_Equivalent_Percentage
+      description: Full Time Equivalent Percentage for Position.
+      type: String
+    - contextPath: Workday.Worker.Exclude_from_Headcount
+      description: If Y, the position will be excluded from headcount reporting.
+      type: String
+    - contextPath: Workday.Worker.Pay_Rate_Type
+      description: Pay rate type for the position.
+      type: String
+    - contextPath: Workday.Worker.Job_Profile_Name
+      description: The name of the job profile.
+      type: String
+    - contextPath: Workday.Worker.Work_Shift_Required
+      description: Returns true if a work shift is required on the position where this job profile is used.
+      type: String
+    - contextPath: Workday.Worker.Critical_Job
+      description: Returns true if the job profile is considered a critical job.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_id
+      description: Business Site ID.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Name
+      description: The name of the location.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Type
+      description: The type of a location.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Address.Address_ID
+      description: Business site address ID.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Address.Formatted_Address
+      description: The formatted address in the format specified for the country.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Address.Country
+      description: Country for the address.
+      type: String
+    - contextPath: Workday.Worker.Business_Site_Address.Postal_Code
+      description: The postal code part of the address.
+      type: String
+    - contextPath: Workday.Worker.End_Date
+      description: The effective date of the end employment business process.
+      type: String
+    - contextPath: Workday.Worker.Pay_Through_Date
+      description: The pay through date for the end of employment.
+      type: String
+    - contextPath: Workday.Worker.Active
+      description: Boolean attribute identifying whether the Worker is Active.
+      type: String
+    - contextPath: Workday.Worker.Hire_Date
+      description: The most recent hire date for the employee or contract start date for the contingent worker.
+      type: String
+    - contextPath: Workday.Worker.Hire_Reason
+      description: Reason for Hire from the most recent Hire event.
+      type: String
+    - contextPath: Workday.Worker.First_Day_of_Work
+      description: First Day of Work only applies to the Payroll web service.
+      type: String
+    - contextPath: Workday.Worker.Retired
+      description: Boolean attribute identifying whether the Worker is currently retired.
+      type: String
+    - contextPath: Workday.Worker.Days_Unemployed
+      description: Number of days unemployed since the employee first joined the work force. Used only for China.
+      type: String
+    - contextPath: Workday.Worker.Terminated
+      description: Boolean attribute identifying whether the Worker is currently Terminated.
+      type: String
+    - contextPath: Workday.Worker.Termination_Date
+      description: Most recent Termination Date.
+      type: String
+    - contextPath: Workday.Worker.Primary_Termination_Reason
+      description: The primary reason for the worker's most recent termination.
+      type: String
+    - contextPath: Workday.Worker.Primary_Termination_Category
+      description: Reference to primary termination reason category.
+      type: String
+    - contextPath: Workday.Worker.Termination_Involuntary
+      description: Indicates if the termination was involuntary.
+      type: String
+    - contextPath: Workday.Worker.Rehire
+      description: Returns "Yes" if the worker is a rehire based on the most recent hire event.
+      type: String
+    - contextPath: Workday.Worker.Termination_Last_Day_of_Work
+      description: Last day worked for the worker's termination event.
+      type: String
+    - contextPath: Workday.Worker.Resignation_Date
+      description: Date the employee submitted their resignation.
+      type: String
+    - contextPath: Workday.Worker.Has_International_Assignment
+      description: Indicates whether the worker has internaitonal assignment
+      type: String
+    - contextPath: Workday.Worker.Home_Country_Reference
+      description: Contains the home country for worker's primary job (ISO_3166-1_Alpha-2_Code).
+      type: String
+    - contextPath: Workday.Worker.Photo
+      description: Worker's photo in base64.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Address_ID
+      description: Worker's address ID.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Formatted_Address
+      description: the formatted address in the format specified for the country.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Country
+      description: Country for the Worker's address.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Region
+      description: The ID of the region (ISO_3166-2_Code)
+      type: String
+    - contextPath: Workday.Worker.Addresses.Region_Descriptor
+      description: The region part of the address. Typically this contains the state/province information.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Postal_Code
+      description: The postal code part of the address.
+      type: String
+    - contextPath: Workday.Worker.Addresses.Type
+      description: Address type.
+      type: String
+    - contextPath: Workday.Worker.Emails.Email_Address
+      description: Email Address Information.
+      type: String
+    - contextPath: Workday.Worker.Emails.Type
+      description: Usage type.
+      type: String
+    - contextPath: Workday.Worker.Emails.Primary
+      description: Indicates if the communication method is primary.
+      type: String
+    - contextPath: Workday.Worker.Emails.Public
+      description: Indicates if the Email is public.
+      type: String
+    - contextPath: Workday.Worker.Phones.ID
+      description: Phone ID.
+      type: String
+    - contextPath: Workday.Worker.Phones.Phone_Number
+      description: Phone number.
+      type: String
+    - contextPath: Workday.Worker.Phones.Type
+      description: Phone Device Type.
+      type: String
+    - contextPath: Workday.Worker.Phones.Usage
+      description: Phone usage data.
+      type: String
+    - contextPath: Workday.Worker.Manager.Manager_ID
+      description: The manager worker ID.
+      type: String
+    - contextPath: Workday.Worker.Manager.Manager_Name
+      description: The manager name.
       type: String
   isfetch: false
   runonce: false

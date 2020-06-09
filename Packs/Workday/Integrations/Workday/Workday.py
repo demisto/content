@@ -1,6 +1,7 @@
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple
 import demistomock as demisto
 from CommonServerPython import *
+from Employees_soap_requests import GET_EMPLOYEE_BY_ID, GET_EMPLOYEES_REQ
 
 # IMPORTS
 # Disable insecure warnings
@@ -13,117 +14,154 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = "v34.0"
+HEADERS = ["Worker_ID", "User_ID", "Country", "Preferred_First_Name", "Preferred_Last_Name", "Active", "Position_Title",
+           "Business_Title", "Start_Date", "End_Date", "Terminated", "Termination_Date"]
 
 
-# TODO: NOTICE THE COMMENT ON PAGINATION:
-#  The numbered page of data Workday returns in the response. The default page is the first page(Page = 1).
-#  For responses that contain more than one page of data, use this parameter to retrieve the additional pages of data.
-#  For example, set Page = 2 to retrieve the second page of data. Note: If you set the page parameter, you must also
-#  specify the "As_Of_Entry_Date" to ensure that the result set remains the same between your requests.
 def convert_to_json(response):
     raw_json_response = json.loads(xml2json(response))
-    workers_data = raw_json_response['Envelope']['Body']['Get_Workers_Response']['Response_Data']['Worker']
+    workers_data = raw_json_response.get('Envelope').get('Body').get('Get_Workers_Response').get('Response_Data'). \
+        get('Worker')
     return raw_json_response, workers_data
 
 
-def create_worker_context(workers: List[dict]):
-    # TODO: ASK Arseny about things I didnt find:
-    # Business_site_Address:
-    # 	* region - take ISO_3166-2_Code from country region reference ???????
-    # 	* Region_Descriptor ??????????
+def create_worker_context(workers, num_of_managers):
+    workers = workers if isinstance(workers, list) else [workers]
+    workers_context = []
 
-    return [
-        {
-            "Worker ID": worker['Worker_ID'],
-            "User ID": worker['User_ID'],
-            "Country": worker['Personal_Data']['Name_Data']['Legal_Name_Data']['Name_Detail_Data']['Country_Reference']['ID'][1]['#text'],
-            "Legal First Name": worker['Personal_Data']['Name_Data']['Legal_Name_Data']['Name_Detail_Data']['First_Name'],
-            "Legal Last Name": worker['Personal_Data']['Name_Data']['Legal_Name_Data']['Name_Detail_Data']['Last_Name'],
-            "Preferred First Name": worker['Personal_Data']['Name_Data']['Preferred_Name_Data']['Name_Detail_Data']['First_Name'],
-            "Preferred Last Name": worker['Personal_Data']['Name_Data']['Preferred_Name_Data']['Name_Detail_Data']['Last_Name'],
-            "Addresses":{
-                "Address ID": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Address_ID'],
-                "Formatted Address": worker['Personal_Data']['Contact_Data']['Address_Data'][0]["@{urn:com.workday/bsvc}Formatted_Address"],
-                "country": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Country_Reference']['ID'][1]['#text'],
-                "Region": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Country_Region_Reference']['ID'][2]['#text'],
-                "Region Descriptor": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Country_Region_Descriptor'],
-                "Postal Code": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Postal_Code'],
-                "Type": worker['Personal_Data']['Contact_Data']['Address_Data'][0]['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
+    for worker in workers:
+        worker = worker.get('Worker_Data')
+
+        # Common Paths for fields
+        name_detail_data_path = worker.get('Personal_Data', {}).get('Name_Data', {}).get('Legal_Name_Data', {}). \
+            get('Name_Detail_Data')
+        position_data_path = worker.get('Employment_Data', {}).get('Worker_Job_Data', {}).get('Position_Data')
+        worker_status_data = worker.get('Employment_Data', {}).get('Worker_Status_Data')
+        business_site_address_data = position_data_path.get('Business_Site_Summary_Data', {}).get('Address_Data')
+        if isinstance(business_site_address_data, list):
+            business_site_address_data = business_site_address_data[-1]
+
+        worker_context = {
+            "Worker_ID": worker['Worker_ID'],
+            "User_ID": worker['User_ID'],
+            "Country": name_detail_data_path['Country_Reference']['ID'][1]['#text'],
+            "Legal_First_Name": name_detail_data_path.get('First_Name'),
+            "Legal_Last_Name": name_detail_data_path.get('Last_Name'),
+            "Preferred_First_Name": name_detail_data_path.get('First_Name'),
+            "Preferred_Last_Name": name_detail_data_path.get('Last_Name'),
+            "Position_ID": position_data_path.get('Position_ID'),
+            "Position_Title": position_data_path.get('Position_Title'),
+            "Business_Title": position_data_path.get('Business_Title'),
+            "Start_Date": position_data_path.get('Start_Date'),
+            "End_Employment_Reason_Reference": position_data_path['End_Employment_Reason_Reference']['ID'][1]['#text']
+            if position_data_path.get('End_Employment_Reason_Reference') else "",
+            "Worker_Type": position_data_path['Worker_Type_Reference']['ID'][1]['#text'],
+            "Position_Time_Type": position_data_path['Position_Time_Type_Reference']['ID'][1]['#text'],
+            "Scheduled_Weekly_Hours": position_data_path.get('Scheduled_Weekly_Hours'),
+            "Default_Weekly_Hours": position_data_path.get('Default_Weekly_Hours'),
+            "Full_Time_Equivalent_Percentage": position_data_path.get('Full_Time_Equivalent_Percentage'),
+            "Exclude_from_Headcount": position_data_path['Exclude_from_Headcount'],
+            "Pay_Rate_Type": position_data_path['Pay_Rate_Type_Reference']['ID'][1]['#text']
+            if position_data_path.get('Pay_Rate_Type_Reference') else "",
+            "Job_Profile_Name": position_data_path['Job_Profile_Summary_Data']['Job_Profile_Name'],
+            "Work_Shift_Required": position_data_path['Job_Profile_Summary_Data']['Work_Shift_Required'],
+            "Critical_Job": position_data_path.get('Job_Profile_Summary_Data').get('Critical_Job'),
+            "Business_Site_id": position_data_path['Business_Site_Summary_Data']['Location_Reference']['ID'][1][
+                '#text'],
+            "Business_Site_Name": position_data_path.get('Business_Site_Summary_Data').get('Name'),
+            "Business_Site_Type": position_data_path['Business_Site_Summary_Data']['Location_Type_Reference']['ID'][1][
+                '#text'],
+            "Business_Site_Address": {
+                "Address_ID": business_site_address_data.get('Address_ID'),
+                "Formatted_Address": business_site_address_data.get("@{urn:com.workday/bsvc}Formatted_Address"),
+                "Country": business_site_address_data['Country_Reference']['ID'][1]['#text'],
+                "Postal_Code": business_site_address_data.get('Postal_Code'),
             },
-            "Phones":{
-                "ID": worker['Personal_Data']['Contact_Data']['Phone_Data'][0]['ID'],
-                "Phone Number": worker['Personal_Data']['Contact_Data']['Phone_Data'][0]['Phone_Number'],
-                "Type": worker['Personal_Data']['Contact_Data']['Phone_Data'][0]['Phone_Device_Type_Reference']['ID'][1]['#text'],
-                "Usage": worker['Personal_Data']['Contact_Data']['Phone_Data'][0]['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
-            },
-            "Emails":{
-                "Email Address": worker['Personal_Data']['Contact_Data']['Email_Address_Data']['Email_Address'],
-                "Type":  worker['Personal_Data']['Contact_Data']['Email_Address_Data']['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
-                "Primary": "true" if worker['Personal_Data']['Contact_Data']['Email_Address_Data']['Usage_Data']['Type_Data']["@{urn:com.workday/bsvc}Primary"] == '1' else "false",
-                "Public": "true" if worker['Personal_Data']['Contact_Data']['Email_Address_Data']['Usage_Data']["@{urn:com.workday/bsvc}Public"] == '1' else 'false'
-            },
-            "Position ID": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Position_ID'],
-            "Position Title": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Position_Title'],
-            "Business Title": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Title'],
-            "Start Date": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Start_Date'],
-            "End Employment Reason Reference": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['End_Employment_Reason_Reference']['ID'][1]['#text'],
-            "Worker Type": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Worker_Type_Reference']['ID'][1]['Text'],
-            "Position Time Type": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Position_Time_Type_Reference']['ID'][1]['Text'],
-            "Scheduled Weekly Hours": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Scheduled_Weekly_Hours'],
-            "Default Weekly Hours": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Default_Weekly_Hours'],
-            "Full Time Equivalent Percentage": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Full_Time_Equivalent_Percentage'],
-            "Exclude from Headcount": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Exclude_from_Headcount'],
-            "Pay Rate Type": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Pay_Rate_Type_Reference']['ID'][1]['#text'],
-            "Job Profile Name": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Job_Profile_Summary_Data']['Job_Profile_Name'],
-            "Work Shift Required": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Job_Profile_Summary_Data']['Work_Shift_Required'],
-            "Critical Job": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Job_Profile_Summary_Data']['Critical_Job'],
-            "Business Site id": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Location_Reference']['ID'][1]['#text'],
-            "Business Site Name": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Name'],
-            "Business Site Type": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Location_Type_Reference']['ID'][1]['#text'],
-            "Business Site Address":{
-                "Address ID": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data']['Address_ID'],
-                "Formatted Address": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data']["@{urn:com.workday/bsvc}Formatted_Address"],
-                "Country": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data']['Country_Reference']['ID'][1]['#text'],
-                # "region": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data'],
-                # "Region_Descriptor": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data'],
-                "Postal Code": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Business_Site_Summary_Data']['Address_Data']['Postal_Code'],
-            },
-            "End Date": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['End_Date'],
-            "Pay Through Date": worker['Employment_Data']['Worker_Job_Data']['Position_Data']['Pay_Through_Date'],
-            # Worker_Status_Data Begins
-            "Active": worker['Employment_Data']['Worker_Status_Data']['Active'],
-            "Hire Date": worker['Employment_Data']['Worker_Status_Data']['Hire_Date'],
-            "Hire Reason": worker['Employment_Data']['Worker_Status_Data']['Hire_Reason_Reference']['ID'][2]['#text'],
-            "First Day of Work": worker['Employment_Data']['Worker_Status_Data']['First_Day_of_Work'],
-            "Retired": worker['Employment_Data']['Worker_Status_Data']['Retired'],
-            "Days Unemployed": worker['Employment_Data']['Worker_Status_Data']['Days_Unemployed'],
-            "Terminated": worker['Employment_Data']['Worker_Status_Data']['Terminated'],
-            "Termination Date": worker['Employment_Data']['Worker_Status_Data']['Termination_Date'],
-            # TODO: ASK Arseny about it.
-            "Pay Through Date_DUPLICATE?": worker['Employment_Data']['Worker_Status_Data']['Pay_Through_Date'],
-            "Primary Termination Reason": worker['Employment_Data']['Worker_Status_Data']['Primary_Termination_Reason_Reference']['ID'][2]['#text'],
-            "Primary Termination Category": worker['Employment_Data']['Worker_Status_Data']['Primary_Termination_Category_Reference']['ID'][1]['#text'],
-            "Termination Involuntary": worker['Employment_Data']['Worker_Status_Data']['Termination_Involuntary'],
-            "Rehire": worker['Employment_Data']['Worker_Status_Data']['Rehire'],
-            "Termination Last Day of Work": worker['Employment_Data']['Worker_Status_Data']['Termination_Last_Day_of_Work'],
-            "Resignation_Date": worker['Employment_Data']['Worker_Status_Data']['Resignation_Date'],
-            # Worker_Status_Data Ends
-            "Has International Assignment": worker['Employment_Data']['International_Assignment_Summary_Data']['Has_International_Assignment'],
-            "Home Country Reference": worker['Employment_Data']['International_Assignment_Summary_Data']['Home_Country_Reference']['ID'][1]['#text'],
+            "End_Date": position_data_path.get('End_Date'),
+            "Pay_Through_Date": position_data_path.get('Pay_Through_Date'),
+            "Active": worker_status_data.get('Active'),
+            "Hire_Date": worker_status_data.get('Hire_Date'),
+            "Hire_Reason": worker_status_data['Hire_Reason_Reference']['ID'][2]['#text'],
+            "First_Day_of_Work": worker_status_data['First_Day_of_Work'],
+            "Retired": worker_status_data.get('Retired'),
+            # Number of days unemployed since the employee first joined the work force. Used only for China:
+            "Days_Unemployed": worker_status_data.get('Days_Unemployed'),
+            "Terminated": worker_status_data.get('Terminated'),
+            "Rehire": worker_status_data['Rehire'],
+            "Resignation_Date": worker_status_data.get('Resignation_Date'),
+            "Has_International_Assignment": worker['Employment_Data']['International_Assignment_Summary_Data'][
+                'Has_International_Assignment'],
+            "Home_Country_Reference":
+                worker['Employment_Data']['International_Assignment_Summary_Data']['Home_Country_Reference']['ID'][1][
+                    '#text'],
+            "Photo": worker.get('Photo_Data', {}).get('Image')
 
+        }
+        if worker_status_data['Terminated'] == '1':
+            worker_context["Termination_Date"] = worker_status_data["Termination_Date"]
+            worker_context["Primary_Termination_Reason"] = \
+                worker_status_data['Primary_Termination_Reason_Reference']['ID'][2]['#text']
+            worker_context["Primary_Termination_Category"] = \
+                worker_status_data['Primary_Termination_Category_Reference']['ID'][1]['#text']
+            worker_context["Termination_Involuntary"] = worker_status_data['Termination_Involuntary']
+            worker_context["Termination_Last_Day_of_Work"] = worker_status_data['Termination_Last_Day_of_Work']
 
-        } for worker in workers
-    ]
+        # Addresses:
+        addresses = worker['Personal_Data']['Contact_Data']['Address_Data']
+        if not isinstance(addresses, list):
+            addresses = [addresses]
+        worker_context["Addresses"] = [{
+            "Address_ID": address['Address_ID'],
+            "Formatted_Address": address["@{urn:com.workday/bsvc}Formatted_Address"],
+            "Country": address['Country_Reference']['ID'][1]['#text'] if address.get('Country_Reference') else "",
+            "Region": address['Country_Region_Reference']['ID'][2]['#text']
+            if address.get('Country_Region_Reference') else "",
+            "Region_Descriptor": address.get('Country_Region_Descriptor', ""),
+            "Postal_Code": address.get('Postal_Code'),
+            "Type": address['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text']
+            if address['Usage_Data'] else "",
+        } for address in addresses]
 
-    # raw_workers = workers if isinstance(workers, list) else [workers]
-    # workers = []
-    # for worker in raw_workers:
-    #     worker_data = worker.get('Worker_Data')
-    #     employment_data = worker.get('Worker_Data').get('Employment_Data')
-    #     personal_data = worker.get('Worker_Data').get('Personal_Data')
-    #     workers.append(worker_data.get('User_ID'))
+        # Emails:
+        emails = worker.get('Personal_Data', {}).get('Contact_Data', {}).get('Email_Address_Data')
+        if emails:
+            if not isinstance(emails, list):
+                emails = [emails]
+            worker_context["Emails"] = [{
+                "Email_Address": email.get('Email_Address'),
+                "Type": email['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text']
+                if email['Usage_Data'] else "",
+                "Primary": bool(int(email['Usage_Data']['Type_Data']["@{urn:com.workday/bsvc}Primary"])),
+                "Public": bool(int(email['Usage_Data']["@{urn:com.workday/bsvc}Public"])),
+            } for email in emails]
 
-    # return workers
+        # Phones:
+        phones = worker['Personal_Data']['Contact_Data'].get('Phone_Data')
+        if phones:
+            if not isinstance(phones, list):
+                phones = [phones]
+            worker_context["Phones"] = [{
+                "ID": phone['ID'],
+                "Phone_Number": phone['Phone_Number'],
+                "Type": phone['Phone_Device_Type_Reference']['ID'][1]['#text'],
+                "Usage": phone['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
+            } for phone in phones]
+
+        # Managers:
+        managers = worker.get("Management_Chain_Data", {}).get("Worker_Supervisory_Management_Chain_Data", {}). \
+            get("Management_Chain_Data")
+        if managers:
+            if not isinstance(managers, list):
+                managers = [managers]
+            # Taking the n'th managers from the end of the list(descending from top level manager(ceo))
+            worker_context["Managers"] = [{
+                "Manager_ID": manager['Manager']['Worker_Reference']['ID'][1]['#text'],
+                "Manager_Name": manager['Manager']['Worker_Descriptor'],
+            } for manager in managers[-num_of_managers:]]
+
+        workers_context.append(worker_context)
+
+    return workers_context
 
 
 class Client(BaseClient):
@@ -140,66 +178,53 @@ class Client(BaseClient):
         self.username = username
         self.password = password
 
-    # TODO: take care of employee id and page params
-    def create_soap_request(self, employee_id, page, count) -> str:
-        body = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc"> 
-       <soapenv:Header>
-          <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"> 
-             <wsse:UsernameToken wsu:Id="UsernameToken-{self.token}">
-                <wsse:Username>{self.username}</wsse:Username>
-                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{self.password}</wsse:Password> 
-             </wsse:UsernameToken>
-          </wsse:Security>
-       </soapenv:Header>
-<soapenv:Body>
-      <bsvc:Get_Workers_Request bsvc:version="{API_VERSION}">
-       <bsvc:Response_Filter>
-            <bsvc:Page>{page}</bsvc:Page>
-            <bsvc:Count>{count}</bsvc:Count>
-         </bsvc:Response_Filter>
-         <bsvc:Response_Group>
-         <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
-         <bsvc:Include_Reference>1</bsvc:Include_Reference>
-         <bsvc:Include_Employment_Information>1</bsvc:Include_Employment_Information>
-         <bsvc:Include_Management_Chain_Data>1</bsvc:Include_Management_Chain_Data>
-         <bsvc:Include_Photo>1</bsvc:Include_Photo>
-         </bsvc:Response_Group>
-         </bsvc:Get_Workers_Request>
-   </soapenv:Body>
-    </soapenv:Envelope>
-    """
-        return body
-
     # TODO: fill request according to params
-    def list_workers(self, employee_id, page, count) -> Tuple:
-        body = self.create_soap_request("employee_id", page, count)
+    def list_workers(self, page, count, employee_id=None) -> Tuple:
+        if employee_id:
+            body = GET_EMPLOYEE_BY_ID.format(
+                token=self.token, username=self.username, password=self.password, api_version=API_VERSION,
+                employee_id=employee_id)
+        else:
+            body = GET_EMPLOYEES_REQ.format(
+                token=self.token, username=self.username, password=self.password, api_version=API_VERSION, page=page,
+                count=count)
         raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type='text')
         return convert_to_json(raw_response)
 
 
-def list_workers_command(client: Client, args: Dict) -> CommandResults:
-    count = int(args.get('count'))
-    page = int(args.get('page'))
-    raw_json_response, workers_data = client.list_workers("d", page, count)
-    # workers_context = create_worker_context(workers_data)
-    # workers_readable = f"### User:{workers_context.get('User_ID')}\n {tableToMarkdown('Worker', worker_data)}"
-    result = CommandResults(
-        # readable_output=workers_readable,
-        readable_output="",
-        outputs_prefix='Workday',
-        outputs_key_field='Worker',
-        outputs=workers_data
-    )
-    return result
+def test_module(client: Client, args: Dict) -> str:
+    try:
+        client.list_workers(page='1', count='1')
+    except Exception as e:
+        raise DemistoException(
+            f"Test failed. Try checking the credentials you entered. \n {e}")
+    return 'ok'
+
+
+def list_workers_command(client: Client, args: dict) -> CommandResults:
+    count = int(args.get('count', ""))
+    page = int(args.get('page', ""))
+    num_of_managers = int(args.get('managers', ""))
+    employee_id = args.get('employee_id')
+    raw_json_response, workers_data = client.list_workers(page, count, employee_id)
+    workers_context = create_worker_context(workers_data, num_of_managers)
+    workers_readable = tableToMarkdown('Workers', workers_context, removeNull=True, headers=HEADERS)
+
+    return CommandResults(
+        readable_output=workers_readable,
+        outputs_prefix='Workday.Worker',
+        outputs_key_field='Worker_ID',
+        outputs=workers_context,
+        raw_response=raw_json_response)
 
 
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    params: dict = demisto.params()
+    params = demisto.params()
     user: str = params.get('username')
-    base_url: str = params.get('base_url').rstrip('/')
+    base_url: str = params.get('base_url', "").rstrip('/')
     tenant_name: str = params.get('tenant_name')
     username = f"{user}@{tenant_name}"
     password: str = params.get('password')
@@ -210,7 +235,7 @@ def main():
     tenant_url = f"{base_url}/{tenant_name}/Staffing/"
 
     commands = {
-        # "test-module": test_module,
+        "test-module": test_module,
         "workday-list-workers": list_workers_command
     }
 
