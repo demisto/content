@@ -147,7 +147,8 @@
         },
         {
             "integrations": "Digital Defense FrontlineVM",
-            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
+            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test",
+            "timeout": 500
         },
         {
             "integrations": "Digital Defense FrontlineVM",
