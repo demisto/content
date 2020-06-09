@@ -52,8 +52,8 @@ class Client:
         if not proxy:
             self._session.trust_env = False
 
-    def _handle_errors(self, errors: list
-    ) -> str:
+    @staticmethod
+    def _handle_errors(errors: list) -> str:
         """
         Converting the errors of the API to a string, in case there are no error, return an empty string
         :param errors: each error is a dict with the keys code and message
@@ -541,7 +541,7 @@ def upload_file_command(
         file_name: str,
         is_confidential: str = "true",
         comment: str = "",
-        submit_file: bool = False
+        submit_file: str = "no",
 ) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
@@ -557,8 +557,7 @@ def upload_file_command(
     resources_fields = ["file_name", "sha256"]
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
     entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
-
-    if not submit_file:
+    if submit_file == 'no':
         return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
     else:

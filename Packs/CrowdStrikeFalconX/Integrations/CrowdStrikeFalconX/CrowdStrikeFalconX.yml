@@ -20,7 +20,7 @@ display: CrowdStrike Falcon X
 name: CrowdStrike Falcon X
 script:
   commands:
-  - arguments:x
+  - arguments:
     - default: false
       description: Name of the file
       isArray: false
@@ -50,14 +50,14 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
+      default: 'no'
+      defaultValue: False
       description: Submit the given file to the sandbox.
       isArray: false
       name: submit_file
       predefined:
-      - 'True'
-      - 'False'
+      - 'no'
+      - 'yes'
       required: false
       secret: false
     deprecated: false
@@ -553,7 +553,7 @@ script:
     - default: false
       description: Set a custom time in the format HH:mm for the sandbox environment.
       isArray: false
-      name: System Time
+      name: system_time
       required: false
       secret: false
     deprecated: false
@@ -603,6 +603,7 @@ script:
     execution: false
     name: cs-fx-download-ioc
   dockerimage: demisto/python3:3.8.3.8494
+  fromversion: 5.0.0
   feed: false
   isfetch: false
   longRunning: false
@@ -611,6 +612,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  fromVersion: "5.0.0"
 tests:
 - No tests - no instance
