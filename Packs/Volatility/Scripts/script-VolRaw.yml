@@ -1,6 +1,6 @@
 commonfields:
   id: VolRaw
-  version: 1
+  version: -1
 name: VolRaw
 script: packOutput('vol.py -f ' + args.file + ' ' + args.cmd);
 type: javascript
