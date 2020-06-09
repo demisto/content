@@ -12,513 +12,795 @@ detaileddescription: |-
   - This text is markdown
   - Here you should explain how to configure the instance in Demisto
 configuration:
-  - display: Server URL (e.g. https://console.infinipoint.io)
-    name: url
-    defaultvalue: https://console.infinipoint.io/
-    type: 0
-    required: false
-  - display: Fetch incidents
-    name: isFetch
-    defaultvalue: ""
-    type: 8
-    required: false
-  - display: Incident type
-    name: incidentType
-    defaultvalue: ""
-    type: 13
-    required: false
-  - display: Maximum number of incidents per fetch
-    name: max_fetch
-    defaultvalue: "10"
-    type: 0
-    required: false
-  - display: API Key
-    name: apikey
-    defaultvalue: ""
-    type: 4
-    required: false
-  - display: Score threshold for ip reputation command (0-100)
-    name: threshold_ip
-    defaultvalue: "65"
-    type: 0
-    required: false
-  - display: Score threshold for domain reputation command (0-100)
-    name: threshold_domain
-    defaultvalue: "65"
-    type: 0
-    required: false
-  - display: Fetch alerts with status (ACTIVE, CLOSED)
-    name: alert_status
-    defaultvalue: ACTIVE
-    type: 15
-    required: false
-    options:
-      - ACTIVE
-      - CLOSED
-  - display: Fetch alerts with type
-    name: alert_type
-    defaultvalue: ""
-    type: 0
-    required: false
-  - display: Minimum severity of alerts to fetch
-    name: min_severity
-    defaultvalue: Low
-    type: 15
-    required: true
-    options:
-      - Low
-      - Medium
-      - High
-      - Critical
-  - display: Access Key
-    name: access_key
-    defaultvalue: ""
-    type: 12
-    required: false
-  - display: Private Key
-    name: private_key
-    defaultvalue: ""
-    type: 12
-    required: false
-  - display: First fetch time
-    name: first_fetch
-    defaultvalue: 3 days
-    type: 0
-    required: false
-  - display: Trust any certificate (not secure)
-    name: insecure
-    defaultvalue: "false"
-    type: 8
-    required: false
-  - display: Use system proxy settings
-    name: proxy
-    defaultvalue: "false"
-    type: 8
-    required: false
-  - display: Fetch indicators
-    name: feed
-    defaultvalue: ""
-    type: 8
-    required: false
-  - display: Indicator Reputation
-    name: feedReputation
-    defaultvalue: ""
-    type: 18
-    required: false
-    options:
-      - None
-      - Good
-      - Suspicious
-      - Bad
-    additionalinfo: Indicators from this integration instance will be marked with this
-      reputation
-  - display: Source Reliability
-    name: feedReliability
-    defaultvalue: F - Reliability cannot be judged
-    type: 15
-    required: true
-    options:
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
-    additionalinfo: Reliability of the source providing the intelligence data
-  - display: ""
-    name: feedExpirationPolicy
-    defaultvalue: indicatorType
-    type: 17
-    required: false
-    options:
-      - never
-      - interval
-      - indicatorType
-      - suddenDeath
-  - display: ""
-    name: feedExpirationInterval
-    defaultvalue: "20160"
-    type: 1
-    required: false
-  - display: Feed Fetch Interval
-    name: feedFetchInterval
-    defaultvalue: "240"
-    type: 19
-    required: false
-  - display: Bypass exclusion list
-    name: feedBypassExclusionList
-    defaultvalue: ""
-    type: 8
-    required: false
-    additionalinfo: When selected, the exclusion list is ignored for indicators from
-      this feed. This means that if an indicator from this feed is on the exclusion
-      list, the indicator might still be added to the system.
+- display: Server URL (e.g. https://console.infinipoint.io)
+  name: url
+  defaultvalue: https://console.infinipoint.io/
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Score threshold for ip reputation command (0-100)
+  name: threshold_ip
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: Score threshold for domain reputation command (0-100)
+  name: threshold_domain
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: Fetch alerts with status (ACTIVE, CLOSED)
+  name: alert_status
+  defaultvalue: ACTIVE
+  type: 15
+  required: false
+  options:
+  - ACTIVE
+  - CLOSED
+- display: Fetch alerts with type
+  name: alert_type
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Minimum severity of alerts to fetch
+  name: min_severity
+  defaultvalue: Low
+  type: 15
+  required: true
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+- display: Access Key
+  name: access_key
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Private Key
+  name: private_key
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: ""
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
 script:
-  script: ""
+  script: |-
+    import collections
+    import time
+    import sys
+    import requests
+    import jwt
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    PROXY = demisto.params().get('proxy')
+    INSECURE = demisto.params().get('insecure')
+    BASE_URL = demisto.params().get('url')
+    ACCESS_KEY = demisto.params().get('access_key')
+    PRIVATE_KEY = demisto.params().get('private_key')
+
+    # if not demisto.params().get('proxy', False):
+    #     del os.environ['HTTP_PROXY']
+    #     del os.environ['HTTPS_PROXY']
+    #     del os.environ['http_proxy']
+    #     del os.environ['https_proxy']
+
+
+    '''HELPER FUNCTIONS'''
+
+
+    def http_request(method, token, route, json=None):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+        r = requests.request(
+            method,
+            BASE_URL + route,
+            data=json,
+            headers=headers,
+            verify=INSECURE
+        )
+        if r.status_code != 200:
+            return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
+        return r.json()
+
+
+    # Allows nested keys to be accesible
+    def makehash():
+        return collections.defaultdict(makehash)
+
+
+    def create_jwt_token(secret, access_key):
+        try:
+            jwt_payload = {
+                "iat": int(time.time()),
+                "sub": access_key
+            }
+            return jwt.encode(jwt_payload, secret, 'ES256').decode("utf-8")
+        except Exception as e:
+            print(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
+            sys.exit(1)
+
+
+    '''MAIN FUNCTIONS'''
+
+
+    def test_module(method, token, route, json=None):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+        r = requests.request(
+            method,
+            BASE_URL + route,
+            data=json,
+            headers=headers,
+            verify=INSECURE
+        )
+        if r.status_code != 200:
+            return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
+
+
+    def get_cve_command(method, token, route):
+        res = http_request(method, token, route)
+        LOG('res %s' % (res,))
+        if "cve_id" in res:
+            command_results = CommandResults(
+                outputs_prefix='Cve.Details',
+                outputs_key_field='ReportID',
+                outputs=res
+            )
+            return_results(command_results)
+            # demisto.results(res)
+
+
+    def get_assets_programs_command(method, token, route, name, publisher, version):
+        rules = [{
+            "field": "$type",
+            "operator": "=",
+            "value": "csv"
+        }]
+
+        if name:
+            name_node = {
+                "field": "name",
+                "operator": "contains",
+                "value": f"{name}"
+            }
+            rules.append(name_node)
+
+        if publisher:
+            publisher_node = {
+                "field": "publisher",
+                "operator": "contains",
+                "value": f"{publisher}"
+            }
+            rules.append(publisher_node)
+
+        if version:
+            version_node = {
+                "field": "version",
+                "operator": "contains",
+                "value": f"{version}"
+            }
+            rules.append(version_node)
+
+        query = {
+            "pageSize": 10,
+            "page": 0,
+            "ruleSet": {
+                "condition": "AND",
+                "rules": [
+                    {
+                        rules
+                    }
+                ]
+            }
+        }
+
+        search = json.dumps(query)
+        res = http_request(method, token, route, search)
+        LOG('res %s' % (res,))
+        if "items" in res:
+            command_results = CommandResults(
+                outputs_prefix='Assets.Programs',
+                outputs_key_field='itemsTotal',
+                outputs=res['items']
+            )
+            return_results(command_results)
+
+
+    def get_devices_command(method, token, route, host, os_type, os_name, status, agent_version):
+        rules = []
+        if host:
+            host_node = {
+                'field': 'host',
+                'operator': 'contains',
+                'value': f'{host}'
+            }
+            rules.append(host_node)
+
+        if os_type:
+            os_type_node = {
+                'field': 'osType',
+                'operator': '=',
+                'value': f'{os_type}'
+            }
+            rules.append(os_type_node)
+
+        if os_name:
+            os_name_node = {
+                'field': 'osName',
+                'operator': 'contains',
+                'value': f'{os_name}'
+            }
+            rules.append(os_name_node)
+
+        if status:
+            status_node = {
+                'field': 'status',
+                'operator': '=',
+                'value': f'{status}'
+            }
+            rules.append(status_node)
+
+        if agent_version:
+            agent_version_node = {
+                'field': 'agentVersion',
+                'operator': '=',
+                'value': f'{agent_version}'
+            }
+            rules.append(agent_version_node)
+
+        query = {
+            'pageSize': 10,
+            'page': 0,
+            'ruleSet': {
+                'condition': 'AND',
+                'rules': rules
+            }
+        }
+
+        search = json.dumps(query)
+        res = http_request(method, token, route, search)
+        LOG('res %s' % (res,))
+        # demisto.results(res)
+        if "items" in res:
+            command_results = CommandResults(
+                outputs_prefix='Device.Search',
+                outputs_key_field='itemsTotal',
+                outputs=res['items']
+            )
+            return_results(command_results)
+
+
+    ''' EXECUTION '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+
+        token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
+        if demisto.command() == 'test-module':
+            route = "/health"
+            method = "GET"
+            test_module(method, token, route)
+            demisto.results('ok')
+
+        elif demisto.command() == 'infinipoint-get-cve':
+            cve_id = demisto.args().get('cve_id')
+            method = "GET"
+            route = f"/vulnerability/{cve_id}/details"
+            get_cve_command(method, token, route)
+
+        elif demisto.command() == 'infinipoint-get-assets-programs':
+            name = demisto.args().get('name')
+            publisher = demisto.args().get('publisher')
+            version = demisto.args().get('version')
+            # type = demisto.args().get('type')
+
+            method = "POST"
+            route = "/assets/programs"
+            get_assets_programs_command(method, token, route, name, publisher, version)
+
+        elif demisto.command() == 'infinipoint-get-device':
+            host = demisto.args().get('host')
+            os_type = demisto.args().get('osType')
+            os_name = demisto.args().get('osName')
+            status = demisto.args().get('status')
+            agent_version = demisto.args().get('agentVersion')
+
+            method = "POST"
+            route = "/devices/search"
+            get_devices_command(method, token, route, host, os_type, os_name, status, agent_version)
+
+    except Exception as e:
+        print(e)
+        demisto.debug('The Senate? I am the Senate!')
+        LOG(e)
+        LOG.print_log()
+        return_error(e)
   type: python
   commands:
-    - name: infinipoint-get-assets-programs
-      arguments:
-        - name: name
-          auto: PREDEFINED
-          predefined:
-            - Software name
-        - name: publisher
-          auto: PREDEFINED
-          predefined:
-            - Software publisher name
-        - name: version
-          auto: PREDEFINED
-          predefined:
-            - Software version
-      outputs:
-        - contextPath: Assets.Programs.items.$device
-          type: String
-        - contextPath: Assets.Programs.items.$host
-          type: String
-        - contextPath: Assets.Programs.items.$time
-          type: Number
-        - contextPath: Assets.Programs.items.$type
-          type: String
-        - contextPath: Assets.Programs.items.name
-          type: String
-        - contextPath: Assets.Programs.items.os_type
-          type: String
-        - contextPath: Assets.Programs.items.program_exists
-          type: String
-        - contextPath: Assets.Programs.items.publisher
-          type: String
-        - contextPath: Assets.Programs.items.version
-          type: String
-        - contextPath: Assets.Programs.items.install_update_date
-          type: Date
-        - contextPath: Assets.Programs.itemsTotal
-          type: Number
-    - name: infinipoint-get-cve
-      arguments:
-        - name: cve_id
-          required: true
-      outputs:
-        - contextPath: Cve.Details.campaign_intelligence.apt
-          description: ''
-          type: String
-        - contextPath: Cve.Details.campaign_intelligence.description
-          description: ''
-          type: String
-        - contextPath: Cve.Details.campaign_intelligence.targeted_countries
-          description: ''
-          type: String
-        - contextPath: Cve.Details.campaign_intelligence.targeted_industries
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_description
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.ac_insuf_info
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.access_vector
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.attack_complexity
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.authentication
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.availability_impact
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.base_score
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.confidentiality_impact
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.exploitability_score
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.impact_score
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.integrity_impact
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_all_privilege
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_other_privilege
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_user_privilege
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.severity
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.user_interaction_required
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.vector_string
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.attack_complexity
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.attack_vector
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.availability_impact
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.base_score
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.base_severity
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.confidentiality_impact
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.exploitability_score
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.impact_score
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.integrity_impact
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.privileges_required
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.scope
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.user_interaction
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.vector_string
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.attack_complexity
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.campaigns
-          description: ''
-          type: Number
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.device_count
-          description: ''
-          type: Number
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploitability_risk
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploits
-          description: ''
-          type: Number
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_label
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_level
-          description: ''
-          type: Number
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_type
-          description: ''
-          type: Number
-        - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.trends_level
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cve_id
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cwe_description
-          description: ''
-          type: String
-        - contextPath: Cve.Details.cwe_id
-          description: ''
-          type: String
-        - contextPath: Cve.Details.devices.$device
-          description: ''
-          type: String
-        - contextPath: Cve.Details.devices.device_name_string
-          description: ''
-          type: String
-        - contextPath: Cve.Details.devices.device_os
-          description: ''
-          type: String
-        - contextPath: Cve.Details.devices.device_risk
-          description: ''
-          type: Number
-        - contextPath: Cve.Details.devices.map_id
-          description: ''
-          type: String
-        - contextPath: Cve.Details.devices.vulnerableProduct
-          description: ''
-          type: String
-        - contextPath: Cve.Details.devices.vulnerableVersion
-          description: ''
-          type: String
-        - contextPath: Cve.Details.scan_date
-          description: ''
-          type: Unknown
-        - contextPath: Cve.Details.software_list.cpe_name_string
-          description: ''
-          type: String
-        - contextPath: Cve.Details.software_list.cpe_type
-          description: ''
-          type: String
-        - contextPath: Cve.Details.top_devices.$device
-          description: ''
-          type: String
-        - contextPath: Cve.Details.top_devices.device_name_string
-          description: ''
-          type: String
-        - contextPath: Cve.Details.top_devices.device_os
-          description: ''
-          type: String
-        - contextPath: Cve.Details.top_devices.device_risk
-          description: ''
-          type: Number
-        - contextPath: Cve.Details.top_devices.map_id
-          description: ''
-          type: String
-        - contextPath: Cve.Details.top_devices.vulnerableProduct
-          description: ''
-          type: String
-        - contextPath: Cve.Details.top_devices.vulnerableVersion
-          description: ''
-          type: String
-    - name: infinipoint-get-device
-      arguments:
-        - name: host
-          auto: PREDEFINED
-          predefined:
-            - Devices hostname
-        - name: osType
-          auto: PREDEFINED
-          predefined:
-            - 'Device operating system type: 1 = Windows'
-            - 2 = Linux
-            - 4 = macOS
-        - name: osName
-          auto: PREDEFINED
-          predefined:
-            - Device operating system full name
-            - e.g. windows-10.0.18363.836
-        - name: status
-          auto: PREDEFINED
-          predefined:
-            - 'Device current status: 0 = Offline'
-            - 1 = Online
-        - name: agentVersion
-          auto: PREDEFINED
-          predefined:
-            - Device Infinipoint’s agent version
-      outputs:
-        - contextPath: Device.Search.items.agentVersion
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.clientType
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.discoveryId
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.domain
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.edge
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.ftDidRespond
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.ftIsSuccessful
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.ftResult
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.gatewayIp
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.gatewayMACAddress
-          description: ''
-          type: Date
-        - contextPath: Device.Search.items.host
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.id
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.ip
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.lastSeen
-          description: ''
-          type: Date
-        - contextPath: Device.Search.items.macAddress
-          description: ''
-          type: Date
-        - contextPath: Device.Search.items.networkId
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.networks.alias
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.networks.cidr
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.networks.gatewayIp
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.networks.gatewayMACAddress
-          description: ''
-          type: Date
-        - contextPath: Device.Search.items.osName
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.osType
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.policyVersion
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.productType
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.regDate
-          description: ''
-          type: Date
-        - contextPath: Device.Search.items.status
-          description: ''
-          type: Number
-        - contextPath: Device.Search.items.statusCode
-          description: ''
-          type: Unknown
-        - contextPath: Device.Search.items.statusDescription
-          description: ''
-          type: Unknown
-        - contextPath: Device.Search.items.supportId
-          description: ''
-          type: Unknown
-        - contextPath: Device.Search.items.tags.color
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.tags.name
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.tags.tagId
-          description: ''
-          type: String
-        - contextPath: Device.Search.items.uniqueHostname
-          description: ''
-          type: String
-        - contextPath: Device.Search.itemsTotal
-          description: ''
-          type: Number
+  - name: infinipoint-get-assets-programs
+    description: ''
+    arguments:
+    - name: name
+      auto: PREDEFINED
+      predefined:
+      - Software name
+      description: ''
+    - name: publisher
+      auto: PREDEFINED
+      predefined:
+      - Software publisher name
+      description: ''
+    - name: version
+      auto: PREDEFINED
+      predefined:
+      - Software version
+      description: ''
+    outputs:
+    - contextPath: Assets.Programs.items.$device
+      description: ''
+      type: String
+    - contextPath: Assets.Programs.items.$host
+      description: ''
+      type: String
+    - contextPath: Assets.Programs.items.$time
+      description: ''
+      type: Number
+    - contextPath: Assets.Programs.items.$type
+      description: ''
+      type: String
+    - contextPath: Assets.Programs.items.name
+      description: ''
+      type: String
+    - contextPath: Assets.Programs.items.os_type
+      description: ''
+      type: String
+    - contextPath: Assets.Programs.items.program_exists
+      description: ''
+      type: String
+    - contextPath: Assets.Programs.items.publisher
+      description: ''
+      type: String
+    - contextPath: Assets.Programs.items.version
+      description: ''
+      type: String
+    - contextPath: Assets.Programs.items.install_update_date
+      description: ''
+      type: Date
+    - contextPath: Assets.Programs.itemsTotal
+      description: ''
+      type: Number
+  - name: infinipoint-get-cve
+    description: ''
+    arguments:
+    - name: cve_id
+      description: ''
+      required: true
+    outputs:
+    - contextPath: Cve.Details.campaign_intelligence.apt
+      description: ''
+      type: String
+    - contextPath: Cve.Details.campaign_intelligence.description
+      description: ''
+      type: String
+    - contextPath: Cve.Details.campaign_intelligence.targeted_countries
+      description: ''
+      type: String
+    - contextPath: Cve.Details.campaign_intelligence.targeted_industries
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_description
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.ac_insuf_info
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.access_vector
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.attack_complexity
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.authentication
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.availability_impact
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.base_score
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.confidentiality_impact
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.exploitability_score
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.impact_score
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.integrity_impact
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_all_privilege
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_other_privilege
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_user_privilege
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.severity
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.user_interaction_required
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.vector_string
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.attack_complexity
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.attack_vector
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.availability_impact
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.base_score
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.base_severity
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.confidentiality_impact
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.exploitability_score
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.impact_score
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.integrity_impact
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.privileges_required
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.scope
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.user_interaction
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.vector_string
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.attack_complexity
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.campaigns
+      description: ''
+      type: Number
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.device_count
+      description: ''
+      type: Number
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploitability_risk
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploits
+      description: ''
+      type: Number
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_label
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_level
+      description: ''
+      type: Number
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_type
+      description: ''
+      type: Number
+    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.trends_level
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cve_id
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cwe_description
+      description: ''
+      type: String
+    - contextPath: Cve.Details.cwe_id
+      description: ''
+      type: String
+    - contextPath: Cve.Details.devices.$device
+      description: ''
+      type: String
+    - contextPath: Cve.Details.devices.device_name_string
+      description: ''
+      type: String
+    - contextPath: Cve.Details.devices.device_os
+      description: ''
+      type: String
+    - contextPath: Cve.Details.devices.device_risk
+      description: ''
+      type: Number
+    - contextPath: Cve.Details.devices.map_id
+      description: ''
+      type: String
+    - contextPath: Cve.Details.devices.vulnerableProduct
+      description: ''
+      type: String
+    - contextPath: Cve.Details.devices.vulnerableVersion
+      description: ''
+      type: String
+    - contextPath: Cve.Details.scan_date
+      description: ''
+      type: Unknown
+    - contextPath: Cve.Details.software_list.cpe_name_string
+      description: ''
+      type: String
+    - contextPath: Cve.Details.software_list.cpe_type
+      description: ''
+      type: String
+    - contextPath: Cve.Details.top_devices.$device
+      description: ''
+      type: String
+    - contextPath: Cve.Details.top_devices.device_name_string
+      description: ''
+      type: String
+    - contextPath: Cve.Details.top_devices.device_os
+      description: ''
+      type: String
+    - contextPath: Cve.Details.top_devices.device_risk
+      description: ''
+      type: Number
+    - contextPath: Cve.Details.top_devices.map_id
+      description: ''
+      type: String
+    - contextPath: Cve.Details.top_devices.vulnerableProduct
+      description: ''
+      type: String
+    - contextPath: Cve.Details.top_devices.vulnerableVersion
+      description: ''
+      type: String
+  - name: infinipoint-get-device
+    description: ''
+    arguments:
+    - name: host
+      auto: PREDEFINED
+      predefined:
+      - Devices hostname
+      description: ''
+    - name: osType
+      auto: PREDEFINED
+      predefined:
+      - 'Device operating system type: 1 = Windows'
+      - 2 = Linux
+      - 4 = macOS
+      description: ''
+    - name: osName
+      auto: PREDEFINED
+      predefined:
+      - Device operating system full name
+      - e.g. windows-10.0.18363.836
+      description: ''
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - 'Device current status: 0 = Offline'
+      - 1 = Online
+      description: ''
+    - name: agentVersion
+      auto: PREDEFINED
+      predefined:
+      - Device Infinipoint’s agent version
+      description: ''
+    outputs:
+    - contextPath: Device.Search.items.agentVersion
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.clientType
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.discoveryId
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.domain
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.edge
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.ftDidRespond
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.ftIsSuccessful
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.ftResult
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.gatewayIp
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.gatewayMACAddress
+      description: ''
+      type: Date
+    - contextPath: Device.Search.items.host
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.id
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.ip
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.lastSeen
+      description: ''
+      type: Date
+    - contextPath: Device.Search.items.macAddress
+      description: ''
+      type: Date
+    - contextPath: Device.Search.items.networkId
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.networks.alias
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.networks.cidr
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.networks.gatewayIp
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.networks.gatewayMACAddress
+      description: ''
+      type: Date
+    - contextPath: Device.Search.items.osName
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.osType
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.policyVersion
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.productType
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.regDate
+      description: ''
+      type: Date
+    - contextPath: Device.Search.items.status
+      description: ''
+      type: Number
+    - contextPath: Device.Search.items.statusCode
+      description: ''
+      type: Unknown
+    - contextPath: Device.Search.items.statusDescription
+      description: ''
+      type: Unknown
+    - contextPath: Device.Search.items.supportId
+      description: ''
+      type: Unknown
+    - contextPath: Device.Search.items.tags.color
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.tags.name
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.tags.tagId
+      description: ''
+      type: String
+    - contextPath: Device.Search.items.uniqueHostname
+      description: ''
+      type: String
+    - contextPath: Device.Search.itemsTotal
+      description: ''
+      type: Number
   dockerimage: demisto/pyjwt3:1.0.0.8871
   isfetch: true
   feed: true
   runonce: true
   subtype: python3
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
