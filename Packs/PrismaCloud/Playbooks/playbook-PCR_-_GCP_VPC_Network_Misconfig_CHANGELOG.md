@@ -1,5 +1,10 @@
 ## [Unreleased]
-- 
+ 
+New Prisma Cloud policies remediated:
+
+- GCP Default Firewall rule should not have any rules (except http and https)
+- GCP Firewall with Inbound rule overly permissive to All Traffic
+
 
 ## [20.5.0] - 2020-05-12
 #### New Playbook

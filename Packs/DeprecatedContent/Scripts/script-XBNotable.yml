@@ -47,7 +47,7 @@ tags:
 - server
 - analytics
 - exabeam
-comment: Retrieve notable Exabeam users
+comment: This script is deprecated. Use the Exabeam integration instead.
 system: true
 deprecated: true
 args:
