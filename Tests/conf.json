@@ -2793,9 +2793,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
-        },
-        {
             "integrations": "Zabbix",
             "playbookID": "Zabbix - Test"
         },
