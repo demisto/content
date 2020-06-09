@@ -275,8 +275,7 @@ def collect_tests_and_content_packs(
             test_playbook_pack = test_playbook_object.get('pack')
             if test_playbook_pack:
                 print(
-                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install'
-                )
+                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install')
                 packs_to_install.add(test_playbook_pack)
             else:
                 print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
@@ -864,11 +863,9 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-            test_conf.get('playbookID') == test_id
-            and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                              server_v=server_version,
-                                              to_v=test_conf.get('toversion', '99.99.99'))
-    )), None)
+                test_conf.get('playbookID') == test_id and is_runnable_in_server_version(
+            from_v=test_conf.get('fromversion', '0.0'), server_v=server_version,
+            to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -1184,7 +1181,7 @@ def create_test_file(is_nightly, skip_save=False):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
-            x = get_modified_packs(files_string)
+
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
