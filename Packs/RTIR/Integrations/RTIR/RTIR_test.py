@@ -93,7 +93,37 @@ def test_parse_ticket_links():
 
 
 def test_build_ticket_id_in_headers():
+    """
+
+    Given:
+    - A ticket containing 'ID' in its keys
+
+    When:
+    - building a search ticket
+
+    Then:
+    - Validate the ticket ID parsed correctly
+
+    """
     from RTIR import build_ticket
     ticket = build_ticket(['ID: ticket/1'])
     expected = {'ID': 1}
     assert expected == ticket
+
+
+def test_build_ticket_contains_id_in_headers():
+    """
+
+    Given:
+    - A ticket contains a key with 'ID' substring.
+
+    When:
+    - building a search ticket
+
+    Then:
+    - Validate nothing returns
+
+    """
+    from RTIR import build_ticket
+    ticket = build_ticket(['ThisIsAID: ofNotID'])
+    assert {} == ticket
