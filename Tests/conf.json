@@ -66,7 +66,15 @@
         {
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "instance_names": "JSON Feed no_auto_detect"
+
+        },
+        {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0",
+            "instance_names": "JSON Feed_auto_detect"
         },
         {
             "integrations": "Google Cloud Functions",
@@ -76,7 +84,14 @@
         {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "instance_names": "Plain Text Feed no_auto_detect"
+        },
+        {
+            "integrations": "Plain Text Feed",
+            "playbookID": "PlainText Feed - Test",
+            "fromversion": "5.5.0",
+            "instance_names": "Plain Text Feed_auto_detect"
         },
         {
             "integrations": "Silverfort",
@@ -156,7 +171,14 @@
         {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "instance_names": "CSVFeed_no_auto_detect"
+        },
+        {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test",
+            "fromversion": "5.5.0",
+            "instance_names": "CSVFeed_auto_detect"
         },
         {
             "integrations": "ProofpointFeed",
@@ -2833,7 +2855,6 @@
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
-        "PhishLabsIOC TestPlaybook": "integration bug (23926)",
         "Symantec Deepsight Test": "Issue 22971",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "test_MsGraphFiles": "Issue 22853 ",
@@ -2846,10 +2867,8 @@
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test": "Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "TestParseEmailHeaders": "Issue 18815",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
