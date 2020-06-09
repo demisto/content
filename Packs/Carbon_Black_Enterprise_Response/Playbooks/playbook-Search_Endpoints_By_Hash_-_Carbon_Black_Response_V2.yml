@@ -1,8 +1,6 @@
-id: search_endpoints_by_hash_-_carbon_black_response
-fromversion: 3.5.0
-system: true
+id: Search Endpoints By Hash - Carbon Black Response V2
 version: -1
-name: Search Endpoints By Hash - Carbon Black Response
+name: Search Endpoints By Hash - Carbon Black Response V2
 description: Hunt for malicious indicators using Carbon Black
 starttaskid: "0"
 tasks:
@@ -28,43 +26,57 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: ad7dff09-2373-43ba-8a87-645fa98ca5cb
+    taskid: 71c8642a-2af7-4af6-8015-5a2f89fd40d2
     type: regular
     task:
-      id: ad7dff09-2373-43ba-8a87-645fa98ca5cb
+      id: 71c8642a-2af7-4af6-8015-5a2f89fd40d2
       version: -1
       name: Hunt MD5 Hash
-      description: Search Carbon Black for the specified MD5 hash(es)
-      scriptName: CBFindHash
+      description: Query processes based on given parameters
+      script: '|||cb-get-processes'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "3"
     scriptarguments:
+      facet: {}
+      group: {}
+      hostname: {}
       md5:
         complex:
           root: inputs
           accessor: Hash
-    results:
-    - found_file_locations
+      name: {}
+      parent-process-name: {}
+      process-path: {}
+      query: {}
+      rows: {}
+      sort: {}
+      start: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 362,
-          "y": 632
+          "x": 500,
+          "y": 680
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 31e80780-a121-4f17-8c64-2880e9ea0a20
+    taskid: a43ea7bf-d5e3-4c0b-8da7-5ce65cc1aae3
     type: condition
     task:
-      id: 31e80780-a121-4f17-8c64-2880e9ea0a20
+      id: a43ea7bf-d5e3-4c0b-8da7-5ce65cc1aae3
       version: -1
       name: Is Carbon Black enabled?
       description: Is Carbon Black enabled?
@@ -73,9 +85,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "7"
       "yes":
-      - "4"
+      - "5"
     scriptarguments:
       value:
         simple: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
@@ -83,21 +95,21 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: modules
                 filters:
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand
                       iscontext: true
                     right:
                       value:
-                        simple: carbonblack
-                - - operator: string.isEqual
+                        simple: carbonblack-v2
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.state
@@ -114,6 +126,9 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 108ba97d-b9da-4162-808d-025b5f6b7986
@@ -131,140 +146,113 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 865
         }
       }
-  "4":
-    id: "4"
-    taskid: 4dc64cf1-acb2-47b5-87c8-88e0e90e6c11
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 00c09fd8-6352-4b6c-8e7a-5a2459544fc7
     type: condition
     task:
-      id: 4dc64cf1-acb2-47b5-87c8-88e0e90e6c11
+      id: 00c09fd8-6352-4b6c-8e7a-5a2459544fc7
       version: -1
-      name: Do we have files to hunt?
-      description: Do we have files to hunt?
+      name: Is there an MD5 hash to hunt?
+      description: Checks if there is an MD5 hash to hunt.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "7"
       "yes":
-      - "1"
-    scriptarguments:
-      value:
-        complex:
-          root: inputs
-          accessor: Hash
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: inputs
-                accessor: Hash
+                root: inputs.Hash
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 356,
-          "y": 371
+          "x": 290,
+          "y": 370
         }
       }
-  "5":
-    id: "5"
-    taskid: 09e186f8-7d8d-4f32-84f8-5960a2e943af
-    type: regular
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4fd8eec7-f7ec-4f53-8473-932db46cc0ec
+    type: title
     task:
-      id: 09e186f8-7d8d-4f32-84f8-5960a2e943af
+      id: 4fd8eec7-f7ec-4f53-8473-932db46cc0ec
       version: -1
-      name: Set hostname
-      description: Set hostname
-      scriptName: Set
-      type: regular
+      name: Hunt MD5
+      type: title
       iscommand: false
       brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 863da4aa-ab0b-416b-8072-1f36602773aa
+    type: title
+    task:
+      id: 863da4aa-ab0b-416b-8072-1f36602773aa
+      version: -1
+      name: No Integration \ No Hash
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      append: {}
-      key:
-        simple: Endpoint.Hostname
-      value:
-        complex:
-          root: found_file_locations
-          transformers:
-          - operator: string.replaceMatch
-            args:
-              regex:
-                value:
-                  simple: '{".*": \[".*", "(.*)"]}'
-              replaceWith:
-                value:
-                  simple: $1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 362,
-          "y": 1045
+          "x": 50,
+          "y": 540
         }
       }
-  "6":
-    id: "6"
-    taskid: a9c71d9b-8bec-42db-8c65-a4d047770eac
-    type: condition
-    task:
-      id: a9c71d9b-8bec-42db-8c65-a4d047770eac
-      version: -1
-      name: Verify found file locations
-      description: Verify found file locations
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "5"
-    scriptarguments:
-      left: {}
-      right: {}
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: found_file_locations
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 362,
-          "y": 790
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "2_3_#default#": 0.15,
-      "2_4_yes": 0.5,
-      "4_1_yes": 0.69,
-      "4_3_#default#": 0.32,
-      "6_3_#default#": 0.6,
-      "6_5_yes": 0.7
+      "2_5_yes": 0.41,
+      "2_7_#default#": 0.42,
+      "5_6_yes": 0.47,
+      "5_7_#default#": 0.41
     },
     "paper": {
       "dimensions": {
-        "height": 1230,
-        "width": 692,
+        "height": 880,
+        "width": 830,
         "x": 50,
         "y": 50
       }
@@ -285,5 +273,6 @@ outputs:
 - contextPath: Endpoint
   description: The endpoint
   type: unknown
+fromversion: 4.5.0
 tests:
-  - no test
+- No tests
