@@ -865,7 +865,7 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
         test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0'),
+        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
                                           server_v=server_version,
                                           to_v=test_conf.get('toversion', '99.99.99'))
     )), None)
@@ -889,7 +889,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
                 continue
 
         # check if object is runnable
-        fromversion = obj.get('fromversion', '0')
+        fromversion = obj.get('fromversion', '0.0')
         toversion = obj.get('toversion', '99.99.99')
         if is_runnable_in_server_version(from_v=fromversion, server_v=server_version, to_v=toversion):
             return obj
@@ -957,7 +957,7 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     if not test_conf:
         print_warning(f'{warning_prefix} - couldn\'t find test in conf.json')
         return False
-    conf_fromversion = test_conf.get('fromversion', '0')
+    conf_fromversion = test_conf.get('fromversion', '0.0')
     conf_toversion = test_conf.get('toversion', '99.99.99')
     test_playbooks_set = id_set.get('TestPlaybooks', [])
     test_playbook_obj = extract_matching_object_from_id_set(test_id, test_playbooks_set, server_version)
