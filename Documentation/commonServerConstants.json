@@ -1,6 +1,6 @@
 [
   {
-    "language": "pythonjhg",
+    "language": "python",
     "origin": "CommonServerPython",
     "cmdType": "builtinVar",
     "return_value": {},

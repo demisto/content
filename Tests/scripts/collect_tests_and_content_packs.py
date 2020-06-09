@@ -19,7 +19,7 @@ sys.path.append(CONTENT_DIR)
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, LOG_COLORS, print_error, print_color, \
-    print_warning, server_version_compare  # noqa: E402
+    print_warning, server_version_compare, get_pack_name  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -1085,15 +1085,13 @@ def get_modified_packs(files_string):
         else:
             file_path = file_data[1]
 
-        # # ignoring deleted files.
-        # # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
-        # if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
-        #         and not file_path.startswith('.')):
-        if os.path.dirname(file_path) == 'Documentation':
-            modified_packs.add('Base')
+        # ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
+        if not file_path.startswith('.'):
+            if file_path.startswith('Documentation'):
+                modified_packs.add('Base')
 
-        elif file_path.split('/')[0] == 'Packs':
-            modified_packs.add(file_path.split('/')[1])
+            elif file_path.startswith('Packs'):
+                modified_packs.add(get_pack_name(file_path))
 
     return modified_packs
 
@@ -1101,6 +1099,7 @@ def get_modified_packs(files_string):
 def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None,
                                                id_set=None):
     """Create a test list that should run"""
+
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files_for_testing(files_string)
 
@@ -1109,7 +1108,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests, conf, id_set)
 
+    # get all modified packs
     modified_packs = get_modified_packs(files_string)
+    if modified_packs:
+        packs_to_install = packs_to_install.union(modified_packs)
+
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
