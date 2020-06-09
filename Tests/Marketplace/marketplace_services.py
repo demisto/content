@@ -37,7 +37,7 @@ class GCPConfig(object):
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     CORE_PACKS_LIST = [BASE_PACK,
-                       "Rasterize",
+                       "rasterize",
                        "DemistoRESTAPI",
                        "DemistoLocking",
                        "ImageOCR",
