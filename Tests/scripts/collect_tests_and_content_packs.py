@@ -1071,17 +1071,43 @@ def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
     return content_packs
 
 
+def get_modified_packs(files_string):
+    modified_packs = set([])
+    all_files = files_string.split('\n')
+
+    for _file in all_files:
+        file_data = _file.split()
+        if not file_data:
+            continue
+        file_status = file_data[0]
+        if file_status.lower().startswith('r'):
+            file_path = file_data[2]
+        else:
+            file_path = file_data[1]
+
+        # # ignoring deleted files.
+        # # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
+        # if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
+        #         and not file_path.startswith('.')):
+        if os.path.dirname(file_path) == 'Documentation':
+            modified_packs.add('Base')
+
+        # elif os
+
+    return file_path
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None,
                                                id_set=None):
     """Create a test list that should run"""
-    (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
+    (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files_for_testing(files_string)
 
     tests = set([])
     packs_to_install = set([])
-    if modified_files:
-        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files, conf, id_set)
+    if modified_files_with_relevant_tests:
+        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests, conf, id_set)
 
+    modified_packs = get_modified_packs(files_string)
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
@@ -1152,18 +1178,21 @@ def create_test_file(is_nightly, skip_save=False):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
+            x = get_modified_packs(files_string)
+
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            # x = get_modified_packs(files_string)
 
-        with open('./Tests/ami_builds.json', 'r') as ami_builds:
-            # get versions to check if tests are runnable on those envs
-            ami_builds = json.load(ami_builds)
-            two_before_ga = ami_builds.get('TwoBefore-GA', '0').split('-')[0]
-            one_before_ga = ami_builds.get('OneBefore-GA', '0').split('-')[0]
-            ga = ami_builds.get('GA', '0').split('-')[0]
+        # with open('./Tests/ami_builds.json', 'r') as ami_builds:
+        #     # get versions to check if tests are runnable on those envs
+        #     ami_builds = json.load(ami_builds)
+        #     two_before_ga = ami_builds.get('TwoBefore-GA', '0').split('-')[0]
+        #     one_before_ga = ami_builds.get('OneBefore-GA', '0').split('-')[0]
+        #     ga = ami_builds.get('GA', '0').split('-')[0]
 
         conf = load_tests_conf()
         with open("./Tests/id_set.json", 'r') as conf_file:

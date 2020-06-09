@@ -1,5 +1,5 @@
 commonfields:
-  id: AbuseIPDBPopulateIndicators
+  id: AbuseIPDBPopulateIndicatorssdf
   version: -1
 name: AbuseIPDBPopulateIndicators
 script: |-
