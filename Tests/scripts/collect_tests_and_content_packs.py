@@ -864,10 +864,10 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-        test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
-                                          server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99'))
+            test_conf.get('playbookID') == test_id
+            and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
+                                              server_v=server_version,
+                                              to_v=test_conf.get('toversion', '99.99.99'))
     )), None)
     return test_conf
 
@@ -1100,15 +1100,17 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
                                                id_set=None):
     """Create a test list that should run"""
 
-    (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
+    (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
+     is_reputations_json,
      is_indicator_json) = get_modified_files_for_testing(files_string)
 
     tests = set([])
     packs_to_install = set([])
     if modified_files_with_relevant_tests:
-        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests, conf, id_set)
+        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
+                                                                                  conf, id_set)
 
-    # get all modified packs
+    # get all modified packs - not just tests related
     modified_packs = get_modified_packs(files_string)
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
@@ -1183,7 +1185,6 @@ def create_test_file(is_nightly, skip_save=False):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
-            x = get_modified_packs(files_string)
 
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")

@@ -6,7 +6,7 @@ import demisto_sdk.commands.common.tools as demisto_sdk_tools
 from ruamel.yaml import YAML
 
 from Tests.scripts.collect_tests_and_content_packs import (
-    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files,
+    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files_for_testing,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
