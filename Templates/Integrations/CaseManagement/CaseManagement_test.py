@@ -109,7 +109,7 @@ class TestInputs:
         ({}, 'Could not find', {})
     ]
     INCIDENT = [{
-        'name': f'Case Management Integration - ticket number: 111',
+        'name': 'Case Management Integration - ticket number: 111',
         'rawJSON': json.dumps(TICKET_MOCK)
     }]
     FETCH_INCIDENTS_INPUT = [
