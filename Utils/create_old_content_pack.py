@@ -18,7 +18,6 @@ COPY_DIR_LIST = ['Playbooks', 'TestPlaybooks', 'Layouts', 'IncidentFields', 'Inc
 
 arguments = sys.argv
 old_version = arguments[1]
-new_from_version = arguments[2]
 
 click.secho("Cleaning access files (unified, demistomock and so on...)")
 os.system('git clean -X -f -q')
@@ -142,7 +141,7 @@ def delete_script_or_integration(path):
 
 
 for copied_pack_name in os.listdir('Packs'):
-    if copied_pack_name != old_version:
+    if copied_pack_name != old_version and copied_pack_name != 'NonSupported':
         copied_pack_path = os.path.join('Packs', copied_pack_name)
 
         for dir_name in os.listdir(copied_pack_path):
@@ -161,8 +160,6 @@ click.secho("Finished content copy", fg="green")
 if old_version.count('.') == 1:
     yml_old_version = old_version + ".9"
 
-if new_from_version.count('.') == 1:
-    yml_from_version = new_from_version + ".0"
 click.secho("Starting file editing")
 for content_dir in os.listdir(pack_path):
     dir_path = os.path.join(pack_path, content_dir)
