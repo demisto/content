@@ -1,5 +1,5 @@
 import urllib3
-from typing import Dict, Any, Tuple, List
+from typing import Dict, Any, List
 
 from CommonServerPython import *
 
@@ -65,8 +65,7 @@ def test_module(client: Client):
     return 'ok', None, None
 
 
-def cve_latest_command(client: Client, limit) -> Tuple[
-        Any, Dict[str, List[Any]], List[Dict[str, Any]]]:
+def cve_latest_command(client: Client, limit) -> CommandResults:
     """Returns the 30 latest updated CVEs.
     Args:
          limit int: The amount of CVEs to display
@@ -75,12 +74,20 @@ def cve_latest_command(client: Client, limit) -> Tuple[
     """
     res = client.cve_latest(limit)
     data = [cve_to_context(cve_details) for cve_details in res]
-    ec = {'CVE(val.ID === obj.ID)': data}
-    human_readable = tableToMarkdown('Latest CVEs', data)
-    return human_readable, ec, res
+    indicators = generate_indicators(data)
+    command_results = CommandResults(
+        outputs_prefix='CVE',
+        outputs_key_field='ID',
+        outputs=data,
+        raw_response=res,
+        indicators=indicators
+    )
+
+    command_results.readable_output = tableToMarkdown('Latest CVEs', data) if res else 'No results found.'
+    return command_results
 
 
-def cve_command(client: Client, args: dict) -> Tuple[Any, Any, Any]:
+def cve_command(client: Client, args: dict) -> CommandResults:
     """Search for cve with the given ID and returns the cve data if found.
     Args:
            client: Integration client
@@ -99,14 +106,38 @@ def cve_command(client: Client, args: dict) -> Tuple[Any, Any, Any]:
         response = client.cve(_id)
         res.append(response)
         data.append(cve_to_context(response))
+    indicators = generate_indicators(data)
+    command_results = CommandResults(
+        outputs_prefix='CVE',
+        outputs_key_field='ID',
+        outputs=data,
+        raw_response=res,
+        indicators=indicators
+    )
 
-    if not res:
-        return 'No results found.', {}, {}
+    command_results.readable_output = tableToMarkdown('CVE Search results', data) if res else 'No results found.'
+    return command_results
 
-    human_readable = tableToMarkdown('CVE Search results', data)
-    context = {'CVE(val.ID === obj.ID)': data}
 
-    return human_readable, context, res
+def generate_indicators(data: list) -> list:
+    """
+    Generating a list of cve indicators with dbot score from cve data.
+    Args:
+        data: The cve data
+
+    Returns:
+        A list of CVE indicators with dbotScore
+    """
+    indicators = []
+    for cve in data:
+        cve_object = Common.CVE(id=cve.get('ID'),
+                                cvss=cve.get('CVSS'),
+                                published=cve.get('Published'),
+                                modified=cve.get('Modified'),
+                                description=cve.get('Description')
+                                )
+        indicators.append(cve_object)
+    return indicators
 
 
 def valid_cve_id_format(cve_id: str) -> bool:
@@ -133,10 +164,10 @@ def main():
             return_outputs(*test_module(client))
 
         elif demisto.command() == 'cve-latest':
-            return_outputs(*cve_latest_command(client, demisto.args().get('limit', 30)))
+            return_results(cve_latest_command(client, demisto.args().get('limit', 30)))
 
         elif demisto.command() == 'cve':
-            return_outputs(*cve_command(client, demisto.args()))
+            return_results(cve_command(client, demisto.args()))
 
         else:
             raise NotImplementedError(f'{command} is not an existing CVE Search command')

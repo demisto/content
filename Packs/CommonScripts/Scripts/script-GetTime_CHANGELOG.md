@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added support for subtracting days and years from current date using **daysAgo** and **yearsAgo** arguments.  
 
 
 ## [20.5.2] - 2020-05-26

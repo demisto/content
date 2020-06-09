@@ -53,6 +53,7 @@ configuration:
   name: incident_name
   required: false
   type: 0
+  defaultvalue: number
 - display: Incident type
   name: incidentType
   required: false
