@@ -732,16 +732,22 @@ Channel renamed successfully.
 
 </p>
 <h2>Additional Information</h2>
+<h3>Change the name of the Cortex XSOAR App</h3>
+<p>You can change the name and icon of the Cortex XSOAR app in direct messages using the integration configuration settings (parameters). In order to change the name of the application itself, do the following:</p>
+<ul>
+<li>Go to the app in the **Apps** section in Slack<img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-apps.png"/></li>
+<li> In the app, go to **About > Settings**: <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-app-about.png"/></li>
+<li>Scroll down and click the pencil icon to change the name. <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-app-name.png"/></li>
+</ul>
 <h3>Direct messages</h3>
-<p>You may send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
-<pre>
-list incidents [page x]
-list my incidents [page x]
-list my tasks
-list closed incidents
-new incident [details]
-mirror incident-id
-</pre>
+<p>You can send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
+<p><strong>list incidents [page x]</strong> - lists the current incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list my incidents [page x]</strong> - lists the current incidents assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list my tasks [page x]</strong> - lists the current tasks assigned to you in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>list closed incidents</strong> - lists the closed incidents in Cortex XSOAR. Requires user permissions in Cortex XSOAR.</p>
+<p><strong>new incident [details]</strong> - creates a new incident in Cortex XSOAR. Requires user permissions in Cortex XSOAR, or that the `Allow external users to create incidents via DM` parameter is enabled.</p>
+<p><strong>mirror [incident-id]</strong> - mirrors an incident in Cortex XSOAR to a Slack channel. Requires user permissions in Cortex XSOAR for the specified incident.</p>
+
 <h3>Notifications</h3>
 <p>The integration sends notifications as they are configured in the notification settings (User Preferences in Cortex XSOAR), and to the dedicated channel configured for incident notifications (according to the integration configuration).
 If a dedicated channel for incident notifications is configured, the following notifications will be sent there:</p>
@@ -783,6 +789,6 @@ The following information is sent to the dedicated endpoint in the request:
 </ul>
 <h2>Troubleshooting</h2>
 <p>If messages are not mirrored in Cortex XSOAR, or direct messages are not handled properly, check the integration status on the integration page:</p>
-<img alt="" src="https://user-images.githubusercontent.com/35098543/66030151-6dbbc780-e509-11e9-9c21-c5c7ceb1f039.png"/>
+<img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-health.png"/>
 <br>
 <span>If you're having further issues, contact us at <a href="mailto:support@demisto.com">support@demisto.com</a> and attach the server logs.</span>

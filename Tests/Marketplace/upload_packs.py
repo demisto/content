@@ -315,8 +315,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
 
     with open(id_set_local_path, mode='r') as f:
         blob.upload_from_file(f)
-
-    print_color(f"Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
+    print_color("Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
 
 
 def get_private_packs(private_index_path):
@@ -595,7 +594,6 @@ def main():
             pack.cleanup()
             continue
 
-        # if should_sign_pack:
         task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name

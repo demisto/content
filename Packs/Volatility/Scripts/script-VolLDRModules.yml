@@ -1,6 +1,6 @@
 commonfields:
   id: VolLDRModules
-  version: 1
+  version: -1
 name: VolLDRModules
 script: |-
   var cmdline = 'ldrmodules';
