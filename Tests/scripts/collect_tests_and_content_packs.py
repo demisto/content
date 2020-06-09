@@ -114,7 +114,7 @@ def validate_not_a_package_test_script(file_path):
     return '_test' not in file_path and 'test_' not in file_path
 
 
-def get_modified_files(files_string):
+def get_modified_files_for_testing(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
     is_reputations_json = False
@@ -1080,7 +1080,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
                                                id_set=None):
     """Create a test list that should run"""
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
-     is_indicator_json) = get_modified_files(files_string)
+     is_indicator_json) = get_modified_files_for_testing(files_string)
 
     tests = set([])
     packs_to_install = set([])
