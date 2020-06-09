@@ -1,6 +1,6 @@
 commonfields:
   id: Volatility
-  version: 1
+  version: -1
 name: Volatility
 script: |-
   var cmdline = args.cmd;
