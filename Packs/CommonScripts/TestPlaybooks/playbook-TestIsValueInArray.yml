@@ -1,0 +1,486 @@
+id: TestIsValueInArray
+version: -1
+name: TestIsValueInArray
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 268876ff-639e-4006-874a-a79e02cc95bf
+    type: start
+    task:
+      id: 268876ff-639e-4006-874a-a79e02cc95bf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -112
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7db207a7-ad98-4343-8db3-80b8951302d4
+    type: regular
+    task:
+      id: 7db207a7-ad98-4343-8db3-80b8951302d4
+      version: -1
+      name: Create array in context
+      description: Find all users associated with a role
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: myArray
+      roles: {}
+      value:
+        simple: ${.=function(obj){return ['value1','value2','value3']}(val)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 224
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 803761a8-9be3-4bb7-8c0f-d4d305528f6f
+    type: condition
+    task:
+      id: 803761a8-9be3-4bb7-8c0f-d4d305528f6f
+      version: -1
+      name: Check existing value
+      description: Look for value in a list
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      array:
+        simple: ${myArray}
+      left: {}
+      list:
+        simple: ${myList}
+      right: {}
+      value:
+        simple: value2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 398
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5bfe9ed3-c070-46ff-8faa-1b5feebf7804
+    type: regular
+    task:
+      id: 5bfe9ed3-c070-46ff-8faa-1b5feebf7804
+      version: -1
+      name: Bad...
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 22,
+          "y": 571
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: cdf4eb33-c8f7-42f3-8c76-523fdb8384a7
+    type: condition
+    task:
+      id: cdf4eb33-c8f7-42f3-8c76-523fdb8384a7
+      version: -1
+      name: Check a non exist value
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "5"
+    scriptarguments:
+      array:
+        simple: ${myArray}
+      left: {}
+      list:
+        simple: ${myList}
+      right: {}
+      value:
+        simple: value5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 697
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c3d3732b-6cc6-4008-84d7-ceafa0bb66ea
+    type: regular
+    task:
+      id: c3d3732b-6cc6-4008-84d7-ceafa0bb66ea
+      version: -1
+      name: Bad...
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 46,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ab8aaac0-d242-463f-8be1-9fd800dcdb45
+    type: condition
+    task:
+      id: ab8aaac0-d242-463f-8be1-9fd800dcdb45
+      version: -1
+      name: 'Check two equal strings '
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "8"
+    scriptarguments:
+      array:
+        simple: value
+      left: {}
+      list:
+        simple: value
+      right: {}
+      value:
+        simple: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1012
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0f19c80d-4cac-4848-83ef-5d2c0a09c8fa
+    type: regular
+    task:
+      id: 0f19c80d-4cac-4848-83ef-5d2c0a09c8fa
+      version: -1
+      name: Bad...
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 46,
+          "y": 1173
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e770565c-9b81-4fbf-86af-a20be65283a3
+    type: condition
+    task:
+      id: e770565c-9b81-4fbf-86af-a20be65283a3
+      version: -1
+      name: 'Check two non equal strings '
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "9"
+    scriptarguments:
+      array:
+        simple: value
+      left: {}
+      list:
+        simple: value
+      right: {}
+      value:
+        simple: other
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1351
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 36adc2a3-a170-4bc5-8f49-797fcbc6c895
+    type: regular
+    task:
+      id: 36adc2a3-a170-4bc5-8f49-797fcbc6c895
+      version: -1
+      name: Bad...
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 46,
+          "y": 1519
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 691e195e-0d5b-46fe-804a-3081e7652437
+    type: regular
+    task:
+      id: 691e195e-0d5b-46fe-804a-3081e7652437
+      version: -1
+      name: Close
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: f7d82642-3594-4464-83ca-b72dc0c6c804
+    type: condition
+    task:
+      id: f7d82642-3594-4464-83ca-b72dc0c6c804
+      version: -1
+      name: Check empty array
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "12"
+    scriptarguments:
+      array: {}
+      left: {}
+      list:
+        simple: value
+      right: {}
+      value:
+        simple: other
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1729
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 10326c52-dfe8-4cbb-8f5f-f35857707a3e
+    type: regular
+    task:
+      id: 10326c52-dfe8-4cbb-8f5f-f35857707a3e
+      version: -1
+      name: Bad...
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 46,
+          "y": 1893
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ab42d7d4-0d3d-4dad-8fd1-448bc0adf9d8
+    type: condition
+    task:
+      id: ab42d7d4-0d3d-4dad-8fd1-448bc0adf9d8
+      version: -1
+      name: Check empty value
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "10"
+      "yes":
+      - "14"
+    scriptarguments:
+      array:
+        simple: ${myArray}
+      left: {}
+      list:
+        simple: value
+      right: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2056
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 9bd5ef1c-e627-4bab-81ba-ea2833c9bc70
+    type: regular
+    task:
+      id: 9bd5ef1c-e627-4bab-81ba-ea2833c9bc70
+      version: -1
+      name: Bad...
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 46,
+          "y": 2225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2637,
+        "width": 808,
+        "x": 22,
+        "y": -112
+      }
+    }
+  }
+inputs: []
+outputs: []
