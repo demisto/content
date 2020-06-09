@@ -2137,13 +2137,13 @@
         {
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
