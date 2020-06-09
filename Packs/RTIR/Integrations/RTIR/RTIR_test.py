@@ -90,3 +90,10 @@ def test_parse_ticket_links():
     response = parse_ticket_links(RAW_LINKS)
     expected = [{'ID': '65461'}, {'ID': '65462'}, {'ID': '65463'}]
     assert response == expected
+
+
+def test_build_ticket_id_in_headers():
+    from RTIR import build_ticket
+    ticket = build_ticket(['ID: ticket/1'])
+    expected = {'ID': 1}
+    assert expected == ticket
