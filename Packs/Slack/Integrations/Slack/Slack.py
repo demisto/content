@@ -756,7 +756,7 @@ def check_for_answers():
                             user.get('profile', {}).get('email'))
 
     if updated_questions:
-        questions = list(filter(lambda q: q.get('remove', False) is False, questions))
+        questions = list(filter(lambda q: q.get('remove', False) is False, updated_questions))
         set_to_latest_integration_context({'users': users, 'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
