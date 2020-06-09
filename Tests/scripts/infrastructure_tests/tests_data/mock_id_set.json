@@ -223,7 +223,8 @@
         ],
         "command_to_integration": {
           "fake-command": ""
-        }
+        },
+        "pack": "fake_pack"
       }
     },
     {
