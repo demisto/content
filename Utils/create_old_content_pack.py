@@ -2,6 +2,7 @@ import json
 import shutil
 import sys
 import os
+import click
 from datetime import datetime
 from typing import Dict
 
@@ -14,6 +15,11 @@ COPY_DIR_LIST = ['Playbooks', 'TestPlaybooks', 'Layouts', 'IncidentFields', 'Inc
 arguments = sys.argv
 old_version = arguments[1]
 new_from_version = arguments[2]
+
+click.secho("Cleaning access files (unified, demistomock and so on...)")
+os.system('git clean -X -f -q')
+
+click.secho(f"Starting old pack creation for {old_version}")
 
 # create a new pack
 pack_path = os.path.join('Packs', str(old_version))
@@ -51,54 +57,36 @@ with open(metadata_path, 'a') as fp:
 
     json.dump(pack_metadata, fp, indent=4)
 
+click.secho("Finished base pack creation", fg="green")
+click.secho("Coping content entities to pack")
+
 
 def copytree(src, dst):
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
-        if os.path.isdir(s):
-            shutil.copytree(s, d)
+        if not os.path.exists(d):
+            if os.path.isdir(s):
+                os.mkdir(d)
+                copytree(s, d)
 
-        else:
-            shutil.copy2(s, d)
+            else:
+                shutil.copy(s, d)
 
 
 for copied_pack_name in os.listdir('Packs'):
     if copied_pack_name != old_version:
         copied_pack_path = os.path.join('Packs', copied_pack_name)
 
-        if not os.path.isdir(copied_pack_path):
-            # there are files that are not directories but returned from listdir like Packs/.DS_Store
-            # skip them
-            continue
-
         for dir_name in os.listdir(copied_pack_path):
             dir_path = os.path.join(copied_pack_path, dir_name)
-            dst_path = os.path.join(pack_path, dir_name)
-
-            if dir_name in COPY_DIR_LIST:
-                copytree(dir_path, dst_path)
+            if os.path.isfile(dir_path) or dir_path.endswith('ReleaseNotes'):
                 continue
 
-            if dir_name not in DIR_LIST and dir_name != 'ReleaseNotes' and os.path.isdir(dir_path):
-                DIR_LIST.append(dir_path)
-                COPY_DIR_LIST.append(dir_name)
-                os.mkdir(dst_path)
-                copytree(dir_path, dst_path)
+            old_pack_directory = os.path.join(pack_path, dir_name)
+            if not os.path.exists(old_pack_directory):
+                os.mkdir(old_pack_directory)
 
-            if dir_name == 'ReleaseNotes':
-                continue
+            copytree(dir_path, old_pack_directory)
 
-            if not os.path.isdir(dir_path):
-                # ignore - .secrets-ignore, .pack-ignore, pack_metadata, readme files
-                continue
-
-            for internal_dir_name in os.listdir(dir_path):
-                src_path = os.path.join(dir_path, internal_dir_name)
-                if os.path.isfile(src_path):
-                    shutil.copy(src_path, dst_path)
-
-                else:
-                    dst_path = os.path.join(dst_path, internal_dir_name)
-                    os.mkdir(dst_path)
-                    copytree(src_path, dst_path)
+click.secho("Finished content copy", fg="green")
