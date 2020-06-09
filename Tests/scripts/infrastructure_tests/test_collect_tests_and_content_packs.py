@@ -116,7 +116,7 @@ class TestUtils(object):
 
     @staticmethod
     def mock_get_modified_files(mocker, modified_files_list, is_conf_json=False):
-        return mocker.patch('Tests.scripts.collect_tests_and_content_packs.get_modified_files',
+        return mocker.patch('Tests.scripts.collect_tests_and_content_packs.get_modified_files_for_testing',
                             return_value=create_get_modified_files_ret(
                                 modified_files_list=modified_files_list,
                                 is_conf_json=is_conf_json
@@ -441,7 +441,7 @@ A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         files_list, tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json, is_indicator_json = \
-            get_modified_files(self.GIT_DIFF_RET)
+            get_modified_files_for_testing(self.GIT_DIFF_RET)
         assert len(sample_tests) == 0
         assert 'Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml' in files_list
 
