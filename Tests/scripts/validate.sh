@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-if [[ $CIRCLE_BRANCH == master ]];
+if [[ $CIRCLE_BRANCH = master ]];
   then
     demisto-sdk validate -a
 
