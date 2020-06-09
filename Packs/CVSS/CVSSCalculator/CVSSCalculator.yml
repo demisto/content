@@ -1,0 +1,246 @@
+commonfields:
+  id: CVSSCalculator
+  version: -1
+name: CVSSCalculator
+script: '-'
+system: false
+type: python
+tags: []
+comment: This script calculates the CVSS Base Score, Temporal Score and Environmental
+  Score using either the CVSS 3.0 or 3.1 calculator according to https://www.first.org/cvss/
+  calculation documentation.
+enabled: true
+args:
+- name: version
+  required: true
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "3.1"
+  - "3.0"
+  description: The version of CVSS to use for scoring
+  defaultValue: "3.1"
+- name: AV
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "N"
+  - A
+  - L
+  - P
+  description: Attack Vector
+- name: AC
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - L
+  - H
+  description: Attack Complexity
+- name: PR
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "N"
+  - L
+  - H
+  description: Privileges Required
+- name: UI
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "N"
+  - R
+  description: User Interaction
+- name: S
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - U
+  - C
+  description: Scope
+- name: C
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - H
+  - L
+  - "N"
+  description: Confidentiality
+- name: I
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - H
+  - L
+  - "N"
+  description: Integrity
+- name: A
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - H
+  - L
+  - "N"
+  description: Availability
+- name: E
+  auto: PREDEFINED
+  predefined:
+  - X
+  - H
+  - F
+  - P
+  - U
+  description: Exploit Code Maturity
+  defaultValue: X
+- name: RL
+  auto: PREDEFINED
+  predefined:
+  - X
+  - U
+  - W
+  - T
+  - O
+  description: Remediation Level
+  defaultValue: X
+- name: RC
+  auto: PREDEFINED
+  predefined:
+  - X
+  - C
+  - R
+  - U
+  description: Report Confidence
+  defaultValue: X
+- name: CR
+  auto: PREDEFINED
+  predefined:
+  - X
+  - H
+  - M
+  - L
+  description: Confidentiality Requirement
+  defaultValue: X
+- name: IR
+  auto: PREDEFINED
+  predefined:
+  - X
+  - H
+  - M
+  - L
+  description: Integrity Requirement
+  defaultValue: X
+- name: AR
+  auto: PREDEFINED
+  predefined:
+  - X
+  - H
+  - M
+  - L
+  description: Availability Requirement
+  defaultValue: X
+- name: MAV
+  auto: PREDEFINED
+  predefined:
+  - X
+  - "N"
+  - A
+  - L
+  - P
+  description: Modified Attack Vector
+  defaultValue: X
+- name: MAC
+  auto: PREDEFINED
+  predefined:
+  - X
+  - L
+  - H
+  description: Modified Attack Complexity
+  defaultValue: X
+- name: MPR
+  auto: PREDEFINED
+  predefined:
+  - X
+  - "N"
+  - L
+  - H
+  description: Modified Privileges Required
+  defaultValue: X
+- name: MUI
+  auto: PREDEFINED
+  predefined:
+  - X
+  - "N"
+  - R
+  description: Modified User Interaction
+  defaultValue: X
+- name: MS
+  auto: PREDEFINED
+  predefined:
+  - X
+  - U
+  - C
+  description: Modified Scope
+  defaultValue: X
+- name: MC
+  auto: PREDEFINED
+  predefined:
+  - X
+  - "N"
+  - L
+  - H
+  description: Modified Confidentiality
+  defaultValue: X
+- name: MI
+  auto: PREDEFINED
+  predefined:
+  - X
+  - "N"
+  - L
+  - H
+  description: Modified Integrity
+  defaultValue: X
+- name: MA
+  auto: PREDEFINED
+  predefined:
+  - X
+  - "N"
+  - L
+  - H
+  description: Modified Availability
+  defaultValue: X
+outputs:
+- contextPath: CVSS.VectorString
+  description: THe text notation of the score
+  type: string
+- contextPath: CVSS.ImpactSubScore
+  description: Impact Sub-Score
+  type: number
+- contextPath: CVSS.Impact
+  description: Impact Score
+  type: number
+- contextPath: CVSS.Exploitability
+  description: Expoitability Score
+  type: number
+- contextPath: CVSS.BaseScore
+  description: Base Score
+  type: number
+- contextPath: CVSS.TemporalScore
+  description: Temporal Score
+  type: number
+- contextPath: CVSS.ModifiedImpactSubScore
+  description: Modified Impact Sub-Score
+  type: number
+- contextPath: CVSS.ModifiedImpact
+  description: Modified Impact
+  type: number
+- contextPath: CVSS.ModifiedExploitability
+  description: Modified Exploitability
+  type: number
+- contextPath: CVSS.EnvironmentalScore
+  description: Environmental Score
+  type: number
+- contextPath: CVSS.Version
+  description: Version of CVSS used in the calculation
+  type: number
+subtype: python3
+dockerimage: demisto/python3:3.8.3.8715
