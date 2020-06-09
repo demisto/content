@@ -1,4 +1,4 @@
-Hunts using available tools.
+Deprecated. Use the Search Endpoints By Hash - Generic V2 playbook instead. Hunts using available tools.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
