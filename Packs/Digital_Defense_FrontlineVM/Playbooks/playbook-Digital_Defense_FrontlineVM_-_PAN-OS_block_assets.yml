@@ -247,7 +247,9 @@ tasks:
       id: 963529eb-2f34-4072-801f-9eed161669d1
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
-      description: ''
+      description: |-
+        This playbook blocks IP addresses and URLs using PAN-OS External Dynamic Lists.
+        It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the input IPs and URLs to the relevant lists.
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
       type: playbook
       iscommand: false
@@ -276,7 +278,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -130,
           "y": 1790
         }
       }
@@ -407,8 +409,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      'Yes':
-      - '11'
+      "No":
+      - "20"
+      "Yes":
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -437,8 +441,35 @@ tasks:
         retriesinterval: 360
         completeafterreplies: 1
       replyOptions:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: c7f0e8e6-a289-4533-8027-f11b67c15bf7
+    type: title
+    task:
+      description: Playbook is done
+      id: c7f0e8e6-a289-4533-8027-f11b67c15bf7
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -447,8 +478,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1835,
-        "width": 810,
-        "x": 50,
+        "width": 990,
+        "x": -130,
         "y": 50
       }
     }
