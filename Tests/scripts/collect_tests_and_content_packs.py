@@ -1190,14 +1190,13 @@ def create_test_file(is_nightly, skip_save=False):
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
-            # x = get_modified_packs(files_string)
 
-        # with open('./Tests/ami_builds.json', 'r') as ami_builds:
-        #     # get versions to check if tests are runnable on those envs
-        #     ami_builds = json.load(ami_builds)
-        #     two_before_ga = ami_builds.get('TwoBefore-GA', '0').split('-')[0]
-        #     one_before_ga = ami_builds.get('OneBefore-GA', '0').split('-')[0]
-        #     ga = ami_builds.get('GA', '0').split('-')[0]
+        with open('./Tests/ami_builds.json', 'r') as ami_builds:
+            # get versions to check if tests are runnable on those envs
+            ami_builds = json.load(ami_builds)
+            two_before_ga = ami_builds.get('TwoBefore-GA', '0').split('-')[0]
+            one_before_ga = ami_builds.get('OneBefore-GA', '0').split('-')[0]
+            ga = ami_builds.get('GA', '0').split('-')[0]
 
         conf = load_tests_conf()
         with open("./Tests/id_set.json", 'r') as conf_file:
