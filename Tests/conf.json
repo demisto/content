@@ -12,6 +12,10 @@
             "playbookID": "BastilleNetworks-Test"
         },
         {
+            "integrations": "Zimperium",
+            "playbookID": "Zimperium_Test"
+        },
+        {
             "integrations": "MITRE ATT&CK",
             "playbookID": "Mitre Attack List 10 Indicators Feed Test"
         },
