@@ -1,0 +1,21 @@
+commonfields:
+  id: d9f3dbf6-bb9d-482e-864d-f86d724f65b5
+  version: 58
+name: Py-DT
+type: python
+tags:
+- transformer
+- general
+comment: Python alternative to DT. Input can be accessed with variable 'val', the
+  same as DT
+enabled: true
+args:
+- name: Python
+  description: Python code, context can be referenced like a Python dict named "ec"
+    . e.g. return_results(ec['incident']['id'])
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.3.8715
+runas: DBotWeakRole
