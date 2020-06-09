@@ -1,5 +1,3 @@
-import json
-
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE = {
     "errors": [],
     "meta": {

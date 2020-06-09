@@ -1,6 +1,6 @@
-id: FalconX - Detonate File
+id: Falcon X - Detonate File
 version: -1
-name: FalconX - Detonate File
+name: Falcon X - Detonate File
 description: |-
   Detonates a File using the McAfee Advanced Threat Defense sandbox.
   Advanced Threat Defense supports the following File Types:

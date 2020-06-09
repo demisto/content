@@ -20,7 +20,7 @@ display: CrowdStrike Falcon X
 name: CrowdStrike Falcon X
 script:
   commands:
-  - arguments:
+  - arguments:x
     - default: false
       description: Name of the file
       isArray: false
@@ -51,13 +51,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'no'
+      defaultValue: 'False'
       description: Submit the given file to the sandbox.
       isArray: false
       name: submit_file
       predefined:
-      - 'yes'
-      - 'no'
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
@@ -175,7 +175,7 @@ script:
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with cs-fx-detonate-uploaded-file.
+        response when submitting a malware sample or search with cs-fx-submit-uploaded-file.
       isArray: true
       name: ids
       required: true
@@ -245,7 +245,7 @@ script:
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with cs-fx-detonate-uploaded-file.
+        response when submitting a malware sample or search with cs-fx-submit-uploaded-file.
       isArray: true
       name: ids
       required: true
@@ -315,7 +315,7 @@ script:
   - arguments:
     - default: false
       description: ID of a submitted malware sample. Find a submission ID from the
-        response when submitting a malware sample or search with cs-fx-detonate-uploaded-file/url.
+        response when submitting a malware sample or search with cs-fx-submit-uploaded-file/url.
       isArray: true
       name: ids
       required: true
@@ -611,5 +611,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+  fromVersion: "5.0.0"
 tests:
 - No tests - no instance

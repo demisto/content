@@ -35,17 +35,6 @@ def convert_environment_id_string_to_int(
         raise Exception('Invalid environment id option')
 
 
-def handle_errors(
-        errors: list
-) -> str:
-    """
-    Converting the errors of the API to a string, in case there are no error, return an empty string
-    :param errors: each error is a dict with the keys code and message
-    :return: errors converted to single str
-    """
-    return '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
-
-
 class Client:
     """
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
@@ -62,6 +51,15 @@ class Client:
         self._headers = {'Authorization': 'bearer ' + self._token}
         if not proxy:
             self._session.trust_env = False
+
+    def _handle_errors(self, errors: list
+    ) -> str:
+        """
+        Converting the errors of the API to a string, in case there are no error, return an empty string
+        :param errors: each error is a dict with the keys code and message
+        :return: errors converted to single str
+        """
+        return '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
 
     def _is_status_code_valid(self, response, ok_codes=None):
         """If the status code is OK, return 'True'.
@@ -85,7 +83,7 @@ class Client:
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       json_data=None, params=None, data=None, files=None,
-                      timeout=10, resp_type='json', ok_codes=None, return_empty_response=False, **kwargs):
+                      timeout=10, ok_codes=None, return_empty_response=False):
         """A wrapper for requests lib to send our requests and handle requests and responses better.
 
         :type method: ``str``
@@ -121,12 +119,6 @@ class Client:
             establish a connection to a remote machine before a timeout occurs.
             can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
 
-        :type resp_type: ``str``
-        :param resp_type:
-            Determines which data format to return from the HTTP request. The default
-            is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
-             to return the full response object.
-
         :type ok_codes: ``tuple``
         :param ok_codes:
             The request codes to accept as OK, for example: (200, 201, 204). If you specify
@@ -150,14 +142,13 @@ class Client:
                 files=files,
                 headers=headers,
                 timeout=timeout,
-                **kwargs
             )
             # Handle error responses gracefully
             if not self._is_status_code_valid(res, ok_codes):
                 try:
                     # Try to parse json error response
                     error_entry = res.json()
-                    err_msg = handle_errors(error_entry.get("errors"))
+                    err_msg = self._handle_errors(error_entry.get("errors"))
                     raise DemistoException(err_msg)
                 except ValueError:
                     err_msg += '\n{}'.format(res.text)
@@ -167,17 +158,8 @@ class Client:
             if is_response_empty_and_successful and return_empty_response:
                 return res
 
-            resp_type = resp_type.lower()
             try:
-                if resp_type == 'json':
-                    return res.json()
-                if resp_type == 'text':
-                    return res.text
-                if resp_type == 'content':
-                    return res.content
-                if resp_type == 'xml':
-                    ET.parse(res.text)
-                return res
+                return res.json()
             except ValueError as exception:
                 raise DemistoException("Failed to parse json object from response:" + str(res.content), exception)
         except requests.exceptions.ConnectTimeout as exception:
@@ -559,7 +541,7 @@ def upload_file_command(
         file_name: str,
         is_confidential: str = "true",
         comment: str = "",
-        submit_file: str = "no"
+        submit_file: bool = False
 ) -> Tuple[str, Dict[str, List[Dict[str, dict]]], List[dict]]:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
@@ -576,7 +558,7 @@ def upload_file_command(
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
     entry_context = {f'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
-    if submit_file == "no":
+    if not submit_file:
         return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
     else:
