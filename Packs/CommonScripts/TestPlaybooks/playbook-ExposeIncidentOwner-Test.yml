@@ -1,0 +1,207 @@
+id: ExposeIncidentOwner-Test
+version: -1
+name: ExposeIncidentOwner-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b86b1453-bf78-4555-876c-e6a34d113b59
+    type: start
+    task:
+      id: b86b1453-bf78-4555-876c-e6a34d113b59
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 505a5981-74f6-43ca-897a-291edd09ab79
+    type: regular
+    task:
+      id: 505a5981-74f6-43ca-897a-291edd09ab79
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5435febf-58c9-492d-88e2-9e9fe43f8fa8
+    type: regular
+    task:
+      id: 5435febf-58c9-492d-88e2-9e9fe43f8fa8
+      version: -1
+      name: ExposeIncidentOwner
+      description: Expose the incident owner into IncidentOwner context key
+      scriptName: ExposeIncidentOwner
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    results:
+    - IncidentOwner
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 660e7c80-8140-483c-80a6-b32f2d9d4deb
+    type: condition
+    task:
+      id: 660e7c80-8140-483c-80a6-b32f2d9d4deb
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        simple: ${incident.owner}
+      right:
+        simple: ${IncidentOwner.username}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 96fe633d-c088-4b71-8ac0-ec49ffe79fd8
+    type: regular
+    task:
+      id: 96fe633d-c088-4b71-8ac0-ec49ffe79fd8
+      version: -1
+      name: Close
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1046b7f1-b263-41fa-8d40-08ea70e4d6e8
+    type: regular
+    task:
+      id: 1046b7f1-b263-41fa-8d40-08ea70e4d6e8
+      version: -1
+      name: Error
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -495,9 +495,9 @@ def get_security_events_command():
 
         human_readable = tableToMarkdown('Security Event: {}'.format(','.join(map(str, ids))), events, removeNull=True)
         outputs = {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': contents}
-        return human_readable, outputs, contents
+        return_outputs(human_readable, outputs, contents)
     else:
-        return 'No events were found', {}, {}
+        demisto.results('No events were found')
 
 
 @logger
@@ -832,7 +832,7 @@ try:
         delete_case_command()
 
     elif demisto.command() == 'as-get-security-events':
-        return_outputs(get_security_events_command())
+        get_security_events_command()
 
     elif demisto.command() == 'as-get-entries':
         get_entries_command()

@@ -547,7 +547,7 @@ tasks:
       version: -1
       name: Add residents' emails to grid
       description: Creates a Grid table of residents and their respective email addresses.
-      scriptName: SetGridField2
+      scriptName: SetGridField
       type: regular
       iscommand: false
       brand: ""
@@ -656,7 +656,7 @@ view: |-
 inputs:
 - key: AutoNotification
   value:
-    simple: "True"
+    simple: "False"
   required: true
   description: |-
     This input determines if the resident notification should be done automatically or manually.
@@ -695,6 +695,6 @@ inputs:
   description: An explanation to the resident's notification email of the company
     actions to mitigate the breach.
 outputs: []
+fromversion: 5.0.0
 tests:
 - No test
-fromversion: 5.0.0
