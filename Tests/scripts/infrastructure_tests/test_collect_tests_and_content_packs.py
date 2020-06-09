@@ -182,7 +182,7 @@ class TestChangedPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == set()
+        assert content_packs == {"CommonPlaybooks"}
 
 
 class TestChangedTestPlaybook:
@@ -194,7 +194,7 @@ class TestChangedTestPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == set()
+        assert content_packs == {"EWS"}
 
     def test_changed_runnable_test__mocked_get_modified_files(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
@@ -337,7 +337,7 @@ class TestChangedIntegration:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == set()
+        assert content_packs == {"PagerDuty"}
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_1'
@@ -362,7 +362,7 @@ class TestChangedIntegrationAndPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
-        assert content_packs == set()
+        assert content_packs == {'CommonPlaybooks', 'PagerDuty'}
 
 
 class TestChangedScript:
@@ -374,7 +374,7 @@ class TestChangedScript:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == set()
+        assert content_packs == {"CommonScripts"}
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_2'
@@ -427,7 +427,7 @@ class TestChangedCommonTesting:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {'fake_pack'}
+        assert content_packs == {'Base', 'fake_pack'}
 
 
 class TestPackageFilesModified:
