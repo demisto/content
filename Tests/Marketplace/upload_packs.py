@@ -315,8 +315,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
 
     with open(id_set_local_path, mode='r') as f:
         blob.upload_from_file(f)
-
-    print_color(f"Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
+    print_color("Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
 
 
 def get_private_packs(private_index_path):

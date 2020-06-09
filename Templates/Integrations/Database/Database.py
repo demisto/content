@@ -55,7 +55,7 @@ def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first
         last_fetch, _ = parse_date_range(first_fetch_time, date_format=date_format, utc=True)
     else:
         last_fetch = last_run_dict.get('last_run')
-    query = f"SELECT "
+    query = "SELECT "
     for column in argToList(columns):
         query += f"{column}, "
     query = query.rstrip(',')

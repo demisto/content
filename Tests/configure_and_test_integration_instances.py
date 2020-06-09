@@ -21,7 +21,6 @@ from Tests.test_integration import __get_integration_config, __test_integration_
     __disable_integrations_instances
 from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager, \
     get_server_numeric_version
-
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
