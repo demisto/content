@@ -1113,17 +1113,16 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
             print_warning("Running Sanity check only")
 
             tests.add('TestCommonPython')  # test with no integration configured
-            packs_to_install.add("DeveloperTools")
-
             tests.add('HelloWorld-Test')  # test with integration configured
             packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
-        packs_to_install.add("DeveloperTools")
 
     if 'NonSupported' in packs_to_install:
         packs_to_install.remove("NonSupported")
+
+    packs_to_install.add("DeveloperTools")
 
     return tests, packs_to_install
 
