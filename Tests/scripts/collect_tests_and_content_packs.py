@@ -1092,9 +1092,11 @@ def get_modified_packs(files_string):
         if os.path.dirname(file_path) == 'Documentation':
             modified_packs.add('Base')
 
-        # elif os
+        elif file_path.split('/')[0] == 'Packs':
+            modified_packs.add(file_path.split('/')[1])
 
-    return file_path
+    return modified_packs
+
 
 def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None,
                                                id_set=None):
