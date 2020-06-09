@@ -1,4 +1,7 @@
-. $PSScriptRoot\CommonServerPowerShell.ps1
+BeforeAll {
+    . $PSScriptRoot\CommonServerPowerShell.ps1
+}
+
 
 Describe 'Check-DemistoServerRequest' {
     It 'Check that a call to demisto DemistoServerRequest mock works. Should always return an empty response' {
@@ -41,6 +44,20 @@ Describe 'Check-UtilityFunctions' {
         $r.Contents | Should -Be $msg
     }
 
+    It "ReturnOutputs PsCustomObject" {
+        $msg = "Human readable"
+        $output = [PsCustomObject]@{Test="test"}
+        $raw = [PSCustomObject]@{Raw="raw"}
+        $r = ReturnOutputs $msg  $output $raw
+        $r.ContentsFormat | Should -Be "json"
+        $r.HumanReadable | Should -Be $msg
+        $r.EntryContext.Test | Should -Be "test"
+        $r.Contents.Raw | Should -Be "raw"
+        $r = ReturnOutputs $msg
+        $r.ContentsFormat | Should -Be "text"
+        $r.Contents | Should -Be $msg
+    }
+
     It "ReturnError simple" {
         $msg = "this is an error"
         $r = ReturnError $msg
@@ -50,8 +67,10 @@ Describe 'Check-UtilityFunctions' {
         $r.EntryContext | Should -BeNullOrEmpty
     }
     Context "Check log function" {
-        Mock DemistoServerLog {}
-
+        BeforeAll {
+            Mock DemistoServerLog {}
+        }
+        
         It "ReturnError complex" {    
             # simulate an error
             Test-JSON "{badjson}" -ErrorAction SilentlyContinue -ErrorVariable err
