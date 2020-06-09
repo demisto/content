@@ -2,7 +2,6 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
-import os
 import json
 import re
 import urllib
@@ -21,7 +20,8 @@ apostrophe = "'"
 SESSION = requests.session()
 SESSION.verify = USE_SSL
 REFERER = None
-HEADERS = {'Referer': REFERER} if REFERER else {}
+HEADERS = {'Referer': REFERER} if REFERER else {}  # type: dict
+
 ''' HELPER FUNCTIONS '''
 
 
