@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: ArcherV2
+  id: RSA Archer v2
   version: -1
 configuration:
 - defaultvalue: https://example.net
@@ -76,8 +76,8 @@ configuration:
   required: false
   type: 0
 description: This is the Hello World integration for getting started.
-display: RSA Archer V2
-name: ArcherV2
+display: RSA Archer v2
+name: RSA Archer v2
 script:
   commands:
   - arguments:

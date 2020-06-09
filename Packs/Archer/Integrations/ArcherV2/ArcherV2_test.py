@@ -2,6 +2,16 @@ from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_erro
 
 BASE_URL = 'https://test.com/'
 
+GET_TOKEN_SOAP = '<?xml version="1.0" encoding="utf-8"?>' + \
+                    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' \
+                    ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
+                    ' xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body>' + \
+                    '        <CreateUserSessionFromInstanceResponse xmlns="http://archer-tech.com/webservices/">' + \
+                    '            <CreateUserSessionFromInstanceResult>TOKEN</CreateUserSessionFromInstanceResult>' + \
+                    '        </CreateUserSessionFromInstanceResponse>' + \
+                    '    </soap:Body>' + \
+                    '</soap:Envelope>'
+
 XML_FOR_TEST= '<?xml version="1.0" encoding="utf-8"?>' + \
        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
        'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
@@ -84,6 +94,36 @@ INCIDENT_RECORD = {
 }
 
 
+SEARCH_RECORDS_RES = \
+    '<?xml version="1.0" encoding="utf-8"?>' + \
+    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' \
+    ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">' + \
+    '    <soap:Body>' + \
+    '        <ExecuteSearchResponse xmlns="http://archer-tech.com/webservices/">' + \
+    '            <ExecuteSearchResult>' + \
+    '&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;Records count="6"&gt;&lt;Metadata&gt;&lt;' \
+    'FieldDefinitions&gt;&lt;FieldDefinition id="2" name="Device Name" alias="Name_Full" /&gt;&lt;' \
+    '/FieldDefinitions&gt;&lt;/Metadata&gt;&lt;LevelCounts&gt;&lt;LevelCount id="37" count="6" /&gt;&lt;' \
+    '/LevelCounts&gt;&lt;Record contentId="238756" levelId="37" moduleId="84" parentId="0"&gt;&lt;Field id="2" guid=' \
+    '"9bc24614-2bc7-4849-a3a3-054729854ab4" type="1"&gt;DEVICE NAME&lt;/Field&gt;&lt;/Record&gt;&lt;/Records&gt;' +\
+    '            </ExecuteSearchResult>' + \
+    '        </ExecuteSearchResponse>' + \
+    '    </soap:Body>' + \
+    '</soap:Envelope>'
+
+
+XML_ENVELOPE = \
+    '<?xml version="1.0" encoding="utf-8"?>' + \
+    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' \
+    ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">' + \
+    '    <soap:Body>' + \
+    '        <ExecuteSearchResponse xmlns="http://archer-tech.com/webservices/">' + \
+    '            <ExecuteSearchResult>Incident 1010</ExecuteSearchResult>' + \
+    '        </ExecuteSearchResponse>' + \
+    '    </soap:Body>' + \
+    '</soap:Envelope>'
+
+
 def test_extract_from_xml():
     field_id = extract_from_xml(XML_FOR_TEST, 'Envelope.Body.GetValueListForField.fieldId')
     assert field_id == '6969'
@@ -139,3 +179,23 @@ def test_record_to_incident():
     assert incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ') == '2018-03-26T10:03:32Z'
     assert incident['name'] == 'RSA Archer Incident: 227602'
     assert incident['occurred'] == '2018-03-26T10:03:32Z'
+
+
+def test_search_records(requests_mock):
+    requests_mock.post(BASE_URL + 'rsaarcher/api/core/security/login',
+                       json={'RequestedObject': {'SessionToken': 'session-id'}})
+    requests_mock.post(BASE_URL + 'rsaarcher/ws/general.asmx', text=GET_TOKEN_SOAP)
+
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/level/module/1', json=GET_LEVEL_RES)
+    requests_mock.get(BASE_URL + 'rsaarcher/api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+    requests_mock.post(BASE_URL + 'rsaarcher/ws/search.asmx',text=SEARCH_RECORDS_RES)
+    client = Client(BASE_URL, '', '', '', '')
+    records, raw_res = client.search_records(1, ['External Links', 'Device Name'])
+    assert len(records) == 1
+    assert records[0]['record']['Id'] == '238756'
+    assert records[0]['record']['Device Name'] == 'DEVICE NAME'
+
+
+def test_extract_from_xml():
+    res = extract_from_xml(XML_ENVELOPE, 'Envelope.Body.ExecuteSearchResponse.ExecuteSearchResult')
+    assert res == 'Incident 1010'

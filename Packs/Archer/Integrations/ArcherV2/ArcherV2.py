@@ -380,7 +380,7 @@ class Client(BaseClient):
         }
         return incident, incident_created_time
 
-    def search_records(self, app_id, fields_to_display, field_to_search, search_value,
+    def search_records(self, app_id, fields_to_display=[], field_to_search='', search_value='',
                        numeric_operator='', date_operator='', max_results=10):
         level_data = self.get_level_by_app_id(app_id)[0]
         fields_xml = ''
@@ -389,14 +389,11 @@ class Client(BaseClient):
         fields_mapping = level_data['mapping']
         for field in fields_mapping.keys():
             field_name = fields_mapping[field]['Name']
-            if not fields_to_display:
-                fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
-            elif field_name in fields_to_display:
+            if field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
             if field_name == field_to_search:
                 search_field_name = field_name
                 search_field_id = field
-
 
         res, raw_res = self.do_soap_request('archer-search-records',
                                             app_id=app_id, display_fields=fields_xml,
@@ -436,10 +433,6 @@ class Client(BaseClient):
                         if field.get('ListValues'):
                             field_value = field['ListValues']['ListValue']['@displayName']
                     elif field_type == '8':
-                        if field.get('Users'):
-                            field_value += json.dumps(field.get('Users'))
-                        if field.get('Groups'):
-                            field_value += json.dumps(field.get('Groups'))
                             field_value = json.dumps(field)
                     else:
                         field_value = field.get('#text')
