@@ -500,6 +500,8 @@ def option_handler():
                         required=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
+    parser.add_argument('-enc', '--encrypt_pack', type=str2bool,
+                        help='Should encrypt pack or not.', default=True)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -600,7 +602,10 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, zip_pack_path = pack.zip_pack()
+        if option.encrypt_pack:
+            task_status, zip_pack_path = pack.zip_pack(option.encrypt_pack)
+        else:
+            task_status, zip_pack_path = pack.zip_pack()
         if not task_status:
             pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
             pack.cleanup()

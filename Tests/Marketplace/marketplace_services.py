@@ -552,7 +552,7 @@ class Pack(object):
         finally:
             return task_status
 
-    def zip_pack(self):
+    def zip_pack(self, should_encrypt=False):
         """ Zips pack folder.
 
         Returns:
@@ -563,12 +563,22 @@ class Pack(object):
         task_status = False
 
         try:
-            with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
-                for root, dirs, files in os.walk(self._pack_path, topdown=True):
-                    for f in files:
-                        full_file_path = os.path.join(root, f)
-                        relative_file_path = os.path.relpath(full_file_path, self._pack_path)
-                        pack_zip.write(filename=full_file_path, arcname=relative_file_path)
+            if should_encrypt:
+                # The path below is custom made for the private repo's build.
+                zip_and_encrypt_script_path = "../server/cmd/zipAndEncryptDirectory/zipAndEncryptDirectory"
+                encryption_key = "3^zWkP?gB7YspY3sxCdv=m*bJaMcbJGc" # TODO : might need "" as part of the key
+                path_to_directory = self._pack_path
+                output_file = zip_pack_path
+                full_command = f'{zip_and_encrypt_script_path} {path_to_directory} {output_file} {encryption_key}'
+                subprocess.call(full_command, shell=True)
+
+            else:
+                with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
+                    for root, dirs, files in os.walk(self._pack_path, topdown=True):
+                        for f in files:
+                            full_file_path = os.path.join(root, f)
+                            relative_file_path = os.path.relpath(full_file_path, self._pack_path)
+                            pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
