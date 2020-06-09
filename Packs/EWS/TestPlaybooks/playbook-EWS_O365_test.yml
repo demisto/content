@@ -1,22 +1,18 @@
 id: EWS_O365_test
 version: -1
 name: EWS_O365_test
-fromversion: 5.0.0
 starttaskid: "0"
-description: ""
 tasks:
   "0":
     id: "0"
-    taskid: 30cae266-e0a8-452d-8943-665774422b8c
+    taskid: 868b5714-1f56-40ad-8e0b-64e807805489
     type: start
     task:
-      description: ""
-      id: 30cae266-e0a8-452d-8943-665774422b8c
+      id: 868b5714-1f56-40ad-8e0b-64e807805489
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -28,7 +24,6 @@ tasks:
           "y": 50
         }
       }
-      
     note: false
     timertriggers: []
     ignoreworker: false
@@ -36,11 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 07cb9584-cb17-4dfd-84af-8f996a2078b1
+    taskid: 4aa13052-7a37-4389-83c0-3b103179d59f
     type: regular
     task:
-      description: ""
-      id: 07cb9584-cb17-4dfd-84af-8f996a2078b1
+      id: 4aa13052-7a37-4389-83c0-3b103179d59f
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -68,11 +62,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ebdccb18-6f99-4dd7-8f40-1bdfbeb3dc9a
+    taskid: 140a8a39-d6f0-4a0d-8652-ce4cc7b155b9
     type: regular
     task:
-      description: ""
-      id: ebdccb18-6f99-4dd7-8f40-1bdfbeb3dc9a
+      id: 140a8a39-d6f0-4a0d-8652-ce4cc7b155b9
       version: -1
       name: ews-get-attachment
       script: '|||ews-get-attachment'
@@ -102,11 +95,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 4b3b36e7-7ebd-464d-8221-9b6a6680d9cf
+    taskid: e4b0396b-9fd8-481b-8722-e09914b5340f
     type: condition
     task:
-      description: ""
-      id: 4b3b36e7-7ebd-464d-8221-9b6a6680d9cf
+      id: e4b0396b-9fd8-481b-8722-e09914b5340f
       version: -1
       name: Verify Outputs
       type: condition
@@ -148,11 +140,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 03882cbc-733b-44d7-874f-486e0dd17a01
+    taskid: 8e54bd48-8d5c-485f-852d-59793c325221
     type: regular
     task:
-      description: ""
-      id: 03882cbc-733b-44d7-874f-486e0dd17a01
+      id: 8e54bd48-8d5c-485f-852d-59793c325221
       version: -1
       name: ews-get-searchable-mailboxes
       script: '|||ews-get-searchable-mailboxes'
@@ -177,11 +168,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: a40c8944-ff91-4708-8b48-35aba2a87385
+    taskid: 4daf91b6-b466-41f3-8b7c-d6b160b086c1
     type: condition
     task:
-      description: ""
-      id: a40c8944-ff91-4708-8b48-35aba2a87385
+      id: 4daf91b6-b466-41f3-8b7c-d6b160b086c1
       version: -1
       name: Verify Outputs
       type: condition
@@ -228,11 +218,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 14f4b8b0-e919-42b6-8795-1e1ec300580c
+    taskid: 04028000-32ce-44b2-84bc-e4e5dad7c7f4
     type: regular
     task:
-      description: ""
-      id: 14f4b8b0-e919-42b6-8795-1e1ec300580c
+      id: 04028000-32ce-44b2-84bc-e4e5dad7c7f4
       version: -1
       name: ews-search-mailbox
       script: '|||ews-search-mailbox'
@@ -266,11 +255,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e344a635-527f-477b-8cfe-5744c5fb982d
+    taskid: e034e902-096d-451d-8751-44a53b74b098
     type: condition
     task:
-      description: ""
-      id: e344a635-527f-477b-8cfe-5744c5fb982d
+      id: e034e902-096d-451d-8751-44a53b74b098
       version: -1
       name: Verify Outputs
       type: condition
@@ -305,11 +293,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: b49a645f-d85d-4022-8cff-fd20396e71da
+    taskid: f54e460a-9d04-4fe9-8a06-ad6272af79fb
     type: regular
     task:
-      description: ""
-      id: b49a645f-d85d-4022-8cff-fd20396e71da
+      id: f54e460a-9d04-4fe9-8a06-ad6272af79fb
       version: -1
       name: ews-get-contacts
       script: '|||ews-get-contacts'
@@ -334,11 +321,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: f036ee19-dbb4-4292-83e4-9cffeb2eb214
+    taskid: 0d4138c5-30e9-437b-85e4-720d8862d74f
     type: regular
     task:
-      description: ""
-      id: f036ee19-dbb4-4292-83e4-9cffeb2eb214
+      id: 0d4138c5-30e9-437b-85e4-720d8862d74f
       version: -1
       name: ews-get-out-of-office
       script: '|||ews-get-out-of-office'
@@ -366,11 +352,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 72287516-243e-4298-86b3-f3e6e5e0c66c
+    taskid: 7eb0d117-14c3-4b78-89a1-71dd92f62edf
     type: condition
     task:
-      description: ""
-      id: 72287516-243e-4298-86b3-f3e6e5e0c66c
+      id: 7eb0d117-14c3-4b78-89a1-71dd92f62edf
       version: -1
       name: Verify Outputs
       type: condition
@@ -405,11 +390,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: d4394b74-7e79-4301-87c7-9da82173d405
+    taskid: 9e3cacfb-f02d-4b5f-8b10-66f150c4c27f
     type: regular
     task:
-      description: ""
-      id: d4394b74-7e79-4301-87c7-9da82173d405
+      id: 9e3cacfb-f02d-4b5f-8b10-66f150c4c27f
       version: -1
       name: ews-find-folders
       script: '|||ews-find-folders'
@@ -434,11 +418,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 321b634d-a27c-48f8-8590-2a656e366ff1
+    taskid: e4c73fb6-9c0f-419b-85f9-116c4e4b69be
     type: condition
     task:
-      description: ""
-      id: 321b634d-a27c-48f8-8590-2a656e366ff1
+      id: e4c73fb6-9c0f-419b-85f9-116c4e4b69be
       version: -1
       name: Verify Outputs
       type: condition
@@ -495,11 +478,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 185de202-eb60-4592-8d38-6ddb3b9196fe
+    taskid: bfc3bff4-3c18-4d72-8bcf-3a6626b047e6
     type: regular
     task:
-      description: ""
-      id: 185de202-eb60-4592-8d38-6ddb3b9196fe
+      id: bfc3bff4-3c18-4d72-8bcf-3a6626b047e6
       version: -1
       name: ews-get-items-from-folder
       script: '|||ews-get-items-from-folder'
@@ -532,11 +514,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: f78c9505-bfae-4b91-83a5-70902bd0e631
+    taskid: 92eb2cdc-6f16-4597-8851-09984d8f2778
     type: regular
     task:
-      description: ""
-      id: f78c9505-bfae-4b91-83a5-70902bd0e631
+      id: 92eb2cdc-6f16-4597-8851-09984d8f2778
       version: -1
       name: ews-get-items
       script: '|||ews-get-items'
@@ -565,11 +546,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 3fb4a6fa-ba65-4b2e-8993-8d73ca00c4ca
+    taskid: 5f7483e1-47b0-4686-8240-bdd61149800a
     type: condition
     task:
-      description: ""
-      id: 3fb4a6fa-ba65-4b2e-8993-8d73ca00c4ca
+      id: 5f7483e1-47b0-4686-8240-bdd61149800a
       version: -1
       name: Verify Outputs
       type: condition
@@ -631,11 +611,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 9a6a4013-4250-40fd-8fb0-c77aed7a2ccc
+    taskid: 0b3e36db-8292-42ad-8789-9cebe311dc1c
     type: regular
     task:
-      description: ""
-      id: 9a6a4013-4250-40fd-8fb0-c77aed7a2ccc
+      id: 0b3e36db-8292-42ad-8789-9cebe311dc1c
       version: -1
       name: ews-get-folder
       script: '|||ews-get-folder'
@@ -660,11 +639,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 7f866711-bc25-42be-8224-24f6f0011169
+    taskid: cb980652-ce60-461e-82b7-82580cdab17b
     type: condition
     task:
-      description: ""
-      id: 7f866711-bc25-42be-8224-24f6f0011169
+      id: cb980652-ce60-461e-82b7-82580cdab17b
       version: -1
       name: Verify Outputs
       type: condition
@@ -721,11 +699,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: d870470e-2594-40d0-8754-4166df334e34
+    taskid: 0001331a-66c0-4fa3-8434-71dfee5da637
     type: regular
     task:
-      description: ""
-      id: d870470e-2594-40d0-8754-4166df334e34
+      id: 0001331a-66c0-4fa3-8434-71dfee5da637
       version: -1
       name: ews-expand-group
       script: '|||ews-expand-group'
@@ -734,7 +711,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "40"
     scriptarguments:
       email-address:
         simple: testgroup-1@demistodev.onmicrosoft.com
@@ -754,17 +731,48 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 07a4fa9e-4548-4ec1-8c33-2833c6282c4f
+    taskid: 8ff5c4d0-6f1c-4a82-8e83-cc4a011931a7
     type: title
     task:
-      description: ""
-      id: 07a4fa9e-4548-4ec1-8c33-2833c6282c4f
+      id: 8ff5c4d0-6f1c-4a82-8e83-cc4a011931a7
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 9607062f-6cf7-495e-822e-e465eec9d0a3
+    type: regular
+    task:
+      id: 9607062f-6cf7-495e-822e-e465eec9d0a3
+      version: -1
+      name: ews-get-items-as-eml
+      description: Retrieves items by item ID and uploads its content as an EML file.
+      script: '|||ews-get-items-as-eml'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      item-id:
+        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAAAAAEMAADj9X3Q04QOTYf/bBd1+UDZAAAHclB6AAA=
+      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -778,12 +786,47 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "41":
+    id: "41"
+    taskid: 0e0078d8-7bed-4443-80ff-f12361f6626b
+    type: regular
+    task:
+      id: 0e0078d8-7bed-4443-80ff-f12361f6626b
+      version: -1
+      name: Get public folder
+      description: Retrieves a single folder.
+      script: '|||ews-get-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      folder-path:
+        simple: test_p
+      is-public:
+        simple: "True"
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3360,
+        "height": 3710,
         "width": 380,
         "x": 50,
         "y": 50
