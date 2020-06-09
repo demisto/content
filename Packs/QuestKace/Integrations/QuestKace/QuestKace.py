@@ -500,13 +500,13 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
     title = args.get("title")
     summary = args.get('summary')
     if args.get('impact'):
-        impact = TICKETS_OBJECTS['impact'][args.get('impact')]
+        impact = TICKETS_OBJECTS.get('impact').get(args.get('impact'), args.get('impact'))
     if args.get('category'):
-        category = TICKETS_OBJECTS['category'][args.get('category')]
+        category = TICKETS_OBJECTS.get('category').get(args.get('category'), args.get('category'))
     if args.get('status'):
-        status = TICKETS_OBJECTS['status'][args.get('status')]
+        status = TICKETS_OBJECTS.get('status').get(args.get('status'), args.get('status'))
     if args.get('priority'):
-        priority = TICKETS_OBJECTS['priority'][args.get('priority')]
+        priority = TICKETS_OBJECTS.get('priority').get(args.get('priority'), args.get('priority'))
 
     machine = args.get('machine')
     asset = args.get('asset')

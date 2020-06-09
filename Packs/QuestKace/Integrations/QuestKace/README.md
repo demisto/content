@@ -1,10 +1,16 @@
 This is the Quest KACE integration.
-This integration was integrated and tested with version xx of QuestKace
+This integration was integrated and tested with version v10.0.290 of QuestKace
 
 ## Limitations
-Tickets custom fields will not be returned in the **kace-tickets-list** command and not in fetch incidents due to api limitation.
+For **kace-ticket-create** and **kace-ticket-update**, When the queue_id is not the default:
+Status,Category,Priority,Impact - values from the option list might cause an error as they correspond to different values.
+If a value not from the list will be inserted - This value will pass to the API as is.
+e.g. **kace-ticket-create status="Opened" impact=13 Priority=25**
 
-Custom fields of tickets are represented by their custom number and not but their display name. e.g.for custom_1 = date, when creating a ticket you should insert custom_1 = test 1 and not date = test.
+Tickets custom fields will not be returned in the **kace-tickets-list** command and not in fetch incidents due to API limitation.
+
+Custom fields of tickets are represented by their custom number and not but their display name. e.g. For custom field: custom_1 with display name: date, the command should be **!kace-ticket-create custom_fields=`custom_1=testfromdemisto`**
+
 
 
 ## Configure QuestKace on Cortex XSOAR
