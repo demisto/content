@@ -7,30 +7,21 @@ import json
 import re
 import urllib
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-BASE_URL = SERVER + '/REST/1.0/'
-USE_SSL = not demisto.params().get('unsecure', False)
-FETCH_PRIORITY = int(demisto.params()['fetch_priority']) - 1
-FETCH_STATUS = demisto.params()['fetch_status']
-FETCH_QUEUE = demisto.params()['fetch_queue']
+SERVER = None
+BASE_URL = None
+USERNAME = None
+PASSWORD = None
+USE_SSL = None
+FETCH_PRIORITY = 0
+FETCH_STATUS = None
+FETCH_QUEUE = None
 CURLY_BRACKETS_REGEX = r'\{(.*?)\}'  # Extracts string in curly brackets, e.g. '{string}' -> 'string'
 apostrophe = "'"
 SESSION = requests.session()
 SESSION.verify = USE_SSL
-REFERER = demisto.params().get('referer')
-HEADERS = {'Referer': REFERER} if REFERER else {}
+REFERER = None
+HEADERS = {'Referer': REFERER} if REFERER else {}  # type: dict
 
 ''' HELPER FUNCTIONS '''
 
@@ -876,44 +867,69 @@ def fetch_incidents():
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(),))
-try:
-    if demisto.command() == 'test-module':
-        login()
-        logout()
-        demisto.results('ok')
 
-    if demisto.command() in {'fetch-incidents'}:
-        fetch_incidents()
+def main():
+    handle_proxy()
 
-    elif demisto.command() == 'rtir-create-ticket':
-        create_ticket()
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
-    elif demisto.command() == 'rtir-search-ticket':
-        search_ticket()
+    ''' GLOBAL VARS '''
+    global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER
+    SERVER = demisto.params().get('server', '')[:-1] if demisto.params().get('server', '').endswith(
+        '/') else demisto.params().get('server', '')
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    BASE_URL = urljoin(SERVER, '/REST/1.0/')
+    USE_SSL = not demisto.params().get('unsecure', False)
+    FETCH_PRIORITY = int(demisto.params()['fetch_priority']) - 1
+    FETCH_STATUS = demisto.params()['fetch_status']
+    FETCH_QUEUE = demisto.params()['fetch_queue']
+    REFERER = demisto.params().get('referer')
+    HEADERS = {'Referer': REFERER} if REFERER else {}
 
-    elif demisto.command() == 'rtir-resolve-ticket':
-        close_ticket()
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        if demisto.command() == 'test-module':
+            login()
+            logout()
+            demisto.results('ok')
 
-    elif demisto.command() == 'rtir-edit-ticket':
-        edit_ticket()
+        if demisto.command() in {'fetch-incidents'}:
+            fetch_incidents()
 
-    elif demisto.command() == 'rtir-ticket-history':
-        get_ticket_history_command()
+        elif demisto.command() == 'rtir-create-ticket':
+            create_ticket()
 
-    elif demisto.command() == 'rtir-ticket-attachments':
-        get_ticket_attachments_command()
+        elif demisto.command() == 'rtir-search-ticket':
+            search_ticket()
 
-    elif demisto.command() == 'rtir-get-ticket':
-        get_ticket()
+        elif demisto.command() == 'rtir-resolve-ticket':
+            close_ticket()
 
-    elif demisto.command() == 'rtir-add-comment':
-        add_comment()
+        elif demisto.command() == 'rtir-edit-ticket':
+            edit_ticket()
 
-    elif demisto.command() == 'rtir-add-reply':
-        add_reply()
+        elif demisto.command() == 'rtir-ticket-history':
+            get_ticket_history_command()
 
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+        elif demisto.command() == 'rtir-ticket-attachments':
+            get_ticket_attachments_command()
+
+        elif demisto.command() == 'rtir-get-ticket':
+            get_ticket()
+
+        elif demisto.command() == 'rtir-add-comment':
+            add_comment()
+
+        elif demisto.command() == 'rtir-add-reply':
+            add_reply()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
