@@ -182,7 +182,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     xdr_ioc: Dict = {
         'indicator': ioc['value'],
         'severity': Client.severity,
-        'type': demisto_types_to_xdr(ioc['indicator_type']),
+        'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
         'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
         'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
     }
@@ -212,9 +212,9 @@ def sync(client: Client):
     requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
     path: str = 'sync_tim_iocs'
     client.http_request(path, requests_kwargs)
-    demisto.setIntegrationContext({'iocs_to_keep_time': create_iocs_to_keep_time()})
-    demisto.setLastRun({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
-                        'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)})
+    demisto.setIntegrationContext({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
+                                   'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
+                                   'iocs_to_keep_time': create_iocs_to_keep_time()})
     return_outputs('sync with XDR completed.')
 
 
@@ -235,24 +235,24 @@ def create_last_iocs_query(from_date, to_date):
 
 def get_last_iocs(batch_size=200) -> List:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-    last_run: Dict = demisto.getLastRun()
+    last_run: Dict = demisto.getIntegrationContext()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
     total_size = get_iocs_size(query)
     iocs: List = []
     for i in range(0, ceil(total_size / batch_size)):
         iocs.extend(get_iocs(query=query, page=i, size=batch_size))
     last_run['time'] = current_run
-    demisto.setLastRun(last_run)
+    demisto.setIntegrationContext(last_run)
     return iocs
 
 
 def tim_insert_jsons(client: Client):
-    indicators = demisto.args().get('indicator', '').split(',')
-    if not indicators or indicators == ['']:
+    indicators = demisto.args().get('indicator')
+    if not indicators:
         iocs = get_last_iocs()
     else:
         iocs = []
-        for indicator in indicators:
+        for indicator in indicators.split(','):
             iocs.append(demisto.searchIndicators(query=f'value:{indicator}').get('iocs')[0])
 
     path = 'tim_insert_jsons/'
@@ -309,7 +309,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
 
 
 def get_changes(client: Client):
-    from_time: Dict = demisto.getLastRun()
+    from_time: Dict = demisto.getIntegrationContext()
     if not from_time:
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
@@ -317,7 +317,7 @@ def get_changes(client: Client):
     iocs: List = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     if iocs:
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
-        demisto.setLastRun(from_time)
+        demisto.setIntegrationContext(from_time)
         return_outputs('', timeline=xdr_ioc_to_timeline(list(map(lambda x: str(x.get('RULE_INDICATOR')), iocs))))
         demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
 
@@ -383,7 +383,7 @@ def main():
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
-            xdr_iocs_sync_command(client, demisto.args().get('firstTime', False))
+            xdr_iocs_sync_command(client, bool(demisto.args().get('firstTime', False)))
         else:
             raise NotImplementedError(command)
     except Exception as error:

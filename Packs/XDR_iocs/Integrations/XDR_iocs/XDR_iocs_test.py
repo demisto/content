@@ -414,7 +414,12 @@ class TestDemistoIOCToXDR:
     data_test_demisto_ioc_to_xdr = [
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': 'IP'}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'}
+        ),
+        (
+            {'value': '11.11.11.11', 'indicator_type': 100, 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': '100'}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP'},

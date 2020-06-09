@@ -6,7 +6,6 @@ script: |+
   args = demisto.args()
   indicator =  args['indicator']
   data = demisto.searchIndicators(value=indicator)['iocs'][0]['moduleToFeedMap']
-  xdr_reputation = None
   for indicator_reputation in data.values():
       if indicator_reputation.get('sourceBrand') == 'Cortex XDR - IOC':
           return_outputs('', outputs={indicator.replace('.', '_'): indicator_reputation['fields']['xdr']})
