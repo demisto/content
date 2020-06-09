@@ -2843,7 +2843,6 @@
         "DuoAdmin API test playbook": "Issue 24937",
         "Wildfire Test": "Issue 24936",
         "SignalSciences-Test": "Issue 24934",
-        "Maltiverse Test": "Issue 24335",
         "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
