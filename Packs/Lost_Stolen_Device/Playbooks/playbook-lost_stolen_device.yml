@@ -69,7 +69,7 @@ tasks:
       id: 1dd39fd1-72fd-4e8c-8a40-92297b9d499a
       version: -1
       name: Notify and involve appropriate personnel
-      description: Depending on regulatory, compliance and legal requirements or company
+      description: Depending on regulatory, compliance and legal requirements or your company
         procedure, you may need to involve the legal department, PR department, upper
         management, the employee's immediate supervisor and/or other personnel.
       iscommand: false
