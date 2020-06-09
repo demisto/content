@@ -50,7 +50,7 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: 'no'
+      default:
       defaultValue: False
       description: Submit the given file to the sandbox.
       isArray: false
@@ -602,8 +602,7 @@ script:
     description: Download IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.8.3.8494
-  fromversion: 5.0.0
+  dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: false
   longRunning: false
@@ -612,5 +611,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - No tests - no instance
