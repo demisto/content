@@ -614,7 +614,7 @@ try:
     elif demisto.command() == 'proofpoint-remove-from-safe-senders-list':
         remove_from_safe_senders_list_command()
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise

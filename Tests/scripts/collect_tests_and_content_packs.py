@@ -4,7 +4,6 @@ This script is used to create a filter_file.txt file which will run only the nee
 Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
 import os
-import re
 import sys
 import json
 import glob
@@ -34,9 +33,8 @@ FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
 
 TEST_DATA_INTEGRATION_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_integrations\/.*\.yml'
 INTEGRATION_REGEXES = [
-    INTEGRATION_REGEX,
-    BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_PY_REGEX,
+    PACKS_INTEGRATION_PS_TEST_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
 TEST_DATA_SCRIPT_YML_REGEX = r'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/.*.yml'
@@ -44,8 +42,7 @@ SCRIPT_REGEXES = [
     TEST_DATA_SCRIPT_YML_REGEX
 ]
 INCIDENT_FIELD_REGEXES = [
-    INCIDENT_FIELD_REGEX,
-    PACKS_INCIDENT_FIELDS_REGEX
+    PACKS_INCIDENT_FIELD_JSON_REGEX
 ]
 FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
     FILE_IN_INTEGRATIONS_DIR_REGEX,
@@ -55,20 +52,19 @@ FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
 ]
 CHECKED_TYPES_REGEXES = [
     # Integrations
-    INTEGRATION_REGEX,
-    INTEGRATION_YML_REGEX,
-    BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_PY_REGEX,
     PACKS_INTEGRATION_YML_REGEX,
+    PACKS_INTEGRATION_NON_SPLIT_YML_REGEX,
+    PACKS_INTEGRATION_PS_REGEX,
+
     # Scripts
-    SCRIPT_REGEX,
-    SCRIPT_YML_REGEX,
     PACKS_SCRIPT_REGEX,
     PACKS_SCRIPT_YML_REGEX,
+    PACKS_SCRIPT_NON_SPLIT_YML_REGEX,
+
     # Playbooks
     PLAYBOOK_REGEX,
-    BETA_PLAYBOOK_REGEX,
-    PACKS_PLAYBOOK_YML_REGEX
+    PLAYBOOK_YML_REGEX
 ]
 
 # File names
@@ -159,8 +155,7 @@ def get_modified_files(files_string):
             # reputations.json
             elif re.match(INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
                     re.match(PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(PACKS_INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE):
+                    re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
             elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
@@ -870,7 +865,7 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
         test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0'),
+        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
                                           server_v=server_version,
                                           to_v=test_conf.get('toversion', '99.99.99'))
     )), None)
@@ -894,7 +889,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
                 continue
 
         # check if object is runnable
-        fromversion = obj.get('fromversion', '0')
+        fromversion = obj.get('fromversion', '0.0')
         toversion = obj.get('toversion', '99.99.99')
         if is_runnable_in_server_version(from_v=fromversion, server_v=server_version, to_v=toversion):
             return obj
@@ -962,7 +957,7 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     if not test_conf:
         print_warning(f'{warning_prefix} - couldn\'t find test in conf.json')
         return False
-    conf_fromversion = test_conf.get('fromversion', '0')
+    conf_fromversion = test_conf.get('fromversion', '0.0')
     conf_toversion = test_conf.get('toversion', '99.99.99')
     test_playbooks_set = id_set.get('TestPlaybooks', [])
     test_playbook_obj = extract_matching_object_from_id_set(test_id, test_playbooks_set, server_version)
