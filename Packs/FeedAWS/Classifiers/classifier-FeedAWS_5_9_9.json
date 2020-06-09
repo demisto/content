@@ -1,0 +1,38 @@
+{
+	"brandName": "AWS Feed",
+	"custom": true,
+	"defaultIncidentType": "",
+	"feed": true,
+	"id": "AWS Feed",
+	"fromVersion": "5.5.0",
+	"incidentSamples": [],
+	"indicatorSamples": [],
+	"isDefault": false,
+	"keyTypeMap": {
+		"CIDR": "CIDR"
+	},
+	"mapping": {
+		"CIDR": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Region": {
+					"complex": null,
+					"simple": "region"
+				},
+				"Tags": {
+					"complex": null,
+					"simple": "service"
+				}
+			}
+		}
+	},
+	"propagationLabels": null,
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "type"
+	},
+	"unclassifiedCases": {},
+	"version": -1,
+	"toVersion": "5.9.9"
+}
