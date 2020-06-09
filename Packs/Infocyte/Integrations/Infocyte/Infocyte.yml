@@ -10,23 +10,47 @@ description: Infocyte can pivot off incidents to automate triage, validate event
 configuration:
 - display: Instance Name
   name: InstanceName
-  defaultvalue: testPANXSOAR
   type: 0
   required: true
   additionalinfo: 'Your Infocyte Instance name is the cname of the URL: https://<cname>.infocyte.com'
 - display: API Key
   name: APIKey
-  defaultvalue: gQ3YyPqjLWPBa9ubPiKFLqabF0YoxrMt4iXGWZfabdrTB3XnBLw3uc7CHXCYZHOV
   type: 4
   required: true
   additionalinfo: https://yourinstance.infocyte.com/profile/access-tokens
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0  
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 script:
   script: ''
   type: powershell
   commands:
   - name: infocyte-scan-host
     arguments:
-    - name: Target
+    - name: target
       required: true
       description: Hostname or ip address of target endpoint
     outputs:
@@ -42,7 +66,7 @@ script:
     description: Kicks off a Scan (forensic collection) against an endpoint
   - name: infocyte-isolate-host
     arguments:
-    - name: Target
+    - name: target
       required: true
       description: Hostname or ip address of target endpoint
     outputs:
@@ -63,7 +87,7 @@ script:
     execution: true
   - name: infocyte-restore-host
     arguments:
-    - name: Target
+    - name: target
       required: true
       description: Hostname or ip address of target endpoint
     outputs:
@@ -82,7 +106,7 @@ script:
     description: Restore an isolated host
   - name: infocyte-collect-evidence
     arguments:
-    - name: Target
+    - name: target
       required: true
       description: Hostname or ip address of target endpoint
     outputs:
@@ -101,12 +125,12 @@ script:
     description: Collects Forensic Evidence to S3 bucket (Dat files, eventlogs, etc.)
   - name: infocyte-kill-process
     arguments:
-    - name: Target
+    - name: target
       required: true
       description: Hostname or ip address of target endpoint
     - name: processName
       description: Name of process to search for and kill on target endpoint
-    - name: SHA1
+    - name: sha1
       description: SHA1 of process image to search for and kill
     - name: processId
       description: Pid of process to search for and kill on target endpoint
@@ -116,10 +140,10 @@ script:
     execution: true
   - name: infocyte-recover-file
     arguments:
-    - name: Target
+    - name: target
       required: true
       description: Hostname or ip address of target endpoint
-    - name: Paths
+    - name: paths
       description: Paths of the files to recover from the target endpoint
       required: true
       isArray: true
@@ -140,10 +164,10 @@ script:
       ftp, share)
   - name: infocyte-run-response
     arguments:
-    - name: Target
+    - name: target
       required: true
       description: Hostname or ip address of target endpoint
-    - name: ExtensionName
+    - name: extensionName
       required: true
       description: Name of extension loaded in Infocyte to run on target host
     outputs:
@@ -199,7 +223,7 @@ script:
       description: Infocyte id used to look up the data associated with a specific scan, collection, or action
       type: string
     - contextPath: Infocyte.Scan.completedOn
-      description: ""
+      description: Time scan was completed on target
       type: date
     - contextPath: Infocyte.Scan.alerts
       description: List of alerts associated with scan of host
@@ -216,10 +240,10 @@ script:
   - name: infocyte-get-hostscanresult
     description: Retrieve results for a scan on a target host
     arguments:
-    - name: ScanId
+    - name: scanId
       description: Infocyte id used to look up the data associated with a specific scan, collection, or action
       required: true
-    - name: Target
+    - name: target
       description: Hostname or ip address of target endpoint
     outputs:
     - contextPath: Infocyte.Scan.scanId
@@ -254,10 +278,10 @@ script:
       type: number
   - name: infocyte-get-responseresult
     arguments:
-    - name: ScanId
+    - name: scanId
       description: Infocyte id used to look up the data associated with a specific scan, collection, or action
       required: true
-    - name: Target
+    - name: target
       description: Hostname or ip address of target endpoint
     outputs:
     - contextPath: Infocyte.Response.scanId
@@ -296,7 +320,17 @@ script:
     - contextPath: Infocyte.Response.extensionName
       description: Name of Infocyte extension being run
       type: string
-  - name: fetch-incidents
+  - name: infocyte-get-alerts
+    arguments:
+      - name: alertId
+        description: Infocyte alertId to look up
+        required: false
+      - name: lastAlertId
+        description: Last alertId to start fetching from
+        required: false
+      - name: max
+        description: Number of alerts to fetch
+        defaultvalue: 10
     outputs:
     - contextPath: Infocyte.Alert.id
       description: Infocyte alertId
