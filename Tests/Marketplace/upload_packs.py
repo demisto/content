@@ -496,7 +496,7 @@ def option_handler():
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-sb', '--storage_bash_path', help="Storage base path of the directory to upload to.",
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
@@ -517,15 +517,15 @@ def main():
     signature_key = option.key_string
     id_set_path = option.id_set_path
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
-    storage_bash_path = option.storage_bash_path
+    storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    if storage_bash_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_bash_path
+    if storage_base_path:
+        GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # detect packs to upload
     modified_packs = get_modified_packs(target_packs)
@@ -576,13 +576,14 @@ def main():
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
-                                           packs_dependencies_mapping=packs_dependencies_mapping)
+                                           packs_dependencies_mapping=packs_dependencies_mapping,
+                                           build_number=build_number)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
-        task_status = pack.prepare_release_notes(index_folder_path)
+        task_status = pack.prepare_release_notes(index_folder_path, build_number)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
