@@ -4,7 +4,6 @@ This script is used to create a filter_file.txt file which will run only the nee
 Overview can be found at: https://confluence.paloaltonetworks.com/display/DemistoContent/Configure+Test+Filter
 """
 import os
-import re
 import sys
 import json
 import glob
@@ -22,7 +21,6 @@ from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_versi
     collect_ids, get_script_or_integration_id, LOG_COLORS, print_error, print_color, \
     print_warning, server_version_compare  # noqa: E402
 
-
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
 PACKS_SCRIPT_REGEX = r'{}/([^/]+)/{}/(script-[^\\/]+)\.yml$'.format(PACKS_DIR, SCRIPTS_DIR)
@@ -33,12 +31,10 @@ FILE_IN_PACKS_INTEGRATIONS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
 FILE_IN_PACKS_SCRIPTS_DIR_REGEX = r'{}/([^/]+)/{}/(.+)'.format(
     PACKS_DIR, SCRIPTS_DIR)
 
-
 TEST_DATA_INTEGRATION_YML_REGEX = r'Tests\/scripts\/infrastructure_tests\/tests_data\/mock_integrations\/.*\.yml'
 INTEGRATION_REGEXES = [
-    INTEGRATION_REGEX,
-    BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_PY_REGEX,
+    PACKS_INTEGRATION_PS_TEST_REGEX,
     TEST_DATA_INTEGRATION_YML_REGEX
 ]
 TEST_DATA_SCRIPT_YML_REGEX = r'Tests/scripts/infrastructure_tests/tests_data/mock_scripts/.*.yml'
@@ -46,8 +42,7 @@ SCRIPT_REGEXES = [
     TEST_DATA_SCRIPT_YML_REGEX
 ]
 INCIDENT_FIELD_REGEXES = [
-    INCIDENT_FIELD_REGEX,
-    PACKS_INCIDENT_FIELDS_REGEX
+    PACKS_INCIDENT_FIELD_JSON_REGEX
 ]
 FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
     FILE_IN_INTEGRATIONS_DIR_REGEX,
@@ -57,20 +52,19 @@ FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES = [
 ]
 CHECKED_TYPES_REGEXES = [
     # Integrations
-    INTEGRATION_REGEX,
-    INTEGRATION_YML_REGEX,
-    BETA_INTEGRATION_REGEX,
-    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_PY_REGEX,
     PACKS_INTEGRATION_YML_REGEX,
+    PACKS_INTEGRATION_NON_SPLIT_YML_REGEX,
+    PACKS_INTEGRATION_PS_REGEX,
+
     # Scripts
-    SCRIPT_REGEX,
-    SCRIPT_YML_REGEX,
     PACKS_SCRIPT_REGEX,
     PACKS_SCRIPT_YML_REGEX,
+    PACKS_SCRIPT_NON_SPLIT_YML_REGEX,
+
     # Playbooks
     PLAYBOOK_REGEX,
-    BETA_PLAYBOOK_REGEX,
-    PACKS_PLAYBOOK_YML_REGEX
+    PLAYBOOK_YML_REGEX
 ]
 
 # File names
@@ -161,8 +155,7 @@ def get_modified_files(files_string):
             # reputations.json
             elif re.match(INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
                     re.match(PACKS_INDICATOR_TYPES_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(PACKS_INDICATOR_TYPES_REGEX, file_path, re.IGNORECASE):
+                    re.match(PACKS_INDICATOR_TYPE_JSON_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
             elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
@@ -602,7 +595,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     integration_set = id_set['integrations']
 
     if changed_api_modules:
-        integration_ids_to_test, integration_to_version_to_add = get_api_module_integrations(changed_api_modules, integration_set)
+        integration_ids_to_test, integration_to_version_to_add = get_api_module_integrations(changed_api_modules,
+                                                                                             integration_set)
         integration_ids = integration_ids.union(integration_ids_to_test)
         integration_to_version = {**integration_to_version, **integration_to_version_to_add}
 
@@ -871,7 +865,7 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
         test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0'),
+        and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
                                           server_v=server_version,
                                           to_v=test_conf.get('toversion', '99.99.99'))
     )), None)
@@ -895,7 +889,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
                 continue
 
         # check if object is runnable
-        fromversion = obj.get('fromversion', '0')
+        fromversion = obj.get('fromversion', '0.0')
         toversion = obj.get('toversion', '99.99.99')
         if is_runnable_in_server_version(from_v=fromversion, server_v=server_version, to_v=toversion):
             return obj
@@ -963,7 +957,7 @@ def is_test_runnable(test_id, id_set, conf, server_version):
     if not test_conf:
         print_warning(f'{warning_prefix} - couldn\'t find test in conf.json')
         return False
-    conf_fromversion = test_conf.get('fromversion', '0')
+    conf_fromversion = test_conf.get('fromversion', '0.0')
     conf_toversion = test_conf.get('toversion', '99.99.99')
     test_playbooks_set = id_set.get('TestPlaybooks', [])
     test_playbook_obj = extract_matching_object_from_id_set(test_id, test_playbooks_set, server_version)
@@ -1077,7 +1071,8 @@ def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
     return content_packs
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None, id_set=None):
+def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None,
+                                               id_set=None):
     """Create a test list that should run"""
     (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
      is_indicator_json) = get_modified_files(files_string)
@@ -1122,6 +1117,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if changed_common:
         tests.add('TestCommonPython')
 
+    if 'NonSupported' in packs_to_install:
+        packs_to_install.remove("NonSupported")
+
     return tests, packs_to_install
 
 
@@ -1131,8 +1129,10 @@ def create_filter_envs_file(tests, two_before_ga, one_before_ga, ga, conf, id_se
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf, id_set=id_set),
-        'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf, id_set=id_set),
+        'Demisto two before GA': is_any_test_runnable(test_ids=tests, server_version=two_before_ga, conf=conf,
+                                                      id_set=id_set),
+        'Demisto one before GA': is_any_test_runnable(test_ids=tests, server_version=one_before_ga, conf=conf,
+                                                      id_set=id_set),
         'Demisto GA': is_any_test_runnable(test_ids=tests, server_version=ga, conf=conf, id_set=id_set),
     }
     print("Creating filter_envs.json with the following envs: {}".format(envs_to_test))

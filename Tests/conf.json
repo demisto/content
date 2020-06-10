@@ -66,7 +66,15 @@
         {
             "integrations": "JSON Feed",
             "playbookID": "JSON_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "instance_names": "JSON Feed no_auto_detect"
+
+        },
+        {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0",
+            "instance_names": "JSON Feed_auto_detect"
         },
         {
             "integrations": "Google Cloud Functions",
@@ -76,7 +84,14 @@
         {
             "integrations": "Plain Text Feed",
             "playbookID": "PlainText Feed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "instance_names": "Plain Text Feed no_auto_detect"
+        },
+        {
+            "integrations": "Plain Text Feed",
+            "playbookID": "PlainText Feed - Test",
+            "fromversion": "5.5.0",
+            "instance_names": "Plain Text Feed_auto_detect"
         },
         {
             "integrations": "Silverfort",
@@ -156,7 +171,14 @@
         {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "instance_names": "CSVFeed_no_auto_detect"
+        },
+        {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test",
+            "fromversion": "5.5.0",
+            "instance_names": "CSVFeed_auto_detect"
         },
         {
             "integrations": "ProofpointFeed",
@@ -302,6 +324,12 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "Cortex XDR - IOC",
+            "playbookID": "Cortex XDR - IOC - Test",
+            "fromversion": "5.5.0",
+            "timeout": 600
+        },
+        {
             "integrations": "Cloaken",
             "playbookID": "Cloaken-Test"
         },
@@ -322,8 +350,8 @@
             "playbookID": "AlienVaultOTX Test"
         },
         {
-            "integrations": "Cofense Triage",
-            "playbookID": "Cofense Triage Test"
+            "integrations": "Cofense Triage v2",
+            "playbookID": "Cofense Triage v2 Test"
         },
         {
             "integrations": "Akamai WAF",
@@ -2787,9 +2815,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
-        },
-        {
             "integrations": "Zabbix",
             "playbookID": "Zabbix - Test"
         },
@@ -2802,7 +2827,13 @@
             "integrations": "Endace",
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Deep Instinct",
+            "playbookID": "Deep_Instinct-Test",
+            "fromversion": "5.0.0"
         }
+
     ],
     "skipped_tests": {
         "SentinelOne V2 - test": "Issue 24933",
@@ -2816,11 +2847,9 @@
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
-        "PhishLabsIOC TestPlaybook": "integration bug (23926)",
         "Symantec Deepsight Test": "Issue 22971",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "test_MsGraphFiles": "Issue 22853 ",
-        "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
@@ -2829,10 +2858,8 @@
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test": "Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "TestParseEmailHeaders": "Issue 18815",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
@@ -2842,7 +2869,6 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
-        "Cofense Triage Test": "Creds only works on demo4",
         "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
@@ -2857,12 +2883,19 @@
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
         "VxStream Test": "Issue #23795",
+        "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
+        "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
+        "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
+        "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
+        "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Deep Instinct": "The partner didn't provide an instance",
+        "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
         "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
@@ -2956,8 +2989,9 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
-        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
+        "XFE": "We have the new integration XFE_v2, so n`o need to test the old one because they use the same quote",
         "AlphaSOC Wisdom": "API key has expired",
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
