@@ -23,6 +23,7 @@ In order to use the integration, a user with admin role is required.
     * __Server URL (e.g., https://192.168.0.1:10000)__
     * __Username__
     * __Password__
+    * __Proofpoint Protection Server Version (e.g., 8.14.2)__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
