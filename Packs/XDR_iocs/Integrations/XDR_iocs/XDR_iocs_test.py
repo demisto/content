@@ -414,7 +414,12 @@ class TestDemistoIOCToXDR:
     data_test_demisto_ioc_to_xdr = [
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': 'IP'}
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'}
+        ),
+        (
+            {'value': '11.11.11.11', 'indicator_type': 100, 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO', 'type': '100'}
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP'},
@@ -537,7 +542,7 @@ class TestXDRIOCToDemisto:
                 'RULE_STATUS': 'ENABLED', 'BS_STATUS': 'DONE', 'BS_TS': 1591165801784, 'BS_RETRIES': 1,
                 'RULE_EXPIRATION_TIME': -1, 'IOC_TYPE': 'DOMAIN_NAME', 'RULE_INDICATOR': 'test.co.il',
                 'REPUTATION': 'SUSPICIOUS', 'RELIABILITY': 'A',
-                'VENDORS': [{'vendor_name': 'XDR iocs', 'reputation': 'SUSPICIOUS', 'reliability': 'A'}],
+                'VENDORS': [{'vendor_name': 'Cortex XDR - IOC', 'reputation': 'SUSPICIOUS', 'reliability': 'A'}],
                 'KLASS': None,
                 'IS_DEFAULT_TTL': False, 'RULE_TTL': -1, 'MARKED_DELETED': 0
             },
@@ -582,7 +587,7 @@ class TestCommands:
                 Then:
                     - Verify enable command is called.
             """
-            mocker.patch.object(demisto, 'command', return_value='xdr-enable-iocs')
+            mocker.patch.object(demisto, 'command', return_value='xdr-iocs-enable')
             mocker.patch.object(demisto, 'args', return_value={'indicator': '11.11.11.11'})
             mocker.patch('XDR_iocs.Client.http_request', return_value={})
             outputs = mocker.patch('XDR_iocs.return_outputs')
@@ -601,7 +606,7 @@ class TestCommands:
                     - Verify disable command is called.
             """
 
-            mocker.patch.object(demisto, 'command', return_value='xdr-disable-iocs')
+            mocker.patch.object(demisto, 'command', return_value='xdr-iocs-disable')
             mocker.patch.object(demisto, 'args', return_value={'indicator': '11.11.11.11'})
             mocker.patch('XDR_iocs.Client.http_request', return_value={})
             outputs = mocker.patch('XDR_iocs.return_outputs')
@@ -630,7 +635,7 @@ class TestCommands:
 
     def test_tim_insert_jsons(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value={'time': '2020-06-03T00:00:00Z'})
+        mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2020-06-03T00:00:00Z'})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'json')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         mocker.patch('XDR_iocs.return_outputs')
@@ -638,7 +643,7 @@ class TestCommands:
         assert http_request.call_args.kwargs['url_suffix'] == 'tim_insert_jsons/', 'tim_insert_jsons command url changed'
 
     def test_get_changes(self, mocker):
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
+        mocker.patch.object(demisto, 'getLastRun', return_value={'ts': 1591142400000})
         mocker.patch.object(demisto, 'createIndicators', return_value={'ts': 1591142400000})
         xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
