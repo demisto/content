@@ -1,7 +1,6 @@
 import os
 import json
 import argparse
-import networkx as nx
 from Tests.Marketplace.upload_packs import PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER
 from Tests.Marketplace.marketplace_services import GCPConfig
 from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, parse_for_pack_metadata
