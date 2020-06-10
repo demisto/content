@@ -171,12 +171,11 @@ jobs:
             fi
             if [ -n "${GITHUB_TOKEN}" ] ;
               then
-                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN || echo "ignore errors"
 
               else
-                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION || echo "ignore errors"
             fi
-            exit 0
       - run:
           name: Common Server Documentation
           when: always
