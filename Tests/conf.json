@@ -2815,9 +2815,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
-        },
-        {
             "integrations": "Zabbix",
             "playbookID": "Zabbix - Test"
         },
@@ -2887,6 +2884,11 @@
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
         "VxStream Test": "Issue #23795",
+        "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
+        "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
+        "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
+        "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
+        "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
