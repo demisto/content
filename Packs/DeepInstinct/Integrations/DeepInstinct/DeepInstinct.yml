@@ -4,7 +4,7 @@ commonfields:
 name: Deep Instinct
 display: Deep Instinct
 category: Network Security
-description: Deep Instinct
+description: The Deep Learning cybersecurity platform, for zero time prevention.
 configuration:
 - display: Base server URL
   name: base_url
