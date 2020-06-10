@@ -170,7 +170,7 @@
       },
       "data": "# Daily Incidents\n\n{date}\n\n---",
       "type": "placeholder",
-      "title": "dailyIncidentRepor Headline"
+      "title": "dailyIncidentRepor Headline DUDUDUDUDDUDUDU"
     },
     {
       "layout": {
@@ -819,10 +819,10 @@
   "sensitive": false,
   "recipients": [],
   "type": "pdf",
-  "createdBy": "DBot",
+  "createdBy": "Dudu Dudu",
   "tags": [],
   "fromVersion": "3.5.0",
   "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
-  "name": "Daily incidents",
+  "name": "Daily incidents - new ver",
   "id": "dailyIncidentReport"
 }
