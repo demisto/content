@@ -118,7 +118,7 @@ def find_ip_by_mac(client, args):
         human_readable = tableToMarkdown(t=context_entry['NozomiGuardian']['Mappings'], name=title)
         return [human_readable, context_entry, raws]
 
-    return_outputs(f'Could not find the mac address:{mac_address}')
+    return_error(f'Could not find the mac address:{mac_address}')
 
 
 def main():
