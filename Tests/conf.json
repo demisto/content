@@ -2817,6 +2817,7 @@
 
     ],
     "skipped_tests": {
+        "RedLockTest": "Issue 24600",
         "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "Test-IsMaliciousIndicatorFound": "Issue 24398",
