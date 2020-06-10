@@ -1,6 +1,6 @@
 commonfields:
   id: CreateIncidentsForEvaluateMLModllAtProduction
-  version: 5
+  version: -1
 name: CreateIncidentsForEvaluateMLModllAtProduction
 script: |+
   import random, base64, pickle
@@ -73,5 +73,5 @@ scripttarget: 0
 subtype: python2
 pswd: ""
 runonce: false
-dockerimage: demisto/python:2.7.16.286
+dockerimage: demisto/python:2.7.18.8715
 runas: DBotWeakRole
