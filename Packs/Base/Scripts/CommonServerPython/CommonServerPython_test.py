@@ -1883,16 +1883,17 @@ def test_handle_proxy(mocker):
     assert os.environ['REQUESTS_CA_BUNDLE'] == '/test2.pem'  # make sure no change
     mocker.patch.object(demisto, 'params', return_value={'unsecure': True})
     handle_proxy()
-
-
-@pytest.mark.parametrize(argnames="dict_obj, keys, expected",
-                         argvalues=[
-                             ({'a': '1'}, ['a'], '1'),
-                             ({'a': {'b': '2'}}, ['a', 'b'], '2'),
-                             ({'a': {'b': '2'}}, ['a', 'c'], None),
-                         ])
-def test_safe_get(dict_obj: dict, keys: list, expected: str):
-    from CommonServerPython import safe_get
-    assert expected == safe_get(dict_obj,
-                                *keys)
     assert os.getenv('REQUESTS_CA_BUNDLE') is None
+
+
+@pytest.mark.parametrize(argnames="dict_obj, keys, expected, default_return_value",
+                         argvalues=[
+                             ({'a': '1'}, ['a'], '1', None),
+                             ({'a': {'b': '2'}}, ['a', 'b'], '2', None),
+                             ({'a': {'b': '2'}}, ['a', 'c'], 'test', 'test'),
+                         ])
+def test_safe_get(dict_obj, keys, expected, default_return_value):
+    from CommonServerPython import safe_get
+    assert expected == safe_get(dict_object=dict_obj,
+                                keys=keys,
+                                default_return_value=default_return_value)
