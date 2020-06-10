@@ -1,0 +1,42 @@
+{
+  "Domain(val.Name && val.Name == obj.Name)":[{"Name": "test.com"}, {"Name": "secondtest.com"}],
+  "GoogleChronicleBackstory.Iocs(val.Artifact && val.Artifact == obj.Artifact)": [{
+      "Artifact": "test.com",
+      "IocIngestTime": "2019-03-31T18:00:00Z",
+      "FirstAccessedTime": "2020-01-20T12:10:26Z",
+      "LastAccessedTime": "2020-03-21T12:10:26Z",
+      "Sources": [
+        {
+          "Category": "Not Known",
+          "IntRawConfidenceScore": 0,
+          "NormalizedConfidenceScore": "Low",
+          "RawSeverity": "Low",
+          "Source": "3rd Party"
+        },
+        {
+          "Category": "Not Known",
+          "IntRawConfidenceScore": 0,
+          "NormalizedConfidenceScore": "Low",
+          "RawSeverity": "Low",
+          "Source": "3rd Party"
+        }
+      ]
+    },
+    {
+      "Artifact": "secondtest.com",
+      "IocIngestTime": "2019-03-30T18:00:00Z",
+      "FirstAccessedTime": "2020-01-21T12:10:26Z",
+      "LastAccessedTime": "2020-01-21T12:10:26Z",
+      "Sources": [
+        {
+          "Category": "Not Known",
+          "IntRawConfidenceScore": 0,
+          "NormalizedConfidenceScore": "Low",
+          "RawSeverity": "Low",
+          "Source": "3rd Party"
+        }
+      ]
+    }
+  ]
+  
+}

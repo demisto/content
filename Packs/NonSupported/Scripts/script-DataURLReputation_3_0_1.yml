@@ -1,0 +1,46 @@
+
+commonfields:
+  id: DataURLReputation
+  version: -1
+name: DataURLReputation
+script: |-
+  var score = -1;
+  var res = executeCommand("findIndicators", {"query": "type:URL and value:\"" + args.input + "\" and manualScore:T"})
+  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
+      score = res[0].Contents[0].score;
+  } else {
+      var rep = executeCommand('url', {url: args.input});
+      var scores = dq(rep, 'EntryContext.DBotScore.Score');
+      for (var i = 0; scores && i < scores.length; i++) {
+          if (scores[i] && score < scores[i]) {
+            score = scores[i];
+          }
+      }
+  }
+  return score < 0 ? 0 : score;
+type: javascript
+tags:
+- reputation
+comment: Evaluate reputation of a URL and return a score between 0 and 3 (0 - unknown,
+  1 - known good, 2 - suspicious, 3 - known bad). If the indicator reputation was
+  manually set, the manual value will be returned.
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: URL to look up
+- name: forceCalc
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  defaultValue: "no"
+  description: Whether to calculate reputation even if it is manual set - yes/no
+scripttarget: 0
+dependson:
+  should:
+  - url
+  - pt-malware
+timeout: 0s
+toversion: 3.0.1

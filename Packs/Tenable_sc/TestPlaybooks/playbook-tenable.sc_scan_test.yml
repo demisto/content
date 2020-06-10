@@ -1,0 +1,75 @@
+id: tenable-sc-scan-test
+version: -1
+name: Test tenable scan
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d2b3668f-e4c0-4543-8363-b4cc3af71906
+    type: start
+    task:
+      id: d2b3668f-e4c0-4543-8363-b4cc3af71906
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: tenable-sc-scan
+    type: playbook
+    task:
+      id: tenable-sc-scan
+      version: -1
+      name: Launch Scan - Tenable.sc
+      description: Launches an existing Tenable.sc scan by scan ID and waits for the
+        scan to finish by polling its status in pre-defined intervals.
+      playbookName: Launch Scan - Tenable.sc
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      ScanID:
+        simple: "1275"
+      diagnosticPassword: {}
+      diagnosticTarget: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

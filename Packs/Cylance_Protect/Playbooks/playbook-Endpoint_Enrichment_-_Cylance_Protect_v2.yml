@@ -1,0 +1,322 @@
+id: Endpoint Enrichment - Cylance Protect v2
+version: -1
+fromversion: 4.1.0
+name: Endpoint Enrichment - Cylance Protect v2
+description: Enriches endpoints using the Cylance Protect v2 integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1635626d-e92f-49c7-85a7-b4d1632d1e38
+    type: start
+    task:
+      id: 1635626d-e92f-49c7-85a7-b4d1632d1e38
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 50264655-eac1-4439-809b-32f93a19c825
+    type: condition
+    task:
+      id: 50264655-eac1-4439-809b-32f93a19c825
+      version: -1
+      name: Is Cylance Protect v2 enabled?
+      description: Checks if there is an active instance of the Cylance Protect v2
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cylance Protect v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 6fc275f9-cd51-4d40-8fe4-52a92bbc6af7
+    type: regular
+    task:
+      id: 6fc275f9-cd51-4d40-8fe4-52a92bbc6af7
+      version: -1
+      name: Get all Cylance Protect devices
+      description: Gets information about all devices that are available in Cylance
+        Protect.
+      script: Cylance Protect v2|||cylance-protect-get-devices
+      type: regular
+      iscommand: true
+      brand: Cylance Protect v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      pageNumber: {}
+      pageSize: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: ec7a9e06-60d0-4c25-8ed4-1cb9d0fe92f6
+    type: regular
+    task:
+      id: ec7a9e06-60d0-4c25-8ed4-1cb9d0fe92f6
+      version: -1
+      name: Set enriched device details
+      description: Sets the device that was enriched in another context key. That
+        key will contain only the device that was enriched using the provided hostname,
+        and will be the output of the playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Cylance Protect v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CylanceProtectDevice
+      value:
+        complex:
+          root: CylanceProtectAllDevices
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: CylanceProtectAllDevices.Hostname
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Hostname
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CylanceProtectAllDevices
+                iscontext: true
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 83e2be36-d5ef-43df-80b3-c77e95e19780
+    type: regular
+    task:
+      id: 83e2be36-d5ef-43df-80b3-c77e95e19780
+      version: -1
+      name: Set device list
+      description: Sets the devices in another context key - "CylanceProtectAllDevices".
+        Setting them under that key ensures proper filtering in the next tasks.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CylanceProtectAllDevices
+      value:
+        complex:
+          root: CylanceProtect
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CylanceProtect.Device
+                iscontext: true
+          accessor: Device
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 8a61ee6d-786a-4ec3-8f9e-fe49f90c1930
+    type: condition
+    task:
+      id: 8a61ee6d-786a-4ec3-8f9e-fe49f90c1930
+      version: -1
+      name: Was a device found?
+      description: Checks whether any of the hostnames for enrichment were enriched
+        using Cylance Protect v2.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CylanceProtectAllDevices
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: CylanceProtectAllDevices.Hostname
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.Hostname
+                      iscontext: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 3849ea50-af6b-4ce4-8c43-c76f660fa7f6
+    type: title
+    task:
+      id: 3849ea50-af6b-4ce4-8c43-c76f660fa7f6
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.57,
+      "1_6_#default#": 0.34,
+      "5_3_yes": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value:
+    complex:
+      root: inputs.Hostname
+      transformers:
+      - operator: uniq
+  required: false
+  description: The hostname to enrich.
+outputs:
+- contextPath: CylanceProtectDevice
+  description: The device information about the hostname that was enriched.
+  type: unknown
+tests:
+  - no test (tested as part of Endpoint Enrichment v2.1)

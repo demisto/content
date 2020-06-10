@@ -1,0 +1,18 @@
+[
+  {
+    "col1": "X-MS-Exchange-Organization-AuthSource",
+    "col2": "Value1"
+  },
+  {
+    "col1": "Received",
+    "col2": "Value2"
+  },
+  {
+    "col1": "Thread-Index",
+    "col2": "Value3"
+  },
+  {
+    "col1": "Accept-Language",
+    "col2": "Value4"
+  }
+]

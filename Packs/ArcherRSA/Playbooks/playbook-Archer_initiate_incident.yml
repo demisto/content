@@ -1,0 +1,70 @@
+id: Archer initiate incident
+version: -1
+name: Archer initiate incident
+fromversion: "3.5.0"
+starttaskid: "0"
+description: "initiate Archer incident"
+tasks:
+  "0":
+    id: "0"
+    taskid: 438120e9-1d87-4bf5-8b48-1000633050e3
+    type: start
+    task:
+      id: 438120e9-1d87-4bf5-8b48-1000633050e3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: "start"
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 474e6e86-127d-46e3-8a9e-9efee132001a
+    type: regular
+    task:
+      id: 474e6e86-127d-46e3-8a9e-9efee132001a
+      version: -1
+      name: archer-get-file
+      description: Downloads file from Archer to Demisto's context
+      script: RSA Archer|||archer-get-file
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    scriptarguments:
+      extend-context: {}
+      fileId:
+        simple: ${incident.labels.attachedFiles->FileID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 452
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 497,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No test

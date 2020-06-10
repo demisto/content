@@ -1,0 +1,1 @@
+This is a regular english file with no special encoding

@@ -1,0 +1,400 @@
+id: Ping Test Playbook
+version: -1
+name: Ping Test Playbook
+description: Test Ping command with various scenarios
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0870f562-2316-49df-8bc4-9992a218e0d1
+    type: start
+    task:
+      id: 0870f562-2316-49df-8bc4-9992a218e0d1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 1f582bcb-7e00-4f26-8678-5dc4d0147a09
+    type: regular
+    task:
+      id: 1f582bcb-7e00-4f26-8678-5dc4d0147a09
+      version: -1
+      name: delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 12a3c6d2-dbbd-4d22-8bde-bdff78a11633
+    type: regular
+    task:
+      id: 12a3c6d2-dbbd-4d22-8bde-bdff78a11633
+      version: -1
+      name: print context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      outputformat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: f931e8f4-6019-4981-8750-a2f2835e3a31
+    type: regular
+    task:
+      id: f931e8f4-6019-4981-8750-a2f2835e3a31
+      version: -1
+      name: Ping google.com
+      scriptName: Ping
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      address:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: aadb1f30-4e2f-4250-8b35-7f195b7df631
+    type: condition
+    task:
+      id: aadb1f30-4e2f-4250-8b35-7f195b7df631
+      version: -1
+      name: Check Ping Response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Ping.ret_code
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Ping.avg_rtt
+            iscontext: true
+          right:
+            value:
+              simple: "0.1"
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Ping.max_rtt
+            iscontext: true
+          right:
+            value:
+              simple: "0.1"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Ping.min_rtt
+            iscontext: true
+          right:
+            value:
+              simple: "0.1"
+      - - operator: match
+          left:
+            value:
+              simple: Ping.destination_ip
+            iscontext: true
+          right:
+            value:
+              simple: \d+\.\d+\.\d+\.\d+
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: cf38a77b-7a05-4f07-8ee1-5f71d1064e42
+    type: regular
+    task:
+      id: cf38a77b-7a05-4f07-8ee1-5f71d1064e42
+      version: -1
+      name: Print Error
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Ping output  doesn't match expected result
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 4634c7cf-38d7-4c5c-802e-7bd42012fcf7
+    type: regular
+    task:
+      id: 4634c7cf-38d7-4c5c-802e-7bd42012fcf7
+      version: -1
+      name: Ping invalid ip
+      scriptName: Ping
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      address:
+        simple: 127.0.0.1.1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 9a9ec144-5587-4130-8413-a83c1e051cce
+    type: condition
+    task:
+      id: 9a9ec144-5587-4130-8413-a83c1e051cce
+      version: -1
+      name: Verify error
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "10"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: a43bc0c6-ef26-424d-8ec2-19c812028a30
+    type: regular
+    task:
+      id: a43bc0c6-ef26-424d-8ec2-19c812028a30
+      version: -1
+      name: Ping invalid domain
+      scriptName: Ping
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      address:
+        simple: invalidnotexistentdomain33443.com
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 855568e4-09cf-483c-80e7-7e772a5956be
+    type: condition
+    task:
+      id: 855568e4-09cf-483c-80e7-7e772a5956be
+      version: -1
+      name: Verify error
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "12"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 594fe53a-f0c6-4173-8a7e-6a95703fdbd4
+    type: regular
+    task:
+      id: 594fe53a-f0c6-4173-8a7e-6a95703fdbd4
+      version: -1
+      name: Ping not responding
+      scriptName: Ping
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      address:
+        simple: usa.gov
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 1a47d834-43ff-489e-8c9f-52976da75b3b
+    type: condition
+    task:
+      id: 1a47d834-43ff-489e-8c9f-52976da75b3b
+      version: -1
+      name: Verify error
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "4"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_8_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2035,
+        "width": 1220,
+        "x": 290,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,17 @@
+commonfields:
+  id: Sleep
+  version: -1
+name: Sleep
+script: wait(parseInt(args.seconds));
+type: javascript
+tags:
+- Utility
+comment: Sleep for X seconds
+enabled: true
+args:
+- name: seconds
+  required: true
+  default: true
+  description: Amount of seconds to sleep
+scripttarget: 0
+timeout: 1h40m0s

@@ -1,0 +1,195 @@
+id: ParseExcel-test
+version: -1
+name: ParseExcel-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3e604ad0-7f4c-45ac-8427-1ea8a71b3c3f
+    type: start
+    task:
+      id: 3e604ad0-7f4c-45ac-8427-1ea8a71b3c3f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: f130d0a4-6ebd-4b7b-8670-b5b600b5b680
+    type: regular
+    task:
+      id: f130d0a4-6ebd-4b7b-8670-b5b600b5b680
+      version: -1
+      name: Downlaod xlsx file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test_file.xlsx
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: http://go.microsoft.com/fwlink/?LinkID=521962
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 4f7429ed-121a-40c3-8da1-efc2cd8797f8
+    type: regular
+    task:
+      id: 4f7429ed-121a-40c3-8da1-efc2cd8797f8
+      version: -1
+      name: DeleteContex
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 5983e276-fed7-45ed-8dc4-3efa28ba7109
+    type: regular
+    task:
+      id: 5983e276-fed7-45ed-8dc4-3efa28ba7109
+      version: -1
+      name: ParseExcel
+      scriptName: ParseExcel
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entryId:
+        complex:
+          root: File
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 4d1b0ced-306f-45ca-8740-691d90da84c8
+    type: condition
+    task:
+      id: 4d1b0ced-306f-45ca-8740-691d90da84c8
+      version: -1
+      name: Check context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ParseExcel
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 0627f573-6fb3-4d46-81f6-1e76ccc3fb0e
+    type: title
+    task:
+      id: 0627f573-6fb3-4d46-81f6-1e76ccc3fb0e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

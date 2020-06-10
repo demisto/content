@@ -1,0 +1,430 @@
+id: CrowdStrike Falcon Sandbox - Detonate file
+version: -1
+name: CrowdStrike Falcon Sandbox - Detonate file
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data. The detonation supports the following file types - PE32, EXE, DLL, JAR,
+  JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML,
+  SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF,
+  JSE, VBE, CHM
+fromversion: 4.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    type: start
+    task:
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
+    type: condition
+    task:
+      id: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
+      version: -1
+      name: Is CrowdStrike enabled?
+      description: |
+        Verify that there is a valid instance of CrowdStrike enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VxStream
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    type: title
+    task:
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
+    type: regular
+    task:
+      id: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
+      version: -1
+      name: CrowdStrike Scan
+      description: Download the pdf report to the War Room.
+      script: VxStream|||crowdstrike-scan
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file:
+        complex:
+          root: File.SHA256
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1245
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
+    type: regular
+    task:
+      id: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
+      version: -1
+      name: Set file to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: ab929de2-d71d-487e-8200-68a9178aca32
+    type: regular
+    task:
+      id: ab929de2-d71d-487e-8200-68a9178aca32
+      version: -1
+      name: CrowdStrike Upload Sample
+      description: Submits a sample to CrowdStrike
+      script: VxStream|||crowdstrike-submit-sample
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      entryId:
+        complex:
+          root: File.EntryID
+      environmentID:
+        complex:
+          root: inputs.EnvironmentID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: a15cdef0-f6bd-48e3-8198-3f7c20e668fe
+    type: condition
+    task:
+      id: a15cdef0-f6bd-48e3-8198-3f7c20e668fe
+      version: -1
+      name: Is there a file to detonate?
+      description: Asserts there's a file to detonate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: a0565f2c-c720-4196-84d2-21e057c23637
+    type: condition
+    task:
+      id: a0565f2c-c720-4196-84d2-21e057c23637
+      version: -1
+      name: Is the file type supported?
+      description: Asserts the file type is supported
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: c6e5c638-5c9e-470c-8f57-7931c2689dba
+    type: playbook
+    task:
+      id: c6e5c638-5c9e-470c-8f57-7931c2689dba
+      version: -1
+      name: GenericPolling
+      description: Initiated the generic polling playbook that will do the polling
+        command
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        complex:
+          root: File.SHA256
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: file
+      PollingCommandName:
+        simple: crowdstrike-scan
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: File(val.state === 'NO_CONTENT').hash
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_6_#default#": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 717.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate.
+- key: EnvironmentID
+  value:
+    simple: "100"
+  required: false
+  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
+    command.
+- key: Interval
+  value:
+    simple: "5"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "30"
+  required: false
+  description: How much time to wait before a timeout occurs  (minutes)
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+tests:
+- VxStream Test

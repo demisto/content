@@ -1,0 +1,125 @@
+id: get_original_email_-_gmail_-_test
+version: -1
+name: Get Original Email - Gmail - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d7920fee-8ada-4d48-8197-2e08d19a54dc
+    type: start
+    task:
+      id: d7920fee-8ada-4d48-8197-2e08d19a54dc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: b52aade3-aa90-4343-8417-d4aa26803d62
+    type: title
+    task:
+      id: b52aade3-aa90-4343-8417-d4aa26803d62
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 62a376b7-ff93-4fd6-8a04-c21d9379046d
+    type: playbook
+    task:
+      id: 62a376b7-ff93-4fd6-8a04-c21d9379046d
+      version: -1
+      name: Get Original Message - Gmail
+      playbookName: Get Original Email - Gmail
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      EmailID:
+        simple: 1653783b47d78642
+      From:
+        simple: admin@demistodev.com
+      User:
+        simple: shai@demistodev.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: bccee3cc-846e-45ed-8f3d-eebf5c26049a
+    type: regular
+    task:
+      id: bccee3cc-846e-45ed-8f3d-eebf5c26049a
+      version: -1
+      name: Verify context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

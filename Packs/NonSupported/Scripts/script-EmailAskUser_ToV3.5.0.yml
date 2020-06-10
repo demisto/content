@@ -1,0 +1,132 @@
+commonfields:
+  id: EmailAskUser
+  version: -1
+name: EmailAskUser
+toversion: 3.1.0
+script: |-
+  // email body type
+  var bodyType = 'text';
+  if (args.bodyType === 'html') {
+      bodyType = 'html';
+  }
+
+  // Get entitlement
+  res = executeCommand('addOneTimeEntitlement', {});
+  if (res[0].Type === entryTypes.error) {
+      return res;
+  }
+  var entitlement = res[0].Contents;
+
+  // Create email subject
+  var subjectSuffix = ' - #' + incidents[0].id + ' ' + entitlement;
+  if (args.task) {
+      subjectSuffix += ' #' + args.task;
+  }
+  var subject = args.subject + subjectSuffix;
+
+  // Handle options
+  var reply = args.replyAddress;
+  var option1 = args.option1;
+  if (!option1) {
+      option1 = 'yes';
+  }
+  var option2 = args.option2;
+  if (!option2) {
+      option2 = 'no';
+  }
+  var additionalOptions = [];
+  if (args.additionalOptions) {
+      additionalOptions = args.additionalOptions.split(',');
+  }
+  var additionalOptionsHTML = [];
+  if (reply && bodyType === 'html') {
+      option1 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option1 + '">' + option1 + '</a>';
+      option2 = '<a href="mailto:' + reply + '?subject=' + subject + '&body=' + option2 + '">' + option2 + '</a>';
+      for (var i=0; i<additionalOptions.length; i++) {
+          additionalOptionsHTML.push('<a href="mailto:' + reply + '?subject=' + subject + '&body=' + additionalOptions[i] + '">' + additionalOptions[i] + '</a>');
+      }
+  }
+
+  // Create email body
+  var message = args.message;
+  if (bodyType === 'html') {
+      message += '<br/><br/>';
+  } else {
+      message += '\n\n';
+  }
+  message += 'Please reply with either ' + option1 + ' or ' + option2;
+  if (additionalOptions.length > 0) {
+      message += ' or ' + (additionalOptionsHTML.length > 0 ? additionalOptionsHTML.join(' or ') : additionalOptions.join(' or '));
+  }
+
+  // Get email recipients
+  var addresses = [];
+  if (args.roles) {
+      var usersRes = executeCommand('getUsers', { 'roles': args.roles });
+      if (usersRes[0].Contents.length > 0) {
+          addresses = addresses.concat(dq(usersRes, 'Contents.email'));
+      }
+  }
+  var email = args.email;
+  if (email) {
+      addresses = addresses.concat(email.split(','));
+  }
+
+  if (addresses.length > 0) {
+      // prepare args and run send-mail
+      emailArgs = args;
+      emailArgs.to = addresses.join(',');
+      emailArgs.subject = subject;
+      if (bodyType === 'html') {
+          emailArgs.htmlBody = message;
+      } else {
+          emailArgs.body = message;
+      }
+      if (args.attachIds) {
+          emailArgs.attachIDs = args.attachIds;
+      }
+      if (reply) {
+          emailArgs.replyTo = reply;
+      }
+      return executeCommand('send-mail', emailArgs);
+  } else {
+      return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
+  }
+type: javascript
+tags:
+- email
+comment: Ask a user a question via email and process the reply directly into the investigation.
+enabled: true
+args:
+- name: email
+  default: true
+  description: The email of the user to ask
+- name: subject
+  required: true
+  description: The subject for the email
+- name: message
+  required: true
+  description: The message to the user to ask
+- name: option1
+  description: First option for a user reply. "yes" is the default.
+- name: option2
+  description: Second option for the user reply. "no" is the default.
+- name: additionalOptions
+  description: A comma delimited list of additional options if you have more than 2
+- name: task
+  description: Which task should we close with the reply. If none then no playbook
+    tasks will be closed.
+- name: roles
+  description: Send mail to all users of these roles (csv list)
+- name: attachIds
+  description: Attachments
+- name: bodyType
+  auto: PREDEFINED
+  predefined:
+  - text
+  - html
+  description: Type of email body to send - text ot HTML
+  defaultValue: text
+- name: replyAddress
+  description: Address of reply for html links
+scripttarget: 0

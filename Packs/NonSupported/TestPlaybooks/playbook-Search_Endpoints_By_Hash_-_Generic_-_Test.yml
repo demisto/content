@@ -1,0 +1,249 @@
+id: search_endpoints_by_hash_-_generic_-_test
+version: -1
+name: Search Endpoints By Hash - Generic - Test
+fromversion: 3.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 463b2178-e0cb-491e-86e0-4f4dba65065b
+    type: start
+    task:
+      id: 463b2178-e0cb-491e-86e0-4f4dba65065b
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: fddf76c0-4759-4555-8f16-af0bdb17a020
+    type: regular
+    task:
+      id: fddf76c0-4759-4555-8f16-af0bdb17a020
+      version: -1
+      name: Clear Context
+      description: Clear all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: dbc3d795-4422-4dd8-8152-617e576eb8dd
+    type: title
+    task:
+      id: dbc3d795-4422-4dd8-8152-617e576eb8dd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "7":
+    id: "7"
+    taskid: b16aefea-bc9c-4395-8a48-901e91883829
+    type: regular
+    task:
+      id: b16aefea-bc9c-4395-8a48-901e91883829
+      version: -1
+      name: VerifyContext - Hostname
+      description: VerifyContext - Hostname
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Endpoint.Hostname
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 6a84b517-7aa4-49b7-843f-391010de5570
+    type: regular
+    task:
+      id: 6a84b517-7aa4-49b7-843f-391010de5570
+      version: -1
+      name: Set test MD5 Hashes
+      description: Set test MD5 Hashes
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: MD5Hashes
+      value:
+        simple: '["0cc175b9c0f1b6a831c399e269772661", "36bd4be7042f6de7e332c05cef287d05",
+          "df9d0ca7409a2967bb338014b043a062", "05ED91DAA77FF31F7F4E61314C2A3122"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 700be7f4-dca4-4503-8c5d-f607db5d8b8c
+    type: regular
+    task:
+      id: 700be7f4-dca4-4503-8c5d-f607db5d8b8c
+      version: -1
+      name: Set test SHA1 Hashes
+      description: Set test SHA1 Hashes
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: SHA1Hashes
+      value:
+        simple: '["2fb8b65be05606697e019391d99e28c79c946725"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 7a8a3e0e-de37-4b21-85d6-a749889bc6ac
+    type: regular
+    task:
+      id: 7a8a3e0e-de37-4b21-85d6-a749889bc6ac
+      version: -1
+      name: Set test SHA256 Hashes
+      description: Set test SHA256 Hashes
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append: {}
+      key:
+        simple: SHA256Hashes
+      value:
+        simple: '["56cdfe418592b3fd68cea60da9689fb51a9bd90409b747d02fa08ed90db81e37"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "11":
+    id: "11"
+    taskid: bbc0f14b-9a7d-4b02-87bb-79cccfdae24d
+    type: playbook
+    task:
+      id: bbc0f14b-9a7d-4b02-87bb-79cccfdae24d
+      version: -1
+      name: Search Endpoints By Hash - Generic
+      description: Assume that malicious IOCs are in the right place in the context
+        and start hunting using available tools
+      playbookName: Search Endpoints By Hash - Generic
+      playbookId: search_endpoints_by_hash_-_generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: MD5Hashes
+      SHA1Hash:
+        complex:
+          root: SHA1Hashes
+      SHA256Hash:
+        complex:
+          root: SHA256Hashes
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 898
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

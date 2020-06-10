@@ -1,0 +1,36 @@
+{
+  "total": 1,
+  "limit": 10,
+  "count": 1,
+  "skip": 0,
+  "data": [
+    {
+      "platform_url": "http://123-fake-api.com/home/search/forums?forum_ids=djhfdjkfkjdshfkjd",
+      "stats": {
+        "threads": 226,
+        "posts": 1226,
+        "rooms": 11,
+        "users": 114
+      },
+      "description": "description 1",
+      "tags": [
+        {
+          "name": "tags1",
+          "id": 31,
+          "parent_tag": 28,
+          "uuid": "e725fc5d-71f9-4403-ab00-ae609f2fd3bd"
+        },
+        {
+          "name": "tags2",
+          "id": 6,
+          "parent_tag": null,
+          "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+        }
+      ],
+      "name": "fakename",
+      "legacy_id": null,
+      "id": "djhfdjkfkjdshfkjd",
+      "hostname": "fake host name"
+    }
+  ]
+}

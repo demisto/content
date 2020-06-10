@@ -1,0 +1,452 @@
+id: Silverfort Disable High Risk Account
+version: -1
+name: Silverfort Disable High Risk Account
+description: This playbook gets the user risk from Silverfort DB. If the risk is medium
+  or higher, the user will be blocked & alert will be sent.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 91ebdb53-730d-45a6-827a-e5f42c428da4
+    type: start
+    task:
+      id: 91ebdb53-730d-45a6-827a-e5f42c428da4
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 7a55238d-b08c-49ad-8dbc-3848992ddd9e
+    type: regular
+    task:
+      id: 7a55238d-b08c-49ad-8dbc-3848992ddd9e
+      version: -1
+      name: Get User Risk from Silverfort
+      description: User risk commands - get the user entity risk
+      script: '|||silverfort-get-user-risk'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      domain:
+        complex:
+          root: ${ActiveDirectory
+          accessor: Users.dn}
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: DC=([^,]*)
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: .
+      email: {}
+      sam_account:
+        simple: ${ActiveDirectory.Users.sAMAccountName}
+      upn: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 0147e2f8-cf60-4d5f-8577-ba1c9c293e9e
+    type: condition
+    task:
+      id: 0147e2f8-cf60-4d5f-8577-ba1c9c293e9e
+      version: -1
+      name: Check Silverfort User Risk
+      description: Check the user risk
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      High Or Critical:
+      - '7'
+      Low Or Medium:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: High Or Critical
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.Risk
+            iscontext: true
+          right:
+            value:
+              simple: High
+        - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.Risk
+            iscontext: true
+          right:
+            value:
+              simple: Critical
+    - label: Low Or Medium
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.Risk
+            iscontext: true
+          right:
+            value:
+              simple: Low
+        - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.Risk
+            iscontext: true
+          right:
+            value:
+              simple: Medium
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 44425412-ffb6-448b-8856-70bb40bed260
+    type: title
+    task:
+      id: 44425412-ffb6-448b-8856-70bb40bed260
+      version: -1
+      name: Block the user in AD
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 188a26df-64a3-45a0-812e-da38fe611048
+    type: title
+    task:
+      id: 188a26df-64a3-45a0-812e-da38fe611048
+      version: -1
+      name: Do Nothing
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: 65a1185c-1e4d-4699-8c0e-366ad708e6f8
+    type: playbook
+    task:
+      id: 65a1185c-1e4d-4699-8c0e-366ad708e6f8
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 1605e45b-778c-4819-8931-12e277208240
+    type: condition
+    task:
+      id: 1605e45b-778c-4819-8931-12e277208240
+      version: -1
+      name: Is Silverfort enabled ?
+      description: Check if Silverfort is enabled
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Silverfort
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: 885afe30-ac8a-4ff7-844e-dd2d0e78f453
+    type: condition
+    task:
+      id: 885afe30-ac8a-4ff7-844e-dd2d0e78f453
+      version: -1
+      name: Is Automatic Disable True ?
+      description: 'Is Automatic Disable True '
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '14'
+      'yes':
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutomaticDisable
+            iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 177e597e-e14a-45e5-8f0e-8ed10d7639a6
+    type: regular
+    task:
+      id: 177e597e-e14a-45e5-8f0e-8ed10d7639a6
+      version: -1
+      name: AD Disable Account
+      description: Disables an Active Directory user account.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      base-dn: {}
+      username:
+        simple: ${ActiveDirectory.Users.sAMAccountName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 38fbac3e-c93b-410a-8b43-c9a768409804
+    type: regular
+    task:
+      id: 38fbac3e-c93b-410a-8b43-c9a768409804
+      version: -1
+      name: Manually Disable Account
+      description: Manually Disable Account
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 59f83391-144d-462e-84cf-525dd77b3b8e
+    type: title
+    task:
+      id: 59f83391-144d-462e-84cf-525dd77b3b8e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 1137.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Username
+  value:
+    complex:
+      root: Account
+      accessor: Username
+      transformers:
+      - operator: uniq
+  required: false
+  description: Account Username
+- key: AutomaticDisable
+  value:
+    simple: 'False'
+  required: false
+  description: Set to true if you want the playbook to automatically disable the account
+outputs:
+- contextPath: Silverfort.UserRisk.Risk
+  description: Risk level
+- contextPath: Silverfort.UserRisk.Reasons
+  description: Risk reasons
+- contextPath: Silverfort.UserRisk.UPN
+  description: User principal name
+fromversion: 5.0.0
+tests:
+  - No Tests

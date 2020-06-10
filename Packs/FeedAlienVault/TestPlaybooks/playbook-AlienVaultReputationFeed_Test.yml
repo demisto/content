@@ -1,0 +1,190 @@
+elasticcommonfields: {}
+id: AlienVaultReputationFeed_Test
+version: -1
+name: AlienVaultReputationFeed_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10dd718c-c314-423e-89ca-c0fca06a2e93
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: 10dd718c-c314-423e-89ca-c0fca06a2e93
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4a51a852-0721-46ae-84f8-716a34f88a45
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 4a51a852-0721-46ae-84f8-716a34f88a45
+      version: -1
+      name: Get Indicators
+      description: Gets the feed indicators.
+      script: AlienVault Reputation Feed|||alienvault-get-indicators
+      type: regular
+      iscommand: true
+      brand: AlienVault Reputation Feed
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: AlienVaultFeed.value=value::AlienVaultFeed.type=type
+      indicator_type:
+        simple: IP
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ef01415d-6ac6-4e16-8ab8-4e413645d416
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: ef01415d-6ac6-4e16-8ab8-4e413645d416
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6e57e6a8-83a8-48f1-8136-19044c339538
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 6e57e6a8-83a8-48f1-8136-19044c339538
+      version: -1
+      name: Delete Context
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e3ef64ee-d2da-42b7-820a-15805a5519a0
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: e3ef64ee-d2da-42b7-820a-15805a5519a0
+      version: -1
+      name: Assert Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultFeed.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultFeed.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: AlienVaultReputationFeed_Test
+fromversion: 5.5.0

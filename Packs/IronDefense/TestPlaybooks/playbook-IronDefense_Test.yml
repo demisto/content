@@ -1,0 +1,324 @@
+id: IronDefenseTest
+version: -1
+name: IronDefenseTest
+description: Playbook to test the IronDefense Integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 94667f9e-9634-46dc-8f92-efc31dfaff09
+    type: start
+    task:
+      id: 94667f9e-9634-46dc-8f92-efc31dfaff09
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 7156268a-8814-4f45-8e17-b5403b7f19b3
+    type: title
+    task:
+      id: 7156268a-8814-4f45-8e17-b5403b7f19b3
+      version: -1
+      name: Done
+      description: Close the current incident
+      type: title
+      iscommand: false
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 98b9dafc-b290-428a-896d-b37fe82ea6df
+    type: regular
+    task:
+      id: 98b9dafc-b290-428a-896d-b37fe82ea6df
+      version: -1
+      name: Submit Incident Rating to IronDefense
+      description: Rates an IronDefense alert.
+      script: '|||irondefense-rate-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      alert_id:
+        simple: ${IronDefense.AlertID}
+      comments:
+        simple: alert is unexpetedly malicious...
+      expectation:
+        simple: Unexpected
+      severity:
+        simple: Malicious
+      share_comment_with_irondome:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: cd414c8d-4f42-45c8-840d-fd8ea511a490
+    type: regular
+    task:
+      id: cd414c8d-4f42-45c8-840d-fd8ea511a490
+      version: -1
+      name: Submit Alert Comment to IronDefense
+      description: Adds a comment to an IronDefense alert.
+      script: '|||irondefense-comment-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      alert_id:
+        simple: ${IronDefense.AlertID}
+      comment:
+        simple: new comment from Demisto for alert ${IronDefense.AlertID}
+      share_comment_with_irondome:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 8cffa6b5-fe3d-433c-8bb6-dba265dd6a96
+    type: regular
+    task:
+      id: 8cffa6b5-fe3d-433c-8bb6-dba265dd6a96
+      version: -1
+      name: Start Clean
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 16d30dd8-7ad4-4f23-874f-c37618c3fe8a
+    type: regular
+    task:
+      id: 16d30dd8-7ad4-4f23-874f-c37618c3fe8a
+      version: -1
+      name: Submit Alert Status to IronDefense
+      description: Sets the status of an IronDefense alert.
+      script: '|||irondefense-set-alert-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      alert_id:
+        simple: ${IronDefense.AlertID}
+      comments:
+        simple: Bitcoin Mining
+      share_comment_with_irondome:
+        simple: "False"
+      status:
+        simple: Awaiting Review
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: e81de4f3-05b5-4b80-8596-29d9b716e5f7
+    type: regular
+    task:
+      id: e81de4f3-05b5-4b80-8596-29d9b716e5f7
+      version: -1
+      name: Close Alert in IronDefense
+      description: Sets the status of an IronDefense alert.
+      script: '|||irondefense-set-alert-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_id:
+        simple: ${IronDefense.AlertID}
+      comments:
+        simple: Alert closed from Demisto.
+      share_comment_with_irondome:
+        simple: "False"
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: f2cb153b-d78a-486d-8a33-d6326bfeb2c0
+    type: regular
+    task:
+      id: f2cb153b-d78a-486d-8a33-d6326bfeb2c0
+      version: -1
+      name: Submit Observed Bad Activity
+      description: Submits an observed bad endpoint to IronDefense to create Threat
+        Intelligence Rules (TIR).
+      script: '|||irondefense-report-observed-bad-activity'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      activity_end_time:
+        simple: "2019-11-21T22:20:50.52Z"
+      activity_start_time:
+        simple: "2019-04-21T22:20:50.52Z"
+      description:
+        simple: bad activity from Demisto test playbook
+      domain: {}
+      ip:
+        simple: 23.62.60.187
+      name:
+        simple: Demisto Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: a8b3a599-b8bb-4044-89c8-8939aa1a4377
+    type: regular
+    task:
+      id: a8b3a599-b8bb-4044-89c8-8939aa1a4377
+      version: -1
+      name: Set Alert ID Example
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IronDefense.AlertID
+      value:
+        simple: 93e7dfbbaece42d1b10b0ed5e4caacc2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Enrich
+  value:
+    simple: "True"
+  required: false
+  description: Should preform enrichment on all indicators in the incident
+outputs: []

@@ -1,0 +1,493 @@
+id: Symantec Data Loss Prevention - Test
+version: -1
+name: Symantec Data Loss Prevention - Test
+starttaskid: "0"
+description: ""
+fromversion: 5.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 34cae85e-421e-4f7f-8d14-c4a6efc0529f
+    type: start
+    task:
+      id: 34cae85e-421e-4f7f-8d14-c4a6efc0529f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 5b25d6b9-93f9-4f6f-856a-2146fc392a9a
+    type: regular
+    task:
+      id: 5b25d6b9-93f9-4f6f-856a-2146fc392a9a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: e1ae0348-7916-42a6-8518-0066897177b5
+    type: regular
+    task:
+      id: e1ae0348-7916-42a6-8518-0066897177b5
+      version: -1
+      name: symantec-dlp-list-incidents
+      description: Returns a list of incidents.
+      script: Symantec Data Loss Prevention|||symantec-dlp-list-incidents
+      type: regular
+      iscommand: true
+      brand: Symantec Data Loss Prevention
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      creation_date:
+        simple: 10 year
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 59ceb0cd-2edc-4a38-8074-20cb253d0f98
+    type: regular
+    task:
+      id: 59ceb0cd-2edc-4a38-8074-20cb253d0f98
+      version: -1
+      name: symantec-dlp-get-incident-details
+      description: Returns the details of a specified incident
+      script: Symantec Data Loss Prevention|||symantec-dlp-get-incident-details
+      type: regular
+      iscommand: true
+      brand: Symantec Data Loss Prevention
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      custom_attributes: {}
+      custom_values: {}
+      incident_id:
+        complex:
+          root: SymantecDLP
+          accessor: Incident.[0].ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 004efb46-e83d-48ac-828b-03ce4f7e1f71
+    type: condition
+    task:
+      id: 004efb46-e83d-48ac-828b-03ce4f7e1f71
+      version: -1
+      name: Verify Context - Incident Details
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SymantecDLP
+                accessor: Incident.CreationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SymantecDLP
+                accessor: Incident.Severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SymantecDLP
+                accessor: Incident.DetectionDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 00bebaec-b1e0-4b31-849f-f0c9a6025904
+    type: regular
+    task:
+      id: 00bebaec-b1e0-4b31-849f-f0c9a6025904
+      version: -1
+      name: symantec-dlp-incident-violations
+      description: Returns the highlighted matches for a specific incident.
+      script: Symantec Data Loss Prevention|||symantec-dlp-incident-violations
+      type: regular
+      iscommand: true
+      brand: Symantec Data Loss Prevention
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: SymantecDLP
+          accessor: Incident.[0].ID
+      include_image_violations: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 5365dee8-f236-4129-8d3e-283362f87a34
+    type: regular
+    task:
+      id: 5365dee8-f236-4129-8d3e-283362f87a34
+      version: -1
+      name: Fail Message - Incident Details
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Incident details command failed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 0f3224a6-3e12-498c-8688-d69463b98421
+    type: condition
+    task:
+      id: 0f3224a6-3e12-498c-8688-d69463b98421
+      version: -1
+      name: Verify Context - Incident Violations
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SymantecDLP
+                accessor: Incident.[0].ID.[0].ViolatingComponent.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SymantecDLP
+                accessor: Incident.[0].ID.[0].ViolatingComponent.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SymantecDLP
+                accessor: Incident.[0].ID.[0].ViolatingComponent.ViolatingCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 8846f71b-44a8-41c1-84ee-823c57ffb760
+    type: regular
+    task:
+      id: 8846f71b-44a8-41c1-84ee-823c57ffb760
+      version: -1
+      name: symantec-dlp-list-custom-attributes
+      description: |-
+        Returns a list of all custom attribute names defined in
+        the Symantec DLP deployment.
+      script: Symantec Data Loss Prevention|||symantec-dlp-list-custom-attributes
+      type: regular
+      iscommand: true
+      brand: Symantec Data Loss Prevention
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 4422dac3-8bff-4224-887e-de48f1fe9880
+    type: regular
+    task:
+      id: 4422dac3-8bff-4224-887e-de48f1fe9880
+      version: -1
+      name: symantec-dlp-list-incident-status
+      description: |-
+        Returns a list of the custom status values defined in the
+        Symantec DLP deployment.
+      script: Symantec Data Loss Prevention|||symantec-dlp-list-incident-status
+      type: regular
+      iscommand: true
+      brand: Symantec Data Loss Prevention
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 584c864c-5fb4-435d-8316-77328e2c33c5
+    type: regular
+    task:
+      id: 584c864c-5fb4-435d-8316-77328e2c33c5
+      version: -1
+      name: Fail Message - Incident Violations
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Incident violations command failed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 9d6c1305-6821-438c-8c3b-9b35e4f6201f
+    type: regular
+    task:
+      id: 9d6c1305-6821-438c-8c3b-9b35e4f6201f
+      version: -1
+      name: symantec-dlp-update-incident
+      description: TBD
+      script: Symantec Data Loss Prevention|||symantec-dlp-update-incident
+      type: regular
+      iscommand: true
+      brand: Symantec Data Loss Prevention
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      custom_attribute_name: {}
+      custom_attribute_value: {}
+      data_owner_email: {}
+      data_owner_name: {}
+      incident_id:
+        complex:
+          root: SymantecDLP
+          accessor: Incident.[0].ID
+      note: {}
+      note_time: {}
+      remediation_location:
+        simple: BBB
+      remediation_status: {}
+      severity: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 3096cc01-4888-4b2b-8559-932aae33ea2b
+    type: regular
+    task:
+      id: 3096cc01-4888-4b2b-8559-932aae33ea2b
+      version: -1
+      name: symantec-dlp-incident-binaries
+      description: TBD
+      script: Symantec Data Loss Prevention|||symantec-dlp-incident-binaries
+      type: regular
+      iscommand: true
+      brand: Symantec Data Loss Prevention
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: SymantecDLP
+          accessor: Incident.[0].ID
+      include_all_components: {}
+      include_original_message: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 8c3dd598-70f4-471f-8ef7-5b25a398f09b
+    type: title
+    task:
+      id: 8c3dd598-70f4-471f-8ef7-5b25a398f09b
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

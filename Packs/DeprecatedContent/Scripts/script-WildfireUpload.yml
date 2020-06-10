@@ -1,0 +1,43 @@
+commonfields:
+  id: WildfireUpload
+  version: -1
+name: WildfireUpload
+deprecated: true
+script: |-
+  var raw = executeCommand('wildfire-upload', {uploadfile: args.upload});
+  if (!raw[0].Contents.wildfire || !raw[0].Contents.wildfire['upload-file-info']) {
+      if (raw[0].Contents.indexOf('Failed to upload, error 418') > -1) {
+          return {Contents: 'WildFire does not support this file type.',
+                  ContentsFormat: formats.text,
+                  Type: entryTypes.error};
+      } else {
+          return raw;
+      }
+  }
+  var item = raw[0].Contents.wildfire['upload-file-info'];
+  return {Contents: {
+      Type: item.filetype,
+      MD5: item.md5,
+      SHA256: item.sha256,
+      Size: item.size,
+      URL: item.url},
+      ContentsFormat: formats.table,
+      Type: entryTypes.note};
+type: javascript
+tags:
+- wildfire
+- sandbox
+comment: Deprecated. Use the "wildfire-upload" command instead.
+system: true
+args:
+- name: upload
+  required: true
+  description: ID of a war room entry containing a file to be uploaded to the WildFire
+    service
+scripttarget: 0
+dependson:
+  must:
+  - wildfire-upload
+timeout: 0s
+tests:
+- No tests

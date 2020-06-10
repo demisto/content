@@ -1,0 +1,322 @@
+id: test_servicenow_scripts
+version: -1
+name: Test ServiceNow Scripts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 827504d3-26ce-454d-813b-429d92397786
+    type: start
+    task:
+      id: 827504d3-26ce-454d-813b-429d92397786
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: ee8f6a1c-f531-48f5-8351-01356f8d16f2
+    type: regular
+    task:
+      id: ee8f6a1c-f531-48f5-8351-01356f8d16f2
+      version: -1
+      name: ServiceNowCreateIncident
+      description: |-
+        This script is used to wrap the generic create-record command in ServiceNow.
+        You can add fields that you want to create the record with as script arguments or in the
+        code and work with the records easily.
+      scriptName: ServiceNowCreateIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assigned_group:
+        simple: test1
+      assignee:
+        simple: Joe Employee
+      description:
+        simple: Test incident
+      severity:
+        simple: 3 - Low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: e1b4195c-a3f7-4612-8ad2-a79bd5900767
+    type: regular
+    task:
+      id: e1b4195c-a3f7-4612-8ad2-a79bd5900767
+      version: -1
+      name: ServiceNowQueryIncidents
+      description: |-
+        This script is used to wrap the generic query-table command in ServiceNow.
+        You can add fields that you want to use as inputs and outputs from the record as script arguments or in the
+        code and work with the records easily.
+      scriptName: ServiceNowQueryIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assignee: {}
+      id: {}
+      number:
+        simple: ${ServiceNow.Incident.Number}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: e4cfaf94-65d2-442b-807d-1a60517e2846
+    type: regular
+    task:
+      id: e4cfaf94-65d2-442b-807d-1a60517e2846
+      version: -1
+      name: Verify Incident
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: Test incident
+      fields: {}
+      path:
+        simple: ServiceNow.Incident.Description
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 4eb2e521-d191-4669-8d36-c481a0079b27
+    type: regular
+    task:
+      id: 4eb2e521-d191-4669-8d36-c481a0079b27
+      version: -1
+      name: ServiceNowUpdateIncident
+      description: |-
+        This script is used to wrap the generic update-record command in ServiceNow.
+        You can add fields that you want to update the record with as script arguments or in the
+        code and work with the records easily.
+      scriptName: ServiceNowUpdateIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      assigned_group: {}
+      assignee: {}
+      description:
+        simple: Updated test incident
+      id:
+        simple: ${ServiceNow.Incident.ID}
+      number: {}
+      query: {}
+      severity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: dc3eeca6-fb25-4bba-87a0-ef1552a9e0fa
+    type: regular
+    task:
+      id: dc3eeca6-fb25-4bba-87a0-ef1552a9e0fa
+      version: -1
+      name: ServiceNowQueryIncidents
+      description: |-
+        This script is used to wrap the generic query-table command in ServiceNow.
+        You can add fields that you want to use as inputs and outputs from the record as script arguments or in the
+        code and work with the records easily.
+      scriptName: ServiceNowQueryIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assignee: {}
+      id: {}
+      number:
+        simple: ${ServiceNow.Incident.Number}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: fe013171-97ad-4475-8df3-fdc4ac16e268
+    type: regular
+    task:
+      id: fe013171-97ad-4475-8df3-fdc4ac16e268
+      version: -1
+      name: Verify Incident
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue:
+        simple: Updated test incident
+      fields: {}
+      path:
+        simple: ServiceNow.Incident.Description
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: a163bb03-60b5-4df8-89ee-36c3754756c1
+    type: regular
+    task:
+      id: a163bb03-60b5-4df8-89ee-36c3754756c1
+      version: -1
+      name: Delete the incident
+      description: Delete a record in a specified ServiceNow table
+      script: ServiceNow|||servicenow-delete-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    scriptarguments:
+      id:
+        simple: ${ServiceNow.Incident.ID}
+      table_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 2ab6f040-7fac-44d7-8ffb-45e1347ed9b7
+    type: regular
+    task:
+      id: 2ab6f040-7fac-44d7-8ffb-45e1347ed9b7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

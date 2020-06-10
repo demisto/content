@@ -1,0 +1,26 @@
+type: map
+mapping:
+  canvasContextConnections:
+    type: seq
+    sequence:
+      - include: canvas_context_conncetion
+  fromVersion:
+    type: str
+  toVersion:
+    type: str
+
+schema;canvas_context_conncetion:
+  type: map
+  mapping:
+    contextKey1:
+      type: str
+      required: True
+    contextKey2:
+      type: str
+      required: True
+    connectionDescription:
+      type: str
+      required: True
+    parentContextKey:
+      type: str
+      required: True

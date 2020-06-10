@@ -1,0 +1,220 @@
+id: SafeBreach Rerun Insights
+version: -1
+name: SafeBreach Rerun Insights
+description: This playbook reruns a SafeBreach insight based on id and waits until
+  it completes. Returns the updated insight object after post rerun.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+    type: start
+    task:
+      id: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 4a2b270d-0c0e-43b4-8eba-81dd594f167f
+    type: regular
+    task:
+      id: 4a2b270d-0c0e-43b4-8eba-81dd594f167f
+      version: -1
+      name: Rerun a SafeBreach Insight
+      description: Rerun a specific SafeBreach Insight related simulations in your
+        environment.
+      script: SafeBreach v2|||safebreach-rerun-insight
+      type: regular
+      iscommand: true
+      brand: SafeBreach v2
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      insightId:
+        simple: ${inputs.InsightId}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 9b1f0474-ce52-413f-8038-43d18c1dfb5d
+    type: playbook
+    task:
+      id: 9b1f0474-ce52-413f-8038-43d18c1dfb5d
+      version: -1
+      name: GenericPolling
+      description: "Use this playbook as a sub-playbook to block execution of the\
+        \ master playbook until a remote action is complete.\nThis playbook implements\
+        \ polling by continuously running the command in Step \\#2 until the operation\
+        \ completes.\nThe remote action should have the following structure:\n\n1.\
+        \ Initiate the operation.\n2. Poll to check if the operation completed.\n\
+        3. (optional) Get the results of the operation."
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${SafeBreach.Test.Id}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: testId
+      PollingCommandName:
+        simple: safebreach-get-test-status
+      Timeout:
+        simple: '1440'
+      dt:
+        simple: SafeBreach.Test(val.Status == "PENDING" || val.Status == "RUNNING").Id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 580\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: ee8ac73b-a507-47c9-831e-eeffa0426aaf
+    type: regular
+    task:
+      id: ee8ac73b-a507-47c9-831e-eeffa0426aaf
+      version: -1
+      name: Get the Insight for verification
+      description: Get SafeBreach Insights for all security control categories
+      script: SafeBreach v2|||safebreach-get-insights
+      type: regular
+      iscommand: true
+      brand: SafeBreach v2
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      insightIds:
+        simple: ${inputs.InsightId}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 760\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: b4d9deb2-20a0-41c6-8468-28a787ee6576
+    type: title
+    task:
+      id: b4d9deb2-20a0-41c6-8468-28a787ee6576
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 940\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 1a84d4da-3a92-41ae-848d-ef2d6eff77b0
+    type: regular
+    task:
+      id: 1a84d4da-3a92-41ae-848d-ef2d6eff77b0
+      version: -1
+      name: Sleep before starting the polling
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      seconds:
+        simple: '60'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 400\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 955,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs:
+- key: InsightId
+  value:
+    complex:
+      root: SafeBreach
+      accessor: Insight.Id
+  required: false
+  description: SafeBreach Insight Id to rerun
+  playbookInputQuery:
+outputs:
+- contextPath: SafeBreach.Insight.Name
+  description: Insight name representing the action required to be taken
+- contextPath: SafeBreach.Insight.Id
+  description: Insight unique id
+- contextPath: SafeBreach.Insight.DataType
+  description: 'Insight data type. Options: Hash, Domain, URI, Command, Port, Protocol'
+- contextPath: SafeBreach.Insight.Category
+  description: Security control category name
+- contextPath: SafeBreach.Insight.LatestSimulation
+  description: Time of the latest simulation from the insight
+- contextPath: SafeBreach.Insight.SimulationsCount
+  description: Number of the related simulations
+- contextPath: SafeBreach.Insight.RiskImpact
+  description: Risk impact of the insight on the environment total risk score
+- contextPath: SafeBreach.Insight.AffectedTargetsCount
+  description: Number of the affected targets
+- contextPath: SafeBreach.Insight.SeverityScore
+  description: Insight severity numeric value
+- contextPath: SafeBreach.Insight.Severity
+  description: Insight severity mapped to low/medium/high
+- contextPath: SafeBreach.Insight.RemediationDataCount
+  description: Number of the remediation data points
+- contextPath: SafeBreach.Insight.RemediationDataType
+  description: Type of the remediation data
+- contextPath: SafeBreach.Insight.ThreatGroups
+  description: Array of APT names that are mapped to the insight
+- contextPath: SafeBreach.Insight.NetworkDirection
+  description: Communication direction of Insight, relative to the target (inbound/outbound)
+- contextPath: SafeBreach.Insight.AttacksCount
+  description: List of all insight related SafeBreach attack ids
+fromversion: 5.5.0
+tests:
+  - No Test

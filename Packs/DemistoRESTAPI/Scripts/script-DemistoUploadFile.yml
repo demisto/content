@@ -1,0 +1,44 @@
+commonfields:
+  id: DemistoUploadFile
+  version: -1
+name: DemistoUploadFile
+script: |
+  var res = executeCommand("demisto-api-multipart", {"uri":'entry/upload/' + args.incidentID,"entryID":args.entryID, "body":args.body});
+  if (isError(res[0])) {
+      return res;
+  }
+  var entryId = dq(res,'Contents.response.entries.id');
+
+  var md = 'File uploaded successfully. Entry ID is ' + entryId;
+  if (args.body){
+      md +=  '. Comment is:' + args.body;
+  }
+
+  return {
+      ContentsFormat: formats.json,
+      Type: entryTypes.note,
+      Contents: res,
+      HumanReadable: md
+  };
+type: javascript
+tags:
+- DemistoAPI
+comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
+enabled: true
+args:
+- name: entryID
+  required: true
+  description: File entry ID
+- name: incidentID
+  required: true
+  description: Incident ID to upload the file to
+- name: body
+  description: Request body
+scripttarget: 0
+dependson:
+  must:
+  - demisto-api-multipart
+runonce: false
+runas: DBotWeakRole
+tests:
+- DemistoUploadFileToIncident Test

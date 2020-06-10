@@ -1,0 +1,160 @@
+commonfields:
+  id: TaniumApprovePendingActions
+  version: -1
+name: TaniumApprovePendingActions
+deprecated: true
+script: |
+  //var approvedPackageNames = ["Disable Java Auto Update"];
+  var approvedPackageNames = args.approvedpackages.split(',');
+  var fieldsToDisplay = ["name", "package_spec","comment"]; //, "approver"];
+
+  var requestPendingObjects = "<object_list>\
+                  <saved_actions/>\
+              </object_list>\
+              <options>\
+                  <row_start>0</row_start>\
+                  <row_count>200</row_count>\
+                  <cache_expiration>300</cache_expiration>\
+                  <cache_sort_fields>name,-id</cache_sort_fields>\
+                  <include_user_details>1</include_user_details>\
+                  <use_json>1</use_json>\
+                  <cache_filters>\
+                      <filter>\
+                          <field>approved_flag</field>\
+                          <value>0</value>\
+                          <type>Numeric</type>\
+                          <operator>eq</operator>\
+                      </filter>\
+                  </cache_filters>\
+              </options>";
+
+
+  var requestActionApproval = "<object_list> \
+                  <saved_action_approval>\
+                      <id>{0}</id>\
+                      <approved_flag>1</approved_flag>\
+                  </saved_action_approval>\
+              </object_list>\
+              <options>\
+                  <include_user_details>1</include_user_details>\
+                  <use_json>1</use_json>\
+              </options>";
+
+  // Send a request to Tanium to approve the given action
+  function approveAction(savedAction) {
+      var addObjArgs = {};
+      addObjArgs["object-data"] = requestActionApproval.replace('{0}',savedAction.id);
+      var res = executeCommand('tn-add-object', addObjArgs);
+      if (1 < res.length)
+          return "Error, tn-add-object returned more than one entry! Returned: " + JSON.stringify(res) + '\n';
+      else
+          return res[0];
+  }
+
+  // Format a saved action as a table row, filtering unwanted fields.
+  function formatAsRow(jsonSavedAction,fieldsToDisplay) {
+    d = {};
+    for (var k in jsonSavedAction)
+      if (fieldsToDisplay.indexOf(k)>-1)
+        d[k] = jsonSavedAction[k];
+    return d;
+  }
+
+  var getObjArgs = {};
+  getObjArgs["object-data"] = requestPendingObjects;
+
+  var res = executeCommand('tn-get-object', getObjArgs);
+  var entry = {
+      Type: 1,
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: ""
+  };
+
+  responseData = res[0].Contents.Envelope.Body.return.result_object;
+  respObj = JSON.parse(responseData);
+  var savedActions = [];
+  nResultObjects = respObj.result_objects.length;
+  for (var i=0; i < nResultObjects; i++) {
+      resultObj = respObj.result_objects[i];
+      nItems = resultObj.saved_actions.length;
+
+      for (var j=0; j < nItems; j++) {
+          // Skip any items not named saved_actions - e.g. skip cache_info item
+          if ("saved_action" in resultObj.saved_actions[j] ) {
+              savedActions.push(resultObj.saved_actions[j].saved_action);
+          }
+      }
+  }
+
+  var approvedSummary=[];
+  for (var i=0; i < savedActions.length; i++) {
+      if (approvedPackageNames.indexOf(savedActions[i].package_spec.name) > -1) {
+          approvalResult = approveAction(savedActions[i]);
+          // Check the response - if we received saved_action_approval with approved_flag==1
+          // and the correct id (matches the task we wanted to approve), then add the action to the list as successfully approved
+          var objList = approvalResult.Contents.Envelope.Body.return.object_list;
+          if (Object.keys(objList).indexOf('saved_action_approval')>-1 &&
+              objList.saved_action_approval.approved_flag == 1 &&
+              objList.saved_action_approval.id == savedActions[i].id)
+
+              approvedSummary.push(savedActions[i]);
+          else
+              log("Failed to approve action:\n" + JSON.stringify(savedActions[i]) + "\nResults returned:\n" + JSON.stringify(approvalResult) + "\n");
+      }
+  }
+
+  if (0 === approvedSummary.length)
+      return "No actions were approved.";
+  else {
+      for (var i=0; i < approvedSummary.length; i++)
+          entry.Contents.push(formatAsRow(approvedSummary[i],fieldsToDisplay));
+
+      entry.HumanReadable = tableToMarkdown("Tanium approve pending actions", entry.Contents, null);
+      var savedActions = cleanObject(entry.Contents);
+      if (!(entry.Contents instanceof Array)) {
+        savedActions = [savedActions];
+      }
+      var actionsForContext = [];
+      for (var s in savedActions) {
+        actionsForContext.push({
+          State: "Pending",
+          Name: savedActions[s].name,
+          Comment: savedActions[s].comment,
+          AvailableTime: savedActions[s].package_spec.available_time,
+          ID: savedActions[s].package_spec.id,
+          PackageName: savedActions[s].package_spec.name
+        });
+      }
+      entry.EntryContext = {
+                'Tanium.Action(val.ID == obj.ID)': actionsForContext
+            };
+      return entry;
+  }
+type: javascript
+tags:
+- tanium
+comment: Approve all pending actions using the specified package names.
+args:
+- name: approvedpackages
+  description: "Names of packages to approve"
+  required: true
+  default: true
+outputs:
+- contextPath: Tanium.Action.Approve.Name
+  description: Action name
+- contextPath: Tanium.Action.State
+  description: Action state
+- contextPath: Tanium.Action.Comment
+  description: Tanium comment
+- contextPath: Tanium.Action.PackageName
+  description: Tanium package name
+- contextPath: Tanium.Action.PackageID
+  description: Tanium package id
+scripttarget: 0
+dependson:
+  must:
+  - tn-add-object
+  - tn-get-object
+timeout: 0s

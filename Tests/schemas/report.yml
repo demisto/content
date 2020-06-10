@@ -1,0 +1,93 @@
+type: map
+mapping:
+  id:
+    type: str
+    required: True
+  name:
+    type: str
+    required: True
+  description:
+    type: str
+    required: True
+  fromVersion:
+    type: str
+  toVersion:
+    type: str
+  reportType:
+    type: str
+  tags:
+    type: seq
+    required: True
+    sequence:
+      - type: str
+  createdBy:
+    type: str
+    required: True
+  type:
+    type: str
+    required: True
+    enum: ['pdf', 'csv', 'docx']
+  orientation:
+    type: str
+    required: True
+    enum: ['landscape', 'portrait', '']
+  recipients:
+    type: seq
+    required: True
+    sequence:
+      - type: str
+  system:
+    type: bool
+  locked:
+    type: bool
+  runOnce:
+    type: bool
+  decoder:
+    type: map
+    mapping:
+      regex;(.+):
+        type: map
+        mapping:
+          type:
+            type: str
+            required: True
+            enum: ['string', 'date', 'duration', 'image']
+          value:
+            type: scalar
+          description:
+            type: str
+  sections:
+    type: seq
+    required: True
+    sequence:
+      - include: section_schema
+
+
+schema;section_schema:
+  type: map
+  mapping:
+    type:
+      type: str
+      required: True
+      enum: ['header', 'date', 'placeholder', 'divider', 'text', 'chart', 'table',
+      'image', 'globalSection', 'markdown', 'automation', 'json']
+    data:
+      type: any
+    layout:
+     type: any
+    query:
+      type: map
+      mapping:
+        type:
+          type: str
+          required: True
+        groupBy:
+          type: seq
+          sequence:
+            - type: str
+        keys:
+          type: seq
+          sequence:
+            - type: str
+        filter:
+          type: any

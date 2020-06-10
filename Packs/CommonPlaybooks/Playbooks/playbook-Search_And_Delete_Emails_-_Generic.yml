@@ -1,0 +1,132 @@
+id: search_and_delete_emails_-_generic
+version: -1
+name: Search And Delete Emails - Generic
+fromversion: 3.6.0
+description: This playbook searches and delete emails with similar attributes of a
+  malicious email.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 808e9cce-8112-49d4-8624-907a6fbeb394
+    type: start
+    task:
+      id: 808e9cce-8112-49d4-8624-907a6fbeb394
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: f2699240-6fe1-40ae-8da6-8017aabf41ff
+    type: playbook
+    task:
+      id: f2699240-6fe1-40ae-8da6-8017aabf41ff
+      version: -1
+      name: Search And Delete Emails - EWS
+      description: This playbook searches EWS to identify and delete emails with similar
+        attributes of a malicious email.
+      playbookName: Search And Delete Emails - EWS
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AttachmentName:
+        complex:
+          root: inputs.AttachmentName
+      DeleteType:
+        simple: trash
+      From:
+        complex:
+          root: inputs.From
+      Limit:
+        simple: "20"
+      SearchThisWeek:
+        simple: "true"
+      Subject:
+        complex:
+          root: inputs.Subject
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
+    type: title
+    task:
+      id: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: From
+  value:
+    complex:
+      root: incident
+      accessor: emailfrom
+  required: false
+  description: The value of the malicious email's "From" attribute.
+- key: Subject
+  value:
+    complex:
+      root: incident
+      accessor: emailsubject
+  required: false
+  description: The value of the malicious email's "Subject" attribute.
+- key: AttachmentName
+  value:
+    complex:
+      root: incident
+      accessor: attachmentname
+  required: false
+  description: The value of the malicious email's "AttachmentName" attribute.
+outputs: []
+tests:
+- No test

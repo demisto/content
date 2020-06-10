@@ -1,0 +1,246 @@
+id: GenericPolling
+version: -1
+name: GenericPolling
+description: |-
+  Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+  This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+  The remote action should have the following structure:
+
+  1. Initiate the operation.
+  2. Poll to check if the operation completed.
+  3. (optional) Get the results of the operation.
+fromversion: 4.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c644af04-2cd7-4462-83e3-5f55bc12aa73
+    type: start
+    task:
+      id: c644af04-2cd7-4462-83e3-5f55bc12aa73
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: c202a667-b138-4635-819f-56a7396cc7f8
+    type: regular
+    task:
+      id: c202a667-b138-4635-819f-56a7396cc7f8
+      version: -1
+      name: Schedule Polling Task
+      description: Schedule Polling Task
+      scriptName: ScheduleGenericPolling
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: ${inputs.AdditionalPollingCommandArgNames}
+      additionalPollingCommandArgValues:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
+      dt:
+        simple: ${inputs.dt}
+      ids:
+        simple: ${inputs.Ids}
+      interval:
+        simple: ${inputs.Interval}
+      playbookId:
+        simple: ${currentPlaybookID}
+      pollingCommand:
+        simple: ${inputs.PollingCommandName}
+      pollingCommandArgName:
+        simple: ${inputs.PollingCommandArgName}
+      tag: {}
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+    type: condition
+    task:
+      id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+      version: -1
+      name: Waiting for polling to complete (Automated Task)
+      description: This task will complete automatically when polling is complete.
+      tags:
+      - polling
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "YES":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: bc152ecc-4c23-4296-844a-d21b32be0ec3
+    type: regular
+    task:
+      id: bc152ecc-4c23-4296-844a-d21b32be0ec3
+      version: -1
+      name: RunPollingCommand
+      description: RunPollingCommand
+      scriptName: RunPollingCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: ${inputs.AdditionalPollingCommandArgNames}
+      additionalPollingCommandArgValues:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
+      ids:
+        simple: ${inputs.Ids}
+      pollingCommand:
+        simple: ${inputs.PollingCommandName}
+      pollingCommandArgName:
+        simple: ${inputs.PollingCommandArgName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+    type: title
+    task:
+      id: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 740
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 62b13486-ae6a-49c1-8988-16765f35f1cc
+    type: regular
+    task:
+      id: 62b13486-ae6a-49c1-8988-16765f35f1cc
+      version: -1
+      name: Scheduled Task Failed
+      description: Scheduled Task Failed
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: GenericPollingScheduledTask encountered an error.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 725
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_5_YES": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 770,
+        "width": 830,
+        "x": -170,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Ids
+  value: {}
+  required: true
+  description: List of IDs to poll
+- key: PollingCommandName
+  value: {}
+  required: true
+  description: Name of the polling command to run
+- key: PollingCommandArgName
+  value:
+    simple: ids
+  required: true
+  description: Argument name of the polling command.
+- key: Interval
+  value:
+    simple: "1"
+  required: true
+  description: Frequency that the polling command will run (minutes).
+- key: Timeout
+  value:
+    simple: "10"
+  required: true
+  description: Amount of time to poll before declaring a timeout and resuming the playbook
+    (in minutes).
+- key: dt
+  value: {}
+  required: true
+  description: "DT filter for polling IDs. Polling will stop when no results are returned. Use single quotes, for example: WildFire.Report(val.Status!=='Success').SHA256."
+- key: AdditionalPollingCommandArgNames
+  value: {}
+  required: false
+  description: "Names of additional arguments for the polling command, for example: (arg1,arg2,...)."
+- key: AdditionalPollingCommandArgValues
+  value: {}
+  required: false
+  description: "Values of the additional arguments for the polling command, for example: (value1,value2,...)."
+outputs: []
+tests:
+- No test

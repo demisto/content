@@ -1,0 +1,47 @@
+{
+  "Flashpoint.Forum.Room(val.RoomId == obj.RoomId)": {
+    "RoomId": "test_scan_forum_room_id",
+    "Title": "fake title",
+    "Url": "fake url",
+    "Forum": {
+      "legacy_id": "fake legacy id",
+      "id": "test_scan_forum_room_id",
+      "name": "fake name",
+      "tags": [
+        {
+          "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd",
+          "parent_tag": null,
+          "id": 6,
+          "name": "fake name"
+        },
+        {
+          "uuid": "fa9a9533-0cf1-42b6-9553-08ebbbaaa60b",
+          "parent_tag": null,
+          "id": 9,
+          "name": "fake name"
+        },
+        {
+          "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b",
+          "parent_tag": null,
+          "id": 28,
+          "name": "fake name"
+        },
+        {
+          "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc",
+          "parent_tag": null,
+          "id": 29,
+          "name": "fake name"
+        }
+      ],
+      "hostname": "fake hostname",
+      "description": "fake description",
+      "stats": {
+        "threads": 116115,
+        "posts": 987018,
+        "rooms": 132,
+        "users": 50902
+      },
+      "platform_url": "http://123-fake-api.com/home/search/forums?forum_ids=test_scan_forum_room_id"
+    }
+  }
+}

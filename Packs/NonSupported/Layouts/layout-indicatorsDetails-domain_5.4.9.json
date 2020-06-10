@@ -1,0 +1,330 @@
+{
+    "typeId": "domainRep",
+    "kind": "indicatorsDetails",
+    "layout": {
+        "typeId": "domainRep",
+        "kind": "indicatorsDetails",
+        "name": "",
+        "tabs": [
+            {
+                "type": "custom",
+                "sections": [
+                    {
+                        "name": "Reputation",
+                        "i": "reputationSources",
+                        "h": 2,
+                        "moved": false,
+                        "static": false,
+                        "w": 1,
+                        "y": 0,
+                        "x": 2,
+                        "type": "reputationSources"
+                    },
+                    {
+                        "name": "Related Incidents",
+                        "i": "relatedIncidents",
+                        "h": 3,
+                        "moved": false,
+                        "static": false,
+                        "w": 2,
+                        "y": 2,
+                        "x": 1,
+                        "type": "relatedIncidents",
+                        "columns": [
+                            {
+                                "width": 110,
+                                "displayed": true,
+                                "key": "id",
+                                "isDefault": false
+                            },
+                            {
+                                "width": 300,
+                                "displayed": true,
+                                "key": "name",
+                                "isDefault": true
+                            },
+                            {
+                                "width": 200,
+                                "displayed": true,
+                                "key": "type",
+                                "isDefault": true
+                            },
+                            {
+                                "width": 80,
+                                "displayed": true,
+                                "key": "severity",
+                                "isDefault": false
+                            },
+                            {
+                                "width": 80,
+                                "displayed": true,
+                                "key": "status",
+                                "isDefault": true
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Timeline",
+                        "i": "indicatorTimeline",
+                        "items": [
+                            {
+                                "index": 0,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "firstseen",
+                                "id": "indicator-first-seen"
+                            },
+                            {
+                                "index": 1,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "lastseen",
+                                "id": "indicator-last-seen"
+                            }
+                        ],
+                        "moved": false,
+                        "displayType": "ROW",
+                        "static": false,
+                        "w": 1,
+                        "h": 2,
+                        "y": 0,
+                        "x": 1,
+                        "type": "indicatorTimeline"
+                    },
+                    {
+                        "name": "Domain Details",
+                        "i": "e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "index": 0,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "indicatortype",
+                                "id": "indicator-type"
+                            },
+                            {
+                                "index": 1,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "source",
+                                "id": "indicator-source"
+                            },
+                            {
+                                "index": 2,
+                                "endCol": 2,
+                                "height": 48,
+                                "startCol": 0,
+                                "fieldId": "comment",
+                                "id": "indicator-comment"
+                            },
+                            {
+                                "index": 3,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "dns",
+                                "id": "08c614d0-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 4,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "internal",
+                                "id": "262cc8c0-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 5,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "malwarefamily",
+                                "id": "2c4d6340-ac6e-11e9-8443-17259235cee7"
+                            }
+                        ],
+                        "moved": false,
+                        "displayType": "ROW",
+                        "static": false,
+                        "w": 1,
+                        "h": 2,
+                        "y": 0,
+                        "x": 0
+                    },
+                    {
+                        "minH": 1,
+                        "name": "Whois",
+                        "i": "3b60c080-ac6d-11e9-8443-17259235cee7",
+                        "hideName": false,
+                        "moved": false,
+                        "maxW": 3,
+                        "displayType": "ROW",
+                        "static": false,
+                        "w": 1,
+                        "items": [
+                            {
+                                "index": 0,
+                                "endCol": 2,
+                                "dropEffect": "move",
+                                "height": 24,
+                                "listId": "3b60c080-ac6d-11e9-8443-17259235cee7",
+                                "startCol": 0,
+                                "fieldId": "creationdate",
+                                "id": "9e5082c0-ac6d-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 1,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "adminphone",
+                                "id": "4f4addb0-ac6d-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 2,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "expirationdate",
+                                "id": "1d42d510-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 3,
+                                "endCol": 2,
+                                "dropEffect": "move",
+                                "height": 24,
+                                "listId": "3b60c080-ac6d-11e9-8443-17259235cee7",
+                                "startCol": 0,
+                                "fieldId": "adminname",
+                                "id": "4cfef1e0-ac6d-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 4,
+                                "endCol": 2,
+                                "dropEffect": "move",
+                                "height": 24,
+                                "listId": "3b60c080-ac6d-11e9-8443-17259235cee7",
+                                "startCol": 0,
+                                "fieldId": "adminemail",
+                                "id": "4a7cb3d0-ac6d-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 5,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "admincountry",
+                                "id": "45460420-ac6d-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 6,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "domainstatus",
+                                "id": "a55eb190-ac6d-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 7,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "nameservers",
+                                "id": "309dd1a0-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 8,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "organization",
+                                "id": "3d11d670-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 9,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "registrantname",
+                                "id": "6735a620-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 10,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "registrantcountry",
+                                "id": "421456c0-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 11,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "registrantemail",
+                                "id": "43fd13f0-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 12,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "registrantphone",
+                                "id": "46140d10-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 13,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "registrarname",
+                                "id": "541fc8e0-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 14,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "registrarabuseemail",
+                                "id": "4d52e8d0-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 15,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "registrarabusephone",
+                                "id": "529cd260-ac6e-11e9-8443-17259235cee7"
+                            },
+                            {
+                                "index": 16,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "subdomains",
+                                "id": "59648250-ac6e-11e9-8443-17259235cee7"
+                            }
+                        ],
+                        "y": 2,
+                        "x": 0,
+                        "h": 3,
+                        "minW": 1
+                    }
+                ],
+                "id": "default-main",
+                "name": "Info"
+            }
+        ],
+        "modified": "2019-07-23T14:46:27.446587968Z",
+        "TypeName": "",
+        "version": -1,
+        "id": "domainRep"
+    },
+    "TypeName": "domainRep",
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "5.4.9"
+}

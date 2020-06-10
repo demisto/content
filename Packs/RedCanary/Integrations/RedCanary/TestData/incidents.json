@@ -1,0 +1,186 @@
+{
+    "meta": {
+        "api_version": "v3.0",
+        "total_items": 1
+    },
+    "data": [
+        {
+            "type": "Detection",
+            "id": 741,
+            "attributes": {
+                "headline": "Unwanted Software (Riskware)",
+                "confirmed_at": "2019-12-25T02:37:41.311Z",
+                "summary": "Riskware was detected on this endpoint. Riskware is identified as software that may be used to circumvent security policy or controls, including but not limited to: license or policy bypass, host-based proxies, and anonymization services. Riskware may have legitimate uses, but does introduce unique risk due to the functionality that this class of software provides.",
+                "severity": "low",
+                "last_activity_seen_at": "2019-12-25T03:22:26.494Z",
+                "classification": {
+                    "superclassification": "Unwanted Software",
+                    "subclassification": [
+                        "Riskware"
+                    ]
+                },
+                "time_of_occurrence": "2019-12-25T02:07:37.329Z",
+                "last_acknowledged_at": "2019-12-25T02:42:43.920Z",
+                "last_acknowledged_by": {
+                    "type": "PortalUser",
+                    "attributes": {
+                        "email": "user@example.com",
+                        "name": "User User",
+                        "name_and_email": "User User (user@example.com)"
+                    }
+                },
+                "last_remediated_status": {
+                    "reason": null,
+                    "remediation_state": "remediated",
+                    "marked_by": {
+                        "type": "PortalUser",
+                        "attributes": {
+                            "email": "user@example.com",
+                            "name": "User User",
+                            "name_and_email": "User User (user@example.com)"
+                        }
+                    },
+                    "marked_at": "2019-12-27T21:00:49.519Z"
+                }
+            },
+            "relationships": {
+                "affected_endpoint": {
+                    "links": {
+                        "related": "url"
+                    },
+                    "data": {
+                        "type": "endpoint",
+                        "id": 42828
+                    }
+                },
+                "related_endpoint_user": {
+                    "links": {
+                        "related": "url"
+                    },
+                    "data": {
+                        "type": "endpoint_user",
+                        "id": 23380
+                    }
+                }
+            },
+            "links": {
+                "self": {
+                    "href": "url"
+                },
+                "activity_timeline": {
+                    "href": "url"
+                },
+                "detectors": {
+                    "href": "url"
+                },
+                "response_plans": {
+                    "href": "url"
+                }
+            }
+        },
+        {
+            "type": "Detection",
+            "id": 742,
+            "attributes": {
+                "headline": "Malicious Software",
+                "confirmed_at": "2019-12-30T16:20:03.423Z",
+                "summary": "An interactive Windows Command Processor (`cmd.exe `) session issued multiple commands to remove backups and prevent system recovery, techniques commonly used by Ransomware. An additional PowerShell command attempted to download and execute the `Bloodhound` Active Directory mapping utility.",
+                "severity": "high",
+                "last_activity_seen_at": "2019-12-30T15:50:40.236Z",
+                "classification": {
+                    "superclassification": "Malicious Software",
+                    "subclassification": []
+                },
+                "time_of_occurrence": "2019-12-13T18:23:22.980Z",
+                "last_acknowledged_at": null,
+                "last_acknowledged_by": null
+            },
+            "relationships": {
+                "affected_endpoint": {
+                    "links": {
+                        "related": "url"
+                    },
+                    "data": {
+                        "type": "endpoint",
+                        "id": 15311
+                    }
+                },
+                "related_endpoint_user": {
+                    "links": {
+                        "related": "url"
+                    },
+                    "data": {
+                        "type": "endpoint_user",
+                        "id": 21054
+                    }
+                }
+            },
+            "links": {
+                "self": {
+                    "href": "url"
+                },
+                "activity_timeline": {
+                    "href": "url"
+                },
+                "detectors": {
+                    "href": "url"
+                },
+                "response_plans": {
+                    "href": "url"
+                }
+            }
+        },
+        {
+            "type": "Detection",
+            "id": 743,
+            "attributes": {
+                "headline": "Malicious Software",
+                "confirmed_at": "2019-12-30T22:43:09.301Z",
+                "summary": "The adversary emulation tool `AttackIQ FireDrill` launched multiple utilities to query information and interact with scheduled tasks in a manner consistent with malicious post-exploitation activity.",
+                "severity": "high",
+                "last_activity_seen_at": "2019-12-30T22:07:46.253Z",
+                "classification": {
+                    "superclassification": "Malicious Software",
+                    "subclassification": []
+                },
+                "time_of_occurrence": "2019-12-30T22:00:50.559Z",
+                "last_acknowledged_at": null,
+                "last_acknowledged_by": null
+            },
+            "relationships": {
+                "affected_endpoint": {
+                    "links": {
+                        "related": "url"
+                    },
+                    "data": {
+                        "type": "endpoint",
+                        "id": 29520
+                    }
+                },
+                "related_endpoint_user": {
+                    "links": {
+                        "related": "url"
+                    },
+                    "data": {
+                        "type": "endpoint_user",
+                        "id": 1
+                    }
+                }
+            },
+            "links": {
+                "self": {
+                    "href": "url"
+                },
+                "activity_timeline": {
+                    "href": "url"
+                },
+                "detectors": {
+                    "href": "url"
+                },
+                "response_plans": {
+                    "href": "url"
+                }
+            }
+        }
+    ]
+}

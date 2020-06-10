@@ -1,0 +1,204 @@
+id: crowdstrike_endpoint_enrichment
+version: -1
+name: CrowdStrike Endpoint Enrichment
+fromversion: "3.5.0"
+description: Enrich Endpoint with CrowdStrike
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7cfa3cf6-82b0-452f-8c52-85355d20008a
+    type: start
+    task:
+      id: 7cfa3cf6-82b0-452f-8c52-85355d20008a
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 51
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
+    type: title
+    task:
+      id: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 6b7bfc47-d31a-4296-8cc5-0522912daa56
+    type: condition
+    task:
+      id: 6b7bfc47-d31a-4296-8cc5-0522912daa56
+      version: -1
+      name: Was device found?
+      description: Check if there was any machine match to the hostname
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FalconHostDevices
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: dcdf99c6-c7ad-48fa-895c-2730fe3821d6
+    type: regular
+    task:
+      id: dcdf99c6-c7ad-48fa-895c-2730fe3821d6
+      version: -1
+      name: Get host information from CrowdStrike Falcon Host
+      description: Get host information from CrowdStrike Falcon Host
+      script: '|||cs-device-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ids:
+        simple: ${FalconHostDevices}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 299,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: bea25d30-36cf-4ca9-8909-1a6ac435bcc1
+    type: regular
+    task:
+      id: bea25d30-36cf-4ca9-8909-1a6ac435bcc1
+      version: -1
+      name: Get device ID
+      description: Get CrowdStrike device id
+      script: '|||cs-device-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filter:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: hostname:"
+              suffix:
+                value:
+                  simple: '"'
+      limit: {}
+      offset: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 734,
+        "width": 629,
+        "x": 50,
+        "y": 51
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
+  description: The hostname to enrich
+outputs:
+- contextPath: Endpoint.ID
+  description: Unique ID of the endpoint in FalconHost
+  type: string
+- contextPath: Endpoint.IPAddress
+  description: IPAddress of the endpoint
+  type: string
+- contextPath: Endpoint.Domain
+  description: Domain of the endpoint
+  type: string
+- contextPath: Endpoint.MACAddress
+  description: MACAddress of the endpoint
+  type: string
+- contextPath: Endpoint.OS
+  description: OS of the endpoint
+  type: string
+- contextPath: Endpoint.OSVersion
+  description: OSVersion of the endpoint
+  type: string
+- contextPath: Endpoint.BIOSVersion
+  description: BIOSVersion of the endpoint
+  type: string
+- contextPath: Endpoint.HostName
+  description: The host of the endpoint
+  type: string
+tests:
+- No test

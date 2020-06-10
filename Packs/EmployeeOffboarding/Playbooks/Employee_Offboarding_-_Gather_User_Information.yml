@@ -1,0 +1,1945 @@
+id: Employee Offboarding - Gather User Information
+version: -1
+fromversion: 5.0.0
+name: Employee Offboarding - Gather User Information
+description: This playbook gathers user information as part of the IT - Employee Offboarding
+  playbook.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a99d2982-2041-46a5-876a-d2eab2ebb4ac
+    type: start
+    task:
+      id: a99d2982-2041-46a5-876a-d2eab2ebb4ac
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '63'
+      - '105'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: c622a80b-e367-4b8d-836e-59a7432a9c8a
+    type: title
+    task:
+      id: c622a80b-e367-4b8d-836e-59a7432a9c8a
+      version: -1
+      name: Proceed to Next Stage
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '28':
+    id: '28'
+    taskid: 9f558d4f-1e0a-467f-8405-799dbc3ecd25
+    type: regular
+    task:
+      id: 9f558d4f-1e0a-467f-8405-799dbc3ecd25
+      version: -1
+      name: Get Google user role IDs
+      description: Retrieves a list of all Google roles for a specified user.
+      script: '|||gmail-get-user-roles'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '120'
+    scriptarguments:
+      user-id:
+        complex:
+          root: inputs.OffboardingUserEmail
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '31':
+    id: '31'
+    taskid: 3ceb5012-031e-45ef-8fe1-9fd396fc9172
+    type: regular
+    task:
+      id: 3ceb5012-031e-45ef-8fe1-9fd396fc9172
+      version: -1
+      name: Get Google user details
+      description: Gets information for a specified user.
+      tags:
+      - google_user_details
+      script: '|||gmail-get-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+      - '91'
+    scriptarguments:
+      custom-field-mask: {}
+      projection: {}
+      user-id:
+        complex:
+          root: inputs.OffboardingUserEmail
+          transformers:
+          - operator: uniq
+      view-type-public-domain: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Google Display Name
+      output:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Google
+              ignorecase: true
+          accessor: DisplayName
+  '32':
+    id: '32'
+    taskid: 57ad98b9-e533-4d71-83e7-422bfba2d79e
+    type: regular
+    task:
+      id: 57ad98b9-e533-4d71-83e7-422bfba2d79e
+      version: -1
+      name: Save Google ID of the user
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      append: {}
+      key:
+        simple: OffboardingUserID
+      stringify:
+        simple: 'true'
+      value:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Gmail.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.OffboardingUserEmail
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '43':
+    id: '43'
+    taskid: f09348b8-e6f1-4162-89d6-71f733cd7214
+    type: condition
+    task:
+      id: f09348b8-e6f1-4162-89d6-71f733cd7214
+      version: -1
+      name: Is Okta enabled?
+      description: Checks whether the Okta integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '124'
+      'yes':
+      - '45'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: okta
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '45':
+    id: '45'
+    taskid: b05e615a-21f9-46ec-815a-ee4aec476e17
+    type: regular
+    task:
+      id: b05e615a-21f9-46ec-815a-ee4aec476e17
+      version: -1
+      name: Search user details in Okta
+      description: Searches for the user details of the user you are offboarding in
+        Okta.
+      script: '|||okta-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '124'
+    scriptarguments:
+      limit: {}
+      term:
+        complex:
+          root: inputs.OffboardingUserEmail
+          transformers:
+          - operator: uniq
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '49':
+    id: '49'
+    taskid: c6c68718-f52e-4ed7-889c-1193748d2589
+    type: regular
+    task:
+      id: c6c68718-f52e-4ed7-889c-1193748d2589
+      version: -1
+      name: Get user details from Active Directory
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      tags:
+      - active_directory_user_details
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '67'
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email:
+        complex:
+          root: inputs.OffboardingUserEmail
+          transformers:
+          - operator: uniq
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Active Directory Display Name
+      output:
+        complex:
+          root: ActiveDirectory
+          accessor: Users.displayName
+  '56':
+    id: '56'
+    taskid: 78eb27ee-f7a9-482d-8b62-b0f8b4ba5e06
+    type: condition
+    task:
+      id: 78eb27ee-f7a9-482d-8b62-b0f8b4ba5e06
+      version: -1
+      name: Can the user device be searched on Duo?
+      description: Checks whether a Duo username was specified in the playbook inputs,
+        and whether the Duo integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '124'
+      'yes':
+      - '57'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DUO Admin
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DuoUsername
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2510,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '57':
+    id: '57'
+    taskid: fe909fe5-6d85-49e0-8795-70f9e1a3fbda
+    type: regular
+    task:
+      id: fe909fe5-6d85-49e0-8795-70f9e1a3fbda
+      version: -1
+      name: Get user mobile devices
+      description: Return devices associated with the user.
+      script: '|||duoadmin-get-devices-by-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '124'
+    scriptarguments:
+      username:
+        complex:
+          root: inputs.DuoUsername
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2510,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '63':
+    id: '63'
+    taskid: ed23ffd2-809c-4b32-8d7e-e76290895bed
+    type: title
+    task:
+      id: ed23ffd2-809c-4b32-8d7e-e76290895bed
+      version: -1
+      name: Gathering User Information
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '114'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '64':
+    id: '64'
+    taskid: 8bdef146-39bd-4e7e-831a-548adf413695
+    type: title
+    task:
+      id: 8bdef146-39bd-4e7e-831a-548adf413695
+      version: -1
+      name: Gmail
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '69'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '65':
+    id: '65'
+    taskid: bd151747-b245-4f82-800f-4dbccd9b7039
+    type: title
+    task:
+      id: bd151747-b245-4f82-800f-4dbccd9b7039
+      version: -1
+      name: Active Directory
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '79'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '67':
+    id: '67'
+    taskid: f16190c9-bbc5-4842-8f90-d212df1e82a7
+    type: condition
+    task:
+      id: f16190c9-bbc5-4842-8f90-d212df1e82a7
+      version: -1
+      name: Is the manager's email configured?
+      description: Checks whether an email address was configured for the user's manager
+        in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '126'
+      'yes':
+      - '68'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.UserManagerEmail
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '68':
+    id: '68'
+    taskid: 87139d71-a4d7-4b42-8ee5-245a08ccaa72
+    type: regular
+    task:
+      id: 87139d71-a4d7-4b42-8ee5-245a08ccaa72
+      version: -1
+      name: Set user manager to local context
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserManagerEmail
+      value:
+        complex:
+          root: inputs.UserManagerEmail
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '69':
+    id: '69'
+    taskid: 96762057-37f3-425d-8aa1-1b646e4e0925
+    type: condition
+    task:
+      id: 96762057-37f3-425d-8aa1-1b646e4e0925
+      version: -1
+      name: Is Gmail enabled?
+      description: Checks whether the Gmail integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '28'
+      - '31'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '70':
+    id: '70'
+    taskid: 820c1859-c442-4aa4-867e-fc93d12cb188
+    type: title
+    task:
+      id: 820c1859-c442-4aa4-867e-fc93d12cb188
+      version: -1
+      name: Duo
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '56'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2510,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '71':
+    id: '71'
+    taskid: e8e50f59-bdcb-41c7-843d-cdc9a6d225c4
+    type: title
+    task:
+      id: e8e50f59-bdcb-41c7-843d-cdc9a6d225c4
+      version: -1
+      name: Okta
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '43'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '79':
+    id: '79'
+    taskid: 69838198-620d-4c27-8561-fb5372756cf1
+    type: condition
+    task:
+      id: 69838198-620d-4c27-8561-fb5372756cf1
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '91':
+    id: '91'
+    taskid: 0315a352-9b55-44fd-8237-22e0beee387b
+    type: title
+    task:
+      id: 0315a352-9b55-44fd-8237-22e0beee387b
+      version: -1
+      name: GoogleApps API
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '92'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '92':
+    id: '92'
+    taskid: fccc9307-616c-4005-8854-f9e18fb4f5ef
+    type: condition
+    task:
+      id: fccc9307-616c-4005-8854-f9e18fb4f5ef
+      version: -1
+      name: Is GoogleApps API enabled?
+      description: Checks whether the GoogleApps API integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '93'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '93':
+    id: '93'
+    taskid: 71582be8-f3f8-451a-8d2d-ecc3b3cf22ef
+    type: regular
+    task:
+      id: 71582be8-f3f8-451a-8d2d-ecc3b3cf22ef
+      version: -1
+      name: Get user mobile device
+      description: Retrieves mobile devices associated with the Google account.
+      script: '|||googleapps-get-devices-for-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      customerId:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Email.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.OffboardingUserEmail
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Type
+                iscontext: true
+              right:
+                value:
+                  simple: Google
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: CustomerId
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '101':
+    id: '101'
+    taskid: 2838ffb7-fcce-49f7-8a31-a89b8e25edc7
+    type: title
+    task:
+      id: 2838ffb7-fcce-49f7-8a31-a89b8e25edc7
+      version: -1
+      name: ServiceNow
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '102'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '102':
+    id: '102'
+    taskid: d60956e4-91c6-4227-8a5d-ebbc506300bd
+    type: condition
+    task:
+      id: d60956e4-91c6-4227-8a5d-ebbc506300bd
+      version: -1
+      name: Can user asset list be retrieved?
+      description: Checks if the ServiceNow integration is enabled, and if there is
+        a value in the ServiceNowAssetsTableName playbook input.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '124'
+      'yes':
+      - '104'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ServiceNowAssetsTableName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '104':
+    id: '104'
+    taskid: 46b7e043-bcd8-415d-81d9-e9e1bd81ab26
+    type: regular
+    task:
+      id: 46b7e043-bcd8-415d-81d9-e9e1bd81ab26
+      version: -1
+      name: Get user assets
+      description: Gets the user assets of the user you are offboarding from ServiceNow.
+      tags:
+      - user_assets
+      script: '|||servicenow-query-table'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '124'
+    scriptarguments:
+      fields:
+        simple: display_name
+      limit:
+        simple: '50'
+      offset: {}
+      query:
+        simple: assigned_to.email=${inputs.OffboardingUserEmail}
+      table_name:
+        complex:
+          root: inputs.ServiceNowAssetsTableName
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '105':
+    id: '105'
+    taskid: d7ca7ff4-b4ae-4fea-8621-df03673801e5
+    type: title
+    task:
+      id: d7ca7ff4-b4ae-4fea-8621-df03673801e5
+      version: -1
+      name: Data Initialization
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '106'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '106':
+    id: '106'
+    taskid: bd51cd86-1cbb-4e6c-84fa-2da36e0cb6bf
+    type: regular
+    task:
+      id: bd51cd86-1cbb-4e6c-84fa-2da36e0cb6bf
+      version: -1
+      name: Generate a random password for the user
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five, and at most ten, characters\
+        \ per class. \n\nThe min_* values all default to 0. This means that if the\
+        \ command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is\
+        \ possible that a password of length zero could be generated. It is therefore\
+        \ recommended to always include a min_* parameter that matches. \n\nThe debug\
+        \ parameter will print certain properties of the command into the WarRoom\
+        \ for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      debug: {}
+      max_digits: {}
+      max_lcase: {}
+      max_symbols: {}
+      max_ucase: {}
+      min_digits:
+        simple: '5'
+      min_lcase:
+        simple: '5'
+      min_symbols:
+        simple: '3'
+      min_ucase:
+        simple: '3'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '107':
+    id: '107'
+    taskid: 1e5bc4d5-8824-45fd-83c2-bf2be88b43d7
+    type: regular
+    task:
+      id: 1e5bc4d5-8824-45fd-83c2-bf2be88b43d7
+      version: -1
+      name: Save Google user roles
+      description: Saves the roles of the Google user in a new context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      append: {}
+      key:
+        simple: GmailRoles
+      value:
+        complex:
+          root: Gmail
+          accessor: Role
+          transformers:
+          - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: 'true'
+              defaultValue:
+                value:
+                  simple: 'null'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '114':
+    id: '114'
+    taskid: 2f07add0-8ed5-4e25-8c19-53103ee00ddb
+    type: regular
+    task:
+      id: 2f07add0-8ed5-4e25-8c19-53103ee00ddb
+      version: -1
+      name: Update offboarding stage
+      description: Updates the stage of the offboarding process in the incident details.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '65'
+      - '64'
+      - '101'
+      - '71'
+      - '70'
+    scriptarguments:
+      account: {}
+      accountid: {}
+      activedirectoryaccountstatus: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      hostname: {}
+      id: {}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      niststage: {}
+      occurred: {}
+      offboardingstage:
+        simple: Gathering User Information
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '119':
+    id: '119'
+    taskid: b43b0a58-bd56-4313-8dcb-c521792c8feb
+    type: regular
+    task:
+      id: b43b0a58-bd56-4313-8dcb-c521792c8feb
+      version: -1
+      name: Get Google role privileges
+      description: Retrieves details of a specific role.
+      script: '|||gmail-get-role'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '107'
+    scriptarguments:
+      customer-id: {}
+      role-id:
+        complex:
+          root: Gmail
+          accessor: Role.ID
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '120':
+    id: '120'
+    taskid: b1079179-f497-4b9a-8a88-85a6bdc9d642
+    type: condition
+    task:
+      id: b1079179-f497-4b9a-8a88-85a6bdc9d642
+      version: -1
+      name: Does the Google user have any roles?
+      description: Checks whether any roles were assigned to the user.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '119'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '124':
+    id: '124'
+    taskid: c2018aa0-e4a0-4ad9-83fc-00a015b5adb8
+    type: title
+    task:
+      id: c2018aa0-e4a0-4ad9-83fc-00a015b5adb8
+      version: -1
+      name: Mobile, 2FA, Assets - Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '125':
+    id: '125'
+    taskid: 237555fc-4fa6-41b6-85e7-9d8034bdfa31
+    type: regular
+    task:
+      id: 237555fc-4fa6-41b6-85e7-9d8034bdfa31
+      version: -1
+      name: Update incident with manager details
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      account: {}
+      accountid: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertyreceiveremail: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail:
+        complex:
+          root: UserManagerEmail
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      hostname: {}
+      id: {}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      logisticsdepartmentemail: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      managerdisplayname: {}
+      measurestomitigate: {}
+      name: {}
+      niststage: {}
+      occurred: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '126':
+    id: '126'
+    taskid: f001d7e1-4af1-4c66-86e2-7eff636227ef
+    type: condition
+    task:
+      id: f001d7e1-4af1-4c66-86e2-7eff636227ef
+      version: -1
+      name: Is there a user manager?
+      description: Checks whether a manager was found for the user.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '127'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Manager
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '127':
+    id: '127'
+    taskid: 40bf23f0-728e-4e2e-819a-bebf324c8f94
+    type: regular
+    task:
+      id: 40bf23f0-728e-4e2e-819a-bebf324c8f94
+      version: -1
+      name: Get user manager details
+      description: Retrieves information about the user manager.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '128'
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Type
+                iscontext: true
+              right:
+                value:
+                  simple: AD
+          accessor: Manager
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '128':
+    id: '128'
+    taskid: 246088c0-10db-491a-852c-1d76c2240caf
+    type: regular
+    task:
+      id: 246088c0-10db-491a-852c-1d76c2240caf
+      version: -1
+      name: Save user manager email to context
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '125'
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserManagerEmail
+      stringify: {}
+      value:
+        complex:
+          root: Account
+          filters:
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: Account.Email.Address
+                iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Account.Email
+                iscontext: true
+              right:
+                value:
+                  simple: incident.employeeemail
+                iscontext: true
+          accessor: Email
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "102_124_#default#": 0.34,
+      "120_9_#default#": 0.33,
+      "126_9_#default#": 0.23,
+      "43_124_#default#": 0.26,
+      "56_124_#default#": 0.35,
+      "67_68_yes": 0.53,
+      "69_28_yes": 0.47,
+      "69_31_yes": 0.48,
+      "69_9_#default#": 0.39,
+      "79_49_yes": 0.65,
+      "79_9_#default#": 0.29,
+      "92_9_#default#": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1805,
+        "width": 4240,
+        "x": -2510,
+        "y": -10
+      }
+    }
+  }
+inputs:
+- key: UserManagerEmail
+  value:
+    complex:
+      root: incident
+      accessor: employeemanageremail
+  required: false
+  description: The email of the manager of the user you are offboarding.
+- key: OffboardingUserEmail
+  value:
+    complex:
+      root: incident
+      accessor: employeeemail
+  required: true
+  description: The email address of the user that you are offboarding.
+- key: DuoUsername
+  value: {}
+  required: false
+  description: The username, in Duo, of the user you are offboarding.
+- key: ServiceNowAssetsTableName
+  value:
+    simple: alm_asset
+  required: false
+  description: The name of the "Assets" table in ServiceNow. This will be used to
+    get the assets that belong to the user you are offboarding.
+outputs: []
+sourceplaybookid: IT - Employee Offboarding
+tests:
+  - no test

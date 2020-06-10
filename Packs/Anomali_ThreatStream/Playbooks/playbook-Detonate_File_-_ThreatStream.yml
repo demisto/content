@@ -1,0 +1,441 @@
+id: Detonate File - ThreatStream
+version: -1
+name: Detonate File - ThreatStream
+fromversion: 4.5.0
+description: Detonate one or more files using the Anomali ThreatStream v2 integration.
+  This playbook returns relevant reports to the War Room, and file reputations to the
+  context data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 56650d59-750f-49e8-8323-9a38636631f6
+    type: start
+    task:
+      id: 56650d59-750f-49e8-8323-9a38636631f6
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: e58d872c-656f-4687-8279-50ff40cb4009
+    type: condition
+    task:
+      id: e58d872c-656f-4687-8279-50ff40cb4009
+      version: -1
+      name: Is Anomali ThreatStream v2 enabled?
+      description: Checks if there is a valid instance of the Anomali ThreatStream v2 integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "6"
+      "yes":
+        - "16"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: modules
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.brand
+                            iscontext: true
+                          right:
+                            value:
+                              simple: Anomali ThreatStream v2
+                          ignorecase: true
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.state
+                            iscontext: true
+                          right:
+                            value:
+                              simple: active
+                          ignorecase: true
+                    accessor: brand
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 1d556414-5fc2-441e-856c-27d1d0b0c207
+    type: title
+    task:
+      id: 1d556414-5fc2-441e-856c-27d1d0b0c207
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 124792e1-e06a-4d0c-8dd4-2fd5fc125aee
+    type: regular
+    task:
+      id: 124792e1-e06a-4d0c-8dd4-2fd5fc125aee
+      version: -1
+      name: ThreatStream Get Report
+      description: Returns a report of the file or URL that was submitted to the sandbox.
+      script: '|||threatstream-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "6"
+    scriptarguments:
+      report_id:
+        simple: ${ThreatStream.Analysis.ReportID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 832bc14a-ab8f-4bd3-8acf-78789433ee61
+    type: regular
+    task:
+      id: 832bc14a-ab8f-4bd3-8acf-78789433ee61
+      version: -1
+      name: Set file to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "19"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 9f3fb5f2-6b4e-4694-8db1-df2211b2b0fd
+    type: playbook
+    task:
+      id: 9f3fb5f2-6b4e-4694-8db1-df2211b2b0fd
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step /#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: ThreatStream
+          accessor: Analysis.ReportID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: report_id
+      PollingCommandName:
+        simple: threatstream-get-analysis-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ThreatStream.Analysis(val.Status=='processing').ReportID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: abdd7f0e-18af-4a32-8bd2-be620253a970
+    type: condition
+    task:
+      id: abdd7f0e-18af-4a32-8bd2-be620253a970
+      version: -1
+      name: Is there a file to detonate?
+      description: Checks if there is a file to detonate. If no file is found, detonation
+        is skipped.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "6"
+      "yes":
+        - "11"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: inputs.File
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 75b5f3a3-d25a-45d4-8477-76e6473d06fd
+    type: condition
+    task:
+      id: 75b5f3a3-d25a-45d4-8477-76e6473d06fd
+      version: -1
+      name: Is the file size bigger than 0?
+      description: Checks if the fail size is larger than 0.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "6"
+      "yes":
+        - "20"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: File.Size
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 78cece2d-336e-41e1-89c8-a70deb8350ff
+    type: regular
+    task:
+      id: 78cece2d-336e-41e1-89c8-a70deb8350ff
+      version: -1
+      name: ThreatStream Upload File
+      description: Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
+      script: '|||threatstream-submit-to-sandbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "15"
+    scriptarguments:
+      detail:
+        simple: ${inputs.Tags}
+      premium_sandbox:
+        simple: ${inputs.PremiumSandbox}
+      report_platform:
+        simple: ${inputs.VM}
+      submission_classification:
+        simple: ${inputs.SubmissionClassification}
+      submission_type:
+        simple: file
+      submission_value:
+        simple: ${inputs.File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_6_#default#": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 717.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+  - key: File
+    value:
+      complex:
+        root: File
+    required: false
+    description: File object of the file to detonate.
+  - key: VM
+    value: {}
+    required: false
+    description: The VM to use (string)
+  - key: SubmissionClassification
+    value: {}
+    required: false
+    description: Classification of the Sandbox submission.
+  - key: PremiumSandbox
+    value: {}
+    required: false
+    description: Specifies if the premium sandbox should be used for detonation.
+  - key: Tags
+    value: {}
+    required: false
+    description: A CSV list of tags applied to this sample.
+  - key: Interval
+    value: {}
+    required: false
+    description: Polling frequency - how often the polling command should run (minutes).
+  - key: Timeout
+    value: {}
+    required: false
+    description: Amount of time to wait before a timeout occurs (minutes).
+outputs:
+  - contextPath: File.Malicious
+    description: The file malicious description.
+    type: unknown
+  - contextPath: File.Malicious.Vendor
+    description: For malicious files, the vendor that made the decision.
+    type: string
+  - contextPath: File.Type
+    description: 'File type, for example: "PE".'
+    type: string
+  - contextPath: File.Size
+    description: File size.
+    type: number
+  - contextPath: File.MD5
+    description: MD5 hash of the file.
+    type: string
+  - contextPath: File.Name
+    description: File name.
+    type: string
+  - contextPath: File.SHA1
+    description: SHA1 hash of the file.
+    type: string
+  - contextPath: File
+    description: The file object.
+    type: unknown
+  - contextPath: File.SHA256
+    description: SHA256 hash of the file.
+    type: string
+  - contextPath: DBotScore
+    description: The DBotScore object.
+    type: unknown
+  - contextPath: DBotScore.Indicator
+    description: The indicator that was tested.
+    type: string
+  - contextPath: DBotScore.Type
+    description: The indicator type.
+    type: string
+  - contextPath: DBotScore.Vendor
+    description: Vendor used to calculate the score.
+    type: string
+  - contextPath: DBotScore.Score
+    description: The actual score.
+    type: number
+tests:
+  - No test

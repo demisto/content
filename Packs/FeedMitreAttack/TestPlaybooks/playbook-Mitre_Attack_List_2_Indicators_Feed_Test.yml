@@ -1,0 +1,186 @@
+id: Mitre Attack List 10 Indicators Feed Test
+version: -1
+name: Mitre Attack List 10 Indicators Feed Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 84bd5c2a-7ed5-4ac8-8e40-0a35f00ee98a
+    type: start
+    task:
+      id: 84bd5c2a-7ed5-4ac8-8e40-0a35f00ee98a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f1ae0fa4-4cfa-4194-8dac-3964fa213d3b
+    type: regular
+    task:
+      id: f1ae0fa4-4cfa-4194-8dac-3964fa213d3b
+      version: -1
+      name: mitre-get-indicators
+      description: Retreives a limited number of the indicators .
+      script: MITRE ATT&CK|||mitre-get-indicators
+      type: regular
+      iscommand: true
+      brand: MITRE ATT&CK
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "2"
+      raw: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e3634256-778d-465d-848a-2980aaf7ff41
+    type: regular
+    task:
+      id: e3634256-778d-465d-848a-2980aaf7ff41
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6a74b4aa-f80c-4921-860b-9434d8e6e6de
+    type: condition
+    task:
+      id: 6a74b4aa-f80c-4921-860b-9434d8e6e6de
+      version: -1
+      name: Indiactors found
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MITRE
+                accessor: ATT&CK
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 080b69a4-a2bf-44b2-8837-b72fd78de834
+    type: title
+    task:
+      id: 080b69a4-a2bf-44b2-8837-b72fd78de834
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: ""

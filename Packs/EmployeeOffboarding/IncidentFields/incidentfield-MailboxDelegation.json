@@ -1,0 +1,43 @@
+{
+	"id": "incident_mailboxdelegation",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"modified": "2020-01-02T16:24:14.655474847Z",
+	"name": "Mailbox Delegation",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "Whether the mailbox of the user was delegated to the user's manager. Can be either \"Unchanged\" or \"Delegated\".",
+	"cliName": "mailboxdelegation",
+	"type": "singleSelect",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"script": "",
+	"fieldCalcScript": "",
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"selectValues": [
+		"Unchanged",
+		"Delegated"
+	],
+	"validationRegex": "",
+	"useAsKpi": false,
+	"locked": false,
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Employee Offboarding"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+	"breachScript": ""
+}

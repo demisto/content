@@ -1,0 +1,277 @@
+category: Analytics & SIEM
+commonfields:
+  id: Looker
+  version: -1
+configuration:
+- display: API URL and port (e.g., https://example.looker.com:19999)
+  name: url
+  required: true
+  type: 0
+- display: API3 Client ID
+  name: client_id
+  required: true
+  type: 0
+- display: API3 Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Looker integration to query an explore, save queries as looks,
+  run looks, and fetch look results as incidents.
+display: Looker
+name: Looker
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: ID of the look. Can be found in the look's URL, or by running the
+        'looker-search-looks' command.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Fields to return.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: Name of the look.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of looks to return (0 for looker-determined limit).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: Format of the result.
+      isArray: false
+      name: result_format
+      predefined:
+      - json
+      - csv
+      required: true
+      secret: false
+    deprecated: false
+    description: Runs a saved look and returns the results in the specified format.
+    execution: false
+    name: looker-run-look
+    outputs:
+    - contextPath: LookerResults.LookID
+      description: Look ID.
+      type: Number
+    - contextPath: LookerResults.Results
+      description: Look results.
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Match look name.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by a particular space.
+      isArray: false
+      name: space_id
+      required: false
+      secret: false
+    - default: false
+      description: Filter by dashboards created by a particular user.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of looks to return (0 for looker-determined limit).
+      isArray: false
+      name: limit
+      predefined:
+      - ''
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves saved looks that match the search criteria.
+    execution: false
+    name: looker-search-looks
+    outputs:
+    - contextPath: Looker.Look.ID
+      description: Look ID.
+      type: Number
+    - contextPath: Looker.Look.Name
+      description: Look name.
+      type: String
+    - contextPath: Looker.Look.SpaceID
+      description: ID of the space that contains the look.
+      type: Number
+    - contextPath: Looker.Look.SpaceName
+      description: Name of the space that contains the look.
+      type: String
+    - contextPath: Looker.Look.LastUpdated
+      description: The time that the look was last updated.
+      type: Date
+  - arguments:
+    - default: false
+      description: Name of the model. Can be found in the explore's URL.
+      isArray: false
+      name: model
+      required: true
+      secret: false
+    - default: false
+      description: Name of the view or explore. Can be found in the explore's URL.
+      isArray: false
+      name: view
+      required: true
+      secret: false
+    - default: false
+      description: 'List of fields to display. (Field name format: "object_name.field_name")'
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters for the query, passed as a semicolon-separated list with
+        the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
+      isArray: true
+      name: filters
+      required: false
+      secret: false
+    - default: false
+      description: 'List of pivots. (Field name format: "object_name.field_name")'
+      isArray: true
+      name: pivots
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorting for the query results. (Field name format: "object_name.field_name").'
+      isArray: true
+      name: sorts
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of looks to return (0 for looker-determined limit).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: json
+      description: Format of the results.
+      isArray: false
+      name: result_format
+      predefined:
+      - json
+      - csv
+      required: true
+      secret: false
+    deprecated: false
+    description: Runs a query by defining it in the command arguments, rather than
+      a saved query in looker.
+    execution: false
+    name: looker-run-inline-query
+    outputs:
+    - contextPath: LookerResults.InlineQuery
+      description: Inline query results.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of the model. Can be found in the explore's URL.
+      isArray: false
+      name: model
+      required: true
+      secret: false
+    - default: false
+      description: Name of the view or explore. Can be found in the explore's URL.
+      isArray: false
+      name: view
+      required: true
+      secret: false
+    - default: false
+      description: 'List of fields to display. (Field name format: "object_name.field_name").'
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters for the query, passed as a semicolon-separated list with
+        the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
+      isArray: true
+      name: filters
+      required: false
+      secret: false
+    - default: false
+      description: 'List of pivots. (Field name format: "object_name.field_name").'
+      isArray: true
+      name: pivots
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorting for the query results. (Field name format: "object_name.field_name").'
+      isArray: true
+      name: sorts
+      required: false
+      secret: false
+    - default: false
+      description: Title of the look.
+      isArray: false
+      name: look_title
+      required: true
+      secret: false
+    - default: false
+      description: Description of the look.
+      isArray: false
+      name: look_description
+      required: false
+      secret: false
+    - default: false
+      description: ID of the space that will contain the look
+      isArray: false
+      name: look_space_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a look from a query.
+    execution: false
+    name: looker-create-look
+    outputs:
+    - contextPath: Looker.Look.ID
+      description: Look ID.
+      type: Number
+    - contextPath: Looker.Look.Name
+      description: Look name.
+      type: String
+    - contextPath: Looker.Look.SpaceID
+      description: ID of the space that contains the look.
+      type: Number
+    - contextPath: Looker.Look.SpaceName
+      description: Name of the space that contains the look.
+      type: String
+    - contextPath: Looker.Look.LastUpdated
+      description: The time that the look was last updated.
+      type: Date
+  dockerimage: demisto/python3:3.7.3.221
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- Test-Looker

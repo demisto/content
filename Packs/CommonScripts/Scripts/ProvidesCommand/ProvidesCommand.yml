@@ -1,0 +1,35 @@
+commonfields:
+  id: ProvidesCommand
+  version: -1
+name: ProvidesCommand
+script: ''
+type: python
+subtype: python3
+tags:
+- general
+comment: |-
+  Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Demisto REST API" integration must first be enabled.
+enabled: true
+args:
+- name: command
+  required: true
+  description: The integration command to find
+- name: enabled
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Filters results to integrations that are enabled or disabled.  'true'
+    or 'false'.  Will return both types by default.  False means that an integration
+    instance is either not defined or not enabled.  True means that an integration
+    instance is both defined and enabled.
+scripttarget: 0
+dependson:
+  must:
+  - Demisto REST API|||demisto-api-post
+  - Demisto REST API|||demisto-api-get
+runonce: false
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole
+tests:
+  - No test - unit test

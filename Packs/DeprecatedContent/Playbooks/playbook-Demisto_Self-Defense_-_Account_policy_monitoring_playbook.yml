@@ -1,0 +1,350 @@
+id: Demisto_Self-Defense_-_Account_policy_monitoring_playbook
+version: -1
+name: Demisto Self-Defense - Account policy monitoring playbook
+description: Get list of Demisto users through the REST API, and alert if any non-SAML user accounts are found.
+fromversion: 3.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8d2065da-28f3-4042-81b6-ccd497f2d788
+    type: start
+    task:
+      id: 8d2065da-28f3-4042-81b6-ccd497f2d788
+      version: -1
+      name: ""
+      description: "start"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 8c2060b1-feed-4a00-8e1d-01d3d8ce9137
+    type: regular
+    task:
+      id: 8c2060b1-feed-4a00-8e1d-01d3d8ce9137
+      version: -1
+      name: List Demisto users
+      description: List all Demisto users via Demisto REST API integration
+      script: Demisto REST API|||demisto-api-get
+      type: regular
+      iscommand: true
+      brand: Demisto REST API
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: DemistoUsers=response
+      uri:
+        simple: users
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 258
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 4d440741-9f52-4625-8b31-ad0de970fe0b
+    type: condition
+    task:
+      id: 4d440741-9f52-4625-8b31-ad0de970fe0b
+      version: -1
+      name: Any non-SSO users?
+      description: Check if there are any users that weren't created through a SAML
+        login i.e. users created locally in Demisto. In an all-SSO setup there shouldn't
+        be any.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isNotEmpty
+          left:
+            value:
+              complex:
+                root: DemistoUsers
+                filters:
+                - - operator: string.isNotEqual
+                    left:
+                      value:
+                        simple: DemistoUsers.userType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SAML
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 448,
+          "y": 443
+        }
+      }
+  "3":
+    id: "3"
+    taskid: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
+    type: title
+    task:
+      id: bc2a838b-0d3e-43d1-8dcd-3e014b6ccf3f
+      version: -1
+      name: Alert and Escalate
+      description: Alert and Escalate
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 2f4d7417-f033-4c83-83b2-8a7484869a32
+    type: regular
+    task:
+      id: 2f4d7417-f033-4c83-83b2-8a7484869a32
+      version: -1
+      name: Escalate to Critical
+      description: Set incident severity to Critical
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      addLabels: {}
+      amarkdownsection: {}
+      anothernumberpleasejusttomakesure: {}
+      app: {}
+      arcsightcaseid: {}
+      attach: {}
+      attachamenthash: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      compliance: {}
+      customFields: {}
+      customfield: {}
+      daysbetweenreportcreation: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      escalationdate: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      hjhj: {}
+      htmltypefield: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      itaytestfield: {}
+      labels: {}
+      longtextone: {}
+      longtexttoo: {}
+      mailbody: {}
+      multilinetext: {}
+      name: {}
+      numberplease: {}
+      occurred: {}
+      one: {}
+      owner: {}
+      phase: {}
+      relatedincidentssummary: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: critical
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      sourceip: {}
+      sourceip1: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      subcat: {}
+      subcategory: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      testhtml: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      tldr: {}
+      tttttt: {}
+      type: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 84,
+          "y": 817
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 15c95532-3d62-41b0-8d97-663d17443b1b
+    type: regular
+    task:
+      id: 15c95532-3d62-41b0-8d97-663d17443b1b
+      version: -1
+      name: Send alert to Slack channel
+      description: Send an alert to the CSIRT slack channel
+      script: slack|||slack-send
+      type: regular
+      iscommand: true
+      brand: slack
+    scriptarguments:
+      IgnoreAddURL: {}
+      channel:
+        simple: csirt
+      entry: {}
+      group: {}
+      message:
+        simple: Non-SSO Demisto User detected!
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 386,
+          "y": 1018
+        }
+      }
+  "6":
+    id: "6"
+    taskid: fed938d2-919c-467c-8f65-4757d50d6f00
+    type: regular
+    task:
+      id: fed938d2-919c-467c-8f65-4757d50d6f00
+      version: -1
+      name: Send SMS alert
+      description: Send an SMS alert using Twilio.
+      script: Twilio|||TwilioSendSMS
+      type: regular
+      iscommand: true
+      brand: Twilio
+    scriptarguments:
+      body:
+        simple: Non-SSO Demisto User detected!
+      from: {}
+      to:
+        simple: +1(XXX)666-1337
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 841
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 99688ee1-63c3-4e75-8148-952305bcd890
+    type: regular
+    task:
+      id: 99688ee1-63c3-4e75-8148-952305bcd890
+      version: -1
+      name: Close
+      description: Auto-close this incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 922,
+          "y": 590
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_yes": 0.62
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1063,
+        "width": 1218,
+        "x": 84,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No test

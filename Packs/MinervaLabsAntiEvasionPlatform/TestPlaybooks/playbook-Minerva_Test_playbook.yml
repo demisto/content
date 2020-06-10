@@ -1,0 +1,497 @@
+id: Minerva Test playbook
+version: -1
+name: Minerva Test playbook
+description: This is a test playbook that executes all the supported commands
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5178b3c4-e896-4191-8191-34f07878f850
+    type: start
+    task:
+      id: 5178b3c4-e896-4191-8191-34f07878f850
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: cbb7c964-0081-42b4-82ba-0ccbf9b156e2
+    type: regular
+    task:
+      id: cbb7c964-0081-42b4-82ba-0ccbf9b156e2
+      version: -1
+      name: minerva-search-endpoint
+      description: Search Minerva for an endpoint
+      script: Minerva Labs Anti-Evasion Platform|||minerva-search-endpoint
+      type: regular
+      iscommand: true
+      brand: Minerva Labs Anti-Evasion Platform
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      condition:
+        simple: equalTo
+      param:
+        simple: operatingSystem
+      value:
+        simple: Windows
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 64ceae65-d4bd-44de-8c6a-62d470246aa4
+    type: condition
+    task:
+      id: 64ceae65-d4bd-44de-8c6a-62d470246aa4
+      version: -1
+      name: Verify endpoint exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: Windows
+          right:
+            value:
+              simple: Minerva.Endpoint.OS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 6d5ad0a9-6108-43a6-885b-17b600a10d5a
+    type: regular
+    task:
+      id: 6d5ad0a9-6108-43a6-885b-17b600a10d5a
+      version: -1
+      name: Search for explorer.exe process
+      description: Search process with Minerva
+      script: Minerva Labs Anti-Evasion Platform|||minerva-search-process
+      type: regular
+      iscommand: true
+      brand: Minerva Labs Anti-Evasion Platform
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      condition:
+        simple: endWith
+      param:
+        simple: processName
+      value:
+        simple: explorer.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: ab64ce2b-bfbf-4932-8fd1-d8a28b5fe77f
+    type: title
+    task:
+      id: ab64ce2b-bfbf-4932-8fd1-d8a28b5fe77f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 6e82ca06-460a-493f-8c49-c8f300e4088b
+    type: regular
+    task:
+      id: 6e82ca06-460a-493f-8c49-c8f300e4088b
+      version: -1
+      name: Retrieve groups
+      description: Fetches all the groups defined in Minerva Management Console
+      script: Minerva Labs Anti-Evasion Platform|||minerva-get-groups
+      type: regular
+      iscommand: true
+      brand: Minerva Labs Anti-Evasion Platform
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 9e9b0ffb-adc7-48f1-88b6-c0f9fbd56ed6
+    type: condition
+    task:
+      id: 9e9b0ffb-adc7-48f1-88b6-c0f9fbd56ed6
+      version: -1
+      name: Check explorer.exe was found in processes
+      description: Check if list exist in demisto lists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              complex:
+                root: Minerva
+                accessor: Process.Name
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: explorer.exe
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 756de4fa-0337-4ea2-8cba-3fc0a19c2056
+    type: condition
+    task:
+      id: 756de4fa-0337-4ea2-8cba-3fc0a19c2056
+      version: -1
+      name: Check if Default Group was retrieved
+      description: Check if list exist in demisto lists.
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      array:
+        simple: ${Minerva.Group.Id}
+      value:
+        simple: DefaultAgentGroup
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 201648e5-311e-4e1d-8b05-d93c182b1cd7
+    type: regular
+    task:
+      id: 201648e5-311e-4e1d-8b05-d93c182b1cd7
+      version: -1
+      name: minerva-add-exclusion
+      description: Add exclusions to Minerva Console
+      script: Minerva Labs Anti-Evasion Platform|||minerva-add-exclusion
+      type: regular
+      iscommand: true
+      brand: Minerva Labs Anti-Evasion Platform
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      appliedGroupsIds: {}
+      data:
+        simple: ${Minerva.Process.SHA256}
+      description:
+        simple: Excluding explorer.exe by hash
+      type:
+        simple: hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 98e05822-0274-4f04-81c7-cb13518ffe48
+    type: regular
+    task:
+      id: 98e05822-0274-4f04-81c7-cb13518ffe48
+      version: -1
+      name: Delete explorer.exe exclusion
+      description: Deletes an exclusion by the id
+      script: Minerva Labs Anti-Evasion Platform|||minerva-delete-exclusion
+      type: regular
+      iscommand: true
+      brand: Minerva Labs Anti-Evasion Platform
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id:
+        simple: ${Minerva.Exclusion.Id}
+      type:
+        simple: hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: d94845d9-0868-4608-85f7-980ca3a6d860
+    type: regular
+    task:
+      id: d94845d9-0868-4608-85f7-980ca3a6d860
+      version: -1
+      name: Get all exclusions
+      description: Retrieves all the exclusions
+      script: Minerva Labs Anti-Evasion Platform|||minerva-get-exclusions
+      type: regular
+      iscommand: true
+      brand: Minerva Labs Anti-Evasion Platform
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: df695dc2-bcb2-4efa-8caf-9d38e3933a48
+    type: condition
+    task:
+      id: df695dc2-bcb2-4efa-8caf-9d38e3933a48
+      version: -1
+      name: Check if explorer.exe hash exclusion is in the exclusion list
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+    scriptarguments:
+      array:
+        complex:
+          root: Minerva
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Minerva.Exclusion.Data
+                iscontext: true
+              right:
+                value:
+                  simple: Minerva.Process.SHA256
+                iscontext: true
+          accessor: Exclusion.Data
+      value:
+        simple: ${Minerva.Process.SHA256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: a92b8c24-f675-4642-8ea8-664fe906888f
+    type: regular
+    task:
+      id: a92b8c24-f675-4642-8ea8-664fe906888f
+      version: -1
+      name: Add some dummy vaccination
+      description: Vaccinate with Minerva
+      script: Minerva Labs Anti-Evasion Platform|||minerva-add-vaccine
+      type: regular
+      iscommand: true
+      brand: Minerva Labs Anti-Evasion Platform
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      description:
+        simple: Made up mutex name
+      isMonitorOnly:
+        simple: "True"
+      name:
+        simple: SomeMaliciousMutex
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 9650d252-28fb-441d-8255-556d3c5edfdb
+    type: regular
+    task:
+      id: 9650d252-28fb-441d-8255-556d3c5edfdb
+      version: -1
+      name: Delete the dummy vaccine
+      description: Deletes given vaccines
+      script: Minerva Labs Anti-Evasion Platform|||minerva-delete-vaccine
+      type: regular
+      iscommand: true
+      brand: Minerva Labs Anti-Evasion Platform
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      vaccine_id:
+        simple: ${Minerva.Vaccine.Id}
+      vaccine_ids:
+        simple: ${Minerva.Vaccine.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: f303a11c-44e0-4995-81e4-20d88fa475f7
+    type: regular
+    task:
+      id: f303a11c-44e0-4995-81e4-20d88fa475f7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "3"
+      - "1"
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1450,
+        "width": 1670,
+        "x": 275,
+        "y": 65
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,194 @@
+id: IPInfoTest
+version: -1
+name: IPInfoTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3acaed5b-5909-4b07-8368-fdd136db2334
+    type: start
+    task:
+      id: 3acaed5b-5909-4b07-8368-fdd136db2334
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: b2064027-0ab4-447b-85e4-9762bbabfa79
+    type: regular
+    task:
+      id: b2064027-0ab4-447b-85e4-9762bbabfa79
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: f4e163e3-9257-4f98-88da-b780f5bdd2f2
+    type: regular
+    task:
+      id: f4e163e3-9257-4f98-88da-b780f5bdd2f2
+      version: -1
+      name: ip
+      description: Check IP reputation (when information is available, returns a JSON
+        with details).  Uses all configured Threat Intelligence feeds
+      script: ipinfo|||ip
+      type: regular
+      iscommand: true
+      brand: ipinfo
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+      - "5"
+    scriptarguments:
+      ip:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 86196c9e-026d-45f1-89f1-57276be540c1
+    type: regular
+    task:
+      id: 86196c9e-026d-45f1-89f1-57276be540c1
+      version: -1
+      name: VerifyContext Geo
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Description,Country,Location
+      path:
+        simple: IP.Geo
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: cc1e7e4e-4a78-4c01-8786-d9c6f032e8b9
+    type: regular
+    task:
+      id: cc1e7e4e-4a78-4c01-8786-d9c6f032e8b9
+      version: -1
+      name: VerifyContext Address
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Address
+      path:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: b7058c76-3475-4c8e-800d-626e1270e9c9
+    type: regular
+    task:
+      id: b7058c76-3475-4c8e-800d-626e1270e9c9
+      version: -1
+      name: Verify DBotScore
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '"0"'
+      fields: {}
+      path:
+        simple: DBotScore(val.Vendor=='ipinfo').Score=>val.length&&val.length>0?val[0]+'':val+''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

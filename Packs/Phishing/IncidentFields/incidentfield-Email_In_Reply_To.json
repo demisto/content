@@ -1,0 +1,33 @@
+{
+    "id": "incident_emailinreplyto",
+    "version": -1,
+    "modified": "2018-09-02T10:53:05.262517498+03:00",
+    "name": "Email In Reply To",
+    "ownerOnly": false,
+    "placeholder": "emailinreplyto",
+    "description": "The mail to whom you reply",
+    "cliName": "emailinreplyto",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "script": "",
+    "fieldCalcScript": "",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": null,
+    "validationRegex": "",
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Phishing"
+    ],
+    "systemAssociatedTypes": null,
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false
+}

@@ -1,0 +1,2 @@
+!activemq-send destination="/topic/demisto-test" body="send to topic message"
+!activemq-subscribe subscription-id=1 topic-name=demisto-test

@@ -1,0 +1,229 @@
+id: Account Enrichment - Generic v2.1
+version: -1
+fromversion: 4.1.0
+name: Account Enrichment - Generic v2.1
+description: |-
+  Enrich accounts using one or more integrations.
+  Supported integrations:
+  - Active Directory
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+    type: start
+    task:
+      id: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
+    type: condition
+    task:
+      id: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
+      version: -1
+      name: Is there an account to enrich?
+      description: Checks if there is at least one username to enrich.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 203
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
+    type: title
+    task:
+      id: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 98e13761-b371-4380-8815-9081204309db
+    type: condition
+    task:
+      id: 98e13761-b371-4380-8815-9081204309db
+      version: -1
+      name: Is Active Directory Query v2 enabled?
+      description: Checks if there’s an active instance of the Active Directory Query
+        v2 integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 97ec5ca3-8754-49ff-8797-627ef7e6cd33
+    type: regular
+    task:
+      id: 97ec5ca3-8754-49ff-8797-627ef7e6cd33
+      version: -1
+      name: Get account info from Active Directory
+      description: Queries Active Directory and returns information for the specified username.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_3_#default#": 0.62
+    },
+    "paper": {
+      "dimensions": {
+        "height": 780,
+        "width": 650,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Username
+  value:
+    complex:
+      root: Account
+      accessor: Username
+      transformers:
+      - operator: uniq
+  required: false
+  description: The username to enrich.
+outputs:
+- contextPath: Account
+  description: The account object.
+  type: unknown
+- contextPath: ActiveDirectory.Users.sAMAccountName
+  description: The user's samAccountName.
+- contextPath: ActiveDirectory.Users.userAccountControl
+  description: The user's account control flag.
+- contextPath: ActiveDirectory.Users.mail
+  description: The user's email address.
+- contextPath: ActiveDirectory.Users.memberOf
+  description: Groups the user is a member of.
+tests:
+  - Account Enrichment - Generic v2.1 - Test

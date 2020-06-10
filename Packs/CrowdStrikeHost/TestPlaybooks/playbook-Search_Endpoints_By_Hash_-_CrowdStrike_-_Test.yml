@@ -1,0 +1,125 @@
+id: search_endpoints_by_hash_-_crowdstrike_-_test
+version: -1
+name: Search Endpoints By Hash - CrowdStrike - Test
+fromversion: 3.5.0
+description: A test playbook for CrowdStrike Rapid IOC Hunting
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+    type: start
+    task:
+      id: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    taskid: ade05085-d22e-470a-8a44-b2b2707c48d3
+    type: title
+    task:
+      id: ade05085-d22e-470a-8a44-b2b2707c48d3
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: d20d4e24-01d3-4528-8442-789b96db9711
+    type: regular
+    task:
+      id: d20d4e24-01d3-4528-8442-789b96db9711
+      version: -1
+      name: Clear Context
+      description: Clear all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: e4502e7d-24b6-4e69-80fb-617590474104
+    type: playbook
+    task:
+      id: e4502e7d-24b6-4e69-80fb-617590474104
+      version: -1
+      name: Search Endpoints By Hash - CrowdStrike
+      playbookId: search_endpoints_by_hash_-_crowdstrike
+      playbookName: Search Endpoints By Hash - CrowdStrike
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      MD5Hash:
+        simple: 36bd4be7042f6de7e332c05cef287d05
+      SHA1Hash:
+        simple: 2fb8b65be05606697e019391d99e28c79c946725
+      SHA256Hash:
+        simple: 56cdfe418592b3fd68cea60da9689fb51a9bd90409b747d02fa08ed90db81e37
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,332 @@
+id: domain_enrichment_generic
+version: -1
+name: Domain Enrichment - Generic
+fromversion: 3.6.0
+description: |-
+  Enrich Domain using one or more integrations.
+
+  Domain enrichment includes:
+  * Domain reputation
+  * Threat information
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    type: start
+    task:
+      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 41
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 7fd055ad-aeb8-476b-8ba9-ab33781d2185
+    type: condition
+    task:
+      id: 7fd055ad-aeb8-476b-8ba9-ab33781d2185
+      version: -1
+      name: Is there a domain to check?
+      description: Determines whether the playbook's input contains a domain name.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "27"
+      - "29"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 191
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 1d8b490b-45a3-4155-8773-a55a106aab5e
+    type: regular
+    task:
+      id: 1d8b490b-45a3-4155-8773-a55a106aab5e
+      version: -1
+      name: Get domain Reputation
+      description: |-
+        Get the domain reputation from every integration that supports the `!domain`
+         command.
+      scriptName: DomainReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+    reputationcalc: 0
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 545.5,
+          "y": 690
+        }
+      }
+  "24":
+    id: "24"
+    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    type: title
+    task:
+      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 865
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 5acde632-6023-47ed-8e24-44a22d0f313b
+    type: condition
+    task:
+      id: 5acde632-6023-47ed-8e24-44a22d0f313b
+      version: -1
+      name: Should we get the Domain Reputation?
+      description: "Should the system retrieve the domain reputation from all of the
+        relevant integration?\nDefault: True\n "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "20"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 545.5,
+          "y": 504
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 5e53200b-ffd1-47f3-8cf1-1cb125623f98
+    type: condition
+    task:
+      id: 5e53200b-ffd1-47f3-8cf1-1cb125623f98
+      version: -1
+      name: Is Virus Total Private API enabled?
+      description: Checks if there is an active instance of the Virus Total Private
+        API enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 38.5,
+          "y": 515
+        }
+      }
+  "27":
+    id: "27"
+    taskid: 22c253ae-95f7-45cb-86cb-e604fe2b2c72
+    type: title
+    task:
+      id: 22c253ae-95f7-45cb-86cb-e604fe2b2c72
+      version: -1
+      name: Enrich using Virus Total Private API
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 38.5,
+          "y": 370
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 70059258-fba3-4615-8fe6-b36360e23e18
+    type: regular
+    task:
+      id: 70059258-fba3-4615-8fe6-b36360e23e18
+      version: -1
+      name: Get report on domain
+      description: ""
+      script: VirusTotal - Private API|||vt-private-get-domain-report
+      type: regular
+      iscommand: true
+      brand: VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+      fullResponse: {}
+      threshold: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 38.5,
+          "y": 690
+        }
+      }
+  "29":
+    id: "29"
+    taskid: 8074fcf5-1164-472b-8367-18d67bcf14ce
+    type: title
+    task:
+      id: 8074fcf5-1164-472b-8367-18d67bcf14ce
+      version: -1
+      name: Get domain reputation
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 545.5,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 889,
+        "width": 887,
+        "x": 38.5,
+        "y": 41
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+  required: false
+  description: The domain name to enrich
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook get reputation for the Domain
+outputs:
+- contextPath: Domain
+  description: The domain objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+tests:
+  - No test (test is old and uses virustotal which has quota problems. The v2 playbook has a better test)

@@ -1,0 +1,16 @@
+{
+  "GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)": [
+    {
+      "AssetName": "svetla",
+      "AlertCounts": 1,
+      "AlertInfo": [
+        {
+          "Name": "Command Shell Launched by Office Applications",
+          "SourceProduct": "Tanium",
+          "Severity": "Medium",
+          "Timestamp": "2019-08-12T20:25:57Z"
+        }
+      ]
+    }
+  ]
+}

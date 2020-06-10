@@ -1,0 +1,184 @@
+id: ActiveMQ Test
+version: -1
+name: ActiveMQ Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 022babb9-505b-4b0d-84c2-96d856226c66
+    type: start
+    task:
+      id: 022babb9-505b-4b0d-84c2-96d856226c66
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 2b7cf628-ffa7-426b-8ec8-10ca565141b5
+    type: regular
+    task:
+      id: 2b7cf628-ffa7-426b-8ec8-10ca565141b5
+      version: -1
+      name: activemq-send
+      description: Send msg to topic or queue
+      script: ActiveMQ|||activemq-send
+      type: regular
+      iscommand: true
+      brand: ActiveMQ
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      body:
+        simple: Demisto$$
+      destination:
+        simple: /topic/demisto-test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 47dacd09-c4bd-47bb-8044-54480a2cc3b1
+    type: regular
+    task:
+      id: 47dacd09-c4bd-47bb-8044-54480a2cc3b1
+      version: -1
+      name: activemq-subscribe
+      description: 'subscribe and read messages from topic '
+      script: ActiveMQ|||activemq-subscribe
+      type: regular
+      iscommand: true
+      brand: ActiveMQ
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: msg=
+      subscription-id:
+        simple: "5"
+      topic-name:
+        simple: demisto-test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 167a431b-7312-4a3e-8b37-789aff3bf9e2
+    type: regular
+    task:
+      id: 167a431b-7312-4a3e-8b37-789aff3bf9e2
+      version: -1
+      name: verify result
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: Demisto$$
+      fields: {}
+      path:
+        simple: msg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: a5560d7c-2e94-482a-81d5-3dc22d021118
+    type: regular
+    task:
+      id: a5560d7c-2e94-482a-81d5-3dc22d021118
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 7d1d501b-5240-4971-831e-9d965c8e06eb
+    type: regular
+    task:
+      id: 7d1d501b-5240-4971-831e-9d965c8e06eb
+      version: -1
+      name: activemq-subscribe
+      description: 'subscribe and read messages from topic '
+      script: ActiveMQ|||activemq-subscribe
+      type: regular
+      iscommand: true
+      brand: ActiveMQ
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      extend-context:
+        simple: msg=
+      subscription-id:
+        simple: "5"
+      topic-name:
+        simple: demisto-test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

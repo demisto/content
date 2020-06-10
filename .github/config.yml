@@ -1,0 +1,6 @@
+newPRWelcomeComment: >
+  Hi and welcome to the Demisto Content project!
+  Thank you and congrats on your first pull request, we will review it soon!
+  Until then you can check out our [documentation](https://github.com/demisto/content/tree/master/docs) for more details.
+  We would be thrilled to see you get involved in our [Slack DFIR community](https://go.demisto.com/join-our-slack-community) for discussions.
+  Hope you have a great time here :)

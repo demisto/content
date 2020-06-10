@@ -1,0 +1,495 @@
+id: CrowdStrike Falcon Intel v2
+version: -1
+name: CrowdStrike Falcon Intel v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2563b107-8432-4d8f-86d6-cf4b2f74a0a2
+    type: start
+    task:
+      id: 2563b107-8432-4d8f-86d6-cf4b2f74a0a2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: a0690b52-40a9-4023-8aba-5202bce9e7e2
+    type: regular
+    task:
+      id: a0690b52-40a9-4023-8aba-5202bce9e7e2
+      version: -1
+      name: Check IP Address
+      script: FalconIntel|||ip
+      type: regular
+      iscommand: true
+      brand: FalconIntel
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        simple: 4.4.4.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 22f372fd-22f4-45c8-8a56-6b0567d17fbe
+    type: regular
+    task:
+      id: 22f372fd-22f4-45c8-8a56-6b0567d17fbe
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 43e08778-21ef-4d20-8ec5-e694ad9b06cc
+    type: regular
+    task:
+      id: 43e08778-21ef-4d20-8ec5-e694ad9b06cc
+      version: -1
+      name: Check File
+      script: FalconIntel|||file
+      type: regular
+      iscommand: true
+      brand: FalconIntel
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file:
+        simple: 369c8fc6532ba547d7ef5985bb5e880a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 5825a5ef-e623-4b61-8f5d-8d27d54931ac
+    type: regular
+    task:
+      id: 5825a5ef-e623-4b61-8f5d-8d27d54931ac
+      version: -1
+      name: Check URL
+      script: FalconIntel|||url
+      type: regular
+      iscommand: true
+      brand: FalconIntel
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        simple: http://8.8.8.8/google.doc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: bb11d0c5-0478-436e-80e6-8c0b5c819be1
+    type: regular
+    task:
+      id: bb11d0c5-0478-436e-80e6-8c0b5c819be1
+      version: -1
+      name: Check Domain
+      script: FalconIntel|||domain
+      type: regular
+      iscommand: true
+      brand: FalconIntel
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domain:
+        simple: dns02.hpupdat.net
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: d3f0406d-c132-484c-8f15-40c08022a6c7
+    type: condition
+    task:
+      id: d3f0406d-c132-484c-8f15-40c08022a6c7
+      version: -1
+      name: Test if values exist from API calls
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: ip
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: hash
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 4a47d3e9-70c6-47c9-86e9-2a9f37ad7793
+    type: title
+    task:
+      id: 4a47d3e9-70c6-47c9-86e9-2a9f37ad7793
+      version: -1
+      name: Test playbook finished successfully.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: d9ae6ec4-2d15-41aa-895e-b3aecc0580e5
+    type: regular
+    task:
+      id: d9ae6ec4-2d15-41aa-895e-b3aecc0580e5
+      version: -1
+      name: Search known actors
+      description: Search known actors based on the given parameters. Dates are formatted
+        as YYYY-MM-DD. Max date is taken automatically looking at end-of-day time.
+        Origins, targetCountries, targetIndustries and motivations can all receive
+        multiple values separated by ",". Offset is 0 based. Sort is field_name.order,
+        field_name.order where order is either asc or desc.
+      script: '|||cs-actors'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      desc: {}
+      limit:
+        simple: "1"
+      maxLastActivityDate: {}
+      maxLastModifiedDate: {}
+      minLastActivityDate: {}
+      minLastModifiedDate: {}
+      motivations: {}
+      name: {}
+      offset: {}
+      origins: {}
+      q:
+        simple: google
+      slug: {}
+      sort: {}
+      targetCountries: {}
+      targetIndustries: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: ef036f00-07eb-497b-8966-7b4e16072881
+    type: regular
+    task:
+      id: ef036f00-07eb-497b-8966-7b4e16072881
+      version: -1
+      name: Search known indicators
+      description: Search known indicators based on the given parameters
+      script: '|||cs-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      filter:
+        simple: match
+      page: {}
+      pageSize: {}
+      parameter:
+        simple: indicator
+      sort: {}
+      value:
+        simple: panda
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 758d2d76-0d38-4750-80a7-1f07ec164d1d
+    type: regular
+    task:
+      id: 758d2d76-0d38-4750-80a7-1f07ec164d1d
+      version: -1
+      name: Query CrowdStrike intelligence publications
+      description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
+        publications.
+      script: '|||cs-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      actor:
+        simple: panda
+      description: {}
+      limit:
+        simple: "2"
+      maxLastModifiedDate: {}
+      minLastModifiedDate:
+        simple: 2019-06-28
+      motivations: {}
+      name: {}
+      offset: {}
+      q: {}
+      slug: {}
+      sort: {}
+      subType: {}
+      tags: {}
+      targetCountries: {}
+      targetIndustries: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0c544724-337f-4d80-834f-9ab2d9377449
+    type: regular
+    task:
+      id: 0c544724-337f-4d80-834f-9ab2d9377449
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 177816e5-3a30-45ac-8d8e-42b2296750d2
+    type: condition
+    task:
+      id: 177816e5-3a30-45ac-8d8e-42b2296750d2
+      version: -1
+      name: Test if values exist from API calls
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: ip
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: hash
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: url
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

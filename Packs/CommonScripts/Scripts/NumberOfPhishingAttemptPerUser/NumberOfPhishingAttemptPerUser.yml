@@ -1,0 +1,19 @@
+comment: Shows a bar chart of the number of incident the 'To' and 'From' email addresses
+  appeared on
+fromversion: 5.0.0
+commonfields:
+  id: NumberOfPhishingAttemptPerUser
+  version: -1
+enabled: true
+name: NumberOfPhishingAttemptPerUser
+script: '-'
+tags:
+- dynamic-section
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.3.286
+runas: DBotWeakRole
+runonce: false
+subtype: python3
+tests:
+  - No test

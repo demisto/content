@@ -1,0 +1,951 @@
+id: TIM - QRadar Add Bad Hash Indicators
+version: -1
+fromversion: 5.5.0
+name: TIM - QRadar Add Bad Hash Indicators
+description: This playbook queries indicators based on a pre-defined query or results
+  from a parent playbook, and adds the resulting indicators to a QRadar Reference
+  Set. The Reference Set name must be defined in the playbook inputs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4f1764f4-d8e4-4a73-883e-a7e2f8e2046b
+    type: start
+    task:
+      id: 4f1764f4-d8e4-4a73-883e-a7e2f8e2046b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3174d8a8-8be4-497a-8d4d-110c701f4e07
+    type: title
+    task:
+      id: 3174d8a8-8be4-497a-8d4d-110c701f4e07
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9414d6b5-94dc-4b24-843b-cdfc6eecd46e
+    type: condition
+    task:
+      id: 9414d6b5-94dc-4b24-843b-cdfc6eecd46e
+      version: -1
+      name: Is QRadarEnabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "49"
+      - "50"
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: c644aaac-dfaf-4da2-8d41-90ccfadef4b7
+    type: condition
+    task:
+      id: c644aaac-dfaf-4da2-8d41-90ccfadef4b7
+      version: -1
+      name: Are there filtered results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 89624abb-440c-4cdd-881b-fce9b8462f2b
+    type: regular
+    task:
+      id: 89624abb-440c-4cdd-881b-fce9b8462f2b
+      version: -1
+      name: Add Sha256 to QRadar reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarSha256ReferenceSetName}
+      source: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha256
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+          transformers:
+          - operator: uniq
+      values:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 7a99bf47-5cb4-4355-8dc4-aa2cabe3614f
+    type: condition
+    task:
+      id: 7a99bf47-5cb4-4355-8dc4-aa2cabe3614f
+      version: -1
+      name: Is there a Qradar Sha256 Reference Set and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.QRadarSha256ReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 960739c4-90dc-4145-8b68-e5362e870fab
+    type: condition
+    task:
+      id: 960739c4-90dc-4145-8b68-e5362e870fab
+      version: -1
+      name: Is there a Qradar Sha1 Reference Set and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.QRadarSha1ReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Sha1
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 1cc5c04b-a56c-46c7-8136-cc82f6e58544
+    type: regular
+    task:
+      id: 1cc5c04b-a56c-46c7-8136-cc82f6e58544
+      version: -1
+      name: Add Sha1 to QRadar reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarSha1ReferenceSetName}
+      source: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha1
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+          transformers:
+          - operator: uniq
+      values:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 35f7ec07-4008-44ce-8b62-02312a7a339a
+    type: condition
+    task:
+      id: 35f7ec07-4008-44ce-8b62-02312a7a339a
+      version: -1
+      name: Is there a Qradar Md5 Reference Set and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.QRadarMd5ReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Md5
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2560,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: bf09c33b-b18f-4753-801e-1c953599ccee
+    type: regular
+    task:
+      id: bf09c33b-b18f-4753-801e-1c953599ccee
+      version: -1
+      name: Add Md5 to QRadar reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarMd5ReferenceSetName}
+      source: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Md5
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+          transformers:
+          - operator: uniq
+      values:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2560,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 38d68455-33df-4d69-8d34-e33d49da30c8
+    type: title
+    task:
+      id: 38d68455-33df-4d69-8d34-e33d49da30c8
+      version: -1
+      name: Sha256
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 4d6da770-b066-46b7-80b4-ae44a3083999
+    type: title
+    task:
+      id: 4d6da770-b066-46b7-80b4-ae44a3083999
+      version: -1
+      name: Sha1
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: c2c41c02-1ab4-4f9f-85c5-3d743f1d65f8
+    type: title
+    task:
+      id: c2c41c02-1ab4-4f9f-85c5-3d743f1d65f8
+      version: -1
+      name: Md5
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2560,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 7ce87557-da19-44e2-8ed9-16e7c501f6b3
+    type: regular
+    task:
+      id: 7ce87557-da19-44e2-8ed9-16e7c501f6b3
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha1
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 5b8cc0f8-0973-4d3e-8e17-3bb7ae0bd7fe
+    type: regular
+    task:
+      id: 5b8cc0f8-0973-4d3e-8e17-3bb7ae0bd7fe
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Sha1
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 35b1c16b-1db9-4265-8a34-3bcfd8b825f1
+    type: regular
+    task:
+      id: 35b1c16b-1db9-4265-8a34-3bcfd8b825f1
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: Md5
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2560,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1885,
+        "width": 2600,
+        "x": 340,
+        "y": -310
+      }
+    }
+  }
+inputs:
+- key: QRadarMd5ReferenceSetName
+  value: {}
+  required: false
+  description: The name of the QRadar Md5 reference set to insert the data in to.
+  playbookInputQuery: null
+- key: QRadarSha1ReferenceSetName
+  value: {}
+  required: false
+  description: The name of the QRadar Sha1 reference set to insert the data in to.
+  playbookInputQuery: null
+- key: QRadarSha256ReferenceSetName
+  value:
+    simple: Demisto Demo Sha256
+  required: false
+  description: The name of the QRadar Sha256 reference set to insert the data in to.
+  playbookInputQuery: null
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+outputs: []
+quiet: true
+tests:
+- No test

@@ -1,0 +1,236 @@
+commonfields:
+  id: TestFormatTableValues
+  version: -1
+name: TestFormatTableValues
+script: |-
+  /* Tests an invalid input param and compares it to the return value */
+  var testInvalidParam = function (param) {
+    var res = formatTableValues(param);
+
+    if (res !== param) {
+      throw new Error('Test value ' + param + ' changed');
+    }
+
+    return res;
+  }
+  /* Tests a single value as a field and compares it to the stringified result */
+  var testSingleValueInObject = function (param) {
+    var res = formatTableValues(
+      {
+        testKey: param,
+      }
+    );
+
+    if (res.testKey !== ('' + param)) {
+      throw new Error('Invalid ' + param + ' value representation');
+    }
+  }
+  /* Tests a single value as a field and compares it to the stringified result */
+  var testSingleValueInArray = function (param) {
+    var res = formatTableValues(
+      [
+        param,
+      ]
+    );
+
+    if (res[0] !== ('' + param)) {
+      throw new Error('Invalid ' + param + ' value representation');
+    }
+  }
+  /* Tests the longest indentation of a stringified object against an expected number */
+  var testIndentation = function (input, expectedIndentation) {
+    var longest = 0;
+    var count = 0;
+    var obj = formatTableValues(input);
+
+    /* Run all stringified object values */
+    for (key in obj) {
+      var value = obj[key];
+      var indented = false;
+
+      /* Search for indentations */
+      for (c in value) {
+          char = value[c];
+        if (char === ' ') {
+          if (!indented) {
+            indented = true;
+          } else {
+            count++;
+            indented = false;
+          }
+        } else {
+          indented = false; // To avoid counting normal spaces
+
+          /* Is this the longest indentation yet? */
+          if (count > longest) {
+            longest = count;
+          }
+          count = 0;
+        }
+      }
+    }
+
+    /* In case the latest count was the largest for some reason */
+    if (count >= longest) {
+      longest = count;
+    }
+
+    if (longest != expectedIndentation) {
+      throw new Error('Wrong longest indentation ' + longest + ' , expected ' + expectedIndentation);
+    }
+  }
+
+  var testIndentationObject = function () {
+    var obj = {
+      testObj: {
+        anotherObj: {
+          testKey: 'testVal'
+        }
+      }
+    }
+    testIndentation(obj, 1);
+  }
+
+  var testInvalidInputFunc = function () {
+    var testValue = 'anything';
+    var res = testInvalidParam(function () { return testValue });
+    var anything = res();
+    if (anything !== testValue) {
+      throw new Error('Invalid function return value');
+    }
+  }
+
+  var testInvalidInputTypes = function () {
+    testInvalidParam('test');
+    testInvalidParam(111);
+    testInvalidParam(true);
+    testInvalidParam(false);
+    testInvalidParam(new Date());
+    testInvalidParam(undefined);
+    testInvalidParam(null);
+    testInvalidInputFunc();
+  }
+
+  var testInputObjectWithTypes = function () {
+    testSingleValueInObject('test string');
+    testSingleValueInObject(123456);
+    testSingleValueInObject(true);
+    testSingleValueInObject(false);
+    testSingleValueInObject(new Date());
+    testSingleValueInObject(null);
+    testSingleValueInObject(undefined);
+  }
+
+  var testInputArrayWithTypes = function () {
+    testSingleValueInArray('test string');
+    testSingleValueInArray(123456);
+    testSingleValueInArray(true);
+    testSingleValueInArray(false);
+    testSingleValueInArray(new Date());
+    testSingleValueInArray(null);
+    testSingleValueInArray(undefined);
+  }
+
+  var testIndentationArray = function() {
+    var arr = [
+      [
+        [
+          [
+            [
+              [
+                [
+                  [
+                    "hi"
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+    testIndentation(arr, 0);
+  }
+
+  var testIndentationArrayOfObjects = function () {
+    var arr = [
+      {
+        hey1: 'lala1',
+        moshe1: 1111,
+        date1: new Date(),
+      },
+      {
+        hey2: 'lala2',
+        moshe2: 2222,
+        date2: new Date(),
+        bla: null,
+        bla2: undefined,
+        bool1: true,
+        bool2: false,
+        someObj: {
+          inAnObj: {
+            a: 'b',
+            c: 'd'
+          }
+        }
+      }
+    ];
+    testIndentation(arr, 2);
+  }
+
+  var testIndentationArrayWithinArray = function () {
+    var obj = {
+      testValue: 'hello',
+      testArr1: [
+        [
+          [
+            'a',
+            42,
+            {
+              test: 'world'
+            },
+            [
+              'b',
+              51,
+              {
+                foo: 'bar',
+                another: {
+                  one: 'bytes',
+                  andAnother: {
+                    one: {
+                      bytes: {
+                        andAnother: {
+                          one: {
+                            bytes: {
+                              the: 'dust'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          ]
+        ]
+      ]
+    };
+    testIndentation(obj, 7);
+  }
+
+  // test calls
+  testInvalidInputTypes();
+  testInputObjectWithTypes();
+  testInputArrayWithTypes();
+
+  testIndentationObject();
+  testIndentationArray();
+  testIndentationArrayOfObjects();
+  testIndentationArrayWithinArray();
+
+  return "ok";
+type: javascript
+tags: []
+enabled: true
+scripttarget: 0

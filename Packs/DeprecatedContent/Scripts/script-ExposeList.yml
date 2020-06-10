@@ -1,0 +1,41 @@
+commonfields:
+  id: ExposeList
+  version: -1
+name: ExposeList
+script: |
+  var list = getJSONListAsObject(args.listName);
+  if (list) {
+      var key = args.contextKey ? args.contextKey : 'lists.' + args.listName;
+      key = key.replace(/[ \\()?]/g, '_');
+      var res = list;
+      if (args.query) {
+          res = dq(list, args.query);
+      }
+      var ec = {};
+      ec[key] = res;
+      return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json,
+          HumanReadable: 'Exposed list [' + args.listName + '] to [' + key + ']', EntryContext: ec};
+  }
+  return {Type: entryTypes.error, Contents: 'Error retrieving list ' + args.listName, ContentsFormat: formats.text};
+type: javascript
+comment: Retruns Demisto list
+tags:
+- Utility
+system: true
+args:
+- name: listName
+  default: true
+  description: The list we want to expose to the context
+- name: contextKey
+  default: false
+  description: The key we want to expose the list to. Default is lists.listName.
+- name: query
+  default: false
+  description: The optional Demisto Query we would like to apply on the list
+outputs:
+- contextPath: lists
+  description: The containing object for the lists which will contain the list names
+scripttarget: 0
+dependson: {}
+deprecated: true
+timeout: 0s

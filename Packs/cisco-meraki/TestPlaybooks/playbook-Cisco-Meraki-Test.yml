@@ -1,0 +1,267 @@
+id: Cisco-Meraki-Test
+version: -1
+name: Cisco-Meraki-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 45bb6b36-3e22-4c61-8961-2d98bac59a8b
+    type: start
+    task:
+      id: 45bb6b36-3e22-4c61-8961-2d98bac59a8b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 75b5a805-2ba5-41ac-850e-9e7076b04894
+    type: regular
+    task:
+      id: 75b5a805-2ba5-41ac-850e-9e7076b04894
+      version: -1
+      name: meraki-fetch-organizations
+      description: List the organizations that the api-key has privileges on
+      script: '|||meraki-fetch-organizations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: a19f66be-6a26-4cff-830e-00804647e580
+    type: regular
+    task:
+      id: a19f66be-6a26-4cff-830e-00804647e580
+      version: -1
+      name: meraki-get-organization-license-state
+      description: License state for an organization
+      script: '|||meraki-get-organization-license-state'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      headers: {}
+      organizationId:
+        simple: ${Organization.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 3f0dbf97-ef2a-4ce4-8a9e-253eb9b389ac
+    type: regular
+    task:
+      id: 3f0dbf97-ef2a-4ce4-8a9e-253eb9b389ac
+      version: -1
+      name: meraki-fetch-organization-inventory
+      description: List of Inventories for an organization
+      script: '|||meraki-fetch-organization-inventory'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      headers: {}
+      organizationId:
+        simple: ${Organization.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 4f3be5ad-39a2-4507-87a8-619e3613a3ca
+    type: regular
+    task:
+      id: 4f3be5ad-39a2-4507-87a8-619e3613a3ca
+      version: -1
+      name: meraki-fetch-networks
+      description: List the networks in an organization
+      script: '|||meraki-fetch-networks'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      headers: {}
+      organizationId:
+        simple: ${Organization.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 2f2c0fef-e22d-44af-8344-07528554f73e
+    type: regular
+    task:
+      id: 2f2c0fef-e22d-44af-8344-07528554f73e
+      version: -1
+      name: meraki-fetch-devices
+      description: List the devices in a network
+      script: '|||meraki-fetch-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      headers: {}
+      networkId:
+        simple: ${Network.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 714a73aa-1aee-4fed-836f-9e9593a75990
+    type: regular
+    task:
+      id: 714a73aa-1aee-4fed-836f-9e9593a75990
+      version: -1
+      name: VerifyContext-fetch-organizations
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "2"
+      - "3"
+    scriptarguments:
+      fields:
+        simple: Name,ID
+      isArray:
+        simple: "true"
+      path:
+        simple: Organization
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: ef74e78f-693d-4b0b-8b06-eb1bc11a6f78
+    type: regular
+    task:
+      id: ef74e78f-693d-4b0b-8b06-eb1bc11a6f78
+      version: -1
+      name: VerifyContext-fetch-networks
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context: {}
+      fields:
+        simple: Name,ID,OrganizationId,Timezone,Type
+      isArray:
+        simple: "true"
+      path:
+        simple: Network
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 8371e442-e42f-4cad-83ce-ba3d4f4e49d6
+    type: regular
+    task:
+      id: 8371e442-e42f-4cad-83ce-ba3d4f4e49d6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 1670,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

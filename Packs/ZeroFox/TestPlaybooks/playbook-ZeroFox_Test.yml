@@ -1,0 +1,1077 @@
+id: ZeroFox-Test
+version: -1
+name: ZeroFox-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd413637-9cbe-439e-828e-c4ef8ffd9d8b
+    type: start
+    task:
+      id: fd413637-9cbe-439e-828e-c4ef8ffd9d8b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: b969969e-a77c-46b1-8844-ec7160199452
+    type: regular
+    task:
+      id: b969969e-a77c-46b1-8844-ec7160199452
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: f0bfbd59-d15c-49dd-8d6c-1aedb9edf27e
+    type: regular
+    task:
+      id: f0bfbd59-d15c-49dd-8d6c-1aedb9edf27e
+      version: -1
+      name: zerofox-list-alerts
+      description: Returns alerts matching given/default filters and parameters. By
+        default, no filters are applied and results are sorted by timestamp.
+      script: ZeroFox|||zerofox-list-alerts
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      account: {}
+      alert_id: {}
+      alert_type: {}
+      assignee: {}
+      entity: {}
+      entity_search: {}
+      entity_term: {}
+      escalated: {}
+      last_modified: {}
+      limit:
+        simple: "1"
+      max_timestamp: {}
+      min_timestamp: {}
+      network: {}
+      offset: {}
+      page_id: {}
+      page_url: {}
+      pages: {}
+      perpetrator_search: {}
+      post: {}
+      pro_social_obj_search: {}
+      rule_id: {}
+      rule_name: {}
+      severity: {}
+      sort_direction: {}
+      sort_field: {}
+      status:
+        simple: open
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 06cb44ad-2e97-4271-8f15-0eee9ee9d948
+    type: regular
+    task:
+      id: 06cb44ad-2e97-4271-8f15-0eee9ee9d948
+      version: -1
+      name: GenerateRandomString
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "12"
+      Lowercase:
+        simple: "False"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 967c8d92-7491-4247-8d0e-a982e7b8b6b8
+    type: regular
+    task:
+      id: 967c8d92-7491-4247-8d0e-a982e7b8b6b8
+      version: -1
+      name: zerofox-alert-user-assignment
+      description: Assigns an alert to a user
+      script: ZeroFox|||zerofox-alert-user-assignment
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+      subject_email:
+        simple: kkk@gmail.com  #disable-secrets-detection
+      subject_name:
+        complex:
+          root: RandomString
+      username:
+        complex:
+          root: RandomString
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 982fe66d-85fa-473d-8f50-f06c6a4b515c
+    type: regular
+    task:
+      id: 982fe66d-85fa-473d-8f50-f06c6a4b515c
+      version: -1
+      name: zerofox-get-alert
+      description: Fetches an alert by ID
+      script: ZeroFox|||zerofox-get-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 3226d9e0-2716-4bee-8d36-2a9f2b8d08bc
+    type: condition
+    task:
+      id: 3226d9e0-2716-4bee-8d36-2a9f2b8d08bc
+      version: -1
+      name: Verify Asignee
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ZeroFox
+                accessor: Alert.Assignee
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 7f734b3e-2da8-46ba-8207-3c241bccb10f
+    type: regular
+    task:
+      id: 7f734b3e-2da8-46ba-8207-3c241bccb10f
+      version: -1
+      name: zerofox-modify-alert-tags
+      description: adds/removes tags to/from a specific alert
+      script: ZeroFox|||zerofox-modify-alert-tags
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      addition: {}
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+      tags:
+        simple: tag1,tag2,tag3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: cd920be8-3b64-44a8-871e-1df68088aec3
+    type: regular
+    task:
+      id: cd920be8-3b64-44a8-871e-1df68088aec3
+      version: -1
+      name: zerofox-get-alert
+      description: Fetches an alert by ID
+      script: ZeroFox|||zerofox-get-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 48be687d-ff6e-4172-897e-eced7aa9c0d2
+    type: condition
+    task:
+      id: 48be687d-ff6e-4172-897e-eced7aa9c0d2
+      version: -1
+      name: Verify Tags
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ZeroFox
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ZeroFox.Alert.Tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: tag1
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ZeroFox.Alert.Tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: tag2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ZeroFox.Alert.Tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: tag3
+                accessor: Alert.Tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: be7133f1-5111-4f1c-816e-de6ece50730f
+    type: regular
+    task:
+      id: be7133f1-5111-4f1c-816e-de6ece50730f
+      version: -1
+      name: zerofox-modify-alert-tags
+      description: adds/removes tags to/from a specific alert
+      script: ZeroFox|||zerofox-modify-alert-tags
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      addition:
+        simple: "false"
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+      tags:
+        simple: tag3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: ec81a221-2ef0-4f97-8a87-c30c495f2390
+    type: regular
+    task:
+      id: ec81a221-2ef0-4f97-8a87-c30c495f2390
+      version: -1
+      name: zerofox-get-alert
+      description: Fetches an alert by ID
+      script: ZeroFox|||zerofox-get-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 564be780-395e-47ad-8ed8-69ff412e0697
+    type: condition
+    task:
+      id: 564be780-395e-47ad-8ed8-69ff412e0697
+      version: -1
+      name: Verify Tags
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ZeroFox
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ZeroFox.Alert.Tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: tag1
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ZeroFox.Alert.Tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: tag2
+                accessor: Alert.Tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 8d69525d-6c4b-4f3c-82d0-92043b3157e9
+    type: regular
+    task:
+      id: 8d69525d-6c4b-4f3c-82d0-92043b3157e9
+      version: -1
+      name: zerofox-alert-request-takedown
+      description: Requests takedown of a specific alert
+      script: ZeroFox|||zerofox-alert-request-takedown
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 86facbc9-d528-4863-8b75-0f56da85d2d1
+    type: regular
+    task:
+      id: 86facbc9-d528-4863-8b75-0f56da85d2d1
+      version: -1
+      name: zerofox-get-alert
+      description: Fetches an alert by ID
+      script: ZeroFox|||zerofox-get-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 88d2efc6-3cf7-4ae1-8500-752fdbdca354
+    type: regular
+    task:
+      id: 88d2efc6-3cf7-4ae1-8500-752fdbdca354
+      version: -1
+      name: zerofox-alert-cancel-takedown
+      description: Cancels takedown of a specific alert
+      script: ZeroFox|||zerofox-alert-cancel-takedown
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 96c9f1e8-9275-4b52-8f08-c10d304ac3e0
+    type: regular
+    task:
+      id: 96c9f1e8-9275-4b52-8f08-c10d304ac3e0
+      version: -1
+      name: zerofox-get-alert
+      description: Fetches an alert by ID
+      script: ZeroFox|||zerofox-get-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 99ebdd90-afae-4bbf-86e6-6fa4661a1d78
+    type: condition
+    task:
+      id: 99ebdd90-afae-4bbf-86e6-6fa4661a1d78
+      version: -1
+      name: Verify Open
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ZeroFox
+                accessor: Alert.Status
+            iscontext: true
+          right:
+            value:
+              simple: Open
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: c8f4046f-23b8-47c6-891b-8221bdd9f85c
+    type: regular
+    task:
+      id: c8f4046f-23b8-47c6-891b-8221bdd9f85c
+      version: -1
+      name: zerofox-close-alert
+      description: Closes an alert
+      script: ZeroFox|||zerofox-close-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: c63288dc-ab08-4d32-82bc-3ebc1c1e5f1a
+    type: regular
+    task:
+      id: c63288dc-ab08-4d32-82bc-3ebc1c1e5f1a
+      version: -1
+      name: zerofox-get-alert
+      description: Fetches an alert by ID
+      script: ZeroFox|||zerofox-get-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: ce8ba771-c084-4f03-8916-ed7882745c0d
+    type: condition
+    task:
+      id: ce8ba771-c084-4f03-8916-ed7882745c0d
+      version: -1
+      name: Verify Closed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ZeroFox
+                accessor: Alert.Status
+            iscontext: true
+          right:
+            value:
+              simple: Closed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 95b695f8-aa03-4534-854e-fe22a22a5676
+    type: regular
+    task:
+      id: 95b695f8-aa03-4534-854e-fe22a22a5676
+      version: -1
+      name: zerofox-open-alert
+      description: Opens an alert'
+      script: ZeroFox|||zerofox-open-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 12655e9f-9066-4afa-8912-744a36e6c880
+    type: regular
+    task:
+      id: 12655e9f-9066-4afa-8912-744a36e6c880
+      version: -1
+      name: zerofox-get-alert
+      description: Fetches an alert by ID
+      script: ZeroFox|||zerofox-get-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: caa9dad3-1587-41c1-81a3-37d688b0216c
+    type: condition
+    task:
+      id: caa9dad3-1587-41c1-81a3-37d688b0216c
+      version: -1
+      name: Verify Open
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ZeroFox
+                accessor: Alert.Status
+            iscontext: true
+          right:
+            value:
+              simple: Open
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: e0b770fc-b7f8-4642-8a5f-139055a59d52
+    type: regular
+    task:
+      id: e0b770fc-b7f8-4642-8a5f-139055a59d52
+      version: -1
+      name: Fetch Incidents Test
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      add_to_context: {}
+      brand_name: {}
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: ZeroFox
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          accessor: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: e0cd9f77-e1d7-4591-8cd9-7749f148254f
+    type: title
+    task:
+      id: e0cd9f77-e1d7-4591-8cd9-7749f148254f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: d49352c4-871d-4383-8e9c-d352b39aa93b
+    type: regular
+    task:
+      id: d49352c4-871d-4383-8e9c-d352b39aa93b
+      version: -1
+      name: zerofox-get-policy-types
+      description: Shows in the war room a table of all policy type names & IDs
+      script: ZeroFox|||zerofox-get-policy-types
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 1e966c36-3ea9-4066-80eb-a723156461de
+    type: regular
+    task:
+      id: 1e966c36-3ea9-4066-80eb-a723156461de
+      version: -1
+      name: zerofox-create-entity
+      description: Creates a new entity on the company of the authorized user.
+      script: ZeroFox|||zerofox-create-entity
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      name:
+        simple: pb_test
+      organization: {}
+      policy_id:
+        simple: "34778"
+      strict_name_matching: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: a03e85c0-6738-4e3d-8f4a-1734182ff368
+    type: regular
+    task:
+      id: a03e85c0-6738-4e3d-8f4a-1734182ff368
+      version: -1
+      name: zerofox-list-entities
+      description: Lists all entities on the company of the authorized user.
+      script: ZeroFox|||zerofox-list-entities
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      email_address: {}
+      group: {}
+      label: {}
+      network: {}
+      networks: {}
+      page: {}
+      policy:
+        complex:
+          root: ZeroFox
+          accessor: Entity.PolicyID
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4935,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

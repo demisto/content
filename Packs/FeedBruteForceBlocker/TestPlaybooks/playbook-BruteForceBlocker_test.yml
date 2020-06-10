@@ -1,0 +1,184 @@
+elasticcommonfields: {}
+id: playbook-BruteForceBlocker_test
+version: -1
+fromversion: 5.5.0
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+name: playbook-BruteForceBlocker_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22fc730d-5c9d-45e8-8a6b-b99c4e2e60a2
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: 22fc730d-5c9d-45e8-8a6b-b99c4e2e60a2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 264b7b7e-ed02-4188-853b-5f218350088a
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 264b7b7e-ed02-4188-853b-5f218350088a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c4767b9f-8d71-4401-8e46-631139772d81
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: c4767b9f-8d71-4401-8e46-631139772d81
+      version: -1
+      name: bruteforceblocker-get-indicators
+      script: '|||bruteforceblocker-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context:
+        simple: Indicator=.[0]
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c534c581-24da-4883-8039-2122001d614d
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: c534c581-24da-4883-8039-2122001d614d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6f95cf9d-bc62-4e8d-8ee5-91bd1ae93023
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 6f95cf9d-bc62-4e8d-8ee5-91bd1ae93023
+      version: -1
+      name: Test BruteForceBlocker outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

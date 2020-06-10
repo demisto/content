@@ -1,0 +1,94 @@
+commonfields:
+  id: Google BigQuery
+  version: -1
+name: Google BigQuery
+display: Google BigQuery
+category: Database
+description: Integration for Google BigQuery, a data warehouse for querying and analyzing
+  large databases.
+  In all commands, for any argument not specified, the BigQuery default value for that argument will be applied.
+configuration:
+- display: Google service account JSON (a credentials JSON generated from Google API
+    Manager or from GCP console)
+  name: google_service_creds
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: bigquery-query
+    arguments:
+    - name: query
+      required: true
+      description: A query string (in BigQuery query syntax).
+        For more information about the standard syntax, see the BigQuery
+        documentation - https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax.
+    - name: location
+      description: The geographic location where the job should run. Required for locations other than US and EU.
+    - name: allow_large_results
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Allow query results tables larger than 128 MB compressed (legacy SQL only)
+    - name: default_dataset
+      description: A string of the fully-qualified dataset ID in standard SQL format.
+        The value must include a project ID and dataset ID, separated by periods.
+    - name: destination_table
+      description: The table to which the results are written. Default value is "None".
+    - name: kms_key_name
+      description: Custom encryption configuration for the destination table.
+    - name: dry_run
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If "true," BigQuery doesn't run the job. Instead, if the query
+        is valid, BigQuery returns statistics about the job, such as how many bytes
+        would be processed. If the query is invalid, an error is returned. The default
+        value is "false".
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - BATCH
+      - INTERACTIVE
+      description: Priority of the query (“INTERACTIVE” or “BATCH”).
+        A query set as INTERACTIVE will be run on-demand, at the next possible time. A query set as BATCH
+        will start as soon as idle resources are available, and changed to INTERACTIVE priority if
+        it wasn’t started within 24 hours. The default value is “INTERACTIVE”.
+    - name: use_query_cache
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to look for the query results in the cache.
+    - name: use_legacy_sql
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to use legacy SQL syntax.
+    - name: job_id
+      description: The ID of the job. The ID must contain only letters (a-z, A-Z),
+        numbers (0-9), underscores (_), or dashes (-). The maximum length is 1,024
+        characters.
+    - name: write_disposition
+      auto: PREDEFINED
+      predefined:
+      - WRITE_EMPTY
+      - WRITE_TRUNCATE
+      - WRITE_APPEND
+      description: Specifies the action that occurs if the destination table already exists.
+    outputs:
+    - contextPath: BigQuery.Query
+      description: The query performed.
+      type: String
+    - contextPath: BigQuery.Row
+      description: The table rows the given query returned.
+      type: Unknown
+    description: Performs a query on BigQuery.
+  dockerimage: demisto/bigquery:1.0.0.239
+  subtype: python3
+  runonce: false

@@ -1,0 +1,24 @@
+commonfields:
+  id: Whois
+  version: -1
+name: Whois
+toversion: 4.0.9
+script: return executeCommand('whois', {'query':args.query});
+type: javascript
+tags:
+- threat-intel
+- whois
+- server
+comment: A simple script that returns WHOIS info for a domain
+system: true
+args:
+- name: query
+  required: true
+  default: true
+  description: Input for the WHOIS query
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - whois
+timeout: 0s

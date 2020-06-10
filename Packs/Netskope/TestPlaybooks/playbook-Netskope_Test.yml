@@ -1,0 +1,206 @@
+id: Netskope Test
+version: -1
+name: Netskope Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 460c6756-a817-4a6b-8964-5e8b6cf7323c
+    type: start
+    task:
+      id: 460c6756-a817-4a6b-8964-5e8b6cf7323c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 647f312a-8616-4b6e-874e-596f183f1567
+    type: regular
+    task:
+      id: 647f312a-8616-4b6e-874e-596f183f1567
+      version: -1
+      name: netskope-alerts
+      script: '|||netskope-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      endtime: {}
+      query: {}
+      starttime: {}
+      timeperiod:
+        simple: Last90Days
+      type:
+        simple: Malware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 4f46a651-cff8-473a-82f5-a49b4e422a38
+    type: regular
+    task:
+      id: 4f46a651-cff8-473a-82f5-a49b4e422a38
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID,Timestamp
+      path:
+        simple: Netskope.Alerts
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 69a409e1-6a8e-4046-8622-50963c6d74f7
+    type: regular
+    task:
+      id: 69a409e1-6a8e-4046-8622-50963c6d74f7
+      version: -1
+      name: netskope-events
+      script: '|||netskope-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      endtime:
+        simple: 28-12-2018T01:01:01Z
+      limit: {}
+      query: {}
+      skip: {}
+      starttime:
+        simple: "1545260461"
+      timeperiod: {}
+      type:
+        simple: audit
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 71e5c03d-a66e-4326-89dc-097c10777a78
+    type: regular
+    task:
+      id: 71e5c03d-a66e-4326-89dc-097c10777a78
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID,Timestamp,User
+      path:
+        simple: Netskope.Events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 65ea66fc-1743-492a-8801-a093a20bb132
+    type: title
+    task:
+      id: 65ea66fc-1743-492a-8801-a093a20bb132
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 961
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 976,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

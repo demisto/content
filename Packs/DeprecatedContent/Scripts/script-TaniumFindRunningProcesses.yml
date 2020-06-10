@@ -1,0 +1,169 @@
+commonfields:
+  id: TaniumFindRunningProcesses
+  version: -1
+name: TaniumFindRunningProcesses
+deprecated: true
+script: |-
+  var entry = {
+      Type: 1,
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: "",
+      EntryContext: {}
+  };
+  // "Get Computer Name"
+  var selects = '\
+  <selects>\
+   <select>\
+    <sensor>\
+     <name>Computer Name</name>\
+    </sensor>\
+   </select>\
+  </selects>';
+  // "where Running Processes starts with "
+  var group = '\
+  <group>\
+   <and_flag>1</and_flag>\
+   <not_flag>0</not_flag>\
+   <sub_groups>\
+    <group>\
+     <and_flag>1</and_flag>\
+     <not_flag>0</not_flag>\
+     <filters>\
+      <filter>\
+       <sensor>\
+        <name>Running Processes</name>\
+       </sensor>\
+       <operator>RegexMatch</operator>\
+       <value_type>String</value_type>\
+       <value>' + args.processNamePrefix + '.*</value>\
+       <not_flag>0</not_flag>\
+       <ignore_case_flag>1</ignore_case_flag>\
+      </filter>\
+     </filters>\
+     <sub_groups/>\
+     <deleted_flag>0</deleted_flag>\
+    </group>\
+   </sub_groups>\
+  </group>';
+  var timeout = parseInt(args.timeout) || 30; // seconds
+  var pollFreq = parseInt(args.pollfreq) || 3; // seconds
+  var taniumArgs = {
+        'selects': selects,
+        'group': group
+      };
+  var hosts = [];
+  var res = executeCommand('tn-add-question-complex', taniumArgs);
+  if (res[0].Type !== entryTypes.error) {
+      var result = res[0].Contents.Envelope.Body.return;
+      if (result.command !== 'AddObject') {
+          return result.command;
+      }
+      if (result.result_object.question.id) {
+          var qid = result.result_object.question.id;
+          // check the status of the new question, based on the returned ID
+          var res = executeCommand('tn-result-info', {'id': qid, 'question-type': 'question'});
+          if (res[0].Type !== entryTypes.error) {
+              if (!res[0].Contents.result_infos) {
+                  return res[0].Contents.Envelope.Body.return.command;
+              }
+              // Need to compare 'mr_passed' and 'estimated_total' values,
+              // to confirm that all machines have answered
+
+              var answers = res[0].Contents.result_infos.result_info.mr_passed;
+              var expectedAnswers = res[0].Contents.result_infos.result_info.estimated_total;
+              var polled = false;
+              sec = 0;
+              do {
+                if (polled) {
+                    sec += pollFreq;
+                    wait(pollFreq);
+                }
+                res = executeCommand('tn-result-info', {'id': qid, 'question-type': 'question'});
+                if (res[0].Type === entryTypes.error) {
+                    return res[0];
+                }
+
+                answers = res[0].Contents.result_infos.result_info.mr_passed;
+                expectedAnswers = res[0].Contents.result_infos.result_info.estimated_total;
+                polled = true;
+              } while (answers !== expectedAnswers && sec < timeout);
+              if (sec >= timeout) {
+                log("Timed out. Results may be incomplete. Run the query again to allow Tanium to reach full results.");
+              } else {
+                log("Full results. It took " + sec + " seconds, polling at " + pollFreq + " second intervals.");
+              }
+              // Get question data (i.e. question result)
+              var qDataRes = executeCommand('tn-result-data', {'id': qid, 'question-type': 'question'});
+              if (!qDataRes[0].Contents.result_sets) {
+                  return qDataRes[0].Contents.Envelope.Body.return.command;
+              }
+              // Extract the relevant fields from the data
+              itemCount = parseInt(qDataRes[0].Contents.result_sets.result_set.item_count);
+              if (itemCount === 0) {
+                  return 'No results';
+              }
+              var output = "";
+              var cs = qDataRes[0].Contents.result_sets.result_set.cs;
+              var rs = qDataRes[0].Contents.result_sets.result_set.rs;
+              // When a single item is returned, rs.r is a single object. Otherwise, it is an array...
+              if (itemCount === 1) {
+                  var row = {};
+                  for (var i=0; i < cs.c.length; i++) {
+                      row[cs.c[i].dn] = rs.r.c[i].v;
+                  }
+                  entry.Contents.push(row);
+              } else {
+                  for (var item=0; item < itemCount; item++) {
+                      var row = {};
+                      for (var j=0; j < cs.c.length; j++) {
+                          row[cs.c[j].dn] = rs.r[item].c[j].v;
+                      }
+                      entry.Contents.push(row);
+                  }
+              }
+              if (entry.Contents.length === 0) {
+                 return 'No Results';
+              }
+              for (var i=0; i<entry.Contents.length; i++) {
+                  hosts.push(entry.Contents[i]["Computer Name"]);
+              }
+
+              var hostArray = [];
+              for (var key in hosts){
+                  hostArray.push({Hostname:hosts[key]});
+              }
+              entry.EntryContext.Endpoint = hostArray;
+              entry.HumanReadable = tableToMarkdown("Running Processes", entry.Contents);
+              return entry;
+          }
+      }
+  }
+  return res;
+type: javascript
+tags:
+- tanium
+comment: TaniumAskQuestionComplex - same as the AskQuestion command with additional
+  filtering prepared by the script (an XML subsection added to the request).
+system: true
+args:
+- name: timeout
+  description: Force Tanium to respond after x seconds (even if data was not collected
+    fully by Tanium)
+- name: processNamePrefix
+  required: true
+  default: true
+  description: Prefix of the process name to search
+- name: pollfreq
+  description: Poll every Y seconds.
+outputs:
+- contextPath: Endpoint
+  description: List of endpoints where the process was found
+scripttarget: 0
+dependson:
+  must:
+  - tn-add-question-complex
+  - tn-result-data
+  - tn-result-info
+timeout: 0s

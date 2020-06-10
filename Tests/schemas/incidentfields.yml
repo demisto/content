@@ -1,0 +1,88 @@
+type: map
+mapping:
+  fromVersion:
+    type: str
+  toVersion:
+    type: str
+  incidentFields:
+    type: seq
+    sequence:
+    - include: field_schema
+
+schema;field_schema:
+  type: map
+  mapping:
+    id:
+      type: str
+      required: True
+    version:
+      type: number
+    modified:
+      type: str
+    name:
+      type: str
+      required: True
+    ownerOnly:
+      type: bool
+    placeholder:
+      type: str
+    description:
+      type: str
+    fieldCalcScript:
+      type: str
+    cliName:
+      type: str
+      required: True
+    type:
+      type: str
+      required: True
+    closeForm:
+      type: bool
+    editForm:
+      type: bool
+    required:
+      type: bool
+    script:
+      type: str
+    neverSetAsRequired:
+      type: bool
+    isReadOnly:
+      type: bool
+    selectValues:
+      type: any
+    validationRegex:
+      type: str
+    useAsKpi:
+      type: bool
+    locked:
+      type: bool
+    system:
+      type: bool
+    group:
+      type: number
+    hidden:
+      type: bool
+    columns:
+      type: any
+    defaultRows:
+      type: any
+    threshold:
+      type: number
+    sla:
+      type: number
+    caseInsensitive:
+      type: bool
+    breachScript:
+      type: str
+    associatedTypes:
+      type: any
+    systemAssociatedTypes:
+      type: any
+    associatedToAll:
+      type: bool
+    unmapped:
+      type: bool
+    content:
+          type: bool
+    unsearchable:
+          type: bool

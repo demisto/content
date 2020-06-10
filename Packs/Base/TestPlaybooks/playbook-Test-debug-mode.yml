@@ -1,0 +1,300 @@
+id: Test-debug-mode
+version: -1
+name: Test-debug-mode
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d0fe4cff-a589-45e0-85a3-8461696cd380
+    type: start
+    task:
+      id: d0fe4cff-a589-45e0-85a3-8461696cd380
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 98144e9f-b5a1-4633-8d2f-b8ba35a1977a
+    type: regular
+    task:
+      id: 98144e9f-b5a1-4633-8d2f-b8ba35a1977a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 054fc178-00b7-4af2-8583-163c5734cb87
+    type: regular
+    task:
+      id: 054fc178-00b7-4af2-8583-163c5734cb87
+      version: -1
+      name: Py logging first time
+      scriptName: TestPyLogging
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 82ea9245-d514-4453-8001-8882a2e47ef0
+    type: regular
+    task:
+      id: 82ea9245-d514-4453-8001-8882a2e47ef0
+      version: -1
+      name: PyLogging in debug-mode
+      description: Run executeCommand in a generic manner. Can be used to dynamically
+        execute a command and also for cases when there is need to pass arguments
+        not defined in the command's configuration.
+      scriptName: ExecuteCommandGeneric
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      argName1:
+        simple: debug-mode
+      argName2: {}
+      argName3: {}
+      argName4: {}
+      argName5: {}
+      argVal1:
+        simple: "true"
+      argVal2: {}
+      argVal3: {}
+      argVal4: {}
+      argVal5: {}
+      commandName:
+        simple: TestPyLogging
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c03bfdc4-ad69-4fd1-8c52-b7d3c34fef67
+    type: regular
+    task:
+      id: c03bfdc4-ad69-4fd1-8c52-b7d3c34fef67
+      version: -1
+      name: Load Debug File
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      encoding: {}
+      entryID:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      maxFileSize:
+        simple: "20000"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 03b01e55-313b-4137-8f95-63fd8041bd39
+    type: condition
+    task:
+      id: 03b01e55-313b-4137-8f95-63fd8041bd39
+      version: -1
+      name: Verify Debug Data
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: FileData
+            iscontext: true
+          right:
+            value:
+              simple: this is a logging test
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 9be2e043-75de-480f-8d40-c86f6cc632d7
+    type: regular
+    task:
+      id: 9be2e043-75de-480f-8d40-c86f6cc632d7
+      version: -1
+      name: All is good
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: All is good
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ec3be904-c22a-44c7-810a-ba975451d5d4
+    type: regular
+    task:
+      id: ec3be904-c22a-44c7-810a-ba975451d5d4
+      version: -1
+      name: Failed verifying data
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed verifying debug log
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1305,
+        "width": 890,
+        "x": 350,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

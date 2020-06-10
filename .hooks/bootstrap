@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+
+# exit on errors
+set -e
+
+#
+# Bootstraps a development environment.
+#
+# This includes:
+# * install pre-commit hooks
+# * setup virtualenv
+
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+    cat << EOF
+Setup development environment (run with no arguments):
+* install pre-commit hooks (set NO_HOOKS=1 to skip)
+* setup venv virtualenv (set NO_VENV=1 to skip)
+
+To update python packages run: $0 -u
+
+EOF
+exit 0
+fi
+
+if [ "$1" == "-u" -o "$1" == "--update" ]; then
+    if [ ! -f "venv/bin/pip2" -a ! -f "venv/bin/pip3" ]; then
+        echo "ERROR: It seems that venv hasn't been setup. Run $0 to fully setup the venv without the [$1] option."
+        exit 1
+    fi
+    if [ -f "venv/bin/pip2" ]; then
+        echo "Updating python 2 dependencies ..."
+        venv/bin/pip2 install -r dev-requirements-py2.txt
+    fi
+    if [ -f "venv/bin/pip3" ]; then
+        echo "Updating python 3 dependencies ..."
+        venv/bin/pip3 install -r dev-requirements-py3.txt
+    fi
+    echo "Done updating dependencies"
+    exit 0
+fi
+
+if [ ! "$PWD" == "$(git rev-parse --show-toplevel)" ]; then
+    cat >&2 <<__EOF__
+ERROR: this script must be run at the root of the source tree
+__EOF__
+    exit 1
+fi
+
+HOOKS_DIR="${PWD}/.hooks"
+GIT_HOOKS_DIR="${PWD}/.git/hooks"
+
+if [ -n "$NO_HOOKS" ]; then
+    echo "Skipping hooks setup as environment varialbe NO_HOOKS is set"
+else
+    if [ ! -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
+        echo "Installing 'pre-commit' hooks"
+        ln -s "${HOOKS_DIR}/pre-commit" "${GIT_HOOKS_DIR}/pre-commit"
+    else
+        echo "Skipping install of pre-commit hook as it already exists."
+        echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-commit' and then run this script again."
+    fi
+fi
+
+echo "======================="
+
+if [ -n "$NO_VENV" ]; then
+    echo "Skipping venv setup as environment varialbe NO_VENV is set"
+else
+    if [ ! -e "${PWD}/venv" ]; then
+        echo "Initializing virtual env..."
+        if ! command -v virtualenv >/dev/null 2>&1; then
+            echo "ERROR: virtualenv is missing. Please install using: pip install virtualenv" 1>&2
+            exit 1
+        fi
+        SETUP_PY2=${SETUP_PY2:-auto}
+        if [ "$SETUP_PY2" == "auto" ]; then
+            # we only setup PY2 if our remote origin is pointing to the demisto content repo (not a fork)
+            if git remote get-url origin | grep -E 'github.com:demisto/content.git$' >/dev/null 2>&1; then
+                echo "Will setup python 2 venv as detected content repo as remote"
+                echo "If you wish to skip python 2 setup, set environment variable SETUP_PY2=no"
+                SETUP_PY2=yes
+            else
+                INCLUDE_PY2_NOTE=yes
+            fi
+        fi
+        PY3CMD="python3"
+        if command -v python3.8 >/dev/null 2>&1; then
+            PY3CMD="python3.8"
+        elif command -v python3.7 >/dev/null 2>&1; then
+            PY3CMD="python3.7"
+        fi
+        if ! command -v $PY3CMD >/dev/null 2>&1; then
+            echo "ERROR: python3 is missing. Please make sure you have Python 3 installed on your system" 1>&2
+            exit 1
+        fi
+        echo "Using python 3 command: `command -v $PY3CMD`"
+        if ! $PY3CMD -c 'import sys;assert sys.version_info.major == 3 and sys.version_info.minor >= 7, "python version check failed for: {}".format(sys.version_info)'; then
+            echo "ERROR: python 3.7 or above version validation failed. Please make sure you have Python 3.7 (and above) installed on your system" 1>&2
+            exit 1
+        fi
+        if [ "$SETUP_PY2" == "yes" ]; then
+            if ! command -v python2 >/dev/null 2>&1; then
+                echo "ERROR: python2 is missing. Please make sure you have Python 2 installed on your system" 1>&2
+                exit 1
+            fi
+        fi
+        virtualenv -p $PY3CMD venv
+        if [ "$SETUP_PY2" == "yes" ]; then
+            virtualenv -p python2 venv
+        fi
+        echo "# set PIPENV_IGNORE_VIRTUALENVS=1 so when setting up pipenv environments it doesn't use this one" >> venv/bin/activate
+        echo "export PIPENV_IGNORE_VIRTUALENVS=1" >> venv/bin/activate
+        echo "Done setting up python virtual env. Installing dependencies..."
+        if [ "$SETUP_PY2" == "yes" ]; then
+            venv/bin/pip2 install -r dev-requirements-py2.txt
+        fi
+        venv/bin/pip3 install -r dev-requirements-py3.txt
+        if [ "$INCLUDE_PY2_NOTE" == "yes" ]; then
+            echo "=========================="
+            echo "Note: python 2 is NOT setup. If you require python 2 for your scripts/integrations run this command again"
+            echo "with the environment variable set: SETUP_PY2=yes"
+        fi
+        echo "=========================="
+        echo "Done setting up virtualenv at directory 'venv'"
+        echo "Activate the venv by running: . ./venv/bin/activate"
+        echo "Deactivate by running: deactivate"
+    else
+        echo "Skipping virtual env setup as directory ${PWD}/venv exists."
+        echo "If you want to re-install: 'rm -r ${PWD}/venv' and then run this script again."
+    fi
+fi
+

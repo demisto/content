@@ -1,0 +1,34 @@
+commonfields:
+  id: EmailAskUserResponse
+  version: -1
+name: EmailAskUserResponse
+script: |
+  var res = executeCommand("getEntry", {"id":args.responseEntryId});
+
+  if (res[0].Type==entryTypes.note) {
+      text = res[0].Contents;
+      text = text.replace(/<br\/?>/gi,'\n')
+                  .replace(/\n/g,'__NL__')
+                  .replace(/<script .+?<\/script>/g,'')
+                  .replace(/<style .+?<\/style>/g,'')
+                  .replace(/__NL____NL__/g,'')
+                  .replace(/__NL__/g,'\n');
+      response = text.replace(/<(?:.|\n)*?>/gm, '').trim("\n").split("\n")[0].trim();
+      setContext('EmailAskUserResponse', response);
+      return response;
+  } else {
+      return res;
+  }
+type: javascript
+tags:
+- Condition
+comment: Extract user's response from EmailAskUser reply. Returns the first textual response line of the provided 
+  entry that contains the reply body. Use ${lastCompletedTaskEntries} to analyze the previous playbook task containing
+  the user's reply.
+enabled: true
+args:
+- name: responseEntryId
+  required: true
+  default: true
+  description: Entry ID where EmailAskUser will complete when user replies
+scripttarget: 0

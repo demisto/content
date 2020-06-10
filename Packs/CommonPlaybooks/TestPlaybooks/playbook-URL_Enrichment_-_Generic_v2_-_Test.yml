@@ -1,0 +1,306 @@
+id: URL Enrichment - Generic v2 - Test
+version: -1
+fromversion: 4.1.0
+name: URL Enrichment - Generic v2 - Test
+description: A test for the URL Enrichment - Generic v2 playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fdfb6e67-9f56-4e09-8adc-2840921415ff
+    type: start
+    task:
+      id: fdfb6e67-9f56-4e09-8adc-2840921415ff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: b5a53d6c-00e9-4978-8ed8-d7a5d8053dd4
+    type: regular
+    task:
+      id: b5a53d6c-00e9-4978-8ed8-d7a5d8053dd4
+      version: -1
+      name: Clear context
+      description: Clear the context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 0010d483-c357-4fda-87e5-ddcdd3fbf778
+    type: regular
+    task:
+      id: 0010d483-c357-4fda-87e5-ddcdd3fbf778
+      version: -1
+      name: Add URLs to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL
+      value:
+        simple: '["www.google.com", "http://www.yahoo.com", "https://www.facebook.com/"]'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 480876c6-7f2b-4f3b-84e0-4857d0d83368
+    type: title
+    task:
+      id: 480876c6-7f2b-4f3b-84e0-4857d0d83368
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 962e4198-f41d-4436-8602-96de795a5183
+    type: playbook
+    task:
+      id: 962e4198-f41d-4436-8602-96de795a5183
+      version: -1
+      name: URL Enrichment - Generic v2
+      description: |-
+        Enrich URL using one or more integrations.
+
+        URL enrichment includes:
+        * Verify URL SSL
+        * Threat information
+        * URL reputaiton
+        * Take URL screenshot
+      playbookName: URL Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "18"
+    scriptarguments:
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: URL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 1d0fd1cb-954a-444b-86c5-80660c0ed637
+    type: condition
+    task:
+      id: 1d0fd1cb-954a-444b-86c5-80660c0ed637
+      version: -1
+      name: Verify DBotScore context fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: d3d29b45-7064-4512-8ce0-20ccf3426bd0
+    type: regular
+    task:
+      id: d3d29b45-7064-4512-8ce0-20ccf3426bd0
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      message:
+        simple: Not all DBotScore context fields were created.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 10182857-c240-4ee1-8cfd-a458dd201571
+    type: condition
+    task:
+      id: 10182857-c240-4ee1-8cfd-a458dd201571
+      version: -1
+      name: Verify URL screenshot
+      description: Verifies that at least one screenshot of the URLs has been created.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value:
+              simple: url.png
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1145,
+        "width": 1090,
+        "x": -90,
+        "y": -100
+      }
+    }
+  }
+inputs: []
+outputs: []

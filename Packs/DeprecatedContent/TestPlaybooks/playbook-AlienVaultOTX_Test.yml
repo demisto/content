@@ -1,0 +1,213 @@
+id: AlienVaultOTX Test
+version: -1
+name: AlienVaultOTX Test
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: b256b1bb-e449-47f5-8afc-9d3fe446dd63
+    type: start
+    task:
+      id: b256b1bb-e449-47f5-8afc-9d3fe446dd63
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c00debdb-5a50-4217-8a83-486cf0cae811
+    type: regular
+    task:
+      id: c00debdb-5a50-4217-8a83-486cf0cae811
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 745db237-7885-4c26-86eb-47be24f3b117
+    type: regular
+    task:
+      id: 745db237-7885-4c26-86eb-47be24f3b117
+      version: -1
+      name: AlienVault !url
+      description: Query url in AlienVault OTX
+      script: 'AlienVault OTX|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: https://social.technet.microsoft.com/Forums/en-US/4bd3093f-8e2d-42df-bc64-330788d18801/to-test-ms-ata?forum=mata
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: a0ec5b8c-97f1-4044-89ab-61289e000dcc
+    type: regular
+    task:
+      id: a0ec5b8c-97f1-4044-89ab-61289e000dcc
+      version: -1
+      name: AlienVault !ip
+      description: Check IP Reputation
+      script: 'AlienVault OTX|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 1.2.3.4
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: e2539ad6-8365-473d-8182-7d24c5652155
+    type: regular
+    task:
+      id: e2539ad6-8365-473d-8182-7d24c5652155
+      version: -1
+      name: AlienVault !ipv6
+      description: Query IP in AlienVault OTX
+      script: 'AlienVault OTX|||ipv6'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        simple: 2603:10b6:0:54::19
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 63967c91-8a2c-436f-8065-1947766a0004
+    type: regular
+    task:
+      id: 63967c91-8a2c-436f-8065-1947766a0004
+      version: -1
+      name: AlienVault domain
+      description: Check domain reputation
+      script: 'AlienVault OTX|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      domain:
+        simple: demisto.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

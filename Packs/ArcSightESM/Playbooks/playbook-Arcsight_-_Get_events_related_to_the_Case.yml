@@ -1,0 +1,467 @@
+id: Arcsight - Get events related to the Case
+version: -1
+name: Arcsight - Get events related to the Case
+fromversion: ""
+description: |-
+  Get the Case's Arcsight ResourceID from the FetchID field, or the "ID" label. If neither is there, ask user for the ID.
+  Use the resource ID to get full data for the case, the correlated/aggregate events underneath it, and all base events underneath them.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d042890c-556f-415a-8b61-a12119407553
+    type: start
+    task:
+      id: d042890c-556f-415a-8b61-a12119407553
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 425,
+          "y": -659
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: f8237bac-e860-407c-810a-1a5ce6e14802
+    type: regular
+    task:
+      id: f8237bac-e860-407c-810a-1a5ce6e14802
+      version: -1
+      name: Arcsight - Get Case info
+      description: Get a specific case from ESM
+      script: '|||as-get-all-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      resourceId:
+        simple: ${incident.labels.FetchID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 328,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: a53d4bfb-3250-4e1f-8014-2c5d0a19e5cf
+    type: regular
+    task:
+      id: a53d4bfb-3250-4e1f-8014-2c5d0a19e5cf
+      version: -1
+      name: Arcsight - get Event ID below the Case
+      description: Returns all case event IDs
+      script: '|||as-get-case-event-ids'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      caseId:
+        simple: ${incident.labels.FetchID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: b5fab90a-0f15-40ba-8233-43ed42be978c
+    type: regular
+    task:
+      id: b5fab90a-0f15-40ba-8233-43ed42be978c
+      version: -1
+      name: Get the Events below the Case
+      script: '|||as-get-security-events'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      endDate: {}
+      ids:
+        simple: ${ArcSightESM.CaseEvents}
+      startDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -372,
+          "y": 763
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 3371774c-a2ba-4ea3-8acb-aaeeae8195f7
+    type: condition
+    task:
+      id: 3371774c-a2ba-4ea3-8acb-aaeeae8195f7
+      version: -1
+      name: Is FetchID set?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        simple: ${incident.FetchID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 425,
+          "y": -509
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: a8d523d4-a25e-45a9-8553-fccb9b49d585
+    type: condition
+    task:
+      id: a8d523d4-a25e-45a9-8553-fccb9b49d585
+      version: -1
+      name: Is ID label included?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "19"
+    scriptarguments:
+      value:
+        simple: ${incident.labels.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 106,
+          "y": -321
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 00fc9870-1af2-47d1-828b-24dbbd6f02cc
+    type: regular
+    task:
+      id: 00fc9870-1af2-47d1-828b-24dbbd6f02cc
+      version: -1
+      name: User - please insert Arcsight Case Resource ID
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserInput.FetchID
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -108
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: c2788a78-f0a8-488e-887b-428e224ceaac
+    type: title
+    task:
+      id: c2788a78-f0a8-488e-887b-428e224ceaac
+      version: -1
+      name: Get case and event info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 328,
+          "y": 231
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 65602a3e-3b1f-4134-80f1-7f056a937775
+    type: regular
+    task:
+      id: 65602a3e-3b1f-4134-80f1-7f056a937775
+      version: -1
+      name: Get Base Events below the top-level event
+      script: '|||as-get-security-events'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      endDate: {}
+      ids:
+        simple: ${ArcSightESM.SecurityEvents.baseEventIds}
+      startDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -626,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 29025200-cf8e-4d69-80f1-166eb6b3a034
+    type: condition
+    task:
+      id: 29025200-cf8e-4d69-80f1-166eb6b3a034
+      version: -1
+      name: Does Case included IDs for related Events?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${ArcSightESM.CaseEvents}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 5c12898b-66b7-4400-8ff9-f7c3632c007a
+    type: title
+    task:
+      id: 5c12898b-66b7-4400-8ff9-f7c3632c007a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    view: |-
+      {
+        "position": {
+          "x": 187,
+          "y": 1299
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 6b37cdf2-9072-49ae-848c-ea00e953a603
+    type: condition
+    task:
+      id: 6b37cdf2-9072-49ae-848c-ea00e953a603
+      version: -1
+      name: Do we have IDs for underlying base events?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "10"
+    scriptarguments:
+      value:
+        simple: ${ArcSightESM.SecurityEvents.baseEventIds}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -372,
+          "y": 924
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: ca867694-bf54-4fe8-85cd-946633455ef9
+    type: regular
+    task:
+      id: ca867694-bf54-4fe8-85cd-946633455ef9
+      version: -1
+      name: Set FetchID from user input
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      addLabels: {}
+      customFields:
+        simple: '[{"FetchID":"${UserInput.FetchID}"}]'
+      deleteEmptyField: {}
+      details: {}
+      id: {}
+      labels:
+        simple: '[{"FetchID":"${UserInput.FetchID}"}]'
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      roles: {}
+      severity: {}
+      sla: {}
+      slaField: {}
+      systems: {}
+      type: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: b0d9eacc-8d9f-4345-8a1e-ac1b94c1c018
+    type: regular
+    task:
+      id: b0d9eacc-8d9f-4345-8a1e-ac1b94c1c018
+      version: -1
+      name: Set FetchID <-- ID label
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      addLabels: {}
+      customFields: {}
+      deleteEmptyField: {}
+      details: {}
+      id: {}
+      labels:
+        simple: '[{"FetchID":"${incident.labels.ID}"}]'
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      roles: {}
+      severity: {}
+      sla: {}
+      slaField: {}
+      systems: {}
+      type: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -108
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_#default#": 0.1,
+      "13_12_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2023,
+        "width": 1431,
+        "x": -626,
+        "y": -659
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - test Arcsight - Get events related to the Case

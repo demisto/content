@@ -1,0 +1,406 @@
+id: Test Playbook McAfee ATD
+version: -1
+name: Test Playbook McAfee ATD
+description: Test playbook for mcafee ATD and for its File and URL detonation playbooks.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5ad1e361-21d6-4fce-83ae-9d0d9c4ef24f
+    type: start
+    task:
+      id: 5ad1e361-21d6-4fce-83ae-9d0d9c4ef24f
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 93f72f9a-6f0d-4252-852d-68e5cacf9062
+    type: regular
+    task:
+      id: 93f72f9a-6f0d-4252-852d-68e5cacf9062
+      version: -1
+      name: atd-login
+      description: Returns a logon result for ATD
+      script: '|||atd-login'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 2444ef96-ae7d-463b-8342-467e915776b5
+    type: regular
+    task:
+      id: 2444ef96-ae7d-463b-8342-467e915776b5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 14c67466-163c-4575-8e87-c9d4f3b90dfe
+    type: title
+    task:
+      id: 14c67466-163c-4575-8e87-c9d4f3b90dfe
+      version: -1
+      name: Test Playbook McAfee ATD
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 44a69b4b-808b-46a9-8ac9-8fe2a63ac7ab
+    type: condition
+    task:
+      id: 44a69b4b-808b-46a9-8ac9-8fe2a63ac7ab
+      version: -1
+      name: atd-login AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      left:
+        simple: ${ATD.Session.UserId}
+      right:
+        simple: "1"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 6717e324-23bc-40fe-8299-70ecf1aec986
+    type: regular
+    task:
+      id: 6717e324-23bc-40fe-8299-70ecf1aec986
+      version: -1
+      name: atd-list-user
+      description: ' displays the user profile information present on the McAfee Advanced
+        Threat Defense.'
+      script: '|||atd-list-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      userType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: b5403b6b-3571-4bae-8866-f396f1c641c3
+    type: condition
+    task:
+      id: b5403b6b-3571-4bae-8866-f396f1c641c3
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      left:
+        complex:
+          root: ATD
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: ATD.Users.FullName
+                iscontext: true
+              right:
+                value:
+                  simple: ATD upload Admin
+          accessor: Users.FullName
+      right:
+        simple: ATD upload Admin
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 78ce8e32-9935-4d0d-8ae0-3a78b8c9c792
+    type: regular
+    task:
+      id: 78ce8e32-9935-4d0d-8ae0-3a78b8c9c792
+      version: -1
+      name: atd-list-analyzer-profiles
+      description: ' display the analyzer profiles. Only the analyzer profiles to
+        which the user has access are displayed.'
+      script: '|||atd-list-analyzer-profiles'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: cea2229b-466a-4fdc-88a7-a97cf63c3500
+    type: condition
+    task:
+      id: cea2229b-466a-4fdc-88a7-a97cf63c3500
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+      - "22"
+    scriptarguments:
+      value:
+        simple: ${ATD.ListAnalyzerProfiles}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: ba669fdf-8eb3-410d-819f-6d5d3ed5b9e3
+    type: regular
+    task:
+      id: ba669fdf-8eb3-410d-819f-6d5d3ed5b9e3
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      data:
+        simple: jmyetnrhk96lktrshfdghj74
+      entryId: {}
+      filename:
+        simple: excel.xls
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: d60917a3-b82f-4450-8c31-d933f9da8992
+    type: title
+    task:
+      id: d60917a3-b82f-4450-8c31-d933f9da8992
+      version: -1
+      name: Done
+      description: finished
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 110e1659-0dc7-444d-88fb-73ad813b0e3b
+    type: playbook
+    task:
+      id: 110e1659-0dc7-444d-88fb-73ad813b0e3b
+      version: -1
+      name: ATD - Detonate File
+      playbookName: ATD - Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 4cfef8f4-bda1-4d4c-88f8-9d318c54741b
+    type: playbook
+    task:
+      id: 4cfef8f4-bda1-4d4c-88f8-9d318c54741b
+      version: -1
+      name: Detonate URL - McAfee ATD
+      playbookName: Detonate URL - McAfee ATD
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      URL:
+        simple: https://www.demisto.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1930,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

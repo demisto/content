@@ -1,0 +1,470 @@
+id: playbook0
+version: -1
+name: Default
+toversion: 3.1.0
+description: Deprecated - We recommend using the new and improoved Default playbook instead (from Demisto 3.5).
+  Default playbook to help classify incoming incidents
+system: true
+fromversion: 2.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: default-start
+    type: start
+    task:
+      id: default-start
+      version: -1
+      description: ""
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: is-email
+    type: condition
+    task:
+      id: is-email
+      version: -1
+      description: Checks if incident has 'Email/from' label
+      name: Is this an email
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "22"
+    scriptarguments:
+      key: Label/Email/from
+      value: ${incident.labels.Email/from}
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    taskid: splunk-email-parser
+    type: regular
+    task:
+      id: splunk-email-parser
+      version: -1
+      description: Parse email with splunk
+      name: SplunkEmailParser
+      scriptName: SplunkEmailParser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      body: ${incident.labels.Email/html}
+      subject: ${incident.labels.Email/subject}
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+  "6":
+    id: "6"
+    taskid: nexpose-email-parser
+    type: regular
+    task:
+      id: nexpose-email-parser
+      version: -1
+      description: Parse email with Nexpose
+      name: NexposeEmailParser
+      scriptName: NexposeEmailParser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+  "8":
+    id: "8"
+    taskid: sentinelone-email-parser
+    type: regular
+    task:
+      id: sentinelone-email-parser
+      version: -1
+      description: Parse email with SentinelOne
+      name: Set incident type and playbook to SentinelOne
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      addLabels: ""
+      customFieldName: ""
+      customFieldValue: ""
+      details: ""
+      labels: ""
+      name: ""
+      owner: ""
+      playbook: ""
+      severity: ""
+      stage: ""
+      type: ${inputs.SentinelOneType}
+      updatePlaybookForType: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+  "9":
+    id: "9"
+    taskid: incident-set-phishing
+    type: regular
+    task:
+      id: incident-set-phishing
+      version: -1
+      description: ""
+      name: Set type and playbook to Phishing (default type for emails)
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      addLabels: ""
+      customFieldName: ""
+      customFieldValue: ""
+      details: ""
+      labels: ""
+      name: ""
+      owner: ""
+      playbook: ""
+      severity: ""
+      stage: ""
+      type: Phishing
+      updatePlaybookForType: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 865
+        }
+      }
+  "22":
+    id: "22"
+    taskid: mail-classifier
+    type: title
+    task:
+      id: mail-classifier
+      version: -1
+      description: ""
+      name: Mail Classifier
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+  "23":
+    id: "23"
+    taskid: brand-classifier
+    type: title
+    task:
+      id: brand-classifier
+      version: -1
+      description: ""
+      name: Classify by Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    view: |-
+      {
+        "position": {
+          "x": 2127.5,
+          "y": 545
+        }
+      }
+  "26":
+    id: "26"
+    taskid: qradar-classifier
+    type: regular
+    task:
+      id: qradar-classifier
+      version: -1
+      description: Classify incident with QRadar
+      name: QRadar Classifier
+      scriptName: QRadarClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      contextOutput: ${inputs.ClassifierContext}
+      customCategories: ${inputs.CustomCategories}
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 865
+        }
+      }
+  "27":
+    id: "27"
+    taskid: branch-by-brand
+    type: condition
+    task:
+      id: branch-by-brand
+      version: -1
+      name: Get Brand
+      description: Prints text to war room
+      scriptName: Print
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      QRadar:
+      - "26"
+      Trend Micro:
+      - "29"
+      Vectra:
+      - "28"
+    scriptarguments:
+      value: ${incident.labels.Brand}
+    view: |-
+      {
+        "position": {
+          "x": 2127.5,
+          "y": 690
+        }
+      }
+  "28":
+    id: "28"
+    taskid: vectra-classifier
+    type: regular
+    task:
+      id: vectra-classifier
+      version: -1
+      description: Classify incident with Vectra
+      name: 'Vectra Classifier '
+      scriptName: VectraClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 865
+        }
+      }
+  "29":
+    id: "29"
+    taskid: trend-classifier
+    type: regular
+    task:
+      id: trend-classifier
+      version: -1
+      description: Classify incident with Trendmicro
+      name: Trendmicro Classifier
+      scriptName: TrendMicroClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 865
+        }
+      }
+  "30":
+    id: "30"
+    taskid: manually-decide
+    type: regular
+    task:
+      id: manually-decide
+      version: -1
+      name: Manually decide playbook
+      description: Could not decide incident type automatically, please set playbook
+        Manually
+      type: regular
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 1677.5,
+          "y": 1215
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
+    type: condition
+    task:
+      id: 2f7ec274-84aa-4e36-80a7-bb7aa32e5560
+      version: -1
+      name: get-email-sender-map
+      description: Prints text to war room
+      scriptName: MapValues
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      nexpose:
+      - "6"
+      sentinel:
+      - "8"
+      splunk:
+      - "4"
+    scriptarguments:
+      input: ${incident.labels.Email/from}
+      translated: splunk,sentinel,nexpose
+      values: ${inputs.SplunkSender},${inputs.SentinelSender},${inputs.NexposeSender}
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 690
+        }
+      }
+  "34":
+    id: "34"
+    taskid: incident-has-brand
+    type: condition
+    task:
+      id: incident-has-brand
+      version: -1
+      name: Does incident include "Brand" label?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "23"
+    scriptarguments:
+      value: ${incident.labels.Brand}
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 370
+        }
+      }
+  "35":
+    id: "35"
+    taskid: call-enrichment
+    type: playbook
+    task:
+      id: call-enrichment
+      version: -1
+      description: ""
+      name: ""
+      playbookName: Enrichment Playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    view: |-
+      {
+        "position": {
+          "x": 1677.5,
+          "y": 1040
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_34_#default#": 0.62,
+      "33_9_#default#": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 3000,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SplunkSender
+  value: splunk@placeholder.com
+  description: If your splunk sends incidents via email, what is the sender email
+    address?
+- key: NexposeSender
+  value: nexpose@placeholder.com
+  description: If Nexpose sends incidents via email, what is the sender email address?
+- key: SentinelSender
+  value: sentinel@placeholder.com
+  description: If Sentinel sends incidents via email, what is the sender email address?
+- key: ClassifierContext
+  value: Classifier/Description
+  description: This context key will contain the description of the incident properties
+    that we tried to classify
+- key: CustomCategories
+  value: ""
+  description: 'Option to add custom categories to the classifier, JSON with SIEM
+    categories and their Demisto type counterparts. i.e {"SIEMCategory1": "DemistoType1",
+    "SIEMCategory2": "DemistoType2"}'
+- key: SentinelOneType
+  value: ""
+  description: If you have SentinelOne, what is the incident type for SentinelOne
+    incidents
+tests:
+  - No tests - Deprecated playbook

@@ -1,0 +1,262 @@
+id: QRadarFullSearch
+version: -1
+name: QRadarFullSearch
+description: This playbook runs a QRadar query and return its results to the context.
+fromversion: 4.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 230a5fa5-ffb2-4d27-857f-647083ec27dc
+    type: start
+    task:
+      id: 230a5fa5-ffb2-4d27-857f-647083ec27dc
+      version: -1
+      name: ""
+      description: Start of playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: c8436b25-99f9-46ec-8fe6-cc601675c5f3
+    type: regular
+    task:
+      id: c8436b25-99f9-46ec-8fe6-cc601675c5f3
+      version: -1
+      name: qradar-searches
+      description: Creates a search in QRadar using the search query
+      script: '|||qradar-searches'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      headers:
+        simple: ${inputs.headers}
+      query_expression:
+        simple: ${inputs.query_expression}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 4dd0f61d-1391-47c3-8a9d-b5580671f092
+    type: regular
+    task:
+      id: 4dd0f61d-1391-47c3-8a9d-b5580671f092
+      version: -1
+      name: qradar-get-search
+      description: Gets search object to initialize polling playbook
+      script: '|||qradar-get-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      headers:
+        simple: ${inputs.headers}
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: af4d3d48-5707-4522-8fef-a6d3b393eab4
+    type: playbook
+    task:
+      id: af4d3d48-5707-4522-8fef-a6d3b393eab4
+      version: -1
+      name: GenericPolling
+      description: Generic polling of qradar-get-search
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Ids:
+        simple: ${QRadar.Search.ID}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: search_id
+      PollingCommandName:
+        simple: qradar-get-search
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: QRadar.Search(val.Status!=='COMPLETED' ).ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 6eefed42-f1f6-46d7-83b0-ecb2e47575f9
+    type: regular
+    task:
+      id: 6eefed42-f1f6-46d7-83b0-ecb2e47575f9
+      version: -1
+      name: qradar-get-search-results
+      description: executes qradar-get-search-results to get the search results
+      script: '|||qradar-get-search-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      headers:
+        simple: ${inputs.headers}
+      range:
+        simple: ${inputs.range}
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 172877e1-d636-4b2a-8b3e-70dddf7ea585
+    type: title
+    task:
+      id: 172877e1-d636-4b2a-8b3e-70dddf7ea585
+      version: -1
+      name: Done
+      description: Playbook is done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 7c323154-9752-4e8d-8e18-7d43fef89edf
+    type: condition
+    task:
+      id: 7c323154-9752-4e8d-8e18-7d43fef89edf
+      version: -1
+      name: Is search completed?
+      description: Checks whether the search is completed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.Search.Status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: timeout
+  value:
+    simple: "600"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: query_expression
+  value: {}
+  required: true
+  description: The query expressions in AQL
+- key: range
+  value: {}
+  required: false
+  description: Range of results to return (e.g. 0-20)
+- key: headers
+  value: {}
+  required: false
+  description: Table headers
+outputs:
+- contextPath: QRadar.Search.Result
+  description: The result of the search
+tests:
+- test_Qradar

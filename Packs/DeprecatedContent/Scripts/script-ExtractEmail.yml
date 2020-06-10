@@ -1,0 +1,56 @@
+commonfields:
+  id: ExtractEmail
+  version: -1
+name: ExtractEmail
+script: |
+  var text = args.text;
+  if (typeof text !== 'string') {
+      text = JSON.stringify(args.text).replace(/\\n/g,' ');
+  }
+  var matches = {};
+  var emailStringRegex = emailRegex.toString().substring(1,(emailRegex.toString().length - 1));
+  var gmi = 'gmi';
+  var reg = new RegExp(emailStringRegex, gmi);
+
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
+  var found;
+
+  while (found = reg.exec(text)) {
+   if (found && whitelist.indexOf(found[0]) < 0) {
+       matches[found[0]] = true;
+   }
+  }
+
+  var uniqueMatches = Object.keys(matches);
+  var emailContext = {};
+  emailContext[outputPaths.email] = [];
+  var md = '### Extract Email\n';
+  for (var i = 0; i < uniqueMatches.length; i++) {
+      emailContext[outputPaths.email].push({ Address: uniqueMatches[i] });
+      md += '- ' + uniqueMatches[i] + '\n';
+  }
+
+  return {
+      Type: entryTypes.note,
+      Contents: emailContext[outputPaths.email],
+      ContentsFormat: formats.json,
+      HumanReadable: md,
+      EntryContext: emailContext
+  };
+type: javascript
+tags:
+- Utility
+comment: Deprecated - We recommend using extractIndicators command instead.
+  Extract Emails from the given text and place them both as output and in the
+  context of a playbook. If given an object, will convert to JSON.
+enabled: true
+args:
+- name: text
+  required: true
+  default: true
+  description: The text to extract Emails from. If object will convert to JSON.
+outputs:
+- contextPath: Account.Email.Address
+  description: Extracted emails
+scripttarget: 0
+deprecated: true

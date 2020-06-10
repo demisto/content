@@ -1,0 +1,95 @@
+commonfields:
+  id: PanoramaBlockIP
+  version: -1
+name: PanoramaBlockIP
+script: |-
+  var direction = args.direction || 'both';
+  var blockingDestination = direction === 'to' || direction === 'both';
+  var blockingSource = direction === 'from' || direction === 'both';
+  var blockedDestination = false;
+  var blockedSource = true;
+  var resp = null;
+
+  if (!args.rulename) {
+      args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
+  }
+
+  if (blockingDestination) {
+      resp = executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-to'});
+      if (isError(resp[0])){
+          return resp;
+      }
+      blockedDestination = 'success' == dq(resp[0],'Contents');
+  }
+
+  if (blockingSource) {
+      resp = executeCommand('PanoramaConfig', {action: 'drop', destination: args.ip, ruleName: args.ruleName + '-from'});
+      if (isError(resp[0])){
+          return resp
+      }
+      blockedSource = 'success' == dq(resp[0],'Contents');
+  }
+
+  if ((blockedSource && blockingSource) || (blockingDestination && blockedDestination)) {
+      resp = executeCommand('PanoramaCommit', {});
+      var entry = resp[0];
+      var context = {PanoramaRule: []};
+
+      context.PanoramaRule.push({
+              Name: args.ruleName,
+              Direction: direction,
+              IP: args.ip
+          });
+
+      //needed for editing of context
+      var entryB = null;
+      entryB = JSON.parse(JSON.stringify(entry))
+      entryB.EntryContext = context;
+      return entryB;
+  }
+  return {
+      Contents: 'no rules commited',
+      ContentsFormat: formats.text,
+      Type: entryTypes.error
+  };
+type: javascript
+tags:
+- firewall
+- panorama
+comment: Blocks IP with Panorama
+enabled: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: IP to block
+- name: rulename
+  description: Rule name
+- name: direction
+  auto: PREDEFINED
+  predefined:
+  - to
+  - from
+  - both
+  description: Direction to block
+outputs:
+- contextPath: PanoramaRule
+  description: List of Panorama rules
+- contextPath: PanoramaRule.Name
+  description: Name of the Panorama rule
+  type: string
+- contextPath: PanoramaRule.Direction
+  description: Direction of the Panorama rule, could be 'to','from', 'both'
+  type: string
+- contextPath: PanoramaRule.IP
+  description: The IP the Panorama rule blocks
+  type: string
+scripttarget: 0
+deprecated: true
+runonce: false
+dependson:
+  must:
+  - panorama
+tests:
+- palo_alto_firewall_test_pb
+- blockip_test_playbook

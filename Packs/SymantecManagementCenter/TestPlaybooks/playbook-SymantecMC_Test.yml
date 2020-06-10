@@ -1,0 +1,1999 @@
+id: SymantecMC_TestPlaybook
+version: -1
+name: SymantecMC_TestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e686eba2-6d53-46be-8b26-c0cbbe00e51a
+    type: start
+    task:
+      id: e686eba2-6d53-46be-8b26-c0cbbe00e51a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 791dc4f8-9fc9-4e40-8b60-6a6ea3093404
+    type: regular
+    task:
+      id: 791dc4f8-9fc9-4e40-8b60-6a6ea3093404
+      version: -1
+      name: List devices
+      description: List devices in Symantec MC
+      script: Symantec Management Center|||symantec-mc-list-devices
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      build: {}
+      description: {}
+      limit: {}
+      model: {}
+      name:
+        simple: CONTAINS Blue Coat
+      os_version: {}
+      platform: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a3979582-4faf-4438-8b73-4f3f223eca7f
+    type: regular
+    task:
+      id: a3979582-4faf-4438-8b73-4f3f223eca7f
+      version: -1
+      name: Get BlueCoat device
+      description: Get a device from Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-device
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      uuid:
+        simple: ${SymantecMC.Device.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 747ec7e0-4bdb-4c47-817f-aa58b5eb4772
+    type: condition
+    task:
+      id: 747ec7e0-4bdb-4c47-817f-aa58b5eb4772
+      version: -1
+      name: Did we get the correct device?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SymantecMC.Device.Name
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.1.207 - Blue Coat SG-VA Series
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 51a0dfed-e6cd-46fc-826d-55c76f8c024f
+    type: regular
+    task:
+      id: 51a0dfed-e6cd-46fc-826d-55c76f8c024f
+      version: -1
+      name: symantec-mc-get-device-health
+      description: Get the health information for a device in Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-device-health
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      uuid:
+        simple: ${SymantecMC.Device.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 4721542c-eb40-4573-88c9-1b3c10181828
+    type: title
+    task:
+      id: 4721542c-eb40-4573-88c9-1b3c10181828
+      version: -1
+      name: Get Device Status
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: be5d43ca-d554-46f1-8181-1e56edf9c19c
+    type: regular
+    task:
+      id: be5d43ca-d554-46f1-8181-1e56edf9c19c
+      version: -1
+      name: symantec-mc-get-device-license
+      description: Get license information for a device in Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-device-license
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      uuid:
+        simple: ${SymantecMC.Device.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 6c4eee5a-6b65-4cc2-8002-508b97d8ee3a
+    type: regular
+    task:
+      id: 6c4eee5a-6b65-4cc2-8002-508b97d8ee3a
+      version: -1
+      name: symantec-mc-get-device-status
+      description: Get the status of a device in Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-device-status
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      uuid:
+        simple: ${SymantecMC.Device.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 64e74173-f20f-43db-8623-3b28ea268f05
+    type: condition
+    task:
+      id: 64e74173-f20f-43db-8623-3b28ea268f05
+      version: -1
+      name: Did we get all the details?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SymantecMC.Device.Health
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SymantecMC.Device.LicenseComponent
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SymantecMC.Device.MonitorState
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 358a82b8-f915-46a7-828b-c9ac814636c5
+    type: title
+    task:
+      id: 358a82b8-f915-46a7-828b-c9ac814636c5
+      version: -1
+      name: Manage Policy
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 5bf688a2-ded2-407a-825b-5dc1303d11d6
+    type: regular
+    task:
+      id: 5bf688a2-ded2-407a-825b-5dc1303d11d6
+      version: -1
+      name: Search for the URL policy
+      description: List policies in Symantec MC
+      script: Symantec Management Center|||symantec-mc-list-policies
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      content_type: {}
+      description: {}
+      limit: {}
+      name:
+        simple: EQ test_policy_url
+      reference_id: {}
+      shared: {}
+      tenant: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: a9fafb85-1bcb-498f-8477-3c67f22b18e5
+    type: condition
+    task:
+      id: a9fafb85-1bcb-498f-8477-3c67f22b18e5
+      version: -1
+      name: Does it exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SymantecMC.Policy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 777f1206-fe41-4b3b-8b3b-2e4a4b74c230
+    type: regular
+    task:
+      id: 777f1206-fe41-4b3b-8b3b-2e4a4b74c230
+      version: -1
+      name: Delete the policy
+      description: Delete a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      force: {}
+      uuid:
+        simple: ${SymantecMC.Policy.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 47856bd5-c398-4bf8-8aad-4166f4b6113f
+    type: regular
+    task:
+      id: 47856bd5-c398-4bf8-8aad-4166f4b6113f
+      version: -1
+      name: Create a new IP policy
+      description: Create a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-create-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      content_type:
+        simple: IP_LIST
+      description:
+        simple: This is a test
+      name:
+        simple: test_policy_ip
+      reference_id: {}
+      replace_variables: {}
+      shared:
+        simple: "true"
+      tenant:
+        complex:
+          root: SymantecMC
+          accessor: Tenant
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Tenant
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 1048e09e-4153-4344-8859-207b65fa1cbd
+    type: regular
+    task:
+      id: 1048e09e-4153-4344-8859-207b65fa1cbd
+      version: -1
+      name: List tenants
+      description: List tenants in Symantec MC
+      script: Symantec Management Center|||symantec-mc-list-tenants
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: c770052d-2afe-433a-8721-b838dc0d9ac3
+    type: regular
+    task:
+      id: c770052d-2afe-433a-8721-b838dc0d9ac3
+      version: -1
+      name: Create a new URL policy
+      description: Create a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-create-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      content_type:
+        simple: URL_LIST
+      description:
+        simple: This is a test
+      name:
+        simple: test_policy_url
+      reference_id: {}
+      replace_variables: {}
+      shared:
+        simple: "true"
+      tenant:
+        complex:
+          root: SymantecMC
+          accessor: Tenant
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Tenant
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: fb2fd003-063d-4e74-8c88-033722bc02e1
+    type: regular
+    task:
+      id: fb2fd003-063d-4e74-8c88-033722bc02e1
+      version: -1
+      name: Create a new category policy
+      description: Create a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-create-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      content_type:
+        simple: CATEGORY_LIST
+      description:
+        simple: This is a test
+      name:
+        simple: test_policy_category
+      reference_id: {}
+      replace_variables: {}
+      shared:
+        simple: "true"
+      tenant:
+        complex:
+          root: SymantecMC
+          accessor: Tenant
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Tenant
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: b7238797-ebbe-4694-817b-c9a448bd3598
+    type: regular
+    task:
+      id: b7238797-ebbe-4694-817b-c9a448bd3598
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 764959c2-e057-4bad-8f8b-bc0f0d87ab26
+    type: regular
+    task:
+      id: 764959c2-e057-4bad-8f8b-bc0f0d87ab26
+      version: -1
+      name: Add IP content
+      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
+        names.
+      script: Symantec Management Center|||symantec-mc-add-policy-content
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      category: {}
+      change_description:
+        simple: test
+      content_type:
+        simple: IP_LIST
+      description:
+        simple: test
+      enabled: {}
+      ip:
+        simple: 2.2.2.2,4.4.4.4,8.8.8.8
+      schema_version: {}
+      url: {}
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_ip
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 84c63834-76b4-4cde-8f35-8b1a77d70738
+    type: regular
+    task:
+      id: 84c63834-76b4-4cde-8f35-8b1a77d70738
+      version: -1
+      name: Add URL content
+      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
+        names.
+      script: Symantec Management Center|||symantec-mc-add-policy-content
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      category: {}
+      change_description:
+        simple: test
+      content_type:
+        simple: URL_LIST
+      description:
+        simple: test
+      enabled: {}
+      ip: {}
+      schema_version: {}
+      url:
+        simple: www.ynet.co.il,www.youtube.com
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_url
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 4eab81a1-0907-42d0-8159-4c2bf4a4e07a
+    type: regular
+    task:
+      id: 4eab81a1-0907-42d0-8159-4c2bf4a4e07a
+      version: -1
+      name: Add Category content with policy name
+      description: Add content to a policy in Symantec MC. Can be IPs or URLs or category
+        names.
+      script: Symantec Management Center|||symantec-mc-add-policy-content
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      category:
+        simple: my cat,his cat
+      change_description:
+        simple: test
+      content_type:
+        simple: CATEGORY_LIST
+      description:
+        simple: test
+      enabled: {}
+      ip: {}
+      name:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_category
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: Name
+      schema_version: {}
+      url: {}
+      uuid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 16328b22-e9cf-48f0-88e5-49f695ef0b30
+    type: regular
+    task:
+      id: 16328b22-e9cf-48f0-88e5-49f695ef0b30
+      version: -1
+      name: Delete IP content
+      description: Delete content from a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy-content
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      category: {}
+      change_description:
+        simple: test
+      content_type:
+        simple: IP_LIST
+      ip:
+        simple: 4.4.4.4,8.8.8.8
+      schema_version: {}
+      url: {}
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_ip
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 1b8de37d-53b5-432d-8f41-b818ba825d6a
+    type: regular
+    task:
+      id: 1b8de37d-53b5-432d-8f41-b818ba825d6a
+      version: -1
+      name: Delete URL content
+      description: Delete content from a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy-content
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      category: {}
+      change_description:
+        simple: test
+      content_type:
+        simple: URL_LIST
+      ip: {}
+      schema_version: {}
+      url:
+        simple: www.ynet.co.il
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_url
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 31d311cd-badb-4889-862a-0710a9ce1de4
+    type: regular
+    task:
+      id: 31d311cd-badb-4889-862a-0710a9ce1de4
+      version: -1
+      name: Delete Category content
+      description: Delete content from a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy-content
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      category:
+        simple: his cat
+      change_description:
+        simple: test
+      content_type:
+        simple: CATEGORY_LIST
+      ip: {}
+      schema_version: {}
+      url: {}
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_category
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: f1267bc4-cbc8-4c3e-8a39-c6d430f96a0d
+    type: regular
+    task:
+      id: f1267bc4-cbc8-4c3e-8a39-c6d430f96a0d
+      version: -1
+      name: Get IP policy
+      description: Get a policy from Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_ip
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 8a042aa8-0546-4e40-8429-b4e8bd2d406b
+    type: condition
+    task:
+      id: 8a042aa8-0546-4e40-8429-b4e8bd2d406b
+      version: -1
+      name: Did we get all the policy data?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SymantecMC.Policy.IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SymantecMC.Policy.URL.Address
+            iscontext: true
+          right:
+            value:
+              simple: www.youtube.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SymantecMC.Policy.Category.Name
+            iscontext: true
+          right:
+            value:
+              simple: my cat
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SymantecMC
+                accessor: Policy
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: test_policy_ip
+                    field:
+                      value:
+                        simple: Name
+                    getField:
+                      value:
+                        simple: Description
+            iscontext: true
+          right:
+            value:
+              simple: test2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 846f176d-bb3c-4397-8473-3cbcd748e062
+    type: regular
+    task:
+      id: 846f176d-bb3c-4397-8473-3cbcd748e062
+      version: -1
+      name: Update IP policy description
+      description: Update the metadata for a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-update-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      description:
+        simple: test2
+      name: {}
+      reference_id: {}
+      replace_variables: {}
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_ip
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 0b9b04a6-6f6b-4613-8bdd-6d3c6e24f89f
+    type: title
+    task:
+      id: 0b9b04a6-6f6b-4613-8bdd-6d3c6e24f89f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 59414235-db82-4461-83fe-d350b29cc686
+    type: regular
+    task:
+      id: 59414235-db82-4461-83fe-d350b29cc686
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 7bdb36ac-d087-429c-8fe2-9f6047fb69e0
+    type: regular
+    task:
+      id: 7bdb36ac-d087-429c-8fe2-9f6047fb69e0
+      version: -1
+      name: Search for the IP policy
+      description: List policies in Symantec MC
+      script: Symantec Management Center|||symantec-mc-list-policies
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      content_type: {}
+      description: {}
+      limit: {}
+      name:
+        simple: EQ test_policy_ip
+      reference_id: {}
+      shared: {}
+      tenant: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: d695bee1-1583-4986-8aa8-88c970bdab6d
+    type: condition
+    task:
+      id: d695bee1-1583-4986-8aa8-88c970bdab6d
+      version: -1
+      name: Does it exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SymantecMC.Policy.UUID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 8eddbcbf-4b95-4bc0-8b3c-11f00636e65c
+    type: regular
+    task:
+      id: 8eddbcbf-4b95-4bc0-8b3c-11f00636e65c
+      version: -1
+      name: Delete the policy
+      description: Delete a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      force: {}
+      uuid:
+        simple: ${SymantecMC.Policy.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: d7f74dcd-5b72-4a93-8c11-3616e641341c
+    type: regular
+    task:
+      id: d7f74dcd-5b72-4a93-8c11-3616e641341c
+      version: -1
+      name: Delete key
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: SymantecMC.Policy
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: 3a482096-df21-4eae-851c-fa525157aa4b
+    type: regular
+    task:
+      id: 3a482096-df21-4eae-851c-fa525157aa4b
+      version: -1
+      name: Delete key
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: SymantecMC.Policy
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 505dc2af-3f03-42a6-804e-cab628a3aa44
+    type: regular
+    task:
+      id: 505dc2af-3f03-42a6-804e-cab628a3aa44
+      version: -1
+      name: Search for the category policy
+      description: List policies in Symantec MC
+      script: Symantec Management Center|||symantec-mc-list-policies
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      content_type: {}
+      description: {}
+      limit: {}
+      name:
+        simple: EQ test_policy_category
+      reference_id: {}
+      shared: {}
+      tenant: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: f766a2e1-214d-41af-80f7-090709b6940b
+    type: condition
+    task:
+      id: f766a2e1-214d-41af-80f7-090709b6940b
+      version: -1
+      name: Does it exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SymantecMC.Policy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: ab096a1c-3b44-4fc2-8d33-4482f7978c6e
+    type: regular
+    task:
+      id: ab096a1c-3b44-4fc2-8d33-4482f7978c6e
+      version: -1
+      name: Delete the policy
+      description: Delete a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      force: {}
+      uuid:
+        simple: ${SymantecMC.Policy.UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: adc62d6a-bc3a-4b61-8292-9ca5cd18d540
+    type: regular
+    task:
+      id: adc62d6a-bc3a-4b61-8292-9ca5cd18d540
+      version: -1
+      name: Delete key
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: SymantecMC.Policy
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: f3df7bfe-08ee-4962-85bf-90753f639187
+    type: regular
+    task:
+      id: f3df7bfe-08ee-4962-85bf-90753f639187
+      version: -1
+      name: Delete IP policy
+      description: Delete a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      force: {}
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_ip
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: 4f3fbb0a-ebe5-4ba3-8923-39ad21ea9cf2
+    type: regular
+    task:
+      id: 4f3fbb0a-ebe5-4ba3-8923-39ad21ea9cf2
+      version: -1
+      name: Delete URL policy
+      description: Delete a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      force: {}
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_url
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 1e0d5764-ce9c-46b5-866a-52c115562d1a
+    type: regular
+    task:
+      id: 1e0d5764-ce9c-46b5-866a-52c115562d1a
+      version: -1
+      name: Delete category policy
+      description: Delete a policy in Symantec MC
+      script: Symantec Management Center|||symantec-mc-delete-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      force: {}
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_category
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: de19de2d-994a-41c0-8b55-2601b744403b
+    type: regular
+    task:
+      id: de19de2d-994a-41c0-8b55-2601b744403b
+      version: -1
+      name: Get URL policy with name
+      description: Get a policy from Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      name:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_url
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: Name
+      uuid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: c6a3ddee-99b2-48e1-80f9-78a5479c33fd
+    type: regular
+    task:
+      id: c6a3ddee-99b2-48e1-80f9-78a5479c33fd
+      version: -1
+      name: Get category policy
+      description: Get a policy from Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      uuid:
+        complex:
+          root: SymantecMC
+          accessor: Policy
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: test_policy_category
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 0eec6154-9275-45df-887d-845e29e16885
+    type: regular
+    task:
+      id: 0eec6154-9275-45df-887d-845e29e16885
+      version: -1
+      name: Get non-existing device
+      description: Get a device from Symantec MC
+      script: '|||symantec-mc-get-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      uuid:
+        simple: "123"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 4a90f660-de80-472b-8c94-e1358cc90ffa
+    type: condition
+    task:
+      id: 4a90f660-de80-472b-8c94-e1358cc90ffa
+      version: -1
+      name: Check Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: fb45c023-8f5f-4b33-88fd-5ae6941d2f0d
+    type: regular
+    task:
+      id: fb45c023-8f5f-4b33-88fd-5ae6941d2f0d
+      version: -1
+      name: Try using illegal filter
+      description: List policies in Symantec MC
+      script: Symantec Management Center|||symantec-mc-list-policies
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      content_type: {}
+      description: {}
+      limit: {}
+      name:
+        simple: blabla
+      reference_id: {}
+      shared: {}
+      tenant: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: 7d70c537-dd95-4797-896d-52e06f97106c
+    type: condition
+    task:
+      id: 7d70c537-dd95-4797-896d-52e06f97106c
+      version: -1
+      name: Check Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 4b66fc64-cca6-4b7b-83a8-6e890428eaed
+    type: regular
+    task:
+      id: 4b66fc64-cca6-4b7b-83a8-6e890428eaed
+      version: -1
+      name: Get non existing policy
+      description: Get a policy from Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      uuid:
+        simple: "123"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: 852da456-d987-485f-8554-0040c52775d4
+    type: condition
+    task:
+      id: 852da456-d987-485f-8554-0040c52775d4
+      version: -1
+      name: Check Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 68563777-809f-4f4e-89e6-4d286efaa27f
+    type: regular
+    task:
+      id: 68563777-809f-4f4e-89e6-4d286efaa27f
+      version: -1
+      name: Get non existing policy with name
+      description: Get a policy from Symantec MC
+      script: Symantec Management Center|||symantec-mc-get-policy
+      type: regular
+      iscommand: true
+      brand: Symantec Management Center
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      name:
+        simple: "123"
+      uuid: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 96927dfd-a76c-4097-8008-2cc2508ff08d
+    type: condition
+    task:
+      id: 96927dfd-a76c-4097-8008-2cc2508ff08d
+      version: -1
+      name: Check Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 8725,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

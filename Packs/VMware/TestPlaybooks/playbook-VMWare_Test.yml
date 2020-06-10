@@ -1,0 +1,463 @@
+id: VMWare Test
+version: -1
+name: VMWare Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 933e7df3-433d-47b5-8be4-17d62d976abd
+    type: start
+    task:
+      id: 933e7df3-433d-47b5-8be4-17d62d976abd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: c8015a38-ed73-4db5-872c-e59157761a7f
+    type: regular
+    task:
+      id: c8015a38-ed73-4db5-872c-e59157761a7f
+      version: -1
+      name: Get VMs
+      description: Returns all virtual machines on a system.
+      script: VMware|||vmware-get-vms
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "11"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: e1619059-a84f-4328-8937-dd6847fceb04
+    type: regular
+    task:
+      id: e1619059-a84f-4328-8937-dd6847fceb04
+      version: -1
+      name: VM PowerOn
+      description: Powers on a powered-off or suspended virtual machine.
+      script: VMware|||vmware-poweron
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 720
+        }
+      }
+  "3":
+    id: "3"
+    taskid: fd5d8e71-5a89-4354-8471-81d45a62c61e
+    type: regular
+    task:
+      id: fd5d8e71-5a89-4354-8471-81d45a62c61e
+      version: -1
+      name: VM PowerOff
+      description: Powers off a powered-on or suspended virtual machine.
+      script: VMware|||vmware-poweroff
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 68530d29-2823-4f64-8230-d1aa04ecbaff
+    type: regular
+    task:
+      id: 68530d29-2823-4f64-8230-d1aa04ecbaff
+      version: -1
+      name: VM PowerOn
+      description: Powers on a powered-off or suspended virtual machine.
+      script: VMware|||vmware-poweron
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 1138d96d-936e-4572-8fe9-4225e7f44ce0
+    type: regular
+    task:
+      id: 1138d96d-936e-4572-8fe9-4225e7f44ce0
+      version: -1
+      name: VM Suspend
+      description: Suspends a powered-on virtual machine.
+      script: VMware|||vmware-suspend
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 3a59ac65-5849-4abc-82eb-0a916527de79
+    type: regular
+    task:
+      id: 3a59ac65-5849-4abc-82eb-0a916527de79
+      version: -1
+      name: VM PowerOn
+      description: Powers on a powered-off or suspended virtual machine.
+      script: VMware|||vmware-poweron
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 95bb703d-838e-40ed-809b-77c8f3d3dcf3
+    type: regular
+    task:
+      id: 95bb703d-838e-40ed-809b-77c8f3d3dcf3
+      version: -1
+      name: VM Hard Reboot
+      description: Reboots a powered-on virtual machine.
+      script: VMware|||vmware-hard-reboot
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 13e24335-511a-4c68-8966-10abd499e421
+    type: regular
+    task:
+      id: 13e24335-511a-4c68-8966-10abd499e421
+      version: -1
+      name: Create VM Snapshot
+      description: 'Creates VM snapshot'
+      script: VMware|||vmware-create-snapshot
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      description: {}
+      memory:
+        simple: "False"
+      name:
+        simple: Test Snapshot
+      quiesce: {}
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+  "9":
+    id: "9"
+    taskid: a275c46c-de75-4dbd-83a4-c340333d868a
+    type: regular
+    task:
+      id: a275c46c-de75-4dbd-83a4-c340333d868a
+      version: -1
+      name: Revert To Snapshot
+      description: Reverts VM to snapshot
+      script: VMware|||vmware-revert-snapshot
+      type: regular
+      iscommand: true
+      brand: VMware
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      snapshot-name:
+        simple: Test Snapshot
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 46dcefff-b1f2-4a82-8504-c37cb18d5cce
+    type: regular
+    task:
+      id: 46dcefff-b1f2-4a82-8504-c37cb18d5cce
+      version: -1
+      name: vmware-get-events
+      description: Gets events of VM
+      script: VMware|||vmware-get-events
+      type: regular
+      iscommand: true
+      brand: VMware
+    scriptarguments:
+      event-type: {}
+      vm-uuid:
+        simple: ${VMWare.[1].UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 32b10716-0834-4f84-86ac-569f3c259082
+    type: condition
+    task:
+      id: 32b10716-0834-4f84-86ac-569f3c259082
+      version: -1
+      name: Check VM power state
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      left:
+        simple: ${VMWare.[1].State}
+      right:
+        simple: poweredOff
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "12":
+    id: "12"
+    taskid: d8da27ae-f9e3-4060-8836-0e31803095c2
+    type: regular
+    task:
+      id: d8da27ae-f9e3-4060-8836-0e31803095c2
+      version: -1
+      name: 'Check if rebooted successfully '
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue:
+        simple: HardRebooted
+      fields: {}
+      path:
+        simple: VMWare.[1].State
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+  "13":
+    id: "13"
+    taskid: b0b84db4-ba1a-48d8-8a2b-4195e73bf748
+    type: regular
+    task:
+      id: b0b84db4-ba1a-48d8-8a2b-4195e73bf748
+      version: -1
+      name: 'Check if reverted to snapshot successfully '
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue:
+        simple: '["Reverted to Test Snapshot"]'
+      fields: {}
+      path:
+        simple: VMWare.Snapshot
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+  "14":
+    id: "14"
+    taskid: c50b2cac-2f79-43a5-866d-fde002f37ac0
+    type: regular
+    task:
+      id: c50b2cac-2f79-43a5-866d-fde002f37ac0
+      version: -1
+      name: DeleteContext (all)
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "15":
+    id: "15"
+    taskid: ba3b0887-2e11-4e65-8537-2afe00906e38
+    type: title
+    task:
+      id: ba3b0887-2e11-4e65-8537-2afe00906e38
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

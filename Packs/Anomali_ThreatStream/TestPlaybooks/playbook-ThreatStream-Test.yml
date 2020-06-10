@@ -1,0 +1,841 @@
+id: ThreatStream-Test
+version: -1
+name: ThreatStream-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fc7f961f-504d-4fcc-8a07-3c26f6df2d5e
+    type: start
+    task:
+      id: fc7f961f-504d-4fcc-8a07-3c26f6df2d5e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: a63d2665-4c06-40ab-8e99-e8f852fe58d6
+    type: regular
+    task:
+      id: a63d2665-4c06-40ab-8e99-e8f852fe58d6
+      version: -1
+      name: Check Domain Reputation
+      description: Checks the reputation of the domain name.
+      script: Anomali ThreatStream v2|||domain
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: dropwellsfargo.com
+      include_inactive: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 0f5880f2-d4bd-4259-8249-435f64f83237
+    type: condition
+    task:
+      id: 0f5880f2-d4bd-4259-8249-435f64f83237
+      version: -1
+      name: 'Validate  Domain Context '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.Domain.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.Domain.Severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 45924a26-d219-455b-8a9d-e29c50b22a55
+    type: regular
+    task:
+      id: 45924a26-d219-455b-8a9d-e29c50b22a55
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "7"
+      - "5"
+      - "9"
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: fdb43b47-9197-4d9b-889a-32780f2d2736
+    type: regular
+    task:
+      id: fdb43b47-9197-4d9b-889a-32780f2d2736
+      version: -1
+      name: Check IP Reputation
+      description: Checks the reputation of the given IP.
+      script: Anomali ThreatStream v2|||ip
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      include_inactive: {}
+      ip:
+        simple: 116.101.134.118
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 80d76444-f1f6-4f70-8d84-cba74e694e70
+    type: condition
+    task:
+      id: 80d76444-f1f6-4f70-8d84-cba74e694e70
+      version: -1
+      name: Validate IP context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.IP.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: f194386e-d684-40d8-89f1-caa03d398aaf
+    type: regular
+    task:
+      id: f194386e-d684-40d8-89f1-caa03d398aaf
+      version: -1
+      name: Check URL reputation
+      description: Checks the reputation of the given URL.
+      script: Anomali ThreatStream v2|||url
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      include_inactive: {}
+      threshold: {}
+      url:
+        simple: http://www.myronnhammond.club/godaddy/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 03b8a721-5ce0-42f1-8dad-8301302c8d6b
+    type: condition
+    task:
+      id: 03b8a721-5ce0-42f1-8dad-8301302c8d6b
+      version: -1
+      name: Validate URL Reputation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.URL.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: c980650f-528a-4da8-83e1-ce1b5bab6de6
+    type: regular
+    task:
+      id: c980650f-528a-4da8-83e1-ce1b5bab6de6
+      version: -1
+      name: Check email reputation
+      description: Checks the reputation of the given email address.
+      script: Anomali ThreatStream v2|||threatstream-email-reputation
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      email:
+        simple: tatimouzo1@aliceadsl.fr
+      include_inactive: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 3504392f-9844-40f8-8647-e96f5ee9ed96
+    type: condition
+    task:
+      id: 3504392f-9844-40f8-8647-e96f5ee9ed96
+      version: -1
+      name: Validate Email Reputation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.EmailReputation.Confidence
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 6eba16b2-245a-4445-8ee9-3ce4ccce2b97
+    type: regular
+    task:
+      id: 6eba16b2-245a-4445-8ee9-3ce4ccce2b97
+      version: -1
+      name: Check MD5 reputation
+      description: Checks the reputation of the given md5 of the file.
+      script: Anomali ThreatStream v2|||file
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      file:
+        simple: ae56db90749f05ee3b6ea1daed4279a2
+      include_inactive:
+        simple: fal
+      md5:
+        simple: fc0f4799549242c437cd480c85cb5e16cfdc0c3df622cc31ed9745a45a61df28
+      threshold:
+        simple: low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 07e11822-3e70-4240-8520-3b0de9660e7e
+    type: condition
+    task:
+      id: 07e11822-3e70-4240-8520-3b0de9660e7e
+      version: -1
+      name: Validate  File reputation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.File.Severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 080844f3-77bb-4a02-8945-adda77b736d5
+    type: regular
+    task:
+      id: 080844f3-77bb-4a02-8945-adda77b736d5
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: d0e02c2b-f3ae-4028-8e06-394b30e16a24
+    type: title
+    task:
+      id: d0e02c2b-f3ae-4028-8e06-394b30e16a24
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 8a564967-696c-45a1-8878-ccc7ad76095a
+    type: regular
+    task:
+      id: 8a564967-696c-45a1-8878-ccc7ad76095a
+      version: -1
+      name: Get Indicator by ID
+      description: Return filtered indicators from ThreatStream. If query is defined,
+        it overides all othe arguments that were passed to the command.
+      script: Anomali ThreatStream v2|||threatstream-get-indicators
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      asn: {}
+      confidence: {}
+      country: {}
+      created_ts: {}
+      id:
+        simple: "51685266655"
+      indicator_severity: {}
+      indicator_value: {}
+      is_public: {}
+      limit: {}
+      org: {}
+      query: {}
+      status: {}
+      tags_name: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 1bd9bca8-99dd-48f5-8a25-936bdac9f84b
+    type: condition
+    task:
+      id: 1bd9bca8-99dd-48f5-8a25-936bdac9f84b
+      version: -1
+      name: Validate Indicator Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatStream.Indicators.Value
+            iscontext: true
+          right:
+            value:
+              simple: 144.172.153.165
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatStream.Indicators.Severity
+            iscontext: true
+          right:
+            value:
+              simple: low
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 7753be8f-33a9-4850-8637-7d3a0194bd95
+    type: regular
+    task:
+      id: 7753be8f-33a9-4850-8637-7d3a0194bd95
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "20"
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 3718724c-3a29-4dd1-8baa-ab341b48f1c5
+    type: regular
+    task:
+      id: 3718724c-3a29-4dd1-8baa-ab341b48f1c5
+      version: -1
+      name: Get Actor list
+      description: Returns a list of Threat Model.
+      script: '|||threatstream-get-model-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit:
+        simple: "1"
+      model:
+        simple: actor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 1cf2edbb-8111-40fc-8846-334725252316
+    type: regular
+    task:
+      id: 1cf2edbb-8111-40fc-8846-334725252316
+      version: -1
+      name: Get Indicator By Model Actor
+      description: Returns a list of indecators associated with the specified model
+        and model's id.
+      script: Anomali ThreatStream v2|||threatstream-get-indicators-by-model
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        simple: ${ThreatStream.List.ID}
+      limit:
+        simple: "1"
+      model:
+        simple: actor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 3c20a3d1-e9b6-4ac7-8d08-3ecc55fb4a77
+    type: regular
+    task:
+      id: 3c20a3d1-e9b6-4ac7-8d08-3ecc55fb4a77
+      version: -1
+      name: Get Passive DNS
+      description: Returns enrichment data for Domain or IP for availabe observables.
+      script: Anomali ThreatStream v2|||threatstream-get-passive-dns
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+      type:
+        simple: domain
+      value:
+        simple: eqouifax.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 76f4c20c-7b08-4069-81a1-4df99561219d
+    type: condition
+    task:
+      id: 76f4c20c-7b08-4069-81a1-4df99561219d
+      version: -1
+      name: Validate Passive DNS Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.PassiveDNS.Domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.PassiveDNS.Ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.PassiveDNS.Rrtype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.PassiveDNS.Source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.PassiveDNS.FirstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatStream.PassiveDNS.LastSeen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 0d6b3cee-cc30-4eec-8279-24358a721c3e
+    type: regular
+    task:
+      id: 0d6b3cee-cc30-4eec-8279-24358a721c3e
+      version: -1
+      name: Get Campaign List
+      description: Returns a list of Threat Model.
+      script: Anomali ThreatStream v2|||threatstream-get-model-list
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      limit:
+        simple: "1"
+      model:
+        simple: campaign
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: b9be25a2-478c-48ce-8aed-ea8d7d75ba47
+    type: regular
+    task:
+      id: b9be25a2-478c-48ce-8aed-ea8d7d75ba47
+      version: -1
+      name: Get Indicator By Model Campaing
+      description: Returns a list of indecators associated with the specified model
+        and model's id.
+      script: Anomali ThreatStream v2|||threatstream-get-indicators-by-model
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        simple: ${ThreatStream.List.ID}
+      limit:
+        simple: "1"
+      model:
+        simple: campaign
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

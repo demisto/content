@@ -1,0 +1,149 @@
+id: Icebrg Test
+version: -1
+name: Icebrg Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: c8fa8730-747a-4fdd-8e45-2ff78648bf99
+    type: start
+    task:
+      id: c8fa8730-747a-4fdd-8e45-2ff78648bf99
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+      - '1'
+      - '10'
+    view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 45\n  }\n}"
+  '1':
+    id: '1'
+    taskid: 4563c6f2-196f-4574-8249-34e62c9ad4b2
+    type: regular
+    task:
+      id: 4563c6f2-196f-4574-8249-34e62c9ad4b2
+      version: -1
+      name: icebrg-get-history
+      description: Gets history of the events
+      script: icebrg|||icebrg-get-history
+      type: regular
+      iscommand: true
+      brand: icebrg
+    nexttasks:
+      '#none#':
+      - '2'
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+  '2':
+    id: '2'
+    taskid: 7abe37a2-2d05-4ac0-8c3c-eae694fcb422
+    type: regular
+    task:
+      id: 7abe37a2-2d05-4ac0-8c3c-eae694fcb422
+      version: -1
+      name: icebrg-search-events
+      description: Perform an ICEBRG datastore event search
+      script: icebrg|||icebrg-search-events
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      customer_id: {}
+      end_date: {}
+      history: {}
+      limit: {}
+      order: {}
+      order_by: {}
+      query:
+        simple: ${Icebrg.UserQueryHistory.[0].Query}
+      service_traffic: {}
+      start_date: {}
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 410\n  }\n}"
+  '7':
+    id: '7'
+    taskid: 786f3f16-5077-4813-8ee4-76d375bce4e1
+    type: regular
+    task:
+      id: 786f3f16-5077-4813-8ee4-76d375bce4e1
+      version: -1
+      name: icebrg-get-reports
+      description: Gets a list of reports
+      script: icebrg|||icebrg-get-reports
+      type: regular
+      iscommand: true
+      brand: icebrg
+    nexttasks:
+      '#none#':
+      - '9'
+      - '8'
+    scriptarguments:
+      account_uuid: {}
+      archived: {}
+      confidence: {}
+      limit: {}
+      offset: {}
+      published_end: {}
+      published_start: {}
+      risk: {}
+      search: {}
+      sort_by: {}
+      sort_order: {}
+      status: {}
+    view: "{\n  \"position\": {\n    \"x\": 1090,\n    \"y\": 230\n  }\n}"
+  '8':
+    id: '8'
+    taskid: 66870130-5574-466e-842c-2450b437c716
+    type: regular
+    task:
+      id: 66870130-5574-466e-842c-2450b437c716
+      version: -1
+      name: icebrg-get-report-indicators
+      description: Gets indicators for a reports
+      script: icebrg|||icebrg-get-report-indicators
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      report_uuid:
+        simple: ${Icebrg.Reports.Uuid}
+    view: "{\n  \"position\": {\n    \"x\": 855,\n    \"y\": 410\n  }\n}"
+  '9':
+    id: '9'
+    taskid: b0cbc68b-8a1a-4d00-8e6b-61e46fbc9910
+    type: regular
+    task:
+      id: b0cbc68b-8a1a-4d00-8e6b-61e46fbc9910
+      version: -1
+      name: icebrg-get-report-assets
+      description: Gets impacted assets for a report
+      script: icebrg|||icebrg-get-report-assets
+      type: regular
+      iscommand: true
+      brand: icebrg
+    scriptarguments:
+      report_uuid:
+        simple: ${Icebrg.Reports.Uuid}
+    view: "{\n  \"position\": {\n    \"x\": 1292,\n    \"y\": 410\n  }\n}"
+  '10':
+    id: '10'
+    taskid: 2871b8c7-9ec1-44ff-8a60-29c5c487463f
+    type: regular
+    task:
+      id: 2871b8c7-9ec1-44ff-8a60-29c5c487463f
+      version: -1
+      name: icebrg-saved-searches
+      description: Gets user saved searches
+      script: icebrg|||icebrg-saved-searches
+      type: regular
+      iscommand: true
+      brand: icebrg
+    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 230\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 460,\n      \"width\": 1642,\n      \"x\": 30,\n      \"y\": 45\n\
+  \    }\n  }\n}"
+inputs: []
+fromversion: 5.0.0
+description: ''

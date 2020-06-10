@@ -1,0 +1,56 @@
+commonfields:
+  id: WildfireReport
+  version: -1
+name: WildfireReport
+deprecated: true
+script: |-
+  var results = [];
+  var raws = [];
+  if (args.md5) {
+      md5s = argToList(args.md5);
+      for(var i=0; i<md5s.length;i++)
+          raws.push(executeCommand('wildfire-report', {md5: md5s[i]}));
+  } else if (args.hash) {
+      hashes = argToList(args.hash);
+      for(var i=0; i<hashes.length;i++)
+          raws.push(executeCommand('wildfire-report', {hash: hashes[i]}));
+  } else {
+      return 'no';
+  }
+  for(var i=0; i<raws.length;i++) {
+      raw = raws[i];
+      if (!raw[0] || !raw[0].Contents || !raw[0].Contents.wildfire || !raw[0].Contents.wildfire.file_info) {
+          results.push(raw);
+      } else {
+          var item = raw[0].Contents.wildfire.file_info;
+          results.push({Contents: {
+              Type: item.filetype,
+              Malware: item.malware,
+              MD5: item.md5,
+              SHA256: item.sha256,
+              Size: item.size},
+              ContentsFormat: formats.table,
+              Type: entryTypes.note});
+      }
+  }
+  return results;
+type: javascript
+tags:
+- enhancement
+- wildfire
+- sandbox
+comment: Deprecated. Use the "wildfire-report" command instead.
+system: true
+args:
+- name: md5
+  default: true
+  description: MD5 Hash to look up
+- name: hash
+  description: Hash to look up
+scripttarget: 0
+dependson:
+  must:
+  - wildfire-report
+timeout: 0s
+tests:
+- No tests

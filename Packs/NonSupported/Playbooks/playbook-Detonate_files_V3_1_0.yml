@@ -1,0 +1,121 @@
+id: Detonate files
+version: -1
+name: Detonate files
+system: true
+fromversion: 2.5.0
+toversion: 3.1.0
+description: Deprecated - We recommend using Detonate File - Generic playbook instead.
+  Detonate files found under File context if they are PDFs or executables
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b914ae63-e755-4b4b-8d46-da635ed2605b
+    type: start
+    task:
+      id: b914ae63-e755-4b4b-8d46-da635ed2605b
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 6705f964-a6a7-470b-8336-76be42147afa
+    type: condition
+    task:
+      id: 6705f964-a6a7-470b-8336-76be42147afa
+      version: -1
+      name: Do we have relevant files?
+      description: Check if the type or info of files is either executable or pdf
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      value: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0)}
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 12cc937e-cdd5-47df-85af-11301187d67d
+    type: regular
+    task:
+      id: 12cc937e-cdd5-47df-85af-11301187d67d
+      version: -1
+      description: ""
+      name: Print that there are no relevant files to detonate
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: There are no relevant files to detonate
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: fd843ede-25fb-4cc3-8611-d9d54d4e1de4
+    type: regular
+    task:
+      id: fd843ede-25fb-4cc3-8611-d9d54d4e1de4
+      version: -1
+      name: SandboxDetonateFile
+      description: Detonate the file in available sandboxes.
+      scriptName: SandboxDetonateFile
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryID: ${File(['exe', 'pe32', 'pe64', 'pdf'].filter(function(t) {return val.Info.toLowerCase().indexOf(t)
+        >= 0 || val.Type.toLowerCase().indexOf(t) >= 0;}).length > 0).EntryID}
+      interval: ""
+      timeout: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+tests:
+  - No tests - Deprecated playbook

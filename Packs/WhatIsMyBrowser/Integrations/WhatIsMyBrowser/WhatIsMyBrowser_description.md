@@ -1,0 +1,1 @@
+The User Agent Parse API from WhatIsMyBrowser allows you to send a User Agent String and received a detailed response back, describing as much as possible about the string. The `ua-parse` command is designed for parsing individual user agents.
