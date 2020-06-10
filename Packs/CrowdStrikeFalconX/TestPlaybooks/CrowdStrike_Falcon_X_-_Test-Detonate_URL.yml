@@ -1,6 +1,7 @@
 id: Falcon X - Test-Detonate URL
 version: -1
 name: Falcon X - Test-Detonate URL
+description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -41,6 +42,7 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
+      description: ''
       brand: ""
     nexttasks:
       '#none#':
@@ -74,6 +76,7 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+      description: ''
       brand: ""
     nexttasks:
       '#none#':
@@ -137,5 +140,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: Test-Detonate URL - Crowdstrike
 fromversion: 5.0.0
