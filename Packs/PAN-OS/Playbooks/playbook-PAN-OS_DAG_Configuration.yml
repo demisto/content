@@ -382,7 +382,7 @@ tasks:
           root: inputs.device-group
       element-to-add:
         complex:
-          root: inputs.ip_list
+          root: inputs.address_group_name
       inbound-or-outbound-rule:
         complex:
           root: inputs.inbound-or-outbound-rule
