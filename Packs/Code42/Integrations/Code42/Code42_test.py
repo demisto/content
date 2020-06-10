@@ -1,5 +1,5 @@
 import json
-from py42.sdk import SDK
+import py42.sdk
 from Code42 import (
     Code42Client,
     build_query_payload,

@@ -1,12 +1,12 @@
 from typing import Optional, Dict, Any
-import demistomock as demisto
-from CommonServerPython import *
+
 ''' IMPORTS '''
 import json
 import requests
-from py42.sdk import SDK
+import py42.sdk
 import py42.settings
-from py42.sdk.file_event_query import (
+from py42.sdk.queries.fileevents.file_event_query import FileEventQuery
+from py42.sdk.queries.fileevents.filters import (
     MD5,
     SHA256,
     Actor,
@@ -14,16 +14,16 @@ from py42.sdk.file_event_query import (
     OSHostname,
     DeviceUsername,
     ExposureType,
-    EventType,
-    FileEventQuery
+    EventType
 )
-from py42.sdk.alert_query import (
+from py42.sdk.queries.alerts.alert_query import AlertQuery
+from py42.sdk.queries.alerts.filters import (
     DateObserved,
     Severity,
-    AlertState,
-    AlertQuery
+    AlertState
 )
 import time
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -102,29 +102,30 @@ CODE42_FILE_TYPE_MAPPER = {
     'Archive': 'ARCHIVE'
 }
 
-SECURITY_EVENT_HEADERS = ['EventType', 'FileName', 'FileSize', 'FileHostname', 'FileOwner', 'FileCategory', 'DeviceUsername']
+SECURITY_EVENT_HEADERS = ['EventType', 'FileName', 'FileSize', 'FileHostname', 'FileOwner', 'FileCategory',
+                          'DeviceUsername']
 SECURITY_ALERT_HEADERS = ['Type', 'Occurred', 'Username', 'Name', 'Description', 'State', 'ID']
 
 
 class Code42Client(BaseClient):
     """
-    Client will implement the service API, should not contain Demisto logic.
+    Client will implement the service API, should not contain Cortex XSOAR logic.
     Should do requests and return data
     """
 
     def __init__(self, sdk, base_url, auth, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy)
-        # Create the Code42 SDK instnace
-        self._sdk = sdk.create_using_local_account(base_url, auth[0], auth[1])
+        # Create the Code42 SDK instance
+        self._sdk = py42.sdk.from_local_account(base_url, auth[0], auth[1])
         py42.settings.set_user_agent_suffix("Demisto")
 
     def add_user_to_departing_employee(self, username, departure_epoch=None, note=None):
-        de = self._sdk.employee_case_management.departing_employee
         try:
-            res = de.create_departing_employee(username, departure_epoch=departure_epoch, notes=note)
+            res = self._sdk.detectionlists.departing_employee.add(username, departure_epoch=departure_epoch)
+            not note or self._sdk.detectionlists.update_user_notes(note)
         except Exception:
             return None
-        return res.json().get('caseId')
+        return res["userId"]
 
     def fetch_alerts(self, start_time, event_severity_filter=None):
         alert_filter = []
@@ -135,57 +136,56 @@ class Code42Client(BaseClient):
         alert_filter.append(DateObserved.on_or_after(start_time))
         alert_query = AlertQuery(self._sdk.user_context.get_current_tenant_id(), *alert_filter)
         alert_query.sort_direction = "asc"
-        alerts = self._sdk.security.alerts
         try:
-            res = alerts.search_alerts(alert_query)
+            res = self._sdk.alerts.search_alerts(alert_query)
         except Exception:
             return None
-        return res.json().get('alerts')
+        return res['alerts']
 
     def get_alert_details(self, alert_id):
-        alerts = self._sdk.security.alerts
         try:
-            res = alerts.get_query_details([alert_id])
+            res = self._sdk.alerts.get_details(alert_id)
         except Exception:
             return None
         else:
             # There will only ever be one alert since we search on just one ID
-            return res.json().get('alerts')[0]
+            return res['alerts'][0]
 
     def get_current_user(self):
         try:
             res = self._sdk.users.get_current_user()
         except Exception:
             return None
-        return res.json()
+        return res
 
     def remove_user_from_departing_employee(self, username):
         try:
-            de = self._sdk.employee_case_management.departing_employee
-            res = de.get_case_by_username(username)
+            user_id = self.get_user_id(username)
+            self._sdk.detectionlists.departing_employee.resolve(user_id)
         except Exception:
             return None
-        case_id = res.json().get('caseId')
-        try:
-            de.resolve_departing_employee(case_id)
-        except Exception:
-            return None
-        return case_id
+        return user_id
 
-    def resolve_alert(self, id):
-        alerts = self._sdk.security.alerts
+    def resolve_alert(self, alert_id):
         try:
-            alerts.resolve_alert(id)
+            self._sdk.alerts.resolve(alert_id)
         except Exception:
             return None
-        return id
+        return alert_id
+
+    def get_user_id(self, username):
+        try:
+            res = self._sdk.users.get_by_username(username)
+        except Exception:
+            return None
+        return res["users"][0]["userUid"]
 
     def search_json(self, payload):
         try:
-            res = self._sdk.security.search_file_events(payload)
+            res = self._sdk.securitydata.search_file_events(payload)
         except Exception:
             return None
-        return res.json().get('fileEvents')
+        return res['fileEvents']
 
 
 @logger
@@ -340,12 +340,13 @@ def alert_resolve_command(client, args):
 def departingemployee_add_command(client, args):
     departure_epoch: Optional[int]
     # Convert date to epoch
+    departure_epoch = None
     if args.get('departuredate'):
         try:
             departure_epoch = int(time.mktime(time.strptime(args['departuredate'], '%Y-%m-%d')))
         except Exception:
             return_error(message='Could not add user to Departing Employee Lens: '
-                         'unable to parse departure date. Is it in YYYY-MM-DD format?')
+                                 'unable to parse departure date. Is it in YYYY-MM-DD format?')
     else:
         departure_epoch = None
     case = client.add_user_to_departing_employee(args['username'], departure_epoch, args.get('note'))
@@ -398,7 +399,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_severity_filter,
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, to_timestamp=True, utc=True)
         start_query_time /= 1000
-    alerts = client.fetch_alerts(start_query_time, demisto.params().get('alert_severity'))
+    alerts = client.fetch_alerts(start_query_time, event_severity_filter)
     for alert in alerts:
         details = client.get_alert_details(alert['id'])
         incident = {
@@ -449,8 +450,9 @@ def securitydata_search_command(client, args):
             code42_securitydata_context,
             headers=SECURITY_EVENT_HEADERS
         )
-        return readable_outputs, {'Code42.SecurityData(val.EventID && val.EventID == obj.EventID)': code42_securitydata_context,
-                                  'File': file_context}, file_events
+        return readable_outputs, {
+            'Code42.SecurityData(val.EventID && val.EventID == obj.EventID)': code42_securitydata_context,
+            'File': file_context}, file_events
     else:
         return 'No results found', {}, {}
 
