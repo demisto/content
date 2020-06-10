@@ -39,12 +39,10 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
-  defaultvalue: false
   type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
-  defaultvalue: false
   type: 8
 script:
   script: ''

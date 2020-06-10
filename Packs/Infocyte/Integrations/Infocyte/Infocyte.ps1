@@ -10,14 +10,15 @@ function Invoke-InfocyteScan {
     $Target = $demisto.Args()['target']
     $Task = Invoke-ICScanTarget -Target $target
     $prefix = "Infocyte.Task"
-    $Output = @{
-        'Infocyte.Task' = @{
+    $Output = [PSCustomObject]@{
+        'Infocyte.Task' = [PSCustomObject]@{
             userTaskId = $Task.userTaskId
             type       = "SCAN"
             host       = $Target
         }
     }
-    ReturnOutputs -ReadableOutput ([PSCustomObject]$Output."$prefix" | ConvertTo-Markdown) -Outputs $Output | Out-Null
+    $MDOutput = [PSCustomObject]$Output."$prefix" | ConvertTo-Markdown
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Get-InfocyteTaskStatus {
@@ -30,10 +31,8 @@ function Get-InfocyteTaskStatus {
     else {
         $type = "SCAN"
     }
-
-    $prefix = "Infocyte.Task(val.userTaskId == obj.userTaskId)"
-    $Output = @{
-        'Infocyte.Task(val.userTaskId == obj.userTaskId)' = @{
+    $Output = [PSCustomObject]@{
+        'Infocyte.Task(val.userTaskId == obj.userTaskId)' = [PSCustomObject]@{
             userTaskId  = $task.id
             scanId      = $task.data.scanId
             type        = $type
@@ -43,7 +42,8 @@ function Get-InfocyteTaskStatus {
             timeElapsed = $task.totalSeconds
         }
     }
-    ReturnOutputs -ReadableOutput ([PSCustomObject]$Output."$prefix" | ConvertTo-Markdown) -Outputs $Output | Out-Null
+    $MDOutput = $Output.'Infocyte.Task(val.userTaskId == obj.userTaskId)' | ConvertTo-Markdown
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Get-InfocyteAlerts {
@@ -64,10 +64,10 @@ function Get-InfocyteAlerts {
     }
     else {
         $LastRun = $demisto.GetLastRun() #TBD (WIP)
-        $Demisto.Log($LastRun | Convertto-Json | Out-String)
-        $LastAlert = $LastRun.get.'Infocyte.Alert' | Sort-Object id | Select-Object -Last 1
-        if ($LastAlert) {
-            $where = @{ id = @{ gt = $LastAlert.id } }
+        if ($LastRun) {
+            $Demisto.Debug("$($LastRun | Convertto-Json)")
+            # $LastAlert =
+            #$where = @{ id = @{ gt = $LastAlert.id } }
         } else {
             $where = @{ createdOn = @{ gt = (Get-Date).AddDays([int]$first_fetch) }}
         }
@@ -100,14 +100,14 @@ function Get-InfocyteAlerts {
             avTotal     = $_.avTotal       # 85
             hasAvScan   = $_.hasAvScan     # $true
             synapse     = $_.synapse       # 1.08223234150638
-            size        = $_. 45208
+            size        = $_.size
         }
     }
-    $prefix = "Infocyte.Alert"
-    $Output = @{
+    $Output = [PSCustomObject]@{
         'Infocyte.Alert' = $formatedAlerts
     }
-    ReturnOutputs -ReadableOutput ([PSCustomObject]$Output."$prefix" | ConvertTo-Markdown)  -Outputs $Output | Out-Null
+    $MDOutput = $Output.'Infocyte.Alert' | ConvertTo-Markdown
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Alerts | Out-Null
 }
 
 function Get-InfocyteScanResult {
@@ -123,7 +123,7 @@ function Get-InfocyteScanResult {
 
     $Hosts = Get-ICObject -Type Host -ScanId $scanId | Select-Object hostname, ip, osVersion
     if ($Scan) {
-        $Alerts = Get-ICAlert -where @{ scanId = $scanId } | Select-Object id, name, type, hostname, scanId, fileRepId, signed, managed, createdOn, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, hasAvScan, synapse, size
+        $Alerts = Get-ICAlert -where @{ scanId = $scanId } | Select-Object id, name, type, hostname, fileRepId, signed, managed, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, hasAvScan, synapse, size
 
         # Handle counting for 1 item (powershell makes this hard)
         if ($HostResult.alerts) {
@@ -136,10 +136,8 @@ function Get-InfocyteScanResult {
             $AlertCount = 0
         }
     }
-
-    $prefix = "Infocyte.Scan"
-    $output = @{
-        'Infocyte.Scan' = @{
+    $output = [PSCustomObject]@{
+        'Infocyte.Scan' = [PSCustomObject]@{
             scanId             = $Scan.data.scanId
             compromised        = $HostResult.compromised
             completeOn          = $Scan.completedOn
@@ -153,7 +151,8 @@ function Get-InfocyteScanResult {
             ip                 = $HostResult.ip
         }
     }
-    ReturnOutputs -ReadableOutput ([PSCustomObject]$Output."$prefix" | ConvertTo-Markdown) -Outputs $Output | Out-Null
+    $MDOutput = $Output.'Infocyte.Scan' | Select-Object -ExcludeProperty alerts | ConvertTo-Markdown
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Get-InfocyteHostScanResult {
@@ -168,29 +167,28 @@ function Get-InfocyteHostScanResult {
     } else {
         $AlertCount = 0
     }
-    $prefix = "Infocyte.Scan"
-    $output = @{
-        'Infocyte.Scan' = @{
+    $output = [PSCustomObject]@{
+        'Infocyte.Scan' = [PSCustomObject]@{
             scanId             = $HostResult.scanId
             hostId             = $HostResult.hostId
             os                 = $HostResult.osVersion
             success            = $HostResult.success
             compromised        = $HostResult.compromised
             completedOn        = $HostResult.completedOn
-            alerts             = $HostResult.alerts | Select-Object id, name, type, hostname, scanId, fileRepId, signed, managed, createdOn, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, hasAvScan, synapse, size
+            alerts             = $HostResult.alerts | Select-Object id, name, fileRepId, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, hasAvScan, synapse, size
             alertCount         = $AlertCount
             hostname           = $HostResult.hostname
             ip                 = $HostResult.ip
         }
     }
-    ReturnOutputs -ReadableOutput ([PSCustomObject]$Output."$prefix" | ConvertTo-Markdown) -Outputs $Output | Out-Null
+    $MDOutput = $Output.'Infocyte.Scan' | Select-Object -ExcludeProperty alerts | ConvertTo-Markdown
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Get-InfocyteResponseResult {
     $HostResult = Get-ICResponseResult -scanId $demisto.Args()['scanId'] -hostname $hostname
-    $prefix = "Infocyte.Response"
-    $output = @{
-        'Infocyte.Response' = @{
+    $output = [PSCustomObject]@{
+        'Infocyte.Response' = [PSCustomObject]@{
             scanId      = $HostResult.scanId
             hostId      = $HostResult.hostId
             extensionId = $HostResult.extensionId
@@ -205,7 +203,8 @@ function Get-InfocyteResponseResult {
             ip          = $HostResult.ip
         }
     }
-    ReturnOutputs -ReadableOutput ([PSCustomObject]$Output."$prefix" | ConvertTo-Markdown) -Outputs $Output | Out-Null
+    $MDOutput = $Output.'Infocyte.Response' | ConvertTo-Markdown
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Invoke-InfocyteResponse {
@@ -217,16 +216,16 @@ function Invoke-InfocyteResponse {
 		Throw "Extension with name $ExtensionName does not exist!"
     }
     $Task = Invoke-ICResponse -Target $demisto.Args()['target'] -ExtensionId $Ext.Id
-    $prefix = "Infocyte.Task"
-    $output = @{
-        'Infocyte.Task' = @{
+    $output = [PSCustomObject]@{
+        'Infocyte.Task' = [PSCustomObject]@{
             userTaskId    = $Task.userTaskId
             type          = "RESPONSE"
             extensionName = $ExtensionName
             target        = $Target
         }
     }
-    ReturnOutputs -ReadableOutput ([PSCustomObject]$Output."$prefix" | ConvertTo-Markdown) -Outputs $Output | Out-Null
+    $MDOutput = $Output.'Infocyte.Task' | ConvertTo-Markdown
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 Function ConvertTo-Markdown {
@@ -295,8 +294,41 @@ Function ConvertTo-Markdown {
     }
 }
 
+# Override ReturnOutputs (use [PSCustomOject] inputs instead of [hashtables]inputs)
+function global:ReturnOutputs([string]$ReadableOutput, [PSCustomObject]$Outputs, [Object]$RawResponse) {
+    $entry = @{
+        Type           = [EntryTypes]::note;
+        ContentsFormat = [EntryFormats]::json.ToString();
+        HumanReadable  = $ReadableOutput;
+        Contents       = $RawResponse;
+        EntryContext   = $Outputs
+    }
+    # Return 'readable_output' only if needed
+    if ($ReadableOutput -and -not $outputs -and -not $RawResponse) {
+        $entry.Contents = $ReadableOutput
+        $entry.ContentsFormat = [EntryFormats]::text.ToString();
+    }
+    elseif ($Outputs -and -not $RawResponse) {
+        # if RawResponse was not provided but outputs were provided then set Contents as outputs
+        $entry.Contents = $Outputs
+    }
+    $demisto.Results($entry) | Out-Null
+    return $entry
+}
+
 function Main {
 
+    if (-NOT $Demisto.Params().ContainsKey('InstanceName')){
+        # Interactive testing only
+        $demisto.ServerEntry.params = @{
+            InstanceName = "testpanxsoar"
+            APIKey = "gQ3YyPqjLWPBa9ubPiKFLqabF0YoxrMt4iXGWZfabdrTB3XnBLw3uc7CHXCYZHOV"
+            insecure = $false
+            proxy = $false
+            first_fetch = '3'
+            max_fetch = '10'
+        }
+    }
     # Parse Params
     $Instance = $demisto.Params()['InstanceName']
     $Token = $demisto.Params()['APIKey']
@@ -323,7 +355,6 @@ function Main {
             $Demisto.Error('Proxy was selected but not found in $Env:HTTPS_PROXY')
         }
     }
-    
     if ($Demisto -AND $demisto.Params().ContainsKey('max_fetch')) {
         $Script:max_fetch = [int]$demisto.Params()['max_fetch']
     }

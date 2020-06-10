@@ -6,13 +6,15 @@ Param()
 Describe 'Infocyte Integration' {
 
     BeforeAll {
+        # Import Script before 'Its'
         . "$PSScriptRoot\Infocyte.ps1"
+
+        # Define Vars (scoped within 'It')
         $GUID = "^[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}$"
         $TestAlertId = "f959f69f-c3e7-42ca-af90-a76f53312720"
         $TestUserTaskId = '873ea61b-1705-49e6-87a5-57db12369ea1'
         $TestScanId = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
         $TestResponseScanId = "36f48e02-845f-4a09-9b7a-c10d0a03ae13"
-        Write-Host "[BeforeAll] Writing: $TestAlertId -- $GUID -- ContextArgs: $($demisto.ContextArgs | convertto-json)"
     }
 
     Context "fetch-incidents" {
@@ -40,11 +42,12 @@ Describe 'Infocyte Integration' {
                     avTotal = 85
                     hasAvScan = $true
                     synapse = 1.08223234150638
-                    size = "45208"
+                    size = 45208
                 }
             }
             Get-InfocyteAlerts
-            $Demisto.Results.Contents.'Infocyte.Alert'.scanId | Should -Be $TestScanId
+            $Results = $Demisto.Results.Content | Convertfrom-Json
+            $Results.'Infocyte.Alert'[0].scanId | Should -Be $TestScanId
         }
 
                 
@@ -74,14 +77,15 @@ Describe 'Infocyte Integration' {
                         avTotal      = 85
                         hasAvScan    = $true
                         synapse      = 1.08223234150638
-                        size         = "45208"
+                        size         = 45208
                     }
                 }
                 $Alerts 
             }
 
             Get-InfocyteAlerts
-            $Demisto.Results.Contents.'Infocyte.Alert'.count | Should -Be 10
+            $Results = $Demisto.Results.Content | Convertfrom-Json
+            $Results.'Infocyte.Alert'.count | Should -Be 10
         }
     }
 
@@ -94,7 +98,8 @@ Describe 'Infocyte Integration' {
                 [PSCustomObject]@{ userTaskId = "ffef64cd-aaf3-4c2b-a650-a2eedb9215be" }
             }
             Invoke-InfocyteScan
-            $Demisto.Results.Contents.'Infocyte.Scan'.userTaskId | Should -Match $GUID
+            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
+            $Results.'Infocyte.Scan'.userTaskId | Should -Match $GUID
         }
 
     }
@@ -139,7 +144,8 @@ Describe 'Infocyte Integration' {
                 }
             }
             Get-InfocyteTaskStatus
-            $Demisto.Results.Contents.'Infocyte.Scan'.scanId | Should -Match $GUID
+            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
+            $Results.'Infocyte.Scan'.scanId | Should -Match $GUID
         }
     }
 
@@ -151,7 +157,8 @@ Describe 'Infocyte Integration' {
                 [PSCustomObject]@{ userTaskId = "ffef64cd-aaf3-4c2b-a650-a2eedb9215be" }
             }
             Invoke-InfocyteResponse -ExtensionName "Terminate Process"
-            $Demisto.Results.Contents.'Infocyte.Response'.userTaskId | Should -Match $GUID
+            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
+            $Results.'Infocyte.Response'.userTaskId | Should -Match $GUID
         }
     }
 
@@ -219,7 +226,8 @@ Describe 'Infocyte Integration' {
                 }
             }
             Get-InfocyteScanResult
-            $demisto.Results.Contents.'Infocyte.Scan'.scanId | Should -Match $GUID
+            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
+            $Results.'Infocyte.Scan'.scanId | Should -Match $GUID
         }
     }
 
@@ -248,7 +256,7 @@ Describe 'Infocyte Integration' {
                     avTotal      = 85
                     hasAvScan    = $true
                     synapse      = 1.08223234150638
-                    size         = "45208"
+                    size         = 45208
                 }
             }
             mock 'Get-ICHostScanResult' {
@@ -265,7 +273,8 @@ Describe 'Infocyte Integration' {
                 }
             }
             Get-InfocyteHostScanResult
-            $demisto.Results.Contents.'Infocyte.Scan'.scanId | Should -Match $GUID
+            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
+            $Results.'Infocyte.Scan'.scanId | Should -Match $GUID
         }
     }
 
@@ -294,7 +303,8 @@ Describe 'Infocyte Integration' {
                 }                
             }
             Get-InfocyteResponseResult
-            $demisto.Results.Contents.'Infocyte.Response'.scanId | Should -Match $GUID
+            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
+            $Results.'Infocyte.Response'.scanId | Should -Match $GUID
         }
     }
 }
