@@ -1,1 +1,1 @@
-[![Crisis Management in Cortex XSOAR](http://img.youtube.com/vi/J6DcD5y5B_U/0.jpg)](http://www.youtube.com/watch?v=J6DcD5y5B_U "Crisis Management in Cortex XSOAR")
+[![Crisis Management in Cortex XSOAR](https://img.youtube.com/vi/J6DcD5y5B_U/0.jpg)](https://www.youtube.com/watch?v=J6DcD5y5B_U "Crisis Management in Cortex XSOAR")
