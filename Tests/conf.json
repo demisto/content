@@ -3027,7 +3027,6 @@
     "unmockable_integrations": {
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Test-IsMaliciousIndicatorFound": "Issue 24398",
-        "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
