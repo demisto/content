@@ -1,0 +1,992 @@
+id: Infocyte-Test
+name: Infocyte-Test
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: infocyte-scan-host
+      description: ''
+      script: '|||infocyte-scan-host'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.target
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: infocyte-isolate-host
+      description: ''
+      script: '|||infocyte-isolate-host'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.target
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.extensionName
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: infocyte-restore-host
+      description: ''
+      script: '|||infocyte-restore-host'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.target
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.extensionName
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: infocyte-collect-evidence
+      description: ''
+      script: '|||infocyte-collect-evidence'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.target
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.extensionName
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: infocyte-kill-process
+      description: ''
+      script: '|||infocyte-kill-process'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '11'
+    type: regular
+    task:
+      id: '11'
+      version: -1
+      name: infocyte-recover-file
+      description: ''
+      script: '|||infocyte-recover-file'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '12'
+    type: condition
+    task:
+      id: '12'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.target
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.extensionName
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: '13'
+    type: regular
+    task:
+      id: '13'
+      version: -1
+      name: infocyte-run-response
+      description: ''
+      script: '|||infocyte-run-response'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: '14'
+    type: condition
+    task:
+      id: '14'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.target
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.extensionName
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: '15'
+    type: regular
+    task:
+      id: '15'
+      version: -1
+      name: infocyte-get-taskstatus
+      description: ''
+      script: '|||infocyte-get-taskstatus'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: '16'
+    taskid: '16'
+    type: condition
+    task:
+      id: '16'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '17'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.scanId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.progress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.timeElapsed
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: '17'
+    type: regular
+    task:
+      id: '17'
+      version: -1
+      name: infocyte-get-scanresult
+      description: ''
+      script: '|||infocyte-get-scanresult'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: '18'
+    taskid: '18'
+    type: condition
+    task:
+      id: '18'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '19'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.scanId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.completedOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.alertCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.compromisedObjects
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.objectCount
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: 19
+    taskid: '19'
+    type: regular
+    task:
+      id: '19'
+      version: -1
+      name: infocyte-get-hostscanresult
+      description: ''
+      script: '|||infocyte-get-hostscanresult'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: '20'
+    taskid: '20'
+    type: condition
+    task:
+      id: '20'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '21'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.scanId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.hostId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.compromised
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.alertCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.compromisedObjects
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Scan.objectCount
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: 21
+    taskid: '21'
+    type: regular
+    task:
+      id: '21'
+      version: -1
+      name: infocyte-get-responseresult
+      description: ''
+      script: '|||infocyte-get-responseresult'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: '22'
+    taskid: '22'
+    type: condition
+    task:
+      id: '22'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '23'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.scanId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.hostId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.threatStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.compromised
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.completedOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.messages
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.extensionId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.extensionName
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: 23
+    taskid: '23'
+    type: regular
+    task:
+      id: '23'
+      version: -1
+      name: infocyte-get-alerts
+      description: ''
+      script: '|||infocyte-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: '24'
+    taskid: '24'
+    type: condition
+    task:
+      id: '24'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '25'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.scanId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.threatName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.hasAvScan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.threatScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.avPositive
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.avTotal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.synapse
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.flagname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.flagWeight
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.createdOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.signed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Alert.managed
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: title
+    task:
+      id: '25'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []

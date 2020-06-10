@@ -328,9 +328,8 @@ script:
       - name: lastAlertId
         description: Last alertId to start fetching from
         required: false
-      - name: max_fetch
+      - name: max
         description: Number of alerts to fetch
-        defaultvalue: 10
         required: false
     outputs:
     - contextPath: Infocyte.Alert.id

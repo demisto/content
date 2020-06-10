@@ -18,7 +18,7 @@ function Invoke-InfocyteScan {
         }
     }
     $MDOutput = [PSCustomObject]$Output."$prefix" | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Get-InfocyteTaskStatus {
@@ -43,7 +43,7 @@ function Get-InfocyteTaskStatus {
         }
     }
     $MDOutput = $Output.'Infocyte.Task(val.userTaskId == obj.userTaskId)' | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Get-InfocyteAlerts {
@@ -107,7 +107,7 @@ function Get-InfocyteAlerts {
         'Infocyte.Alert' = $formatedAlerts
     }
     $MDOutput = $Output.'Infocyte.Alert' | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Alerts | Out-Null
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Alerts | Out-Null
 }
 
 function Get-InfocyteScanResult {
@@ -152,7 +152,7 @@ function Get-InfocyteScanResult {
         }
     }
     $MDOutput = $Output.'Infocyte.Scan' | Select-Object -ExcludeProperty alerts | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Get-InfocyteHostScanResult {
@@ -182,7 +182,7 @@ function Get-InfocyteHostScanResult {
         }
     }
     $MDOutput = $Output.'Infocyte.Scan' | Select-Object -ExcludeProperty alerts | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Get-InfocyteResponseResult {
@@ -204,7 +204,7 @@ function Get-InfocyteResponseResult {
         }
     }
     $MDOutput = $Output.'Infocyte.Response' | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 function Invoke-InfocyteResponse {
@@ -225,7 +225,7 @@ function Invoke-InfocyteResponse {
         }
     }
     $MDOutput = $Output.'Infocyte.Task' | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output | Out-Null
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output | Out-Null
 }
 
 Function ConvertTo-Markdown {
@@ -295,7 +295,7 @@ Function ConvertTo-Markdown {
 }
 
 # Override ReturnOutputs (use [PSCustomOject] inputs instead of [hashtables]inputs)
-function global:ReturnOutputs([string]$ReadableOutput, [PSCustomObject]$Outputs, [Object]$RawResponse) {
+function ReturnOutputs2 ([string]$ReadableOutput, [PSCustomObject]$Outputs, [Object]$RawResponse) {
     $entry = @{
         Type           = [EntryTypes]::note;
         ContentsFormat = [EntryFormats]::json.ToString();
@@ -359,7 +359,7 @@ function Main {
         $Script:max_fetch = [int]$demisto.Params()['max_fetch']
     }
     if ($demisto.Params().ContainsKey('first_fetch')) {
-        $Script:first_fetch = [int]$demisto.Params()['first_fetch']
+        $Script:first_fetch = [int]($demisto.Params()['first_fetch'] -split " " | Select-Object -First 1)
     }
 
     Import-Module -Name InfocyteHUNTAPI | Out-Null
@@ -369,11 +369,11 @@ function Main {
     try {
         $connected = Set-ICToken -Instance $Instance -Token $Token -Proxy $Proxy -ProxyUser $ProxyUser -ProxyPass $ProxyPass -DisableSSLVerification:$DisableSSLVerification
         if (-NOT $connected) {
-            ReturnError "Could not connect to instance $Instance!" | Out-Null
+            ReturnError -Message "Could not connect to instance $Instance!" | Out-Null
             return
         }
     } catch {
-        ReturnError "Could not connect to instance $Instance." $_ | Out-Null
+        ReturnError -Messagw "Could not connect to instance $Instance." $_ | Out-Null
         return
     }
 
@@ -383,7 +383,7 @@ function Main {
         Switch ($Demisto.GetCommand()) {
             "test-module" {
                 $Demisto.Debug("Running test-module")
-                ReturnOutputs "ok"
+                ReturnOutputs2 "ok"
             }
             "fetch-incidents" {
                 Get-InfocyteAlerts
@@ -430,7 +430,7 @@ function Main {
         }
     }
     catch {
-        ReturnError "Something has gone wrong in Infocyte.ps1:Main()" $_ | Out-Null
+        ReturnError -Message "Something has gone wrong in Infocyte.ps1:Main() [$($_.Exception.Message)]" -Err $_ | Out-Null
         return
     }
 }
