@@ -1263,7 +1263,7 @@ script:
     - contextPath: checkpoint.instal-policy.task-id
       description: operation task ID
       type: String
-  dockerimage: demisto/python3.8.3.8715
+  dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false
   longRunning: false
