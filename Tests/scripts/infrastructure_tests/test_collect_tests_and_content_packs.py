@@ -6,7 +6,7 @@ import demisto_sdk.commands.common.tools as demisto_sdk_tools
 from ruamel.yaml import YAML
 
 from Tests.scripts.collect_tests_and_content_packs import (
-    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files,
+    RANDOM_TESTS_NUM, TestConf, create_filter_envs_file, get_modified_files_for_testing,
     get_test_list_and_content_packs_to_install, collect_content_packs_to_install)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -116,7 +116,7 @@ class TestUtils(object):
 
     @staticmethod
     def mock_get_modified_files(mocker, modified_files_list, is_conf_json=False):
-        return mocker.patch('Tests.scripts.collect_tests_and_content_packs.get_modified_files',
+        return mocker.patch('Tests.scripts.collect_tests_and_content_packs.get_modified_files_for_testing',
                             return_value=create_get_modified_files_ret(
                                 modified_files_list=modified_files_list,
                                 is_conf_json=is_conf_json
@@ -182,7 +182,7 @@ class TestChangedPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == set()
+        assert content_packs == {"CommonPlaybooks"}
 
 
 class TestChangedTestPlaybook:
@@ -194,7 +194,7 @@ class TestChangedTestPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == set()
+        assert content_packs == {"EWS"}
 
     def test_changed_runnable_test__mocked_get_modified_files(self, mocker):
         # fake_test_playbook is fromversion 4.1.0 in playbook file
@@ -337,7 +337,7 @@ class TestChangedIntegration:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == set()
+        assert content_packs == {"PagerDuty"}
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_1'
@@ -362,7 +362,7 @@ class TestChangedIntegrationAndPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
-        assert content_packs == set()
+        assert content_packs == {'CommonPlaybooks', 'PagerDuty'}
 
 
 class TestChangedScript:
@@ -374,7 +374,7 @@ class TestChangedScript:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == set()
+        assert content_packs == {"CommonScripts"}
 
     def test_changed_unrunnable_test__integration_toversion(self, mocker):
         test_id = 'past_test_playbook_2'
@@ -427,7 +427,7 @@ class TestChangedCommonTesting:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {'fake_pack'}
+        assert content_packs == {'Base', 'fake_pack'}
 
 
 class TestPackageFilesModified:
@@ -441,7 +441,7 @@ A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
 
     def test_changed_runnable_test__unmocked_get_modified_files(self):
         files_list, tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json, is_indicator_json = \
-            get_modified_files(self.GIT_DIFF_RET)
+            get_modified_files_for_testing(self.GIT_DIFF_RET)
         assert len(sample_tests) == 0
         assert 'Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml' in files_list
 
@@ -479,7 +479,7 @@ def get_mock_test_list(two_before_ga=TWO_BEFORE_GA_VERSION, get_modified_files_r
     branch_name = 'BranchA'
     if get_modified_files_ret is not None:
         mocker.patch(
-            'Tests.scripts.collect_tests_and_content_packs.get_modified_files',
+            'Tests.scripts.collect_tests_and_content_packs.get_modified_files_for_testing',
             return_value=get_modified_files_ret
         )
     tests, content_packs = get_test_list_and_content_packs_to_install(
