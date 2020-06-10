@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 import urllib
 import re
+from distutils.version import StrictVersion
 
 if not demisto.params()['proxy']:
     del os.environ['HTTP_PROXY']
@@ -312,6 +313,24 @@ def smart_search_command():
         demisto.results('No results found')
 
 
+def get_pps_token(pps_magic):
+    try:
+        cmd_url = '/admin?module=RPC&class=InputValidator&method=getSMD&pps_magic=' + pps_magic
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) '
+                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+        submit_search_response = http_request('GET', cmd_url, headers=headers)
+        submit_search_response_json = json.loads(submit_search_response)
+        service_url = submit_search_response_json.get('serviceURL')
+        parsed_service_url = service_url.split('pps_token=')
+        pps_token = parsed_service_url[1]
+        return pps_token
+    except Exception as e:
+        raise Exception('Failed retrieving pps_token - {}'.format(str(e)))
+
+
 def smart_search(data):
     pps_magic = session.cookies.get_dict()['pps_magic']
 
@@ -328,6 +347,12 @@ def smart_search(data):
         'id': 1
     })
     cmd_url = '/admin?module=RPC&class=SmartSearch&method=get&pps_magic=' + pps_magic
+
+    pps_version = demisto.params().get('version')
+    if StrictVersion(pps_version) >= StrictVersion('8.14.2'):
+        pps_token = get_pps_token(pps_magic)
+        cmd_url += '&pps_token=' + pps_token
+
     submit_search_response = http_request('POST', cmd_url, headers=headers, data=submit_search_data)
 
     if submit_search_response:

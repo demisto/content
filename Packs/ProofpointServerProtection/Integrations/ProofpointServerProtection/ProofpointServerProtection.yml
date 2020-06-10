@@ -16,6 +16,10 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: Proofpoint Protection Server Version (e.g., 8.14.2)
+  name: version
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
