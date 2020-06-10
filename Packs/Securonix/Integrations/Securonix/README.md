@@ -1,6 +1,6 @@
 ## Overview
 Use the Securonix integration to manage incidents and watchlists.
-Integration was built and tested with SNYPR Versions: 6.2, 6.3.
+Integration was built and tested with SNYPR Versions: 6.2, 6.3, 6.3.1.
 
 This integration supports both cloud and on-prem instances of Securonix.
 To configure a cloud base instance use the *tenant* parameter only.
@@ -22,6 +22,7 @@ For more information, visit: `securonix/etnants/<tenantname>/securonix_home/resp
 | incident_status | Incidents to fetch | False |
 | incidentType | Incident type | False |
 | fetch_time | First fetch time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes) | False |
+| max_fetch | The maximum number of incidents to fetch each time. Maximum is 50. | False
 | unsecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 
@@ -1177,5 +1178,5 @@ Creates an incident. For more information about the required arguments, see the 
 
 ## Limitations
   - The `opened` argument for fetching and listing incidents is currently not filtering the only the opened incidents.
-    This is an open issue on the vendor side, currently happening on SNYPR Versions 6.2, 6,3.
-  - Every *fetch incidents* only the 10 most recent incidents are going to be fetched.
+    This is an open issue on the vendor side.
+  - Until version 6.3.1, the *max_fetch argument is not used. Hence, every *fetch incidents*, only the 10 most recent incidents are going to be fetched.
