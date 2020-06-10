@@ -324,10 +324,10 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "XDR iocs",
-            "playbookID": "XDR iocs - Test",
+            "integrations": "Cortex XDR - IOC",
+            "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 300
+            "timeout": 600
         },
         {
             "integrations": "Cloaken",
@@ -2823,9 +2823,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "playbookID": "Extract Indicators From File - test"
-        },
-        {
             "integrations": "Zabbix",
             "playbookID": "Zabbix - Test"
         },
@@ -2861,7 +2858,6 @@
         "Symantec Deepsight Test": "Issue 22971",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
         "test_MsGraphFiles": "Issue 22853 ",
-        "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
@@ -2895,6 +2891,11 @@
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
         "VxStream Test": "Issue #23795",
+        "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
+        "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
+        "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
+        "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
+        "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
