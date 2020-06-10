@@ -324,10 +324,10 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "XDR iocs",
-            "playbookID": "XDR iocs - Test",
+            "integrations": "Cortex XDR - IOC",
+            "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 300
+            "timeout": 600
         },
         {
             "integrations": "Cloaken",
