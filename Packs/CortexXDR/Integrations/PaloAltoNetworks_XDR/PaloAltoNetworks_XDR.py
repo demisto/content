@@ -810,7 +810,12 @@ class Client(BaseClient):
             url_suffix='/quarantine/status/',
             json_data={'request_data': request_data}
         )
-        return reply.get('reply')[0]
+
+        reply_content = reply.get('reply')
+        if isinstance(reply_content, list):
+            return reply_content[0]
+        else:
+            raise TypeError(f'got unexpected response from api: {reply_content}\n')
 
 
 def get_incidents_command(client, args):
