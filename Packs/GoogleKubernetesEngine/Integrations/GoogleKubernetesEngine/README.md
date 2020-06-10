@@ -237,8 +237,7 @@ Lists all clusters owned by a project in either the specified zone or all zones.
 >### Clusters (Project=gcp-integrations, Zone=us-central1-c)
 >|Location|Master IP|Master version|Name|Status|
 >|---|---|---|---|---|
->| us-central1-c | 35.188.169.29 | 1.16.9-gke.2 | xsoar-integration | RECONCILING |
-
+>| us-central1-c | xxxx | xxxx | xxxx | RECONCILING |
 
 ### gcloud-clusters-describe
 ***
