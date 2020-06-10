@@ -80,7 +80,7 @@ def google_client_setup(json_configuration: str) -> ClusterManagerClient:
 
 
 def safe_get(dict_object: dict, *keys, key_return_value: Optional[Any] = None) -> Any:
-    """ Recursive safe get query, If keys found return value othewisw return None
+    """ Recursive safe get query, If keys found return value othewise return None
 
     Args:
         key_return_value: Value to return when no key availble
