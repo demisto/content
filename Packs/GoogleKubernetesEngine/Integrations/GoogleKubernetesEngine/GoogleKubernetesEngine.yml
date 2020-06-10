@@ -3,18 +3,21 @@ commonfields:
   id: GoogleKubernetesEngine
   version: -1
 configuration:
-- display: JSON credentials - Paste of the json credentials file.
+- additionalinfo: Paste of the json credentials file.
+  display: JSON credentials
   name: credentials_json
   required: true
   type: 4
-- display: Test project -  used only for test button.
+- additionalinfo: Can be modified in command execution
+  display: Default project
   hidden: false
-  name: test_project
+  name: default_project
   required: true
   type: 0
-- display: Test zone - used only for test button.
+- additionalinfo: Can be modified in command execution
+  display: Default zone
   hidden: false
-  name: test_zone
+  name: default_zone
   required: true
   type: 0
 description: |-
@@ -29,7 +32,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '-'
@@ -238,7 +241,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -252,7 +255,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Gets the details of a specific cluster.
@@ -452,7 +455,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve.
@@ -465,7 +468,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -510,7 +513,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -524,7 +527,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -591,7 +594,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -605,7 +608,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -653,7 +656,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -667,7 +670,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -720,7 +723,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -780,7 +783,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -794,7 +797,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -838,7 +841,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -852,7 +855,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -896,7 +899,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -910,7 +913,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Lists the node pools for a cluster.
@@ -990,7 +993,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -1004,7 +1007,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the Google Compute Engine node pool.
@@ -1090,7 +1093,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -1104,7 +1107,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the Google Compute Engine node pool.
@@ -1169,14 +1172,14 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the Google Compute Engine zone in which the cluster
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: List operations in project-zone.
@@ -1210,14 +1213,14 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the Google Compute Engine zone in which the cluster
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the Google Compute Engine operation name.
@@ -1257,7 +1260,7 @@ script:
       description: The Google Developers Console project ID or project number.
       isArray: false
       name: project
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the cluster to retrieve. The name of the cluster to
@@ -1271,7 +1274,7 @@ script:
         resides.
       isArray: false
       name: zone
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the Google Compute Engine operation name.

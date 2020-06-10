@@ -46,6 +46,17 @@ API_TIMEOUT = 90
 # HELPER FUNCTIONS #
 ####################
 
+def handle_default_configuration():
+    command_arguments = demisto.args()
+    integration_parameters = demisto.params()
+    for param_key, value in integration_parameters.items():
+        if 'default' in param_key:
+            arg_key = param_key.split('_')[1]
+            if arg_key not in command_arguments.keys():
+                command_arguments[arg_key] = value
+
+    return command_arguments
+
 
 def google_client_setup(json_configuration: str) -> ClusterManagerClient:
     """ Setup client for service acount in google cloud - For more information:
@@ -880,6 +891,7 @@ def main():
     LOG(f'Command being called is {command}')
     commands: Dict[str, Callable] = {
         # Clusters
+        f"test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-list": gcloud_clusters_list_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-describe": gcloud_clusters_describe_command,
         f"{INTEGRATION_COMMAND_NAME}-clusters-set-muster-auth": gcloud_clusters_set_master_auth,
@@ -901,13 +913,8 @@ def main():
     }
     try:
         client: ClusterManagerClient = google_client_setup(json_configuration=demisto.getParam('credentials_json'))
-
-        if command == "test-module":
-            readable_output, context_entry, raw_response = test_module_command(client=client,
-                                                                               project=demisto.getParam('test_project'),
-                                                                               zone=demisto.getParam('test_zone'))
-        else:
-            readable_output, context_entry, raw_response = commands[command](client=client, **demisto.args())
+        command_arguments = handle_default_configuration()
+        readable_output, context_entry, raw_response = commands[command](client=client, **command_arguments)
 
         return_outputs(readable_output=readable_output,
                        outputs=context_entry,
