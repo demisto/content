@@ -10,4 +10,3 @@
 !infocyte-restore-host target="win10.pegasus.test"
 !infocyte-collect-evidence target="win10.pegasus.test"
 !infocyte-start-ediscovery target="win10.pegasus.test"
-!infocyte-recover-file target="win10.pegasus.test"

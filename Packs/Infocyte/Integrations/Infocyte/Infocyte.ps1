@@ -4,7 +4,6 @@
 $Test = $False
 $progressPreference = 'silentlyContinue'
 
-
 function Invoke-InfocyteScan {
     $Demisto.Debug("Scanning Host: $($demisto.Args()['target'])")
     $Target = $demisto.Args()['target']
