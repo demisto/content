@@ -1,7 +1,6 @@
 from typing import Dict, Tuple
 import demistomock as demisto
 from CommonServerPython import *
-from Employees_soap_requests import GET_EMPLOYEE_BY_ID, GET_EMPLOYEES_REQ
 
 # IMPORTS
 # Disable insecure warnings
@@ -16,6 +15,69 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = "v34.0"
 HEADERS = ["Worker_ID", "User_ID", "Country", "Preferred_First_Name", "Preferred_Last_Name", "Active", "Position_Title",
            "Business_Title", "Start_Date", "End_Date", "Terminated", "Termination_Date"]
+
+GET_EMPLOYEES_REQ = """
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc">
+    <soapenv:Header>
+        <wsse:Security soapenv:mustUnderstand="1"
+        xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+        xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+            <wsse:UsernameToken wsu:Id="UsernameToken-{token}">
+                <wsse:Username>{username}</wsse:Username>
+                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
+                #PasswordText">{password}</wsse:Password>
+            </wsse:UsernameToken>
+        </wsse:Security>
+    </soapenv:Header>
+    <soapenv:Body>
+        <bsvc:Get_Workers_Request bsvc:version="{api_version}">
+            <bsvc:Response_Filter>
+                <bsvc:Page>{page}</bsvc:Page>
+                <bsvc:Count>{count}</bsvc:Count>
+            </bsvc:Response_Filter>
+            <bsvc:Response_Group>
+                <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
+                <bsvc:Include_Reference>1</bsvc:Include_Reference>
+                <bsvc:Include_Employment_Information>1</bsvc:Include_Employment_Information>
+                <bsvc:Include_Management_Chain_Data>1</bsvc:Include_Management_Chain_Data>
+                <bsvc:Include_Photo>1</bsvc:Include_Photo>
+            </bsvc:Response_Group>
+        </bsvc:Get_Workers_Request>
+    </soapenv:Body>
+</soapenv:Envelope>
+"""
+
+GET_EMPLOYEE_BY_ID = """
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc">
+    <soapenv:Header>
+        <wsse:Security soapenv:mustUnderstand="1"
+        xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+        xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+            <wsse:UsernameToken wsu:Id="UsernameToken-{token}">
+                <wsse:Username>{username}</wsse:Username>
+                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
+                #PasswordText">{password}</wsse:Password>
+            </wsse:UsernameToken>
+        </wsse:Security>
+    </soapenv:Header>
+    <soapenv:Body>
+        <bsvc:Get_Workers_Request bsvc:version="{api_version}">
+            <bsvc:Request_References bsvc:Skip_Non_Existing_Instances="false">
+                <bsvc:Worker_Reference>
+                    <bsvc:ID bsvc:type="Employee_ID">{employee_id}</bsvc:ID>
+                </bsvc:Worker_Reference>
+            </bsvc:Request_References>
+            <bsvc:Response_Group>
+                <bsvc:Include_Personal_Information>1</bsvc:Include_Personal_Information>
+                <bsvc:Include_Reference>1</bsvc:Include_Reference>
+                <bsvc:Include_Employment_Information>1</bsvc:Include_Employment_Information>
+                <bsvc:Include_Management_Chain_Data>1</bsvc:Include_Management_Chain_Data>
+                <bsvc:Include_Photo>1</bsvc:Include_Photo>
+            </bsvc:Response_Group>
+        </bsvc:Get_Workers_Request>
+    </soapenv:Body>
+</soapenv:Envelope>
+"""
 
 
 def convert_to_json(response):
@@ -79,14 +141,14 @@ def create_worker_context(workers, num_of_managers):
             },
             "End_Date": position_data_path.get('End_Date'),
             "Pay_Through_Date": position_data_path.get('Pay_Through_Date'),
-            "Active": worker_status_data.get('Active'),
+            "Active": bool(int(worker_status_data.get('Active'))),
             "Hire_Date": worker_status_data.get('Hire_Date'),
             "Hire_Reason": worker_status_data['Hire_Reason_Reference']['ID'][2]['#text'],
             "First_Day_of_Work": worker_status_data['First_Day_of_Work'],
             "Retired": worker_status_data.get('Retired'),
             # Number of days unemployed since the employee first joined the work force. Used only for China:
             "Days_Unemployed": worker_status_data.get('Days_Unemployed'),
-            "Terminated": worker_status_data.get('Terminated'),
+            "Terminated": bool(int(worker_status_data.get('Terminated'))),
             "Rehire": worker_status_data['Rehire'],
             "Resignation_Date": worker_status_data.get('Resignation_Date'),
             "Has_International_Assignment": worker['Employment_Data']['International_Assignment_Summary_Data'][
@@ -188,7 +250,7 @@ class Client(BaseClient):
             body = GET_EMPLOYEES_REQ.format(
                 token=self.token, username=self.username, password=self.password, api_version=API_VERSION, page=page,
                 count=count)
-        raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type='text')
+        raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=30)
         return convert_to_json(raw_response)
 
 
@@ -202,9 +264,9 @@ def test_module(client: Client, args: Dict) -> str:
 
 
 def list_workers_command(client: Client, args: dict) -> CommandResults:
-    count = int(args.get('count', ""))
-    page = int(args.get('page', ""))
-    num_of_managers = int(args.get('managers', ""))
+    count = int(args.get('count', "1"))
+    page = int(args.get('page', "1"))
+    num_of_managers = int(args.get('managers', "3"))
     employee_id = args.get('employee_id')
     raw_json_response, workers_data = client.list_workers(page, count, employee_id)
     workers_context = create_worker_context(workers_data, num_of_managers)

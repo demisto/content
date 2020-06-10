@@ -1,5 +1,5 @@
 Workday offers enterprise-level software solutions for financial management, human resources, and planning.
-This integration was integrated and tested with version xx of Workday
+This integration was integrated and tested with version 1.0.0 of Workday
 ## Configure Workday on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -33,9 +33,9 @@ List workers command - Returns information for specified workers.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | employee_id | Employee ID of the worker for which to get information. | Optional | 
-| count | The maximum number of results to return. | Optional | 
-| page | The page from which to get the employees data. | Optional | 
-| managers | Number of managers to show. | Optional | 
+| count | The maximum number of results to return. (default = 50) | Optional | 
+| page | The page from which to get the employees data. (default = 1) | Optional | 
+| managers | Number of managers to show. (default = 3) | Optional | 
 
 
 #### Context Output
@@ -110,8 +110,131 @@ List workers command - Returns information for specified workers.
 
 
 #### Command Example
-``` ```
+```!workday-list-workers employee_id=123456```
+##### or
+```!workday-list-workers page=1 count=1 managers=3```
+
+
+#### Context Example
+```
+{
+    "Workday": {
+        "Worker": {
+            "Active": "1",
+            "Addresses": [
+                {
+                    "Address_ID": "ADDRESS_REFERENCE-3-3415",
+                    "Country": "SA",
+                    "Formatted_Address": "Kingdom Tower&#xa;P.O Box: 230 888, Floor 28&#xa;Offices 1431, 1435, 1428, 1429&#xa;Riyadh 11321&#xa;Riyadh&#xa;Saudi Arabia",
+                    "Postal_Code": "112345",
+                    "Region": "01",
+                    "Region_Descriptor": "Riyadh",
+                    "Type": "WORK"
+                },
+                {
+                    "Address_ID": "ADDRESS_REFERENCE-6-107",
+                    "Country": "SA",
+                    "Formatted_Address": "King Faisal District&#xa;Riyadh 13215&#xa;Saudi Arabia",
+                    "Postal_Code": "112345",
+                    "Region": "",
+                    "Region_Descriptor": "",
+                    "Type": "HOME"
+                }
+            ],
+            "Business_Site_Address": {
+                "Address_ID": "ADDRESS_REFERENCE-3-3415",
+                "Country": "SA",
+                "Formatted_Address": "Kingdom Tower&#xa;P.O Box: 230 888, Floor 28&#xa;Offices 1431, 1435, 1428, 1429&#xa;Riyadh 11321&#xa;Riyadh&#xa;Saudi Arabia",
+                "Postal_Code": "112345"
+            },
+            "Business_Site_Name": "Office - Saudi Arabia - Riyadh",
+            "Business_Site_Type": "Office",
+            "Business_Site_id": "3010",
+            "Business_Title": "Regional Sales Manager",
+            "Country": "AE",
+            "Critical_Job": "0",
+            "Days_Unemployed": "0",
+            "Default_Weekly_Hours": "40",
+            "Emails": [
+                {
+                    "Email_Address": "test@hotmail.com",
+                    "Primary": true,
+                    "Public": false,
+                    "Type": "HOME"
+                },
+                {
+                    "Email_Address": "test@paloaltonetworks.com",
+                    "Primary": true,
+                    "Public": true,
+                    "Type": "WORK"
+                }
+            ],
+            "End_Date": null,
+            "End_Employment_Reason_Reference": "",
+            "Exclude_from_Headcount": "0",
+            "First_Day_of_Work": "2020-03-25",
+            "Full_Time_Equivalent_Percentage": "100",
+            "Has_International_Assignment": "0",
+            "Hire_Date": "2020-03-25",
+            "Hire_Reason": "Hire_Employee_Hire_Employee_Rehire",
+            "Home_Country_Reference": "SA",
+            "Job_Profile_Name": "Regional Sales Manager (DQC)",
+            "Legal_First_Name": "Test_name",
+            "Legal_Last_Name": "Test_last_name",
+            "Managers": [
+                {
+                    "Manager_ID": "100002",
+                    "Manager_Name": "manager_name_3"
+                },
+                {
+                    "Manager_ID": "100001",
+                    "Manager_Name": "manager_name_2"
+                },
+                {
+                    "Manager_ID": "100000",
+                    "Manager_Name": "manager_name_1"
+                }
+            ],
+            "Pay_Rate_Type": "Salary",
+            "Pay_Through_Date": null,
+            "Phones": [
+                {
+                    "ID": "PHONE_REFERENCE-3-4210",
+                    "Phone_Number": "5-5501-2343",
+                    "Type": "Mobile",
+                    "Usage": "WORK"
+                },
+                {
+                    "ID": "PHONE_REFERENCE-3-14614",
+                    "Phone_Number": "55501234",
+                    "Type": "Mobile",
+                    "Usage": "HOME"
+                }
+            ],
+            "Photo": "image_in_base64",
+            "Position_ID": "POS-114061",
+            "Position_Time_Type": "Full_time",
+            "Position_Title": "Regional Sales Manager",
+            "Preferred_First_Name": "Test_name",
+            "Preferred_Last_Name": "Test_last_name",
+            "Rehire": "1",
+            "Resignation_Date": "2018-06-14",
+            "Retired": "0",
+            "Scheduled_Weekly_Hours": "40",
+            "Start_Date": "2020-03-25",
+            "Terminated": "0",
+            "User_ID": "test@paloaltonetworks.com",
+            "Work_Shift_Required": "0",
+            "Worker_ID": "123456",
+            "Worker_Type": "Regular"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>### Workers
+>|Worker_ID|User_ID|Country|Preferred_First_Name|Preferred_Last_Name|Active|Position_Title|Business_Title|Start_Date|Terminated|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | test@paloaltonetworks.com | AE | Test_name | Test_last_name | 1 | Regional Sales Manager | Regional Sales Manager | 2020-03-25 | 0 |
