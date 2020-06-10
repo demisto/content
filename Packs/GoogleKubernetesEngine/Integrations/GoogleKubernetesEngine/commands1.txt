@@ -1,0 +1,15 @@
+!gcloud-clusters-list project=gcp-integrations zone=us-central1-c
+!gcloud-clusters-describe project=gcp-integrations zone=us-central1-c cluster=xsoar-integration
+!gcloud-clusters-set-muster-auth project=gcp-integrations zone=us-central1-c cluster=xsoar-integration basic_auth=enable
+!gcloud-clusters-set-addons project=gcp-integrations zone=us-central1-c cluster=xsoar-integration http_load_balancing=enable kubernetes_dashboard=disable network_policy=enable
+!gcloud-clusters-set-legacy-auth project=gcp-integrations zone=us-central1-c cluster=xsoar-integration enable=true
+!gcloud-clusters-set-master-authorized-network project=gcp-integrations zone=us-central1-c cluster=xsoar-integration enable=true cidrs=
+!gcloud-clusters-set-k8s-stackdriver project=gcp-integrations zone=us-central1-c cluster=xsoar-integration enable=true
+!gcloud-clusters-set-binary-auth project=gcp-integrations zone=us-central1-c cluster=xsoar-integration enable=true
+!gcloud-clusters-set-intra-node-visibility project=gcp-integrations zone=us-central1-c cluster=xsoar-integration enable=true
+!gcloud-node-pool-list project=gcp-integrations zone=us-central1-c cluster=xsoar-integration
+!gcloud-node-pool-describe project=gcp-integrations zone=us-central1-c cluster=xsoar-integration node_pool=default-pool
+!gcloud-node-pool-set-management project=gcp-integrations zone=us-central1-c node_pool= auto_repair= auto_upgrade=
+!gcloud-operations-list project=gcp-integrations zone=us-central1-c
+!gcloud-operations-describe project=gcp-integrations zone=us-central1-c operation=operation-1591773015046-cc1b6943
+!gcloud-operations-cancel project=gcp-integrations zone=us-central1-c operation=operation-1591773015046-cc1b6943

@@ -47,6 +47,11 @@ API_TIMEOUT = 90
 ####################
 
 def handle_default_configuration():
+    """ Handle - default configuration if args not configured.
+
+    Returns:
+        dict: arguments filled with default configuration if args not configured.
+    """
     command_arguments = demisto.args()
     integration_parameters = demisto.params()
     for param_key, value in integration_parameters.items():
@@ -851,7 +856,7 @@ def gcloud_operations_describe_command(client: ClusterManagerClient, project: st
     # Human readable
     human_readable: str = tableToMarkdown(t=operations,
                                           headers=OPERATION_TABLE,
-                                          name=f'Project {project} - Zone {zone} - Operatio {operation}')
+                                          name=f'Project {project} - Zone {zone} - Operation {operation}')
 
     return human_readable, entry_context, raw_response_dict
 

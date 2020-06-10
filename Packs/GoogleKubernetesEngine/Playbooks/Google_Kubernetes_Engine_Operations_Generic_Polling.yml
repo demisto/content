@@ -64,7 +64,7 @@ tasks:
       Timeout:
         simple: '30'
       dt:
-        simple: GKE.Operation(val.Status && val.Status == 'RUNNING').Status
+        simple: GKE.Operation(val.Status && val.Status == 'RUNNING')
     separatecontext: true
     loop:
       iscommand: false
@@ -148,5 +148,5 @@ inputs:
   playbookInputQuery:
 fromversion: 5.0.0
 tests:
-  -  No tests
+- GoogleKubernetesEngine_Test
 

@@ -3,18 +3,19 @@ commonfields:
   id: GoogleKubernetesEngine
   version: -1
 configuration:
-- additionalinfo: Paste of the json credentials file.
+- additionalinfo: The content of the generated `credentials.json` file. (Read the
+    docs for further information)
   display: JSON credentials
   name: credentials_json
   required: true
   type: 4
-- additionalinfo: Can be modified in command execution
+- additionalinfo: Can be overwriten in commands execution.
   display: Default project
   hidden: false
   name: default_project
   required: true
   type: 0
-- additionalinfo: Can be modified in command execution
+- additionalinfo: Can be overwriten in commands execution.
   display: Default zone
   hidden: false
   name: default_zone
