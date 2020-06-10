@@ -26,23 +26,25 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '10'
-  display: Maximum number of incidents per fetch
+- display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
+  defaultvalue: '10'
   type: 0  
-- defaultvalue: 3 days
-  display: First fetch time
+- display: Initial fetch time (days)
   name: first_fetch
   required: false
+  defaultvalue: '3'
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
+  defaultvalue: false
   type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
+  defaultvalue: false
   type: 8
 script:
   script: ''
@@ -328,9 +330,10 @@ script:
       - name: lastAlertId
         description: Last alertId to start fetching from
         required: false
-      - name: max
+      - name: max_fetch
         description: Number of alerts to fetch
         defaultvalue: 10
+        required: false
     outputs:
     - contextPath: Infocyte.Alert.id
       description: Infocyte alertId

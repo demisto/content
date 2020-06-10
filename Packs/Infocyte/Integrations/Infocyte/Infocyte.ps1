@@ -1,11 +1,13 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
 # Silence write-progress
+$Test = $False
 $progressPreference = 'silentlyContinue'
 
+
 function Invoke-InfocyteScan {
-    $Demisto.Debug("Scanning Host: $($demisto.Args()['Target'])")
-    $Target = $demisto.Args()['Target']
+    $Demisto.Debug("Scanning Host: $($demisto.Args()['target'])")
+    $Target = $demisto.Args()['target']
     $Task = Invoke-ICScanTarget -Target $target
     $prefix = "Infocyte.Task"
     $Output = @{
@@ -47,7 +49,12 @@ function Get-InfocyteTaskStatus {
 function Get-InfocyteAlerts {
     $fields = @('id', 'name', 'type', 'hostname', 'scanId', 'fileRepId', 'signed', 'managed', 'createdOn', 'flagName',
      'flagWeight', 'threatScore', 'threatWeight', 'threatName', 'avPositives', 'avTotal', 'hasAvScan', 'synapse', 'size')
-    $max = $demisto.Params()['max_fetch']
+    if (-NOT $max_fetch) {
+        $max_fetch = 10
+    }
+    if (-NOT $first_fetch) {
+        $first_fetch = 3
+    }
 
     if ($demisto.Args().ContainsKey('alertId')) {
         $where = @{ id = $demisto.Args()['alertId'] }
@@ -56,15 +63,19 @@ function Get-InfocyteAlerts {
         $where = @{ id = @{ gt = $demisto.Args()['lastAlertId'] } }
     }
     else {
-        $LastRun = $demisto.GetLastRun()
-        $LastAlert = $LastRun.results.'Infocyte.Alert' | Sort-Object id | Select-Object -Last 1
+        $LastRun = $demisto.GetLastRun() #TBD (WIP)
+        $Demisto.Log($LastRun | Convertto-Json | Out-String)
+        $LastAlert = $LastRun.get.'Infocyte.Alert' | Sort-Object id | Select-Object -Last 1
         if ($LastAlert) {
             $where = @{ id = @{ gt = $LastAlert.id } }
+        } else {
+            $where = @{ createdOn = @{ gt = (Get-Date).AddDays([int]$first_fetch) }}
         }
     }
 
-    $Alerts = Get-ICAlert -where $where | Select-Object -First $max | Select-Object $fields
+    $Alerts = Get-ICAlert -where $where | Select-Object -First $max_fetch | Select-Object $fields
     if (-NOT $Alerts) {
+        $Demisto.Debug("No new alerts found.")
         return
     }
 
@@ -205,7 +216,7 @@ function Invoke-InfocyteResponse {
 	if (-NOT $Ext) {
 		Throw "Extension with name $ExtensionName does not exist!"
     }
-    $Task = Invoke-ICResponse -Target $demisto.Args()['Target'] -ExtensionId $Ext.Id
+    $Task = Invoke-ICResponse -Target $demisto.Args()['target'] -ExtensionId $Ext.Id
     $prefix = "Infocyte.Task"
     $output = @{
         'Infocyte.Task' = @{
@@ -285,21 +296,39 @@ Function ConvertTo-Markdown {
 }
 
 function Main {
+
     # Parse Params
     $Instance = $demisto.Params()['InstanceName']
     $Token = $demisto.Params()['APIKey']
-    $DisableSSLVerification = $demisto.Params()['insecure']
-    if ($demisto.Params()['proxy']) {
+    if ($demisto.Params().ContainsKey('insecure')) {
+        $DisableSSLVerification = $demisto.Params()['insecure']
+    } else {
+        $DisableSSLVerification = $false
+    }
+    if ($demisto.Params().ContainsKey('proxy') -AND $demisto.Params()['proxy']) {
         # Parse proxy envirorment variable
-        $a = $Env:HTTPS_PROXY -split "//" | Select-Object -Last 1
-        if ($a -match "@") {
-            $a = $a -split "@"
-            $Proxy = $a | Select-Object -Last 1
-            $ProxyUser = $a[0] -split ":" | Select-Object -First 1;
-            $ProxyPass = $a[0] -split ":" | Select-Object -Last 1;
+        if ($Env:HTTPS_PROXY) {
+            $a = $Env:HTTPS_PROXY -split "//" | Select-Object -Last 1
+            if ($a -match "@") {
+                $a = $a -split "@"
+                $Proxy = $a | Select-Object -Last 1
+                $ProxyUser = $a[0] -split ":" | Select-Object -First 1;
+                $ProxyPass = $a[0] -split ":" | Select-Object -Last 1;
+                $Demisto.Debug("Using Proxy: $($ProxyUser):*****@$Proxy")
+            } else {
+                $Proxy = $a
+                $Demisto.Debug("Using Proxy: $Proxy")
+            }
         } else {
-            $Proxy = $a
+            $Demisto.Error('Proxy was selected but not found in $Env:HTTPS_PROXY')
         }
+    }
+    
+    if ($Demisto -AND $demisto.Params().ContainsKey('max_fetch')) {
+        $Script:max_fetch = [int]$demisto.Params()['max_fetch']
+    }
+    if ($demisto.Params().ContainsKey('first_fetch')) {
+        $Script:first_fetch = [int]$demisto.Params()['first_fetch']
     }
 
     Import-Module -Name InfocyteHUNTAPI | Out-Null
@@ -309,11 +338,11 @@ function Main {
     try {
         $connected = Set-ICToken -Instance $Instance -Token $Token -Proxy $Proxy -ProxyUser $ProxyUser -ProxyPass $ProxyPass -DisableSSLVerification:$DisableSSLVerification
         if (-NOT $connected) {
-            ReturnError "Could not connect to instance $Instance!"
+            ReturnError "Could not connect to instance $Instance!" | Out-Null
             return
         }
     } catch {
-        ReturnError "Could not connect to instance $Instance. [$($_.Exception.Message)]"
+        ReturnError "Could not connect to instance $Instance." $_ | Out-Null
         return
     }
 
@@ -343,11 +372,11 @@ function Main {
             "infocyte-get-hostscanresult" {
                 Get-InfocyteHostScanResult
             }
-            "infocyte-run-response" {
-                Invoke-InfocyteResponse -ExtensionName $demisto.Args()['ExtensionName']
-            }
             "infocyte-get-responseresult" {
                 Get-InfocyteResponseResult
+            }
+            "infocyte-run-response" {
+                Invoke-InfocyteResponse -ExtensionName $demisto.Args()['extensionName']
             }
             "infocyte-isolate-host" {
                 Invoke-InfocyteResponse -ExtensionName "Host Isolation"
@@ -370,11 +399,16 @@ function Main {
         }
     }
     catch {
-        ReturnError "Something has gone wrong in MAIN(): $($_.Exception.Message)"
+        ReturnError "Something has gone wrong in Infocyte.ps1:Main()" $_ | Out-Null
+        return
     }
 }
 
 # Execute Main when not in Tests
-if ($MyInvocation.ScriptName -notlike "*.tests.ps1") {
+if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
     Main
+} else {
+    Import-Module -Name InfocyteHUNTAPI -ea 0 | Out-Null
+    $v = Get-Module -name InfocyteHUNTAPI | Select-Object -ExpandProperty Version
+    $Demisto.Debug("Initiating Infocyte PSModule version $v")
 }
