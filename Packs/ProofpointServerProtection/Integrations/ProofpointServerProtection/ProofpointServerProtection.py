@@ -349,7 +349,7 @@ def smart_search(data):
     cmd_url = '/admin?module=RPC&class=SmartSearch&method=get&pps_magic=' + pps_magic
 
     pps_version = demisto.params().get('version')
-    if StrictVersion(pps_version) >= StrictVersion('8.14.2'):
+    if pps_version and StrictVersion(pps_version) >= StrictVersion('8.14.2'):
         pps_token = get_pps_token(pps_magic)
         cmd_url += '&pps_token=' + pps_token
 
