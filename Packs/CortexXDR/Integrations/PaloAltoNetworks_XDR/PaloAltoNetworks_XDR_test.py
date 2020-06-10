@@ -486,7 +486,7 @@ def test_create_distribution(requests_mock):
 def test_blacklist_files_command_with_more_than_one_file(requests_mock):
     """
     Given:
-        - ￿List of files' hashes to put in blacklist
+        - List of files' hashes to put in blacklist
     When
         - A user desires to mark more than one file
     Then
@@ -511,7 +511,7 @@ def test_blacklist_files_command_with_more_than_one_file(requests_mock):
 def test_blacklist_files_command_with_single_file(requests_mock):
     """
     Given:
-        - ￿List of a file hashes to put in blacklist.
+        - List of a file hashes to put in blacklist.
     When
         - A user desires to blacklist one file.
     Then
@@ -588,7 +588,7 @@ def test_whitelist_files_command_with_more_than_one_file(requests_mock):
 def test_whitelist_files_command_with_single_file(requests_mock):
     """
     Given:
-        - ￿List of a file hashes to put in whitelist.
+        - List of a file hashes to put in whitelist.
     When
         - A user desires to whitelist one file.
     Then
@@ -614,7 +614,7 @@ def test_whitelist_files_command_with_single_file(requests_mock):
 def test_whitelist_files_command_with_no_comment_file(requests_mock):
     """
     Given:
-        - ￿List of files' hashes to put in whitelist without passing the comment argument.
+        - List of files' hashes to put in whitelist without passing the comment argument.
     When
         - A user desires to whitelist files without adding a comment.
     Then
@@ -640,7 +640,7 @@ def test_whitelist_files_command_with_no_comment_file(requests_mock):
 def test_quarantine_files_command(requests_mock):
     """
     Given:
-        - ￿List of files' hashes to put in quarantine
+        - List of files' hashes to put in quarantine
     When
         - A user desires to quarantine files.
     Then
@@ -664,7 +664,7 @@ def test_quarantine_files_command(requests_mock):
 def test_get_quarantine_status_command(requests_mock):
     """
     Given:
-        - ￿endpoint_id, file_path, file_hash
+        - Endpoint_id, file_path, file_hash
     When
         - A user desires to check a file's quarantine status.
     Then
@@ -690,7 +690,7 @@ def test_get_quarantine_status_command(requests_mock):
 def test_restore_file_command(requests_mock):
     """
     Given:
-        - ￿file_hash
+        - file_hash
     When
         - A user desires to restore a file.
     Then
