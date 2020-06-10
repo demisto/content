@@ -117,7 +117,7 @@ def test_get_endpoints(requests_mock):
 
     _, outputs, _ = get_endpoints_command(client, args)
     expected_output = {
-        'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == val.endpoint_id)':
+        'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)':
             get_endpoints_response.get('reply').get('endpoints')
     }
     assert expected_output == outputs
@@ -139,10 +139,12 @@ def test_get_all_endpoints_using_limit(requests_mock):
     }
 
     _, outputs, _ = get_endpoints_command(client, args)
+    expected_endpoint = get_endpoints_response.get('reply')[0]
     expected_output = {
-        'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == val.endpoint_id)': [get_endpoints_response.get('reply')[0]]
+        'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)': [expected_endpoint]
 
     }
+
     assert expected_output == outputs
 
 
