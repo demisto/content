@@ -37,7 +37,7 @@ class GCPConfig(object):
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     CORE_PACKS_LIST = [BASE_PACK,
-                       "Rasterize",
+                       "rasterize",
                        "DemistoRESTAPI",
                        "DemistoLocking",
                        "ImageOCR",
@@ -57,7 +57,8 @@ class GCPConfig(object):
                        "CommonReports",
                        "CommonWidgets",
                        "TIM_Processing",
-                       "TIM_SIEM"
+                       "TIM_SIEM",
+                       "HelloWorld"
                        ]  # cores packs list
 
 
@@ -102,7 +103,8 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def yml_supported_folders(cls):
-        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value}
+        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
+                PackFolders.TEST_PLAYBOOKS.value}
 
     @classmethod
     def json_supported_folders(cls):
@@ -733,7 +735,6 @@ class Pack(object):
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
-                pack_dirs[:] = [d for d in pack_dirs if d not in PackFolders.TEST_PLAYBOOKS.value]
                 current_directory = root.split(os.path.sep)[-1]
 
                 folder_collected_items = []

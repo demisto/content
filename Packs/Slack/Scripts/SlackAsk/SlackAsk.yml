@@ -81,7 +81,9 @@ args:
   secret: false
 - default: false
   defaultValue: Thank you for your response.
-  description: The reply to send to the user.
+  description: The reply to send to the user. Use the templates {user} and {response}
+    to incorporate these in the reply. (i.e. "Thank you {user}. You have answered
+    {response}.")
   isArray: false
   name: reply
   required: false

@@ -149,6 +149,7 @@ class DBotScoreType(object):
     FILE = 'file'
     DOMAIN = 'domain'
     URL = 'url'
+    CVE = 'cve'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -162,7 +163,8 @@ class DBotScoreType(object):
             DBotScoreType.IP,
             DBotScoreType.FILE,
             DBotScoreType.DOMAIN,
-            DBotScoreType.URL
+            DBotScoreType.URL,
+            DBotScoreType.CVE
         )
 
 
@@ -336,7 +338,7 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         Should usually be called at the beginning of the integration, depending on proxy checkbox state.
 
         Additionally will unset env variables REQUESTS_CA_BUNDLE and CURL_CA_BUNDLE if handle_insecure is speficied (default).
-        This is needed as when these variables are set and a requests.Session object is used, requests will ignore the 
+        This is needed as when these variables are set and a requests.Session object is used, requests will ignore the
         Sesssion.verify setting. See: https://github.com/psf/requests/blob/master/requests/sessions.py#L703
 
         :type proxy_param_name: ``string``
@@ -966,15 +968,17 @@ class IntegrationLogger(object):
             # add common params
             sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
             if demisto.params():
-                for (k, v) in demisto.params().items():
-                    k_lower = k.lower()
-                    for p in sensitive_params:
-                        if p in k_lower:
-                            if isinstance(v, STRING_OBJ_TYPES):
-                                self.add_replace_strs(v, b64_encode(v))
-                            if isinstance(v, dict) and v.get('password'):  # credentials object case
-                                pswrd = v.get('password')
-                                self.add_replace_strs(pswrd, b64_encode(pswrd))
+                self._iter_sensistive_dict_obj(demisto.params(), sensitive_params)
+
+    def _iter_sensistive_dict_obj(self, dict_obj, sensitive_params):
+        for (k, v) in dict_obj.items():
+            if isinstance(v, dict):  # credentials object case. recurse into the object
+                self._iter_sensistive_dict_obj(v, sensitive_params)
+            elif isinstance(v, STRING_OBJ_TYPES):
+                k_lower = k.lower()
+                for p in sensitive_params:
+                    if p in k_lower:
+                        self.add_replace_strs(v, b64_encode(v))
 
     def encode(self, message):
         try:
@@ -1860,6 +1864,15 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
+def get_integration_name():
+    """
+    Getting calling integration's name
+    :return: Calling integration's name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('IntegrationBrand')
+
+
 class Common(object):
     class Indicator(object):
         """
@@ -1911,7 +1924,7 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name
+            self.integration_name = integration_name or get_integration_name()
             self.score = score
             self.malicious_description = malicious_description
 
@@ -2254,6 +2267,12 @@ class Common(object):
             self.published = published
             self.modified = modified
             self.description = description
+            self.dbot_score = Common.DBotScore(
+                indicator=id,
+                indicator_type=DBotScoreType.CVE,
+                integration_name=None,
+                score=Common.DBotScore.NONE
+            )
 
         def to_context(self):
             cve_context = {
@@ -2275,6 +2294,9 @@ class Common(object):
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
             }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
 
             return ret_value
 
@@ -3173,16 +3195,20 @@ def is_debug_mode():
 
 class DemistoHandler(logging.Handler):
     """
-        Handler to route logging messages to demisto.debug
+        Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
     """
 
-    def __init__(self):
+    def __init__(self, int_logger=None):
         logging.Handler.__init__(self)
+        self.int_logger = int_logger
 
     def emit(self, record):
         msg = self.format(record)
         try:
-            demisto.debug(msg)
+            if self.int_logger:
+                self.int_logger.write(msg)
+            else:
+                demisto.debug(msg)
         except Exception:
             pass
 
@@ -3196,6 +3222,10 @@ class DebugLogger(object):
     def __init__(self):
         logging.raiseExceptions = False
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
+        self.int_logger = IntegrationLogger()
+        self.int_logger.set_buffering(False)
+        self.http_client_print = None
+        self.http_client = None
         if IS_PY3:
             # pylint: disable=import-error
             import http.client as http_client
@@ -3203,17 +3233,18 @@ class DebugLogger(object):
             self.http_client = http_client
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
-            self.int_logger = IntegrationLogger()
-            self.int_logger.set_buffering(False)
             setattr(http_client, 'print', self.int_logger.print_override)
-        else:
-            self.http_client = None
         self.handler = DemistoHandler()
         demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
         self.root_logger.setLevel(logging.DEBUG)
+        self.org_handlers = list()
+        if self.root_logger.handlers:
+            self.org_handlers.extend(self.root_logger.handlers)
+            for h in self.org_handlers:
+                self.root_logger.removeHandler(h)
         self.root_logger.addHandler(self.handler)
 
     def __del__(self):
@@ -3222,6 +3253,9 @@ class DebugLogger(object):
             self.root_logger.removeHandler(self.handler)
             self.handler.flush()
             self.handler.close()
+        if self.org_handlers:
+            for h in self.org_handlers:
+                self.root_logger.addHandler(h)
         if self.http_client:
             self.http_client.HTTPConnection.debuglevel = 0
             if self.http_client_print:
@@ -3229,11 +3263,21 @@ class DebugLogger(object):
             else:
                 delattr(self.http_client, 'print')
 
+    def log_start_debug(self):
+        """
+        Utility function to log start of debug mode logging
+        """
+        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None, os.environ)
+        if hasattr(demisto, 'params'):
+            msg += "\nParams: {}.".format(demisto.params())
+        self.int_logger.write(msg)
+
 
 _requests_logger = None
 try:
     if is_debug_mode():
         _requests_logger = DebugLogger()
+        _requests_logger.log_start_debug()
 except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
     # not affect the execution of commands and playbooks
