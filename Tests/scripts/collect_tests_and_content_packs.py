@@ -1083,13 +1083,11 @@ def get_modified_packs(files_string):
         else:
             file_path = file_data[1]
 
-        # ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
-        if not file_path.startswith('.'):
-            if file_path.startswith('Documentation'):
-                modified_packs.add('Base')
+        if file_path.startswith('Documentation'):
+            modified_packs.add('Base')
 
-            elif file_path.startswith('Packs'):
-                modified_packs.add(get_pack_name(file_path))
+        elif file_path.startswith('Packs'):
+            modified_packs.add(get_pack_name(file_path))
 
     return modified_packs
 
