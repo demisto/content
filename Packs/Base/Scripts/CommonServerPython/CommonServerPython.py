@@ -3069,7 +3069,7 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
       :return: The parsed timestamp in the date_format
       :rtype: ``str``
     """
-    return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
+    return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
 def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
