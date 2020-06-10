@@ -8,8 +8,19 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Access Token
-  name: access_token
+- additionalinfo: test additional
+  display: Client ID
+  name: client_id
+  required: true
+  type: 4
+- display: Client Secret
+  hidden: false
+  name: client_secret
+  required: true
+  type: 4
+- display: Refresh Token
+  hidden: false
+  name: refresh_token
   required: true
   type: 4
 - display: Fetch incidents

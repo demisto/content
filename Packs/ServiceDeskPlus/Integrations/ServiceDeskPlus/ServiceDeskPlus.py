@@ -13,7 +13,8 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://sdpondemand.manageengine.com'
-VERSION = '/api/v3/'
+API_VERSION = '/api/v3/'
+OAUTH = '/oauth/v2/token'
 
 REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority',
                   'service_category', 'requester', 'assets', 'site', 'group', 'technician', 'category', 'subcategory',
@@ -28,9 +29,28 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, access_token: str):
+    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, client_id: str, client_secret: str,
+                 refresh_token: str):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.refresh_token = refresh_token
+        self.access_token = None
+        self.generate_access_token()  # will create a valid access token
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/v3+json',
-                                                                        'Authorization': 'Bearer ' + access_token})
+                                                                        'Authorization': 'Bearer ' + self.access_token})
+
+    def generate_access_token(self):
+        """
+        Generates an access token from the client id, client secret and refresh token
+        """
+        params = {
+            'refresh_token': self.refresh_token,
+            'grant_type': 'refresh_token',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+        res = self.http_request('POST', url_suffix=OAUTH, params=params)
+        self.access_token = res.get('access_token', None)
 
     def http_request(self, method, url_suffix, params=None):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
@@ -46,7 +66,7 @@ class Client(BaseClient):
                     raise DemistoException('Failed to parse json object from response: {}'
                                            .format(res.content), exception)
 
-            if res.status_code in [401]:
+            if res.status_code in [401]:  # todo: if got this error generate a new access token and run the command again
                 try:
                     err_msg = f'Check server URL and access token \n{str(res.json())}'
                 except ValueError:
@@ -142,10 +162,6 @@ def list_requests_command(client: Client, args: dict):
     context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = output
     markdown = tableToMarkdown(f'Requests', t=output)
     return markdown, context, result
-
-
-
-
 
 
 def delete_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
@@ -357,12 +373,16 @@ def main():
     params = demisto.params()
     server_url = params.get('server_url') if params.get('server_url') else SERVER_URL
 
-    client = Client(url=server_url + VERSION,
+    client = Client(url=server_url,
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
-                    access_token=params.get('access_token'))
+                    # access_token=params.get('access_token'))
+                    client_id=params.get('client_id'),
+                    client_secret=params.get('client_secret'),
+                    refresh_token=params.get('refresh_token'))
 
     commands = {
+        # 'service-desk-plus-refresh-token': generate_refresh_token,
         'service-desk-plus-requests-list': list_requests_command,
         'service-desk-plus-request-delete': delete_request_command,
         'service-desk-plus-request-create': create_request_command,
