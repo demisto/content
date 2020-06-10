@@ -9,7 +9,7 @@
   "isPredefined": true,
   "params": {
     "currencySign": "%",
-    "signAlignment": "right",
+    "signAlignment": "left",
     "colors": {
       "isEnabled": true,
       "items": {
@@ -17,7 +17,7 @@
           "value": 80
         },
         "#FAC100": {
-          "value": 50
+          "value": 5
         },
         "#00CD33": {
           "value": -1
@@ -26,6 +26,6 @@
       "type": "above"
     }
   },
-  "size": 0,
+  "size": 300,
   "description": ""
 }
