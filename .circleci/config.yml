@@ -309,6 +309,10 @@ jobs:
                 echo 'Skipping - running only in container number 0.'
                 exit 0;
             fi
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping, Should not run on contributor's branch."
+              exit 0
+            fi
             ./Tests/scripts/prepare_content_packs_for_testing.sh
       - run:
           name: Zip Content Packs From GCS
