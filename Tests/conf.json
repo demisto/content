@@ -147,8 +147,7 @@
         },
         {
             "integrations": "Digital Defense FrontlineVM",
-            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test",
-            "timeout": 500
+            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
         },
         {
             "integrations": "Digital Defense FrontlineVM",
@@ -2819,7 +2818,6 @@
     ],
     "skipped_tests": {
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
-        "TestShowScheduledEntries": "Issue 24401",
         "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "SentinelOne V2 - test": "Issue 24933",
         "DuoAdmin API test playbook": "Issue 24937",
