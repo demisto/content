@@ -450,7 +450,7 @@ Gets the details of a specific cluster.
 >### Clusters (Project=gcp-integrations, Zone=us-central1-c, Cluster=xsoar-integration)
 >|Location|Master IP|Master version|Name|Status|
 >|---|---|---|---|---|
->| us-central1-c | 35.188.169.29 | 1.16.9-gke.2 | xsoar-integration | RECONCILING |
+>| us-central1-c | xxxx | xxxx | xxxx | RECONCILING |
 
 
 ### gcloud-clusters-set-muster-auth
