@@ -264,34 +264,54 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
-def upload_core_packs_config(storage_bucket, packs_list, build_number):
-    """Uploads corepacks.json file configuration to bucket. corepacks file includes core packs for server installation.
+def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
+    """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
-        packs_list (list): list of initialized packs.
         build_number (str): circleCI build number.
+        index_folder_path (str): The index folder path.
 
     """
-    # todo later check if it is not pre release and only then upload corepacks.json
-    core_packs_public_urls = [c.public_storage_path for c in packs_list if
-                              c.name in GCPConfig.CORE_PACKS_LIST and c.public_storage_path]
+    core_packs_public_urls = []
+    found_core_packs = set()
 
-    if not core_packs_public_urls:
-        print(f"No core packs detected, skipping {GCPConfig.CORE_PACK_FILE_NAME} upload")
-        return
+    for pack in os.scandir(index_folder_path):
+        if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
+            pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
-    if len(core_packs_public_urls) != len(GCPConfig.CORE_PACKS_LIST):
-        print_warning(f"Found core packs does not match configured core packs. "
-                      f"Found {len(core_packs_public_urls)} and configured {len(GCPConfig.CORE_PACKS_LIST)}, "
-                      f"skipping {GCPConfig.CORE_PACK_FILE_NAME} upload")
+            if not os.path.exists(pack_metadata_path):
+                print_error(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
+                sys.exit(1)
+
+            with open(pack_metadata_path, 'r') as metadata_file:
+                metadata = json.load(metadata_file)
+
+            pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
+            core_pack_relative_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack.name,
+                                                   pack_current_version, f"{pack.name}.zip")
+            core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name, core_pack_relative_path)
+
+            if not storage_bucket.blob(core_pack_relative_path).exists():
+                print_error(f"{pack.name} pack does not exist under {core_pack_relative_path} path")
+                sys.exit(1)
+
+            core_packs_public_urls.append(core_pack_public_url)
+            found_core_packs.add(pack.name)
+
+    if len(found_core_packs) != len(GCPConfig.CORE_PACKS_LIST):
+        missing_core_packs = set(GCPConfig.CORE_PACKS_LIST) ^ found_core_packs
+        print_error(f"Number of defined core packs are: {len(GCPConfig.CORE_PACKS_LIST)}")
+        print_error(f"Actual number of found core packs are: {len(found_core_packs)}")
+        print_error(f"Missing core packs are: {missing_core_packs}")
+        sys.exit(1)
 
     # construct core pack data with public gcs urls
     core_packs_data = {
         'corePacks': core_packs_public_urls,
         'buildNumber': build_number
     }
-
+    # upload core pack json file to gcs
     core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
     blob = storage_bucket.blob(core_packs_config_path)
     blob.upload_from_string(json.dumps(core_packs_data, indent=4))
@@ -635,11 +655,11 @@ def main():
 
         pack.status = PackStatus.SUCCESS.name
 
+    # upload core packs json to bucket
+    upload_core_packs_config(storage_bucket, build_number, index_folder_path)
+
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
-
-    # upload core packs json to bucket
-    upload_core_packs_config(storage_bucket, packs_list, build_number)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
