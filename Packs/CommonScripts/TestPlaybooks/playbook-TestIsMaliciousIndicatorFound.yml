@@ -2,17 +2,19 @@ id: Test-IsMaliciousIndicatorFound
 version: -1
 name: Test-IsMaliciousIndicatorFound
 starttaskid: "0"
+description: TestPlaybook for IsMaliciousIndicatorFound
 tasks:
   "0":
     id: "0"
-    taskid: dcec9b1e-550c-4e44-827d-e6fab92ffc9e
+    taskid: 6f91ac6c-4474-45cf-847f-a374f7c4fd6f
     type: start
     task:
-      id: dcec9b1e-550c-4e44-827d-e6fab92ffc9e
+      id: 6f91ac6c-4474-45cf-847f-a374f7c4fd6f
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -31,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 793b8169-d455-4e53-8621-f148afea307a
+    taskid: 82995d91-a3ce-4d44-88b7-88b2600fb195
     type: regular
     task:
-      id: 793b8169-d455-4e53-8621-f148afea307a
+      id: 82995d91-a3ce-4d44-88b7-88b2600fb195
       version: -1
       name: Create good indicator
       description: Modify indicator reputation
@@ -77,10 +79,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 1981e2f1-a458-4866-8218-9b70cb6c560e
+    taskid: 67ae41e2-c70d-4823-821b-7257793429dc
     type: condition
     task:
-      id: 1981e2f1-a458-4866-8218-9b70cb6c560e
+      id: 67ae41e2-c70d-4823-821b-7257793429dc
       version: -1
       name: IsMaliciuosFound
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -113,10 +115,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: be276019-cd8c-4661-81ba-f8c467d3b081
+    taskid: 4c4aa898-3ea0-4131-835e-cf723c6462d8
     type: regular
     task:
-      id: be276019-cd8c-4661-81ba-f8c467d3b081
+      id: 4c4aa898-3ea0-4131-835e-cf723c6462d8
       version: -1
       name: Create Bad indicator
       script: Builtin|||createNewIndicator
@@ -168,10 +170,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: d17f4a94-9a53-4455-8ec3-e8c9427bba29
+    taskid: 80579870-6afe-4673-8e66-6430a8f938b4
     type: condition
     task:
-      id: d17f4a94-9a53-4455-8ec3-e8c9427bba29
+      id: 80579870-6afe-4673-8e66-6430a8f938b4
       version: -1
       name: IsMaliciuosFound
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -182,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "23"
+      - "33"
     scriptarguments:
       includeManual: {}
       includeSuspicious: {}
@@ -203,10 +205,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: d809e135-f716-4d47-87ef-c4d926d2f80e
+    taskid: 0e8d1d00-e246-4d3f-8b8c-4aeab3f544f6
     type: regular
     task:
-      id: d809e135-f716-4d47-87ef-c4d926d2f80e
+      id: 0e8d1d00-e246-4d3f-8b8c-4aeab3f544f6
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -258,10 +260,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 0953ee65-4264-4a5c-8dd4-ceaaaf53dad8
+    taskid: 4ce6ed1a-52d4-4a5b-8ee1-9f60138dbf14
     type: condition
     task:
-      id: 0953ee65-4264-4a5c-8dd4-ceaaaf53dad8
+      id: 4ce6ed1a-52d4-4a5b-8ee1-9f60138dbf14
       version: -1
       name: IsMaliciuosFound-no-suspicious
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -294,10 +296,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: d635b4dc-1c80-4299-8360-0a479d5b8d9b
+    taskid: 347b224c-2cbd-44b9-83c9-5870bfed838b
     type: condition
     task:
-      id: d635b4dc-1c80-4299-8360-0a479d5b8d9b
+      id: 347b224c-2cbd-44b9-83c9-5870bfed838b
       version: -1
       name: IsMaliciuosFound-include-suspicious
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -330,21 +332,22 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: bef226a4-4895-41c7-8e70-a7e9d2e5c032
+    taskid: 1dd6f0eb-e056-4ecb-8080-2b0c6edb750c
     type: title
     task:
-      id: bef226a4-4895-41c7-8e70-a7e9d2e5c032
+      id: 1dd6f0eb-e056-4ecb-8080-2b0c6edb750c
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3170
         }
       }
     note: false
@@ -354,10 +357,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 04d3d065-6a15-4c12-8e9f-f43f6b676e94
+    taskid: fdc56f6e-3607-445a-8e61-bd49cbece6f1
     type: regular
     task:
-      id: 04d3d065-6a15-4c12-8e9f-f43f6b676e94
+      id: fdc56f6e-3607-445a-8e61-bd49cbece6f1
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -389,10 +392,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 8a7e48d2-ca24-4bfc-8037-fde1aa45dfe0
+    taskid: e210b8d5-13b0-4cab-859b-a7902676764c
     type: regular
     task:
-      id: 8a7e48d2-ca24-4bfc-8037-fde1aa45dfe0
+      id: e210b8d5-13b0-4cab-859b-a7902676764c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -423,79 +426,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
-    taskid: c37a30fc-74ba-47b6-8ed6-0f828eb14280
-    type: regular
-    task:
-      id: c37a30fc-74ba-47b6-8ed6-0f828eb14280
-      version: -1
-      name: Delete Context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: 189a236c-c17c-4341-8792-38f912dd8daf
-    type: regular
-    task:
-      id: 189a236c-c17c-4341-8792-38f912dd8daf
-      version: -1
-      name: FileReputation-multiple bad
-      description: A context script for hash entities
-      scriptName: FileReputation
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      file:
-        simple: 85b794e080d83a91e904b97769e1e770
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "26":
     id: "26"
-    taskid: df245dba-d0f6-4998-825f-da617215b4da
+    taskid: 52c85de8-c313-4aab-8b93-73aa05dc20b8
     type: condition
     task:
-      id: df245dba-d0f6-4998-825f-da617215b4da
+      id: 52c85de8-c313-4aab-8b93-73aa05dc20b8
       version: -1
       name: IsMaliciuosFound
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -517,7 +453,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -527,10 +463,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: a87b2042-8c7d-46bf-8cc5-e38360de68a0
+    taskid: 81f11ca3-9e02-47c1-88d2-1698bc25babc
     type: condition
     task:
-      id: a87b2042-8c7d-46bf-8cc5-e38360de68a0
+      id: 81f11ca3-9e02-47c1-88d2-1698bc25babc
       version: -1
       name: IsMaliciuosFound
       description: Checks if the investigation found any Malicious File/URL/IP, if
@@ -552,7 +488,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 2995
         }
       }
     note: false
@@ -562,10 +498,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: c858b092-01de-4e5b-87c1-ebd9dc5b2c17
+    taskid: 7c1fea5d-a369-4ca8-8e89-eb094e63511a
     type: regular
     task:
-      id: c858b092-01de-4e5b-87c1-ebd9dc5b2c17
+      id: 7c1fea5d-a369-4ca8-8e89-eb094e63511a
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -671,7 +607,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2295
         }
       }
     note: false
@@ -681,10 +617,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: f69c2c1a-a882-4703-8f71-e3b570cda227
+    taskid: 3744c248-762a-4220-800a-1e1362bcb509
     type: regular
     task:
-      id: f69c2c1a-a882-4703-8f71-e3b570cda227
+      id: 3744c248-762a-4220-800a-1e1362bcb509
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -790,7 +726,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2645
         }
       }
     note: false
@@ -800,10 +736,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 8e4403c2-2c2f-452f-8363-df12a1249f74
+    taskid: f24daa2c-103c-4135-8ed6-1a335b8aeaf0
     type: regular
     task:
-      id: 8e4403c2-2c2f-452f-8363-df12a1249f74
+      id: f24daa2c-103c-4135-8ed6-1a335b8aeaf0
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -909,7 +845,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2820
         }
       }
     note: false
@@ -919,10 +855,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 0a0145b9-24b6-4369-850e-66ee9ce580fb
+    taskid: 5c027de5-e277-472c-8ea0-faa6320b8c11
     type: regular
     task:
-      id: 0a0145b9-24b6-4369-850e-66ee9ce580fb
+      id: 5c027de5-e277-472c-8ea0-faa6320b8c11
       version: -1
       name: Create suspiciuos indicator
       script: Builtin|||createNewIndicator
@@ -1028,7 +964,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2470
         }
       }
     note: false
@@ -1038,10 +974,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 2b1f057e-bb11-4048-8d7d-bd5598ccfa70
+    taskid: b5822b2b-6714-42bd-8611-e2e2030a7e53
     type: regular
     task:
-      id: 2b1f057e-bb11-4048-8d7d-bd5598ccfa70
+      id: b5822b2b-6714-42bd-8611-e2e2030a7e53
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1064,7 +1000,166 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: e0dfca7e-fed9-4f73-80be-7772aba66a48
+    type: regular
+    task:
+      id: e0dfca7e-fed9-4f73-80be-7772aba66a48
+      version: -1
+      name: Create Bad indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      comment: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      note: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reportedby: {}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      tmp: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Email
+      updateddate: {}
+      username: {}
+      value:
+        simple: yulu@demisto.com
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -1077,7 +1172,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3360,
+        "height": 3185,
         "width": 380,
         "x": 50,
         "y": 50
@@ -1086,3 +1181,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
