@@ -52,7 +52,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- additionalInfo: Incremental feed would result in fetching new indicators without removing old ones even if they do not apear any more.
+- additionalInfo: Incremental feed would result in fetching new indicators without removing existing even if they do not appear in currently.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: true
