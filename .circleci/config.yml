@@ -176,6 +176,7 @@ jobs:
               else
                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
             fi
+            exit 0
       - run:
           name: Common Server Documentation
           when: always
