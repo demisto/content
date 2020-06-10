@@ -1313,7 +1313,6 @@ class TestBaseClient:
                                       '',
                                       full_url='http://httpbin.org/status/{}'.format(status),
                                       retries=3,
-                                      backoff_factor=0.0001,
                                       status_list_to_retry=[400, 401, 500])
 
     def test_http_request_json(self, requests_mock):
