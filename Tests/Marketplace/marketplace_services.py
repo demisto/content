@@ -28,7 +28,8 @@ class GCPConfig(object):
     """ Google cloud storage basic configurations
 
     """
-    STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
+    STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
+    IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
@@ -37,7 +38,7 @@ class GCPConfig(object):
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     CORE_PACKS_LIST = [BASE_PACK,
-                       "Rasterize",
+                       "rasterize",
                        "DemistoRESTAPI",
                        "DemistoLocking",
                        "ImageOCR",
@@ -58,7 +59,8 @@ class GCPConfig(object):
                        "CommonWidgets",
                        "TIM_Processing",
                        "TIM_SIEM",
-                       "HelloWorld"
+                       "HelloWorld",
+                       "DefaultPlaybook"
                        ]  # cores packs list
 
 
@@ -403,7 +405,7 @@ class Pack(object):
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version):
+                             dependencies_data, server_min_version, build_number):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -414,6 +416,7 @@ class Pack(object):
             author_image (str): gcs uploaded author image
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
             server_min_version (str): server minimum version found during the iteration over content items.
+            build_number (str): circleCI build number.
 
         Returns:
             dict: parsed pack metadata.
@@ -439,6 +442,7 @@ class Pack(object):
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
+        pack_metadata['versionInfo'] = build_number
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
@@ -620,12 +624,13 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
-    def prepare_release_notes(self, index_folder_path):
+    def prepare_release_notes(self, index_folder_path, build_number):
         """
         Handles the creation and update of the changelog.json files.
 
         Args:
             index_folder_path (str): Path to the unzipped index json.
+            build_number (str): circleCI build number.
         Returns:
             bool: whether the operation succeeded.
         """
@@ -657,10 +662,14 @@ class Pack(object):
                             changelog = json.load(changelog_file)
 
                             if latest_release_notes in changelog:
-                                shutil.copyfile(changelog_index_path,
-                                                os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
-                                print_warning(f"Found existing release notes for version: {latest_release_notes} "
-                                              f"in the {self._pack_name} pack.")
+                                changelog[latest_release_notes][  # update latest release notes build numbers
+                                    'displayName'] = f'{latest_release_notes} - {build_number}'
+                                # write back the updated build number to the changelog in pack the folder
+                                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
+                                    json.dump(changelog, pack_changelog, indent=4)
+
+                                print(f"Found existing release notes for version: {latest_release_notes} "
+                                      f"in the {self._pack_name} pack.")
                                 task_status = True
                                 return task_status
 
@@ -671,7 +680,7 @@ class Pack(object):
                             changelog_lines = changelog_md.read()
                             changelog_lines = self._clean_release_notes(changelog_lines)
                         version_changelog = {'releaseNotes': changelog_lines,
-                                             'displayName': latest_release_notes,
+                                             'displayName': f'{latest_release_notes} - {build_number}',
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
 
@@ -679,13 +688,28 @@ class Pack(object):
                             json.dump(changelog, f, indent=4)
 
                 else:  # will enter only on initial version and release notes folder still was not created
-                    shutil.copyfile(changelog_index_path, os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
-                    print(f"Keeping existing {Pack.CHANGELOG_JSON} of {self._pack_name} pack.")
+                    with open(changelog_index_path, "r") as changelog_file:
+                        changelog = json.load(changelog_file)
+
+                    if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
+                        print_error(
+                            f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
+                        task_status = False
+                        return task_status
+
+                    changelog[Pack.PACK_INITIAL_VERSION][  # update latest release notes build numbers
+                        'displayName'] = f'{Pack.PACK_INITIAL_VERSION} - {build_number}'
+                    # write back the updated build number to the changelog in pack the folder
+                    with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
+                        json.dump(changelog, pack_changelog, indent=4)
+
+                    print(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
+                          f"in the {self._pack_name} pack.")
 
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
                 changelog = {}
                 version_changelog = {'releaseNotes': self._description,
-                                     'displayName': Pack.PACK_INITIAL_VERSION,
+                                     'displayName': f'{Pack.PACK_INITIAL_VERSION} - {build_number}',
                                      'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                 changelog[Pack.PACK_INITIAL_VERSION] = version_changelog
 
@@ -899,7 +923,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping):
+                        packs_dependencies_mapping, build_number):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -911,6 +935,7 @@ class Pack(object):
             author_image (str): uploaded public gcs path to author image.
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
+            build_number (str): circleCI build number.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -940,7 +965,8 @@ class Pack(object):
                                                            integration_images=integration_images,
                                                            author_image=author_image,
                                                            dependencies_data=dependencies_data,
-                                                           server_min_version=self.server_min_version)
+                                                           server_min_version=self.server_min_version,
+                                                           build_number=build_number)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -1099,15 +1125,21 @@ class Pack(object):
                 image_name = os.path.basename(image_path)
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
-                print(f"Uploading {self._pack_name} pack integration image: {image_name}")
 
+                print(f"Uploading {self._pack_name} pack integration image: {image_name}")
                 with open(image_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
-                    uploaded_integration_images.append({
-                        'name': image_data.get('display_name', ''),
-                        'imagePath': urllib.parse.quote(pack_image_blob.name) if GCPConfig.USE_GCS_RELATIVE_PATH
-                        else pack_image_blob.public_url
-                    })
+
+                if GCPConfig.USE_GCS_RELATIVE_PATH:
+                    image_gcs_path = urllib.parse.quote(
+                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, image_name))
+                else:
+                    image_gcs_path = pack_image_blob.public_url
+
+                uploaded_integration_images.append({
+                    'name': image_data.get('display_name', ''),
+                    'imagePath': image_gcs_path
+                })
 
             print(f"Uploaded {len(pack_local_images)} images for {self._pack_name} pack.")
         except Exception as e:
@@ -1144,12 +1176,15 @@ class Pack(object):
                 with open(author_image_path, "rb") as author_image_file:
                     pack_author_image_blob.upload_from_file(author_image_file)
 
-                author_image_storage_path = pack_author_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH \
-                    else pack_author_image_blob.public_url
+                if GCPConfig.USE_GCS_RELATIVE_PATH:
+                    author_image_storage_path = urllib.parse.quote(
+                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME))
+                else:
+                    author_image_storage_path = pack_author_image_blob.public_url
 
                 print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
             elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
-                author_image_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.BASE_PACK,
+                author_image_storage_path = os.path.join(GCPConfig.IMAGES_BASE_PATH, GCPConfig.BASE_PACK,
                                                          Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
                 if not GCPConfig.USE_GCS_RELATIVE_PATH:
