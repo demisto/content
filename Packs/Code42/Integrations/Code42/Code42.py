@@ -1,5 +1,6 @@
 from typing import Optional, Dict, Any
-
+import demistomock as demisto
+from CommonServerPython import *
 ''' IMPORTS '''
 import json
 import requests
