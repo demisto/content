@@ -2832,8 +2832,11 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Nozomi_Guardian",
+            "playbookID": "NozomiGuardian_Test"
         }
-
     ],
     "skipped_tests": {
         "SentinelOne V2 - test": "Issue 24933",
