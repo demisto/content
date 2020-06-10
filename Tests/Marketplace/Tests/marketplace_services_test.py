@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+import random
 from unittest.mock import mock_open
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig
@@ -28,7 +29,8 @@ class TestMetadataParsing:
         """
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0")
+                                                    dependencies_data={}, server_min_version="5.5.0",
+                                                    build_number="dummy_build_number")
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -44,6 +46,7 @@ class TestMetadataParsing:
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == '5.5.0'
         assert parsed_metadata['currentVersion'] == '2.3.0'
+        assert parsed_metadata['versionInfo'] == "dummy_build_number"
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two"]
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
@@ -58,7 +61,8 @@ class TestMetadataParsing:
         """
         parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version")
+                                                    dependencies_data={}, server_min_version="dummy_server_version",
+                                                    build_number="dummy_build_number")
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -80,7 +84,8 @@ class TestMetadataParsing:
         mocker.patch("Tests.Marketplace.marketplace_services.print_warning")
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version")
+                                                    dependencies_data={}, server_min_version="dummy_server_version",
+                                                    build_number="dummy_build_number")
 
         assert parsed_metadata['price'] == expected
 
@@ -243,7 +248,8 @@ class TestChangelogCreation:
         """
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        build_number = random.randint(0, 100000)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
         assert result is True
 
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
@@ -274,7 +280,8 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        build_number = random.randint(0, 100000)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
         assert result is True
 
     def test_prepare_release_notes_upgrade_version_mismatch(self, mocker, dummy_pack):
@@ -306,7 +313,8 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        build_number = random.randint(0, 100000)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
         assert result is False
 
     def test_prepare_release_notes_upgrade_version_dup(self, mocker, dummy_pack):
@@ -339,7 +347,8 @@ class TestChangelogCreation:
         }'''
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
-        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path)
+        build_number = random.randint(0, 100000)
+        result = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
         assert result is True
 
     def test_clean_release_notes_lines(self):
