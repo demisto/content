@@ -5,8 +5,8 @@ import demistomock as demisto
 class DotDict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
+    __setattr__ = dict.__setitem__  # noqa: type: ignore[assignment]
+    __delattr__ = dict.__delitem__  # noqa: type: ignore[assignment]
 
 
 def test_query_formatting(mocker):
@@ -90,3 +90,40 @@ def test_parse_ticket_links():
     response = parse_ticket_links(RAW_LINKS)
     expected = [{'ID': '65461'}, {'ID': '65462'}, {'ID': '65463'}]
     assert response == expected
+
+
+def test_build_ticket_id_in_headers():
+    """
+
+    Given:
+    - A ticket containing 'ID' in its keys
+
+    When:
+    - building a search ticket
+
+    Then:
+    - Validate the ticket ID parsed correctly
+
+    """
+    from RTIR import build_ticket
+    ticket = build_ticket(['ID: ticket/1'])
+    expected = {'ID': 1}
+    assert expected == ticket
+
+
+def test_build_ticket_contains_id_in_headers():
+    """
+
+    Given:
+    - A ticket contains a key with 'ID' substring.
+
+    When:
+    - building a search ticket
+
+    Then:
+    - Validate nothing returns
+
+    """
+    from RTIR import build_ticket
+    ticket = build_ticket(['ThisIsAID: ofNotID'])
+    assert {} == ticket
