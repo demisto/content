@@ -323,7 +323,7 @@ def get_pps_token(pps_magic):
         }
         submit_search_response = http_request('GET', cmd_url, headers=headers)
         submit_search_response_json = json.loads(submit_search_response)
-        service_url = submit_search_response_json.get('serviceURL')
+        service_url = submit_search_response_json.get('serviceURL', '')
         parsed_service_url = service_url.split('pps_token=')
         pps_token = parsed_service_url[1]
         return pps_token
