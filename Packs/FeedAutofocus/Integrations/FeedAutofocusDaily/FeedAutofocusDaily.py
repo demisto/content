@@ -9,10 +9,6 @@ from typing import List
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# CONSTANTS
-SOURCE_NAME = "AutoFocusFeedDaily"
-DAILY_FEED_BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult'
-
 
 class Client(BaseClient):
     """Client for AutoFocus Feed - gets indicator lists from the Custom and Daily threat feeds
@@ -41,7 +37,7 @@ class Client(BaseClient):
 
         res = requests.request(
             method="GET",
-            url=DAILY_FEED_BASE_URL,
+            url='https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult',
             verify=self.verify,
             headers=headers
         )
@@ -246,7 +242,7 @@ def main():
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')
+        raise Exception(f'Error in AutoFocusFeed Daily Integration [{e}]')
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':

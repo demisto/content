@@ -3,6 +3,7 @@ commonfields:
   id: AutoFocus Daily Feed
   version: -1
 configuration:
+
 - display: Fetch indicators
   name: feed
   required: false
@@ -51,6 +52,12 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
+- additionalInfo: Incremental feed would result in fetching new indicators without removing old ones even if they do not apear any more.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: true
+  required: false
+  type: 8
 - defaultvalue: '15'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -74,7 +81,6 @@ configuration:
 description: Use the AutoFocus Feeds integration to fetch daily indicators from AutoFocus.
 display: AutoFocus Daily Feed
 name: AutoFocus Daily Feed
-feedIncremental: true
 script:
   commands:
   - arguments:
