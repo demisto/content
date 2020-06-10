@@ -1,8 +1,0 @@
-[file:script-CveSearch.yml]
-ignore=BA101
-
-[file:playbook-CVE_Enrichment_-_Generic.yml]
-ignore=BA101
-
-[file:script-CveLatest.yml]
-ignore=BA101

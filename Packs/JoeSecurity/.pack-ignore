@@ -1,8 +1,0 @@
-[file:playbook-Detonate_File_-_JoeSecurity.yml]
-ignore=BA101
-
-[file:playbook-Detonate_URL_-_JoeSecurity.yml]
-ignore=BA101
-
-[file:playbook-Detonate_File_From_URL_-_JoeSecurity.yml]
-ignore=BA101

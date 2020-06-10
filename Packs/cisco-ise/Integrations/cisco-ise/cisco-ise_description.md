@@ -1,2 +1,0 @@
-The Cisco Identity Services Engine (ISE) offers a network-based approach for adaptable, trusted access everywhere, based on context. 
-It gives you intelligent, integrated protection through intent-based policy and compliance solutions. 
