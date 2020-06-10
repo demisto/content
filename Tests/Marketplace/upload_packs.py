@@ -282,7 +282,7 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
 
             if not os.path.exists(pack_metadata_path):
                 print_error(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
-                return
+                sys.exit(1)
 
             with open(pack_metadata_path, 'r') as metadata_file:
                 metadata = json.load(metadata_file)
@@ -294,7 +294,7 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
 
             if not storage_bucket.blob(core_pack_relative_path).exists():
                 print_error(f"{pack.name} pack does not exist under {core_pack_relative_path} path")
-                return
+                sys.exit(1)
 
             core_packs_public_urls.append(core_pack_public_url)
             found_core_packs.add(pack.name)
@@ -304,7 +304,7 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
         print_error(f"Number of defined core packs are: {len(GCPConfig.CORE_PACKS_LIST)}")
         print_error(f"Actual number of found core packs are: {len(found_core_packs)}")
         print_error(f"Missing core packs are: {missing_core_packs}")
-        return
+        sys.exit(1)
 
     # construct core pack data with public gcs urls
     core_packs_data = {
