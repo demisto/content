@@ -46,13 +46,6 @@ def main():
 
         try:
             dependency_graph = PackDependencies.build_dependency_graph(pack_id=pack.name, id_set=id_set)
-            # remove Legacy node subtree
-            if dependency_graph.has_node("Legacy"):
-                legacy_sub_tree = nx.descendants(dependency_graph, "Legacy")
-                legacy_sub_tree.add("Legacy")
-                dependency_graph.remove_nodes_from(legacy_sub_tree)
-                dependency_graph.remove_nodes_from(list(nx.isolates(dependency_graph)))
-
             # currently all level of dependencies is not in use
             first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(dependency_graph, pack.name)
 
