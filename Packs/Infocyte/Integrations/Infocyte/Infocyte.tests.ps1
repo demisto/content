@@ -3,103 +3,76 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "", Justification="Ignore")]
 Param()
 
-Describe 'Infocyte Integration' {
+BeforeAll {
+    . "$PSScriptRoot\Infocyte.ps1"
+    
+    # Define Vars (scoped within 'It')
+    $GUID = "^[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}$"
+    $TestHost = "pegasusactual"
+    $TestAlertId = "f959f69f-c3e7-42ca-af90-a76f53312720"
+    $TestUserTaskId = '873ea61b-1705-49e6-87a5-57db12369ea1'
+    $TestScanId = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
+    $TestResponseScanId = "36f48e02-845f-4a09-9b7a-c10d0a03ae13"
+
+    $demisto.ServerEntry.params = @{
+        InstanceName = "testpanxsoar"
+        APIKey       = "dHYZS0pIx3vSJGW1VpgAWTaBZgaHVrY6SW5UgHEpElAD57pANEQY2QIoCpwHb5wO"
+        insecure     = $false
+        proxy        = $false
+        first_fetch  = '3'
+        max_fetch    = '10'
+    }
+}
+
+Describe 'Infocyte Integration Unit Tests' {
 
     BeforeAll {
-        # Import Script before 'Its'
-        . "$PSScriptRoot\Infocyte.ps1"
-
-        # Define Vars (scoped within 'It')
-        $GUID = "^[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}$"
-        $TestAlertId = "f959f69f-c3e7-42ca-af90-a76f53312720"
-        $TestUserTaskId = '873ea61b-1705-49e6-87a5-57db12369ea1'
-        $TestScanId = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
-        $TestResponseScanId = "36f48e02-845f-4a09-9b7a-c10d0a03ae13"
+        $Alerts = @()
+        0..9 | ForEach-Object {
+            $Alerts += [PSCustomObject]@{
+                id           = "f959f69f-c3e7-42ca-af90-a76f53312720"
+                name         = "kprocesshacker.sys"
+                type         = "Autostart"
+                hostname     = "pegasusactual"
+                scanId       = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
+                fileRepId    = "a21c84c6bf2e21d69fa06daaf19b4cc34b589347"
+                signed       = $true
+                managed      = $null
+                createdOn    = "2020-05-28T05:57:18.404Z"
+                flagName     = $null
+                flagWeight   = $null
+                threatScore  = 9
+                threatWeight = 8
+                threatName   = "Bad"
+                avPositives  = 21
+                avTotal      = 85
+                hasAvScan    = $true
+                synapse      = 1.08223234150638
+                size         = 45208
+            }
+        } 
+        Mock Get-ICAlert { $Alerts }
     }
 
     Context "fetch-incidents" {
-
-        It 'Returns an alert by alertId' {
-            $demisto.ContextArgs = @{ alertId = $TestAlertId }
-            Write-Host "[It] Looking up alert $TestAlertId -- ContextArgs: $($demisto.ContextArgs | convertto-json)"
-            Mock 'Get-ICAlert' {
-                [PSCustomObject]@{
-                    id = "f959f69f-c3e7-42ca-af90-a76f53312720"
-                    name = "kprocesshacker.sys"
-                    type = "Autostart"
-                    hostname = "pegasusactual"
-                    scanId = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
-                    fileRepId = "a21c84c6bf2e21d69fa06daaf19b4cc34b589347"
-                    signed = $true
-                    managed = $null
-                    createdOn = "2020-05-28T05:57:18.404Z"
-                    flagName = $null
-                    flagWeight = $null
-                    threatScore = 9
-                    threatWeight = 8
-                    threatName = "Bad"
-                    avPositives = 21
-                    avTotal = 85
-                    hasAvScan = $true
-                    synapse = 1.08223234150638
-                    size = 45208
-                }
-            }
-            Get-InfocyteAlerts
-            $Results = $Demisto.Results.Content | Convertfrom-Json
-            $Results.'Infocyte.Alert'[0].scanId | Should -Be $TestScanId
-        }
-
-                
+                                   
         It 'Returns 10 alerts after an alertId' {
             $demisto.ContextArgs = @{ lastAlertId = $TestAlertId }
-            Write-Host "[It] Looking up alerts since $TestAlertId -- ContextArgs: $($demisto.ContextArgs | convertto-json)"
-            
-            Mock 'Get-ICAlert' {
-                $Alerts = @()
-                0..9 | ForEach-Object {
-                    $Alerts += [PSCustomObject]@{
-                        id           = "f959f69f-c3e7-42ca-af90-a76f53312720"
-                        name         = "kprocesshacker.sys"
-                        type         = "Autostart"
-                        hostname     = "pegasusactual"
-                        scanId       = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
-                        fileRepId    = "a21c84c6bf2e21d69fa06daaf19b4cc34b589347"
-                        signed       = $true
-                        managed      = $null
-                        createdOn    = "2020-05-28T05:57:18.404Z"
-                        flagName     = $null
-                        flagWeight   = $null
-                        threatScore  = 9
-                        threatWeight = 8
-                        threatName   = "Bad"
-                        avPositives  = 21
-                        avTotal      = 85
-                        hasAvScan    = $true
-                        synapse      = 1.08223234150638
-                        size         = 45208
-                    }
-                }
-                $Alerts 
-            }
-
-            Get-InfocyteAlerts
-            $Results = $Demisto.Results.Content | Convertfrom-Json
-            $Results.'Infocyte.Alert'.count | Should -Be 10
+            $r = Get-InfocyteAlerts
+            $r.EntryContext.'Infocyte.Alert'.count | Should -Be 10
+            $r.EntryContext.'Infocyte.Alert'[0].scanId | Should -Be $TestScanId
         }
     }
 
     Context "infocyte-scan-host" {
 
         It 'kicks off a scan' {
-            #$Demisto.ServerEntry.command = "infocyte-scan-host"
-            $demisto.ContextArgs = @{ Target = $Testhost }
-            mock 'Invoke-ICScanTarget' {
+            $demisto.ContextArgs = @{ target = $Testhost }
+            mock Invoke-ICScanTarget {
                 [PSCustomObject]@{ userTaskId = "ffef64cd-aaf3-4c2b-a650-a2eedb9215be" }
             }
-            Invoke-InfocyteScan
-            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
-            $Results.'Infocyte.Scan'.userTaskId | Should -Match $GUID
+            $r = Invoke-InfocyteScan
+            $r.EntryContext.'Infocyte.Task'.userTaskId | Should -Match $GUID
         }
 
     }
@@ -122,7 +95,7 @@ Describe 'Infocyte Integration' {
                 installed   = $False
                 application = $True
             }
-            mock 'Get-ICTask' {
+            Mock Get-ICTask {
                 [PSCustomObject]@{
                     userId       = $null
                     createdOn    = "6/9/20 5:47:04 PM"
@@ -143,9 +116,8 @@ Describe 'Infocyte Integration' {
                     totalSeconds = $null
                 }
             }
-            Get-InfocyteTaskStatus
-            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
-            $Results.'Infocyte.Scan'.scanId | Should -Match $GUID
+            $r = Get-InfocyteTaskStatus
+            $r.EntryContext.'Infocyte.Task(val.userTaskId == obj.userTaskId)'.scanId | Should -Match $GUID
         }
     }
 
@@ -153,12 +125,27 @@ Describe 'Infocyte Integration' {
 
         It 'kicks off a Terminate Process response action' {
             $demisto.ContextArgs = @{ target = $Testhost }
-            mock 'Invoke-ICResponse' {
+            Mock Get-ICExtension {
+                [PSCustomObject]@{ 
+                    id           = "2ffd753a-ba60-4414-8991-52aa54615e73"
+                    name         = "Terminate Process"
+                    type         = "action"
+                    versionCount = 4
+                    active       = $True
+                    deleted      = $False
+                    createdOn    = [DateTime]"5/12/2020 10:40:41 PM"
+                    createdBy    = $null
+                    updatedOn    = [DateTime]"5/26/2020 5:43:01 AM"
+                    updatedBy    = $null
+                    guid         = "5a2e94d9-fa88-4ffe-8aa9-ef53660b3a53"
+                }
+            } -ParameterFilter { $extensionName -eq "Terminate Process" }
+            Mock Invoke-ICResponse {
                 [PSCustomObject]@{ userTaskId = "ffef64cd-aaf3-4c2b-a650-a2eedb9215be" }
             }
-            Invoke-InfocyteResponse -ExtensionName "Terminate Process"
-            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
-            $Results.'Infocyte.Response'.userTaskId | Should -Match $GUID
+
+            $r = Invoke-InfocyteResponse -ExtensionName "Terminate Process"
+            $r.EntryContext.'Infocyte.Task'.userTaskId | Should -Match $GUID
         }
     }
 
@@ -198,8 +185,7 @@ Describe 'Infocyte Integration' {
                     }
                 }
             }
-
-            mock 'Get-ICScanResult' {
+            Mock Get-ICScan {
                 [PSCustomObject]@{
                     id               = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
                     targetId         = "f5acd0e1-7012-445d-af04-1ea0a89e334c"
@@ -225,9 +211,16 @@ Describe 'Infocyte Integration' {
                     applicationCount = 101
                 }
             }
-            Get-InfocyteScanResult
-            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
-            $Results.'Infocyte.Scan'.scanId | Should -Match $GUID
+            Mock Get-ICObject {
+                [PSCustomObject]@{
+                    hostname  = "pegasusactual"
+                    ip        = "x.x.x.x"
+                    osVersion = "Windows 10 Pro 2004 Professional 64-bit"
+                }
+            } -ParameterFilter { $type -eq "Host" }
+
+            $r = Get-InfocyteScanResult
+            $r.EntryContext.'Infocyte.Scan'.scanId | Should -Match $GUID
         }
     }
 
@@ -235,31 +228,7 @@ Describe 'Infocyte Integration' {
 
         It 'returns hostscan results for a single host' {
             $demisto.ContextArgs = @{ scanId = $TestScanId }
-            $Alerts = @()
-            0..9 | ForEach-Object {
-                $Alerts += [PSCustomObject]@{
-                    id           = "f959f69f-c3e7-42ca-af90-a76f53312720"
-                    name         = "kprocesshacker.sys"
-                    type         = "Autostart"
-                    hostname     = "pegasusactual"
-                    scanId       = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
-                    fileRepId    = "a21c84c6bf2e21d69fa06daaf19b4cc34b589347"
-                    signed       = $true
-                    managed      = $null
-                    createdOn    = "2020-05-28T05:57:18.404Z"
-                    flagName     = $null
-                    flagWeight   = $null
-                    threatScore  = 9
-                    threatWeight = 8
-                    threatName   = "Bad"
-                    avPositives  = 21
-                    avTotal      = 85
-                    hasAvScan    = $true
-                    synapse      = 1.08223234150638
-                    size         = 45208
-                }
-            }
-            mock 'Get-ICHostScanResult' {
+            mock Get-ICHostScanResult {
                 [PSCustomObject]@{
                     scanId      = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
                     hostId      = "558feacbbae80c63d54ec1252ac34bdc285b20a7"
@@ -272,9 +241,8 @@ Describe 'Infocyte Integration' {
                     ip          = "x.x.x.x"
                 }
             }
-            Get-InfocyteHostScanResult
-            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
-            $Results.'Infocyte.Scan'.scanId | Should -Match $GUID
+            $r = Get-InfocyteHostScanResult
+            $r.EntryContext.'Infocyte.Scan'.scanId | Should -Match $GUID
         }
     }
 
@@ -282,7 +250,7 @@ Describe 'Infocyte Integration' {
 
         It 'returns response action result' {
             $demisto.ContextArgs = @{ scanId = $TestResponseScanId }
-            mock 'Get-ICResponseResult' {
+            mock Get-ICResponseResult {
                 [PSCustomObject]@{
                     scanId        = "36f48e02-845f-4a09-9b7a-c10d0a03ae13"
                     hostId        = "558feacbbae80c63d54ec1252ac34bdc285b20a7"
@@ -302,9 +270,8 @@ Describe 'Infocyte Integration' {
                     ip            = "x.x.x.x"
                 }                
             }
-            Get-InfocyteResponseResult
-            $Results = $Demisto.Results.EntryContext | Convertfrom-Json
-            $Results.'Infocyte.Response'.scanId | Should -Match $GUID
+            $r = Get-InfocyteResponseResult
+            $r.EntryContext.'Infocyte.Response'.scanId | Should -Match $GUID
         }
     }
 }
