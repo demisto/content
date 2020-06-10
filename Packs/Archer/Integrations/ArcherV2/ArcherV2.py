@@ -523,9 +523,9 @@ def search_applications_command(client: Client, args: Dict[str, str]):
                                  'Status': app_obj.get('Status'),
                                  'Guid': app_obj.get('Guid')})
 
-    markdown = tableToMarkdown('archer-search-applications', applications)
+    markdown = tableToMarkdown('Search applications results', applications)
     context: dict = {
-            f'Archer.Applications(val.Id && val.Id == obj.Id)':
+            f'Archer.Application(val.Id && val.Id == obj.Id)':
             applications
         }
     return_outputs(markdown, context, res)
@@ -550,9 +550,9 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
             if errors:
                 return_error(errors)
 
-    markdown = tableToMarkdown('archer-get-application-fields', fields)
+    markdown = tableToMarkdown('Application fields', fields)
     context: dict = {
-            f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
+            f'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
             fields
         }
     return_outputs(markdown, context, res)
@@ -577,9 +577,9 @@ def get_field_command(client: Client, args: Dict[str, str]):
                        'FieldName': field_obj.get('Name'),
                        'LevelID': field_obj.get('LevelId')}
 
-    markdown = tableToMarkdown('archer-get-application-field', field)
+    markdown = tableToMarkdown('Application field', field)
     context: dict = {
-        f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
+        f'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
             field
     }
     return_outputs(markdown, context, res)
@@ -599,17 +599,18 @@ def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
                 item_type = FIELD_TYPE_DICT.get(item_type, 'Unknown')
             else:
                 item_type = 'Unknown'
-            items.append({'Name': item_obj.get('Name'),
+            items.append({'Id': item_obj.get('Id'),
+                          'Name': item_obj.get('Name'),
                           'Type': item_type,
-                          'levelId': item_obj.get('LevelId')})
+                          'LevelId': item_obj.get('LevelId')})
         else:
             errors = get_errors_from_res(item)
             if errors:
                 return_error(errors)
 
-    markdown = tableToMarkdown('archer-get-mapping-by-level', items)
+    markdown = tableToMarkdown(f'Level mapping for level {level}', items)
     context: dict = {
-            f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
+            f'Archer.LevelMapping(val.Id && val.Id == obj.Id)':
             items
         }
     return_outputs(markdown, context, res)
@@ -648,7 +649,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         rec_id = res['RequestedObject']['Id']
-        return_outputs(f'Record created successfully, record id: {rec_id}', {}, res)
+        return_outputs(f'Record created successfully, record id: {rec_id}', {'Archer.Record.Id': rec_id}, res)
 
 
 def delete_record_command(client: Client, args: Dict[str, str]):
@@ -659,7 +660,6 @@ def delete_record_command(client: Client, args: Dict[str, str]):
     if errors:
         return_error(errors)
     return_outputs(f'Record {record_id} deleted successfully', {}, res)
-
 
 
 def update_record_command(client: Client, args: Dict[str, str]):
@@ -700,7 +700,7 @@ def get_reports_command(client: Client, args: Dict[str, str]):
     context: dict = {
         f'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
     }
-    return_outputs(ec, context, raw_res)
+    return_outputs(ec, context, {})
 
 
 def search_options_command(client: Client, args: Dict[str, str]):
@@ -735,10 +735,10 @@ def get_value_list_command(client: Client, args: Dict[str, str]):
                                     'IsSelectable': value['Data']['IsSelectable']})
 
             field_data = {'FieldId': field_id, 'ValuesList': values_list}
-            markdown = tableToMarkdown('archer-get-valuelist', values_list)
+            markdown = tableToMarkdown(f'Value list for field {field_id}', values_list)
 
             context: dict = {
-                f'Archer.ApplicationFields(val.FieldId && val.FieldId == obj.FieldId)':
+                f'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
                     field_data
             }
             return_outputs(markdown, context, values_list_res)
@@ -806,7 +806,7 @@ def list_users_command(client: Client, args: Dict[str, str]):
                                  'LastLoginDate': user_obj.get('LastLoginDate'),
                                  'UserName': user_obj.get('UserName')})
 
-    markdown = tableToMarkdown('Archer list users:', users)
+    markdown = tableToMarkdown('Users list', users)
     context: dict = {
         f'Archer.User(val.Id && val.Id == obj.Id)':
             users
@@ -857,7 +857,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
         for record in records:
             hr.append({f: record[f] for f in fields_to_display})
 
-    markdown = tableToMarkdown('Search records results:', hr)
+    markdown = tableToMarkdown('Search records results', hr)
     context: dict = {'Archer.Record(val.Id && val.Id == obj.Id)': records}
     return_outputs(markdown, context, {})
 
@@ -886,8 +886,11 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
         records = client.xml_to_records(res, fields)
         records = list(map(lambda x: x['record'], records))
 
-    markdown = tableToMarkdown('Search records by report results:', records)
-    context: dict = {'Archer.Record(val.Id && val.Id == obj.Id)': records}
+        ec = {'Record': records, 'RecordsAmount': len(records), 'ReportGUID': report_guid}
+
+    markdown = tableToMarkdown('Search records by report results', records)
+    context: dict = {'Archer.SearchByReport.(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec}
+
     return_outputs(markdown, context, json.loads(xml2json(raw_res)))
 
 
