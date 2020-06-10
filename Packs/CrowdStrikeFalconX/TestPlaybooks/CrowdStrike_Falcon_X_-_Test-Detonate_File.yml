@@ -42,6 +42,7 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
