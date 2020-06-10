@@ -1070,8 +1070,8 @@ def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
 
 
 def get_modified_packs(files_string):
-    modified_packs = set([])
-    all_files = files_string.split('\n')
+    modified_packs = set()
+    all_files = files_string.splitlines()
 
     for _file in all_files:
         file_data = _file.split()
@@ -1140,13 +1140,13 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if changed_common:
         tests.add('TestCommonPython')
 
-    if 'NonSupported' in packs_to_install:
-        packs_to_install.remove("NonSupported")
-
     # get all modified packs - not just tests related
     modified_packs = get_modified_packs(files_string)
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
+
+    if 'NonSupported' in packs_to_install:
+        packs_to_install.remove("NonSupported")
 
     return tests, packs_to_install
 
