@@ -317,20 +317,15 @@ def main():
     }
 
     hrentry = {k: v for k,v in entry.items() if v}
-    md = tableToMarkdown('CVSS Score:', hrentry)
+    markdown = tableToMarkdown('CVSS Score:', hrentry)
 
-    ec = {
-        "CVSS(val.VectorString == obj.VectorString && val.Version == obj.Version)": entry
-    }
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': entry,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+    results = CommandResults(
+        readable_output = markdown,
+        outputs_prefix = 'CVSS',
+        outputs_key_field = ['VectorString', 'Version'],
+        outputs = entry
+    )
+    return_results(results)
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
