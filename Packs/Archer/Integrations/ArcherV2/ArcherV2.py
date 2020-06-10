@@ -2,12 +2,14 @@ import demistomock as demisto
 from CommonServerPython import *
 import traceback
 from CommonServerUserPython import *
-from typing import Tuple, Dict, Any
+from typing import Dict
 import dateparser
-import urllib3
+
 ''' IMPORTS '''
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 REQUEST_HEADERS = {'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
@@ -17,7 +19,7 @@ FIELD_TYPE_DICT = {1: 'Text', 2: 'Numeric', 3: 'Date', 4: 'Values List', 6: 'Tra
                    8: 'Users/Groups List', 9: 'Cross-Reference', 11: 'Attachment', 12: 'Image',
                    14: 'Cross-Application Status Tracking (CAST)', 16: 'Matrix', 19: 'IP Address', 20: 'Record Status',
                    21: 'First Published', 22: 'Last Updated Field', 23: 'Related Records', 24: 'Sub-Form',
-                   25: 'History Log', 26: 'Discussion',27: 'Multiple Reference Display Control',
+                   25: 'History Log', 26: 'Discussion', 27: 'Multiple Reference Display Control',
                    28: 'Questionnaire Reference', 29: 'Access History', 30: 'V oting', 31: 'Scheduler',
                    1001: 'Cross-Application Status Tracking Field Value'}
 
@@ -132,23 +134,24 @@ def search_records_by_report_soap_request(token, report_guid):
 
 def search_records_soap_request(token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
                                 numeric_operator='', max_results=10):
-    request_body =  '<?xml version="1.0" encoding="UTF-8"?>' + \
-            '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
-            'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + \
-            '    <soap:Body>' + \
-            '        <ExecuteSearch xmlns="http://archer-tech.com/webservices/">' + \
-            f'            <sessionToken>{token}</sessionToken>' + \
-            '            <searchOptions>' + \
-            '                <![CDATA[<SearchReport>' + \
-            '                <PageSize>100</PageSize>' + \
-            '                <PageNumber>1</PageNumber>' + \
-            f'                <MaxRecordCount>{max_results}</MaxRecordCount>' + \
-            '                <ShowStatSummaries>false</ShowStatSummaries>' + \
-            f'                <DisplayFields>{display_fields}</DisplayFields>' + \
-            f'                <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
+    request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
+                   '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
+                   'xmlns:xsd="http://www.w3.org/2001/XMLSchema"' \
+                   ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + \
+                   '    <soap:Body>' + \
+                   '        <ExecuteSearch xmlns="http://archer-tech.com/webservices/">' + \
+                   f'            <sessionToken>{token}</sessionToken>' + \
+                   '            <searchOptions>' + \
+                   '                <![CDATA[<SearchReport>' + \
+                   '                <PageSize>100</PageSize>' + \
+                   '                <PageNumber>1</PageNumber>' + \
+                   f'                <MaxRecordCount>{max_results}</MaxRecordCount>' + \
+                   '                <ShowStatSummaries>false</ShowStatSummaries>' + \
+                   f'                <DisplayFields>{display_fields}</DisplayFields>' + \
+                   f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
 
     if search_value:
-        request_body +='<Filter><Conditions>'
+        request_body += '<Filter><Conditions>'
 
         if date_operator:
             request_body += '<DateComparisonFilterCondition>' + \
@@ -171,10 +174,10 @@ def search_records_soap_request(token, app_id, display_fields, field_id, field_n
                             f'        <Value>{search_value}</Value>' + \
                             '</TextFilterCondition >'
 
-        request_body +='</Conditions></Filter>'
+        request_body += '</Conditions></Filter>'
 
     if date_operator:
-        request_body +='<Filter>' + \
+        request_body += '<Filter>' + \
                         '<Conditions>' + \
                         '    <DateComparisonFilterCondition>' + \
                         f'        <Operator>{date_operator}</Operator>' + \
@@ -186,12 +189,12 @@ def search_records_soap_request(token, app_id, display_fields, field_id, field_n
                         '</Conditions>' + \
                         '</Filter>'
 
-    request_body +='</Criteria></SearchReport>]]>' + \
-    '</searchOptions>' + \
-    '<pageNumber>1</pageNumber>' + \
-    '</ExecuteSearch>' + \
-    '</soap:Body>' + \
-    '</soap:Envelope>'
+    request_body += ' </Criteria></SearchReport>]]>' + \
+                    '</searchOptions>' + \
+                    '<pageNumber>1</pageNumber>' + \
+                    '</ExecuteSearch>' + \
+                    '</soap:Body>' + \
+                    '</soap:Envelope>'
 
     return request_body
 
@@ -264,7 +267,8 @@ class Client(BaseClient):
         body = get_token_soap_request(self.username, self.password, self.instance_name)
         headers = {'SOAPAction': 'http://archer-tech.com/webservices/CreateUserSessionFromInstance',
                    'Content-Type': 'text/xml; charset=utf-8'}
-        res = self._http_request('Post', 'rsaarcher/ws/general.asmx', headers=headers, data=body, ok_codes=[200], resp_type='content')
+        res = self._http_request('Post', 'rsaarcher/ws/general.asmx', headers=headers, data=body, ok_codes=[200],
+                                 resp_type='content')
 
         return extract_from_xml(res, 'Envelope.Body.CreateUserSessionFromInstanceResponse.CreateUserSessionFromInstanceResult')
 
@@ -280,7 +284,7 @@ class Client(BaseClient):
         token = self.get_token()
         body = req_data['soapBody'](token, **kwargs)
         res = self._http_request('Post', req_data['urlSuffix'], headers=headers,
-                                  data=body, ok_codes=[200], resp_type='content')
+                                 data=body, ok_codes=[200], resp_type='content')
         self.destroy_token(token)
         return extract_from_xml(res, req_data['outputPath']), res
 
@@ -302,9 +306,9 @@ class Client(BaseClient):
                         field_item = field.get('RequestedObject')
                         field_id = str(field_item.get('Id'))
                         fields[field_id] = {'Type': field_item.get('Type'),
-                                                        'Name': field_item.get('Name'),
-                                                        'IsRequired': field_item.get('IsRequired', False),
-                                                        'RelatedValuesListId': field_item.get('RelatedValuesListId')}
+                                            'Name': field_item.get('Name'),
+                                            'IsRequired': field_item.get('IsRequired', False),
+                                            'RelatedValuesListId': field_item.get('RelatedValuesListId')}
 
                 levels.append({'level': level_id, 'mapping': fields})
 
@@ -433,7 +437,7 @@ class Client(BaseClient):
                         if field.get('ListValues'):
                             field_value = field['ListValues']['ListValue']['@displayName']
                     elif field_type == '8':
-                            field_value = json.dumps(field)
+                        field_value = json.dumps(field)
                     else:
                         field_value = field.get('#text')
 
@@ -468,8 +472,8 @@ def generate_field_contents(fields_values, level_fields):
 
         if field_data:
             field_content[_id] = {'Type': field_data['Type'],
-                                   'Value': fields_values[field_name],
-                                   'FieldId': _id}
+                                  'Value': fields_values[field_name],
+                                  'FieldId': _id}
     return field_content
 
 
@@ -501,7 +505,7 @@ def search_applications_command(client: Client, args: Dict[str, str]):
     endpoint_url = 'rsaarcher/api/core/system/application/'
 
     if app_id:
-         endpoint_url = f'rsaarcher/api/core/system/application/{app_id}'
+        endpoint_url = f'rsaarcher/api/core/system/application/{app_id}'
 
     res = client.do_request('GET', endpoint_url)
 
@@ -524,10 +528,7 @@ def search_applications_command(client: Client, args: Dict[str, str]):
                                  'Guid': app_obj.get('Guid')})
 
     markdown = tableToMarkdown('Search applications results', applications)
-    context: dict = {
-            f'Archer.Application(val.Id && val.Id == obj.Id)':
-            applications
-        }
+    context: dict = {f'Archer.Application(val.Id && val.Id == obj.Id)': applications}
     return_outputs(markdown, context, res)
 
 
@@ -551,10 +552,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
                 return_error(errors)
 
     markdown = tableToMarkdown('Application fields', fields)
-    context: dict = {
-            f'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
-            fields
-        }
+    context: dict = {f'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)': fields}
     return_outputs(markdown, context, res)
 
 
@@ -573,9 +571,9 @@ def get_field_command(client: Client, args: Dict[str, str]):
         item_type = field_obj.get('Type')
         item_type = FIELD_TYPE_DICT.get(item_type, 'Unknown')
         field = {'FieldId': field_obj.get('Id'),
-                       'FieldType': item_type,
-                       'FieldName': field_obj.get('Name'),
-                       'LevelID': field_obj.get('LevelId')}
+                 'FieldType': item_type,
+                 'FieldName': field_obj.get('Name'),
+                 'LevelID': field_obj.get('LevelId')}
 
     markdown = tableToMarkdown('Application field', field)
     context: dict = {
@@ -609,10 +607,7 @@ def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
                 return_error(errors)
 
     markdown = tableToMarkdown(f'Level mapping for level {level}', items)
-    context: dict = {
-            f'Archer.LevelMapping(val.Id && val.Id == obj.Id)':
-            items
-        }
+    context: dict = {f'Archer.LevelMapping(val.Id && val.Id == obj.Id)': items}
     return_outputs(markdown, context, res)
 
 
@@ -667,9 +662,9 @@ def update_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('record-id')
     fields_values = args.get('fields-to-values')
     level_data = client.get_level_by_app_id(app_id)[0]
-    field_contents = generate_field_contents(fields_values,  level_data['mapping'])
+    field_contents = generate_field_contents(fields_values, level_data['mapping'])
 
-    body = {'Content': {'Id': record_id, 'LevelId':  level_data['level'], 'FieldContents': field_contents}}
+    body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
     res = client.do_request('Put', f'rsaarcher/api/core/content', data=body)
 
     errors = get_errors_from_res(res)
@@ -686,7 +681,7 @@ def execute_statistics_command(client: Client, args: Dict[str, str]):
     report_guid = args.get('report-guid')
     max_results = args.get('max-results')
     res, raw_res = client.do_soap_request('archer-execute-statistic-search-by-report',
-                                 report_guid=report_guid, max_results=max_results)
+                                          report_guid=report_guid, max_results=max_results)
     if res:
         res = json.loads(xml2json(res))
     return_outputs(res, {}, {})
@@ -797,14 +792,13 @@ def list_users_command(client: Client, args: Dict[str, str]):
         if user.get('RequestedObject') and user.get('IsSuccessful'):
             user_obj = user['RequestedObject']
             users.append({'Id': user_obj.get('Id'),
-                                 'DisplayName': user_obj.get('DisplayName'),
-                                 'FirstName': user_obj.get('FirstName'),
-                                 'MiddleName': user_obj.get('MiddleName'),
-                                 'LastName': user_obj.get('LastName'),
-                                 'LastLoginDate': user_obj.get('LastLoginDate'),
-                                 'AccountStatus': ACCOUNT_STATUS_DICT[user_obj.get('AccountStatus')],
-                                 'LastLoginDate': user_obj.get('LastLoginDate'),
-                                 'UserName': user_obj.get('UserName')})
+                          'DisplayName': user_obj.get('DisplayName'),
+                          'FirstName': user_obj.get('FirstName'),
+                          'MiddleName': user_obj.get('MiddleName'),
+                          'LastName': user_obj.get('LastName'),
+                          'AccountStatus': ACCOUNT_STATUS_DICT[user_obj.get('AccountStatus')],
+                          'LastLoginDate': user_obj.get('LastLoginDate'),
+                          'UserName': user_obj.get('UserName')})
 
     markdown = tableToMarkdown('Users list', users)
     context: dict = {
@@ -821,9 +815,10 @@ def search_records_command(client: Client, args: Dict[str, str]):
     max_results = args.get('max-results', 10)
     date_operator = args.get('date-operator')
     numeric_operator = args.get('numeric-operator')
-    full_data = args.get('full-data').lower() == 'true'
     fields_to_display = argToList(args.get('fields-to-display'))
     fields_to_get = argToList(args.get('fields-to-get'))
+    full_data = args.get('full-data')
+    full_data = True if (full_data and full_data.lower() == 'true') else False
 
     if fields_to_get and 'Id' not in fields_to_get:
         fields_to_get.append('Id')
@@ -837,7 +832,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
     records, raw_res = client.search_records(app_id, fields_to_get, field_to_search, search_value,
-                                                  numeric_operator, date_operator, max_results)
+                                             numeric_operator, date_operator, max_results)
 
     records = list(map(lambda x: x['record'], records))
 
@@ -927,7 +922,7 @@ def fetch_incidents(client, last_run, first_fetch_time, params):
         if incident_created_time > last_fetch:
             last_fetch = incident_created_time
 
-    last_fetch = last_fetch + timedelta(minutes = time_offset)
+    last_fetch = last_fetch + timedelta(minutes=time_offset)
     next_run = {'last_fetch': last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ')}
     return next_run, incidents
 
