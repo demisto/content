@@ -26,7 +26,7 @@ configuration:
     reputation
 - display: Source Reliability
   name: feedReliability
-  defaultvalue: F - Reliability cannot be judged
+  defaultvalue: A - Completely reliable
   type: 15
   required: true
   options:
@@ -57,7 +57,7 @@ configuration:
   defaultvalue: "30"
   type: 19
   required: false
-- display: The Zoom Endpoint CIDRL
+- display: The Zoom Endpoint URL
   name: url
   defaultvalue: https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom
   type: 0
