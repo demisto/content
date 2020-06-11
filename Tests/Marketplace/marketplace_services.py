@@ -70,7 +70,7 @@ class Metadata(object):
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     XSOAR_SUPPORT = "xsoar"
     XSOAR_SUPPORT_URL = "https://www.paloaltonetworks.com/cortex"  # disable-secrets-detection
-    XSOAR_AUTHOR = "Cortex XSOAR"
+    XSOAR_AUTHOR = "Palo Alto Networks"
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
     CERTIFIED = "certified"
 
@@ -369,8 +369,8 @@ class Pack(object):
         doesn't match xsoar default url, warning is raised.
 
         Args:
-            support_type (str): support type of pack, optional values are: partner, developer, xsoar and nonsupported
-            support_url (str): support full url
+            support_type (str): support type of pack.
+            support_url (str): support full url.
             support_email (str): support email address.
 
         Returns:
@@ -392,6 +392,10 @@ class Pack(object):
     def _get_author(support_type, author=None):
         """ Returns pack author. In case support type is xsoar, more additional validation are applied.
 
+        Args:
+            support_type (str): support type of pack.
+            author (str): author of the pack.
+
         Returns:
             str: returns author from the input.
         """
@@ -402,6 +406,29 @@ class Pack(object):
             return author
         else:
             return author
+
+    @staticmethod
+    def _get_certification(support_type, certification=None):
+        """ Returns pack certification.
+
+        In case support type is xsoar, CERTIFIED is returned.
+        In case support is not xsoar but pack_metadata has certification field, certification value will be taken from
+        pack_metadata defined value.
+        Otherwise empty certification value (empty string) will be returned
+
+        Args:
+            support_type (str): support type of pack.
+            certification (str): certification value from pack_metadata, if exists.
+
+        Returns:
+            str: certification value
+        """
+        if support_type == Metadata.XSOAR_SUPPORT:
+            return Metadata.CERTIFIED
+        elif support_type != Metadata.XSOAR_SUPPORT and certification:
+            return certification
+        else:
+            return ""
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
@@ -422,8 +449,6 @@ class Pack(object):
             dict: parsed pack metadata.
 
         """
-
-        # part of old packs are initialized with empty list
         pack_metadata = {}
         pack_metadata['name'] = user_metadata.get('name') or pack_id
         pack_metadata['id'] = pack_id
@@ -438,7 +463,8 @@ class Pack(object):
         pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
                                                    author=user_metadata.get('author', ''))
         pack_metadata['authorImage'] = author_image
-        pack_metadata['certification'] = user_metadata.get('certification', Metadata.CERTIFIED)
+        pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
+                                                                 certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
