@@ -266,7 +266,7 @@ script:
           type: string
         - contextPath: InfoFile.Info
           description: The dump file info
-      description: Network activity dump export
+      description: The command allows you to download a network activity dump in case the file/link is malicious.
     - name: polygon-export-video
       arguments:
         - name: tds_analysis_id
@@ -288,7 +288,7 @@ script:
         - contextPath: InfoFile.Info
           description: The video file info
           type: string
-      description: Screen activity video export
+      description: The command allows you to download a screen activity video in case the file/link is malicious.
     - name: file
       arguments:
         - name: file
