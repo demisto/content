@@ -361,6 +361,7 @@ def map_to_file_context(obj):
     return _map_obj_to_context(obj, FILE_CONTEXT_FIELD_MAPPER)
 
 
+@logger
 def _map_obj_to_context(obj, context_mapper):
     return {v: obj.get(k) for k, v in context_mapper.items() if obj.get(k)}
 
