@@ -19,7 +19,7 @@ sys.path.append(CONTENT_DIR)
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 from demisto_sdk.commands.common.tools import get_yaml, str2bool, get_from_version, get_to_version, \
     collect_ids, get_script_or_integration_id, LOG_COLORS, print_error, print_color, \
-    print_warning, server_version_compare  # noqa: E402
+    print_warning, server_version_compare, get_pack_name  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -110,7 +110,7 @@ def validate_not_a_package_test_script(file_path):
     return '_test' not in file_path and 'test_' not in file_path
 
 
-def get_modified_files(files_string):
+def get_modified_files_for_testing(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
     is_reputations_json = False
@@ -275,8 +275,7 @@ def collect_tests_and_content_packs(
             test_playbook_pack = test_playbook_object.get('pack')
             if test_playbook_pack:
                 print(
-                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install'
-                )
+                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install')
                 packs_to_install.add(test_playbook_pack)
             else:
                 print_warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
@@ -867,8 +866,7 @@ def get_test_conf_from_conf(test_id, server_version, conf=None):
         test_conf.get('playbookID') == test_id
         and is_runnable_in_server_version(from_v=test_conf.get('fromversion', '0.0'),
                                           server_v=server_version,
-                                          to_v=test_conf.get('toversion', '99.99.99'))
-    )), None)
+                                          to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -1071,17 +1069,42 @@ def get_content_pack_name_of_test(tests: set, id_set: Dict = None) -> set:
     return content_packs
 
 
+def get_modified_packs(files_string):
+    modified_packs = set()
+    all_files = files_string.splitlines()
+
+    for _file in all_files:
+        file_data = _file.split()
+        if not file_data:
+            continue
+        file_status = file_data[0]
+        if file_status.lower().startswith('r'):
+            file_path = file_data[2]
+        else:
+            file_path = file_data[1]
+
+        if file_path.startswith('Documentation'):
+            modified_packs.add('Base')
+
+        elif file_path.startswith('Packs'):
+            modified_packs.add(get_pack_name(file_path))
+
+    return modified_packs
+
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga_ver='0', conf=None,
                                                id_set=None):
     """Create a test list that should run"""
-    (modified_files, modified_tests_list, changed_common, is_conf_json, sample_tests, is_reputations_json,
-     is_indicator_json) = get_modified_files(files_string)
+
+    (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
+     is_reputations_json,
+     is_indicator_json) = get_modified_files_for_testing(files_string)
 
     tests = set([])
     packs_to_install = set([])
-    if modified_files:
-        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files, conf, id_set)
-
+    if modified_files_with_relevant_tests:
+        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
+                                                                                  conf, id_set)
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
@@ -1116,6 +1139,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
 
     if changed_common:
         tests.add('TestCommonPython')
+
+    # get all modified packs - not just tests related
+    modified_packs = get_modified_packs(files_string)
+    if modified_packs:
+        packs_to_install = packs_to_install.union(modified_packs)
 
     if 'NonSupported' in packs_to_install:
         packs_to_install.remove("NonSupported")
@@ -1152,6 +1180,7 @@ def create_test_file(is_nightly, skip_save=False):
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
+
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
