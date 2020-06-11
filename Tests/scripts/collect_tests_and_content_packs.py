@@ -339,6 +339,7 @@ class TestConf(object):
         for t in conf_tests:
             if t.get('playbookID') not in collected_tests:
                 continue
+
             if 'integrations' in t:
                 if isinstance(t['integrations'], list):
                     tested_integrations.extend(t['integrations'])
