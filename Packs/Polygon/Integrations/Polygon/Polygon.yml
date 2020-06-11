@@ -74,7 +74,7 @@ script:
           description: URL analyzed
           type: string
         - contextPath: Polygon.Analysis.Status
-          description: Polygon analysis status
+          description: The analysis status
           type: string
       description: Upload URL for analysis
     - name: polygon-analysis-info
