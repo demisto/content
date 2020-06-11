@@ -82,8 +82,8 @@ GET_EMPLOYEE_BY_ID = """
 
 def convert_to_json(response):
     raw_json_response = json.loads(xml2json(response))
-    workers_data = raw_json_response.get('Envelope').get('Body').get('Get_Workers_Response').get('Response_Data'). \
-        get('Worker')
+    workers_data = raw_json_response.get('Envelope', {}).get('Body', {}).get('Get_Workers_Response', {}). \
+        get('Response_Data', {}).get('Worker')
     return raw_json_response, workers_data
 
 
@@ -104,9 +104,9 @@ def create_worker_context(workers, num_of_managers):
             business_site_address_data = business_site_address_data[-1]
 
         worker_context = {
-            "Worker_ID": worker['Worker_ID'],
-            "User_ID": worker['User_ID'],
-            "Country": name_detail_data_path['Country_Reference']['ID'][1]['#text'],
+            "Worker_ID": worker.get('Worker_ID'),
+            "User_ID": worker.get('User_ID'),
+            "Country": name_detail_data_path.get('Country_Reference')['ID'][1]['#text'],
             "Legal_First_Name": name_detail_data_path.get('First_Name'),
             "Legal_Last_Name": name_detail_data_path.get('Last_Name'),
             "Preferred_First_Name": name_detail_data_path.get('First_Name'),
@@ -122,66 +122,66 @@ def create_worker_context(workers, num_of_managers):
             "Scheduled_Weekly_Hours": position_data_path.get('Scheduled_Weekly_Hours'),
             "Default_Weekly_Hours": position_data_path.get('Default_Weekly_Hours'),
             "Full_Time_Equivalent_Percentage": position_data_path.get('Full_Time_Equivalent_Percentage'),
-            "Exclude_from_Headcount": position_data_path['Exclude_from_Headcount'],
+            "Exclude_from_Headcount": position_data_path.get('Exclude_from_Headcount'),
             "Pay_Rate_Type": position_data_path['Pay_Rate_Type_Reference']['ID'][1]['#text']
             if position_data_path.get('Pay_Rate_Type_Reference') else "",
-            "Job_Profile_Name": position_data_path['Job_Profile_Summary_Data']['Job_Profile_Name'],
-            "Work_Shift_Required": position_data_path['Job_Profile_Summary_Data']['Work_Shift_Required'],
-            "Critical_Job": position_data_path.get('Job_Profile_Summary_Data').get('Critical_Job'),
-            "Business_Site_id": position_data_path['Business_Site_Summary_Data']['Location_Reference']['ID'][1][
-                '#text'],
-            "Business_Site_Name": position_data_path.get('Business_Site_Summary_Data').get('Name'),
-            "Business_Site_Type": position_data_path['Business_Site_Summary_Data']['Location_Type_Reference']['ID'][1][
-                '#text'],
+            "Job_Profile_Name": position_data_path.get('Job_Profile_Summary_Data', {}).get('Job_Profile_Name'),
+            "Work_Shift_Required": position_data_path.get('Job_Profile_Summary_Data', {}).get('Work_Shift_Required'),
+            "Critical_Job": position_data_path.get('Job_Profile_Summary_Data', {}).get('Critical_Job'),
+            "Business_Site_id": position_data_path.get('Business_Site_Summary_Data', {}).get('Location_Reference', {}).
+            get('ID')[1]['#text'],
+            "Business_Site_Name": position_data_path.get('Business_Site_Summary_Data', {}).get('Name'),
+            "Business_Site_Type": position_data_path.get('Business_Site_Summary_Data', {}).
+            get('Location_Type_Reference').get('ID')[1]['#text'],
             "Business_Site_Address": {
                 "Address_ID": business_site_address_data.get('Address_ID'),
                 "Formatted_Address": business_site_address_data.get("@{urn:com.workday/bsvc}Formatted_Address"),
-                "Country": business_site_address_data['Country_Reference']['ID'][1]['#text'],
+                "Country": business_site_address_data.get('Country_Reference', {}).get('ID')[1]['#text'],
                 "Postal_Code": business_site_address_data.get('Postal_Code'),
             },
             "End_Date": position_data_path.get('End_Date'),
             "Pay_Through_Date": position_data_path.get('Pay_Through_Date'),
             "Active": bool(int(worker_status_data.get('Active'))),
             "Hire_Date": worker_status_data.get('Hire_Date'),
-            "Hire_Reason": worker_status_data['Hire_Reason_Reference']['ID'][2]['#text'],
-            "First_Day_of_Work": worker_status_data['First_Day_of_Work'],
+            "Hire_Reason": worker_status_data.get('Hire_Reason_Reference', {}).get('ID')[2]['#text'],
+            "First_Day_of_Work": worker_status_data.get('First_Day_of_Work'),
             "Retired": worker_status_data.get('Retired'),
             # Number of days unemployed since the employee first joined the work force. Used only for China:
             "Days_Unemployed": worker_status_data.get('Days_Unemployed'),
             "Terminated": bool(int(worker_status_data.get('Terminated'))),
-            "Rehire": worker_status_data['Rehire'],
+            "Rehire": worker_status_data.get('Rehire'),
             "Resignation_Date": worker_status_data.get('Resignation_Date'),
-            "Has_International_Assignment": worker['Employment_Data']['International_Assignment_Summary_Data'][
-                'Has_International_Assignment'],
+            "Has_International_Assignment": worker.get('Employment_Data', {}).
+            get('International_Assignment_Summary_Data', {}).get('Has_International_Assignment'),
             "Home_Country_Reference":
-                worker['Employment_Data']['International_Assignment_Summary_Data']['Home_Country_Reference']['ID'][1][
-                    '#text'],
+                worker.get('Employment_Data', {}).get('International_Assignment_Summary_Data', {}).get(
+                    'Home_Country_Reference', {})['ID'][1]['#text'],
             "Photo": worker.get('Photo_Data', {}).get('Image')
 
         }
-        if worker_status_data['Terminated'] == '1':
-            worker_context["Termination_Date"] = worker_status_data["Termination_Date"]
+        if worker_status_data.get('Terminated') == '1':
+            worker_context["Termination_Date"] = worker_status_data.get("Termination_Date")
             worker_context["Primary_Termination_Reason"] = \
-                worker_status_data['Primary_Termination_Reason_Reference']['ID'][2]['#text']
+                worker_status_data.get('Primary_Termination_Reason_Reference', {}).get('ID')[2]['#text']
             worker_context["Primary_Termination_Category"] = \
-                worker_status_data['Primary_Termination_Category_Reference']['ID'][1]['#text']
-            worker_context["Termination_Involuntary"] = worker_status_data['Termination_Involuntary']
-            worker_context["Termination_Last_Day_of_Work"] = worker_status_data['Termination_Last_Day_of_Work']
+                worker_status_data.get('Primary_Termination_Category_Reference', {}).get('ID')[1]['#text']
+            worker_context["Termination_Involuntary"] = worker_status_data.get('Termination_Involuntary')
+            worker_context["Termination_Last_Day_of_Work"] = worker_status_data.get('Termination_Last_Day_of_Work')
 
         # Addresses:
-        addresses = worker['Personal_Data']['Contact_Data']['Address_Data']
+        addresses = worker.get('Personal_Data', {}).get('Contact_Data', {}).get('Address_Data')
         if not isinstance(addresses, list):
             addresses = [addresses]
         worker_context["Addresses"] = [{
-            "Address_ID": address['Address_ID'],
-            "Formatted_Address": address["@{urn:com.workday/bsvc}Formatted_Address"],
+            "Address_ID": address.get('Address_ID'),
+            "Formatted_Address": address.get("@{urn:com.workday/bsvc}Formatted_Address"),
             "Country": address['Country_Reference']['ID'][1]['#text'] if address.get('Country_Reference') else "",
             "Region": address['Country_Region_Reference']['ID'][2]['#text']
             if address.get('Country_Region_Reference') else "",
             "Region_Descriptor": address.get('Country_Region_Descriptor', ""),
             "Postal_Code": address.get('Postal_Code'),
             "Type": address['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text']
-            if address['Usage_Data'] else "",
+            if address.get('Usage_Data') else "",
         } for address in addresses]
 
         # Emails:
@@ -191,34 +191,35 @@ def create_worker_context(workers, num_of_managers):
                 emails = [emails]
             worker_context["Emails"] = [{
                 "Email_Address": email.get('Email_Address'),
-                "Type": email['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text']
+                "Type": email.get('Usage_Data', {}).get('Type_Data', {}).get('Type_Reference')['ID'][1]['#text']
                 if email['Usage_Data'] else "",
-                "Primary": bool(int(email['Usage_Data']['Type_Data']["@{urn:com.workday/bsvc}Primary"])),
-                "Public": bool(int(email['Usage_Data']["@{urn:com.workday/bsvc}Public"])),
+                "Primary": bool(int(email.get('Usage_Data', {}).get('Type_Data', {}).get
+                                    ("@{urn:com.workday/bsvc}Primary"))),
+                "Public": bool(int(email.get('Usage_Data', {}).get("@{urn:com.workday/bsvc}Public"))),
             } for email in emails]
 
         # Phones:
-        phones = worker['Personal_Data']['Contact_Data'].get('Phone_Data')
+        phones = worker.get('Personal_Data', {}).get('Contact_Data', {}).get('Phone_Data')
         if phones:
             if not isinstance(phones, list):
                 phones = [phones]
             worker_context["Phones"] = [{
-                "ID": phone['ID'],
+                "ID": phone.get('ID'),
                 "Phone_Number": phone.get('@{urn:com.workday/bsvc}E164_Formatted_Phone'),
-                "Type": phone['Phone_Device_Type_Reference']['ID'][1]['#text'],
-                "Usage": phone['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
+                "Type": phone.get('Phone_Device_Type_Reference', {})['ID'][1]['#text'],
+                "Usage": phone.get('Usage_Data', {}).get('Type_Data', {}).get('Type_Reference', {})['ID'][1]['#text'],
             } for phone in phones]
 
         # Managers:
-        managers = worker.get("Management_Chain_Data", {}).get("Worker_Supervisory_Management_Chain_Data", {}). \
-            get("Management_Chain_Data")
+        managers = worker.get("Management_Chain_Data", {}).get("Worker_Supervisory_Management_Chain_Data", {}).get(
+            "Management_Chain_Data")
         if managers:
             if not isinstance(managers, list):
                 managers = [managers]
             # Taking the n'th managers from the end of the list(descending from top level manager(ceo))
             worker_context["Managers"] = [{
-                "Manager_ID": manager['Manager']['Worker_Reference']['ID'][1]['#text'],
-                "Manager_Name": manager['Manager']['Worker_Descriptor'],
+                "Manager_ID": manager.get('Manager', {}).get('Worker_Reference', {})['ID'][1]['#text'],
+                "Manager_Name": manager.get('Manager', {}).get('Worker_Descriptor'),
             } for manager in managers[-num_of_managers:]]
 
         workers_context.append(worker_context)
