@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -125,11 +125,11 @@ class Code42Client(BaseClient):
         self._sdk = sdk or py42.sdk.from_local_account(base_url, auth[0], auth[1])
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
 
-    def add_user_to_departing_employee(self, username, departure_epoch=None, note=None):
+    def add_user_to_departing_employee(self, username, departure_date=None, note=None):
         try:
             user_id = self.get_user_id(username)
             self._sdk.detectionlists.departing_employee.add(
-                user_id, departure_epoch=departure_epoch
+                user_id, departure_date=departure_date
             )
             not note or self._sdk.detectionlists.update_user_notes(note)
         except Exception:

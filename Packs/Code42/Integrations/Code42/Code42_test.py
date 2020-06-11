@@ -803,7 +803,8 @@ def test_departing_employee_add_command(code42_sdk_mock):
     )
     expected = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected
-    code42_sdk_mock.detectionlists.departing_employee.add.assert_called_once_with(expected, departure_epoch=1577836800)
+    add_func = code42_sdk_mock.detectionlists.departing_employee.add
+    add_func.assert_called_once_with(expected, departure_date="2020-01-01")
 
 
 def test_security_data_search_command(code42_sdk_mock):
