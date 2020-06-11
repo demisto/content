@@ -137,22 +137,26 @@ class Code42Client(BaseClient):
         return user_id
 
     def fetch_alerts(self, start_time, event_severity_filter=None):
-        alert_filter = []
+        try:
+            query = self._create_alert_query(event_severity_filter, start_time)
+            res = self._sdk.alerts.search_alerts(query)
+        except Exception:
+            return None
+        return res["alerts"]
+    
+    def _create_alert_query(self, event_severity_filter, start_time):
+        alert_filters = []
         # Create alert filter
         if event_severity_filter:
             f = event_severity_filter
             severity_filter = (f.upper() if isinstance(f, str) else list(map(lambda x: x.upper(), f)))
-            alert_filter.append(Severity.is_in(severity_filter))
-        alert_filter.append(AlertState.eq(AlertState.OPEN))
-        alert_filter.append(DateObserved.on_or_after(start_time))
+            alert_filters.append(Severity.is_in(severity_filter))
+        alert_filters.append(AlertState.eq(AlertState.OPEN))
+        alert_filters.append(DateObserved.on_or_after(start_time))
         tenant_id = self._sdk.usercontext.get_current_tenant_id()
-        alert_query = AlertQuery(tenant_id, *alert_filter)
+        alert_query = AlertQuery(tenant_id, *alert_filters)
         alert_query.sort_direction = "asc"
-        try:
-            res = self._sdk.alerts.search_alerts(alert_query)
-        except Exception:
-            return None
-        return res["alerts"]
+        return alert_query
 
     def get_alert_details(self, alert_id):
         try:
@@ -434,21 +438,12 @@ class Code42SecurityIncidentFetcher(object):
         self._integration_context = integration_context
     
     def fetch(self):
-        incidents = []
-        
         remaining_incidents_from_last_run = self._fetch_remaining_incidents_from_last_run()
         if remaining_incidents_from_last_run:
             return remaining_incidents_from_last_run
-        
         start_query_time = self._get_start_query_time()
         alerts = self._fetch_alerts(start_query_time)
-        
-        for alert in alerts:
-            details = self._client.get_alert_details(alert["id"])
-            incident = _create_incident_from_alert_details(details)
-            self._relate_files_to_alert(details)
-            incident["rawJSON"] = json.dumps(details)
-            incidents.append(incident)
+        incidents = [self._create_incident_from_alert(a) for a in alerts]
         save_time = datetime.utcnow().timestamp()
         next_run = {"last_fetch": save_time}
         return next_run, incidents[:self._fetch_limit], incidents[self._fetch_limit:]
@@ -475,6 +470,13 @@ class Code42SecurityIncidentFetcher(object):
     
     def _fetch_alerts(self, start_query_time):
         return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
+    
+    def _create_incident_from_alert(self, alert):
+        details = self._client.get_alert_details(alert["id"])
+        incident = _create_incident_from_alert_details(details)
+        self._relate_files_to_alert(details)
+        incident["rawJSON"] = json.dumps(details)
+        return incident
     
     def _relate_files_to_alert(self, alert_details):
         for obs in alert_details["observations"]:

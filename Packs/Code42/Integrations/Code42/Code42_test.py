@@ -335,50 +335,58 @@ MOCK_FILE_CONTEXT = [
     },
 ]
 
-MOCK_ALERT_RESPONSE = {
-    "alerts": [
-        {
-            "actor": "user1@example.com",
-            "createdAt": "2020-05-28T12:50:23.5867670Z",
-            "description": "",
-            "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
-            "name": "Departing Employee Alert",
-            "severity": "HIGH",
-            "state": "OPEN",
-            "target": "N/A",
-            "tenantId": "fef27d1d-e835-465c-be8f-ac9db7a54684",
-            "type": "FED_ENDPOINT_EXFILTRATION",
-            "type$": "ALERT_SUMMARY",
-        },
-        {
-            "actor": "user2@example.com",
-            "createdAt": "2019-10-02T17:02:24.2071980Z",
-            "description": "",
-            "id": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
-            "name": "High-Risk Employee Alert",
-            "severity": "MEDIUM",
-            "state": "OPEN",
-            "target": "N/A",
-            "tenantId": "fef27d1d-e835-465c-be8f-ac9db7a54684",
-            "type": "FED_CLOUD_SHARE_PERMISSIONS",
-            "type$": "ALERT_SUMMARY",
-        },
-        {
-            "actor": "user3@exmaple.com",
-            "createdAt": "2019-10-02T17:03:28.2885720Z",
-            "description": "",
-            "id": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
-            "name": "Custom Alert 1",
-            "severity": "LOW",
-            "state": "OPEN",
-            "target": "N/A",
-            "tenantId": "fef27d1d-e835-465c-be8f-ac9db7a54684",
-            "type": "FED_ENDPOINT_EXFILTRATION",
-            "type$": "ALERT_SUMMARY",
-        },
-    ],
-    "type$": "ALERT_QUERY_RESPONSE",
-}
+MOCK_ALERTS_RESPONSE = """{
+  "type$": "ALERT_QUERY_RESPONSE",
+  "alerts": [
+    {
+      "type$": "ALERT_SUMMARY",
+      "tenantId": "1d700000-af5b-4231-9d8e-df6434d00000",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Exposure on an endpoint",
+      "description": "This default rule alerts you when departing employees move data from an endpoint.",
+      "actor": "test.testerson@example.com",
+      "target": "N/A",
+      "severity": "HIGH",
+      "ruleId": "9befe477-3487-40b7-89a6-bbcced4cf1fe",
+      "ruleSource": "Departing Employee",
+      "id": "fbeaabc1-9205-4620-ad53-95d0633429a3",
+      "createdAt": "2020-05-04T20:46:45.8106280Z",
+      "state": "OPEN"
+    },
+    {
+      "type$": "ALERT_SUMMARY",
+      "tenantId": "1d700000-af5b-4231-9d8e-df6434d00000",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Exposure on an endpoint",
+      "description": "This default rule alerts you when departing employees move data from an endpoint.",
+      "actor": "test.testerson@example.com",
+      "target": "N/A",
+      "severity": "LOW",
+      "ruleId": "9befe477-3487-40b7-89a6-bbcced4cf1fe",
+      "ruleSource": "Departing Employee",
+      "id": "6bb7ca1e-c8cf-447d-a732-9652869e42d0",
+      "createdAt": "2020-05-04T20:35:54.2400240Z",
+      "state": "OPEN"
+    },
+    {
+      "type$": "ALERT_SUMMARY",
+      "tenantId": "1d700000-af5b-4231-9d8e-df6434d00000",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Exposure on an endpoint",
+      "description": "This default rule alerts you when departing employees move data from an endpoint.",
+      "actor": "test.testerson@example.com",
+      "target": "N/A",
+      "severity": "HIGH",
+      "ruleId": "9befe477-3487-40b7-89a6-bbcced4cf1fe",
+      "ruleSource": "Departing Employee",
+      "id": "c2c3aef3-8fd9-4e7a-a04e-16bec9e27625",
+      "createdAt": "2020-05-04T20:19:34.7121300Z",
+      "state": "OPEN"
+    }
+  ],
+  "totalCount": 3,
+  "problems": []
+}"""
 
 MOCK_ALERT_DETAILS_RESPONSE = """{
     "type$": "ALERT_DETAILS_RESPONSE", 
@@ -698,6 +706,10 @@ def code42_sdk_mock(mocker):
     # Setup mock alert details
     alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
     c42_sdk_mock.alerts.get_details.return_value = alert_details_response
+    
+    # Setup alerts for querying
+    alerts_response = create_mock_code42_sdk_response(mocker, MOCK_ALERTS_RESPONSE)
+    c42_sdk_mock.alerts.search_alerts.return_value = alerts_response
 
     # Setup mock get user
     get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
@@ -706,6 +718,9 @@ def code42_sdk_mock(mocker):
     # Setup securitydata search file events
     search_file_events_response = create_mock_code42_sdk_response(mocker, MOCK_SECURITY_EVENT_RESPONSE)
     c42_sdk_mock.securitydata.search_file_events.return_value = search_file_events_response
+    
+    # Setup tenant ID call
+    c42_sdk_mock.usercontext.get_current_tenant_id.return_value = "MOCK-TENANT-ID"
 
     return c42_sdk_mock
 
