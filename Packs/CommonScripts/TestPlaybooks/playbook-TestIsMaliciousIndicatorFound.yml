@@ -1,7 +1,8 @@
 id: Test-IsMaliciousIndicatorFound
-version: 6
+version: -1
 name: Test-IsMaliciousIndicatorFound
 starttaskid: "0"
+description: Test playbook for IsMaliciousIndicatorFound.
 tasks:
   "0":
     id: "0"
@@ -13,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -343,12 +345,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4580
         }
       }
     note: false
@@ -481,6 +484,8 @@ tasks:
     nexttasks:
       "no":
       - "20"
+      "yes":
+      - "40"
     scriptarguments:
       includeManual: {}
       includeSuspicious: {}
@@ -491,7 +496,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4055
         }
       }
     note: false
@@ -1372,12 +1377,80 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "40":
+    id: "40"
+    taskid: 9008d395-6fc8-4f57-85cf-5b0896d66ae6
+    type: regular
+    task:
+      id: 9008d395-6fc8-4f57-85cf-5b0896d66ae6
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      seconds:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 4240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: a6695b95-69db-4575-8ad1-fbe1ed82b566
+    type: condition
+    task:
+      id: a6695b95-69db-4575-8ad1-fbe1ed82b566
+      version: -1
+      name: IsMaliciuosFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "20"
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 4410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4235,
+        "height": 4595,
         "width": 690,
         "x": 50,
         "y": 50
@@ -1386,3 +1459,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0
