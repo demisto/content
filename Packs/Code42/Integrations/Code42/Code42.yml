@@ -252,7 +252,7 @@ script:
       description: Note to attach to the Departing Employee.
     outputs:
     - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 Case ID for the Departing Employee.
+      description: Internal Code42 User ID for the Departing Employee.
       type: string
     - contextPath: Code42.DepartingEmployee.Username
       description: The username of the Departing Employee.
@@ -268,8 +268,8 @@ script:
     - name: username
       description: The username to remove from the Departing Employee List.
     outputs:
-    - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee.
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
     - contextPath: Code42.DepartingEmployee.Username
       description: The username of the Departing Employee.
     description: Removes a user from the Departing Employee List.

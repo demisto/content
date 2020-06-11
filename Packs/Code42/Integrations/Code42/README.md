@@ -306,7 +306,7 @@ This command requires one of the following roles:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for Departing Employee | 
+| Code42.DepartingEmployee.UserID | string | Internal Code42 Case ID for Departing Employee | 
 | Code42.DepartingEmployee.Username | string | Username for Departing Employee | 
 | Code42.DepartingEmployee.Note | string | Note associated with Departing Employee | 
 | Code42.DepartingEmployee.DepartureDate | unknown | Departure date for Departing Employee | 
@@ -321,7 +321,7 @@ This command requires one of the following roles:
 ```
 {
     "DepartingEmployee": {
-        "CaseID": "892",
+        "UserID": "892",
         "DepartureDate": "2020-02-28",
         "Note": "Leaving for competitor",
         "Username": "john.user@123.org"
@@ -331,7 +331,7 @@ This command requires one of the following roles:
 
 ##### Human Readable Output
 
-| **CaseID** | **DepartureDate** | **Note** | **Username** |
+| **UserID** | **DepartureDate** | **Note** | **Username** |
 | --- | --- | --- | --- |
 | 123 | 2020-02-28 | Leaving for competitor | john.user@123.org |
 
@@ -360,7 +360,7 @@ This command requires one of the following roles:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | unknown | Internal Code42 Case ID for Departing Employee | 
+| Code42.DepartingEmployee.UserID | unknown | Internal Code42 User ID for Departing Employee | 
 | Code42.DepartingEmployee.Username | unknown | Username for Departing Employee | 
 
 
@@ -373,7 +373,7 @@ This command requires one of the following roles:
 ```
 {
     "DepartingEmployee": {
-        "CaseID": "892",
+        "UserID": "892",
         "Username": "john.user@123.org"
     }
 }
@@ -381,7 +381,7 @@ This command requires one of the following roles:
 
 ##### Human Readable Output
 
-| **CaseID** | **Username** |
+| **UserID** | **Username** |
 | --- | --- | 
 | 123 | john.user@123.org |
 
