@@ -653,11 +653,56 @@ MOCK_OBSERVATION_QUERIES = [
 ]
 
 
+MOCK_GET_USER_RESPONSE = """
+{
+    "totalCount": 1, 
+    "users": [
+        {
+            "userId": 123456, 
+            "userUid": "123412341234123412", 
+            "status": "Active", 
+            "username": "test.testerson@example.com", 
+            "email": "test.testerson@example.com", 
+            "firstName": "Test", 
+            "lastName": "Testerson", 
+            "quotaInBytes": -1, 
+            "orgId": 1111, 
+            "orgUid": "81111247111106706", 
+            "orgName": "Testers", 
+            "userExtRef": null, 
+            "notes": null, 
+            "active": true, 
+            "blocked": false, 
+            "emailPromo": true, 
+            "invited": false, 
+            "orgType": "ENTERPRISE", 
+            "usernameIsAnEmail": true, 
+            "creationDate": "2019-09-30T21:03:08.587Z", 
+            "modificationDate": "2020-04-10T11:49:49.987Z", 
+            "passwordReset": false, 
+            "localAuthenticationOnly": false, 
+            "licenses": ["admin.securityTools"]
+        }
+    ]
+}"""
+
+
 @pytest.fixture
 def code42_sdk_mock(mocker):
     c42_sdk_mock = mocker.MagicMock(spec=SDKClient)
-    response_mock = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
-    c42_sdk_mock.alerts.get_details.return_value = response_mock
+
+    # Setup mock alert details
+    alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
+    c42_sdk_mock.alerts.get_details.return_value = alert_details_response
+
+    # Setup mock get user
+    get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
+    c42_sdk_mock.users.get_by_username.return_value = get_user_response
+    
+    # Setup securitydata search file events
+    search_file_events_response = create_mock_code42_sdk_response(mocker, MOCK_SECURITY_EVENT_RESPONSE)
+    c42_sdk_mock.securitydata.search_file_events.return_value = search_file_events_response
+
     return c42_sdk_mock
 
 
@@ -727,7 +772,7 @@ def test_departing_employee_remove_command(code42_sdk_mock):
         sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
     )
     _, _, res = departingemployee_remove_command(client, {"username": "user1@example.com"})
-    assert res == 123
+    assert res == "123412341234123412"  # value found in GET_USER_RESPONSE
 
 
 def test_departing_employee_add_command(code42_sdk_mock):
@@ -738,7 +783,7 @@ def test_departing_employee_add_command(code42_sdk_mock):
         client,
         {"username": "user1@example.com", "departuredate": "2020-01-01", "notes": "Dummy note"},
     )
-    assert res == 123
+    assert res == "123412341234123412"
 
 
 def test_security_data_search_command(code42_sdk_mock):

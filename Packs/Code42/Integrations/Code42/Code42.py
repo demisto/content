@@ -126,22 +126,21 @@ class Code42Client(BaseClient):
 
     def add_user_to_departing_employee(self, username, departure_epoch=None, note=None):
         try:
-            res = self._sdk.detectionlists.departing_employee.add(
-                username, departure_epoch=departure_epoch
+            user_id = self.get_user_id(username)
+            self._sdk.detectionlists.departing_employee.add(
+                user_id, departure_epoch=departure_epoch
             )
             not note or self._sdk.detectionlists.update_user_notes(note)
         except Exception:
             return None
-        return res["userId"]
+        return user_id
 
     def fetch_alerts(self, start_time, event_severity_filter=None):
         alert_filter = []
         # Create alert filter
         if event_severity_filter:
-            if isinstance(event_severity_filter, str):
-                severity_filter = event_severity_filter.upper()
-            else:
-                severity_filter = list(map(lambda x: x.upper(), event_severity_filter))
+            f = event_severity_filter
+            severity_filter = (f.upper() if isinstance(f, str) else list(map(lambda x: x.upper(), f)))
             alert_filter.append(Severity.is_in(severity_filter))
         alert_filter.append(AlertState.eq(AlertState.OPEN))
         alert_filter.append(DateObserved.on_or_after(start_time))
@@ -159,9 +158,8 @@ class Code42Client(BaseClient):
             res = self._sdk.alerts.get_details(alert_id)
         except Exception:
             return None
-        else:
-            # There will only ever be one alert since we search on just one ID
-            return res["alerts"][0]
+        details = res["alerts"][0] if res["alerts"] else None
+        return details
 
     def get_current_user(self):
         try:
@@ -190,7 +188,7 @@ class Code42Client(BaseClient):
             res = self._sdk.users.get_by_username(username)
         except Exception:
             return None
-        return res["users"][0]["userUid"]
+        return res["users"][0]["userUid"] if res["users"] else None
 
     def search_json(self, payload):
         try:
@@ -333,15 +331,15 @@ def alert_get_command(client, args):
 def alert_resolve_command(client, args):
     code42_security_alert_context = []
     alert_id = client.resolve_alert(args["id"])
-    
+
     if not alert_id:
         return "No results found", {}, {}
-    
+
     # Retrieve new alert details
     alert_details = client.get_alert_details(alert_id)
     if not alert_details:
         return "Error retrieving updated alert", {}, {}
-    
+
     code42_context = map_to_code42_alert_context(alert_details)
     code42_security_alert_context.append(code42_context)
     readable_outputs = tableToMarkdown(
@@ -383,7 +381,6 @@ def departingemployee_add_command(client, args):
     }
     readable_outputs = tableToMarkdown(f"Code42 Departing Employee Lens User Added", de_context)
     return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
-
 
 
 @logger
@@ -434,7 +431,7 @@ def fetch_incidents(
                 for event in file_events:
                     # We need to convert certain fields to a stringified list or React.JS will throw an error
                     if event.get("sharedWith"):
-                        shared_list = [u["cloudUsername"] for u in event["sharedWith"]]    
+                        shared_list = [u["cloudUsername"] for u in event["sharedWith"]]
                         event["sharedWith"] = str(shared_list)
                     if event.get("privateIpAddresses"):
                         event["privateIpAddresses"] = str(event["privateIpAddresses"])
@@ -501,10 +498,7 @@ def main():
     LOG(f"Command being called is {demisto.command()}")
     try:
         client = Code42Client(
-            base_url=base_url,
-            auth=(username, password),
-            verify=verify_certificate,
-            proxy=proxy,
+            base_url=base_url, auth=(username, password), verify=verify_certificate, proxy=proxy
         )
         commands = {
             "code42-alert-get": alert_get_command,
