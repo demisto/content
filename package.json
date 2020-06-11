@@ -1,7 +1,7 @@
 {
   "name": "content",
   "version": "1.0.0",
-  "description": "![Content logo](demisto_content_logo.png)",
+  "description": "",
   "main": "mdx-parse.js",
   "directories": {
     "doc": "docs"

@@ -245,35 +245,37 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '16':
-    id: '16'
-    taskid: 417da9df-5b58-4530-8dae-8591592a06df
+  "16":
+    id: "16"
+    taskid: b2b37a86-85e8-4385-811c-004dd3b0b215
     type: regular
     task:
-      id: 417da9df-5b58-4530-8dae-8591592a06df
+      id: b2b37a86-85e8-4385-811c-004dd3b0b215
       version: -1
       name: Update  the user that the reported email is safe
-      description: Send an email to the user explaining that the email they reported
-        is safe.
-      scriptName: SendEmail
+      description: Send an email to the user explaining that the email they reported is safe.
+      script: '|||send-mail'
       type: regular
-      iscommand: false
-      brand: ''
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
+      attachCIDs: {}
       attachIDs: {}
+      attachNames: {}
       bcc: {}
       body:
-        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']\
-          \ ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've\
-          \ concluded that the email you forwarded to us is safe.\nThank you for your\
-          \ alertness and your participation in keeping our organization secure.\n\
-          \nCordially,\n  Your security team"
+        simple: |-
+          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          We've concluded that the email you forwarded to us is safe.
+          Thank you for your alertness and your participation in keeping our organization secure.
+
+          Cordially,
+            Your security team
       cc: {}
       htmlBody: {}
-      noteEntryID: {}
       replyTo: {}
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
@@ -281,7 +283,13 @@ tasks:
         simple: ${incident.labels.Email/from}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 130,\n    \"y\": 3930\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 3930
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla

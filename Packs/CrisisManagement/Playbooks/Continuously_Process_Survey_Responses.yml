@@ -65,11 +65,11 @@ tasks:
     nexttasks:
       '#default#':
       - '4'
-      yes:
+      'yes':
       - '9'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:

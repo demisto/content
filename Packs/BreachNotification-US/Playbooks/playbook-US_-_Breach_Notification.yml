@@ -1,0 +1,1057 @@
+id: US - Breach Notification
+version: -1
+name: US - Breach Notification
+description: |-
+  This playbook is triggered by a breach notification incident and then proceeds to the breach notification playbook for the relevant state.
+
+  DISCLAIMER: Please consult with your legal team before implementing this playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: da8dfe83-e8db-4cbc-8c36-c59ea9695896
+    type: start
+    task:
+      id: da8dfe83-e8db-4cbc-8c36-c59ea9695896
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": -1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 956e5aa4-cdd8-4b5f-888e-4847f1b601ea
+    type: condition
+    task:
+      id: 956e5aa4-cdd8-4b5f-888e-4847f1b601ea
+      version: -1
+      name: Check where breach took place
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "26"
+      California:
+      - "3"
+      Illinois:
+      - "27"
+      New York:
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: California
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: incident.statewherethebreachtookplace
+                      iscontext: true
+                accessor: statewherethebreachtookplace
+            iscontext: true
+          right:
+            value:
+              simple: California
+          ignorecase: true
+    - label: New York
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: statewherethebreachtookplace
+            iscontext: true
+          right:
+            value:
+              simple: New York
+          ignorecase: true
+    - label: Illinois
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: statewherethebreachtookplace
+            iscontext: true
+          right:
+            value:
+              simple: Illinois
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: aec50e80-0dd6-4674-8cb7-0c9d25a89292
+    type: title
+    task:
+      id: aec50e80-0dd6-4674-8cb7-0c9d25a89292
+      version: -1
+      name: California Breach Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 5d95f880-a9b1-46c2-8a84-72e8620f0dfe
+    type: title
+    task:
+      id: 5d95f880-a9b1-46c2-8a84-72e8620f0dfe
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1fed596f-f8f4-49da-835d-8b7b6535f14e
+    type: condition
+    task:
+      id: 1fed596f-f8f4-49da-835d-8b7b6535f14e
+      version: -1
+      name: Is breached data encrypted?
+      description: Check if breached data has been encrypted. If breached data is
+        encrypted and the encryption has not been compromised, there is no need for
+        breach notification.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: dataencryptionstatus
+            iscontext: true
+          right:
+            value:
+              simple: Full
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": -1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 5f93907d-e7c9-4ae8-816a-a14e0785a63f
+    type: condition
+    task:
+      id: 5f93907d-e7c9-4ae8-816a-a14e0785a63f
+      version: -1
+      name: Has encryption been compromised?
+      description: Are the encryption keys or the encrypted data compromised in any
+        way?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": -920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: adbc2ca3-443c-4ded-80cf-7bb683021699
+    type: collection
+    task:
+      id: adbc2ca3-443c-4ded-80cf-7bb683021699
+      version: -1
+      name: Analyst review
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": -750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: ${incident.rawName} | Analyst review required
+      body:
+        simple: |-
+          Hello,
+
+          A breach incident has been opened.
+          The breached data is encrypted, and the encryption key was not compromised.
+
+          Please review the information and the incident details to make sure there is no breach.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Has encryption been compromised?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Explain What happened
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Explain, in your words, the incident origin, what you have checked,
+          and any information related to this incident.
+        readonly: false
+      title: Analyst review
+      description: |-
+        A breach incident has been opened.
+        The breached data is encrypted, and the encryption key was not compromised.
+
+        Please review the information and the incident details to make sure there is no breach.
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "8":
+    id: "8"
+    taskid: ae16e746-6916-4cdd-85fc-c677c289e1d4
+    type: condition
+    task:
+      id: ae16e746-6916-4cdd-85fc-c677c289e1d4
+      version: -1
+      name: Has the key been compromised?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Analyst review
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: f913dc89-eac1-4310-8038-7a59e882e693
+    type: playbook
+    task:
+      id: f913dc89-eac1-4310-8038-7a59e882e693
+      version: -1
+      name: PII Check - Breach Notification
+      playbookName: PII Check - Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": -420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 2f4afee3-2006-47cc-8681-b94c034cf46a
+    type: regular
+    task:
+      id: 2f4afee3-2006-47cc-8681-b94c034cf46a
+      version: -1
+      name: Close investigation
+      description: Closes the investigation.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 3188c2c6-a5dc-4df8-82b8-7c408156c49e
+    type: title
+    task:
+      id: 3188c2c6-a5dc-4df8-82b8-7c408156c49e
+      version: -1
+      name: Notify Residents
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 5c4bed82-b0d9-4059-8471-eb56492fdecf
+    type: playbook
+    task:
+      id: 5c4bed82-b0d9-4059-8471-eb56492fdecf
+      version: -1
+      name: California - Breach Notification
+      description: "This playbook helps an analyst determine if the breached data\
+        \ meets the criteria for breach notification according to California law,\
+        \ and, if necessary, follows through with the notification procedures. \n\n\
+        DISCLAIMER: Please consult with your legal team before implementing this playbook.\n\
+        \n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."
+      playbookName: California - Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      CompanyAddress:
+        complex:
+          root: inputs.CompanyAddress
+      CompanyCity:
+        complex:
+          root: inputs.CompanyCity
+      CompanyCountry:
+        complex:
+          root: inputs.CompanyCountry
+      CompanyName:
+        complex:
+          root: inputs.CompanyName
+      ContactEmailAddress:
+        complex:
+          root: inputs.ContactEmailAddress
+      ContactName:
+        complex:
+          root: inputs.ContactName
+      ContactTelNumber:
+        complex:
+          root: inputs.ContactTelNumber
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 65d3abeb-18f6-4cc3-8d72-71f93e2b3f1d
+    type: title
+    task:
+      id: 65d3abeb-18f6-4cc3-8d72-71f93e2b3f1d
+      version: -1
+      name: Corrective action for breached accounts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 8dd9b859-7deb-4507-82b7-b1d8fdc76621
+    type: condition
+    task:
+      id: 8dd9b859-7deb-4507-82b7-b1d8fdc76621
+      version: -1
+      name: Does breach data contain user account details?
+      description: |-
+        If yes, work on resetting user passwords.
+        If no, continue with the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${incident
+                accessor: accountinformationbreached}
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 69fd6818-1996-4ece-83a0-f17b3e82f0c8
+    type: regular
+    task:
+      id: 69fd6818-1996-4ece-83a0-f17b3e82f0c8
+      version: -1
+      name: Breach is documented in Cortex XSOAR
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      value:
+        simple: The breach was reported and is documented in Cortex XSOAR.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 4a0069ce-31c6-415e-8e4e-3a7a6643c0de
+    type: regular
+    task:
+      id: 4a0069ce-31c6-415e-8e4e-3a7a6643c0de
+      version: -1
+      name: Reset user passwords
+      description: Activate a 'reset password' process for all affected accounts.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 53287163-23ae-4d34-8b48-06ee441508c8
+    type: regular
+    task:
+      id: 53287163-23ae-4d34-8b48-06ee441508c8
+      version: -1
+      name: Close investigation
+      description: Closes the investigation.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: The breach was reported and is documented in Cortex XSOAR.
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 2ef00c3f-35db-48e2-874b-9d0032bfa796
+    type: playbook
+    task:
+      id: 2ef00c3f-35db-48e2-874b-9d0032bfa796
+      version: -1
+      name: Residents Notification - Breach Notification
+      description: This playbook is triggered by a breach notification playbook and
+        is responsible for the resident notification process.
+      playbookName: Residents Notification - Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      AutoNotification:
+        complex:
+          root: inputs.AutoNotification
+      ContactEmailAddress:
+        complex:
+          root: inputs.ContactEmailAddress
+      ContactName:
+        complex:
+          root: inputs.ContactName
+      ContactTelNumber:
+        complex:
+          root: inputs.ContactTelNumber
+      MeasuresToMitigate:
+        complex:
+          root: incident
+          accessor: measurestomitigate
+      ResidentNotification_WhatCanTheyDo:
+        simple: "First, change your online login information, passwords, and security\
+          \ questions-and-answers. \nSecond, if you used similar login information\
+          \ and passwords for different sites - change the login information, passwords,\
+          \ and security Q&A to them too.\nThird, pay attention if you start receiving\
+          \ notices of password changes to your current accounts or find yourself\
+          \ locked out of your accounts.\nFourth, Consider implementing two-factor-authentication\
+          \ to your account to reduce the risk of unauthorized access in your account."
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: b44feb33-a4a5-440e-8abf-62d2da03f765
+    type: condition
+    task:
+      id: b44feb33-a4a5-440e-8abf-62d2da03f765
+      version: -1
+      name: Check if PII compromised
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PIICompromised
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 075d3bc0-03e3-4484-80f3-70a365b7e8c6
+    type: regular
+    task:
+      id: 075d3bc0-03e3-4484-80f3-70a365b7e8c6
+      version: -1
+      name: Close investigation
+      description: Closes the investigation.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 348693f2-5982-4b63-8ac3-995fe246aa62
+    type: title
+    task:
+      id: 348693f2-5982-4b63-8ac3-995fe246aa62
+      version: -1
+      name: New York Breach Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 908760cc-584e-4bef-83a2-8ba303afe3ae
+    type: playbook
+    task:
+      id: 908760cc-584e-4bef-83a2-8ba303afe3ae
+      version: -1
+      name: New York - Breach Notification
+      playbookName: New York - Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      CompanyAddress:
+        complex:
+          root: inputs.CompanyAddress
+      CompanyCity:
+        complex:
+          root: inputs.CompanyCity
+      CompanyCountry:
+        complex:
+          root: inputs.CompanyCountry
+      CompanyName:
+        complex:
+          root: inputs.CompanyName
+      ContactEmailAddress:
+        complex:
+          root: inputs.ContactEmailAddress
+      ContactName:
+        complex:
+          root: inputs.ContactName
+      ContactTelNumber:
+        complex:
+          root: inputs.ContactTelNumber
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 64eee13d-d5e2-44cb-879a-616d2e9683cb
+    type: title
+    task:
+      id: 64eee13d-d5e2-44cb-879a-616d2e9683cb
+      version: -1
+      name: Not supported state
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 7baed65c-9cda-4341-890a-c741a2bf3f36
+    type: title
+    task:
+      id: 7baed65c-9cda-4341-890a-c741a2bf3f36
+      version: -1
+      name: Illinois Breach Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: e0444dbd-521c-4fcc-82a0-3015b943b3e8
+    type: playbook
+    task:
+      id: e0444dbd-521c-4fcc-82a0-3015b943b3e8
+      version: -1
+      name: Illinois - Breach Notification
+      playbookName: Illinois - Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      CompanyAddress:
+        complex:
+          root: inputs.CompanyAddress
+      CompanyCity:
+        complex:
+          root: inputs.CompanyCity
+      CompanyCountry:
+        complex:
+          root: inputs.CompanyCountry
+      CompanyName:
+        complex:
+          root: inputs.CompanyName
+      ContactEmailAddress:
+        complex:
+          root: inputs.ContactEmailAddress
+      ContactName:
+        complex:
+          root: inputs.ContactName
+      ContactTelNumber:
+        complex:
+          root: inputs.ContactTelNumber
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_17_#default#": 0.36,
+      "16_18_yes": 0.37,
+      "21_11_yes": 0.61,
+      "2_24_New York": 0.78,
+      "2_26_#default#": 0.21,
+      "2_27_Illinois": 0.53,
+      "2_3_California": 0.5,
+      "5_6_yes": 0.34,
+      "5_9_#default#": 0.16,
+      "6_7_No": 0.34,
+      "6_9_Yes": 0.14,
+      "8_10_#default#": 0.36,
+      "8_9_yes": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3295,
+        "width": 1870,
+        "x": -1060,
+        "y": -1260
+      }
+    }
+  }
+inputs:
+- key: ContactName
+  value: {}
+  required: false
+  description: In case of a breach, the contact details to send to the Attorney General
+    and the affected residents.
+- key: ContactEmailAddress
+  value: {}
+  required: false
+  description: In case of a breach, the contact details to send to the Attorney General
+    and the affected residents.
+- key: ContactTelNumber
+  value: {}
+  required: false
+  description: In case of a breach, the contact details to send to the Attorney General
+    and the affected residents.
+- key: CompanyName
+  value: {}
+  required: false
+  description: In case of a breach, the company details to display in the breach report.
+- key: CompanyAddress
+  value: {}
+  required: false
+  description: In case of a breach, the company details to display in the breach report.
+- key: CompanyCity
+  value: {}
+  required: false
+  description: In case of a breach, the company details to display in the breach report.
+- key: CompanyCountry
+  value: {}
+  required: false
+  description: In case of a breach, the company details to display in the breach report.
+- key: AutoNotification
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    This input determines if the resident notification should be done automatically or manually.
+    Ture - Automatically
+    False - Manually.
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests

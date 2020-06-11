@@ -36,6 +36,7 @@ This integration was integrated and tested with Splunk v6.5.
 | hec_token | The HEC token (HTTP Event Collector). | False |
 | hec_url | The HEC URL. For example, https://localhost:8088. | False |
 | fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
+| use_requests_handler | Use Python requests handler  | False |
 
 The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
 
@@ -353,3 +354,7 @@ Click on Global settings (in the http event collector page)
 ![Screen Shot 2020-01-20 at 10 27 25](https://user-images.githubusercontent.com/45915502/72710342-8d860280-3b6f-11ea-8d66-4d60303aba48.png)
 
 The default port is 8088.
+
+## Troubleshooting
+
+In case you encounter HTTP errors (e.g. IncompleteRead), we suggest using Python requests handler.

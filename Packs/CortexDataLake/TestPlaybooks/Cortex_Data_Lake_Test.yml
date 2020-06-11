@@ -110,11 +110,6 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CDL.Logging.CharacteristicOfApp
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
               simple: CDL.Logging.SourceLocation
             iscontext: true
     view: |-

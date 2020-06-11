@@ -1,4 +1,4 @@
-category: Authentication
+category: Utilities
 commonfields:
   id: HelloWorld
   version: -1
@@ -584,3 +584,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultClassifier: HelloWorld
+defaultMapperIn: HelloWorld-mapper

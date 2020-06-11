@@ -1,37 +1,21 @@
 {
-    "name": "IP Whitelisting",
-    "description": "Playbooks to enable access to Cloud and SaaS services by updating whitelists of source IP addresses.",
-    "support": "xsoar",
-    "serverMinVersion": "5.5.0",
-    "currentVersion": "1.0.0",
-    "author": "Lior Kolnik and Prasen Shelar",
-    "url": "",
-    "email": "lkolnik@paloaltonetworks.com",
-    "categories": [
-        "Network Security"
-    ],
-    "tags": [
-        "NetworkSecurity",
-        "Whitelist",
-        "Cloud",
-        "PrismaAccess"
-    ],
-    "created": "2020-04-22T06:05:52Z",
-    "updated": "2020-04-22T06:05:52Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "price": 0,
-    "dependencies": {
-		"Legacy": {
-			"display_name": "Legacy",
-			"mandatory": true
-		},
-		"Base": {
-			"display_name": "Base",
-			"mandatory": true
-		}
-	}
+  "name": "IP Whitelisting",
+  "description": "Playbooks to enable access to Cloud and SaaS services by updating whitelists of source IP addresses.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "created": "2020-04-22T06:05:52Z",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [
+    "NetworkSecurity",
+    "Whitelist",
+    "Cloud",
+    "PrismaAccess"
+  ],
+  "useCases": [],
+  "keywords": []
 }
