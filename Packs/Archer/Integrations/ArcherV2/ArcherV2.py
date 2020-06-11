@@ -959,6 +959,7 @@ def main():
         'archer-search-records-by-report': search_records_by_report_command
     }
 
+
     command = demisto.command()
     LOG(f'Command being called is {command}')
 
