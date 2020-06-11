@@ -1,5 +1,5 @@
 Workday offers enterprise-level software solutions for financial management, human resources, and planning.
-This integration was integrated and tested with version 1.0.0 of Workday
+This integration was integrated and tested with version 34.0 of Workday
 ## Configure Workday on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
