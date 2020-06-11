@@ -282,7 +282,7 @@ This command requires one of the following roles:
 
 ### 3. code42-departingemployee-add
 ---
-Add a user to the Departing Employee Lens
+Add a user to the Departing Employee List
 ##### Required Permissions
 
 This command requires one of the following roles:
@@ -297,8 +297,8 @@ This command requires one of the following roles:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to add to the Departing Employee Lens | Required | 
-| departuredate | Departure date for the employee in YYYY-MM-DD format | Optional | 
+| username | Username to add to the Departing Employee LIst | Required | 
+| departuredate | Departure date for the employee in yyyy-MM-dd format | Optional | 
 | note | Note to attach to Departing Employee | Optional | 
 
 
@@ -338,7 +338,7 @@ This command requires one of the following roles:
 
 ### 4. code42-departingemployee-remove
 ---
-Remove a user from the Departing Employee Lens
+Remove a user from the Departing Employee List
 ##### Required Permissions
 
 This command requires one of the following roles:
@@ -353,7 +353,7 @@ This command requires one of the following roles:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to remove from the Departing Employee Lens | Optional | 
+| username | Username to remove from the Departing Employee List | Optional | 
 
 
 ##### Context Output

@@ -245,7 +245,7 @@ script:
     arguments:
     - name: username
       required: true
-      description: The username to add to the Departing Employee Lens.
+      description: The username to add to the Departing Employee List.
     - name: departuredate
       description: The departure date for the employee, in the format YYYY-MM-DD.
     - name: note
@@ -262,17 +262,17 @@ script:
       type: string
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
-    description: Adds a user to the Departing Employee Lens.
+    description: Adds a user to the Departing Employee List.
   - name: code42-departingemployee-remove
     arguments:
     - name: username
-      description: The username to remove from the Departing Employee Lens.
+      description: The username to remove from the Departing Employee List.
     outputs:
     - contextPath: Code42.DepartingEmployee.CaseID
       description: Internal Code42 Case ID for the Departing Employee.
     - contextPath: Code42.DepartingEmployee.Username
       description: The username of the Departing Employee.
-    description: Removes a user from the Departing Employee Lens.
+    description: Removes a user from the Departing Employee List.
   - name: code42-alert-resolve
     arguments:
     - name: id

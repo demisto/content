@@ -181,12 +181,12 @@ class Code42Client(BaseClient):
             return None
         return user_id
 
-    def resolve_alert(self, alert_id):
+    def resolve_alert(self, id):
         try:
-            self._sdk.alerts.resolve(alert_id)
+            self._sdk.alerts.resolve(id)
         except Exception:
             return None
-        return alert_id
+        return id
 
     def get_user_id(self, username):
         try:
@@ -243,24 +243,11 @@ def map_observation_to_security_query(observation, actor):
         search_args.append(DeviceUsername.eq(actor))
     else:
         search_args.append(Actor.eq(actor))
-    search_args.append(
-        EventTimestamp.on_or_after(
-            int(
-                time.mktime(
-                    time.strptime(begin_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z")
-                )
-            )
-        )
-    )
-    search_args.append(
-        EventTimestamp.on_or_before(
-            int(
-                time.mktime(
-                    time.strptime(end_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z")
-                )
-            )
-        )
-    )
+
+    begin_time = time.mktime(time.strptime(begin_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z"))
+    search_args.append(EventTimestamp.on_or_after(int(begin_time)))
+    end_time = time.mktime(time.strptime(end_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z"))
+    search_args.append(int(end_time))
     # Determine exposure types based on alert type
     if observation["type"] == "FedCloudSharePermissions":
         if "PublicSearchableShare" in exposure_types:
@@ -369,7 +356,7 @@ def departingemployee_add_command(client, args):
             departure_epoch = int(time.mktime(time.strptime(args["departuredate"], "%Y-%m-%d")))
         except Exception:
             return_error(
-                message="Could not add user to Departing Employee Lens: "
+                message="Could not add user to Departing Employee List: "
                 "unable to parse departure date. Is it in yyyy-MM-dd format?"
             )
     user_id = client.add_user_to_departing_employee(
@@ -384,7 +371,7 @@ def departingemployee_add_command(client, args):
         "DepartureDate": args.get("departuredate"),
         "Note": args.get("note"),
     }
-    readable_outputs = tableToMarkdown(f"Code42 Departing Employee Lens User Added", de_context)
+    readable_outputs = tableToMarkdown(f"Code42 Departing Employee List User Added", de_context)
     return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
 
 
@@ -394,11 +381,11 @@ def departingemployee_remove_command(client, args):
     if case:
         de_context = {"CaseID": case, "Username": args["username"]}
         readable_outputs = tableToMarkdown(
-            f"Code42 Departing Employee Lens User Removed", de_context
+            f"Code42 Departing Employee List User Removed", de_context
         )
         return readable_outputs, {"Code42.DepartingEmployee": de_context}, case
     else:
-        return_error(message="Could not remove user from Departing Employee Lens")
+        return_error(message="Could not remove user from Departing Employee List")
 
 
 def _create_incident_from_alert_details(details):
