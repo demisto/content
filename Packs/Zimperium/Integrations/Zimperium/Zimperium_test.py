@@ -1,12 +1,12 @@
 import pytest
 from Zimperium import Client, events_search, users_search, user_get_by_id, devices_search, device_get_by_id,\
-    app_classification_get, fetch_incidents
+    devices_get_last_updated, app_classification_get, fetch_incidents
 from test_data.response_constants import RESPONSE_SEARCH_EVENTS, RESPONSE_SEARCH_USERS, RESPONSE_USER_GET_BY_ID,\
     RESPONSE_SEARCH_DEVICES, RESPONSE_DEVICE_GET_BY_ID, RESPONSE_APP_CLASSIFICATION_GET,\
-    RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, RESPONSE_MULTIPLE_EVENTS_FETCH
+    RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, RESPONSE_GET_LAST_UPDATED_DEVICES, RESPONSE_MULTIPLE_EVENTS_FETCH
 from test_data.result_constants import EXPECTED_SEARCH_EVENTS, EXPECTED_SEARCH_USERS, EXPECTED_USER_GET_BY_ID,\
-    EXPECTED_SEARCH_DEVICES, EXPECTED_DEVICE_GET_BY_ID, EXPECTED_APP_CLASSIFICATION_GET,\
-    EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET
+    EXPECTED_SEARCH_DEVICES, EXPECTED_DEVICE_GET_BY_ID, EXPECTED_GET_LAST_UPDATED_DEVICES,\
+    EXPECTED_APP_CLASSIFICATION_GET, EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
@@ -19,6 +19,8 @@ from test_data.result_constants import EXPECTED_SEARCH_EVENTS, EXPECTED_SEARCH_U
      EXPECTED_SEARCH_DEVICES),
     (device_get_by_id, {'zdid': "87a587de-283f-48c9-9ff2-047c8b025b6d"}, RESPONSE_DEVICE_GET_BY_ID,
      EXPECTED_DEVICE_GET_BY_ID),
+    (devices_get_last_updated, {'from_last_update': "5 days"}, RESPONSE_GET_LAST_UPDATED_DEVICES,
+     EXPECTED_GET_LAST_UPDATED_DEVICES),
     (app_classification_get, {'app_hash': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"},
      RESPONSE_APP_CLASSIFICATION_GET, EXPECTED_APP_CLASSIFICATION_GET),
     (app_classification_get, {'app_name': "Duo"},

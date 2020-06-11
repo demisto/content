@@ -169,7 +169,7 @@ script:
   - arguments:
     - default: false
       defaultValue: 1 day
-      description: from_last_update, time format?????
+      description: <number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year
       isArray: false
       name: from_last_update
       required: true

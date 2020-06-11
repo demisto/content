@@ -433,3 +433,56 @@ EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET = {
         }
     ]
 }
+EXPECTED_GET_LAST_UPDATED_DEVICES = {
+    'Zimperium.LastUpdatedDevices(val.deviceId === obj.deviceId)':
+        [
+            {
+                'appName': 'zIPS', 'bundleId': 'com.zimperium.zIPS', 'country': '454', 'countryCode': '454',
+                'createdAt': '2020-06-03 02:02:45 UTC', 'deviceGroupName': None,
+                'deviceHash': 'dcbe063072cf31387339ed13efc076043e8b172995e71a653f08f07b36ab3b3f',
+                'deviceId': '000834174047969', 'email': 'ztester1982@gmail.com', 'externalTrackingId1': None,
+                'externalTrackingId2': None, 'firstName': 'Fname', 'lastName': 'Lname',
+                'lastSeen': '2020-06-03 02:04:03 UTC', 'mdmId': None, 'middleName': None, 'model': 'iPhone',
+                'operatorAlpha': 'SMC HK', 'osBuild': None, 'osSecurityPatch': None, 'osType': 'iOS',
+                'osUpgradeable': False, 'osVersion': '11.0.2', 'osVulnerable': False, 'phoneNumber': '',
+                'processor': None,
+                'riskPosture': 'Critical', 'riskPostureCode': 3, 'status': 'Inactive', 'statusCode': 2,
+                'systemToken': 'paxsoar', 'type': 'iPhone5,2', 'updatedDate': '2020-06-06 02:04:57 UTC',
+                'userId': '3d588112-6467-4c2d-932a-b728f866163d', 'version': '4.9.21',
+                'vulnerabilities': ['Jailbroken/Rooted', 'Screen Lock Disabled'],
+                'zdid': '71bd5388-f2f4-44e8-9235-6ecd973da589', 'zipsDistributionVersion': 'n/a',
+                'zipsVersion': '4.9.21'},
+            {
+                'appName': 'zIPS', 'bundleId': 'com.zimperium.zips', 'country': 'us', 'countryCode': 'us',
+                'createdAt': '2020-06-03 02:04:25 UTC', 'deviceGroupName': None,
+                'deviceHash': 'd3a5f56726ea39341ca19a534b8d5bc0cac07484b3032148857118f31b72bf01',
+                'deviceId': '198280699673142', 'email': 'ztester1982@gmail.com', 'externalTrackingId1': None,
+                'externalTrackingId2': None, 'firstName': 'Fname', 'lastName': 'Lname',
+                'lastSeen': '2020-06-03 02:05:19 UTC', 'mdmId': None, 'middleName': None, 'model': 'SM-G900H',
+                'operatorAlpha': 'AT&T', 'osBuild': 'LRX21T.G900HXXS1BPC8', 'osSecurityPatch': '2016-03-01',
+                'osType': 'Android', 'osUpgradeable': False, 'osVersion': '4.4.2', 'osVulnerable': False,
+                'phoneNumber': '', 'processor': 'armeabi-v7a', 'riskPosture': 'Low', 'riskPostureCode': 1,
+                'status': 'Inactive', 'statusCode': 2, 'systemToken': 'paxsoar', 'type': 'k3gxx',
+                'updatedDate': '2020-06-06 02:05:57 UTC', 'userId': '3d588112-6467-4c2d-932a-b728f866163d',
+                'version': '4.9.19',
+                'vulnerabilities': ['Jailbroken/Rooted', 'USB Debug Mode', 'Stagefright', 'Device Encryption Disabled',
+                                    'Developer Mode', 'Screen Lock Disabled', '3rd Party App Store'],
+                'zdid': 'c728a9f1-dbcc-4b0f-84b2-5dc07e80b6e5', 'zipsDistributionVersion': 'n/a',
+                'zipsVersion': '4.9.19'},
+            {
+                'appName': 'zIPS', 'bundleId': 'com.zimperium.zips', 'country': None, 'countryCode': None,
+                'createdAt': '2020-06-10 08:50:32 UTC', 'deviceGroupName': None,
+                'deviceHash': 'f5b42533a5cd2e4452a954b62a5bbab7ac2147d5bf1ade726a48f1f1d111c9',
+                'deviceId': 'c3e39cf6-97aa-38df-86eb-60a8a2cafbc1', 'email': 'ztester1982@gmail.com',
+                'externalTrackingId1': '', 'externalTrackingId2': '', 'firstName': 'Fname', 'lastName': 'Lname',
+                'lastSeen': '2020-06-11 08:43:58 UTC', 'mdmId': None, 'middleName': None, 'model': None,
+                'operatorAlpha': None, 'osBuild': None, 'osSecurityPatch': None, 'osType': None, 'osUpgradeable': False,
+                'osVersion': None, 'osVulnerable': False, 'phoneNumber': '', 'processor': None,
+                'riskPosture': 'Critical',
+                'riskPostureCode': 3, 'status': 'Active', 'statusCode': 1, 'systemToken': 'paxsoar', 'type': None,
+                'updatedDate': '2020-06-11 08:44:35 UTC', 'userId': '3d588112-6467-4c2d-932a-b728f866163d',
+                'version': '4.13.3', 'vulnerabilities': ['USB Debug Mode', 'Developer Mode', 'Screen Lock Disabled'],
+                'zdid': '2a086e00-32f3-4c03-90b2-b9fd4ea836e5', 'zipsDistributionVersion': 'n/a',
+                'zipsVersion': '4.13.3'}
+        ]
+}

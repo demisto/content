@@ -89,12 +89,12 @@ class Client(BaseClient):
 
         return self._http_request(method='GET', url_suffix=url_suffix, headers=self._headers)
 
-    def devices_get_last_updated_request(self, from_last_update: str, exclude_deleted: bool, size: str, page: str)\
+    def devices_get_last_updated_request(self, last_updated: str, exclude_deleted: bool, size: str, page: str)\
             -> dict:
         """Search last updated devices by sending a GET request.
 
         Args:
-            from_last_update: Last updated devices time frame.
+            last_updated: Last updated devices time frame.
             exclude_deleted: whether to exclude deleted devices.
             size: response size.
             page: response page.
@@ -102,7 +102,7 @@ class Client(BaseClient):
             Response from API.
         """
         params = {
-            'fromLastUpdate': from_last_update,
+            'fromLastUpdate': last_updated,
             'excludeDeleted': exclude_deleted,
             'size': size,
             'page': page,
@@ -280,7 +280,7 @@ def devices_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     table_name = ''
     if not devices.get('last'):
         table_name = f' (To get the next devices, run the command with the next page)'
-    headers = ['deviceId', 'zdid', 'deviceHash', 'model', 'osType', 'osVersion']
+    headers = ['deviceId', 'zdid', 'deviceHash', 'model', 'osType', 'osVersion', 'updatedDate']
     human_readable = tableToMarkdown(name=f"Devices{table_name}:", t=devices_data, headers=headers, removeNull=True)
     entry_context = {f'Zimperium.Devices(val.deviceId === obj.deviceId)': devices_data}
 
@@ -302,7 +302,7 @@ def device_get_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     device = client.device_get_by_id_request(zdid, device_id)
 
-    headers = ['deviceId', 'zdid', 'deviceHash', 'model', 'osType', 'osVersion']
+    headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
     human_readable = tableToMarkdown(name=f"Device {device_id}:", t=device, headers=headers, removeNull=True)
     entry_context = {f'Zimperium.Devices(val.deviceId === obj.deviceId)': device}
 
@@ -319,19 +319,22 @@ def devices_get_last_updated(client: Client, args: Dict) -> Tuple[str, Dict, Dic
     Returns:
         Outputs.
     """
+    timestamp_format = '%Y-%m-%d'
     from_last_update = str(args.get('from_last_update', '1 day'))
+    last_updated = parse_date_range(from_last_update, date_format=timestamp_format)[0]
     exclude_deleted = args.get('exclude_deleted') == 'false'
     size = str(args.get('size', '10'))
     page = str(args.get('page', '0'))
 
-    devices = client.devices_get_last_updated_request(from_last_update, exclude_deleted, size, page)
+    devices = client.devices_get_last_updated_request(last_updated, exclude_deleted, size, page)
 
     devices_data = devices.get('content')
     table_name = ''
     if not devices.get('last'):
         table_name = f' (To get the next devices, run the command with the next page)'
-    headers = ['deviceId', 'zdid', 'deviceHash', 'model', 'osType', 'osVersion']
-    human_readable = tableToMarkdown(name=f"Devices{table_name}:", t=devices_data, headers=headers, removeNull=True)
+    headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
+    human_readable = tableToMarkdown(name=f"Last updated devices{table_name}:", t=devices_data, headers=headers,
+                                     removeNull=True)
     entry_context = {f'Zimperium.LastUpdatedDevices(val.deviceId === obj.deviceId)': devices_data}
 
     return human_readable, entry_context, devices
