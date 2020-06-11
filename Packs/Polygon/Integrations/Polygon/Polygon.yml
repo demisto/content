@@ -74,14 +74,14 @@ script:
           description: URL analyzed
           type: string
         - contextPath: Polygon.Analysis.Status
-          description: Polygon analysis status
+          description: The analysis status
           type: string
       description: Upload URL for analysis
     - name: polygon-analysis-info
       arguments:
         - name: tds_analysis_id
           required: true
-          description: Analysis ID in TDS
+          description: Analysis ID in TDS. Comma separated values.
           isArray: true
       outputs:
         - contextPath: File.Name
