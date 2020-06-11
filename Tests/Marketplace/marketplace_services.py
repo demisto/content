@@ -60,6 +60,8 @@ class GCPConfig(object):
                        "TIM_Processing",
                        "TIM_SIEM",
                        "HelloWorld",
+                       "ExportIndicators",
+                       "Malware",
                        "DefaultPlaybook"
                        ]  # cores packs list
 
