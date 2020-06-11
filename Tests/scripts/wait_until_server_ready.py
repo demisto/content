@@ -35,6 +35,7 @@ def exit_if_timed_out(loop_start_time, current_time):
 
 
 def main():
+    global SETUP_TIMEOUT
     ready_ami_list = []
     failure = False
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
@@ -61,7 +62,7 @@ def main():
                     # print_error(f'{ami_instance_name} encountered an error: {str(exp)}\n'
                     #             f'Spot instance was dropped by amazon, if raised often - report to team leader.')
                     print_error(f'{ami_instance_name} encountered an error: {str(exp)}')
-                    if SETUP_TIMEOUT != 60 * 10:  # noqa: F823
+                    if SETUP_TIMEOUT != 60 * 10:
                         print_warning('Setting SETUP_TIMEOUT to 10 minutes.')
                         SETUP_TIMEOUT = 60 * 10
                     # instance_ips_to_poll.remove(ami_instance_ip)
