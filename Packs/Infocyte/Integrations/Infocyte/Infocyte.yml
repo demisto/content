@@ -395,7 +395,7 @@ script:
       type: string
     - contextPath: Infocyte.Response.success
       description: Flag if extention successfully ran and completed (not necessarily
-        if it performed everything correctly)
+        if it performed everything or found something)
       type: boolean
     - contextPath: Infocyte.Response.threatStatus
       description: Threat category assigned by extension logic (Good, Low risk, Unknown,
