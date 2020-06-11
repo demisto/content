@@ -804,7 +804,9 @@ def test_departing_employee_add_command(code42_sdk_mock):
         client,
         {"username": "user1@example.com", "departuredate": "2020-01-01", "notes": "Dummy note"},
     )
-    assert res == "123412341234123412"
+    expected = "123412341234123412"  # value found in GET_USER_RESPONSE
+    assert res == expected
+    code42_sdk_mock.detectionlists.departing_employee.add.assert_called_once_with(expected, departure_epoch=1577836800)
 
 
 def test_security_data_search_command(code42_sdk_mock):
@@ -813,6 +815,15 @@ def test_security_data_search_command(code42_sdk_mock):
     )
     _, _, res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
     assert len(res) == 3
+    actual_query = code42_sdk_mock.securitydata.search_file_events.call_args[0][0]
+    assert "md5Checksum" in actual_query
+    assert "d41d8cd98f00b204e9800998ecf8427e" in actual_query
+    assert "osHostName" in actual_query
+    assert "DESKTOP-0001" in actual_query
+    assert "deviceUserName" in actual_query
+    assert "user3@example.com" in actual_query
+    assert "exposure" in actual_query
+    assert "ApplicationRead" in actual_query
 
 
 def test_fetch_incidents_first_run(code42_sdk_mock):
