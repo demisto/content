@@ -719,9 +719,6 @@ def code42_sdk_mock(mocker):
     search_file_events_response = create_mock_code42_sdk_response(mocker, MOCK_SECURITY_EVENT_RESPONSE)
     c42_sdk_mock.securitydata.search_file_events.return_value = search_file_events_response
 
-    # Setup tenant ID call
-    c42_sdk_mock.usercontext.get_current_tenant_id.return_value = "MOCK-TENANT-ID"
-
     return c42_sdk_mock
 
 

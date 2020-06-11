@@ -153,8 +153,7 @@ class Code42Client(BaseClient):
             alert_filters.append(Severity.is_in(severity_filter))
         alert_filters.append(AlertState.eq(AlertState.OPEN))
         alert_filters.append(DateObserved.on_or_after(start_time))
-        tenant_id = self._sdk.usercontext.get_current_tenant_id()
-        alert_query = AlertQuery(tenant_id, *alert_filters)
+        alert_query = AlertQuery(*alert_filters)
         alert_query.sort_direction = "asc"
         return alert_query
 
