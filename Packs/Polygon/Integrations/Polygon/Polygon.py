@@ -421,7 +421,6 @@ def analysis_info_command(client, args):
             indicators=indicators
         )
         all_results.append(results)
-        return_results(results)
     return all_results
 
 
@@ -473,7 +472,6 @@ def upload_url_command(client, args):
         outputs_key_field='ID',
         outputs=outputs
     )
-    return_results(results)
     return results
 
 
@@ -498,7 +496,6 @@ def upload_file_command(client, args):
         outputs_key_field='ID',
         outputs=outputs
     )
-    return_results(results)
     return results
 
 
@@ -540,7 +537,6 @@ def file_command(client, args):
                 outputs=analysis_info,
                 indicators=[indicator]
             )
-            return_results(result)
             all_results.append(result)
     return all_results
 
@@ -584,8 +580,14 @@ def main():
 
         if command == 'test-module':
             return_results(test_module(client))
-        elif command in commands:
+        elif command in ['polygon-export-report', 'polygon-export-pcap', 'polygon-export-video']:
             commands[command](client, demisto.args())
+        elif command in ['polygon-analysis-info', 'file']:
+            results = commands[command](client, demisto.args())
+            for r in results:
+                return_results(r)
+        elif command in ['polygon-upload-file', 'polygon-upload-url']:
+            return_results(commands[command](client, demisto.args()))
 
     # Log exceptions
     except Exception as err:
