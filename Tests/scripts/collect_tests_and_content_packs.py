@@ -347,11 +347,12 @@ class TestConf(object):
 
         return tested_integrations
 
-    def get_packs_of_tested_integrations(self, collected_tests):
+    def get_packs_of_tested_integrations(self, collected_tests, id_set):
         packs = set([])
         tested_integrations = self.get_tested_integrations_for_collected_tests(collected_tests)
         for integration in tested_integrations:
-            pack = get_pack_name(integration)
+            int_path = id_set__get_integration_file_path(id_set, integration)
+            pack = get_pack_name(int_path)
             if pack:
                 packs.add(pack)
         return packs
@@ -1176,7 +1177,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
 
     packs_to_install.add("DeveloperTools")
 
-    more_packs_to_install = conf.get_packs_of_tested_integrations(tests)
+    more_packs_to_install = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(more_packs_to_install)
 
     return tests, packs_to_install
