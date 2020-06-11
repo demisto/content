@@ -68,29 +68,33 @@ function Get-InfocyteAlerts {
         } else {
             $max = $demisto.Args()['max']
         }
+        $Demisto.Log("Retreiving $max alerts following lastAlertId: $($demisto.Args()['lastAlertId'])")
         $Alerts = Get-ICAlert -where $where | Select-Object -First $max
         if (-NOT $Alerts) {
-            $Demisto.Debug("No alerts found following lastAlertId $($demisto.Args()['lastAlertId']).")
+            $Demisto.Log("No alerts found following lastAlertId $($demisto.Args()['lastAlertId']).")
             return
         }
     }
     else {
-        $LastAlert = $demisto.GetLastRun()
-        if ($LastAlert) {
+        $LastAlert = $Demisto.GetLastRun()
+        $Demisto.Debug("LastAlert: $($LastAlert|Convertto-Json -compress)")
+        if ($LastAlert.Values) {
+            $Demisto.Log("Found lastAlertId: $($LastAlert | Convertto-Json -compress)")
             $where = @{ id = @{ gt = $LastAlert } }
         } else {
-            $where = @{ createdOn = @{ gt = (Get-Date).AddDays([int]$first_fetch) }}
+            $Demisto.Log("First run: Retrieving all alerts for past $first_fetch days")
+            $where = @{ createdOn = @{ gt = (Get-Date).AddDays(-[int]$first_fetch) }}
         }
         $Alerts = Get-ICAlert -where $where | Select-Object -First $max_fetch
         if (-NOT $Alerts) {
-            $Demisto.Debug("No new alerts found.")
+            $Demisto.Log("No new alerts found.")
             if ($LastAlert) {
-                SetLastRun $LastAlert
+                $Demisto.SetLastRun($LastAlert)
             }
             return
         }
         $LastAlert = $Alerts | Select-Object -Last 1 -ExpandProperty id
-        SetLastRun $LastAlert
+        $Demisto.SetLastRun($LastAlert)
     }
     $Output = [PSCustomObject]@{
         'Infocyte.Alert' = $Alerts | Select-Object id,
@@ -98,7 +102,7 @@ function Get-InfocyteAlerts {
             type,
             hostname,
             scanId,
-            @{ N = "sha1"; E = { $_.fileRepId }},
+            @{ N="sha1"; E={ $_.fileRepId }},
             signed,
             managed,
             createdOn,
@@ -110,11 +114,12 @@ function Get-InfocyteAlerts {
             avPositives,
             avTotal,
             hasAvScan,
-            synapse,
+            @{ N='synapseScore'; E={ if ($_.synapse) { [math]::Round($_.synapse,2)}}},
             size
     }
     $MDOutput = $Output.'Infocyte.Alert' |
-        Select-Object id, name, type, sha1, size, threatName, flagName, @{N = ’av’; E = { "$($_.avPositives)/$($_.avTotal)" }}, synapse |
+        Select-Object id, name, type, sha1, size, threatName, flagName,
+         @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
         ConvertTo-Markdown
     ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Alerts
 }
@@ -137,7 +142,7 @@ function Get-InfocyteScanResult {
 
     $Hosts = Get-ICObject -Type Host -ScanId $scanId | Select-Object hostname, ip, osVersion
     $Alerts = Get-ICAlert -where @{ scanId = $scanId } |
-        Select-Object id, name, type, hostname, @{N = ’sha1’; E = { $_.fileRepId } }, size, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, synapse
+        Select-Object id, name, type, hostname, @{N=’sha1’; E={ $_.fileRepId }}, size, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, @{ N='synapseScore'; E={ if ($_.synapse) { [math]::Round($_.synapse,2)}}}
 
     # Handle counting for 1 item (powershell makes this hard)
     if ($HostResult.alerts) {
@@ -162,9 +167,9 @@ function Get-InfocyteScanResult {
         }
     }
     $MDOutput = $Output.'Infocyte.Scan' | Select-Object -ExcludeProperty alerts | ConvertTo-Markdown
-    $MDOutput += "`nAlerts`n---------------------------------------`n"
+    $MDOutput += "`n#### Alerts`n"
     $MDOutput += $Output.'Infocyte.Scan'.alerts |
-         Select-Object id, name, type, sha1, size, threatName, flagName, @{N = ’av’; E = { "$($_.avPositives)/$($_.avTotal)" } }, synapse |
+         Select-Object id, name, type, sha1, size, threatName, flagName, @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
          ConvertTo-Markdown
     ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output
 }
@@ -185,7 +190,7 @@ function Get-InfocyteHostScanResult {
         $AlertCount = 0
     }
     $Alerts = $HostResult.alerts |
-     Select-Object id, name, @{N = ’sha1’; E = { $_.fileRepId } }, size, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, synapse
+     Select-Object id, name, @{N='sha1'; E={ $_.fileRepId }}, size, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, @{ N = 'synapseScore'; E = { if ($_.synapse) { [math]::Round($_.synapse,2)}} }
     $output = [PSCustomObject]@{
         'Infocyte.Scan' = [PSCustomObject]@{
             hostId             = $HostResult.hostId
@@ -201,9 +206,9 @@ function Get-InfocyteHostScanResult {
         }
     }
     $MDOutput = $Output.'Infocyte.Scan' | Select-Object -ExcludeProperty alerts | ConvertTo-Markdown
-    $MDOutput += "`nAlerts`n---------------------------------------`n"
+    $MDOutput += "`n#### Alerts`n`n"
     $MDOutput += $Output.'Infocyte.Scan'.alerts |
-         Select-Object id, name, type, sha1, size, threatName, flagName, @{N = ’av’; E = { "$($_.avPositives)/$($_.avTotal)" }}, synapse |
+         Select-Object id, name, type, sha1, size, threatName, flagName, @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
          ConvertTo-Markdown
     ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
 }
@@ -232,7 +237,7 @@ function Get-InfocyteResponseResult {
     $MDOutput = $Output.'Infocyte.Response' |
          Select-Object hostname, ip, extensionName, completedOn, os, success, threatStatus |
          ConvertTo-Markdown
-    $MDOutput += "`nMessages`n---------------------------------------`n"
+    $MDOutput += "`n#### Messages`n`n"
     $MDOutput += $Output.'Infocyte.Response'.messages
     ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
 }
@@ -259,6 +264,7 @@ function Invoke-InfocyteResponse {
 }
 
 Function ConvertTo-Markdown {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "", Justification = "Pester is wrong")]
     [CmdletBinding()]
     [OutputType([string])]
     Param (
@@ -304,19 +310,20 @@ Function ConvertTo-Markdown {
             $header += ('{0,-' + $columns[$key] + '}') -f $key
         }
         $header -join ' | '
-
+        "`n"
         $separator = @()
         ForEach($key in $columns.Keys) {
             $separator += '-' * $columns[$key]
         }
         $separator -join ' | '
-
+        "`n"
         ForEach($item in $items) {
             $values = @()
             ForEach($key in $columns.Keys) {
                 $values += ('{0,-' + $columns[$key] + '}') -f $item.($key)
             }
             $values -join ' | '
+            "`n"
         }
     }
 }

@@ -355,7 +355,7 @@ Retrieve metadata and results for a scan against multiple hosts
 | Infocyte.Scan.Alert.threatScore | number | 0\-10 confidence score. Higher = more confident. | 
 | Infocyte.Scan.Alert.avPositive | number | Number of engines and threat intel sources flagging the object as bad | 
 | Infocyte.Scan.Alert.avTotal | number | Number of engines and threat intel sources that analyzed the object | 
-| Infocyte.Scan.Alert.synapse | number | Infocyte proprietary machine learning score on maliciousness. Negative (especially below \-1) indicates backdoor or remote access tool features (generally bad), positive is good | 
+| Infocyte.Scan.Alert.synapseScore | number | Infocyte proprietary machine learning score on maliciousness. Negative (especially below \-1) indicates backdoor or remote access tool features (generally bad), positive is good | 
 | Infocyte.Scan.Alert.size | number | Size of object/file in bytes | 
 | Infocyte.Scan.Alert.flagname | string | Name of user assigned flag in Infocyte on this artifact | 
 | Infocyte.Scan.Alert.flagWeight | number | 0\-10 user\-assigned score assigned to the flag. Higher = more critical | 
@@ -436,7 +436,7 @@ Retrieve results for a scan on a target host
 | Infocyte.Scan.Alert.threatScore | number | 0\-10 confidence score. Higher = more confident. | 
 | Infocyte.Scan.Alert.avPositive | number | Number of engines and threat intel sources flagging the object as bad | 
 | Infocyte.Scan.Alert.avTotal | number | Number of engines and threat intel sources that analyzed the object | 
-| Infocyte.Scan.Alert.synapse | number | Infocyte proprietary machine learning score on maliciousness. Negative (especially below \-1) indicates backdoor or remote access tool features (generally bad), positive is good | 
+| Infocyte.Scan.Alert.synapseScore | number | Infocyte proprietary machine learning score on maliciousness. Negative (especially below \-1) indicates backdoor or remote access tool features (generally bad), positive is good | 
 | Infocyte.Scan.Alert.size | number | Size of object/file in bytes | 
 | Infocyte.Scan.Alert.flagname | string | Name of user assigned flag in Infocyte on this artifact | 
 | Infocyte.Scan.Alert.flagWeight | number | 0\-10 user\-assigned score assigned to the flag. Higher = more critical | 
@@ -579,7 +579,7 @@ Retrieve alert by alertId, since a lastAlertId, since LastRun (if no arguments p
 | Infocyte.Alert.threatScore | number | 0\-10 confidence score. Higher = more confident. | 
 | Infocyte.Alert.avPositive | number | Number of engines and threat intel sources flagging the object as bad | 
 | Infocyte.Alert.avTotal | number | Number of engines and threat intel sources that analyzed the object | 
-| Infocyte.Alert.synapse | number | Infocyte proprietary machine learning score on maliciousness. Negative (especially below \-1) indicates backdoor or remote access tool features (generally bad), positive is good | 
+| Infocyte.Alert.synapseScore | number | Infocyte proprietary machine learning score on maliciousness. Negative (especially below \-1) indicates backdoor or remote access tool features (generally bad), positive is good | 
 | Infocyte.Alert.size | number | Size of object/file in bytes | 
 | Infocyte.Alert.flagname | string | Name of user assigned flag in Infocyte on this artifact | 
 | Infocyte.Alert.flagWeight | number | 0\-10 user\-assigned score assigned to the flag. Higher = more critical | 
@@ -613,7 +613,7 @@ Retrieve alert by alertId, since a lastAlertId, since LastRun (if no arguments p
                 "sha1": "4a45814547f237bbd96db61dec58c0e3fd5c7558",
                 "signed": true,
                 "size": "1255176",
-                "synapse": null,
+                "synapseScore": null,
                 "threatName": "Bad",
                 "threatScore": 9,
                 "threatWeight": 8,

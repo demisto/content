@@ -1,59 +1,72 @@
 id: Infocyte-Test
+version: 4
 name: Infocyte-Test
-description: 'Test Playbook for Infocyte commands'
-version: -1
-starttaskid: '0'
+description: Test Playbook for Infocyte commands
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: 59aa5ed1-6e7e-4b4e-8cc2-4bc6cf0edeb0
     type: start
     task:
-      id: '0'
+      id: 59aa5ed1-6e7e-4b4e-8cc2-4bc6cf0edeb0
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
-    type: regular
-    task:
-      id: '1'
-      version: -1
-      name: DeleteContext
-      description: ''
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      all:
-        simple: yes
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: be2d6ce8-7600-477b-877c-27eea59affae
     type: regular
     task:
-      id: '2'
+      id: be2d6ce8-7600-477b-877c-27eea59affae
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2e6b27aa-3dab-4bce-8408-f4931deb6c31
+    type: regular
+    task:
+      id: 2e6b27aa-3dab-4bce-8408-f4931deb6c31
       version: -1
       name: infocyte-scan-host
       description: Kicks off a Scan (forensic collection) against an endpoint
@@ -63,34 +76,40 @@ tasks:
       brand: Infocyte
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       target:
         simple: ${incident.sourcehostname}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d5f9251f-7f99-407a-8efa-a95864e84f0f
     type: condition
     task:
-      id: '3'
+      id: d5f9251f-7f99-407a-8efa-a95864e84f0f
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      "yes":
+      - "15"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -107,140 +126,71 @@ tasks:
             value:
               simple: Infocyte.Task.target
             iscontext: true
-    view: '{"position": {"x": 50, "y": 600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
-    type: regular
-    task:
-      id: '4'
-      version: -1
-      name: infocyte-get-taskstatus
-      description: Gets status of an Infocyte task (scan, response action, etc.)
-      script: '|||infocyte-get-taskstatus'
-      type: regular
-      iscommand: true
-      brand: Infocyte
-    nexttasks:
-      '#none#':
-      - '5'
-    scriptarguments:
-      userTaskId:
-        simple: ${Infocyte.Task.userTaskId}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e98f9a44-5499-4f34-841a-3a9833630dea
     type: condition
     task:
-      id: '5'
+      id: e98f9a44-5499-4f34-841a-3a9833630dea
       version: -1
-      name: Verify Outputs
+      name: infocyte-get-hostscanresult
+      description: Retrieve results for a scan on a target host
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '6'
+      brand: Infocyte
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Infocyte.Task.userTaskId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Infocyte.Scan.scanId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Infocyte.Task.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Infocyte.Task.progress
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Infocyte.Task.message
-            iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: Infocyte.Task.status
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: Infocyte.Task.timeElapsed
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1000}}'
+              simple: completed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1105
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
-    type: regular
-    task:
-      id: '6'
-      version: -1
-      name: infocyte-get-hostscanresult
-      description: Retrieve results for a scan on a target host
-      script: '|||infocyte-get-hostscanresult'
-      type: regular
-      iscommand: true
-      brand: Infocyte
-    nexttasks:
-      '#none#':
-      - '7'
-    scriptarguments:
-      scanId:
-        simple: ${Infocyte.Scan.scanId}
-      target:
-        simple: ${Infocyte.Task.target}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '7':
-    id: '7'
-    taskid: '7'
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b7ae3936-3be8-4302-81c8-db4649f2b131
     type: condition
     task:
-      id: '7'
+      id: b7ae3936-3be8-4302-81c8-db4649f2b131
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '12'
+      "yes":
+      - "12"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -292,52 +242,63 @@ tasks:
             value:
               simple: Infocyte.Scan.objectCount
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1265
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '12':
-    id: 12
-    taskid: '12'
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 8232b464-4462-40f5-8a65-8c223cad2484
     type: regular
     task:
-      id: '12'
+      id: 8232b464-4462-40f5-8a65-8c223cad2484
       version: -1
       name: infocyte-get-alerts
-      description: ''
       script: '|||infocyte-get-alerts'
       type: regular
       iscommand: true
       brand: Infocyte
     nexttasks:
       '#none#':
-      - '13'
-    scriptarguments: {}
+      - "13"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '13':
-    id: '13'
-    taskid: '13'
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 471eee8a-e438-47d9-85d5-636339b3c34b
     type: condition
     task:
-      id: '13'
+      id: 471eee8a-e438-47d9-85d5-636339b3c34b
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '14'
+      "yes":
+      - "14"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -429,31 +390,130 @@ tasks:
             value:
               simple: Infocyte.Alert.managed
             iscontext: true
-    view: '{"position": {"x": 50, "y": 2800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1580
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '14':
-    id: '14'
-    taskid: '14'
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2530687f-728b-4014-8b44-992f2a7b0d6f
     type: title
     task:
-      id: '14'
+      id: 2530687f-728b-4014-8b44-992f2a7b0d6f
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 3000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 8bcc00d9-ea35-4e0b-8638-bd97249c99d6
+    type: regular
+    task:
+      id: 8bcc00d9-ea35-4e0b-8638-bd97249c99d6
+      version: -1
+      name: infocyte-get-taskstatus Polling
+      description: Called by the GenericPolling playbook, schedules the polling task.
+      scriptName: ScheduleGenericPolling
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      additionalPollingCommandArgNames: {}
+      additionalPollingCommandArgValues: {}
+      dt:
+        simple: Infocyte.Task(val.status == ‘active’).id
+      ids:
+        simple: ${Infocyte.Task.userTaskId}
+      interval:
+        simple: "2"
+      playbookId: {}
+      pollingCommand:
+        simple: infocyte-get-taskstatus
+      pollingCommandArgName:
+        simple: userTaskId
+      tag: {}
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 81cf8ea7-3c8a-45c2-8a3f-bae0957e1b8c
+    type: regular
+    task:
+      id: 81cf8ea7-3c8a-45c2-8a3f-bae0957e1b8c
+      version: -1
+      name: infocyte-get-taskstatus
+      description: Gets status of an Infocyte task (scan, response action, etc.)
+      script: Infocyte|||infocyte-get-taskstatus
+      type: regular
+      iscommand: true
+      brand: Infocyte
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      userTaskId:
+        simple: ${Infocyte.Task.userTaskId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
-fromversion: 5.5.0

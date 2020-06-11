@@ -273,7 +273,7 @@ script:
     - contextPath: Infocyte.Scan.Alert.avTotal
       description: Number of engines and threat intel sources that analyzed the object
       type: number
-    - contextPath: Infocyte.Scan.Alert.synapse
+    - contextPath: Infocyte.Scan.Alert.synapseScore
       description: Infocyte proprietary machine learning score on maliciousness.
         Negative (especially below -1) indicates backdoor or remote access tool features (generally bad), positive is good
       type: number
@@ -355,7 +355,7 @@ script:
     - contextPath: Infocyte.Scan.Alert.avTotal
       description: Number of engines and threat intel sources that analyzed the object
       type: number
-    - contextPath: Infocyte.Scan.Alert.synapse
+    - contextPath: Infocyte.Scan.Alert.synapseScore
       description: Infocyte proprietary machine learning score on maliciousness.
         Negative (especially below -1) indicates backdoor or remote access tool features (generally bad), positive is good
       type: number
@@ -464,7 +464,7 @@ script:
     - contextPath: Infocyte.Alert.avTotal
       description: Number of engines and threat intel sources that analyzed the object
       type: number
-    - contextPath: Infocyte.Alert.synapse
+    - contextPath: Infocyte.Alert.synapseScore
       description: Infocyte proprietary machine learning score on maliciousness.
         Negative (especially below -1) indicates backdoor or remote access tool features (generally bad), positive is good
       type: number
