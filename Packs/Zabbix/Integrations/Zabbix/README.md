@@ -1,8 +1,6 @@
-## Overview
----
-
 Allow integration with Zabbix api
 This integration was integrated and tested with version xx of Zabbix
+
 ## Zabbix Playbook
 ---
 
@@ -593,8 +591,3 @@ No current known limitations
 
 ## Troubleshooting
 Verify if the user has the necessary permissions to execute the operation
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
-* "Unknown command " + command
-* Generic error
