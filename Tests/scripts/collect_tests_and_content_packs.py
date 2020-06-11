@@ -337,7 +337,7 @@ class TestConf(object):
         conf_tests = self._conf['tests']
 
         for t in conf_tests:
-            if t not in collected_tests:
+            if t.get('playbookID') not in collected_tests:
                 continue
             if 'integrations' in t:
                 if isinstance(t['integrations'], list):
