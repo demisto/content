@@ -297,7 +297,7 @@ This command requires one of the following roles:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to add to the Departing Employee LIst | Required | 
+| username | Username to add to the Departing Employee List | Required | 
 | departuredate | Departure date for the employee in yyyy-MM-dd format | Optional | 
 | note | Note to attach to Departing Employee | Optional | 
 
