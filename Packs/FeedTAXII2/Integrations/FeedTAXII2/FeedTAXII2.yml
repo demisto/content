@@ -60,12 +60,11 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: true
+  required: false
   type: 9
-- defaultvalue: https://example.net
-  display: Collection ID To Fetch Indicators From
+- display: Collection ID To Fetch Indicators From
   name: collection_to_fetch
-  required: true
+  required: false
   type: 0
   additionalinfo: Indicators will be fetched from this collection.
 - display: Trust any certificate (not secure)
@@ -105,7 +104,7 @@ script:
       type: String
   dockerimage: demisto/taxii2:1.0.0.6793
   feed: true
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false

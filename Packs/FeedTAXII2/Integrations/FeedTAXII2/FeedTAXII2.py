@@ -2,35 +2,60 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-from typing import List, Dict, Set
-import json
 import requests
-from stix2 import TAXIICollectionSource, Filter
-from taxii2client import Server, Collection, ApiRoot
+from taxii2client.exceptions import TAXIIServiceException
+from taxii2client import v20, v21, Collection
 
 """ CONSTANT VARIABLES """
 CONTEXT_PREFIX = "TAXII2"
+TAXII_VER_2_0 = '2.0'
+TAXII_VER_2_1 = '2.1'
+DFLT_LIMIT_PER_FETCH = 50
+
+TAXII_TYPES_TO_DEMISTO_TYPES = {
+    'ipv4-addr': FeedIndicatorType.IP,
+    'ipv6-addr': FeedIndicatorType.IPv6,
+    'domain': FeedIndicatorType.Domain,
+    'domain-name': FeedIndicatorType.Domain,
+    'url': FeedIndicatorType.URL,
+    'md5': FeedIndicatorType.File,
+    'sha-1': FeedIndicatorType.File,
+    'sha-256': FeedIndicatorType.File,
+    'file:hashes': FeedIndicatorType.File,
+}
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 
 class FeedClient:
-    def __init__(self, url, collection_to_fetch, proxies, verify):
+    def __init__(self, url, collection_to_fetch, proxies, verify, username=None, password=None):
         self.collection_to_fetch = collection_to_fetch
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
-        self.server: Server
-        self.api_root: List[ApiRoot]
-        self.collections: List[Collection]
+        self.username = username
+        self.password = password
+        self.server = None
+        self.api_root = None
+        self.collections = None
 
-    def init_server(self):
-        server_url = urljoin(self.base_url, "/taxii/")
-        self.server = Server(server_url, verify=self.verify, proxies=self.proxies)
+    def init_server(self, version=TAXII_VER_2_0):
+        server_url = urljoin(self.base_url)
+        if version is TAXII_VER_2_0:
+            self.server = v20.Server(server_url, verify=self.verify, user=self.username, password=self.password, proxies=self.proxies)
+        else:
+            self.server = v21.Server(server_url, verify=self.verify, user=self.username, password=self.password, proxies=self.proxies)
 
     def init_roots(self):
-        self.api_root = self.server.api_roots[0]
+        try:
+            # try TAXII 2.0
+            self.api_root = self.server.api_roots[0]
+        except TAXIIServiceException:
+            # switch to TAXII 2.1
+            self.init_server(version=TAXII_VER_2_1)
+            self.api_root = self.server.api_roots[0]
 
     def init_collections(self):
         self.collections = [x for x in self.api_root.collections]  # type: ignore[attr-defined]
@@ -38,14 +63,15 @@ class FeedClient:
     def init_collection_to_fetch(self):
         if self.collections and self.collection_to_fetch:
             try:
-                collection_to_fetch = next(
+                self.collection_to_fetch = next(
                     collection
                     for collection in self.collections
                     if collection.id == self.collection_to_fetch
                 )
             except StopIteration:
-                raise Exception(
-                    "Could not find the provided Collection ID in the available tests. Please make sure you entered the ID correctly."
+                raise DemistoException(
+                    "Could not find the provided Collection ID in the available tests. "
+                    "Please make sure you entered the ID correctly."
                 )
 
     def initialise(self):
@@ -54,19 +80,28 @@ class FeedClient:
         self.init_collections()
         self.init_collection_to_fetch()
 
-    def build_iterator(self, limit: int = -1, added_after=None) -> List:
+    def build_iterator(self, limit: int = -1, added_after=None) -> list:
         if not isinstance(self.collection_to_fetch, Collection):
             self.init_collection_to_fetch()
+        cur_limit = limit
+        page_size = self.get_page_size(limit, cur_limit)
         envelope = self.collection_to_fetch.get_objects(
-            limit=50, added_after=added_after
+            limit=page_size, added_after=added_after
         )
         # todo add indicators processing here
-        # todo add limit to while loop
-        while envelope.get("more", False):
+        while envelope.get("more", False) and cur_limit > 0:
+            page_size = self.get_page_size(limit, cur_limit)
             envelope = self.collection_to_fetch.get_objects(
-                limit=50, next=envelope.get("next", "")
+                limit=page_size, next=envelope.get("next", "")
             )
+            cur_limit -= len(envelope)
             # todo add indicators processing here
+
+    def get_page_size(self, max_limit, cur_limit):
+        return min(DFLT_LIMIT_PER_FETCH, cur_limit) if max_limit > -1 else DFLT_LIMIT_PER_FETCH
+
+    def parse_taxii_objects(self, envelope):
+        pass
 
 
 def test_module(client):
@@ -77,6 +112,7 @@ def test_module(client):
 
 
 def fetch_indicators_command(client):
+    # todo: add treatment to last fetch and first fetch here
     iterator = client.build_iterator(date_to_timestamp(datetime.now()))
     indicators = []
     for item in iterator:
@@ -131,8 +167,11 @@ def get_collections_command(client: FeedClient):
 def main():
     params = demisto.params()
     args = demisto.args()
-    url = params.get("server")
+    url = params.get("url")
     collection_to_fetch = params.get("collection_to_fetch")
+    credentials = params.get('credentials') or {}
+    username = credentials.get('identifier')
+    password = credentials.get('password')
     proxies = handle_proxy()
     verify_certificate = not params.get("insecure", False)
 
@@ -140,7 +179,7 @@ def main():
     demisto.info(f"Command being called is {command}")
 
     try:
-        client = FeedClient(url, collection_to_fetch, proxies, verify_certificate)
+        client = FeedClient(url, collection_to_fetch, proxies, verify_certificate, username, password)
         client.initialise()
         commands = {
             "taxii2-get-indicators": get_indicators_command,
@@ -161,7 +200,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(str(e))
+        raise e
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
