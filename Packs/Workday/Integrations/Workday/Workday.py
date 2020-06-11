@@ -264,9 +264,9 @@ def test_module(client: Client, args: Dict) -> str:
 
 
 def list_workers_command(client: Client, args: dict) -> CommandResults:
-    count = int(args.get('count', "1"))
-    page = int(args.get('page', "1"))
-    num_of_managers = int(args.get('managers', "3"))
+    count = int(args.get('count', '1'))
+    page = int(args.get('page', '1'))
+    num_of_managers = int(args.get('managers', '3'))
     employee_id = args.get('employee_id')
     raw_json_response, workers_data = client.list_workers(page, count, employee_id)
     workers_context = create_worker_context(workers_data, num_of_managers)
