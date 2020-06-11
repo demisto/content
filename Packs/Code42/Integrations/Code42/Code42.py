@@ -207,26 +207,41 @@ def build_query_payload(args):
     """
     Build a query payload combining passed args
     """
+    _hash = args.get("hash")
+    hostname = args.get("hostname")
+    username = args.get("username")
+    exposure = args.get("exposure")
+
     search_args = []
-    if args.get("hash"):
-        if len(args["hash"]) == 32:
-            search_args.append(MD5.eq(args["hash"]))
-        elif len(args["hash"]) == 64:
-            search_args.append(SHA256.eq(args["hash"]))
-    if args.get("hostname"):
-        search_args.append(OSHostname.eq(args["hostname"]))
-    if args.get("username"):
-        search_args.append(DeviceUsername.eq(args["username"]))
-    if args.get("exposure"):
-        # Because the CLI can't accept lists, convert the args to a list if the type is string.
-        if isinstance(args["exposure"], str):
-            args["exposure"] = args["exposure"].split(",")
-        search_args.append(ExposureType.is_in(args["exposure"]))
+    hash_filter = _create_hash_filter(_hash)
+    if hash_filter:
+        search_args.append(hash_filter)
+    if hostname:
+        search_args.append(OSHostname.eq(hostname))
+    if username:
+        search_args.append(DeviceUsername.eq(username))
+    if exposure:
+        search_args.append(_create_exposure_filter(exposure))
+
     # Convert list of search criteria to *args
     query = FileEventQuery.all(*search_args)
     query.page_size = args.get("results")
     LOG("File Event Query: {}".format(query))
     return str(query)
+
+
+def _create_hash_filter(hash_arg):
+    if len(hash_arg) == 32:
+        return MD5.eq(hash_arg)
+    elif len(hash_arg) == 64:
+        return SHA256.eq(hash_arg)
+
+
+def _create_exposure_filter(exposure_arg):
+    # Because the CLI can't accept lists, convert the args to a list if the type is string.
+    if isinstance(exposure_arg, str):
+        exposure_arg = exposure_arg.split(",")
+    return ExposureType.is_in(exposure_arg)
 
 
 @logger
