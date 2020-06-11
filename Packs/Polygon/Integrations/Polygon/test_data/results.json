@@ -87,7 +87,7 @@
                 "Description": "Verdict probability: 68.0%, iocs: JS:Trojan.Agent.DQBF"
             }
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "9b52c8a74353d82ef1ebca42c9a7358c",
             "Type": "file",
             "Vendor": "Group-IB TDS Polygon",
@@ -102,7 +102,7 @@
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
             "Type": "ASCII text, with no line terminators"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "Type": "file",
             "Vendor": "Group-IB TDS Polygon",
@@ -117,7 +117,7 @@
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
             "Type": "ASCII text, with no line terminators"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "Type": "file",
             "Vendor": "Group-IB TDS Polygon",
@@ -129,7 +129,7 @@
             "Name": "svettenkirch.de",
             "DNS": "217.114.216.252"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "svettenkirch.de",
             "Type": "domain",
             "Vendor": "Group-IB TDS Polygon",
@@ -141,7 +141,7 @@
             "Name": "super.esu.as",
             "DNS": "79.98.29.14"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "super.esu.as",
             "Type": "domain",
             "Vendor": "Group-IB TDS Polygon",
@@ -152,7 +152,7 @@
         "IP(val.Address && val.Address == obj.Address)": {
             "Address": "8.8.8.8"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "8.8.8.8",
             "Type": "ip",
             "Vendor": "Group-IB TDS Polygon",
@@ -163,7 +163,7 @@
         "IP(val.Address && val.Address == obj.Address)": {
             "Address": "79.98.29.14"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "79.98.29.14",
             "Type": "ip",
             "Vendor": "Group-IB TDS Polygon",
@@ -174,7 +174,7 @@
         "IP(val.Address && val.Address == obj.Address)": {
             "Address": "217.114.216.252"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "217.114.216.252",
             "Type": "ip",
             "Vendor": "Group-IB TDS Polygon",
@@ -185,7 +185,7 @@
         "IP(val.Address && val.Address == obj.Address)": {
             "Address": "217.114.216.252"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "217.114.216.252",
             "Type": "ip",
             "Vendor": "Group-IB TDS Polygon",
@@ -196,7 +196,7 @@
         "URL(val.Data && val.Data == obj.Data)": {
             "Data": "http://super.esu.as/wp-content/themes/twentyeleven/inc/images/msg.jpg"
         },
-        "DBotScore": {
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "http://super.esu.as/wp-content/themes/twentyeleven/inc/images/msg.jpg",
             "Type": "url",
             "Vendor": "Group-IB TDS Polygon",
@@ -250,41 +250,41 @@
         }
     }],
     "file_reputation_results": [{
+        "Type": 1,
+        "ContentsFormat": "json",
         "Contents": {
+            "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
             "Found": true,
+            "Verdict": true,
+            "Score": 21.0,
             "Malware-families": [
                 "Trojan"
-            ],
-            "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
-            "Score": 21.0,
-            "Verdict": true
-        },
-        "ContentsFormat": "json",
-        "EntryContext": {
-            "DBotScore": {
-                "Indicator": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
-                "Score": 3,
-                "Type": "file",
-                "Vendor": "Group-IB TDS Polygon"
-            },
-            "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
-                "Malicious": {
-                    "Description": "TDS Polygon score: 21.0, Trojan",
-                    "Vendor": "Group-IB TDS Polygon"
-                },
-                "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815"
-            },
-            "Polygon.Analysis(val.SHA1 == obj.SHA1)": {
-                "Found": true,
-                "Malware-families": [
-                    "Trojan"
-                ],
-                "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
-                "Score": 21.0,
-                "Verdict": true
-            }
+            ]
         },
         "HumanReadable": "### Results\n|Found|Malware-families|SHA1|Score|Verdict|\n|---|---|---|---|---|\n| true | Trojan | 44b3f79dfd7c5861501a19a3bac89f544c7ff815 | 21.0 | true |\n",
-        "Type": 1
+        "EntryContext": {
+            "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+                "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
+                "Malicious": {
+                    "Vendor": "Group-IB TDS Polygon",
+                    "Description": "TDS Polygon score: 21.0, Trojan"
+                }
+            },
+            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+                "Indicator": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
+                "Type": "file",
+                "Vendor": "Group-IB TDS Polygon",
+                "Score": 3
+            },
+            "Polygon.Analysis(val.SHA1 == obj.SHA1)": {
+                "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
+                "Found": true,
+                "Verdict": true,
+                "Score": 21.0,
+                "Malware-families": [
+                    "Trojan"
+                ]
+            }
+        }
     }]
 }
