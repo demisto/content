@@ -16,14 +16,15 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: eventId==*
-  display: Fetch query
-  name: fetch_query
-  required: false
-  type: 0
-- defaultvalue: 50
+- defaultvalue: '50'
   display: Max fetch
   name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
   required: false
   type: 0
 - display: Incident type
@@ -50,7 +51,7 @@ script:
       description: Search events query.
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false

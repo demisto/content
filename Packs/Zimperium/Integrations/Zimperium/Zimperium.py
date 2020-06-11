@@ -149,7 +149,7 @@ class Client(BaseClient):
         elif itunes_id:
             url_suffix = f'/malware/public/reports/itunes/{itunes_id}'
         else:
-            url_suffix = f'/malware/public/reports/bundle/{app_hash}'
+            url_suffix = f'/malware/public/reports/hash/{app_hash}'
 
         return self._http_request(method='GET', url_suffix=url_suffix, headers=self._headers)
 
@@ -194,6 +194,7 @@ class Client(BaseClient):
             'rsql': query,
             'size': size,
             'page': page,
+            'sort': 'deviceTime,asc',
             'includeFullEventDetail': verbose,
         }
 
@@ -206,6 +207,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     Performs basic get request to get incident samples
     """
     client.users_search_request(query='objectId==*', size='10', page='0')
+    if demisto.params().get('isFetch'):
+        client.events_search_request(query='eventId==*', size='10', page='0', verbose=False)
     return 'ok', {}, {}
 
 
@@ -349,9 +352,13 @@ def app_classification_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
 
     application = client.app_classification_get_request(app_hash, app_name)
 
-    headers = ['objectId', 'hash', 'name', 'classification', 'score', 'privacyEnum', 'SecurityEnum']
-    human_readable = tableToMarkdown(name=f"Application:", t=application, headers=headers, removeNull=True)
-    entry_context = {f'Zimperium.Application(val.objectId: === obj.objectId)': application}
+    if isinstance(application, dict):  # an app name can have multiple results due to different versions.
+        application_data = application.get('content')
+    else:  # or it can have only one result, if queried using a hash or if it has only one version.
+        application_data = application[0]
+    headers = ['objectId', 'hash', 'name', 'version', 'classification', 'score', 'privacyEnum', 'securityEnum']
+    human_readable = tableToMarkdown(name=f"Application:", t=application_data, headers=headers, removeNull=True)
+    entry_context = {f'Zimperium.Application(val.objectId: === obj.objectId)': application_data}
 
     return human_readable, entry_context, application
 
@@ -420,16 +427,15 @@ def events_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     events_data = events.get('content')
     table_name = ''
     if not events.get('last'):
-        table_name = f' (To get the next users, run the command with the next page)'
-    headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
+        table_name = f' (To get the next events, run the command with the next page)'
+    headers = ['eventId', 'eventName', 'eventState', 'incidentSummary', 'severity', 'persistedTime']
     human_readable = tableToMarkdown(name=f"Users{table_name}:", t=events_data, headers=headers, removeNull=True)
-    entry_context = {f'Zimperium.Users(val.objectId === obj.objectId)': events_data}
+    entry_context = {f'Zimperium.Events(val.eventId === obj.eventId)': events_data}
 
     return human_readable, entry_context, events
 
 
-def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, fetch_query: str = 'eventId==*',
-                    max_fetch: str = '50'):
+def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: str = '50'):
     """
     This function will execute each interval (default is 1 minute).
 
@@ -437,43 +443,74 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, fetch
         client (Client): Zimperium client
         last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
         first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
-        fetch_query: events query
         max_fetch: max events to fetch
 
     Returns:
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
-
-    # Handle first time fetch
-    if last_fetch is None:
-        last_fetch, _ = dateparser.parse(first_fetch_time)
+    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+    if not last_run:  # if first time fetching
+        next_run = {
+            'time': parse_date_range(first_fetch_time, date_format=timestamp_format)[0],
+            'last_event_ids': []
+        }
     else:
-        last_fetch = dateparser.parse(last_fetch)
+        next_run = last_run
 
-    latest_created_time = last_fetch
     incidents = []
 
-    events = client.events_search_request(query=fetch_query, size=max_fetch, page='0', verbose=False)
+    events = client.events_search_request(query=f"persistedTime=gt={next_run.get('time')}",
+                                          size=max_fetch, page='0', verbose=False)
+    events_data = events.get('content')
 
-    for event in events:
-        incident_created_time = dateparser.parse(event['created_time'])
-        incident = {
-            'name': event['description'],
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(event)
-        }
+    if events_data:
+        last_event_ids = last_run.get('last_event_ids', [])
+        for event_data in events_data:
+            event_id = event_data.get('eventId')
+            if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
+                event_created_time = dateparser.parse(event_data.get('persistedTime'))
+                demisto.info(str(event_created_time))
+                incident = {
+                    'name': event_data.get('incidentSummary'),
+                    'occurred': event_created_time.strftime(timestamp_format),
+                    'severity': event_severity_to_dbot_score(event_data.get('severity')),
+                    'rawJSON': json.dumps(event_data)
+                }
+                incidents.append(incident)
+                last_event_ids.append(event_id)
 
-        incidents.append(incident)
+                next_run = {
+                    'time': event_created_time.strftime(timestamp_format),
+                    'last_event_ids': json.dumps(last_event_ids)  # save the event IDs from the last fetch
+                }
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
-
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
+    demisto.info(f'Zimperium last fetch data: {str(next_run)}')
     return next_run, incidents
+
+
+def event_severity_to_dbot_score(severity_str: str):
+    """Converts an severity string to DBot score representation
+        alert severity. Can be one of:
+        Low    ->  1
+        Medium ->  2
+        High   ->  3
+
+    Args:
+        severity_str: String representation of severity.
+
+    Returns:
+        Dbot representation of severity
+    """
+    severity = severity_str.lower()
+    if severity == 'LOW':
+        return 1
+    if severity == 'important':
+        return 2
+    if severity == 'critical':
+        return 3
+    demisto.info(f'Zimperium incident severity: {severity} is not known. Setting as unknown(DBotScore of 0).')
+    return 0
 
 
 def main():
@@ -488,7 +525,6 @@ def main():
     # fetch params
     first_fetch_time = params.get('fetch_time', '3 days').strip()
     max_fetch = min('50', params.get('max_fetch', '50'))
-    fetch_query = params.get('fetch_query', 'eventId==*')
 
     command = demisto.command()
     LOG(f'Command being called is {demisto.command()}')
@@ -511,7 +547,6 @@ def main():
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
-                fetch_query=fetch_query,
                 max_fetch=max_fetch,
             )
             demisto.setLastRun(next_run)
