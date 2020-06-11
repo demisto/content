@@ -361,21 +361,10 @@ def alert_resolve_command(client, args):
 
 @logger
 def departingemployee_add_command(client, args):
-    departure_epoch: Optional[int]
-    # Convert date to epoch
     departing_date = args.get("departuredate")
     username = args["username"]
     note = args.get("note")
-    departure_epoch = None
-    if departing_date:
-        try:
-            departure_epoch = int(time.mktime(time.strptime(departing_date, "%Y-%m-%d")))
-        except Exception:
-            return_error(
-                message="Could not add user to Departing Employee List: "
-                "unable to parse departure date. Is it in yyyy-MM-dd format?"
-            )
-    user_id = client.add_user_to_departing_employee(username, departure_epoch, note)
+    user_id = client.add_user_to_departing_employee(username, departing_date, note)
     if not user_id:
         return_error(message="Could not add user to Departing Employee List")
 
