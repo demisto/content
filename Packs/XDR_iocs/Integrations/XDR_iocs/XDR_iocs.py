@@ -235,7 +235,7 @@ def iocs_to_keep(client: Client):
 
 
 def create_last_iocs_query(from_date, to_date):
-    return f'modified:>={from_date} and modified:<{to_date}'
+    return f'modified:>={from_date} and modified:<{to_date} and ({Client.query})'
 
 
 def get_last_iocs(batch_size=200) -> List:
@@ -251,19 +251,34 @@ def get_last_iocs(batch_size=200) -> List:
     return iocs
 
 
+def get_indicators(indicators: Union[str, List[str]]) -> List:
+    if indicators:
+        iocs = []
+        not_found = []
+        for indicator in indicators.split(','):
+            data = demisto.searchIndicators(value=indicator).get('iocs')
+            if data:
+                iocs.extend(data)
+            else:
+                not_found.append(indicator)
+        if not_found:
+            return_warning('the indicator{} {} was not found.'.format('s' if len(not_found) > 1 else '', ', '.join(not_found)))
+        else:
+            return iocs
+    return []
+
+
 def tim_insert_jsons(client: Client):
-    indicators = demisto.args().get('indicator')
+    indicators = demisto.args().get('indicator', '')
     if not indicators:
         iocs = get_last_iocs()
     else:
-        iocs = []
-        for indicator in indicators.split(','):
-            iocs.extend(demisto.searchIndicators(query=f'value:{indicator}').get('iocs')[0])
-
-    path = 'tim_insert_jsons/'
-    requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
-    client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
-    return_outputs('push success.')
+        iocs = get_indicators(indicators)
+    if iocs:
+        path = 'tim_insert_jsons/'
+        requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
+        client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+    return_outputs('push done.')
 
 
 def iocs_command(client: Client):
