@@ -81,7 +81,7 @@ script:
       arguments:
         - name: tds_analysis_id
           required: true
-          description: Analysis ID in TDS
+          description: Analysis ID in TDS. Comma separated values.
           isArray: true
       outputs:
         - contextPath: File.Name
