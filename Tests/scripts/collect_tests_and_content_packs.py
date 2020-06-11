@@ -1178,8 +1178,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
 
     packs_to_install.add("DeveloperTools")
 
-    more_packs_to_install = conf.get_packs_of_tested_integrations(tests, id_set)
-    packs_to_install = packs_to_install.union(more_packs_to_install)
+    packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
     return tests, packs_to_install
 
