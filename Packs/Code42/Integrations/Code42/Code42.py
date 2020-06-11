@@ -18,6 +18,7 @@ from py42.sdk.queries.fileevents.filters import (
     DeviceUsername,
     ExposureType,
     EventType,
+    FileCategory,
 )
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
@@ -242,52 +243,97 @@ def _create_exposure_filter(exposure_arg):
     return ExposureType.is_in(exposure_arg)
 
 
-@logger
+class ObservationToSecurityQueryMapper(object):
+    _ENDPOINT_TYPE = "FedEndpointExfiltration"
+    _CLOUD_TYPE = "FedCloudSharePermissions"
+    _PUBLIC_SEARCHABLE = "PublicSearchableShare"
+    _PUBLIC_LINK = "PublicLinkShare"
+
+    def __init__(self, observation, actor):
+        self._obs = observation
+        self._actor = actor
+
+    @property
+    def _observation_data(self):
+        return self._obs["data"]
+
+    @property
+    def _exfiltration_type(self):
+        return self._obs["type"]
+
+    @property
+    def _is_endpoint_exfiltration(self):
+        return self._exfiltration_type == self._ENDPOINT_TYPE
+
+    @property
+    def _is_cloud_exfiltration(self):
+        return self._exfiltration_type == self._CLOUD_TYPE
+
+    @property
+    def _user_filter(self):
+        return DeviceUsername.eq(self._actor) if self._is_endpoint_exfiltration else Actor.eq(self._actor)
+
+    def map(self):
+        search_args = self._create_search_args()
+        query = self._create_query(search_args)
+        return str(query)
+
+    def _create_search_args(self):
+        search_args = []
+        exposure_types = self._observation_data["exposureTypes"]
+        begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
+        end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
+        search_args.append(self._user_filter)
+        search_args.append(EventTimestamp.on_or_after(begin_time))
+        search_args.append(EventTimestamp.on_or_before(end_time))
+
+        exposure_filters = self._create_exposure_filters(exposure_types) or []
+        for _filter in exposure_filters:
+            search_args.append(_filter)
+
+        category_filters = self._create_file_category_filters()
+        if category_filters:
+            search_args.append(category_filters)
+        return search_args
+
+    def _create_exposure_filters(self, exposure_types):
+        """
+        Determine exposure types based on alert type
+        """
+        if self._is_cloud_exfiltration:
+            exp_types = []
+            if self._PUBLIC_SEARCHABLE in exposure_types:
+                exp_types.append(ExposureType.IS_PUBLIC)
+            if self._PUBLIC_LINK in exposure_types:
+                exp_types.append(ExposureType.SHARED_VIA_LINK)
+            return [ExposureType.is_in(exp_types)]
+        elif self._is_endpoint_exfiltration:
+            return [EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]), ExposureType.is_in(exposure_types)]
+
+    def _create_file_category_filters(self):
+        """Determine if file categorization is significant"""
+        file_categories: Dict[str, Any]
+        filters = []
+        for file_type in self._observation_data["fileCategories"]:
+            if file_type["isSignificant"]:
+                category_value = CODE42_FILE_TYPE_MAPPER.get(file_type["category"], "UNCATEGORIZED")
+                file_category = FileCategory.eq(category_value)
+                filters.append(file_category)
+        if len(filters):
+            file_categories = {"filterClause": "OR", "filters": filters}
+            return json.dumps(file_categories)
+
+    @logger
+    def _create_query(self, search_args):
+        """Convert list of search criteria to *args"""
+        query = FileEventQuery.all(*search_args)
+        LOG("Alert Observation Query: {}".format(query))
+        return query
+
+
 def map_observation_to_security_query(observation, actor):
-    file_categories: Dict[str, Any]
-    observation_data = observation["data"]
-    search_args = []
-    exp_types = []
-    exposure_types = observation_data["exposureTypes"]
-
-    begin_time = _convert_date_arg_to_epoch(observation_data["firstActivityAt"])
-    end_time = _convert_date_arg_to_epoch(observation_data["lastActivityAt"])
-
-    if observation["type"] == "FedEndpointExfiltration":
-        search_args.append(DeviceUsername.eq(actor))
-    else:
-        search_args.append(Actor.eq(actor))
-
-    search_args.append(EventTimestamp.on_or_after(begin_time))
-    search_args.append(EventTimestamp.on_or_before(end_time))
-    # Determine exposure types based on alert type
-    if observation["type"] == "FedCloudSharePermissions":
-        if "PublicSearchableShare" in exposure_types:
-            exp_types.append(ExposureType.IS_PUBLIC)
-        if "PublicLinkShare" in exposure_types:
-            exp_types.append(ExposureType.SHARED_VIA_LINK)
-    elif observation["type"] == "FedEndpointExfiltration":
-        exp_types = exposure_types
-        search_args.append(EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]))
-    search_args.append(ExposureType.is_in(exp_types))
-    # Determine if file categorization is significant
-    file_categories = {"filterClause": "OR"}
-    filters = []
-    for filetype in observation_data["fileCategories"]:
-        if filetype["isSignificant"]:
-            file_category = {
-                "operator": "IS",
-                "term": "fileCategory",
-                "value": CODE42_FILE_TYPE_MAPPER.get(filetype["category"], "UNCATEGORIZED"),
-            }
-            filters.append(file_category)
-    if len(filters):
-        file_categories["filters"] = filters
-        search_args.append(json.dumps(file_categories))
-    # Convert list of search criteria to *args
-    query = FileEventQuery.all(*search_args)
-    LOG("Alert Observation Query: {}".format(query))
-    return str(query)
+    mapper = ObservationToSecurityQueryMapper(observation, actor)
+    return mapper.map()
 
 
 def _convert_date_arg_to_epoch(date_arg):
@@ -433,6 +479,7 @@ class Code42SecurityIncidentFetcher(object):
         self._include_files = include_files,
         self._integration_context = integration_context
 
+    @logger
     def fetch(self):
         remaining_incidents_from_last_run = self._fetch_remaining_incidents_from_last_run()
         if remaining_incidents_from_last_run:
@@ -484,7 +531,6 @@ class Code42SecurityIncidentFetcher(object):
         return self._client.search_json(security_data_query)
 
 
-@logger
 def fetch_incidents(
     client,
     last_run,
