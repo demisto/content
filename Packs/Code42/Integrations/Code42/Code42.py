@@ -175,7 +175,7 @@ class Code42Client(BaseClient):
     def remove_user_from_departing_employee(self, username):
         try:
             user_id = self.get_user_id(username)
-            self._sdk.detectionlists.departing_employee.resolve(user_id)
+            self._sdk.detectionlists.departing_employee.remove(user_id)
         except Exception:
             return None
         return user_id

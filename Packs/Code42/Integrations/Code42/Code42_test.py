@@ -791,7 +791,9 @@ def test_departing_employee_remove_command(code42_sdk_mock):
         sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     _, _, res = departingemployee_remove_command(client, {"username": "user1@example.com"})
-    assert res == "123412341234123412"  # value found in GET_USER_RESPONSE
+    expected = "123412341234123412"  # value found in GET_USER_RESPONSE
+    assert res == expected
+    code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(expected)
 
 
 def test_departing_employee_add_command(code42_sdk_mock):
