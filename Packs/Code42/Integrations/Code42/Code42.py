@@ -163,8 +163,7 @@ class Code42Client(BaseClient):
             res = self._sdk.alerts.get_details(alert_id)
         except Exception:
             return None
-        details = res["alerts"][0] if res["alerts"] else None
-        return details
+        return res["alerts"][0]
 
     def get_current_user(self):
         try:
@@ -193,7 +192,7 @@ class Code42Client(BaseClient):
             res = self._sdk.users.get_by_username(username)
         except Exception:
             return None
-        return res["users"][0]["userUid"] if res["users"] else None
+        return res["users"][0]["userUid"]
 
     def search_json(self, payload):
         try:
@@ -244,10 +243,10 @@ def map_observation_to_security_query(observation, actor):
     else:
         search_args.append(Actor.eq(actor))
 
-    begin_time = time.mktime(time.strptime(begin_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z"))
-    search_args.append(EventTimestamp.on_or_after(int(begin_time)))
-    end_time = time.mktime(time.strptime(end_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z"))
-    search_args.append(int(end_time))
+    begin = time.mktime(time.strptime(begin_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z"))
+    search_args.append(EventTimestamp.on_or_after(int(begin)))
+    end = time.mktime(time.strptime(end_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z"))
+    search_args.append(EventTimestamp.on_or_before(int(end)))
     # Determine exposure types based on alert type
     if observation["type"] == "FedCloudSharePermissions":
         if "PublicSearchableShare" in exposure_types:
