@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added max parameter to the `securonix-list-incidents` command
+  - Added the `max` parameter to the `securonix-list-incidents` command.
   - Added the `max_fetch` parameter to the integration configuration, where the default and maximum value is 50.
   - Fixed an issue where duplicate incidents where fetched.
 
