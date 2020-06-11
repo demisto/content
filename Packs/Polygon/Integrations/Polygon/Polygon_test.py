@@ -14,7 +14,7 @@ with open("test_data/args.json", "r") as f:
 with open("test_data/get_report.json", "r") as f:
     MOCKED_REPORT = json.load(f)
 
-with open("test_data/get_file_reputation.json", "r") as f:    
+with open("test_data/get_file_reputation.json", "r") as f:
     MOCKED_FILE_REPUTATION_DATA = json.load(f)
 
 with open("test_data/upload.json", "r") as f:
