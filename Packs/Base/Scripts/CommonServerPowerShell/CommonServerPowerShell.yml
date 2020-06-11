@@ -12,7 +12,5 @@ system: true
 fromversion: 5.5.0
 alt_dockerimages: # used for unit testing
   - demisto/powershell:7.0.1.9103
-  - demisto/powershell-deb:7.0.1.9103
-  - demisto/powershell-ubuntu:7.0.1.9103
 tests:
   - PowerShellCommon-Test
