@@ -59,7 +59,8 @@ class GCPConfig(object):
                        "CommonWidgets",
                        "TIM_Processing",
                        "TIM_SIEM",
-                       "HelloWorld"
+                       "HelloWorld",
+                       "DefaultPlaybook"
                        ]  # cores packs list
 
 
