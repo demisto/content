@@ -3,18 +3,28 @@ import json
 from Polygon import demisto, Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \
     HASH_REPUTATION
 
-
-with open("test_data/mocked_data.json", "r") as f:
+with open("test_data/args.json", "r") as f:
     data = json.load(f)
-    MOCKED_REPORT = data["report"]
     MOCKED_CLIENT_KWARGS = data["client_kwargs"]
     MOCKED_UPLOAD_FILE_ARGS = data["upload_file_args"]
     MOCKED_UPLOAD_URL_ARGS = data["upload_url_args"]
     MOCKED_ANALYSIS_INFO_ARGS = data["analysis_info_args"]
     MOCKED_FILE_ARGS = data["file_args"]
-    MOCKED_FILE_REPUTATION_DATA = data["file_reputation_data"]
-    MOCKED_UPLOAD_DATA = data["upload_data"]
-    MOCKED_ANALYSIS_INFO_DATA = data["analysis_info_data"]
+
+with open("test_data/get_report.json", "r") as f:
+    MOCKED_REPORT = json.load(f)
+
+with open("test_data/get_file_reputation.json", "r") as f:    
+    MOCKED_FILE_REPUTATION_DATA = json.load(f)
+
+with open("test_data/upload.json", "r") as f:
+    MOCKED_UPLOAD_DATA = json.load(f)
+
+with open("test_data/get_analysis_info.json", "r") as f:
+    MOCKED_ANALYSIS_INFO_DATA = json.load(f)
+
+with open("test_data/results.json", "r") as f:
+    data = json.load(f)
     MOCKED_UPLOAD_FILE_RESULTS = data["upload_file_results"]
     MOCKED_UPLOAD_URL_RESULTS = data["upload_url_results"]
     MOCKED_ANALYSIS_INFO_RESULTS = data["analysis_info_results"]

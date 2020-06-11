@@ -86,56 +86,28 @@ class Process(Common.Indicator):
         return {"Process": process_context}
 
 
-class Client:
-    def __init__(self, base_url, api_key, verify, proxies, language):
-        self.base_url = base_url
-        self.verify = verify
-        self.proxies = proxies
-        self.language = language
-        self.headers = {'X-API-KEY': api_key}
-
-    def _resp_handle(self, resp, decode=True):
-        if resp.status_code != 200:
-            if resp.status_code == 400:
-                raise ValueError(f"Bad request: {resp.json()['messages']}")
-            elif resp.status_code == 423:
-                raise ValueError("TDS is being updated, please try again later")
-            raise ValueError(f"Error in API call to TDS server: {resp.status_code}. Reason: {resp.text}")
-        if decode:
-            try:
-                return resp.json()
-            except Exception:
-                raise ValueError("Incorrect TDS answer format")
-        return resp.content
-
-    def _http_request(self, method, url_suffix, params=None, data=None, files=None, decode=True):
-        url = urljoin(self.base_url, url_suffix)
-        resp = requests.request(
-            method,
-            url,
-            headers=self.headers,
-            verify=self.verify,
-            params=params,
-            data=data,
-            files=files,
-            proxies=self.proxies
-        )
-        return self._resp_handle(resp, decode)
+class Client(BaseClient):
+    def __init__(self, base_url, verify, api_key, language):
+        super().__init__(base_url=base_url, verify=verify)
+        self._language = language
+        self._headers = {'X-API-KEY': api_key}
 
     def _check_report_available(self, file_info):
         report = False
         if "analgin_result" in file_info:
-            if "commit" in file_info["analgin_result"]:
-                if "reports" in file_info["analgin_result"]:
-                    if len(file_info["analgin_result"]["reports"]):
+            if "commit" in file_info.get("analgin_result", {}):
+                if "reports" in file_info.get("analgin_result", {}):
+                    if len(file_info["analgin_result"].get("reports", [])):
                         if "id" in file_info["analgin_result"]["reports"][0]:
                             report = True
         return report
 
     def _get_fids(self, resp):
-        fids = resp["data"].get("ids", [])
+        fids = resp.get("data", {}).get("ids", [])
         if not fids:
-            raise ValueError("TDS server error")
+            err_msg = "There is no analysis ID in TDS response." \
+                      "Try to upload file/url one more time."
+            raise DemistoException(err_msg)
         return fids[0]
 
     def upload_file(self, file_name, file_path, password=""):
@@ -144,7 +116,7 @@ class Client:
                 method='post',
                 url_suffix=ANALGIN_UPLOAD,
                 files={'files': (file_name, f)},
-                data=dict(language=self.language, password=password)
+                data=dict(language=self._language, password=password)
             )
         return self._get_fids(resp)
 
@@ -153,19 +125,19 @@ class Client:
             method='post',
             url_suffix=ANALGIN_UPLOAD,
             files={'files': ("url.txt", StringIO(url))},
-            data=dict(language=self.language)
+            data=dict(language=self._language)
         )
         return self._get_fids(resp)
 
     def get_attach(self, id=None):
         url = ATTACH.format(id) if id else ATTACHES
-        resp = self._http_request('get', url)["data"]["results"]
+        results = self._http_request('get', url).get("data", {}).get("results", [])
         if id:
             try:
-                resp = resp[0]
+                results = results[0]
             except Exception:
-                raise ValueError(f"File with ID={id} does not exist")
-        return resp
+                raise DemistoException(f"File with ID={id} does not exist")
+        return results
 
     def get_analysis_info(self, tds_analysis_id):
         file = self.get_attach(tds_analysis_id)
@@ -175,8 +147,9 @@ class Client:
                 report = self._http_request('get', REPORT.format(tds_analysis_id,
                                                                  file["analgin_result"]["commit"],
                                                                  file["analgin_result"]["reports"][0]["id"]))
-                resp.update({'report': report['data']})
-            except ValueError:
+                if "data" in report:
+                    resp.update({'report': report['data']})
+            except Exception:
                 pass
         return resp
 
@@ -186,9 +159,9 @@ class Client:
             return self._http_request(
                 method='get',
                 url_suffix=file["file_url"][1:],
-                decode=False
+                resp_type="content"
             )
-        raise ValueError("No reports found")
+        raise DemistoException(f"No reports for analysis: {tds_analysis_id}")
 
     def export_report(self, tds_analysis_id):
         file = self.get_attach(tds_analysis_id)
@@ -198,9 +171,9 @@ class Client:
                 url_suffix=REPORT_EXPORT.format(tds_analysis_id,
                                                 file["analgin_result"]["commit"],
                                                 file["analgin_result"]["reports"][0]["id"]),
-                decode=False
+                resp_type="content"
             )
-        raise ValueError("No reports found")
+        raise DemistoException(f"No reports for analysis: {tds_analysis_id}")
 
     def export_pcap(self, tds_analysis_id):
         file = self.get_attach(tds_analysis_id)
@@ -210,30 +183,27 @@ class Client:
                 url_suffix=PCAP_EXPORT.format(tds_analysis_id,
                                               file["analgin_result"]["commit"],
                                               file["analgin_result"]["reports"][0]["id"]),
-                decode=False
+                resp_type="content"
             )
-        raise ValueError("No dump files found")
+        raise DemistoException(f"No reports for analysis: {tds_analysis_id}")
 
     def export_video(self, tds_analysis_id):
         file = self.get_attach(tds_analysis_id)
         if self._check_report_available(file):
-            try:
-                return self._http_request(
-                    method='get',
-                    url_suffix=VIDEO_EXPORT.format(tds_analysis_id,
-                                                   file["analgin_result"]["commit"],
-                                                   file["analgin_result"]["reports"][0]["id"]),
-                    decode=False
-                )
-            except ValueError:
-                return None
-        raise ValueError("No dump files found")
+            return self._http_request(
+                method='get',
+                url_suffix=VIDEO_EXPORT.format(tds_analysis_id,
+                                               file["analgin_result"]["commit"],
+                                               file["analgin_result"]["reports"][0]["id"]),
+                resp_type="content"
+            )
+        raise DemistoException(f"No reports for analysis: {tds_analysis_id}")
 
     def get_hash_reputation(self, hash_type, hash_value):
         return self._http_request(
-            method='GET',
+            method='get',
             url_suffix=HASH_REPUTATION.format(hash_type, hash_value)
-        )["data"]
+        ).get("data", {})
 
 
 def drop_prefix(id_with_prefix):
@@ -241,50 +211,51 @@ def drop_prefix(id_with_prefix):
 
 
 def serialize_report_info(report, analysis_type):
+    info = report.get('info', {})
     res = {
-        "Verdict": "Malicious" if report["info"]["verdict"] else "Benign",
-        "Started": report["info"]["started"],
-        "Analyzed": report["info"]["ended"],
-        "Internet-connection": "Available" if report["info"]["internet_available"] else "Unavailable",
+        "Verdict": "Malicious" if info.get("verdict") else "Benign",
+        "Started": info.get("started"),
+        "Analyzed": info.get("ended"),
+        "Internet-connection": "Available" if info.get("internet_available") else "Unavailable",
     }
-    if report['info']['verdict']:
+    if info.get('verdict'):
         res.update({
-            "Probability": "{:.2f}%".format(report["info"]["probability"]),
-            "Families": ", ".join(report["info"]["families"]),
-            "Score": report["info"]["score"],
-            "DumpExists": any(map(lambda vals: len(vals) > 0, report["network"].values()))
+            "Probability": "{:.2f}%".format(info.get("probability", 0.0)),
+            "Families": ", ".join(info.get("families", [])),
+            "Score": info.get("score", 0),
+            "DumpExists": any(map(lambda vals: len(vals) > 0, report.get("network", {}).values()))
         })
     if analysis_type == FILE_TYPE:
         res.update({
-            "Type": report["target"]["file"]["type"]
+            "Type": report.get("target", {}).get("file", {}).get("type")
         })
     else:
         res.update({
-            "URL": report["target"]["url"]
+            "URL": report.get("target", {}).get("url")
         })
     return res
 
 
 def serialize_analysis_info(info, analysis_type, report):
     res = {
-        'ID': analysis_type + str(info["id"]),
+        'ID': analysis_type + str(info.get("id", "")),
         'Status': 'Finished' if report else 'In Progress',
-        'Result': info['verdict']
+        'Result': info.get('verdict')
     }
     if analysis_type == FILE_TYPE:
         res.update({
-            'Name': info["original_filename"],
-            'Size': info['file_size'],
-            'MD5': info['md5'],
-            'SHA1': info['sha1'],
-            'SHA256': info['sha256'],
+            'Name': info.get("original_filename"),
+            'Size': info.get('file_size'),
+            'MD5': info.get('md5'),
+            'SHA1': info.get('sha1'),
+            'SHA256': info.get('sha256'),
         })
     return res
 
 
 def get_human_readable_analysis_info(analysis_info):
     return tableToMarkdown(
-        f"Analysis {analysis_info['ID']}",
+        f"Analysis {analysis_info.get('ID')}",
         analysis_info,
         removeNull=True
     )
@@ -293,26 +264,27 @@ def get_human_readable_analysis_info(analysis_info):
 def get_main_indicator(report, analysis_type):
     score = Common.DBotScore.GOOD
     malicious = None
-    if report["info"]["verdict"]:
+    if report.get("info", {}).get("verdict"):
         score = Common.DBotScore.BAD
         malicious = "Verdict probability: {}%".format(
-            report["info"]["probability"]
+            report.get("info", {}).get("probability")
         )
         signatures = []
-        for signature in report["signatures"]:
+        for signature in report.get("signatures", []):
             if signature.get("name") == "yara_rules":
                 signatures += [s.get('ioc') for s in signature.get('marks', [])]
         if signatures:
             malicious += ", iocs: {}".format(", ".join(signatures))
     if analysis_type == FILE_TYPE:
+        tfile = report.get("target", {}).get("file", {})
         return Common.File(
-            name=report["target"]["file"]["name"],
-            file_type=report["target"]["file"]["type"],
-            md5=report["target"]["file"]["md5"],
-            sha1=report["target"]["file"]["sha1"],
-            sha256=report["target"]["file"]["sha256"],
+            name=tfile.get("name"),
+            file_type=tfile.get("type"),
+            md5=tfile.get("md5"),
+            sha1=tfile.get("sha1"),
+            sha256=tfile.get("sha256"),
             dbot_score=Common.DBotScore(
-                indicator=report["target"]["file"]["md5"],
+                indicator=tfile.get("md5"),
                 indicator_type=DBotScoreType.FILE,
                 integration_name=INTEGRATION_NAME,
                 score=score,
@@ -320,10 +292,11 @@ def get_main_indicator(report, analysis_type):
             )
         )
     else:
+        url = report.get("target", {}).get("url")
         return Common.URL(
-            url=report['target']['url'],
+            url=url,
             dbot_score=Common.DBotScore(
-                indicator=report['target']['url'],
+                indicator=url,
                 indicator_type=DBotScoreType.URL,
                 integration_name=INTEGRATION_NAME,
                 score=score,
@@ -334,16 +307,16 @@ def get_main_indicator(report, analysis_type):
 
 def get_packages_indicators(report):
     ids = []
-    for package in report["packages"]:
-        info = package['file_info']
+    for package in report.get("packages", []):
+        info = package.get('file_info', {})
         file = Common.File(
-            name=info['name'],
-            file_type=info['type'],
-            md5=info['md5'],
-            sha1=info['sha1'],
-            sha256=info['sha256'],
+            name=info.get('name'),
+            file_type=info.get('type'),
+            md5=info.get('md5'),
+            sha1=info.get('sha1'),
+            sha256=info.get('sha256'),
             dbot_score=Common.DBotScore(
-                indicator=info['sha1'],
+                indicator=info.get('sha1'),
                 indicator_type=DBotScoreType.FILE,
                 integration_name=INTEGRATION_NAME,
                 score=0
@@ -355,20 +328,20 @@ def get_packages_indicators(report):
 
 def get_network_indicators(report):
     ids: List[Common.Indicator] = []
-    network = report['network']
-    for dns in network['dns']:
+    network = report.get('network', {})
+    for dns in network.get('dns', []):
         domain = Common.Domain(
-            domain=dns['request'],
-            dns=", ".join(list(map(lambda x: x['data'], dns['answers']))),
+            domain=dns.get('request'),
+            dns=", ".join(list(map(lambda x: x.get('data'), dns.get('answers', [])))),
             dbot_score=Common.DBotScore(
-                indicator=dns['request'],
+                indicator=dns.get('request'),
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=INTEGRATION_NAME,
                 score=0
             )
         )
         ids.append(domain)
-    for host in network['hosts'] + [h[0] for h in network['dead_hosts']]:
+    for host in network.get('hosts', []) + [h[0] for h in network.get('dead_hosts', [])]:
         ip = Common.IP(
             ip=host,
             dbot_score=Common.DBotScore(
@@ -379,11 +352,11 @@ def get_network_indicators(report):
             )
         )
         ids.append(ip)
-    for http in network['http']:
+    for http in network.get('http', []):
         url = Common.URL(
-            url=http['uri'],
+            url=http.get('uri'),
             dbot_score=Common.DBotScore(
-                indicator=http['uri'],
+                indicator=http.get('uri'),
                 indicator_type=DBotScoreType.URL,
                 integration_name=INTEGRATION_NAME,
                 score=0
@@ -396,21 +369,21 @@ def get_network_indicators(report):
 
 def get_monitor_indicators(report):
     ids: List[Common.Indicator] = []
-    for p in report['goo_monitor']['processes']:
+    for p in report.get('goo_monitor', {}).get('processes', []):
         process = Process(
-            name=p['basename'],
-            pid=str(p['pid']),
-            command_line=p['cmdline'],
-            start_time=p['started_at'],
-            end_time=p['exited_at'],
-            path=p['filename'],
+            name=p.get('basename'),
+            pid=str(p.get('pid')),
+            command_line=p.get('cmdline'),
+            start_time=p.get('started_at'),
+            end_time=p.get('exited_at'),
+            path=p.get('filename'),
         )
         ids.append(process)
-        for regkey in p['regkeys']:
-            if regkey['action'] == 'regkey_written':
+        for regkey in p.get('regkeys', []):
+            if regkey.get('action') == 'regkey_written':
                 reg = RegistryKey(
-                    path=regkey['ioc'],
-                    value=str(regkey['value'])
+                    path=regkey.get('ioc'),
+                    value=str(regkey.get('value'))
                 )
                 ids.append(reg)
 
@@ -432,7 +405,7 @@ def analysis_info_command(client, args):
     for tds_analysis_id in tds_analysis_id_array:
         analysis_type = tds_analysis_id[0]
         res = client.get_analysis_info(drop_prefix(tds_analysis_id))
-        analysis_info = serialize_analysis_info(res['file'], analysis_type, report='report' in res)
+        analysis_info = serialize_analysis_info(res.get('file'), analysis_type, report='report' in res)
         indicators = []
         if 'report' in res:
             if analysis_type == URL_TYPE:
@@ -509,14 +482,14 @@ def upload_file_command(client, args):
     password = args.get('password')
     file_obj = demisto.getFilePath(file_id)
     # Ignoring non ASCII
-    file_name = file_obj['name'].encode('ascii', 'ignore')
-    file_path = file_obj['path']
+    file_name = file_obj.get('name', '').encode('ascii', 'ignore')
+    file_path = file_obj.get('path')
     res = client.upload_file(file_name, file_path, password)
     res = f"{FILE_TYPE}{res}"
     outputs = {
         'ID': res,
         'EntryID': file_id,
-        'FileName': file_obj['name'],
+        'FileName': file_obj.get('name'),
         'Status': 'In Progress'
     }
     results = CommandResults(
@@ -545,12 +518,12 @@ def file_command(client, args):
             }
             score = Common.DBotScore.NONE
             malicious = None
-            if res["found"]:
-                if res["verdict"]:
+            if res.get("found"):
+                if res.get("verdict"):
                     score = Common.DBotScore.BAD
-                    malicious = "TDS Polygon score: {}".format(res['score'])
+                    malicious = "TDS Polygon score: {}".format(res.get('score'))
                     if res.get('malware_families'):
-                        malicious += ", {}".format(", ".join(res["malware_families"]))
+                        malicious += ", {}".format(", ".join(res.get("malware_families", [])))
                 else:
                     score = Common.DBotScore.GOOD
             dbot_score = Common.DBotScore(
@@ -588,7 +561,7 @@ def main():
     report_language = LANGUAGE_TO_CODE[params.get('report_language')]
 
     # Remove proxy if not set to true in params
-    proxies = handle_proxy()
+    handle_proxy()
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -597,16 +570,15 @@ def main():
             base_url=base_url,
             api_key=api_key,
             verify=verify_certificate,
-            proxies=proxies,
             language=report_language
         )
         commands = {
             'polygon-upload-file': upload_file_command,
             'polygon-upload-url': upload_url_command,
             'polygon-analysis-info': analysis_info_command,
-            'polygon-report-export': export_report_command,
-            'polygon-pcap-export': export_pcap_command,
-            'polygon-video-export': export_video_command,
+            'polygon-export-report': export_report_command,
+            'polygon-export-pcap': export_pcap_command,
+            'polygon-export-video': export_video_command,
             'file': file_command
         }
 

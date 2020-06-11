@@ -826,14 +826,14 @@ Get TDS Polygon analysis info
 >| 2020-05-07 10:29:42 | true | F2118597 | Available | ba9fe2cb8ee2421ea24a55306ce9d923 | link.pdf | 64.80% | true | 44b3f79dfd7c5861501a19a3bac89f544c7ff815 | 0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697 | 24.6 | 36375 | 2020-05-07 10:27:30 | Finished | PDF document, version 1.7 | Malicious |
 
 
-### polygon-report-export
+### polygon-export-report
 ***
 Export an archive with TDS Polygon report to War Room
 
 
 #### Base Command
 
-`polygon-report-export`
+`polygon-export-report`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -853,7 +853,7 @@ Export an archive with TDS Polygon report to War Room
 
 
 #### Command Example
-```!polygon-report-export tds_analysis_id=F2118597```
+```!polygon-export-report tds_analysis_id=F2118597```
 
 #### Context Example
 ```
@@ -873,14 +873,14 @@ Export an archive with TDS Polygon report to War Room
 
 
 
-### polygon-pcap-export
+### polygon-export-pcap
 ***
 Network activity dump export
 
 
 #### Base Command
 
-`polygon-pcap-export`
+`polygon-export-pcap`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -900,7 +900,7 @@ Network activity dump export
 
 
 #### Command Example
-```!polygon-pcap-export tds_analysis_id=F2118597```
+```!polygon-export-pcap tds_analysis_id=F2118597```
 
 #### Context Example
 ```
@@ -920,14 +920,14 @@ Network activity dump export
 
 
 
-### polygon-video-export
+### polygon-export-video
 ***
 Screen activity video export
 
 
 #### Base Command
 
-`polygon-video-export`
+`polygon-export-video`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -947,7 +947,7 @@ Screen activity video export
 
 
 #### Command Example
-```!polygon-video-export tds_analysis_id=F2118597```
+```!polygon-export-video tds_analysis_id=F2118597```
 
 #### Context Example
 ```

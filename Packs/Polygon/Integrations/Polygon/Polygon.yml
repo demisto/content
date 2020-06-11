@@ -224,7 +224,7 @@ script:
         - contextPath: Polygon.Analysis.Process
           description: The information about processes started during the analysis
       description: Get TDS Polygon analysis info
-    - name: polygon-report-export
+    - name: polygon-export-report
       arguments:
         - name: tds_analysis_id
           required: true
@@ -246,7 +246,7 @@ script:
           description: The report file info
           type: string
       description: Export an archive with TDS Polygon report to War Room
-    - name: polygon-pcap-export
+    - name: polygon-export-pcap
       arguments:
         - name: tds_analysis_id
           required: true
@@ -267,7 +267,7 @@ script:
         - contextPath: InfoFile.Info
           description: The dump file info
       description: Network activity dump export
-    - name: polygon-video-export
+    - name: polygon-export-video
       arguments:
         - name: tds_analysis_id
           required: true

@@ -16,9 +16,9 @@ This playbook does not use any integrations.
 ### Commands
 * polygon-upload-url
 * polygon-analysis-info
-* polygon-report-export
-* polygon-pcap-export
-* polygon-video-export
+* polygon-export-report
+* polygon-export-pcap
+* polygon-export-video
 
 ## Playbook Inputs
 ---
@@ -84,4 +84,4 @@ This playbook does not use any integrations.
 | Polygon.Analysis.Process | unknown | The information about processes started during the analysis | 
 
 ## Playbook Image
-![Polygon Detonate URL](https://github.com/demisto/content/raw/Polygon-Initial/docs/images/playbooks/Detonate_URL_-_Group-IB_TDS_Polygon.png)
+![Polygon Detonate URL](https://github.com/demisto/content/blob/ac0bc92612ebb5412c6dc9cbf727fd09549c6bec/docs/images/playbooks/Detonate_URL_-_Group-IB_TDS_Polygon.png)
