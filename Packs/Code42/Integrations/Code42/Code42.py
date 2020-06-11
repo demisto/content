@@ -21,7 +21,6 @@ from py42.sdk.queries.fileevents.filters import (
 )
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
-import time
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -250,17 +249,17 @@ def map_observation_to_security_query(observation, actor):
     search_args = []
     exp_types = []
     exposure_types = observation_data["exposureTypes"]
-    begin_time = observation_data["firstActivityAt"]
-    end_time = observation_data["lastActivityAt"]
+
+    begin_time = _convert_date_arg_to_epoch(observation_data["firstActivityAt"])
+    end_time = _convert_date_arg_to_epoch(observation_data["lastActivityAt"])
+
     if observation["type"] == "FedEndpointExfiltration":
         search_args.append(DeviceUsername.eq(actor))
     else:
         search_args.append(Actor.eq(actor))
 
-    begin = time.mktime(time.strptime(begin_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z"))
-    search_args.append(EventTimestamp.on_or_after(int(begin)))
-    end = time.mktime(time.strptime(end_time.replace("0000000", "000"), "%Y-%m-%dT%H:%M:%S.000Z"))
-    search_args.append(EventTimestamp.on_or_before(int(end)))
+    search_args.append(EventTimestamp.on_or_after(begin_time))
+    search_args.append(EventTimestamp.on_or_before(end_time))
     # Determine exposure types based on alert type
     if observation["type"] == "FedCloudSharePermissions":
         if "PublicSearchableShare" in exposure_types:
@@ -289,6 +288,11 @@ def map_observation_to_security_query(observation, actor):
     query = FileEventQuery.all(*search_args)
     LOG("Alert Observation Query: {}".format(query))
     return str(query)
+
+
+def _convert_date_arg_to_epoch(date_arg):
+    date_arg = date_arg[:25]
+    return (datetime.strptime(date_arg, u"%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)).total_seconds()
 
 
 @logger
