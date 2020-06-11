@@ -389,52 +389,52 @@ MOCK_ALERTS_RESPONSE = """{
 }"""
 
 MOCK_ALERT_DETAILS_RESPONSE = """{
-    "type$": "ALERT_DETAILS_RESPONSE", 
+    "type$": "ALERT_DETAILS_RESPONSE",
     "alerts": [
-        {"type$": "ALERT_DETAILS", 
-        "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663", 
-        "type": "FED_ENDPOINT_EXFILTRATION", 
-        "name": "Departing Employee Alert", 
-        "description": "Cortex XSOAR is cool.", 
-        "actor": "user1@example.com", 
-        "actorId": "912098363086307495", 
-        "target": "N/A", 
-        "severity": "HIGH", 
-        "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649", 
-        "ruleSource": "Alerting", 
-        "id": "36fb8ca5-0533-4d25-9763-e09d35d60610", 
-        "createdAt": "2019-10-02T17:02:23.5867670Z", 
-        "state": "OPEN", 
+        {"type$": "ALERT_DETAILS",
+        "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+        "type": "FED_ENDPOINT_EXFILTRATION",
+        "name": "Departing Employee Alert",
+        "description": "Cortex XSOAR is cool.",
+        "actor": "user1@example.com",
+        "actorId": "912098363086307495",
+        "target": "N/A",
+        "severity": "HIGH",
+        "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+        "ruleSource": "Alerting",
+        "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
+        "createdAt": "2019-10-02T17:02:23.5867670Z",
+        "state": "OPEN",
         "observations": [
             {
-                "type$": "OBSERVATION", 
-                "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce", 
-                "observedAt": "2020-05-28T12:50:00.0000000Z", 
-                "type": "FedEndpointExfiltration", 
+                "type$": "OBSERVATION",
+                "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
+                "observedAt": "2020-05-28T12:50:00.0000000Z",
+                "type": "FedEndpointExfiltration",
                 "data": {
-                    "type$": "OBSERVED_ENDPOINT_ACTIVITY", 
-                    "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce", 
-                    "sources": ["Endpoint"], 
+                    "type$": "OBSERVED_ENDPOINT_ACTIVITY",
+                    "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
+                    "sources": ["Endpoint"],
                     "exposureTypes": ["ApplicationRead"],
                     "firstActivityAt": "2020-05-28T12:50:00.0000000Z",
-                    "lastActivityAt": "2020-05-28T12:50:00.0000000Z", 
-                    "fileCount": 3, 
-                    "totalFileSize": 533846, 
+                    "lastActivityAt": "2020-05-28T12:50:00.0000000Z",
+                    "fileCount": 3,
+                    "totalFileSize": 533846,
                     "fileCategories": [
                         {
-                            "type$": "OBSERVED_FILE_CATEGORY", 
-                            "category": "Image", 
-                            "fileCount": 3, 
-                            "totalFileSize": 533846, 
+                            "type$": "OBSERVED_FILE_CATEGORY",
+                            "category": "Image",
+                            "fileCount": 3,
+                            "totalFileSize": 533846,
                             "isSignificant": false
                         }
-                    ], 
+                    ],
                     "files": [
                         {
-                            "type$": "OBSERVED_FILE", 
+                            "type$": "OBSERVED_FILE",
                             "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
-                            "path": "C:/Users/QA/Downloads/", 
-                            "name": "Customers..jpg", 
+                            "path": "C:/Users/QA/Downloads/",
+                            "name": "Customers..jpg",
                             "category": "Image",
                             "size": 265122
                         },
@@ -450,12 +450,12 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
                             "type$": "OBSERVED_FILE",
                             "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_7",
                             "path": "C:/Users/QA/Downloads/",
-                            "name": "company_secrets.ps", 
-                            "category": "Image", 
+                            "name": "company_secrets.ps",
+                            "category": "Image",
                             "size": 139595
                         }
-                    ], 
-                    "syncToServices": [], 
+                    ],
+                    "syncToServices": [],
                     "sendingIpAddresses": ["127.0.0.1"]
                     }
                 }
@@ -667,32 +667,32 @@ MOCK_OBSERVATION_QUERIES = [
 
 MOCK_GET_USER_RESPONSE = """
 {
-    "totalCount": 1, 
+    "totalCount": 1,
     "users": [
         {
-            "userId": 123456, 
-            "userUid": "123412341234123412", 
-            "status": "Active", 
-            "username": "test.testerson@example.com", 
-            "email": "test.testerson@example.com", 
-            "firstName": "Test", 
-            "lastName": "Testerson", 
-            "quotaInBytes": -1, 
-            "orgId": 1111, 
-            "orgUid": "81111247111106706", 
-            "orgName": "Testers", 
-            "userExtRef": null, 
-            "notes": null, 
-            "active": true, 
-            "blocked": false, 
-            "emailPromo": true, 
-            "invited": false, 
-            "orgType": "ENTERPRISE", 
-            "usernameIsAnEmail": true, 
-            "creationDate": "2019-09-30T21:03:08.587Z", 
-            "modificationDate": "2020-04-10T11:49:49.987Z", 
-            "passwordReset": false, 
-            "localAuthenticationOnly": false, 
+            "userId": 123456,
+            "userUid": "123412341234123412",
+            "status": "Active",
+            "username": "test.testerson@example.com",
+            "email": "test.testerson@example.com",
+            "firstName": "Test",
+            "lastName": "Testerson",
+            "quotaInBytes": -1,
+            "orgId": 1111,
+            "orgUid": "81111247111106706",
+            "orgName": "Testers",
+            "userExtRef": null,
+            "notes": null,
+            "active": true,
+            "blocked": false,
+            "emailPromo": true,
+            "invited": false,
+            "orgType": "ENTERPRISE",
+            "usernameIsAnEmail": true,
+            "creationDate": "2019-09-30T21:03:08.587Z",
+            "modificationDate": "2020-04-10T11:49:49.987Z",
+            "passwordReset": false,
+            "localAuthenticationOnly": false,
             "licenses": ["admin.securityTools"]
         }
     ]
@@ -706,7 +706,7 @@ def code42_sdk_mock(mocker):
     # Setup mock alert details
     alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
     c42_sdk_mock.alerts.get_details.return_value = alert_details_response
-    
+
     # Setup alerts for querying
     alerts_response = create_mock_code42_sdk_response(mocker, MOCK_ALERTS_RESPONSE)
     c42_sdk_mock.alerts.search_alerts.return_value = alerts_response
@@ -714,11 +714,11 @@ def code42_sdk_mock(mocker):
     # Setup mock get user
     get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
     c42_sdk_mock.users.get_by_username.return_value = get_user_response
-    
+
     # Setup securitydata search file events
     search_file_events_response = create_mock_code42_sdk_response(mocker, MOCK_SECURITY_EVENT_RESPONSE)
     c42_sdk_mock.securitydata.search_file_events.return_value = search_file_events_response
-    
+
     # Setup tenant ID call
     c42_sdk_mock.usercontext.get_current_tenant_id.return_value = "MOCK-TENANT-ID"
 

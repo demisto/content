@@ -143,7 +143,7 @@ class Code42Client(BaseClient):
         except Exception:
             return None
         return res["alerts"]
-    
+
     def _create_alert_query(self, event_severity_filter, start_time):
         alert_filters = []
         # Create alert filter
@@ -421,14 +421,13 @@ def _process_event_from_observation(event):
 
 class Code42SecurityIncidentFetcher(object):
     def __init__(self,
-        client,
-        last_run,
-        first_fetch_time,
-        event_severity_filter,
-        fetch_limit,
-        include_files,
-        integration_context=None,
-    ):
+                 client,
+                 last_run,
+                 first_fetch_time,
+                 event_severity_filter,
+                 fetch_limit,
+                 include_files,
+                 integration_context=None):
         self._client = client
         self._last_run = last_run
         self._first_fetch_time = first_fetch_time
@@ -436,7 +435,7 @@ class Code42SecurityIncidentFetcher(object):
         self._fetch_limit = fetch_limit
         self._include_files = include_files,
         self._integration_context = integration_context
-    
+
     def fetch(self):
         remaining_incidents_from_last_run = self._fetch_remaining_incidents_from_last_run()
         if remaining_incidents_from_last_run:
@@ -447,14 +446,14 @@ class Code42SecurityIncidentFetcher(object):
         save_time = datetime.utcnow().timestamp()
         next_run = {"last_fetch": save_time}
         return next_run, incidents[:self._fetch_limit], incidents[self._fetch_limit:]
-    
+
     def _fetch_remaining_incidents_from_last_run(self):
         if self._integration_context:
             remaining_incidents = self._integration_context.get("remaining_incidents")
             # return incidents if exists in context.
             if remaining_incidents:
                 return self._last_run, remaining_incidents[:self._fetch_limit], remaining_incidents[self._fetch_limit:]
-    
+
     def _get_start_query_time(self):
         start_query_time = self._try_get_last_fetch_time()
 
@@ -462,27 +461,27 @@ class Code42SecurityIncidentFetcher(object):
         if not start_query_time:
             start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
             start_query_time /= 1000
-        
+
         return start_query_time
-    
+
     def _try_get_last_fetch_time(self):
         return self._last_run.get("last_fetch")
-    
+
     def _fetch_alerts(self, start_query_time):
         return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
-    
+
     def _create_incident_from_alert(self, alert):
         details = self._client.get_alert_details(alert["id"])
         incident = _create_incident_from_alert_details(details)
         self._relate_files_to_alert(details)
         incident["rawJSON"] = json.dumps(details)
         return incident
-    
+
     def _relate_files_to_alert(self, alert_details):
         for obs in alert_details["observations"]:
             file_events = self._get_file_events_from_alert_details(obs, alert_details)
             alert_details["fileevents"] = [_process_event_from_observation(e) for e in file_events]
-    
+
     def _get_file_events_from_alert_details(self, observation, alert_details):
         security_data_query = map_observation_to_security_query(observation, alert_details["actor"])
         return self._client.search_json(security_data_query)
@@ -559,7 +558,7 @@ def main():
     LOG(f"Command being called is {demisto.command()}")
     try:
         client = Code42Client(
-            base_url=base_url, auth=(username, password), verify=verify_certificate, proxy=proxy
+            base_url=base_url, sdk=None, auth=(username, password), verify=verify_certificate, proxy=proxy
         )
         commands = {
             "code42-alert-get": alert_get_command,
