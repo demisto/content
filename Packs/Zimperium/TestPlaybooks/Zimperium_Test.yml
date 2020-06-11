@@ -2,6 +2,8 @@ id: Zimperium_Test
 name: Zimperium_Test
 version: -1
 fromversion: 5.0.0
+description: |-
+  A test playbook for Zimperium.
 starttaskid: '0'
 tasks:
   '0':
