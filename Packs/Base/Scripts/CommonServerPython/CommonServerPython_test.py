@@ -1893,7 +1893,7 @@ def test_handle_proxy(mocker):
                              ({'a': {'b': '2'}}, ['a', 'c'], 'test', 'test'),
                          ])
 def test_safe_get(dict_obj, keys, expected, default_return_value):
-    from CommonServerPython import safe_get
-    assert expected == safe_get(dict_object=dict_obj,
+    from CommonServerPython import dict_safe_get
+    assert expected == dict_safe_get(dict_object=dict_obj,
                                 keys=keys,
                                 default_return_value=default_return_value)
