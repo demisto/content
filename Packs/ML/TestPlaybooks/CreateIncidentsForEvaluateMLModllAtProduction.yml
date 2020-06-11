@@ -2,6 +2,8 @@ commonfields:
   id: CreateIncidentsForEvaluateMLModllAtProduction
   version: -1
 name: CreateIncidentsForEvaluateMLModllAtProduction
+comment: |-
+  Artificially create incident to test model in production
 script: |+
   import random, base64, pickle
   NUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])
@@ -71,7 +73,7 @@ outputs:
   description: EmailPredictionProbabilityKey
 scripttarget: 0
 subtype: python2
-pswd: ""
 runonce: false
 dockerimage: demisto/python:2.7.18.8715
 runas: DBotWeakRole
+fromversion: 5.0.0
