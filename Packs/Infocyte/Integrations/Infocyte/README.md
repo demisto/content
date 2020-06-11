@@ -8,12 +8,12 @@ This integration was integrated and tested with version xx of Infocyte
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| InstanceName | Instance Name | True |
+| InstanceName | Instance Name \(e.g., https://&lt;cname&gt;.infocyte.com\) | True |
 | APIKey | API Key | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 | max_fetch | Maximum number of incidents per fetch | False |
-| first_fetch | First fetch time | False |
+| first_fetch | Initial fetch time \(days\) | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
@@ -40,7 +40,7 @@ Kicks off a Scan (forensic collection) against an endpoint
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus | 
+| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus. This id is returned from any async command/task. | 
 | Infocyte.Task.type | string | Task type \(SCAN or RESPONSE\) | 
 | Infocyte.Task.target | string | Hostname or ip of target provided | 
 
@@ -78,11 +78,16 @@ Isolates a host to only communicate to Infocyte and other security tools
 
 
 #### Command Example
-``` ```
+```!infocyte-isolate-host target="pegasusactual"```
+
+#### Context Example
+```
+{}
+```
 
 #### Human Readable Output
 
-
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 ### infocyte-restore-host
 ***
@@ -103,18 +108,23 @@ Restore an isolated host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus | 
+| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus. This id is returned from any async command/task. | 
 | Infocyte.Task.type | string | Task type \(SCAN or RESPONSE\) | 
 | Infocyte.Task.target | string | Hostname or ip of target provided | 
 | Infocyte.Task.extensionName | string | Name of extension ran | 
 
 
 #### Command Example
-``` ```
+```!infocyte-restore-host target="pegasusactual"```
+
+#### Context Example
+```
+{}
+```
 
 #### Human Readable Output
 
-
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 ### infocyte-collect-evidence
 ***
@@ -135,7 +145,7 @@ Collects Forensic Evidence to S3 bucket (Dat files, eventlogs, etc.)
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus | 
+| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus. This id is returned from any async command/task. | 
 | Infocyte.Task.type | string | Task type \(SCAN or RESPONSE\) | 
 | Infocyte.Task.target | string | Hostname or ip of target provided | 
 | Infocyte.Task.extensionName | string | Name of extension ran | 
@@ -172,11 +182,16 @@ Kills a process on target endpoint
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!infocyte-kill-process target="pegasusactual"```
+
+#### Context Example
+```
+{}
+```
 
 #### Human Readable Output
 
-
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 ### infocyte-recover-file
 ***
@@ -198,7 +213,7 @@ Recovers a file on an endpoint to your defined recovery point (S3, ftp, share)
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus | 
+| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus. This id is returned from any async command/task. | 
 | Infocyte.Task.type | string | Task type \(SCAN or RESPONSE\) | 
 | Infocyte.Task.target | string | Hostname or ip of target provided | 
 | Infocyte.Task.extensionName | string | Name of extension ran | 
@@ -231,18 +246,23 @@ Runs the named Infocyte extension on target host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus | 
+| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus. This id is returned from any async command/task. | 
 | Infocyte.Task.type | string | Task type \(SCAN or RESPONSE\) | 
 | Infocyte.Task.target | string | Hostname or ip of target provided | 
 | Infocyte.Task.extensionName | string | Name of extension ran | 
 
 
 #### Command Example
-``` ```
+```!infocyte-run-response target="pegasusactual" extensionName="Yara Scanner"```
+
+#### Context Example
+```
+{}
+```
 
 #### Human Readable Output
 
-
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
 ### infocyte-get-taskstatus
 ***
@@ -256,15 +276,15 @@ Gets status of an Infocyte task (scan, response action, etc.)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userTaskId | Task id used with infocyte-get-taskstatus | Required | 
+| userTaskId | Task id used with infocyte-get-taskstatus. This id is returned from any async command/task. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus | 
-| Infocyte.Scan.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action | 
+| Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus. This id is returned from any async command/task. | 
+| Infocyte.Scan.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte\-get\-taskstatus and is present in all job\-based data schemas. | 
 | Infocyte.Task.type | string | Task type \(SCAN or RESPONSE\) | 
 | Infocyte.Task.progress | number | Percent completed | 
 | Infocyte.Task.message | string | Message regarding the current status | 
@@ -273,28 +293,11 @@ Gets status of an Infocyte task (scan, response action, etc.)
 
 
 #### Command Example
-```!infocyte-get-taskstatus userTaskId="873ea61b-1705-49e6-87a5-57db12369ea1"```
-
-#### Context Example
-```
-{
-    "Infocyte": {
-        "Task": {
-            "message": "Complete",
-            "progress": 100,
-            "scanId": "27673898-f615-484c-9731-6526192aff21",
-            "status": "Completed",
-            "timeElapsed": 396,
-            "type": "RESPONSE",
-            "userTaskId": "873ea61b-1705-49e6-87a5-57db12369ea1"
-        }
-    }
-}
-```
+``` ```
 
 #### Human Readable Output
 
->Task status retrieved
+
 
 ### infocyte-get-scanresult
 ***
@@ -308,14 +311,14 @@ Retrieve metadata and results for a scan against multiple hosts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scanId | Infocyte id used to look up the data associated with a specific scan, collection, or action | Required | 
+| scanId | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte-get-taskstatus and is present in all job-based data schemas | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Scan.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action | 
+| Infocyte.Scan.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte\-get\-taskstatus and is present in all job\-based data schemas | 
 | Infocyte.Scan.completedOn | date | Time scan was completed on target | 
 | Infocyte.Scan.alerts | array | List of alerts associated with scan of host | 
 | Infocyte.Scan.alertCount | number | number of alerts associated with scan of host | 
@@ -324,36 +327,11 @@ Retrieve metadata and results for a scan against multiple hosts
 
 
 #### Command Example
-```!infocyte-get-scanresult scanId="27673898-f615-484c-9731-6526192aff21"```
-
-#### Context Example
-```
-{
-    "Infocyte": {
-        "Scan": {
-            "alertCount": 0,
-            "alerts": {},
-            "completeOn": "2020-06-04T12:50:57.532Z",
-            "compromised": null,
-            "compromisedObjects": 0,
-            "hostCount": 1,
-            "hostname": null,
-            "hosts": {
-                "hostname": "pegasusactual",
-                "ip": "",
-                "osVersion": "Windows 10 Pro 2004 Professional"
-            },
-            "ip": null,
-            "objectCount": 223,
-            "scanId": null
-        }
-    }
-}
-```
+``` ```
 
 #### Human Readable Output
 
->Scan results!
+
 
 ### infocyte-get-hostscanresult
 ***
@@ -367,7 +345,7 @@ Retrieve results for a scan on a target host
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scanId | Infocyte id used to look up the data associated with a specific scan, collection, or action | Required | 
+| scanId | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte-get-taskstatus and is present in all job-based data schemas | Required | 
 | target | Hostname or ip address of target endpoint | Optional | 
 
 
@@ -375,7 +353,7 @@ Retrieve results for a scan on a target host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Scan.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action | 
+| Infocyte.Scan.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte\-get\-taskstatus and is present in all job\-based data schemas | 
 | Infocyte.Scan.hostId | string | Infocyte Id assigned to the target host | 
 | Infocyte.Scan.os | string | Operating system of the target host | 
 | Infocyte.Scan.compromised | boolean | Flagged if system has a malicious item found | 
@@ -396,7 +374,7 @@ Retrieve results for a scan on a target host
 
 ### infocyte-get-responseresult
 ***
- 
+Gets the results of a response action.
 
 
 #### Base Command
@@ -406,7 +384,7 @@ Retrieve results for a scan on a target host
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scanId | Infocyte id used to look up the data associated with a specific scan, collection, or action | Required | 
+| scanId | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte-get-taskstatus and is present in all job-based data schemas | Required | 
 | target | Hostname or ip address of target endpoint | Optional | 
 
 
@@ -414,7 +392,7 @@ Retrieve results for a scan on a target host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infocyte.Response.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action | 
+| Infocyte.Response.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte\-get\-taskstatus and is present in all job\-based data schemas | 
 | Infocyte.Response.hostId | string | Infocyte Id assigned to the target host | 
 | Infocyte.Response.os | string | Operating system of the target host | 
 | Infocyte.Response.success | boolean | Flag if extention successfully ran and completed \(not necessarily if it performed everything correctly\) | 
@@ -457,7 +435,7 @@ Retrieve alerts since last alert pulled
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Infocyte.Alert.id | string | Infocyte alertId | 
-| Infocyte.Alert.scanId | string | Infocyte scanId alert originated from | 
+| Infocyte.Alert.scanId | string | Infocyte scanId the alert originated from | 
 | Infocyte.Alert.name | string | Name of alerted file or alert | 
 | Infocyte.Alert.type | string | Type of object or artifact | 
 | Infocyte.Alert.threatName | string | Threat category assigned by extension logic \(Good, Low risk, Unknown, Suspicious, Bad\) | 

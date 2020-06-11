@@ -2878,7 +2878,6 @@
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
-        "Infocyte": "In development",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
