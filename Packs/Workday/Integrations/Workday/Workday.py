@@ -298,7 +298,7 @@ def main():
 
     commands = {
         "test-module": test_module,
-        "workday-list-workers": list_workers_command
+        "workday-list-workers": list_workers_command,
     }
 
     command = demisto.command()
