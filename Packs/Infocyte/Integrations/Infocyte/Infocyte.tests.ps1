@@ -13,15 +13,16 @@ BeforeAll {
     $TestUserTaskId = '873ea61b-1705-49e6-87a5-57db12369ea1'
     $TestScanId = "aeac5ff3-52e9-4073-b37f-a23cadd3c69e"
     $TestResponseScanId = "36f48e02-845f-4a09-9b7a-c10d0a03ae13"
-
+    <#
     $demisto.ServerEntry.params = @{
         InstanceName = "testpanxsoar"
-        APIKey       = "dHYZS0pIx3vSJGW1VpgAWTaBZgaHVrY6SW5UgHEpElAD57pANEQY2QIoCpwHb5wO"
+        APIKey       = ""
         insecure     = $false
         proxy        = $false
         first_fetch  = '3'
         max_fetch    = '10'
     }
+    #>
 }
 
 Describe 'Infocyte Integration Unit Tests' {
