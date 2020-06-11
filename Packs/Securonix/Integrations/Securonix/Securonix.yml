@@ -540,7 +540,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximun number of incident to retrieve.
+      description: Maximum number of incidents to retrieve.
       isArray: false
       name: max
       required: false
