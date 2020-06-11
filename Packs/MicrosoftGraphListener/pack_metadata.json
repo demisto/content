@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Mail Single User",
     "description": "Microsoft Graph grants Demisto authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -307,7 +307,7 @@ def search_command(client, args):
     sensitive = True if args.get('casesensitive') == 'True' else False
     return_list_md: List[Dict] = list()
     entries = list()
-    all_indicators = list()
+    all_indicators: List[Dict] = list()
     page = 0
     size = 1000
     raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
@@ -347,7 +347,7 @@ def search_command(client, args):
     return_list_md = sorted(return_list_md, key=lambda name: name['mitrename'])
     return_list_md = [{"Name": x.get('Name')} for x in return_list_md]
 
-    md = tableToMarkdown(f'MITRE Indicator search:', return_list_md)
+    md = tableToMarkdown('MITRE Indicator search:', return_list_md)
     ec = {'indicators(val.id && val.id == obj.id)': entries}
     return_outputs(md, ec, return_list_md)
 
@@ -356,7 +356,7 @@ def reputation_command(client, args):
     input_indicator = args.get('indicator')
     demisto_urls = demisto.demistoUrls()
     indicator_url = demisto_urls.get('server') + "/#/indicator/"
-    all_indicators = list()
+    all_indicators: List[Dict] = list()
     page = 0
     size = 1000
     raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
@@ -367,7 +367,7 @@ def reputation_command(client, args):
         raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
                                             size=size)
     for indicator in all_indicators:
-        custom_fields = indicator.get('CustomFields')
+        custom_fields = indicator.get('CustomFields', {})
 
         score = indicator.get('score')
         value = indicator.get('value')
