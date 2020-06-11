@@ -22,7 +22,7 @@ For more information, visit: `securonix/etnants/<tenantname>/securonix_home/resp
 | incident_status | Incidents to fetch | False |
 | incidentType | Incident type | False |
 | fetch_time | First fetch time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes) | False |
-| max_fetch | The maximum number of incidents to fetch each time. Maximum is 50. | False
+| max_fetch | The maximum number of incidents to fetch each time. Maximum is 50. | False |
 | unsecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 
