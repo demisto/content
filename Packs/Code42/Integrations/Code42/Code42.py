@@ -363,26 +363,27 @@ def alert_resolve_command(client, args):
 def departingemployee_add_command(client, args):
     departure_epoch: Optional[int]
     # Convert date to epoch
+    departing_date = args.get("departuredate")
+    username = args["username"]
+    note = args.get("note")
     departure_epoch = None
-    if args.get("departuredate"):
+    if departing_date:
         try:
-            departure_epoch = int(time.mktime(time.strptime(args["departuredate"], "%Y-%m-%d")))
+            departure_epoch = int(time.mktime(time.strptime(departing_date, "%Y-%m-%d")))
         except Exception:
             return_error(
                 message="Could not add user to Departing Employee List: "
                 "unable to parse departure date. Is it in yyyy-MM-dd format?"
             )
-    user_id = client.add_user_to_departing_employee(
-        args["username"], departure_epoch, args.get("note")
-    )
+    user_id = client.add_user_to_departing_employee(username, departure_epoch, note)
     if not user_id:
         return_error(message="Could not add user to Departing Employee List")
 
     de_context = {
         "UserID": user_id,
-        "Username": args["username"],
-        "DepartureDate": args.get("departuredate"),
-        "Note": args.get("note"),
+        "Username": username,
+        "DepartureDate": departing_date,
+        "Note": note,
     }
     readable_outputs = tableToMarkdown(f"Code42 Departing Employee List User Added", de_context)
     return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
@@ -390,13 +391,14 @@ def departingemployee_add_command(client, args):
 
 @logger
 def departingemployee_remove_command(client, args):
-    case = client.remove_user_from_departing_employee(args["username"])
-    if case:
-        de_context = {"CaseID": case, "Username": args["username"]}
+    username = args["username"]
+    user_id = client.remove_user_from_departing_employee(username)
+    if user_id:
+        de_context = {"UserID": user_id, "Username": username}
         readable_outputs = tableToMarkdown(
             f"Code42 Departing Employee List User Removed", de_context
         )
-        return readable_outputs, {"Code42.DepartingEmployee": de_context}, case
+        return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
     else:
         return_error(message="Could not remove user from Departing Employee List")
 
@@ -407,11 +409,13 @@ def _create_incident_from_alert_details(details):
 
 def _stringify_lists_if_needed(event):
     # We need to convert certain fields to a stringified list or React.JS will throw an error
-    if event.get("sharedWith"):
-        shared_list = [u["cloudUsername"] for u in event["sharedWith"]]
+    shared_with = event.get("sharedWith")
+    private_ip_addresses = event.get("privateIpAddresses")
+    if shared_with:
+        shared_list = [u["cloudUsername"] for u in shared_with]
         event["sharedWith"] = str(shared_list)
-    if event.get("privateIpAddresses"):
-        event["privateIpAddresses"] = str(event["privateIpAddresses"])
+    if private_ip_addresses:
+        event["privateIpAddresses"] = str(private_ip_addresses)
 
 
 def _process_event_from_observation(event):
