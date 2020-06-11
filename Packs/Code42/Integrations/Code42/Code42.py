@@ -290,35 +290,26 @@ def map_observation_to_security_query(observation, actor):
 
 @logger
 def map_to_code42_event_context(obj):
-    code42_context = {}
-    for (k, v) in CODE42_EVENT_CONTEXT_FIELD_MAPPER.items():
-        if obj.get(k):
-            code42_context[v] = obj.get(k)
+    code42_context = _map_obj_to_context(obj, CODE42_EVENT_CONTEXT_FIELD_MAPPER)
     # FileSharedWith is a special case and needs to be converted to a list
     if code42_context.get("FileSharedWith"):
-        shared_list = []
-        for shared_with in code42_context["FileSharedWith"]:
-            shared_list.append(shared_with["cloudUsername"])
-            code42_context["FileSharedWith"] = str(shared_list)
+        shared_list = [u["cloudUsername"] for u in code42_context["FileSharedWith"]]
+        code42_context["FileSharedWith"] = str(shared_list)
     return code42_context
 
 
 @logger
 def map_to_code42_alert_context(obj):
-    code42_context = {}
-    for (k, v) in CODE42_ALERT_CONTEXT_FIELD_MAPPER.items():
-        if obj.get(k):
-            code42_context[v] = obj.get(k)
-    return code42_context
+    return _map_obj_to_context(obj, CODE42_ALERT_CONTEXT_FIELD_MAPPER)
 
 
 @logger
 def map_to_file_context(obj):
-    file_context = {}
-    for (k, v) in FILE_CONTEXT_FIELD_MAPPER.items():
-        if obj.get(k):
-            file_context[v] = obj.get(k)
-    return file_context
+    return _map_obj_to_context(obj, FILE_CONTEXT_FIELD_MAPPER)
+
+
+def _map_obj_to_context(obj, context_mapper):
+    return {v: obj.get(k) for k, v in context_mapper.items() if obj.get(k)}
 
 
 @logger

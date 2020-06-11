@@ -655,7 +655,10 @@ MOCK_OBSERVATION_QUERIES = [
 
 @pytest.fixture
 def code42_sdk_mock(mocker):
-    return mocker.MagicMock(spec=SDKClient)
+    c42_sdk_mock = mocker.MagicMock(spec=SDKClient)
+    response_mock = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
+    c42_sdk_mock.alerts.get_details.return_value = response_mock
+    return c42_sdk_mock
 
 
 def create_mock_code42_sdk_response(mocker, response_text):
@@ -703,9 +706,7 @@ def test_map_to_file_context():
         assert context == MOCK_FILE_CONTEXT[i]
 
 
-def test_alert_get_command(code42_sdk_mock, mocker):
-    response_mock = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
-    code42_sdk_mock.alerts.get_details.return_value = response_mock
+def test_alert_get_command(code42_sdk_mock):
     client = Code42Client(
         sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
     )
