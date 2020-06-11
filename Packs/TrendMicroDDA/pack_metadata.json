@@ -3,7 +3,7 @@
   "description": "Deep Discovery Analyzer is a turnkey appliance that uses virtual images of endpoint configurations to analyze and detect targeted attacks.",
   "support": "xsoar",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
+  "author": "Palo Alto Networks",
   "url": "https://www.paloaltonetworks.com/cortex",
   "email": "",
   "created": "2020-04-14T00:00:00Z",

@@ -3,7 +3,7 @@
   "description": "Symantec Messaging Gateway protects against spam, malware, targeted attacks and provides advanced content filtering, data loss prevention, and email encryption.",
   "support": "xsoar",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
+  "author": "Palo Alto Networks",
   "url": "https://www.paloaltonetworks.com/cortex",
   "email": "",
   "created": "2020-04-14T00:00:00Z",
