@@ -178,6 +178,8 @@ script:
       description: A description of the issue.
     - name: labels
       description: 'A CSV list of labels. '
+    - name: components
+      description: 'A CSV list of components. '
     - name: priority
       description: 'The priority name, for example: "High" or "Medium".'
     - name: dueDate
@@ -254,6 +256,8 @@ script:
       description: The description of the issue.
     - name: labels
       description: ' A CSV list of labels. '
+    - name: components
+      description: 'A CSV list of components. '
     - name: priority
       description: ' A priorty name, for example "High" or "Medium". '
     - name: dueDate

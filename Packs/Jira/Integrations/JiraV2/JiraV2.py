@@ -210,6 +210,7 @@ def generate_md_context_get_issue(data):
             'priority': demisto.get(element, 'fields.priority.name'),
             'project': demisto.get(element, 'fields.project.name'),
             'labels': demisto.get(element, 'fields.labels'),
+            'components': demisto.get(element, 'fields.components'),
             'description': demisto.get(element, 'fields.description'),
             'duedate': demisto.get(element, 'fields.duedate'),
             'ticket_link': demisto.get(element, 'self'),
@@ -365,6 +366,9 @@ def get_issue_fields(issue_creating=False, **issue_args):
 
     if issue_args.get('labels'):
         issue['fields']['labels'] = issue_args['labels'].split(",")
+
+    if issue_args.get('components'):
+        issue['fields']['components'] = issue_args['components'].split(",")
 
     if issue_args.get('priority'):
         if not issue['fields'].get('priority'):
