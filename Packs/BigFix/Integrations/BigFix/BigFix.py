@@ -169,7 +169,7 @@ def get_site_command():
     })
 
 
-def get_endpoints():
+def get_endpoints(should_get_endpoint_details):
     fullurl = BASE_URL + '/api/computers'
 
     res = requests.get(
@@ -182,10 +182,7 @@ def get_endpoints():
         return_error('Failed to get endpoints.\nRequest URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
             fullurl, res.status_code, res.content))
 
-    demisto.debug('get endpoints response: {}'.format(str(res.content)))
-    parser = ET.XMLParser(encoding='utf-8')
-    tree = ET.fromstring(res.content, parser=parser)
-    raw_endpoints = json.loads(elem2json(tree, options={}))
+    raw_endpoints = json.loads(xml2json(res.content))
 
     if (not raw_endpoints or not raw_endpoints.has_key('BESAPI')):
         return None
@@ -198,24 +195,22 @@ def get_endpoints():
         raw_endpoints[idx]['Resource'] = raw_endpoints[idx]['@Resource']
         del raw_endpoints[idx]['@Resource']
 
-    endpoints_with_details = []
-    for raw_endpoint in raw_endpoints:
-        endpoint = get_endpoint_details(raw_endpoint.get('ID'))
-        endpoints_with_details.append(endpoint)
-
-    return endpoints_with_details
+    if should_get_endpoint_details:
+        endpoints_with_details = []
+        for raw_endpoint in raw_endpoints:
+            endpoint = get_endpoint_details(raw_endpoint.get('ID'))
+            endpoints_with_details.append(endpoint)
+        return endpoints_with_details
+    else:
+        return raw_endpoints
 
 
 def get_endpoints_command():
-    endpoints = get_endpoints()
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': endpoints,
-        'HumanReadable': tableToMarkdown('BigFix Computers', endpoints, headers=[
-            'ID',
-            'Resource',
-            'LastReportTime',
+    should_get_endpoint_details = demisto.args().get('get_endpoint_details') == 'true'
+    endpoints = get_endpoints(should_get_endpoint_details)
+    headers = ['ID', 'Resource', 'LastReportTime']
+    if should_get_endpoint_details:
+        headers.extend([
             'ActiveDirectoryPath',
             'AgentType',
             'AgentVersion',
@@ -242,7 +237,12 @@ def get_endpoints_command():
             'SubscribedSites',
             'TotalSizeofSystemDrive',
             'UserName'
-        ]),
+        ])
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': endpoints,
+        'HumanReadable': tableToMarkdown('BigFix Computers', endpoints, headers=headers),
         'EntryContext': {
             'Bigfix.Endpoint(val.ID==obj.ID)': endpoints
         }
