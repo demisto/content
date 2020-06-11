@@ -89,7 +89,8 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: 'true'
+- display: ''
+  defaultvalue: 'true'
   name: feedIncremental
   required: false
   type: 8

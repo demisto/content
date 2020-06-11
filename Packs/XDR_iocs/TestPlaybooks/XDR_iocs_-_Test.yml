@@ -50,7 +50,7 @@ tasks:
       merge: {}
       relatedIncidents: {}
       reputation:
-        simple: Good
+        simple: Bad
       seenNow: {}
       source: {}
       sourceTimeStamp: {}
@@ -92,7 +92,7 @@ tasks:
       merge: {}
       relatedIncidents: {}
       reputation:
-        simple: Good
+        simple: Bad
       seenNow: {}
       source: {}
       sourceTimeStamp: {}
@@ -135,7 +135,7 @@ tasks:
       relateToIncident: {}
       relatedIncidents: {}
       reputation:
-        simple: Good
+        simple: Bad
       seenNow: {}
       source: {}
       sourceTimeStamp: {}
@@ -149,40 +149,6 @@ tasks:
         "position": {
           "x": 0,
           "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 3748e1e4-d9eb-4fd0-8aef-c61bedce4981
-    type: regular
-    task:
-      id: 3748e1e4-d9eb-4fd0-8aef-c61bedce4981
-      version: -1
-      name: xdr-iocs-sync
-      description: |-
-        Run once when you configure the integration (do NOT run this twice!).
-        will all the indicators that were synced with XDR and then resync.
-      script: 'xdr-iocs-sync'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      firstTime:
-        simple: "true"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 400
         }
       }
     note: false
@@ -221,76 +187,6 @@ tasks:
         "position": {
           "x": 450,
           "y": -150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 38497c0a-f0f0-4a9a-8bd5-8895f9ded9aa
-    type: regular
-    task:
-      id: 38497c0a-f0f0-4a9a-8bd5-8895f9ded9aa
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: fdf8f5e4-a22a-415d-8d5d-7a186488eeb4
-    type: regular
-    task:
-      id: fdf8f5e4-a22a-415d-8d5d-7a186488eeb4
-      version: -1
-      name: Sleep (120)
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-      - "10"
-      - "11"
-    scriptarguments:
-      seconds:
-        simple: "120"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 750
         }
       }
     note: false
@@ -1090,10 +986,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
+      - "10"
+      - "11"
     scriptarguments:
       seconds:
-        simple: "120"
+        simple: "150"
     separatecontext: false
     view: |-
       {

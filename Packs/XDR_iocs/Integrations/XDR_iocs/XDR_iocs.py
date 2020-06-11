@@ -125,9 +125,10 @@ def create_file_sync(file_path, batch_size: int = 200):
         total_size: int = get_iocs_size()
         for i in range(0, ceil(total_size / batch_size)):
             iocs: List = get_iocs(page=i, size=batch_size)
-            for ioc in map(lambda x: json.dumps(demisto_ioc_to_xdr(x)), iocs):
-                _file.write(ioc)
-                _file.write('\n')
+            for ioc in map(lambda x: demisto_ioc_to_xdr(x), iocs):
+                if ioc:
+                    _file.write(json.dumps(ioc))
+                    _file.write('\n')
 
 
 def get_iocs_size(query=None) -> int:
@@ -179,26 +180,30 @@ def demisto_types_to_xdr(_type: str) -> str:
 
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
-    xdr_ioc: Dict = {
-        'indicator': ioc['value'],
-        'severity': Client.severity,
-        'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
-        'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
-        'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
-    }
-    # get last 'IndicatorCommentRegular'
-    comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
-    if comment:
-        xdr_ioc['comment'] = comment.get('content')
-    if ioc.get('aggregatedReliability'):
-        xdr_ioc['reliability'] = ioc['aggregatedReliability'][0]
-    vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
-    if vendors:
-        xdr_ioc['vendors'] = vendors
-    threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory', False)
-    if threat_type:
-        xdr_ioc['class'] = threat_type
-    return xdr_ioc
+    try:
+        xdr_ioc: Dict = {
+            'indicator': ioc['value'],
+            'severity': Client.severity,
+            'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
+            'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
+            'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
+        }
+        # get last 'IndicatorCommentRegular'
+        comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
+        if comment:
+            xdr_ioc['comment'] = comment.get('content')
+        if ioc.get('aggregatedReliability'):
+            xdr_ioc['reliability'] = ioc['aggregatedReliability'][0]
+        vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
+        if vendors:
+            xdr_ioc['vendors'] = vendors
+        threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory', False)
+        if threat_type:
+            xdr_ioc['class'] = threat_type
+        return xdr_ioc
+    except KeyError as error:
+        demisto.debug(f'unexpected IOC format in key: {str(error)}, {json.dumps(ioc)}')
+        return {}
 
 
 def get_temp_file() -> str:
@@ -253,7 +258,7 @@ def tim_insert_jsons(client: Client):
     else:
         iocs = []
         for indicator in indicators.split(','):
-            iocs.append(demisto.searchIndicators(query=f'value:{indicator}').get('iocs')[0])
+            iocs.extend(demisto.searchIndicators(query=f'value:{indicator}').get('iocs')[0])
 
     path = 'tim_insert_jsons/'
     requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_xdr(ioc), iocs)))
@@ -383,7 +388,7 @@ def main():
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
-            xdr_iocs_sync_command(client, bool(demisto.args().get('firstTime', False)))
+            xdr_iocs_sync_command(client, demisto.args().get('firstTime') == 'true')
         else:
             raise NotImplementedError(command)
     except Exception as error:
