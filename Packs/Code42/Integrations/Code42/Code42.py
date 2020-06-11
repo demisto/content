@@ -7,6 +7,7 @@ import json
 import requests
 import py42.sdk
 import py42.settings
+from datetime import datetime
 from py42.sdk.queries.fileevents.file_event_query import FileEventQuery
 from py42.sdk.queries.fileevents.filters import (
     MD5,
@@ -396,6 +397,95 @@ def departingemployee_remove_command(client, args):
         return_error(message="Could not remove user from Departing Employee Lens")
 
 
+def _create_incident_from_alert_details(details):
+    return {"name": "Code42 - {}".format(details["name"]), "occurred": details["createdAt"]}
+
+
+def _stringify_lists_if_needed(event):
+    # We need to convert certain fields to a stringified list or React.JS will throw an error
+    if event.get("sharedWith"):
+        shared_list = [u["cloudUsername"] for u in event["sharedWith"]]
+        event["sharedWith"] = str(shared_list)
+    if event.get("privateIpAddresses"):
+        event["privateIpAddresses"] = str(event["privateIpAddresses"])
+
+
+def _process_event_from_observation(event):
+    _stringify_lists_if_needed(event)
+    return event
+
+
+class Code42SecurityIncidentFetcher(object):
+    def __init__(self,
+        client,
+        last_run,
+        first_fetch_time,
+        event_severity_filter,
+        fetch_limit,
+        include_files,
+        integration_context=None,
+    ):
+        self._client = client
+        self._last_run = last_run
+        self._first_fetch_time = first_fetch_time
+        self._event_severity_filter = event_severity_filter
+        self._fetch_limit = fetch_limit
+        self._include_files = include_files,
+        self._integration_context = integration_context
+    
+    def fetch(self):
+        incidents = []
+        
+        remaining_incidents_from_last_run = self._fetch_remaining_incidents_from_last_run()
+        if remaining_incidents_from_last_run:
+            return remaining_incidents_from_last_run
+        
+        start_query_time = self._get_start_query_time()
+        alerts = self._fetch_alerts(start_query_time)
+        
+        for alert in alerts:
+            details = self._client.get_alert_details(alert["id"])
+            incident = _create_incident_from_alert_details(details)
+            self._relate_files_to_alert(details)
+            incident["rawJSON"] = json.dumps(details)
+            incidents.append(incident)
+        save_time = datetime.utcnow().timestamp()
+        next_run = {"last_fetch": save_time}
+        return next_run, incidents[:self._fetch_limit], incidents[self._fetch_limit:]
+    
+    def _fetch_remaining_incidents_from_last_run(self):
+        if self._integration_context:
+            remaining_incidents = self._integration_context.get("remaining_incidents")
+            # return incidents if exists in context.
+            if remaining_incidents:
+                return self._last_run, remaining_incidents[:self._fetch_limit], remaining_incidents[self._fetch_limit:]
+    
+    def _get_start_query_time(self):
+        start_query_time = self._try_get_last_fetch_time()
+
+        # Handle first time fetch, fetch incidents retroactively
+        if not start_query_time:
+            start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
+            start_query_time /= 1000
+        
+        return start_query_time
+    
+    def _try_get_last_fetch_time(self):
+        return self._last_run.get("last_fetch")
+    
+    def _fetch_alerts(self, start_query_time):
+        return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
+    
+    def _relate_files_to_alert(self, alert_details):
+        for obs in alert_details["observations"]:
+            file_events = self._get_file_events_from_alert_details(obs, alert_details)
+            alert_details["fileevents"] = [_process_event_from_observation(e) for e in file_events]
+    
+    def _get_file_events_from_alert_details(self, observation, alert_details):
+        security_data_query = map_observation_to_security_query(observation, alert_details["actor"])
+        return self._client.search_json(security_data_query)
+
+
 @logger
 def fetch_incidents(
     client,
@@ -406,41 +496,10 @@ def fetch_incidents(
     include_files,
     integration_context=None,
 ):
-    incidents = []
-    # Determine if there are remaining incidents from last fetch run
-    if integration_context:
-        remaining_incidents = integration_context.get("remaining_incidents")
-        # return incidents if exists in context.
-        if remaining_incidents:
-            return last_run, remaining_incidents[:fetch_limit], remaining_incidents[fetch_limit:]
-    # Get the last fetch time, if exists
-    start_query_time = last_run.get("last_fetch")
-    # Handle first time fetch, fetch incidents retroactively
-    if not start_query_time:
-        start_query_time, _ = parse_date_range(first_fetch_time, to_timestamp=True, utc=True)
-        start_query_time /= 1000
-    alerts = client.fetch_alerts(start_query_time, event_severity_filter)
-    for alert in alerts:
-        details = client.get_alert_details(alert["id"])
-        incident = {"name": "Code42 - {}".format(details["name"]), "occurred": details["createdAt"]}
-        if include_files:
-            details["fileevents"] = []
-            for obs in details["observations"]:
-                security_data_query = map_observation_to_security_query(obs, details["actor"])
-                file_events = client.search_json(security_data_query)
-                for event in file_events:
-                    # We need to convert certain fields to a stringified list or React.JS will throw an error
-                    if event.get("sharedWith"):
-                        shared_list = [u["cloudUsername"] for u in event["sharedWith"]]
-                        event["sharedWith"] = str(shared_list)
-                    if event.get("privateIpAddresses"):
-                        event["privateIpAddresses"] = str(event["privateIpAddresses"])
-                    details["fileevents"].append(event)
-        incident["rawJSON"] = json.dumps(details)
-        incidents.append(incident)
-    save_time = datetime.utcnow().timestamp()
-    next_run = {"last_fetch": save_time}
-    return next_run, incidents[:fetch_limit], incidents[fetch_limit:]
+    fetcher = Code42SecurityIncidentFetcher(
+        client, last_run, first_fetch_time, event_severity_filter, fetch_limit, include_files, integration_context
+    )
+    return fetcher.fetch()
 
 
 @logger

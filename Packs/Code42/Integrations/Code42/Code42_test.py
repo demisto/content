@@ -21,6 +21,10 @@ import time
 
 MOCK_URL = "https://123-fake-api.com"
 
+MOCK_AUTH = ("123", "123")
+
+MOCK_FETCH_TIME = "24 hours"
+
 MOCK_SECURITY_DATA_SEARCH_QUERY = {
     "hash": "d41d8cd98f00b204e9800998ecf8427e",
     "hostname": "DESKTOP-0001",
@@ -753,7 +757,7 @@ def test_map_to_file_context():
 
 def test_alert_get_command(code42_sdk_mock):
     client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     _, _, res = alert_get_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
     assert res["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
@@ -761,7 +765,7 @@ def test_alert_get_command(code42_sdk_mock):
 
 def test_alert_resolve_command(code42_sdk_mock):
     client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     _, _, res = alert_resolve_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
     assert res["id"] == "36fb8ca5-0533-4d25-9763-e09d35d60610"
@@ -769,7 +773,7 @@ def test_alert_resolve_command(code42_sdk_mock):
 
 def test_departing_employee_remove_command(code42_sdk_mock):
     client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     _, _, res = departingemployee_remove_command(client, {"username": "user1@example.com"})
     assert res == "123412341234123412"  # value found in GET_USER_RESPONSE
@@ -777,7 +781,7 @@ def test_departing_employee_remove_command(code42_sdk_mock):
 
 def test_departing_employee_add_command(code42_sdk_mock):
     client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     _, _, res = departingemployee_add_command(
         client,
@@ -788,7 +792,7 @@ def test_departing_employee_add_command(code42_sdk_mock):
 
 def test_security_data_search_command(code42_sdk_mock):
     client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     _, _, res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
     assert len(res) == 3
@@ -796,14 +800,14 @@ def test_security_data_search_command(code42_sdk_mock):
 
 def test_fetch_incidents_first_run(code42_sdk_mock):
     client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
-        first_fetch_time="24 hours",
+        first_fetch_time=MOCK_FETCH_TIME,
         event_severity_filter=None,
-        fetch_limit=int("10"),
+        fetch_limit=10,
         include_files=True,
         integration_context=None,
     )
@@ -815,14 +819,14 @@ def test_fetch_incidents_next_run(code42_sdk_mock):
     mock_date = "2020-01-01T00:00:00.000Z"
     mock_timestamp = int(time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z")))
     client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_timestamp},
-        first_fetch_time="24 hours",
+        first_fetch_time=MOCK_FETCH_TIME,
         event_severity_filter=None,
-        fetch_limit=int("10"),
+        fetch_limit=10,
         include_files=True,
         integration_context=None,
     )
@@ -834,14 +838,14 @@ def test_fetch_incidents_fetch_limit(code42_sdk_mock):
     mock_date = "2020-01-01T00:00:00.000Z"
     mock_timestamp = int(time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z")))
     client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=("123", "123"), verify=False, proxy=None
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_timestamp},
-        first_fetch_time="24 hours",
+        first_fetch_time=MOCK_FETCH_TIME,
         event_severity_filter=None,
-        fetch_limit=int("2"),
+        fetch_limit=2,
         include_files=True,
         integration_context=None,
     )
@@ -852,9 +856,9 @@ def test_fetch_incidents_fetch_limit(code42_sdk_mock):
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_timestamp},
-        first_fetch_time="24 hours",
+        first_fetch_time=MOCK_FETCH_TIME,
         event_severity_filter=None,
-        fetch_limit=int("2"),
+        fetch_limit=2,
         include_files=True,
         integration_context={"remaining_incidents": remaining_incidents},
     )
