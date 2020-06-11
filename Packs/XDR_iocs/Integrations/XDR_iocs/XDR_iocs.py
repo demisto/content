@@ -251,7 +251,7 @@ def get_last_iocs(batch_size=200) -> List:
     return iocs
 
 
-def get_indicators(indicators: Union[str, List[str]]) -> List:
+def get_indicators(indicators: str) -> List:
     if indicators:
         iocs = []
         not_found = []
