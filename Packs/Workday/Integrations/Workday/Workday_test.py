@@ -106,7 +106,7 @@ WORKER_CONTEXT_DATA = [{
          'Region_Descriptor': '', 'Postal_Code': '13215', 'Type': 'HOME'}], 'Emails': [
         {'Email_Address': 'John@hotmail.com', 'Type': 'HOME', 'Primary': True, 'Public': False},
         {'Email_Address': 'JDoe@paloaltonetworks.com', 'Type': 'WORK', 'Primary': True, 'Public': True}], 'Phones': [
-        {'ID': 'PHONE_REFERENCE-3-4210', 'Phone_Number': '5-5505-5555', 'Type': 'Mobile', 'Usage': 'WORK'},
-        {'ID': 'PHONE_REFERENCE-3-14614', 'Phone_Number': '555055555', 'Type': 'Mobile', 'Usage': 'HOME'}],
+        {'ID': 'PHONE_REFERENCE-3-4210', 'Phone_Number': '+966555055555', 'Type': 'Mobile', 'Usage': 'WORK'},
+        {'ID': 'PHONE_REFERENCE-3-14614', 'Phone_Number': '+966555055555', 'Type': 'Mobile', 'Usage': 'HOME'}],
     'Managers': [{'Manager_ID': '100700', 'Manager_Name': 'Manager 700'},
                  {'Manager_ID': '100600', 'Manager_Name': 'Manager 600'}]}]

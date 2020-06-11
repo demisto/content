@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = "v34.0"
 HEADERS = ["Worker_ID", "User_ID", "Country", "Preferred_First_Name", "Preferred_Last_Name", "Active", "Position_Title",
-           "Business_Title", "Start_Date", "End_Date", "Terminated", "Termination_Date"]
+           "Start_Date", "End_Date", "Terminated", "Termination_Date"]
 
 GET_EMPLOYEES_REQ = """
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc">
@@ -204,7 +204,7 @@ def create_worker_context(workers, num_of_managers):
                 phones = [phones]
             worker_context["Phones"] = [{
                 "ID": phone['ID'],
-                "Phone_Number": phone['Phone_Number'],
+                "Phone_Number": phone.get('@{urn:com.workday/bsvc}E164_Formatted_Phone'),
                 "Type": phone['Phone_Device_Type_Reference']['ID'][1]['#text'],
                 "Usage": phone['Usage_Data']['Type_Data']['Type_Reference']['ID'][1]['#text'],
             } for phone in phones]
@@ -259,7 +259,7 @@ def test_module(client: Client, args: Dict) -> str:
         client.list_workers(page='1', count='1')
     except Exception as e:
         raise DemistoException(
-            f"Test failed. Try checking the credentials you entered. \n {e}")
+            f"Test failed. Please check your parameters. \n {e}")
     return 'ok'
 
 
@@ -285,11 +285,11 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    user: str = params.get('username')
+    user: str = params.get('credentials').get('identifier')
     base_url: str = params.get('base_url', "").rstrip('/')
     tenant_name: str = params.get('tenant_name')
     username = f"{user}@{tenant_name}"
-    password: str = params.get('password')
+    password: str = params.get('credentials').get('password')
     token = params.get('token')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
