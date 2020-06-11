@@ -1267,6 +1267,7 @@ class TestBaseClient:
         'post'
     ]
 
+    @pytest.mark.skip(reason="Test - too long, only manual")
     @pytest.mark.parametrize('method', RETRIES_POSITIVE_TEST)
     def test_http_requests_with_retry_sanity(self, method):
         """
@@ -1291,9 +1292,9 @@ class TestBaseClient:
         ('get', 400), ('get', 401), ('get', 500),
         ('put', 400), ('put', 401), ('put', 500),
         ('post', 400), ('post', 401), ('post', 500),
-
     ]
 
+    @pytest.mark.skip(reason="Test - too long, only manual")
     @pytest.mark.parametrize('method, status', RETRIES_NEGATIVE_TESTS_INPUT)
     def test_http_requests_with_retry_negative_sanity(self, method, status):
         """
