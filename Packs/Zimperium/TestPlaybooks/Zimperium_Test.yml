@@ -13,6 +13,7 @@ tasks:
       id: "0"
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -37,6 +38,7 @@ tasks:
       id: "2"
       version: -1
       name: zimperium-events-search
+      description: ""
       script: '|||zimperium-events-search'
       type: regular
       iscommand: true
@@ -63,6 +65,7 @@ tasks:
       id: 704ce753-4bd3-48c8-8a39-860135ccf82e
       version: -1
       name: zimperium-users-search
+      description: ""
       script: '|||zimperium-users-search'
       type: regular
       iscommand: true
@@ -93,6 +96,7 @@ tasks:
       id: 4c137532-6cb9-4b29-8d0e-a15310019a70
       version: -1
       name: zimperium-user-get-by-id
+      description: ""
       script: '|||zimperium-user-get-by-id'
       type: regular
       iscommand: true
@@ -122,6 +126,7 @@ tasks:
       id: 9238f51b-7de9-4122-84bd-7e565daad6e2
       version: -1
       name: zimperium-devices-search
+      description: ""
       script: '|||zimperium-devices-search'
       type: regular
       iscommand: true
@@ -153,6 +158,7 @@ tasks:
       id: 738fdbd0-4ee3-4981-86d8-944b6409dcc7
       version: -1
       name: zimperium-device-get-by-id
+      description: ""
       script: '|||zimperium-device-get-by-id'
       type: regular
       iscommand: true
@@ -183,6 +189,7 @@ tasks:
       id: 4bd665d1-0ba4-4290-8cf0-460f633bcd23
       version: -1
       name: zimperium-devices-get-last-updated
+      description: ""
       script: '|||zimperium-devices-get-last-updated'
       type: regular
       iscommand: true
@@ -216,6 +223,7 @@ tasks:
       id: a56bee59-9f1b-4739-8df0-1531f13fb887
       version: -1
       name: zimperium-app-classification-get
+      description: ""
       script: '|||zimperium-app-classification-get'
       type: regular
       iscommand: true
@@ -246,6 +254,7 @@ tasks:
       id: "12"
       version: -1
       name: Test Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
