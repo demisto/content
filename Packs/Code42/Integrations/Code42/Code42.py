@@ -1,4 +1,3 @@
-from typing import Dict, Any
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -113,6 +112,20 @@ SECURITY_EVENT_HEADERS = [
 SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description", "State", "ID"]
 
 
+def _create_alert_query(event_severity_filter, start_time):
+    alert_filters = []
+    # Create alert filter
+    if event_severity_filter:
+        f = event_severity_filter
+        severity_filter = (f.upper() if isinstance(f, str) else list(map(lambda x: x.upper(), f)))
+        alert_filters.append(Severity.is_in(severity_filter))
+    alert_filters.append(AlertState.eq(AlertState.OPEN))
+    alert_filters.append(DateObserved.on_or_after(start_time))
+    alert_query = AlertQuery(*alert_filters)
+    alert_query.sort_direction = "asc"
+    return alert_query
+
+
 class Code42Client(BaseClient):
     """
     Client will implement the service API, should not contain Cortex XSOAR logic.
@@ -138,24 +151,11 @@ class Code42Client(BaseClient):
 
     def fetch_alerts(self, start_time, event_severity_filter=None):
         try:
-            query = self._create_alert_query(event_severity_filter, start_time)
+            query = _create_alert_query(event_severity_filter, start_time)
             res = self._sdk.alerts.search_alerts(query)
         except Exception:
             return None
         return res["alerts"]
-
-    def _create_alert_query(self, event_severity_filter, start_time):
-        alert_filters = []
-        # Create alert filter
-        if event_severity_filter:
-            f = event_severity_filter
-            severity_filter = (f.upper() if isinstance(f, str) else list(map(lambda x: x.upper(), f)))
-            alert_filters.append(Severity.is_in(severity_filter))
-        alert_filters.append(AlertState.eq(AlertState.OPEN))
-        alert_filters.append(DateObserved.on_or_after(start_time))
-        alert_query = AlertQuery(*alert_filters)
-        alert_query.sort_direction = "asc"
-        return alert_query
 
     def get_alert_details(self, alert_id):
         try:
@@ -201,32 +201,46 @@ class Code42Client(BaseClient):
         return res["fileEvents"]
 
 
+class FileEventSearchFilters(object):
+    def __init__(self, pg_size):
+        self._pg_size = pg_size
+        self._args = []
+
+    def to_all_query(self):
+        """Convert list of search criteria to *args"""
+        query = FileEventQuery.all(*self._args)
+        query.page_size = self._pg_size
+        return query
+
+    def append(self, arg, create_filter):
+        if not arg:
+            return
+        _filter = create_filter(arg)
+        if _filter:
+            self._args.append(create_filter(arg))
+
+
 @logger
 def build_query_payload(args):
     """
     Build a query payload combining passed args
     """
+    pg_size = args.get("results")
     _hash = args.get("hash")
     hostname = args.get("hostname")
     username = args.get("username")
     exposure = args.get("exposure")
 
-    search_args = []
-    hash_filter = _create_hash_filter(_hash)
-    if hash_filter:
-        search_args.append(hash_filter)
-    if hostname:
-        search_args.append(OSHostname.eq(hostname))
-    if username:
-        search_args.append(DeviceUsername.eq(username))
-    if exposure:
-        search_args.append(_create_exposure_filter(exposure))
+    search_args = FileEventSearchFilters(pg_size)
+    search_args.append(_hash, _create_hash_filter)
+    search_args.append(hostname, OSHostname.eq)
+    search_args.append(username, DeviceUsername.eq)
+    search_args.append(exposure, _create_exposure_filter)
 
-    # Convert list of search criteria to *args
-    query = FileEventQuery.all(*search_args)
-    query.page_size = args.get("results")
-    LOG("File Event Query: {}".format(query))
-    return str(query)
+    query = search_args.to_all_query()
+    query_str = str(query)
+    LOG("File Event Query: {}".format(query_str))
+    return query_str
 
 
 def _create_hash_filter(hash_arg):
@@ -243,6 +257,11 @@ def _create_exposure_filter(exposure_arg):
     if isinstance(exposure_arg, str):
         exposure_arg = exposure_arg.split(",")
     return ExposureType.is_in(exposure_arg)
+
+
+def _create_category_filter(file_type):
+    category_value = CODE42_FILE_TYPE_MAPPER.get(file_type["category"], "UNCATEGORIZED")
+    return FileCategory.eq(category_value)
 
 
 class ObservationToSecurityQueryMapper(object):
@@ -314,16 +333,10 @@ class ObservationToSecurityQueryMapper(object):
 
     def _create_file_category_filters(self):
         """Determine if file categorization is significant"""
-        file_categories: Dict[str, Any]
-        filters = []
-        for file_type in self._observation_data["fileCategories"]:
-            if file_type["isSignificant"]:
-                category_value = CODE42_FILE_TYPE_MAPPER.get(file_type["category"], "UNCATEGORIZED")
-                file_category = FileCategory.eq(category_value)
-                filters.append(file_category)
-        if len(filters):
-            file_categories = {"filterClause": "OR", "filters": filters}
-            return json.dumps(file_categories)
+        observed_file_categories = self._observation_data["fileCategories"]
+        filters = [c for c in observed_file_categories if c["isSignificant"]]
+        if filters:
+            return json.dumps({"filterClause": "OR", "filters": filters})
 
     @logger
     def _create_query(self, search_args):
