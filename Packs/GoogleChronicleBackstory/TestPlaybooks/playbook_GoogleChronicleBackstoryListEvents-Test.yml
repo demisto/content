@@ -3,6 +3,7 @@ version: -1
 name: Google Chronicle Backstory List Events - Test
 description: This playbook uses the Google Chronicle Backstory integration and tests
   the various scenarios of the "gcb-list-events" command.
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -42,6 +44,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -112,6 +115,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -154,6 +158,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -178,6 +183,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
