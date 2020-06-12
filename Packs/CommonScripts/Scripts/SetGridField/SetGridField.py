@@ -278,7 +278,6 @@ def main():
                                    columns=argToList(demisto.getArg('columns')),
                                    sort_by=demisto.getArg('sort_by'),
                                    unpack_nested_elements=demisto.getArg('unpack_nested_elements') == 'true')
-        print(table)
         # Execute automation 'setIncident` which change the Context data in the incident
         demisto.executeCommand("setIncident",
                                {
