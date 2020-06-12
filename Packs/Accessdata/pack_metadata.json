@@ -4,8 +4,8 @@
   "support": "partner",
   "currentVersion": "1.0.0",
   "author": "Accessdata",
-  "url": "",
-  "email": "",
+  "url": "https://support.accessdata.com/hc/en-us",
+  "email": "support@accessdata.com",
   "created": "2020-04-14T00:00:00Z",
   "categories": [
     "Forensics & Malware Analysis"
