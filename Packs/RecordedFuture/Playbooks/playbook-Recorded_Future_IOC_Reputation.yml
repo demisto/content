@@ -1,0 +1,434 @@
+id: Recorded Future IOC Reputation
+version: -1
+name: Recorded Future IOC Reputation
+description: Entity Reputation using sub-playbooks
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 31873721-cbc2-4aff-89c6-8158aceb2f04
+    type: start
+    task:
+      id: 31873721-cbc2-4aff-89c6-8158aceb2f04
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+      - "16"
+      - "18"
+      - "19"
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: a6d14c3d-59ff-4c4e-828b-a21492d4d1da
+    type: title
+    task:
+      id: a6d14c3d-59ff-4c4e-828b-a21492d4d1da
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c0323bab-06fc-49a3-8c75-c0a42de70554
+    type: playbook
+    task:
+      id: c0323bab-06fc-49a3-8c75-c0a42de70554
+      version: -1
+      name: Recorded Future Domain Reputation
+      playbookName: Recorded Future Domain Reputation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 7fea0d9b-6f98-4ec4-81b0-cdadd6c749ad
+    type: playbook
+    task:
+      id: 7fea0d9b-6f98-4ec4-81b0-cdadd6c749ad
+      version: -1
+      name: Recorded Future IP Reputation
+      playbookName: Recorded Future IP Reputation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: ca55d1ff-d524-4456-8365-5b655de0b4a0
+    type: playbook
+    task:
+      id: ca55d1ff-d524-4456-8365-5b655de0b4a0
+      version: -1
+      name: Recorded Future URL Reputation
+      playbookName: Recorded Future URL Reputation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 8c9869fa-477d-4b6b-8e86-b37121adea91
+    type: playbook
+    task:
+      id: 8c9869fa-477d-4b6b-8e86-b37121adea91
+      version: -1
+      name: Recorded Future File Reputation
+      playbookName: Recorded Future File Reputation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: da774399-ce73-4369-89ae-1ad2be7c3130
+    type: playbook
+    task:
+      id: da774399-ce73-4369-89ae-1ad2be7c3130
+      version: -1
+      name: Recorded Future CVE Reputation
+      playbookName: Recorded Future CVE Reputation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 515,
+        "width": 2020,
+        "x": -540,
+        "y": 70
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: The IP addresses to enrich
+  playbookInputQuery:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: File MD5 to enrich
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
+  required: false
+  description: File SHA256 to enrich
+  playbookInputQuery:
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: uniq
+  required: false
+  description: File SHA1 to enrich
+  playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+      transformers:
+      - operator: uniq
+  required: false
+  description: URL to enrich
+  playbookInputQuery:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+      transformers:
+      - operator: uniq
+  required: false
+  description: The domain name to enrich
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+- contextPath: DBotScore.Type
+  description: Indicator type
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+- contextPath: DBotScore.Score
+  description: The actual score
+- contextPath: Domain.Name
+  description: Domain name
+- contextPath: IP.Address
+  description: IP address
+- contextPath: URL.Data
+  description: URL name
+- contextPath: CVE.ID
+  description: CVE ID
+- contextPath: File.SHA256
+  description: File SHA-256
+- contextPath: File.SHA512
+  description: File SHA-512
+- contextPath: File.SHA1
+  description: File SHA-1
+- contextPath: File.MD5
+  description: File MD5
+- contextPath: File.CRC32
+  description: File CRC32
+- contextPath: File.CTPH
+  description: File CTPH
+- contextPath: RecordedFuture.File.riskScore
+  description: Recorded Future Hash Risk Score
+- contextPath: RecordedFuture.File.riskLevel
+  description: Recorded Future Hash Risk Level
+- contextPath: RecordedFuture.File.Evidence.rule
+  description: Recorded Risk Rule Name
+- contextPath: RecordedFuture.File.Evidence.mitigation
+  description: Recorded Risk Rule Mitigation
+- contextPath: RecordedFuture.File.Evidence.description
+  description: Recorded Risk Rule description
+- contextPath: RecordedFuture.File.Evidence.timestamp
+  description: Recorded Risk Rule timestamp
+- contextPath: RecordedFuture.File.Evidence.level
+  description: Recorded Risk Rule Level
+- contextPath: RecordedFuture.File.Evidence.ruleid
+  description: Recorded Risk Rule ID
+- contextPath: RecordedFuture.File.name
+  description: Hash
+- contextPath: RecordedFuture.File.maxRules
+  description: Maximum count of Recorded Future Hash Risk Rules
+- contextPath: RecordedFuture.File.ruleCount
+  description: Number of triggered Recorded Future Hash Risk Rules
+- contextPath: RecordedFuture.IP.riskScore
+  description: Recorded Future IP Risk Score
+- contextPath: RecordedFuture.IP.riskLevel
+  description: Recorded Future IP Risk Level
+- contextPath: RecordedFuture.IP.Evidence.rule
+  description: Recorded Risk Rule Name
+- contextPath: RecordedFuture.IP.Evidence.mitigation
+  description: Recorded Risk Rule Mitigation
+- contextPath: RecordedFuture.IP.Evidence.description
+  description: Recorded Risk Rule Description
+- contextPath: RecordedFuture.IP.Evidence.timestamp
+  description: Recorded Risk Rule Timestamp
+- contextPath: RecordedFuture.IP.Evidence.level
+  description: Recorded Risk Rule Level
+- contextPath: RecordedFuture.IP.Evidence.ruleid
+  description: Recorded Risk Rule ID
+- contextPath: RecordedFuture.IP.name
+  description: IP Address
+- contextPath: RecordedFuture.IP.maxRules
+  description: Maximum count of Recorded Future IP Risk Rules
+- contextPath: RecordedFuture.IP.ruleCount
+  description: Number of triggered Recorded Future IP Risk Rules
+- contextPath: RecordedFuture.CVE.riskLevel
+  description: Recorded Future Vulnerability Risk Level
+- contextPath: RecordedFuture.CVE.riskScore
+  description: Risk Score
+- contextPath: RecordedFuture.CVE.Evidence.rule
+  description: Recorded Risk Rule Name
+- contextPath: RecordedFuture.CVE.Evidence.mitigation
+  description: Recorded Risk Rule Mitigation
+- contextPath: RecordedFuture.CVE.Evidence.description
+  description: Recorded Risk Rule description
+- contextPath: RecordedFuture.CVE.Evidence.timestamp
+  description: Recorded Risk Rule timestamp
+- contextPath: RecordedFuture.CVE.Evidence.level
+  description: Recorded Risk Rule Level
+- contextPath: RecordedFuture.CVE.Evidence.ruleid
+  description: Recorded Risk Rule ID
+- contextPath: RecordedFuture.CVE.name
+  description: Vulnerability name
+- contextPath: RecordedFuture.CVE.maxRules
+  description: Maximum count of Recorded Future Vulnerability Risk Rules
+- contextPath: RecordedFuture.CVE.ruleCount
+  description: Number of triggered Recorded Future Vulnerability Risk Rules
+- contextPath: RecordedFuture.Domain.riskScore
+  description: Recorded Future Domain Risk Score
+- contextPath: RecordedFuture.Domain.riskLevel
+  description: Recorded Future Domain Risk Level
+- contextPath: RecordedFuture.Domain.Evidence.rule
+  description: Recorded Risk Rule Name
+- contextPath: RecordedFuture.Domain.Evidence.mitigation
+  description: Recorded Risk Rule Mitigation
+- contextPath: RecordedFuture.Domain.Evidence.description
+  description: Recorded Risk Rule description
+- contextPath: RecordedFuture.Domain.Evidence.timestamp
+  description: Recorded Risk Rule timestamp
+- contextPath: RecordedFuture.Domain.Evidence.level
+  description: Recorded Risk Rule Level
+- contextPath: RecordedFuture.Domain.Evidence.ruleid
+  description: Recorded Risk Rule ID
+- contextPath: RecordedFuture.Domain.name
+  description: Domain name
+- contextPath: RecordedFuture.Domain.maxRules
+  description: Maximum count of Recorded Future Domain Risk Rules
+- contextPath: RecordedFuture.Domain.ruleCount
+  description: Number of triggered Recorded Future Domain Risk Rules
+- contextPath: RecordedFuture.URL.riskScore
+  description: Recorded Future URL Risk Score
+- contextPath: RecordedFuture.URL.riskLevel
+  description: Recorded Future URL Risk Level
+- contextPath: RecordedFuture.URL.Evidence.rule
+  description: Recorded Risk Rule Name
+- contextPath: RecordedFuture.URL.Evidence.mitigation
+  description: Recorded Risk Rule Mitigation
+- contextPath: RecordedFuture.URL.Evidence.description
+  description: Recorded Risk Rule description
+- contextPath: RecordedFuture.URL.Evidence.timestamp
+  description: Recorded Risk Rule timestamp
+- contextPath: RecordedFuture.URL.Evidence.level
+  description: Recorded Risk Rule Level
+- contextPath: RecordedFuture.URL.Evidence.ruleid
+  description: Recorded Risk Rule ID
+- contextPath: RecordedFuture.URL.name
+  description: URL
+- contextPath: RecordedFuture.URL.maxRules
+  description: Maximum count of Recorded Future URL Risk Rules
+- contextPath: RecordedFuture.URL.ruleCount
+  description: Number of triggered Recorded Future URL Risk Rules
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

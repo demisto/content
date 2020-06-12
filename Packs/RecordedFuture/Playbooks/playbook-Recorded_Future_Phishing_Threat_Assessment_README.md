@@ -1,0 +1,56 @@
+Threat Assessment using the Recorded Future SOAR Triage API and the Phishing context.
+
+## Dependencies
+This playbook uses the following sub-playbooks, integrations, and scripts.
+
+### Sub-playbooks
+This playbook does not use any sub-playbooks.
+
+### Integrations
+* Recorded Future v2
+
+### Scripts
+This playbook does not use any scripts.
+
+### Commands
+* recordedfuture-threat-assessment
+
+## Playbook Inputs
+---
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| CVE | CVE | CVE.ID | Optional |
+| IP | IP Address | IP.Address | Optional |
+| URL | URL | URL.Data | Optional |
+| MD5 | MD5 | File.MD5 | Optional |
+| SHA1 | SHA\-1 | File.SHA1 | Optional |
+| SHA256 | SHA\-256 | File.SHA256 | Optional |
+| Domain | Domain | Domain.Name | Optional |
+
+## Playbook Outputs
+---
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| DBotScore.Indicator | The indicator that was tested | unknown |
+| DBotScore.Type | Indicator type | unknown |
+| DBotScore.Vendor | Vendor used to calculate the score | unknown |
+| DBotScore.Score | The actual score | unknown |
+| RecordedFuture.verdict | Recorded Future verdict | unknown |
+| RecordedFuture.context | Threat Assessment Context | unknown |
+| RecordedFuture.riskScore | Recorded Future Max Score | unknown |
+| RecordedFuture.Entities.id | Entity ID | unknown |
+| RecordedFuture.Entities.name | Entity Name | unknown |
+| RecordedFuture.Entities.type | Entity Type | unknown |
+| RecordedFuture.Entities.score | Entity Score | unknown |
+| RecordedFuture.Entities.Evidence.ruleid | Recorded Future Risk Rule ID | unknown |
+| RecordedFuture.Entities.Evidence.timestamp | Recorded Future Evidence Timestamp | unknown |
+| RecordedFuture.Entities.Evidence.mitigation | Recorded Future Evidence Mitigation | unknown |
+| RecordedFuture.Entities.Evidence.description | Recorded Future Evidence Description | unknown |
+| RecordedFuture.Entities.Evidence.rule | Recorded Future Risk Rule | unknown |
+| RecordedFuture.Entities.Evidence.level | Recorded Future Risk Rule Level | unknown |
+
+## Playbook Image
+---
+![Recorded Future Phishing Threat Assessment](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/triage_playbook.png)
