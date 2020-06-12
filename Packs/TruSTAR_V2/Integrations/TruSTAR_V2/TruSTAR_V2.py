@@ -149,7 +149,7 @@ class ContextManager(object):
         xsoar_indicators = [
             self._get_xsoar_indicator(d) 
             for d in indicators
-            if d.get('indicatorType') not in {'EMAIL_ADDRESS', 'REGISTRY_KEY', 'MALWARE', 'CVE', 'CIDR_BLOCK'}
+            if d.get('indicatorType') not in {'EMAIL_ADDRESS', 'REGISTRY_KEY', 'MALWARE', 'CIDR_BLOCK'}
         ]
 
         standard_context = self.get_non_xsoar_standard_context(indicators)
