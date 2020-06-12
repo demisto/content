@@ -34,7 +34,7 @@ def check_logging(caplog):
 @pytest.fixture(autouse=True)
 def check_std_out_err(capfd):
     '''
-    Fixture validates that there is no ouput to stdout or stderr.
+    Fixture validates that there is no output to stdout or stderr.
 
     If your test fails and it is ok to have output in stdout/stderr, you can disable the capture use "with capfd.disabled()"
 
