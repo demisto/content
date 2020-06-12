@@ -145,14 +145,18 @@ class Client(BaseClient):
         if (bundle_id and itunes_id) or (bundle_id and app_hash) or (itunes_id and app_hash):
             raise Exception("To get a report, use exactly one of the arguments: bundle_id, itunes_id, app_hash.")
 
+        params = {}
         if bundle_id:
-            url_suffix = f'/malware/public/reports/bundle/{bundle_id}?platform={platform}'
+            url_suffix = f'/malware/public/reports/bundle/{bundle_id}'
+            params['platform'] = platform
         elif itunes_id:
             url_suffix = f'/malware/public/reports/itunes/{itunes_id}'
         else:
-            url_suffix = f'/malware/public/reports/hash/{app_hash}?platform={platform}'
+            url_suffix = f'/malware/public/reports/hash/{app_hash}'
+            params['platform'] = platform
 
-        return self._http_request(method='GET', url_suffix=url_suffix, headers=self._headers)
+        return self._http_request(method='GET', url_suffix=url_suffix, headers=self._headers,
+                                  params=params)
 
     def app_upload_for_analysis_request(self, entry_id: str) -> dict:
         """Upload an application for analysis by sending a POST request.
@@ -387,7 +391,7 @@ def report_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not report_data:
         return 'A report was not found.', {}, {}
 
-    app_md5 = report.get('md5')
+    app_md5 = report.get('md5') if 'md5' in report else report_data.get('app_analysis', {}).get('md5_hash')
     if app_md5:
         report_data.update({'md5': app_md5})
     human_readable = tableToMarkdown(name=f"Report:", t=report_data, removeNull=True)
