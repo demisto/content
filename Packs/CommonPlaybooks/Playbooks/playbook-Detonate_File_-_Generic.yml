@@ -1,11 +1,5 @@
 id: Detonate File - Generic
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.0.1
-    fromServerVersion: ""
-    toServerVersion: ""
 name: Detonate File - Generic
 description: Detonate file through active integrations that support file detonation
 starttaskid: "0"
