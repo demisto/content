@@ -2,7 +2,6 @@ import requests
 
 import demistomock as demisto
 from CommonServerPython import *
-import xml.etree.ElementTree as ET
 
 requests.packages.urllib3.disable_warnings()
 
@@ -40,7 +39,7 @@ def get_sites():
 
     raw_sites = json.loads(xml2json(res.content))
 
-    if (not raw_sites or not raw_sites.has_key('BESAPI')):
+    if not raw_sites or 'BESAPI' not in raw_sites:
         return []
 
     sites = []
@@ -104,7 +103,11 @@ def get_sites_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': sites,
-        'HumanReadable': tableToMarkdown('BigFix Sites', sites, ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']),
+        'HumanReadable': tableToMarkdown(
+            'BigFix Sites',
+            sites,
+            ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']
+        ),
         'EntryContext': {
             'Bigfix.Site(val.Resource==obj.Resource)': sites
         }
@@ -129,7 +132,7 @@ def get_site(site_type, site_name):
 
     raw_site = json.loads(xml2json(res.content))
 
-    if (not raw_site or not raw_site.has_key('BES')):
+    if not raw_site or 'BES' not in raw_site:
         return None
 
     site = None
@@ -162,7 +165,11 @@ def get_site_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': site,
-        'HumanReadable': tableToMarkdown('BigFix Site: {} - {}'.format(site_type, site_name), [site], ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']),
+        'HumanReadable': tableToMarkdown(
+            'BigFix Site: {} - {}'.format(site_type, site_name),
+            [site],
+            ['Name', 'Type', 'GatherURL', 'Description', 'GlobalReadPermissions', 'Subscription']
+        ),
         'EntryContext': {
             'Bigfix.Site(val.Resource==obj.Resource)': site
         }
@@ -184,7 +191,7 @@ def get_endpoints(should_get_endpoint_details):
 
     raw_endpoints = json.loads(xml2json(res.content))
 
-    if (not raw_endpoints or not raw_endpoints.has_key('BESAPI')):
+    if not raw_endpoints or 'BESAPI' not in raw_endpoints:
         return None
 
     raw_endpoints = demisto.get(raw_endpoints, 'BESAPI.Computer')
@@ -264,7 +271,7 @@ def get_endpoint_details(computer_id):
         )
 
     raw_endpoint = json.loads(xml2json(res.content))
-    if (not raw_endpoint or not raw_endpoint.has_key('BESAPI')):
+    if not raw_endpoint or 'BESAPI' not in raw_endpoint:
         return None
 
     raw_endpoint = demisto.get(raw_endpoint, 'BESAPI.Computer')
@@ -272,13 +279,23 @@ def get_endpoint_details(computer_id):
     endpoint = {
         'ID': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "ID")=val["#text"]')),
         'Resource': demisto.get(raw_endpoint, '@Resource'),
-        'LastReportTime': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Last Report Time")=val["#text"]')),
-        'ActiveDirectoryPath': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Active Directory Path")=val["#text"]')),
+        'LastReportTime': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Last Report Time")=val["#text"]')
+        ),
+        'ActiveDirectoryPath': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Active Directory Path")=val["#text"]')
+        ),
         'AgentType': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Agent Type")=val["#text"]')),
         'AgentVersion': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Agent Version")=val["#text"]')),
-        'BESRelaySelectionMethod': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Relay Selection Method")=val["#text"]')),
-        'BESRelayServiceInstalled': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Relay Selection Method")=val["#text"]')),
-        'BESRootServer': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Root Server")=val["#text"]')),
+        'BESRelaySelectionMethod': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Relay Selection Method")=val["#text"]')
+        ),
+        'BESRelayServiceInstalled': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Relay Selection Method")=val["#text"]')
+        ),
+        'BESRootServer': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BES Root Server")=val["#text"]')
+        ),
         'BIOS': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "BIOS")=val["#text"]')),
         'CPU': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "CPU")=val["#text"]')),
         'ClientSettings': demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Client Settings")=val["#text"]'),
@@ -287,17 +304,27 @@ def get_endpoint_details(computer_id):
         'DNSName': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "DNS Name")=val["#text"]')),
         'IPAddress': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "IP Address")=val["#text"]')),
         'DeviceType': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Device Type")=val["#text"]')),
-        'DistancetoBESRelay': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Distance to BES Relay")=val["#text"]')),
-        'FreeSpaceonSystemDrive': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Free Space on System Drive")=val["#text"]')),
+        'DistancetoBESRelay': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Distance to BES Relay")=val["#text"]')
+        ),
+        'FreeSpaceonSystemDrive': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Free Space on System Drive")=val["#text"]')
+        ),
         'LicenseType': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "License Type")=val["#text"]')),
         'Locked': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Locked")=val["#text"]')),
         'OS': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "OS")=val["#text"]')),
         'RAM': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "RAM")=val["#text"]')),
         'Relay': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Relay")=val["#text"]')),
-        'RelayNameOfClient': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Relay Name of Client")=val["#text"]')),
+        'RelayNameOfClient': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Relay Name of Client")=val["#text"]')
+        ),
         'SubnetAddress': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Subnet Address")=val["#text"]')),
-        'SubscribedSites': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Subscribed Sites")=val["#text"]')),
-        'TotalSizeofSystemDrive': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Total Size of System Drive")=val["#text"]')),
+        'SubscribedSites': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Subscribed Sites")=val["#text"]')
+        ),
+        'TotalSizeofSystemDrive': get_first(
+            demisto.dt(raw_endpoint, 'Property(val["@Name"] == "Total Size of System Drive")=val["#text"]')
+        ),
         'UserName': get_first(demisto.dt(raw_endpoint, 'Property(val["@Name"] == "User Name")=val["#text"]'))
     }
 
@@ -374,7 +401,7 @@ def get_patches(site_type='', site_name=''):
         )
 
     raw_patches = json.loads(xml2json(res.content))
-    if (not raw_patches or not raw_patches.has_key('BESAPI')):
+    if not raw_patches or 'BESAPI' not in raw_patches:
         return None
 
     raw_patches = demisto.get(raw_patches, 'BESAPI.Fixlet')
@@ -424,7 +451,6 @@ def get_patches_command():
 
 
 def get_patch_details(site_type, site_name, patch_id):
-    fullurl = ''
     if site_type == 'master':
         fullurl = BASE_URL + '/api/fixlet/master/{}'.format(patch_id)
     else:
@@ -437,11 +463,12 @@ def get_patch_details(site_type, site_name, patch_id):
     )
 
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Failed to get patch/fixlet {}. Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(patch_id,
-                                                                                                                fullurl, res.status_code, res.content))
+        return_error('Failed to get patch/fixlet {}. Request URL: {}\nStatusCode: {}\nResponse Body: {}'.format(
+            patch_id, fullurl, res.status_code, res.content)
+        )
 
     raw_patch = json.loads(xml2json(res.content))
-    if (not raw_patch or not raw_patch.has_key('BES')):
+    if not raw_patch or 'BES' not in raw_patch:
         return None
 
     raw_patch = demisto.get(raw_patch, 'BES.Fixlet')
@@ -498,7 +525,6 @@ def get_patch_details_command():
 
 
 def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
-    target = ''
     if 'all' in computer_ids:
         target = '<AllComputers>true</AllComputers>'
     else:
@@ -535,7 +561,7 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
             fixlet_id, fullurl, res.status_code, res.content))
 
     raw_action = json.loads(xml2json(res.content))
-    if (not raw_action or not raw_action.has_key('BESAPI')):
+    if not raw_action or 'BESAPI' not in raw_action:
         return None
 
     raw_action = demisto.get(raw_action, 'BESAPI.Action')
@@ -553,7 +579,6 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
 
 def deploy_patch_command():
     site_name = demisto.args().get('site_name')
-    all_computers = False
     computer_ids = argToList(demisto.args().get('computer_ids'))
 
     fixlet_id = demisto.args().get('fixlet_id')
@@ -582,8 +607,9 @@ def deploy_patch_command():
 
 
 def action_delete(action_id):
+    fullurl = BASE_URL + '/api/action/' + action_id
     res = requests.delete(
-        BASE_URL + '/api/action/' + action_id,
+        fullurl,
         auth=(USERNAME, PASSWORD),
         verify=VERIFY_CERTIFICATE
     )
@@ -614,7 +640,7 @@ def get_action_status(action_id):
             action_id, fullurl, res.status_code, res.content))
 
     raw_action = json.loads(xml2json(res.content))
-    if (not raw_action or not raw_action.has_key('BESAPI')):
+    if not raw_action or 'BESAPI' not in raw_action:
         return None
 
     raw_action = demisto.get(raw_action, 'BESAPI.ActionResults')
@@ -642,8 +668,9 @@ def get_action_status_command():
 
 
 def action_stop(action_id):
+    fullurl = BASE_URL + '/api/action/' + action_id + '/stop'
     res = requests.post(
-        BASE_URL + '/api/action/' + action_id + '/stop',
+        fullurl,
         auth=(USERNAME, PASSWORD),
         verify=VERIFY_CERTIFICATE
     )
@@ -678,7 +705,7 @@ def query(relevance):
             fullurl, res.status_code, res.content))
 
     raw_action = json.loads(xml2json(res.content))
-    if (not raw_action or not raw_action.has_key('BESAPI')):
+    if not raw_action or 'BESAPI' not in raw_action:
         demisto.info('BigFix query has incorrect response format. Response Body: {}'.format(res.content))
         return_error('The response has incorrect format. Check the logs')
 
@@ -694,7 +721,7 @@ def query_command():
     relevance = demisto.args().get('relevance')
     results = query(relevance)
 
-    if results == None:
+    if results is None:
         demisto.results('No results')
         sys.exit(0)
 
