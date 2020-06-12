@@ -204,23 +204,35 @@ class Code42Client(BaseClient):
 class FileEventSearchFilters(object):
     """Class for simplifying building up a file event search query"""
 
-    def __init__(self, pg_size):
+    def __init__(self, pg_size=None):
         self._pg_size = pg_size
         self._filters = []
+
+    @property
+    def filters(self):
+        return self._filters
 
     def to_all_query(self):
         """Convert list of search criteria to *args"""
         query = FileEventQuery.all(*self._filters)
-        query.page_size = self._pg_size
+        if self._pg_size:
+            query.page_size = self._pg_size
         return query
 
-    def append(self, arg, create_filter):
-        """Safely creates and appends the filter to the working list."""
-        if not arg:
-            return
-        _filter = create_filter(arg)
+    def append(self, _filter):
         if _filter:
             self._filters.append(_filter)
+
+    def extend(self, _filters):
+        if _filters:
+            self._filters.extend(_filters)
+
+    def append_result(self, value, create_filter):
+        """Safely creates and appends the filter to the working list."""
+        if not value:
+            return
+        _filter = create_filter(value)
+        self.append(_filter)
 
 
 @logger
@@ -234,10 +246,10 @@ def build_query_payload(args):
     exposure = args.get("exposure")
 
     search_args = FileEventSearchFilters(pg_size)
-    search_args.append(_hash, _create_hash_filter)
-    search_args.append(hostname, OSHostname.eq)
-    search_args.append(username, DeviceUsername.eq)
-    search_args.append(exposure, _create_exposure_filter)
+    search_args.append_result(_hash, _create_hash_filter)
+    search_args.append_result(hostname, OSHostname.eq)
+    search_args.append_result(username, DeviceUsername.eq)
+    search_args.append_result(exposure, _create_exposure_filter)
 
     query = search_args.to_all_query()
     query_str = str(query)
@@ -267,6 +279,8 @@ def _create_category_filter(file_type):
 
 
 class ObservationToSecurityQueryMapper(object):
+    """Class to simplify the process of mapping observation data to query objects."""
+
     _ENDPOINT_TYPE = "FedEndpointExfiltration"
     _CLOUD_TYPE = "FedCloudSharePermissions"
     _PUBLIC_SEARCHABLE = "PublicSearchableShare"
@@ -301,22 +315,18 @@ class ObservationToSecurityQueryMapper(object):
         return str(query)
 
     def _create_search_args(self):
-        search_args = []
+        filters = FileEventSearchFilters()
         exposure_types = self._observation_data["exposureTypes"]
         begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
         end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
-        search_args.append(self._create_user_filter())
-        search_args.append(EventTimestamp.on_or_after(begin_time))
-        search_args.append(EventTimestamp.on_or_before(end_time))
 
-        exposure_filters = self._create_exposure_filters(exposure_types) or []
-        for _filter in exposure_filters:
-            search_args.append(_filter)
+        filters.append(self._create_user_filter())
+        filters.append(EventTimestamp.on_or_after(begin_time))
+        filters.append(EventTimestamp.on_or_before(end_time))
+        filters.extend(self._create_exposure_filters(exposure_types))
+        filters.extend(self._create_file_category_filters())
 
-        category_filters = self._create_file_category_filters()
-        if category_filters:
-            search_args.append(category_filters)
-        return search_args
+        return filters.filters
 
     def _create_exposure_filters(self, exposure_types):
         """Determine exposure types based on alert type"""
@@ -330,6 +340,7 @@ class ObservationToSecurityQueryMapper(object):
             return [ExposureType.is_in(exp_types)]
         elif self._is_endpoint_exfiltration:
             return [EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]), ExposureType.is_in(exposure_types)]
+        return []
 
     def _create_file_category_filters(self):
         """Determine if file categorization is significant"""
