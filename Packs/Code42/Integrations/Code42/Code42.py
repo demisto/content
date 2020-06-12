@@ -225,9 +225,8 @@ class FileEventSearchFilters(object):
 
 @logger
 def build_query_payload(args):
-    """
-    Build a query payload combining passed args
-    """
+    """Build a query payload combining passed args"""
+
     pg_size = args.get("results")
     _hash = args.get("hash")
     hostname = args.get("hostname")
@@ -249,7 +248,7 @@ def build_query_payload(args):
 def _create_hash_filter(hash_arg):
     if not hash_arg:
         return None
-    if len(hash_arg) == 32:
+    elif len(hash_arg) == 32:
         return MD5.eq(hash_arg)
     elif len(hash_arg) == 64:
         return SHA256.eq(hash_arg)
@@ -293,8 +292,7 @@ class ObservationToSecurityQueryMapper(object):
     def _is_cloud_exfiltration(self):
         return self._exfiltration_type == self._CLOUD_TYPE
 
-    @property
-    def _user_filter(self):
+    def _create_user_filter(self):
         return DeviceUsername.eq(self._actor) if self._is_endpoint_exfiltration else Actor.eq(self._actor)
 
     def map(self):
@@ -307,7 +305,7 @@ class ObservationToSecurityQueryMapper(object):
         exposure_types = self._observation_data["exposureTypes"]
         begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
         end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
-        search_args.append(self._user_filter)
+        search_args.append(self._create_user_filter())
         search_args.append(EventTimestamp.on_or_after(begin_time))
         search_args.append(EventTimestamp.on_or_before(end_time))
 
@@ -321,9 +319,8 @@ class ObservationToSecurityQueryMapper(object):
         return search_args
 
     def _create_exposure_filters(self, exposure_types):
-        """
-        Determine exposure types based on alert type
-        """
+        """Determine exposure types based on alert type"""
+
         if self._is_cloud_exfiltration:
             exp_types = []
             if self._PUBLIC_SEARCHABLE in exposure_types:
@@ -567,11 +564,12 @@ def fetch_incidents(
 
 @logger
 def securitydata_search_command(client, args):
-    code42_securitydata_context = []
+    code42_security_data_context = []
+    _json = args.get("json")
     file_context = []
     # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
-    if args.get("json") is not None:
-        file_events = client.search_json(args.get("json"))
+    if _json is not None:
+        file_events = client.search_json(_json)
     else:
         # Build payload
         payload = build_query_payload(args)
@@ -579,22 +577,17 @@ def securitydata_search_command(client, args):
     if file_events:
         for file_event in file_events:
             code42_context_event = map_to_code42_event_context(file_event)
-            code42_securitydata_context.append(code42_context_event)
+            code42_security_data_context.append(code42_context_event)
             file_context_event = map_to_file_context(file_event)
             file_context.append(file_context_event)
         readable_outputs = tableToMarkdown(
             f"Code42 Security Data Results",
-            code42_securitydata_context,
+            code42_security_data_context,
             headers=SECURITY_EVENT_HEADERS,
         )
-        return (
-            readable_outputs,
-            {
-                "Code42.SecurityData(val.EventID && val.EventID == obj.EventID)": code42_securitydata_context,
-                "File": file_context,
-            },
-            file_events,
-        )
+        security_data_context_key = "Code42.SecurityData(val.EventID && val.EventID == obj.EventID)"
+        context = {security_data_context_key: code42_security_data_context, "File": file_context}
+        return readable_outputs, context, file_events
     else:
         return "No results found", {}, {}
 
