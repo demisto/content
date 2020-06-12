@@ -65,6 +65,6 @@ def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json
     mocker.patch.object(SetGridField, 'demisto')
     SetGridField.demisto.dt.return_value = json.load(open(datadir[dt_response_json]))
     expected_grid = json.load(open(datadir[expected_json]))
-    assert pd.DataFrame(expected_grid).to_dict() == \
-           SetGridField.build_grid(context_path=mocker.MagicMock(), keys=keys, columns=columns,
-                                   unpack_nested_elements=unpack_nested).to_dict()
+    assert pd.DataFrame(expected_grid).to_dict() == SetGridField.build_grid(
+        context_path=mocker.MagicMock(), keys=keys, columns=columns, unpack_nested_elements=unpack_nested
+    ).to_dict()
