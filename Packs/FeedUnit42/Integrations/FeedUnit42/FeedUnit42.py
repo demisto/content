@@ -39,7 +39,29 @@ class Client(BaseClient):
         Returns:
             A list of objects, containing the indicators.
         """
-        return self._http_request('GET', url_suffix='', full_url=self._base_url, ok_codes=(200, 201, 206))
+        data = []
+
+        response = self._http_request('GET', url_suffix='', full_url=self._base_url, ok_codes=(200, 201, 206))
+
+        data.extend(response.get('objects'))
+
+        # Sort the objs in data by timestamp to find the most recent timestamp
+        data.sort(key=lambda x: datetime.strptime(x['modified'], '%Y-%m-%dT%H:%M:%S.%fZ'))
+        if len(data):
+            ts = data[-1]['modified']
+            params = {'added_after': ts}
+
+        demisto.log(str(params))
+        # demisto.log(str('success1'))
+        response2 = self._http_request('GET', url_suffix='', full_url=self._base_url, data=params,
+                                       ok_codes=(200, 201, 206))
+        demisto.log(str('success2'))
+        data.extend(response2.get('objects'))
+
+        demisto.info(str(data))
+        demisto.info(str(len(data)))
+
+        demisto.results(str(len(data)))
 
 
 def parse_response(response: dict) -> list:
