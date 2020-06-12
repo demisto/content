@@ -27,9 +27,9 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
-| IP | IP addresses to set in the whitelist |  | Required |
+| IP | IP addresses to set in the allow list |  | Required |
 | SecurityGroupName | Name of the AWS Security Group to update |  | Required |
-| IndicatorTagName | Name of the Indicator Tag to apply to any IPs whitelisted by this playbook. | AWS_IP_Whitelist | Required |
+| IndicatorTagName | Name of the Indicator Tag to apply to any IPs allowed by this playbook. | AWS_IP_Whitelist | Required |
 
 ## Playbook Outputs
 ---
@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![IP Whitelist - AWS Security Group](https://raw.githubusercontent.com/demisto/content/6fdbbd10fd0505cfe5e2664b2733cdf6c5a19192/Packs/AWS-EC2/doc_files/IP_Whitelist_-_AWS_Security_Group.png)
+![IP Whitelist - AWS Security Group](https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/AWS-EC2/doc_files/IP_Whitelist_-_AWS_Security_Group.png)

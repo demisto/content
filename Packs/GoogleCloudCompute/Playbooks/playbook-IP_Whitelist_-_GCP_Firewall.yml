@@ -38,7 +38,7 @@ tasks:
     task:
       id: 1873652b-4672-4413-874b-2294a66dc221
       version: -1
-      name: Whitelist IPs on GCP (Firewall)
+      name: Allow IPs on GCP (Firewall)
       type: title
       iscommand: false
       brand: ""
@@ -66,7 +66,7 @@ tasks:
     task:
       id: 08f244c8-d3c9-4aeb-82c7-7ddfebd9770c
       version: -1
-      name: Add whitelisted Tag
+      name: Add allowed Tag
       description: commands.local.cmd.set.indicator
       script: Builtin|||setIndicator
       type: regular
@@ -287,7 +287,7 @@ tasks:
     task:
       id: 159b97e1-3e77-41e7-8ca4-c527d5dd1f70
       version: -1
-      name: Is Google Compute integration enabled?
+      name: Is Google Cloud Compute integration enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -501,7 +501,7 @@ tasks:
     task:
       id: 08d094f2-d55a-4865-8a9b-1b48e6c494c5
       version: -1
-      name: Remove whitelisted Tag
+      name: Remove blocked Tag
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
       script: Builtin|||removeIndicatorField
       type: regular
@@ -539,7 +539,7 @@ tasks:
     task:
       id: ebe68b52-f1cb-4a7d-87a3-f019ce6a048d
       version: -1
-      name: Any IPs in GCP whitelist that should be removed?
+      name: Any IPs in GCP allowed that should be removed?
       type: condition
       iscommand: false
       brand: ""
@@ -577,7 +577,7 @@ tasks:
     task:
       id: 2abed310-7d92-4322-885d-6c85c23464e3
       version: -1
-      name: Any IPs to whitelist that are not already in GCP?
+      name: Any IPs to allow that are not already in GCP?
       type: condition
       iscommand: false
       brand: ""
@@ -651,7 +651,7 @@ inputs:
 - key: IP
   value: {}
   required: true
-  description: IP addresses to whitelist in GCP Firewall
+  description: IP addresses to allow in GCP Firewall
   playbookInputQuery:
 - key: GCPFirewallName
   value: {}
@@ -662,7 +662,7 @@ inputs:
   value:
     simple: GCP_IP_Whitelist
   required: true
-  description: Name of the Indicator Tag to apply to any IPs whitelisted by this playbook.
+  description: Name of the Indicator Tag to apply to any IPs allowed by this playbook.
   playbookInputQuery:
 outputs: []
 fromversion: 5.5.0

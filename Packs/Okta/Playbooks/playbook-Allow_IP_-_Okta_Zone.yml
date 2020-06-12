@@ -1,6 +1,6 @@
-id: IP Whitelist - Okta Zone
+id: Allow IP - Okta Zone
 version: -1
-name: IP Whitelist - Okta Zone
+name: Allow IP - Okta Zone
 description: "Sync a list of IP addresses to the Okta Network Zone with the given\
   \ ID. \nExisting IPs in the Okta Zone which are not in the input list will be removed\
   \ and the indicator will be untagged on XSOAR.\nIDs can be retrieved  using !okta-list-zones.\
@@ -42,7 +42,7 @@ tasks:
     task:
       id: d1f0c0ea-52c7-4205-8d23-c981908fefef
       version: -1
-      name: Whitelist IPs on Okta (Zone Gateways)
+      name: Allow IPs on Okta (Zone Gateways)
       type: title
       iscommand: false
       brand: ""
@@ -249,7 +249,7 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        simple: WhitelistCIDRs
+        simple: AllowedCIDRs
       stringify: {}
       value:
         complex:
@@ -329,7 +329,7 @@ tasks:
     task:
       id: fc3ba922-5683-4dad-83ea-bf1a6d015c1d
       version: -1
-      name: Compare IP list with current Okta whitelist
+      name: Compare IP list with current Okta allow list
       description: Compare  two lists and put the differences in context.
       scriptName: CompareLists
       type: regular
@@ -341,7 +341,7 @@ tasks:
       - "32"
     scriptarguments:
       left:
-        simple: ${WhitelistCIDRs}
+        simple: ${AllowedCIDRs}
       right:
         complex:
           root: Okta
@@ -653,7 +653,7 @@ tasks:
       - "8"
     scriptarguments:
       gatewayIPs:
-        simple: ${WhitelistCIDRs}
+        simple: ${AllowedCIDRs}
       proxyIPs: {}
       zoneID:
         complex:
@@ -712,7 +712,7 @@ inputs:
 - key: IP
   value: {}
   required: true
-  description: IP addresses to set in the whitelist
+  description: IP addresses to set in the allow list
   playbookInputQuery:
 - key: ZoneID
   value: {}
@@ -723,7 +723,7 @@ inputs:
   value:
     simple: Okta_Zone
   required: true
-  description: Name of the Indicator Tag to apply to any IPs whitelisted by this playbook.
+  description: Name of the Indicator Tag to apply to any IPs allowed by this playbook.
   playbookInputQuery:
 outputs: []
 fromversion: 5.5.0

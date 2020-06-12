@@ -27,9 +27,9 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
-| IP | IP addresses to set in the whitelist |  | Required |
+| IP | IP addresses to set in the allow list |  | Required |
 | ZoneID | ID of the Okta Zone to update. Use \!okta\-list\-zones to obtain |  | Required |
-| IndicatorTagName | Name of the Indicator Tag to apply to any IPs whitelisted by this playbook. | Okta_Zone | Required |
+| IndicatorTagName | Name of the Indicator Tag to apply to any IPs allow listed by this playbook. | Okta_Zone | Required |
 
 ## Playbook Outputs
 ---
@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![IP Whitelist - Okta Zone](https://raw.githubusercontent.com/demisto/content/6fdbbd10fd0505cfe5e2664b2733cdf6c5a19192/Packs/Okta/doc_files/IP_Whitelist_-_Okta_Zone.png)
+![Allow IP - Okta Zone](https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/Okta/doc_files/Allow_IP_-_Okta_Zone.png)

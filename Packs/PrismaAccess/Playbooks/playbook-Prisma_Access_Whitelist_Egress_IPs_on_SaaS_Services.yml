@@ -252,13 +252,13 @@ tasks:
     task:
       id: 70af2aa4-8c91-4705-88ef-1deba78c1ee4
       version: -1
-      name: IP Whitelist - Okta Zone
+      name: Allow IP - Okta Zone
       description: "Sync a list of IP addresses to the Okta Network Zone with the\
         \ given ID. \nExisting IPs in the Okta Zone which are not in the input list\
         \ will be removed and the indicator will be untagged on XSOAR.\nIDs can be\
         \ retrieved  using !okta-list-zones. This playbook supports CIDR notation\
         \ only (1.1.1.1/32) and not range notation (1.1.1.1-1.1.1.1)"
-      playbookName: IP Whitelist - Okta Zone
+      playbookName: Allow IP - Okta Zone
       type: playbook
       iscommand: false
       brand: ""
