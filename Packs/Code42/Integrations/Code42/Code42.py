@@ -112,17 +112,18 @@ SECURITY_EVENT_HEADERS = [
 SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description", "State", "ID"]
 
 
+def _get_severity_filter_value(severity_arg):
+    if severity_arg:
+        return ([severity_arg.upper()] if isinstance(severity_arg, str) else list(map(lambda x: x.upper(), severity_arg)))
+
+
 def _create_alert_query(event_severity_filter, start_time):
-    alert_filters = []
-    # Create alert filter
-    if event_severity_filter:
-        f = event_severity_filter
-        severity_filter = (f.upper() if isinstance(f, str) else list(map(lambda x: x.upper(), f)))
-        alert_filters.append(Severity.is_in(severity_filter))
+    alert_filters = AlertSearchFilters()
+    severity = event_severity_filter
+    alert_filters.append_result(_get_severity_filter_value(severity), Severity.is_in)
     alert_filters.append(AlertState.eq(AlertState.OPEN))
-    alert_filters.append(DateObserved.on_or_after(start_time))
-    alert_query = AlertQuery(*alert_filters)
-    alert_query.sort_direction = "asc"
+    alert_filters.append_result(start_time, DateObserved.on_or_after)
+    alert_query = alert_filters.to_all_query()
     return alert_query
 
 
@@ -201,11 +202,8 @@ class Code42Client(BaseClient):
         return res["fileEvents"]
 
 
-class FileEventSearchFilters(object):
-    """Class for simplifying building up a file event search query"""
-
-    def __init__(self, pg_size=None):
-        self._pg_size = pg_size
+class SearchFilters(object):
+    def __init__(self):
         self._filters = []
 
     @property
@@ -213,11 +211,7 @@ class FileEventSearchFilters(object):
         return self._filters
 
     def to_all_query(self):
-        """Convert list of search criteria to *args"""
-        query = FileEventQuery.all(*self._filters)
-        if self._pg_size:
-            query.page_size = self._pg_size
-        return query
+        """Override"""
 
     def append(self, _filter):
         if _filter:
@@ -233,6 +227,28 @@ class FileEventSearchFilters(object):
             return
         _filter = create_filter(value)
         self.append(_filter)
+
+
+class FileEventSearchFilters(SearchFilters):
+    """Class for simplifying building up a file event search query"""
+
+    def __init__(self, pg_size=None):
+        self._pg_size = pg_size
+        super(FileEventSearchFilters, self).__init__()
+
+    def to_all_query(self):
+        """Convert list of search criteria to *args"""
+        query = FileEventQuery.all(*self._filters)
+        if self._pg_size:
+            query.page_size = self._pg_size
+        return query
+
+
+class AlertSearchFilters(SearchFilters):
+    def to_all_query(self):
+        query = AlertQuery.all(*self._filters)
+        query.sort_direction = "asc"
+        return query
 
 
 @logger
