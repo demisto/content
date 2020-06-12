@@ -18,6 +18,7 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,6 +26,11 @@ tasks:
           "y": -134
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 2944ea73-dbaa-4554-8a6b-f7965e97d527
@@ -41,7 +47,9 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      url: ${inputs.Non malicious URL}
+      url:
+        simple: ${inputs.Non malicious URL}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -49,6 +57,11 @@ tasks:
           "y": 185
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 8337e288-ec0f-4dad-89cf-dbec4fbb995b
@@ -57,7 +70,7 @@ tasks:
       id: 8337e288-ec0f-4dad-89cf-dbec4fbb995b
       version: -1
       name: Check if found malicious
-      scriptName: Exists
+      script: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -67,7 +80,9 @@ tasks:
       "yes":
       - "5"
     scriptarguments:
-      value: ${URL.Data}
+      value:
+        simple: ${URL.Data}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -75,6 +90,11 @@ tasks:
           "y": 346
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 41095935-b8f8-4713-84dd-d4b4431d6913
@@ -91,7 +111,9 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      url: ${inputs.Malicious URL}
+      url:
+        simple: ${inputs.Malicious URL}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -99,6 +121,11 @@ tasks:
           "y": 619
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 1c5c2db3-e073-4274-89e7-c419c88fba5b
@@ -107,12 +134,14 @@ tasks:
       id: 1c5c2db3-e073-4274-89e7-c419c88fba5b
       version: -1
       name: False Positive
-      scriptName: Print
+      script: Print
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      value: False Positive - found non-malicious URL as malicious
+      value:
+        simple: False Positive - found non-malicious URL as malicious
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -120,6 +149,11 @@ tasks:
           "y": 524
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 0acab294-4534-4eae-870e-5f2322be251e
@@ -131,6 +165,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -138,6 +173,11 @@ tasks:
           "y": 1121
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: 31274de5-0c80-4041-8171-07dac9932450
@@ -146,7 +186,7 @@ tasks:
       id: 31274de5-0c80-4041-8171-07dac9932450
       version: -1
       name: Check if found malicious
-      scriptName: Exists
+      script: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -156,7 +196,9 @@ tasks:
       "yes":
       - "8"
     scriptarguments:
-      value: ${URL.Data}
+      value:
+        simple: ${URL.Data}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -164,6 +206,11 @@ tasks:
           "y": 794
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: dfc74289-ba9a-4db9-8968-0997d329522b
@@ -172,13 +219,14 @@ tasks:
       id: dfc74289-ba9a-4db9-8968-0997d329522b
       version: -1
       name: Closing incident
-      scriptName: CloseInvestigation
+      script: CloseInvestigation
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: ""
-      reason: ""
+      notes: {}
+      reason: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -186,6 +234,11 @@ tasks:
           "y": 1121
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: 1f515876-7ad2-4e9e-8454-3fde14722c60
@@ -194,12 +247,14 @@ tasks:
       id: 1f515876-7ad2-4e9e-8454-3fde14722c60
       version: -1
       name: False Negative
-      scriptName: Print
+      script: Print
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
-      value: Did not find malicious URL
+      value:
+        simple: Did not find malicious URL
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -207,6 +262,11 @@ tasks:
           "y": 956
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: 72f4341b-3cce-471a-816d-0ec51bd36b22
@@ -223,6 +283,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -230,6 +291,11 @@ tasks:
           "y": 11
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -244,8 +310,15 @@ view: |-
   }
 inputs:
 - key: Malicious URL
-  value: http://www.santoguia.net/sew/html/
+  value:
+    simple: http://www.santoguia.net/sew/html/
+  required: false
   description: ""
+  playbookInputQuery: null
 - key: Non malicious URL
-  value: http://google.com
+  value:
+    simple: http://google.com
+  required: false
   description: ""
+  playbookInputQuery: null
+outputs: []
