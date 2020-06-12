@@ -67,7 +67,7 @@ class ContextManager(object):
         'URL': DBotScoreType.URL,
         'IP' : DBotScoreType.IP,
         'DOMAIN': DBotScoreType.DOMAIN,
-        'CVE': DBotScoreType.CVE,
+        # 'CVE': DBotScoreType.CVE,
         'SOFTWARE': DBotScoreType.FILE,
         'SHA256': DBotScoreType.FILE,
         'SHA1': DBotScoreType.FILE,
@@ -148,7 +148,7 @@ class ContextManager(object):
         xsoar_indicators = [
             self._get_xsoar_indicator(d) 
             for d in indicators
-            if d.get('indicatorType') not in {'EMAIL_ADDRESS', 'REGISTRY_KEY', 'MALWARE', 'CIDR_BLOCK'}
+            if d.get('indicatorType') not in {'EMAIL_ADDRESS', 'REGISTRY_KEY', 'MALWARE', 'CIDR_BLOCK', 'CVE'}
         ]
 
         standard_context = self.get_non_xsoar_standard_context(indicators)

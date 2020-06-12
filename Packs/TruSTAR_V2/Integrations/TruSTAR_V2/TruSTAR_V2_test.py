@@ -1,6 +1,4 @@
 import pytest
-import pytest_mock
-import demistomock as demisto
 from TruSTAR_V2 import TrustarClient, Utils
 
 import trustar
@@ -10,12 +8,6 @@ from trustar.models.report import Report
 from trustar.models.intelligence_source import IntelligenceSource
 from trustar.models.phishing_submission import PhishingSubmission, PhishingIndicator
 from trustar.models.indicator_summary import IndicatorSummary, IndicatorAttribute, IndicatorScore
-
-
-
-###############################################
-#######             FIXTURES            #######
-###############################################
 
 
 @pytest.fixture
@@ -60,7 +52,6 @@ def related_indicators(mocker):
     )
 
 
-
 @pytest.fixture
 def trending_indicators():
     return [
@@ -75,7 +66,6 @@ def trending_indicators():
             value="botvrij.eu"
         )
     ]
-
 
 
 @pytest.fixture
@@ -99,7 +89,7 @@ def indicators_metadata():
 @pytest.fixture
 def indicator_summaries(mocker):
     return mocker.Mock(
-        items = [ 
+        items=[
             IndicatorSummary(
                 value="185.220.101.141",
                 indicator_type="IP",
@@ -112,16 +102,16 @@ def indicator_summaries(mocker):
                     IndicatorAttribute(
                         description='Number of associated URLs detected as bad',
                         name='Detected URLs',
-                        value=1,    
+                        value=1,
                     ),
                     IndicatorAttribute(
                         description='Number of hostnames this IP resolved to',
                         name='Hostname Resolutions',
-                        value=2,    
+                        value=2,
                     ),
                     IndicatorAttribute(
                         name='ASN',
-                        value='200052',    
+                        value='200052',
                     ),
                 ],
                 score=IndicatorScore(name="Positives/Total Scans", value="64/75")
@@ -143,9 +133,10 @@ def reports(mocker):
                 id="2",
                 title="Test Report2",
                 body="{'testField': 'test'}",
-            ),   
+            ),
         ]
     )
+
 
 @pytest.fixture
 def correlated_reports(mocker):
@@ -159,7 +150,7 @@ def correlated_reports(mocker):
             id="2",
             title="Test Report2",
             body="{'testField': 'test'}",
-        ),   
+        ),
     ]
 
 
@@ -208,11 +199,6 @@ def phishing_indicators(mocker):
     )
 
 
-###############################################
-#######             TESTS               #######
-###############################################
-
-
 def test_get_enclaves(client, enclaves, monkeypatch):
 
     def mock_get_enclaves(*args, **kwargs):
@@ -225,19 +211,17 @@ def test_get_enclaves(client, enclaves, monkeypatch):
     assert response.get('Contents')[0] == expected
 
 
-
 def test_related_indicators(client, related_indicators, monkeypatch):
 
     def mock_get_related_indicators(*args, **kwargs):
         return related_indicators
 
     monkeypatch.setattr(trustar.TruStar, "get_related_indicators_page", mock_get_related_indicators)
-    response = client.get_related_indicators(["a127d88fb73f8f1a3671557f3084d02d981396d5f5218163ef26d61314ced3c1",
-                                            "www.testUrl.com"])
+    indicators = ["a127d88fb73f8f1a3671557f3084d02d981396d5f5218163ef26d61314ced3c1", "www.testUrl.com"]
+    response = client.get_related_indicators(indicators)
 
     expected = [i.to_dict(remove_nones=True) for i in related_indicators.items]
     assert response.get('Contents') == expected
-
 
 
 def test_trending_indicators(client, trending_indicators, monkeypatch):
@@ -245,13 +229,11 @@ def test_trending_indicators(client, trending_indicators, monkeypatch):
     def mock_get_trending_indicators(*args, **kwargs):
         return trending_indicators
 
-
     monkeypatch.setattr(trustar.TruStar, "get_community_trends", mock_get_trending_indicators)
     response = client.get_trending_indicators()
     expected = [i.to_dict(remove_nones=True) for i in trending_indicators]
 
     assert response.get('Contents') == expected
-
 
 
 def test_get_indicators_metadata(client, indicators_metadata, monkeypatch):
@@ -264,10 +246,8 @@ def test_get_indicators_metadata(client, indicators_metadata, monkeypatch):
     expected = indicators_metadata[0].to_dict(remove_nones=True)
     expected["firstSeen"] = Utils.normalize_time(expected.get('firstSeen'))
     expected["lastSeen"] = Utils.normalize_time(expected.get('lastSeen'))
-    
+
     assert response.get('Contents')[0] == expected
-
-
 
 
 def test_get_indicator_summaries(client, indicator_summaries, monkeypatch):
@@ -283,7 +263,6 @@ def test_get_indicator_summaries(client, indicator_summaries, monkeypatch):
     assert response.get('Contents')[0] == expected
 
 
-
 def test_get_whitelisted_indicators(client, whitelisted_indicators, monkeypatch):
 
     def mock_get_whitelist(*args, **kwargs):
@@ -296,9 +275,7 @@ def test_get_whitelisted_indicators(client, whitelisted_indicators, monkeypatch)
     assert response.get('Contents') == expected
 
 
-
 def test_get_indicators_for_report(client, whitelisted_indicators, monkeypatch):
-    #using whitelisted_indicators as the response for indicators for report has same structure
 
     def mock_get_indicators_for_report(*args, **kwargs):
         return whitelisted_indicators
@@ -310,17 +287,17 @@ def test_get_indicators_for_report(client, whitelisted_indicators, monkeypatch):
     assert response.get('Contents') == expected
 
 
-
 def test_move_report(client, monkeypatch):
 
     def mock_move_report(*args, **kwargs):
         return kwargs["report_id"]
 
+    report_id = "94a476d8-17e3-490a-9020-f6971b692daf"
+    enclave_id = "6ef1078c-a74a-4b42-9344-56c6adea0bda"
     monkeypatch.setattr(trustar.TruStar, "move_report", mock_move_report)
-    response = client.move_report("94a476d8-17e3-490a-9020-f6971b692daf",
-                                "6ef1078c-a74a-4b42-9344-56c6adea0bda")
+    response = client.move_report(report_id, enclave_id)
 
-    assert response == "94a476d8-17e3-490a-9020-f6971b692daf has been moved to enclave id: 6ef1078c-a74a-4b42-9344-56c6adea0bda"
+    assert response == f"{report_id} has been moved to enclave id: {enclave_id}"
 
 
 def test_copy_report(client, monkeypatch):
@@ -328,12 +305,12 @@ def test_copy_report(client, monkeypatch):
     def mock_copy_report(*args, **kwargs):
         return "NEW-Test-ID"
 
+    report_id = "94a476d8-17e3-490a-9020-f6971b692daf"
+    dest_enclave_id = "6ef1078c-a74a-4b42-9344-56c6adea0bda"
     monkeypatch.setattr(trustar.TruStar, "copy_report", mock_copy_report)
-    response = client.copy_report("94a476d8-17e3-490a-9020-f6971b692daf",
-                                "6ef1078c-a74a-4b42-9344-56c6adea0bda")
+    response = client.copy_report(report_id, dest_enclave_id)
 
-    assert response == "94a476d8-17e3-490a-9020-f6971b692daf has been copied to enclave id: 6ef1078c-a74a-4b42-9344-56c6adea0bda with id: NEW-Test-ID"
-
+    assert response == f"{report_id} has been copied to enclave id: {dest_enclave_id} with id: NEW-Test-ID"
 
 
 def test_get_reports(client, reports, monkeypatch):
@@ -362,7 +339,6 @@ def test_get_report_details(client, reports, monkeypatch):
     assert response.get('Contents') == expected
 
 
-
 def test_update_report(client, reports, monkeypatch):
 
     def mock_update_report(*args, **kwargs):
@@ -378,12 +354,11 @@ def test_update_report(client, reports, monkeypatch):
     assert response.get('Contents') == expected
 
 
-
 def test_search_reports(client, reports, monkeypatch):
 
     def mock_search_reports(*args, **kwargs):
         return reports.items
-    
+
     monkeypatch.setattr(trustar.TruStar, "search_reports_page", mock_search_reports)
     response = client.search_reports()
     expected = [r.to_dict(remove_nones=True) for r in reports.items]
@@ -391,15 +366,13 @@ def test_search_reports(client, reports, monkeypatch):
     assert response.get('Contents') == expected
 
 
-
 def test_delete_report(client, monkeypatch):
-    
+
     report_id = "94a476d8-17e3-490a-9020-f6971b692daf"
-    monkeypatch.setattr(trustar.TruStar, "delete_report", lambda x, y ,z: None)
+    monkeypatch.setattr(trustar.TruStar, "delete_report", lambda x, y, z: None)
     response = client.delete_report(report_id)
 
     assert response == f"Report {report_id} was successfully deleted"
-
 
 
 def test_submit_report(client, monkeypatch, mocker):
@@ -418,7 +391,6 @@ def test_submit_report(client, monkeypatch, mocker):
     assert response.get('Contents').get('reportBody') == "TEST BODY"
 
 
-
 def test_add_to_whitelist(client, monkeypatch):
 
     monkeypatch.setattr(trustar.TruStar, "add_terms_to_whitelist", lambda x, y: y)
@@ -426,7 +398,6 @@ def test_add_to_whitelist(client, monkeypatch):
     response = client.add_to_whitelist(indicators)
 
     assert response == f"{indicators} added to the whitelist successfully"
-
 
 
 def test_remove_from_whitelist(client, monkeypatch):
@@ -437,20 +408,16 @@ def test_remove_from_whitelist(client, monkeypatch):
     assert response == f'{indicator} removed from the whitelist successfully'
 
 
-
-
 def test_correlated_reports(client, correlated_reports, monkeypatch):
 
     def mock_get_correlated_reports(*args, **kwargs):
         return correlated_reports
-
 
     monkeypatch.setattr(trustar.TruStar, "get_correlated_reports_page", mock_get_correlated_reports)
     response = client.get_correlated_reports(indicators="5f67fc0a85ef8f1b6c17ee54acb55140")
     expected = [r.to_dict(remove_nones=True) for r in correlated_reports]
 
     assert response.get('Contents') == expected
-
 
 
 def test_get_all_phishing_indicators(client, phishing_indicators, monkeypatch):
@@ -463,7 +430,6 @@ def test_get_all_phishing_indicators(client, phishing_indicators, monkeypatch):
     expected = phishing_indicators.items[0].to_dict(remove_nones=True)
 
     assert response.get('Contents')[0] == expected
-
 
 
 def test_get_phishing_submissions(client, phishing_submissions, monkeypatch):
@@ -486,7 +452,6 @@ def test_set_triage_status(client, monkeypatch, mocker):
     response = client.set_triage_status("TEST-ID", "RESOLVED")
 
     assert response == "Submission ID TEST-ID is RESOLVED"
-
 
 
 def test_search_indicators(client, whitelisted_indicators, monkeypatch):
