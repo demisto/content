@@ -49,9 +49,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: >
-    from typing import Dict, Any
-
+  script: >2
 
 
 
@@ -185,6 +183,25 @@ script:
 
 
 
+    def _get_severity_filter_value(severity_arg):
+        if severity_arg:
+            return (
+                [severity_arg.upper()]
+                if isinstance(severity_arg, str)
+                else list(map(lambda x: x.upper(), severity_arg))
+            )
+
+
+    def _create_alert_query(event_severity_filter, start_time):
+        alert_filters = AlertSearchFilters()
+        severity = event_severity_filter
+        alert_filters.append_result(_get_severity_filter_value(severity), Severity.is_in)
+        alert_filters.append(AlertState.eq(AlertState.OPEN))
+        alert_filters.append_result(start_time, DateObserved.on_or_after)
+        alert_query = alert_filters.to_all_query()
+        return alert_query
+
+
     class Code42Client(BaseClient):
         """
         Client will implement the service API, should not contain Cortex XSOAR logic.
@@ -200,9 +217,7 @@ script:
         def add_user_to_departing_employee(self, username, departure_date=None, note=None):
             try:
                 user_id = self.get_user_id(username)
-                self._sdk.detectionlists.departing_employee.add(
-                    user_id, departure_date=departure_date
-                )
+                self._sdk.detectionlists.departing_employee.add(user_id, departure_date=departure_date)
                 not note or self._sdk.detectionlists.update_user_notes(note)
             except Exception:
                 return None
@@ -210,24 +225,11 @@ script:
 
         def fetch_alerts(self, start_time, event_severity_filter=None):
             try:
-                query = self._create_alert_query(event_severity_filter, start_time)
+                query = _create_alert_query(event_severity_filter, start_time)
                 res = self._sdk.alerts.search_alerts(query)
             except Exception:
                 return None
             return res["alerts"]
-
-        def _create_alert_query(self, event_severity_filter, start_time):
-            alert_filters = []
-            # Create alert filter
-            if event_severity_filter:
-                f = event_severity_filter
-                severity_filter = (f.upper() if isinstance(f, str) else list(map(lambda x: x.upper(), f)))
-                alert_filters.append(Severity.is_in(severity_filter))
-            alert_filters.append(AlertState.eq(AlertState.OPEN))
-            alert_filters.append(DateObserved.on_or_after(start_time))
-            alert_query = AlertQuery(*alert_filters)
-            alert_query.sort_direction = "asc"
-            return alert_query
 
         def get_alert_details(self, alert_id):
             try:
@@ -273,39 +275,82 @@ script:
             return res["fileEvents"]
 
 
+    class SearchFilters(object):
+        def __init__(self):
+            self._filters = []
+
+        @property
+        def filters(self):
+            return self._filters
+
+        def to_all_query(self):
+            """Override"""
+
+        def append(self, _filter):
+            if _filter:
+                self._filters.append(_filter)
+
+        def extend(self, _filters):
+            if _filters:
+                self._filters.extend(_filters)
+
+        def append_result(self, value, create_filter):
+            """Safely creates and appends the filter to the working list."""
+            if not value:
+                return
+            _filter = create_filter(value)
+            self.append(_filter)
+
+
+    class FileEventSearchFilters(SearchFilters):
+        """Class for simplifying building up a file event search query"""
+
+        def __init__(self, pg_size=None):
+            self._pg_size = pg_size
+            super(FileEventSearchFilters, self).__init__()
+
+        def to_all_query(self):
+            """Convert list of search criteria to *args"""
+            query = FileEventQuery.all(*self._filters)
+            if self._pg_size:
+                query.page_size = self._pg_size
+            return query
+
+
+    class AlertSearchFilters(SearchFilters):
+        def to_all_query(self):
+            query = AlertQuery.all(*self._filters)
+            query.sort_direction = "asc"
+            return query
+
+
     @logger
 
     def build_query_payload(args):
-        """
-        Build a query payload combining passed args
-        """
+        """Build a query payload combining passed args"""
+
+        pg_size = args.get("results")
         _hash = args.get("hash")
         hostname = args.get("hostname")
         username = args.get("username")
         exposure = args.get("exposure")
 
-        search_args = []
-        hash_filter = _create_hash_filter(_hash)
-        if hash_filter:
-            search_args.append(hash_filter)
-        if hostname:
-            search_args.append(OSHostname.eq(hostname))
-        if username:
-            search_args.append(DeviceUsername.eq(username))
-        if exposure:
-            search_args.append(_create_exposure_filter(exposure))
+        search_args = FileEventSearchFilters(pg_size)
+        search_args.append_result(_hash, _create_hash_filter)
+        search_args.append_result(hostname, OSHostname.eq)
+        search_args.append_result(username, DeviceUsername.eq)
+        search_args.append_result(exposure, _create_exposure_filter)
 
-        # Convert list of search criteria to *args
-        query = FileEventQuery.all(*search_args)
-        query.page_size = args.get("results")
-        LOG("File Event Query: {}".format(query))
-        return str(query)
+        query = search_args.to_all_query()
+        query_str = str(query)
+        LOG("File Event Query: {}".format(query_str))
+        return query_str
 
 
     def _create_hash_filter(hash_arg):
         if not hash_arg:
             return None
-        if len(hash_arg) == 32:
+        elif len(hash_arg) == 32:
             return MD5.eq(hash_arg)
         elif len(hash_arg) == 64:
             return SHA256.eq(hash_arg)
@@ -318,7 +363,14 @@ script:
         return ExposureType.is_in(exposure_arg)
 
 
+    def _create_category_filter(file_type):
+        category_value = CODE42_FILE_TYPE_MAPPER.get(file_type["category"], "UNCATEGORIZED")
+        return FileCategory.eq(category_value)
+
+
     class ObservationToSecurityQueryMapper(object):
+        """Class to simplify the process of mapping observation data to query objects."""
+
         _ENDPOINT_TYPE = "FedEndpointExfiltration"
         _CLOUD_TYPE = "FedCloudSharePermissions"
         _PUBLIC_SEARCHABLE = "PublicSearchableShare"
@@ -344,37 +396,36 @@ script:
         def _is_cloud_exfiltration(self):
             return self._exfiltration_type == self._CLOUD_TYPE
 
-        @property
-        def _user_filter(self):
-            return DeviceUsername.eq(self._actor) if self._is_endpoint_exfiltration else Actor.eq(self._actor)
+        def _create_user_filter(self):
+            return (
+                DeviceUsername.eq(self._actor)
+                if self._is_endpoint_exfiltration
+                else Actor.eq(self._actor)
+            )
 
         def map(self):
             search_args = self._create_search_args()
-            query = self._create_query(search_args)
-            return str(query)
+            query = str(search_args.to_all_query())
+            LOG("Alert Observation Query: {}".format(query))
+            return query
 
         def _create_search_args(self):
-            search_args = []
+            filters = FileEventSearchFilters()
             exposure_types = self._observation_data["exposureTypes"]
             begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
             end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
-            search_args.append(self._user_filter)
-            search_args.append(EventTimestamp.on_or_after(begin_time))
-            search_args.append(EventTimestamp.on_or_before(end_time))
 
-            exposure_filters = self._create_exposure_filters(exposure_types) or []
-            for _filter in exposure_filters:
-                search_args.append(_filter)
+            filters.append(self._create_user_filter())
+            filters.append(EventTimestamp.on_or_after(begin_time))
+            filters.append(EventTimestamp.on_or_before(end_time))
+            filters.extend(self._create_exposure_filters(exposure_types))
+            filters.extend(self._create_file_category_filters())
 
-            category_filters = self._create_file_category_filters()
-            if category_filters:
-                search_args.append(category_filters)
-            return search_args
+            return filters
 
         def _create_exposure_filters(self, exposure_types):
-            """
-            Determine exposure types based on alert type
-            """
+            """Determine exposure types based on alert type"""
+
             if self._is_cloud_exfiltration:
                 exp_types = []
                 if self._PUBLIC_SEARCHABLE in exposure_types:
@@ -383,27 +434,18 @@ script:
                     exp_types.append(ExposureType.SHARED_VIA_LINK)
                 return [ExposureType.is_in(exp_types)]
             elif self._is_endpoint_exfiltration:
-                return [EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]), ExposureType.is_in(exposure_types)]
+                return [
+                    EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]),
+                    ExposureType.is_in(exposure_types),
+                ]
+            return []
 
         def _create_file_category_filters(self):
             """Determine if file categorization is significant"""
-            file_categories: Dict[str, Any]
-            filters = []
-            for file_type in self._observation_data["fileCategories"]:
-                if file_type["isSignificant"]:
-                    category_value = CODE42_FILE_TYPE_MAPPER.get(file_type["category"], "UNCATEGORIZED")
-                    file_category = FileCategory.eq(category_value)
-                    filters.append(file_category)
-            if len(filters):
-                file_categories = {"filterClause": "OR", "filters": filters}
-                return json.dumps(file_categories)
-
-        @logger
-        def _create_query(self, search_args):
-            """Convert list of search criteria to *args"""
-            query = FileEventQuery.all(*search_args)
-            LOG("Alert Observation Query: {}".format(query))
-            return query
+            observed_file_categories = self._observation_data["fileCategories"]
+            filters = [c for c in observed_file_categories if c["isSignificant"]]
+            if filters:
+                return json.dumps({"filterClause": "OR", "filters": filters})
 
 
     def map_observation_to_security_query(observation, actor):
@@ -413,7 +455,9 @@ script:
 
     def _convert_date_arg_to_epoch(date_arg):
         date_arg = date_arg[:25]
-        return (datetime.strptime(date_arg, u"%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)).total_seconds()
+        return (
+            datetime.strptime(date_arg, "%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)
+        ).total_seconds()
 
 
     @logger
@@ -547,20 +591,22 @@ script:
 
 
     class Code42SecurityIncidentFetcher(object):
-        def __init__(self,
-                     client,
-                     last_run,
-                     first_fetch_time,
-                     event_severity_filter,
-                     fetch_limit,
-                     include_files,
-                     integration_context=None):
+        def __init__(
+            self,
+            client,
+            last_run,
+            first_fetch_time,
+            event_severity_filter,
+            fetch_limit,
+            include_files,
+            integration_context=None,
+        ):
             self._client = client
             self._last_run = last_run
             self._first_fetch_time = first_fetch_time
             self._event_severity_filter = event_severity_filter
             self._fetch_limit = fetch_limit
-            self._include_files = include_files,
+            self._include_files = (include_files,)
             self._integration_context = integration_context
 
         @logger
@@ -573,21 +619,27 @@ script:
             incidents = [self._create_incident_from_alert(a) for a in alerts]
             save_time = datetime.utcnow().timestamp()
             next_run = {"last_fetch": save_time}
-            return next_run, incidents[:self._fetch_limit], incidents[self._fetch_limit:]
+            return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
         def _fetch_remaining_incidents_from_last_run(self):
             if self._integration_context:
                 remaining_incidents = self._integration_context.get("remaining_incidents")
                 # return incidents if exists in context.
                 if remaining_incidents:
-                    return self._last_run, remaining_incidents[:self._fetch_limit], remaining_incidents[self._fetch_limit:]
+                    return (
+                        self._last_run,
+                        remaining_incidents[: self._fetch_limit],
+                        remaining_incidents[self._fetch_limit:],
+                    )
 
         def _get_start_query_time(self):
             start_query_time = self._try_get_last_fetch_time()
 
             # Handle first time fetch, fetch incidents retroactively
             if not start_query_time:
-                start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
+                start_query_time, _ = parse_date_range(
+                    self._first_fetch_time, to_timestamp=True, utc=True
+                )
                 start_query_time /= 1000
 
             return start_query_time
@@ -625,7 +677,13 @@ script:
         integration_context=None,
     ):
         fetcher = Code42SecurityIncidentFetcher(
-            client, last_run, first_fetch_time, event_severity_filter, fetch_limit, include_files, integration_context
+            client,
+            last_run,
+            first_fetch_time,
+            event_severity_filter,
+            fetch_limit,
+            include_files,
+            integration_context,
         )
         return fetcher.fetch()
 
@@ -633,11 +691,12 @@ script:
     @logger
 
     def securitydata_search_command(client, args):
-        code42_securitydata_context = []
+        code42_security_data_context = []
+        _json = args.get("json")
         file_context = []
         # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
-        if args.get("json") is not None:
-            file_events = client.search_json(args.get("json"))
+        if _json is not None:
+            file_events = client.search_json(_json)
         else:
             # Build payload
             payload = build_query_payload(args)
@@ -645,22 +704,17 @@ script:
         if file_events:
             for file_event in file_events:
                 code42_context_event = map_to_code42_event_context(file_event)
-                code42_securitydata_context.append(code42_context_event)
+                code42_security_data_context.append(code42_context_event)
                 file_context_event = map_to_file_context(file_event)
                 file_context.append(file_context_event)
             readable_outputs = tableToMarkdown(
                 f"Code42 Security Data Results",
-                code42_securitydata_context,
+                code42_security_data_context,
                 headers=SECURITY_EVENT_HEADERS,
             )
-            return (
-                readable_outputs,
-                {
-                    "Code42.SecurityData(val.EventID && val.EventID == obj.EventID)": code42_securitydata_context,
-                    "File": file_context,
-                },
-                file_events,
-            )
+            security_data_context_key = "Code42.SecurityData(val.EventID && val.EventID == obj.EventID)"
+            context = {security_data_context_key: code42_security_data_context, "File": file_context}
+            return readable_outputs, context, file_events
         else:
             return "No results found", {}, {}
 
@@ -686,7 +740,11 @@ script:
         LOG(f"Command being called is {demisto.command()}")
         try:
             client = Code42Client(
-                base_url=base_url, sdk=None, auth=(username, password), verify=verify_certificate, proxy=proxy
+                base_url=base_url,
+                sdk=None,
+                auth=(username, password),
+                verify=verify_certificate,
+                proxy=proxy,
             )
             commands = {
                 "code42-alert-get": alert_get_command,
