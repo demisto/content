@@ -9,7 +9,6 @@ import requests
 import trustar
 from trustar.models.report import Report
 from trustar.models.indicator import Indicator
-from trustar.models.page import Page
 
 # IMPORTS
 
