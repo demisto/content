@@ -129,13 +129,14 @@ class Client(BaseClient):
 
         return self._http_request(method='GET', url_suffix=url_suffix, headers=self._headers)
 
-    def report_get_request(self, bundle_id: str, itunes_id: str, app_hash: str) -> dict:
+    def report_get_request(self, bundle_id: str, itunes_id: str, app_hash: str, platform: str) -> dict:
         """Retrieve device details by sending a GET request.
 
         Args:
             bundle_id: bundle ID.
             itunes_id: itunes ID.
             app_hash: application hash.
+            platform: app platform
         Returns:
             Response from API.
         """
@@ -145,11 +146,11 @@ class Client(BaseClient):
             raise Exception("To get a report, use exactly one of the arguments: bundle_id, itunes_id, app_hash.")
 
         if bundle_id:
-            url_suffix = f'/malware/public/reports/bundle/{bundle_id}'
+            url_suffix = f'/malware/public/reports/bundle/{bundle_id}?platform={platform}'
         elif itunes_id:
             url_suffix = f'/malware/public/reports/itunes/{itunes_id}'
         else:
-            url_suffix = f'/malware/public/reports/hash/{app_hash}'
+            url_suffix = f'/malware/public/reports/hash/{app_hash}?platform={platform}'
 
         return self._http_request(method='GET', url_suffix=url_suffix, headers=self._headers)
 
@@ -379,14 +380,21 @@ def report_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     bundle_id = str(args.get('bundle_id', ''))
     itunes_id = str(args.get('itunes_id', ''))
     app_hash = str(args.get('app_hash', ''))
+    platform = str(args.get('platform', 'ios'))
 
-    report = client.report_get_request(bundle_id, itunes_id, app_hash)
+    report = client.report_get_request(bundle_id, itunes_id, app_hash, platform).get('report', {})
+    report_data = report.get('report')
+    if not report_data:
+        return 'A report was not found.', {}, {}
 
-    # headers = ['objectId', 'hash', 'name', 'classification', 'score', 'privacyEnum', 'SecurityEnum']
-    human_readable = tableToMarkdown(name=f"Report:", t=report, removeNull=True)
-    entry_context = {f'Zimperium.Reports(val.objectId: === obj.objectId)': report}
+    app_md5 = report.get('md5')
+    if app_md5:
+        report_data.update({'md5': app_md5})
+    human_readable = tableToMarkdown(name=f"Report:", t=report_data, removeNull=True)
+    entry_context = {f'Zimperium.Reports(val.app_md5: === obj.app_md5)': report_data}
+    demisto.log(str(entry_context))
 
-    return human_readable, entry_context, report
+    return human_readable, entry_context, report_data
 
 
 def app_upload_for_analysis(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:

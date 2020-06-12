@@ -239,6 +239,17 @@ script:
       name: app_hash
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ios
+      description: Application platform.
+      isArray: false
+      name: platform
+      predefined:
+      - ios
+      - android
+      required: false
+      secret: false
     deprecated: false
     description: Get a report.
     execution: false
