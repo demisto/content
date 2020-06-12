@@ -392,7 +392,6 @@ def report_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         report_data.update({'md5': app_md5})
     human_readable = tableToMarkdown(name=f"Report:", t=report_data, removeNull=True)
     entry_context = {f'Zimperium.Reports(val.app_md5: === obj.app_md5)': report_data}
-    demisto.log(str(entry_context))
 
     return human_readable, entry_context, report_data
 
