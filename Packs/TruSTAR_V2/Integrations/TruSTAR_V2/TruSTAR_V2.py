@@ -300,8 +300,7 @@ class TrustarClient:
 
     def get_entry(self, title='', contents=None, ec=None):
         """
-
-        :return: Returns a 
+        Returns Context dictionary
         """
         entry = {
             'Type': EntryType.NOTE,
