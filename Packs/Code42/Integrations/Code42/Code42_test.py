@@ -716,7 +716,9 @@ def code42_sdk_mock(mocker):
     c42_sdk_mock.users.get_by_username.return_value = get_user_response
 
     # Setup securitydata search file events
-    search_file_events_response = create_mock_code42_sdk_response(mocker, MOCK_SECURITY_EVENT_RESPONSE)
+    search_file_events_response = create_mock_code42_sdk_response(
+        mocker, MOCK_SECURITY_EVENT_RESPONSE
+    )
     c42_sdk_mock.securitydata.search_file_events.return_value = search_file_events_response
 
     return c42_sdk_mock

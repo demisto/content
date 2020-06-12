@@ -114,7 +114,11 @@ SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description",
 
 def _get_severity_filter_value(severity_arg):
     if severity_arg:
-        return ([severity_arg.upper()] if isinstance(severity_arg, str) else list(map(lambda x: x.upper(), severity_arg)))
+        return (
+            [severity_arg.upper()]
+            if isinstance(severity_arg, str)
+            else list(map(lambda x: x.upper(), severity_arg))
+        )
 
 
 def _create_alert_query(event_severity_filter, start_time):
@@ -142,9 +146,7 @@ class Code42Client(BaseClient):
     def add_user_to_departing_employee(self, username, departure_date=None, note=None):
         try:
             user_id = self.get_user_id(username)
-            self._sdk.detectionlists.departing_employee.add(
-                user_id, departure_date=departure_date
-            )
+            self._sdk.detectionlists.departing_employee.add(user_id, departure_date=departure_date)
             not note or self._sdk.detectionlists.update_user_notes(note)
         except Exception:
             return None
@@ -323,7 +325,11 @@ class ObservationToSecurityQueryMapper(object):
         return self._exfiltration_type == self._CLOUD_TYPE
 
     def _create_user_filter(self):
-        return DeviceUsername.eq(self._actor) if self._is_endpoint_exfiltration else Actor.eq(self._actor)
+        return (
+            DeviceUsername.eq(self._actor)
+            if self._is_endpoint_exfiltration
+            else Actor.eq(self._actor)
+        )
 
     def map(self):
         search_args = self._create_search_args()
@@ -355,7 +361,10 @@ class ObservationToSecurityQueryMapper(object):
                 exp_types.append(ExposureType.SHARED_VIA_LINK)
             return [ExposureType.is_in(exp_types)]
         elif self._is_endpoint_exfiltration:
-            return [EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]), ExposureType.is_in(exposure_types)]
+            return [
+                EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]),
+                ExposureType.is_in(exposure_types),
+            ]
         return []
 
     def _create_file_category_filters(self):
@@ -380,7 +389,9 @@ def map_observation_to_security_query(observation, actor):
 
 def _convert_date_arg_to_epoch(date_arg):
     date_arg = date_arg[:25]
-    return (datetime.strptime(date_arg, u"%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)).total_seconds()
+    return (
+        datetime.strptime(date_arg, "%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)
+    ).total_seconds()
 
 
 @logger
@@ -506,20 +517,22 @@ def _process_event_from_observation(event):
 
 
 class Code42SecurityIncidentFetcher(object):
-    def __init__(self,
-                 client,
-                 last_run,
-                 first_fetch_time,
-                 event_severity_filter,
-                 fetch_limit,
-                 include_files,
-                 integration_context=None):
+    def __init__(
+        self,
+        client,
+        last_run,
+        first_fetch_time,
+        event_severity_filter,
+        fetch_limit,
+        include_files,
+        integration_context=None,
+    ):
         self._client = client
         self._last_run = last_run
         self._first_fetch_time = first_fetch_time
         self._event_severity_filter = event_severity_filter
         self._fetch_limit = fetch_limit
-        self._include_files = include_files,
+        self._include_files = (include_files,)
         self._integration_context = integration_context
 
     @logger
@@ -532,21 +545,27 @@ class Code42SecurityIncidentFetcher(object):
         incidents = [self._create_incident_from_alert(a) for a in alerts]
         save_time = datetime.utcnow().timestamp()
         next_run = {"last_fetch": save_time}
-        return next_run, incidents[:self._fetch_limit], incidents[self._fetch_limit:]
+        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
     def _fetch_remaining_incidents_from_last_run(self):
         if self._integration_context:
             remaining_incidents = self._integration_context.get("remaining_incidents")
             # return incidents if exists in context.
             if remaining_incidents:
-                return self._last_run, remaining_incidents[:self._fetch_limit], remaining_incidents[self._fetch_limit:]
+                return (
+                    self._last_run,
+                    remaining_incidents[: self._fetch_limit],
+                    remaining_incidents[self._fetch_limit:],
+                )
 
     def _get_start_query_time(self):
         start_query_time = self._try_get_last_fetch_time()
 
         # Handle first time fetch, fetch incidents retroactively
         if not start_query_time:
-            start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
+            start_query_time, _ = parse_date_range(
+                self._first_fetch_time, to_timestamp=True, utc=True
+            )
             start_query_time /= 1000
 
         return start_query_time
@@ -584,7 +603,13 @@ def fetch_incidents(
     integration_context=None,
 ):
     fetcher = Code42SecurityIncidentFetcher(
-        client, last_run, first_fetch_time, event_severity_filter, fetch_limit, include_files, integration_context
+        client,
+        last_run,
+        first_fetch_time,
+        event_severity_filter,
+        fetch_limit,
+        include_files,
+        integration_context,
     )
     return fetcher.fetch()
 
@@ -640,7 +665,11 @@ def main():
     LOG(f"Command being called is {demisto.command()}")
     try:
         client = Code42Client(
-            base_url=base_url, sdk=None, auth=(username, password), verify=verify_certificate, proxy=proxy
+            base_url=base_url,
+            sdk=None,
+            auth=(username, password),
+            verify=verify_certificate,
+            proxy=proxy,
         )
         commands = {
             "code42-alert-get": alert_get_command,
