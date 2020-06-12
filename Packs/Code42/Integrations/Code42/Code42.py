@@ -202,22 +202,25 @@ class Code42Client(BaseClient):
 
 
 class FileEventSearchFilters(object):
+    """Class for simplifying building up a file event search query"""
+
     def __init__(self, pg_size):
         self._pg_size = pg_size
-        self._args = []
+        self._filters = []
 
     def to_all_query(self):
         """Convert list of search criteria to *args"""
-        query = FileEventQuery.all(*self._args)
+        query = FileEventQuery.all(*self._filters)
         query.page_size = self._pg_size
         return query
 
     def append(self, arg, create_filter):
+        """Safely creates and appends the filter to the working list."""
         if not arg:
             return
         _filter = create_filter(arg)
         if _filter:
-            self._args.append(create_filter(arg))
+            self._filters.append(_filter)
 
 
 @logger
