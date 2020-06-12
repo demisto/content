@@ -230,6 +230,8 @@ def build_query_payload(args):
 
 
 def _create_hash_filter(hash_arg):
+    if not hash_arg:
+        return None
     if len(hash_arg) == 32:
         return MD5.eq(hash_arg)
     elif len(hash_arg) == 64:
