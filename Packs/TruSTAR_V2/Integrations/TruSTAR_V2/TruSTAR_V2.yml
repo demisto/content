@@ -67,6 +67,7 @@ script:
     - name: search-term
       description: The term to search for
     - name: enclave-ids
+      isArray: true
       description: Comma-separated list of enclave ids; only indicators found in reports
         from these enclaves will be returned (defaults to all of user’s enclaves).
         Defaults is all enclaves the user has READ access to.
@@ -83,6 +84,48 @@ script:
     - contextPath: TruSTAR.Indicators.value
       description: File name
       type: string
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address of the account.
+      type: String
+    - contextPath: RegistryKey.Path
+      description: The path to the registry key
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Searches for all indicators that contain the given search term.
     #0  
   
@@ -118,6 +161,48 @@ script:
     - contextPath: TruSTAR.Indicators.value
       description: Indicator value
       type: string
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address of the account.
+      type: String
+    - contextPath: RegistryKey.Path
+      description: The path to the registry key
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Finds all reports that contain any of the given indicators 
       and returns correlated indicators from those reports.
     #2
@@ -149,6 +234,48 @@ script:
     - contextPath: TruSTAR.Indicators.value
       description: Indicator value
       type: string
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address of the account.
+      type: String
+    - contextPath: RegistryKey.Path
+      description: The path to the registry key
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Find indicators that are trending in the community.
     #3
 
@@ -192,6 +319,48 @@ script:
     - contextPath: TruSTAR.IndicatorMetadata.enclaveIds
       description: Enclave IDs where indicator is present
       type: Array
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address of the account.
+      type: String
+    - contextPath: RegistryKey.Path
+      description: The path to the registry key
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Provide metadata associated with a list of indicators, including value, indicatorType, noteCount,
       sightings, lastSeen, enclaveIds, and tags. The metadata is determined based on the enclaves the user making
       the request has READ access to.
@@ -249,6 +418,48 @@ script:
     - contextPath: TruSTAR.IndicatorSummaries.updated
       description: Indicator last update value
       type: string
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address of the account.
+      type: String
+    - contextPath: RegistryKey.Path
+      description: The path to the registry key
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Provides structured summaries about indicators, which are derived from 
       intelligence sources on the TruSTAR Marketplace.
     #5
@@ -268,6 +479,48 @@ script:
     - contextPath: TruSTAR.WhitelistedIndicators.value
       description: File SHA1
       type: string
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address of the account.
+      type: String
+    - contextPath: RegistryKey.Path
+      description: The path to the registry key
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Gets a list of indicators that the user’s company has whitelisted.
     #6
 
@@ -288,15 +541,18 @@ script:
       description: Whether to search for reports in the community, or only in enclaves
       defaultValue: ENCLAVE
     - name: enclave-ids
+      isArray: true
       description: Comma separated list of enclave ids to search for reports in. Even
         if distributionType is COMMUNITY, these enclaves will still be searched as
         well. Default is All enclaves the user has READ access to.
     - name: tags
       description: a list of names of tags to filter by; only reports containing ALL
         of these tags will be returned
+      isArray: true
     - name: excluded-tags
       description: reports containing ANY of these tags will be excluded from the
         results.
+      isArray: true
     outputs:
     - contextPath: TruSTAR.Report.reportTitle
       description: Title of the report
@@ -328,6 +584,48 @@ script:
     - contextPath: TruSTAR.Indicators.value
       description: Indicator value
       type: string
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address of the account.
+      type: String
+    - contextPath: RegistryKey.Path
+      description: The path to the registry key
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Return a list of indicators extracted from a report.
     #8
 
@@ -510,6 +808,7 @@ script:
       default: true
       description: The term to search for
     - name: enclave-ids
+      isArray: true
       description: Comma-separated list of enclave ids; only indicators found in reports
         from these enclaves will be returned (defaults to all of user’s enclaves)
     outputs:
@@ -665,6 +964,48 @@ script:
     - contextPath: TruSTAR.PhishingIndicator.value
       description: Indicator value
       type: string
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address of the account.
+      type: String
+    - contextPath: RegistryKey.Path
+      description: The path to the registry key
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     description: Get phishing indicators that match the given criteria.
       #20
 

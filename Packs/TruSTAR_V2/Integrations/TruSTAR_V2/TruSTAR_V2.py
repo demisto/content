@@ -68,7 +68,7 @@ class ContextManager(object):
         'URL': DBotScoreType.URL,
         'IP' : DBotScoreType.IP,
         'DOMAIN': DBotScoreType.DOMAIN,
-        # 'CVE': DBotScoreType.CVE,
+        'CVE': DBotScoreType.CVE,
         'SOFTWARE': DBotScoreType.FILE,
         'SHA256': DBotScoreType.FILE,
         'SHA1': DBotScoreType.FILE,
@@ -260,7 +260,9 @@ class TrustarClient:
         "enclave_ids", 
         "priority_event_score", 
         "normalized_indicator_score", 
-        "status"
+        "status",
+        "tags",
+        "exclueded_tags"
     ]
 
     def __init__(self, config):
