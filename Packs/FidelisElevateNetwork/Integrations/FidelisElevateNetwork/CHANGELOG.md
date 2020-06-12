@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed file download functionality in the **fidelis-download-malware-file** command.
 
 ## [20.5.0] - 2020-05-12
 -
