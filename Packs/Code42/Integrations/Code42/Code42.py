@@ -333,8 +333,9 @@ class ObservationToSecurityQueryMapper(object):
 
     def map(self):
         search_args = self._create_search_args()
-        query = self._create_query(search_args)
-        return str(query)
+        query = str(search_args.to_all_query())
+        LOG("Alert Observation Query: {}".format(query))
+        return query
 
     def _create_search_args(self):
         filters = FileEventSearchFilters()
@@ -348,7 +349,7 @@ class ObservationToSecurityQueryMapper(object):
         filters.extend(self._create_exposure_filters(exposure_types))
         filters.extend(self._create_file_category_filters())
 
-        return filters.filters
+        return filters
 
     def _create_exposure_filters(self, exposure_types):
         """Determine exposure types based on alert type"""
@@ -373,13 +374,6 @@ class ObservationToSecurityQueryMapper(object):
         filters = [c for c in observed_file_categories if c["isSignificant"]]
         if filters:
             return json.dumps({"filterClause": "OR", "filters": filters})
-
-    @logger
-    def _create_query(self, search_args):
-        """Convert list of search criteria to *args"""
-        query = FileEventQuery.all(*search_args)
-        LOG("Alert Observation Query: {}".format(query))
-        return query
 
 
 def map_observation_to_security_query(observation, actor):
