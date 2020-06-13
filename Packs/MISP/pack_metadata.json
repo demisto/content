@@ -1,9 +1,9 @@
 {
   "name": "MISP",
   "description": "Malware information sharing platform and threat sharing.",
-  "support": "xsoar",
+  "support": "none",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
+  "author": "lala",
   "url": "https://www.paloaltonetworks.com/cortex",
   "email": "",
   "created": "2020-04-14T00:00:00Z",
