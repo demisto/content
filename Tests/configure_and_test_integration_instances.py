@@ -197,7 +197,6 @@ def get_new_and_modified_integration_files(git_sha1):
     change_log = run_command('git diff --name-status {}'.format(git_sha1))
     modified_files, added_files, _, _ = file_validator.get_modified_files(change_log, tag)
     all_integration_regexes = YML_INTEGRATION_REGEXES
-    all_integration_regexes.extend([INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX])
 
     new_integration_files = [
         file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
