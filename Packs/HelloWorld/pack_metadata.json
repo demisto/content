@@ -1,6 +1,6 @@
 {
     "name": "HelloWorld",
-    "description": "This is the Hello World integration for getting started.",
+    "description": "This is the Hello World integration for getting started. todo: remove me",
     "support": "xsoar",
     "currentVersion": "1.1.3",
     "author": "Cortex XSOAR",
