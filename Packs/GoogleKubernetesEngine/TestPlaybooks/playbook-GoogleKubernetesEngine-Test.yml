@@ -2,6 +2,7 @@ id: GoogleKubernetesEngine_Test
 version: -1
 name: GoogleKubernetesEngine_Test
 starttaskid: "0"
+description: ''
 tasks:
   "0":
     id: "0"
@@ -740,6 +741,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "24"
@@ -840,6 +842,7 @@ tasks:
     taskid: 0a80beb5-ee8d-4c71-851c-3debb1d9875f
     type: condition
     task:
+      description: ''
       id: 0a80beb5-ee8d-4c71-851c-3debb1d9875f
       version: -1
       name: Verify operation
@@ -946,6 +949,7 @@ tasks:
     taskid: 05d4b42c-3e14-432a-8d2a-0e7ad7b50e99
     type: condition
     task:
+      description: ''
       id: 05d4b42c-3e14-432a-8d2a-0e7ad7b50e99
       version: -1
       name: Verify operation
@@ -1052,6 +1056,7 @@ tasks:
     taskid: a0d708a0-cafe-467b-833b-cc46a9077ba2
     type: condition
     task:
+      description: ''
       id: a0d708a0-cafe-467b-833b-cc46a9077ba2
       version: -1
       name: Verify operation
@@ -1196,6 +1201,7 @@ tasks:
     taskid: 1f904d24-8ff0-4761-861f-b1fe4a7297c8
     type: condition
     task:
+      description: ''
       id: 1f904d24-8ff0-4761-861f-b1fe4a7297c8
       version: -1
       name: Verify operation
