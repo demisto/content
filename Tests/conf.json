@@ -2837,8 +2837,11 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Recorded Future v2",
+            "playbookID": "Recorded Future Test Playbook"
         }
-
     ],
     "skipped_tests": {
         "RedLockTest": "Issue 24600",

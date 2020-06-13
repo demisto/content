@@ -3021,63 +3021,6 @@ IP_REP = {
                                 "rule": "Historically Linked to Cyber Attack",
                                 "mitigation": "",
                                 "level": 1
-                            },
-                            "unusualIP": {
-                                "timestamp": "2019-11-25T20:56:19.232Z",
-                                "description": "1 sighting on 1 source: Char"
-                                               "les B. Haley: SSH Dictionary "
-                                               "Attack IPs.",
-                                "rule": "Unusual IP",
-                                "mitigation": "",
-                                "level": 1
-                            },
-                            "positiveMalwareVerdict": {
-                                "timestamp": "2016-10-03T00:00:00.000Z",
-                                "description": "4 sightings on 1 source: Re"
-                                               "versingLabs. Most recent li"
-                                               "nk (Oct 3, 2016): https://a"
-                                               "1000.reversinglabs.com/accou"
-                                               "nts/login/?next=/%3Fq%3Dae46"
-                                               "a6ec88bbf1c3b13f7a607f7e5223"
-                                               "f0a0d37d44169c319859f82d17fe4"
-                                               "09a",
-                                "rule": "Historical Positive Malware Verdict",
-                                "mitigation": "",
-                                "level": 1
-                            },
-                            "sshDictAttacker": {
-                                "timestamp": "2016-08-25T21:45:09.000Z",
-                                "description": "4 sightings on 1 source: @br"
-                                               "eakinlog. Most recent tweet: "
-                                               "\\#HackAlert Fri Aug 26 07:3"
-                                               "6:05 AEST 2016 Failed passwor"
-                                               "d for invalid user support fro"
-                                               "m 37.48.83.137 port 55610 ssh"
-                                               "2. Most recent link (Aug 25, 2"
-                                               "016): https://twitter.com/bre"
-                                               "akinlog/statuses/768927216508"
-                                               "043265",
-                                "rule": "Historical SSH/Dictionary Attacker",
-                                "mitigation": "",
-                                "level": 1
-                            },
-                            "defanged": {
-                                "timestamp": "2019-09-09T20:39:21.000Z",
-                                "description": "3 sightings on 1 source: @Scu"
-                                               "mBots. Most recent tweet: Po"
-                                               "werShell_Meterpreter_Reverse"
-                                               "_HTTP_x86 found at https://t."
-                                               "co/e7jIwZeU4t SHA256: db3caf2"
-                                               "cc03e43f6e6f0a184e1ea39c589ed"
-                                               "13dbae126a16b3dbc4e87f49f868 "
-                                               "C2: 37[.]48[.]83[.]137. Most "
-                                               "recent link (Sep 9, 2019): ht"
-                                               "tps://twitter.com/ScumBots/st"
-                                               "atuses/1171161188329279489",
-                                "rule": "Historically Reported as a Defanged"
-                                        " IP",
-                                "mitigation": "",
-                                "level": 1
                             }
                         },
                         "maxCount": 51
@@ -3187,305 +3130,140 @@ TRIAGE = {
 
 
 ALERT_RULES = {
-  "data": {
-    "results": [
-      {
-        "title": "Third-Party Risk, Trend",
-        "id": "d071-i"
-      },
-      {
-        "title": "Infrastructure and Brand Risk, Potential Typosquatting "
-                 "Watch List Domains",
-        "id": "dmQn3r"
-      },
-      {
-        "title": "Company Email on Code Repository",
-        "id": "dlYHpI"
-      },
-      {
-        "title": "Merchants and POS, Trending Targets in Merchant & POS",
-        "id": "dhfdl-"
-      },
-      {
-        "title": "Target Trends, Trending Targets in Watch List",
-        "id": "dbWEXt"
-      },
-      {
-        "title": "Possible Fraud related to COVID-19",
-        "id": "dQ5lJN"
-      },
-      {
-        "title": "COVID-19 linked Cyber Attacks (Social Media)",
-        "id": "dRDebc"
-      },
-      {
-        "title": "COVID-19 Suspicious Domain Registrations",
-        "id": "dRDebb"
-      },
-      {
-        "title": "COVID-19 linked Cyber Attacks (non-Social Media)",
-        "id": "dRDeba"
-      },
-      {
-        "title": "COVID-19 Insikt Group Reporting",
-        "id": "dQTh2T"
-      }
-    ]
-  },
-  "counts": {
-    "returned": 10,
-    "total": 101
-  }
+    "data": {
+        "results": [
+            {
+                "title": "Third-Party Risk, Trend",
+                "id": "d071-i"
+            },
+            {
+                "title": "Infrastructure and Brand Risk, Potential "
+                         "Typosquatting Watch List Domains",
+                "id": "dmQn3r"
+            },
+            {
+                "title": "Company Email on Code Repository",
+                "id": "dlYHpI"
+            },
+            {
+                "title": "Merchants and POS, Trending Targets in"
+                         " Merchant & POS",
+                "id": "dhfdl-"
+            },
+            {
+                "title": "Target Trends, Trending Targets in Watch List",
+                "id": "dbWEXt"
+            },
+            {
+                "title": "Possible Fraud related to COVID-19",
+                "id": "dQ5lJN"
+            },
+            {
+                "title": "COVID-19 linked Cyber Attacks (Social Media)",
+                "id": "dRDebc"
+            },
+            {
+                "title": "COVID-19 Suspicious Domain Registrations",
+                "id": "dRDebb"
+            },
+            {
+                "title": "COVID-19 linked Cyber Attacks (non-Social Media)",
+                "id": "dRDeba"
+            },
+            {
+                "title": "COVID-19 Insikt Group Reporting",
+                "id": "dQTh2T"
+            }
+        ]
+    },
+    "counts": {
+        "returned": 10,
+        "total": 101
+    }
 }
 
 ALERTS = {
-  "data": {
-    "results": [
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/?"
-               "id=d6bWi2",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_rep"
-                 "ort_item_alert_editor?view_opts=%7B%22reportId%22%3A%22dQT"
-                 "h2T%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22COVID-19+I"
-                 "nsikt+Group+Reporting%22%7D&state.bNavbar=false",
-          "name": "COVID-19 Insikt Group Reporting",
-          "id": "dQTh2T"
-        },
-        "triggered": "2020-05-22T10:36:35.203Z",
-        "id": "d6bWi2",
-        "title": "COVID-19 Insikt Group Reporting -"
-                 " New reference in 1 document",
-        "type": "REFERENCE"
-      },
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notificati"
-               "on/?id=d6a-48",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_rep"
-                 "ort_item_alert_editor?view_opts=%7B%22reportId%22%3A%22dRD"
-                 "ebb%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22COVID-19+S"
-                 "uspicious+Domain+Registrations%22%7D&state.bNavbar=false",
-          "name": "COVID-19 Suspicious Domain Registrations",
-          "id": "dRDebb"
-        },
-        "triggered": "2020-05-22T10:18:34.231Z",
-        "id": "d6a-48",
-        "title": "COVID-19 Suspicious Domain Registrations "
-                 "- New references in 60 documents",
-        "type": "REFERENCE"
-      },
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/?"
-               "id=d6anxr",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_re"
-                 "port_item_alert_editor?view_opts=%7B%22reportId%22%3A%22Z7"
-                 "VJ3f%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22Brand+Men"
-                 "tions+on+Non-Mainstream+Sources%22%7D&state.bNavbar=false",
-          "name": "Brand Mentions on Non-Mainstream Sources",
-          "id": "Z7VJ3f"
-        },
-        "triggered": "2020-05-22T10:17:41.563Z",
-        "id": "d6anxr",
-        "title": "Brand Mentions on Non-Mainstream Sources"
-                 " - New references in 48 documents",
-        "type": "EVENT"
-      },
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/"
-               "?id=d6Zsca",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_rep"
-                 "ort_item_alert_editor?view_opts=%7B%22reportId%22%3A%22bQkq"
-                 "cP%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22Leaked+Crede"
-                 "ntial+Monitoring%22%7D&state.bNavbar=false",
-          "name": "Leaked Credential Monitoring",
-          "id": "bQkqcP"
-        },
-        "triggered": "2020-05-22T10:16:12.613Z",
-        "id": "d6Zsca",
-        "title": "Leaked Credential Monitoring "
-                 "- New references in 23 documents",
-        "type": "EVENT"
-      },
-      {
-        "review": {
-          "assignee": "bmanalo@recordedfuture.com",
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/?"
-               "id=d6anw6",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_rep"
-                 "ort_item_alert_editor?view_opts=%7B%22reportId%22%3A%22YSFj"
-                 "BG%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22New+Penetrat"
-                 "ion+Testing+Tools%22%7D&state.bNavbar=false",
-          "name": "New Penetration Testing Tools",
-          "id": "YSFjBG"
-        },
-        "triggered": "2020-05-22T10:16:10.326Z",
-        "id": "d6anw6",
-        "title": "New Penetration Testing Tools "
-                 "- New references in 51 documents",
-        "type": "EVENT"
-      },
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/"
-               "?id=d6a7N9",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_rep"
-                 "ort_item_alert_editor?view_opts=%7B%22reportId%22%3A%22YiVs"
-                 "jX%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22Identify+Sim"
-                 "ilar+Domains%22%7D&state.bNavbar=false",
-          "name": "Identify Similar Domains",
-          "id": "YiVsjX"
-        },
-        "triggered": "2020-05-22T10:15:29.274Z",
-        "id": "d6a7N9",
-        "title": "Identify Similar Domains - New reference in 1 document",
-        "type": "EVENT"
-      },
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/"
-               "?id=d6aM7Q",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_rep"
-                 "ort_item_alert_editor?view_opts=%7B%22reportId%22%3A%22dRDe"
-                 "bc%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22COVID-19+lin"
-                 "ked+Cyber+Attacks+%28Social+Media%29%22%7D&state.bNavbar=f"
-                 "alse",
-          "name": "COVID-19 linked Cyber Attacks (Social Media)",
-          "id": "dRDebc"
-        },
-        "triggered": "2020-05-22T10:15:07.302Z",
-        "id": "d6aM7Q",
-        "title": "COVID-19 linked Cyber Attacks (Social Media) "
-                 "- New references in 225 documents",
-        "type": "REFERENCE"
-      },
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/?"
-               "id=d6anwD",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_repo"
-                 "rt_item_alert_editor?view_opts=%7B%22reportId%22%3A%22dRDeb"
-                 "a%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22COVID-19+link"
-                 "ed+Cyber+Attacks+%28non-Social+Media%29%22%7D&state.bNavbar"
-                 "=false",
-          "name": "COVID-19 linked Cyber Attacks (non-Social Media)",
-          "id": "dRDeba"
-        },
-        "triggered": "2020-05-22T10:14:36.804Z",
-        "id": "d6anwD",
-        "title": "COVID-19 linked Cyber Attacks (non-Social Media)"
-                 " - New references in 56 documents",
-        "type": "REFERENCE"
-      },
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/"
-               "?id=d6aY13",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_rep"
-                 "ort_item_alert_editor?view_opts=%7B%22reportId%22%3A%22dQ5l"
-                 "JN%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22Possible+Fra"
-                 "ud+related+to+COVID-19%22%7D&state.bNavbar=false",
-          "name": "Possible Fraud related to COVID-19",
-          "id": "dQ5lJN"
-        },
-        "triggered": "2020-05-22T10:14:28.876Z",
-        "id": "d6aY13",
-        "title": "Possible Fraud related to COVID-19 "
-                 "- New references in 78 documents",
-        "type": "REFERENCE"
-      },
-      {
-        "review": {
-          "assignee": None,
-          "noteAuthor": None,
-          "note": None,
-          "status": "no-action",
-          "noteDate": None
-        },
-        "url": "https://app.recordedfuture.com/live/sc/notification/?"
-               "id=d6a7Nd",
-        "rule": {
-          "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_re"
-                 "port_item_alert_editor?view_opts=%7B%22reportId%22%3A%22dQ"
-                 "Jehr%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22Suppliers+"
-                 "affected+by+COVID-19%22%7D&state.bNavbar=false",
-          "name": "Suppliers affected by COVID-19",
-          "id": "dQJehr"
-        },
-        "triggered": "2020-05-22T10:14:23.663Z",
-        "id": "d6a7Nd",
-        "title": "Suppliers affected by COVID-19"
-                 " - New references in 39 documents",
-        "type": "REFERENCE"
-      }
-    ]
-  },
-  "counts": {
-    "returned": 10,
-    "total": 18252
-  }
+    "data": {
+        "results": [
+            {
+                "review": {
+                    "assignee": "None",
+                    "noteAuthor": "None",
+                    "note": "None",
+                    "status": "no-action",
+                    "noteDate": "None"
+                },
+                "url": "https://app.recordedfuture.com/live/sc/notification/"
+                       "?id=d6bWi2",
+                "rule": {
+                    "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra"
+                           "_view_report_item_alert_editor?view_opts=%7B%22rep"
+                           "ortId%22%3A%22dQTh2T%22%2C%22bTitle%22%3Atrue%2C%"
+                           "22title%22%3A%22COVID-19+Insikt+Group+Reporting%2"
+                           "2%7D&state.bNavbar=false",
+                    "name": "COVID-19 Insikt Group Reporting",
+                    "id": "dQTh2T"
+                },
+                "triggered": "2020-05-22T10:36:35.203Z",
+                "id": "d6bWi2",
+                "title": "COVID-19 Insikt Group Reporting - New reference "
+                         "in 1 document",
+                "type": "REFERENCE"
+            },
+            {
+                "review": {
+                    "assignee": "None",
+                    "noteAuthor": "None",
+                    "note": "None",
+                    "status": "no-action",
+                    "noteDate": "None"
+                },
+                "url": "https://app.recordedfuture.com/live/sc/notification/"
+                       "?id=d6a-48",
+                "rule": {
+                    "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra"
+                           "_view_report_item_alert_editor?view_opts=%7B%22rep"
+                           "ortId%22%3A%22dRDebb%22%2C%22bTitle%22%3Atrue%2C%2"
+                           "2title%22%3A%22COVID-19+Suspicious+Domain+Registra"
+                           "tions%22%7D&state.bNavbar=false",
+                    "name": "COVID-19 Suspicious Domain Registrations",
+                    "id": "dRDebb"
+                },
+                "triggered": "2020-05-22T10:18:34.231Z",
+                "id": "d6a-48",
+                "title": "COVID-19 Suspicious Domain Registrations - "
+                         "New references in 60 documents",
+                "type": "REFERENCE"
+            },
+            {
+                "review": {
+                    "assignee": "None",
+                    "noteAuthor": "None",
+                    "note": "None",
+                    "status": "no-action",
+                    "noteDate": "None"
+                },
+                "url": "https://app.recordedfuture.com/live/sc/notification/"
+                       "?id=d6anxr",
+                "rule": {
+                    "url": "https://app.recordedfuture.com/live/sc/ViewIdkobr"
+                           "a_view_report_item_alert_editor?view_opts=%7B%22r"
+                           "eportId%22%3A%22Z7VJ3f%22%2C%22bTitle%22%3Atrue%2"
+                           "C%22title%22%3A%22Brand+Mentions+on+Non-Mainstrea"
+                           "m+Sources%22%7D&state.bNavbar=false",
+                    "name": "Brand Mentions on Non-Mainstream Sources",
+                    "id": "Z7VJ3f"
+                },
+                "triggered": "2020-05-22T10:17:41.563Z",
+                "id": "d6anxr",
+                "title": "Brand Mentions on Non-Mainstream Sources - New "
+                         "references in 48 documents",
+                "type": "EVENT"
+            }
+        ]
+    },
+    "counts": {
+        "returned": 10,
+        "total": 18252
+    }
 }
