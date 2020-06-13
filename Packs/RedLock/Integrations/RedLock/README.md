@@ -1,799 +1,418 @@
-<!-- HTML_DOC -->
-<p>Use the  Prisma Cloud (RedLock) Threat Defense integration to manage alerts from Microsoft Azure, Google Cloud Platform, and AWS.</p>
-<h2>Configure the Prisma Cloud (RedLock) Integration on Demisto</h2>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Prisma Cloud (RedLock).</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
-<ul>
-<li>
-<strong>Name</strong>: A textual name for the integration instance.</li>
-<li>
-<strong>Server URL</strong>: URL of RedLlock server.</li>
-<li><strong>Username</strong></li>
-<li><strong>Password</strong></li>
-<li><strong>Customer name</strong></li>
-<li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-<li><strong>Fetch only incidents matching this rule name</strong></li>
-<li><strong>Fetch only incidents with this severity</strong></li>
-<li><strong>Fetch Incidents</strong></li>
-<li><strong>Incident type</strong></li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs and token.</li>
-</ol>
-<h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_95612196841530795631871">Search RedLock alerts: redlock-search-alerts</a></li>
-<li><a href="#h_696049476181530796105219">Get RedLock alert details: redlock-get-alert-details</a></li>
-<li><a href="#h_256874257371530796584869">Dismiss RedLock alerts: redlock-dismiss-alerts</a></li>
-<li><a href="#h_321535839611530796763100">Reopen RedLock alerts: redlock-reopen-alerts</a></li>
-<li><a href="#h_463885917901530796933580">List all Redlock alerts: redlock-list-alert-filters</a></li>
-</ol>
-<hr>
-<h3 id="h_95612196841530795631871">1. Search RedLock alerts</h3>
-<p>Searches RedLock for all alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-search-alerts</code></p>
-<h5>Input</h5>
-<table style="height: 271px; width: 744px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Input Parameter</strong></td>
-<td style="width: 535px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-from</td>
-<td style="width: 535px;">Search start time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-to</td>
-<td style="width: 535px;">Search end time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-value</td>
-<td style="width: 535px;">Amount of units to go back in time</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-unit</td>
-<td style="width: 535px;">The search unit. The types <em>login</em> and <em>epoch</em> are only available if <em>timeRangeValue</em> is blank.</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-name</td>
-<td style="width: 535px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-label</td>
-<td style="width: 535px;">Policy label</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-compliance-standard</td>
-<td style="width: 535px;">Policy compliance standard</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-account</td>
-<td style="width: 535px;">Cloud account</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-region</td>
-<td style="width: 535px;">Cloud region</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-rule-name</td>
-<td style="width: 535px;">Name of the alert rule</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-id</td>
-<td style="width: 535px;">Resource ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-name</td>
-<td style="width: 535px;">Resource name</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-type</td>
-<td style="width: 535px;">Resource type</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-status</td>
-<td style="width: 535px;">Alert status</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-id</td>
-<td style="width: 535px;">Alert ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-type</td>
-<td style="width: 535px;">Cloud type</td>
-</tr>
-<tr>
-<td style="width: 210px;">risk-grade</td>
-<td style="width: 535px;">Risk grade</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-type</td>
-<td style="width: 535px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-severity</td>
-<td style="width: 535px;">Policy severity</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 180px;"><strong>Path</strong></td>
-<td style="width: 565px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.ID</td>
-<td style="width: 565px;">ID of returned alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Status</td>
-<td style="width: 565px;">Status of returned alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.AlertTime</td>
-<td style="width: 565px;">Time of alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.ID</td>
-<td style="width: 565px;">Policy ID</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Name</td>
-<td style="width: 565px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Type</td>
-<td style="width: 565px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Severity</td>
-<td style="width: 565px;">Policy severity</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Remediable</td>
-<td style="width: 565px;">Whether or not the policy is remediable</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.RiskDetail.Rating</td>
-<td style="width: 565px;">Risk rating</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.RiskDetail.Score</td>
-<td style="width: 565px;">Risk score</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Metadata.CountOfAlerts</td>
-<td style="width: 565px;">Number of alerts found</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!redlock-search-alerts time-range-date-from="05/19/2018" time-range-date-to="06/26/2018"</code></p>
-<h5>Raw Output</h5>
-<pre>[
-	{
-		"AlertTime": 1527208131469,
-		"ID": "P-120",
-		"Policy": {
-			"ID": "c2b84f89-7ec8-473e-a6af-404feeeb96c5",
-			"Name": "CloudTrail logs are not encrypted using Customer Master Keys (CMKs)",
-			"Remediable": false,
-			"Severity": "medium",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "arn:aws:cloudtrail:us-west-1:961855366482:trail/Logs",
-			"Name": "Logs"
-		},
-		"RiskDetail": {
-			"Rating": "C",
-			"Score": 20
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527208131954,
-		"ID": "P-151",
-		"Policy": {
-			"ID": "b82f90ce-ed8b-4b49-970c-2268b0a6c2e5",
-			"Name": "Security Groups allow internet traffic from internet to RDP port (3389)",
-			"Remediable": true,
-			"Severity": "high",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "sg-00c2402879388152c",
-			"Name": "launch-wizard-1"
-		},
-		"RiskDetail": {
-			"Rating": "F",
-			"Score": 80
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527283805892,
-		"ID": "P-206",
-		"Policy": {
-			"ID": "cd94c83e-6f84-4a37-a116-13ccba78a615",
-			"Name": "Internet connectivity via tcp over insecure port",
-			"Remediable": false,
-			"Severity": "high",
-			"Type": "network"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "i-0798ff02acd2cd1cf",
-			"Name": "i-0798ff02acd2cd1cf"
-		},
-		"RiskDetail": {
-			"Rating": "F",
-			"Score": 80
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527283805839,
-		"ID": "P-204",
-		"Policy": {
-			"ID": "9c7af8a8-5743-420f-a879-8f0f73d678ea",
-			"Name": "Internet exposed instances",
-			"Remediable": false,
-			"Severity": "high",
-			"Type": "network"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "i-0798ff02acd2cd1cf",
-			"Name": "i-0798ff02acd2cd1cf"
-		},
-		"RiskDetail": {
-			"Rating": "F",
-			"Score": 80
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527202810000,
-		"ID": "P-195",
-		"Policy": {
-			"ID": "e12e210c-3018-11e7-93ae-92361f002671",
-			"Name": "Excessive login failures",
-			"Remediable": false,
-			"Severity": "high",
-			"Type": "anomaly"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "akaylor",
-			"Name": "akaylor"
-		},
-		"RiskDetail": {
-			"Rating": "C",
-			"Score": 40
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527209282788,
-		"ID": "P-192",
-		"Policy": {
-			"ID": "50af1c0a-ab70-44dd-b6f6-3529e795131f",
-			"Name": "MFA not enabled for IAM users",
-			"Remediable": false,
-			"Severity": "medium",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "akaylor",
-			"Name": "akaylor"
-		},
-		"RiskDetail": {
-			"Rating": "C",
-			"Score": 20
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527209282796,
-		"ID": "P-193",
-		"Policy": {
-			"ID": "6a34af3f-21ae-8008-0850-229761d01081",
-			"Name": "IAM user has both Console access and Access Keys",
-			"Remediable": false,
-			"Severity": "medium",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "akaylor",
-			"Name": "akaylor"
-		},
-		"RiskDetail": {
-			"Rating": "C",
-			"Score": 20
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527208132072,
-		"ID": "P-164",
-		"Policy": {
-			"ID": "d9b86448-11a2-f9d4-74a5-f6fc590caeef",
-			"Name": "IAM policy allow full administrative privileges",
-			"Remediable": false,
-			"Severity": "low",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "arn:aws:iam::aws:policy/AdministratorAccess",
-			"Name": "AdministratorAccess"
-		},
-		"RiskDetail": {
-			"Rating": "B",
-			"Score": 1
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527208132065,
-		"ID": "P-163",
-		"Policy": {
-			"ID": "7913fcbf-b679-5aac-d979-1b6817becb22",
-			"Name": "S3 buckets do not have server side encryption",
-			"Remediable": false,
-			"Severity": "low",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "tax-returns-and-bitcoin-wallets",
-			"Name": "tax-returns-and-bitcoin-wallets"
-		},
-		"RiskDetail": {
-			"Rating": "F",
-			"Score": 51
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527208131969,
-		"ID": "P-152",
-		"Policy": {
-			"ID": "630d3779-d932-4fbf-9cce-6e8d793c6916",
-			"Name": "S3 buckets are accessible to public",
-			"Remediable": true,
-			"Severity": "high",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "tax-returns-and-bitcoin-wallets",
-			"Name": "tax-returns-and-bitcoin-wallets"
-		},
-		"RiskDetail": {
-			"Rating": "F",
-			"Score": 51
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527208132057,
-		"ID": "P-162",
-		"Policy": {
-			"ID": "7913fcbf-b679-5aac-d979-1b6817becb22",
-			"Name": "S3 buckets do not have server side encryption",
-			"Remediable": false,
-			"Severity": "low",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "someprivatestuff",
-			"Name": "someprivatestuff"
-		},
-		"RiskDetail": {
-			"Rating": "B",
-			"Score": 11
-		},
-		"Status": "open"
-	},
-	{
-		"AlertTime": 1527208131434,
-		"ID": "P-118",
-		"Policy": {
-			"ID": "4daa435b-fa46-457a-9359-6a4b4a43a442",
-			"Name": "Access logging not enabled on S3 buckets",
-			"Remediable": false,
-			"Severity": "medium",
-			"Type": "config"
-		},
-		"Resource": {
-			"Account": "Adrians AWS account",
-			"AccountID": "961855366482",
-			"ID": "lotsologs",
-			"Name": "lotsologs"
-		},
-		"RiskDetail": {
-			"Rating": "B",
-			"Score": 11
-		},
-		"Status": "open"
-	}
-]
-</pre>
-<h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/39116813/42449980-5bcee498-838b-11e8-81a7-34c2d4650b03.jpg" alt="playground - war room 2018-07-09 15-11-24" width="749" height="341"></p>
-<hr>
-<h3 id="h_696049476181530796105219">2. Get RedLock alert details</h3>
-<p>Get details for RedLock alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-get-alert-details</code></p>
-<h5>Input</h5>
-<table style="height: 271px; width: 744px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Input Parameter</strong></td>
-<td style="width: 535px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-id</td>
-<td style="width: 535px;">Alert ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">detailed</td>
-<td style="width: 535px;">Enables retrieving the entire or trimmed alert model</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 180px;"><strong>Path</strong></td>
-<td style="width: 565px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.ID</td>
-<td style="width: 565px;">ID of returned alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Status</td>
-<td style="width: 565px;">Status of returned alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.AlertTime</td>
-<td style="width: 565px;">Time of alert</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.ID</td>
-<td style="width: 565px;">Policy ID</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Name</td>
-<td style="width: 565px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Type</td>
-<td style="width: 565px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Severity</td>
-<td style="width: 565px;">Policy severity</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.Policy.Remediable</td>
-<td style="width: 565px;">Whether or not the policy is remediable</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.RiskDetail.Rating</td>
-<td style="width: 565px;">Risk rating</td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.RiskDetail.Score</td>
-<td style="width: 565px;">Risk score</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!redlock-get-alert-details alert-id="P-120"</code></p>
-<h5>Raw Output</h5>
-<pre>{
-	"AlertTime": 1527208131469,
-	"ID": "P-120",
-	"Policy": {
-		"ID": "c2b84f89-7ec8-473e-a6af-404feeeb96c5",
-		"Name": null,
-		"Remediable": false,
-		"Severity": null,
-		"Type": "config"
-	},
-	"Resource": {
-		"Account": "Adrians AWS account",
-		"AccountID": "961855366482",
-		"ID": "arn:aws:cloudtrail:us-west-1:961855366482:trail/Logs",
-		"Name": "Logs"
-	},
-	"RiskDetail": {
-		"Rating": "C",
-		"Score": 20
-	},
-	"Status": "dismissed"
+## Configure Prisma Cloud (RedLock) on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Prisma Cloud (RedLock).
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Server URL | True |
+| username | API Access Key | True |
+| password | API Secret | True |
+| customer | Customer name | False |
+| proxy | Use system proxy settings | False |
+| unsecure | Trust any certificate \(not secure\) | False |
+| ruleName | Fetch only incidents matching this rule name | False |
+| policySeverity | Fetch only incidents with this severity | False |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### redlock-search-alerts
+***
+Search alerts on the Prisma Cloud (RedLock) platform
+
+
+#### Base Command
+
+`redlock-search-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional | 
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional | 
+| time-range-value | The amount of units to go back in time | Optional | 
+| time-range-unit | The search unit. login and epoch are only available if timeRangeValue is not provided. | Optional | 
+| policy-name | The policy name | Optional | 
+| policy-label | The policy label | Optional | 
+| policy-compliance-standard | The policy compliance standard | Optional | 
+| cloud-account | The cloud account | Optional | 
+| cloud-region | The cloud region | Optional | 
+| alert-rule-name | The alert rule name | Optional | 
+| resource-id | The resource ID | Optional | 
+| resource-name | The resource name | Optional | 
+| resource-type | The resource type | Optional | 
+| alert-status | The alert status | Optional | 
+| alert-id | The alert ID | Optional | 
+| cloud-type | The cloud type | Optional | 
+| risk-grade | The risk grade | Optional | 
+| policy-type | The policy type | Optional | 
+| policy-severity | The policy severity | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Alert.ID | string | ID of returned alert | 
+| Redlock.Alert.Status | string | Status of returned alert | 
+| Redlock.Alert.AlertTime | string | Time of alert | 
+| Redlock.Alert.Policy.ID | string | The policy ID | 
+| Redlock.Alert.Policy.Name | string | The policy name | 
+| Redlock.Alert.Policy.Type | string | The policy type | 
+| Redlock.Alert.Policy.Severity | string | The policy severity | 
+| Redlock.Alert.Policy.Remediable | boolean | Whether or not the policy is remediable | 
+| Redlock.Alert.RiskDetail.Rating | string | The risk rating | 
+| Redlock.Alert.RiskDetail.Score | string | The risk score | 
+| Redlock.Metadata.CountOfAlerts | number | The number of alerts found | 
+
+
+#### Command Example
+```!redlock-search-alerts alert-id=P-214016```
+
+#### Context Example
+```
+{
+    "Redlock": {
+        "Alert": {
+            "AlertTime": "05/29/2020 14:16:15",
+            "ID": "P-214016",
+            "Policy": {
+                "ID": "765988-b967-9djksb-830f-sdf98798sdf9",
+                "Name": "AWS Security groups allow internet traffic gnoy",
+                "Remediable": true,
+                "Severity": "high",
+                "Type": "config"
+            },
+            "Resource": {
+                "Account": "testAWS",
+                "AccountID": "9876654321",
+                "ID": "sg-98vc98sd76sd",
+                "Name": "demo-98787654432"
+            },
+            "RiskDetail": {
+                "Rating": "F",
+                "Score": 170
+            },
+            "Status": "open"
+        },
+        "Metadata": {
+            "CountOfAlerts": 1
+        }
+    }
 }
-</pre>
-<h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/39116813/42450437-c86ac6d4-838c-11e8-95bb-3358f3ba33e5.jpg" alt="playground - artifact viewer 2018-07-09 15-28-04" width="750" height="1299"></p>
-<hr>
-<h3 id="h_256874257371530796584869">3. Dismiss RedLock alerts</h3>
-<p>Dismisses the specified RedLock alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-dismiss-alerts</code></p>
-<h5>Input</h5>
-<table style="height: 271px; width: 744px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Input Parameter</strong></td>
-<td style="width: 535px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-id</td>
-<td style="width: 535px;">Alert ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">dismissal-note</td>
-<td style="width: 535px;">Reason for dismissal</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-from</td>
-<td style="width: 535px;">Search start time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-to</td>
-<td style="width: 535px;">Search end time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-value</td>
-<td style="width: 535px;">Amount of units to go back in time</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-unit</td>
-<td style="width: 535px;">The search unit. The types <em>login</em> and <em>epoch</em> are only available if <em>timeRangeValue</em> is blank.</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-name</td>
-<td style="width: 535px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-label</td>
-<td style="width: 535px;">Policy label</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-compliance-standard</td>
-<td style="width: 535px;">Policy compliance standard</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-account</td>
-<td style="width: 535px;">Cloud account</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-region</td>
-<td style="width: 535px;">Cloud region</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-rule-name</td>
-<td style="width: 535px;">Name of the alert rule</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-id</td>
-<td style="width: 535px;">Resource ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-name</td>
-<td style="width: 535px;">Resource name</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-type</td>
-<td style="width: 535px;">Resource type</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-status</td>
-<td style="width: 535px;">Alert status</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-type</td>
-<td style="width: 535px;">Cloud type</td>
-</tr>
-<tr>
-<td style="width: 210px;">risk-grade</td>
-<td style="width: 535px;">Risk grade</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-type</td>
-<td style="width: 535px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-severity</td>
-<td style="width: 535px;">Policy severity</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-id</td>
-<td style="width: 535px;">Policy IDs (comma-separated string)</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 180px;"><strong>Path</strong></td>
-<td style="width: 565px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.ID</td>
-<td style="width: 565px;">ID of the dismissed alerts</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!redlock-dismiss-alerts alert-id="P-120" dismissal-note="Dismiss"</code></p>
-<h5>Raw Output</h5>
-<pre>[
-	"P-120"
-]
-</pre>
-<h5>War Room Output</h5>
-<pre>Alerts dismissed successfully. Dismissal Note: Dismiss.</pre>
-<hr>
-<h3 id="h_321535839611530796763100">4. Reopen RedLock alerts: redlock-reopen-alerts</h3>
-<p>Reopens dismissed alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-dismiss-alerts</code></p>
-<h5>Input</h5>
-<table style="height: 271px; width: 744px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Input Parameter</strong></td>
-<td style="width: 535px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-id</td>
-<td style="width: 535px;">Alert ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-from</td>
-<td style="width: 535px;">Search start time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-date-to</td>
-<td style="width: 535px;">Search end time (MM/DD/YYYY)</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-value</td>
-<td style="width: 535px;">Amount of units to go back in time</td>
-</tr>
-<tr>
-<td style="width: 210px;">time-range-unit</td>
-<td style="width: 535px;">The search unit. The types <em>login</em> and <em>epoch</em> are only available if <em>timeRangeValue</em> is blank.</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-name</td>
-<td style="width: 535px;">Policy name</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-label</td>
-<td style="width: 535px;">Policy label</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-compliance-standard</td>
-<td style="width: 535px;">Policy compliance standard</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-account</td>
-<td style="width: 535px;">Cloud account</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-region</td>
-<td style="width: 535px;">Cloud region</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-rule-name</td>
-<td style="width: 535px;">Name of the alert rule</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-id</td>
-<td style="width: 535px;">Resource ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-name</td>
-<td style="width: 535px;">Resource name</td>
-</tr>
-<tr>
-<td style="width: 210px;">resource-type</td>
-<td style="width: 535px;">Resource type</td>
-</tr>
-<tr>
-<td style="width: 210px;">alert-status</td>
-<td style="width: 535px;">Alert status</td>
-</tr>
-<tr>
-<td style="width: 210px;">cloud-type</td>
-<td style="width: 535px;">Cloud type</td>
-</tr>
-<tr>
-<td style="width: 210px;">risk-grade</td>
-<td style="width: 535px;">Risk grade</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-type</td>
-<td style="width: 535px;">Policy type</td>
-</tr>
-<tr>
-<td style="width: 210px;">policy-severity</td>
-<td style="width: 535px;">Policy severity</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 180px;"><strong>Path</strong></td>
-<td style="width: 565px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 180px;">Redlock.Alert.ID</td>
-<td style="width: 565px;">ID of the reopened alerts</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!redlock-reopen-alerts alert-id="P-120"</code></p>
-<h5>Raw Output</h5>
-<pre>[
-	"P-120"
-]
-</pre>
-<h5>War Room Output</h5>
-<pre>Alerts re-opened successfully.</pre>
-<hr>
-<h3 id="h_463885917901530796933580">5. List all RedLock alerts</h3>
-<p>Lists all RedLock alerts.</p>
-<h5>Base Command</h5>
-<p><code>redlock-list-alert-filters</code></p>
-<h5>Input</h5>
-<p>There is no input for this command.</p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/39116813/42451747-c934f072-8390-11e8-948d-a6ed094f5b04.jpg" alt="playground - artifact viewer 2018-07-09 15-54-29" width="749" height="366"></p>
+```
+
+#### Human Readable Output
+
+>### Alerts
+>|ID|Status|FirstSeen|LastSeen|AlertTime|PolicyName|PolicyType|PolicyDescription|PolicySeverity|PolicyRecommendation|PolicyDeleted|PolicyRemediable|RiskRating|ResourceName|ResourceAccount|ResourceType|ResourceCloudType|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| P-214016 | open | 05/28/2020 01:17:31 | 05/29/2020 14:16:42 | 05/29/2020 14:16:15 | AWS Security groups allow internet traffic gnoy | config | This policy identifies that Security Groups do not allow all traffic from internet. A Security Group acts as a virtual firewall that controls the traffic for one or more instances. Security groups should have restrictive ACLs to only allow incoming traffic from specific IPs to specific ports where the application is listening for connections. | high | If the Security Groups reported indeed need to restrict all traffic, follow the instructions below:<br/>1. Log in to the AWS console<br/>2. In the console, select the specific region from region drop down on the top right corner, for which the alert is generated<br/>3. Navigate to the 'VPC' service<br/>4. Click on the 'Security Group' specific to the alert<br/>5. Click on 'Inbound Rules' and remove the row with the ip value as 0.0.0.0/0 or ::/0 | false | true | F | demo-98787654432 | testAWS | SECURITY_GROUP | aws |
+
+
+### redlock-get-alert-details
+***
+Gets the details of an alert based on alert ID
+
+
+#### Base Command
+
+`redlock-get-alert-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert-id | The alert ID | Required | 
+| detailed | Allows for retrieving entire / trimmed alert model | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Alert.ID | string | The alert ID | 
+| Redlock.Alert.Status | string | The alert status | 
+| Redlock.Alert.AlertTime | date | The time of the alert | 
+| Redlock.Alert.Policy.ID | string | The policy ID | 
+| Redlock.Alert.Policy.Name | string | The policy name | 
+| Redlock.Alert.Policy.Type | string | The type of policy | 
+| Redlock.Alert.Policy.Severity | string | The policy severity | 
+| Redlock.Alert.Policy.Remediable | boolean | Whether or not the policy is remediable | 
+| Redlock.Alert.RiskDetail.Rating | string | The risk rating | 
+| Redlock.Alert.RiskDetail.Score | string | The risk score | 
+
+
+#### Command Example
+```!redlock-get-alert-details alert-id=P-214016```
+
+#### Context Example
+```
+{
+    "Redlock": {
+        "Alert": {
+            "AlertTime": "05/29/2020 14:16:15",
+            "ID": "P-214016",
+            "Policy": {
+                "ID": "765988-b967-9djksb-830f-sdf98798sdf9",
+                "Name": null,
+                "Remediable": false,
+                "Severity": null,
+                "Type": "config"
+            },
+            "Resource": {
+                "Account": "testAWS",
+                "AccountID": "9876654321",
+                "ID": "sg-98vc98sd76sd",
+                "Name": "demo-98787654432"
+            },
+            "RiskDetail": {
+                "Rating": "F",
+                "Score": 170
+            },
+            "Status": "open"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alert
+>|ID|Status|FirstSeen|LastSeen|AlertTime|PolicyID|PolicyName|PolicyType|PolicySystemDefault|PolicyLabels|PolicyDescription|PolicySeverity|PolicyRecommendation|PolicyDeleted|PolicyRemediable|PolicyLastModifiedOn|PolicyLastModifiedBy|RiskScore|RiskRating|ResourceName|ResourceRRN|ResourceID|ResourceAccount|ResourceAccountID|ResourceType|ResourceRegionID|ResourceApiName|ResourceUrl|ResourceData|ResourceAccessKeyAge|ResourceInactiveSinceTs|ResourceCloudType|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| P-214016 | open | 05/28/2020 01:17:31 | 05/29/2020 14:16:42 | 05/29/2020 14:16:15 |  |  | config | false |  |  |  |  |  | false |  |  | 170 | F | demo-98787654432 |  | sg-98vc98sd76sd | testAWS | 9876654321 | SECURITY_GROUP | us-west-2 | aws-ec2-describe-security-groups |  | vpcId: vpc-0824920b6d19bc4f1<br/>description: EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.<br/>tags: {u'value': u'demo-98787654432', u'key': u'Name'},<br/>{u'value': u'cn-demo', u'key': u'aws:eks:cluster-name'},<br/>{u'value': u'owned', u'key': u'kubernetes.io/cluster/cn-demo'}<br/>ipPermissions: {u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/mtu=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}], u'prefixListIds': [], u'fromPort': 3, u'ipRanges': [u'0.0.0.0/0'], u'toPort': 4, u'ipProtocol': u'icmp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/client=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}, {u'description': u'kubernetes.io/rule/nlb/health=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'192.168.0.0/16'}], u'prefixListIds': [], u'fromPort': 30463, u'ipRanges': [u'0.0.0.0/0', u'192.168.0.0/16'], u'toPort': 30463, u'ipProtocol': u'tcp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'192.168.1.1/16'}], u'ipRanges': [u'192.168.1.1/16'], u'ipProtocol': u'-1', u'userIdGroupPairs': [{u'userId': u'9876654321', u'groupId': u'sg-0ce26260850e500d4', u'description': u'Allow unmanaged nodes to communicate with control plane (all ports)'}, {u'userId': u'9876654321', u'groupId': u'sg-98vc98sd76sd'}], u'ipv6Ranges': []}<br/>groupName: demo-98787654432<br/>ipPermissionsEgress: {u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'0.0.0.0/0'}], u'ipRanges': [u'0.0.0.0/0'], u'ipProtocol': u'-1', u'userIdGroupPairs': [], u'ipv6Ranges': []}<br/>ownerId: 9876654321<br/>groupId: sg-98vc98sd76sd |  |  | aws |
+
+
+### redlock-dismiss-alerts
+***
+Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
+
+
+#### Base Command
+
+`redlock-dismiss-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert-id | comma separated list of string IDs to be dismissed | Optional | 
+| dismissal-note | Reason for dismissal | Required | 
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional | 
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional | 
+| time-range-value | The amount of units to go back in time | Optional | 
+| time-range-unit | The search unit | Optional | 
+| policy-name | The policy name | Optional | 
+| policy-label | The policy label | Optional | 
+| policy-compliance-standard | The policy compliance standard | Optional | 
+| cloud-account | The cloud account | Optional | 
+| cloud-region | The cloud region | Optional | 
+| alert-rule-name | The alert rule name | Optional | 
+| resource-id | The resource ID | Optional | 
+| resource-name | The resource name | Optional | 
+| resource-type | The resource type | Optional | 
+| alert-status | The alert status | Optional | 
+| cloud-type | The cloud type | Optional | 
+| risk-grade | The risk grade | Optional | 
+| policy-type | The policy type | Optional | 
+| policy-severity | The policy severity | Optional | 
+| policy-id | comma separated string of policy IDs | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.DismissedAlert.ID | string | The IDs of the dismissed alerts | 
+
+
+#### Command Example
+```!redlock-dismiss-alerts dismissal-note="testing" alert-id=P-214016```
+
+#### Context Example
+```
+{
+    "Redlock": {
+        "DismissedAlert": {
+            "ID": [
+                "P-214016"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alerts dismissed successfully. Dismissal Note: testing.
+
+### redlock-reopen-alerts
+***
+Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
+
+
+#### Base Command
+
+`redlock-reopen-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert-id | The IDs of alerts to reopen | Optional | 
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional | 
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional | 
+| time-range-value | The amount of units to go back in time | Optional | 
+| time-range-unit | The search unit | Optional | 
+| policy-name | The policy name | Optional | 
+| policy-label | The policy label | Optional | 
+| policy-compliance-standard | The policy compliance standard | Optional | 
+| cloud-account | The cloud account | Optional | 
+| cloud-region | The cloud region | Optional | 
+| alert-rule-name | The alert rule name | Optional | 
+| resource-id | The resource ID | Optional | 
+| resource-name | The resource name | Optional | 
+| resource-type | The resource type | Optional | 
+| alert-status | The alert status | Optional | 
+| cloud-type | The cloud type | Optional | 
+| risk-grade | The risk grade | Optional | 
+| policy-type | The policy type | Optional | 
+| policy-severity | The policy severity | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.ReopenedAlert.ID | string | IDs of the re\-opened alerts | 
+
+
+#### Command Example
+```!redlock-reopen-alerts alert-id=P-214016```
+
+#### Context Example
+```
+{
+    "Redlock": {
+        "ReopenedAlert": {
+            "ID": [
+                "P-214016"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alerts re-opened successfully.
+
+### redlock-list-alert-filters
+***
+List the acceptable filters and values for alerts
+
+
+#### Base Command
+
+`redlock-list-alert-filters`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!redlock-list-alert-filters```
+
+#### Context Example
+```
+{}
+```
+
+#### Human Readable Output
+
+>### Filter options
+>|Name|Options|Static|
+>|---|---|---|
+>| cloud.account |  | false |
+>| alert.id |  | false |
+>| cloud.region |  | false |
+>| policy.label |  | false |
+>| resource.id |  | false |
+>| cloud.type | alibaba_cloud,aws,azure,gcp | true |
+>| resource.name |  | false |
+>| account.group |  | false |
+>| risk.grade | A,B,C,F | true |
+>| policy.complianceSection |  | false |
+>| policy.remediable | true,false | true |
+>| policy.name |  | false |
+>| policy.type | anomaly,audit_event,config,network | true |
+>| alert.status | dismissed,snoozed,open,resolved | true |
+>| alertRule.name |  | false |
+>| policy.subtype | build,run | true |
+>| resource.type |  | false |
+>| policy.complianceStandard |  | false |
+>| cloud.accountId |  | false |
+>| policy.severity | high,medium,low | true |
+>| policy.rule.type | cft,k8s,tf | true |
+>| cloud.service |  | false |
+>| policy.complianceRequirement |  | false |
+
+
+### redlock-get-remediation-details
+***
+Get remediation details for a given alert
+
+
+#### Base Command
+
+`redlock-get-remediation-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert-id | The alert id to get remediation details for | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Alert.Remediation.Description | string | Description of CLI remediation instructions | 
+| Redlock.Alert.ID | string | The ID of the alert for which the remediation details applies | 
+| Redlock.Alert.Remediation.CLI | string | Exact CLI command string | 
+
+
+#### Command Example
+```!redlock-get-remediation-details alert-id=P-214016```
+
+#### Context Example
+```
+{
+    "Redlock": {
+        "Alert": {
+            "ID": "P-214016",
+            "Remediation": {
+                "CLI": "aws --region us-west-2 ec2 revoke-security-group-ingress --group-id sg-984392384bkhjb --ip-permissions '[{\"IpProtocol\": \"tcp\", \"IpRanges\":[{\"CidrIp\": \"0.0.0.0/0\"}]}]' ; aws --region us-west-1 ec2 authorize-security-group-ingress --group-id sg-98237498798 --ip-permissions '[{\"IpProtocol\": \"tcp\", \"FromPort\": 22, \"ToPort\": 22, \"IpRanges\":[{\"CidrIp\": \"10.0.0.0/8\", \"Description\": \"Enforced by Redlock Remediation\"}]}]'",
+                "Description": "\"This CLI command requires 'ec2:RevokeSecurityGroupIngress' permission. Successful execution will update the security group to revoke the ingress rule records open to internet either on IPv4 or on IPv6 protocol.\"} To resolve the alert from Prisma Cloud's console, add the permission."
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Remediation Details
+>|ID|RemediationCLI|RemediationDescription|
+>|---|---|---|
+>| P-211648 | gcloud compute networks subnets update default --project=project1-111111 --region europe-north2 --enable-flow-logs | This CLI command requires 'compute.securityAdmin' permission. Successful execution will enables GCP VPC Flow logs for subnets to capture information about the IP traffic going to and from network interfaces in VPC Subnets. To resolve the alert from Prisma Cloud's console, add the permission. |
+
+
