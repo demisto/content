@@ -1,6 +1,6 @@
-id: XDR iocs - Test
+id: Cortex XDR - IOC - Test
 version: -1
-name: XDR iocs - Test
+name: Cortex XDR - IOC - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -164,7 +164,9 @@ tasks:
       id: 3748e1e4-d9eb-4fd0-8aef-c61bedce4981
       version: -1
       name: xdr-iocs-sync
-      description: run once when configure the integration (do NOT use this twice!).
+      description: |-
+        Run once when you configure the integration (do NOT run this twice!).
+        will all the indicators that were synced with XDR and then resync.
       script: 'xdr-iocs-sync'
       type: regular
       iscommand: true
@@ -172,6 +174,9 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    scriptarguments:
+      firstTime:
+        simple: "true"
     separatecontext: false
     view: |-
       {
@@ -266,7 +271,7 @@ tasks:
     task:
       id: fdf8f5e4-a22a-415d-8d5d-7a186488eeb4
       version: -1
-      name: Sleep (60)
+      name: Sleep (120)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -279,7 +284,7 @@ tasks:
       - "11"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "120"
     separatecontext: false
     view: |-
       {
@@ -300,9 +305,9 @@ tasks:
     task:
       id: 12c5f3ea-5c81-42ea-8985-69e957165379
       version: -1
-      name: xdr-disable-iocs (test.com)
+      name: xdr-iocs-disable (test.com)
       description: Disable iocs in XDR server
-      script: 'xdr-disable-iocs'
+      script: 'xdr-iocs-disable'
       type: regular
       iscommand: true
       brand: ""
@@ -332,9 +337,9 @@ tasks:
     task:
       id: c2a2117a-b4e6-4e20-8176-712f12172f13
       version: -1
-      name: xdr-disable-iocs (88.88.88.88)
+      name: xdr-iocs-disable (88.88.88.88)
       description: Disable iocs in XDR server
-      script: 'xdr-disable-iocs'
+      script: 'xdr-iocs-disable'
       type: regular
       iscommand: true
       brand: ""
@@ -364,9 +369,9 @@ tasks:
     task:
       id: ddc92f88-ce5c-4f06-8911-8694c3d6e1bd
       version: -1
-      name: xdr-disable-iocs (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      name: xdr-iocs-disable (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
       description: Disable iocs in XDR server
-      script: 'xdr-disable-iocs'
+      script: 'xdr-iocs-disable'
       type: regular
       iscommand: true
       brand: ""
@@ -396,7 +401,7 @@ tasks:
     task:
       id: c9a9ecd7-afef-46ff-8240-fd4d9af54fed
       version: -1
-      name: Sleep (60)
+      name: Sleep (120)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -409,7 +414,7 @@ tasks:
       - "15"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "120"
     separatecontext: false
     view: |-
       {
@@ -681,9 +686,9 @@ tasks:
     task:
       id: 030fa5e9-09a9-4a01-816c-1aa154b0d186
       version: -1
-      name: xdr-enable-iocs (test.com)
+      name: xdr-iocs-enable (test.com)
       description: Enable iocs in XDR server
-      script: 'xdr-enable-iocs'
+      script: 'xdr-iocs-enable'
       type: regular
       iscommand: true
       brand: ""
@@ -713,9 +718,9 @@ tasks:
     task:
       id: 54064545-7bd5-4dd1-87dd-29a5f1a7c3e3
       version: -1
-      name: xdr-enable-iocs (88.88.88.88)
+      name: xdr-iocs-enable (88.88.88.88)
       description: Enable iocs in XDR server
-      script: 'xdr-enable-iocs'
+      script: 'xdr-iocs-enable'
       type: regular
       iscommand: true
       brand: ""
@@ -745,9 +750,9 @@ tasks:
     task:
       id: b22de31d-afad-415c-8153-b355eccee4aa
       version: -1
-      name: xdr-enable-iocs (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      name: xdr-iocs-enable (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
       description: Enable iocs in XDR server
-      script: 'xdr-enable-iocs'
+      script: 'xdr-iocs-enable'
       type: regular
       iscommand: true
       brand: ""
@@ -777,7 +782,7 @@ tasks:
     task:
       id: 76bcb0bb-5758-4998-868a-ef00f1817b53
       version: -1
-      name: Sleep (60)
+      name: Sleep (120)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -790,7 +795,7 @@ tasks:
       - "26"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "120"
     separatecontext: false
     view: |-
       {
@@ -1077,7 +1082,7 @@ tasks:
     task:
       id: bfcd05f4-9f1e-4493-8389-b55c04795134
       version: -1
-      name: Sleep (60)
+      name: Sleep (120)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -1088,7 +1093,7 @@ tasks:
       - "4"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "120"
     separatecontext: false
     view: |-
       {
