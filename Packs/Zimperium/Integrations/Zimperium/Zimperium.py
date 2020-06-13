@@ -22,7 +22,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_key: str, verify: bool):
         super().__init__(base_url=base_url, verify=verify)
-        self._headers = {'api_key': api_key}
+        self._headers = {'api_key': api_key, 'Accept': 'application/json'}
         self._proxies = handle_proxy()
 
     def users_search_request(self, query: str, size: str, page: str) -> dict:
@@ -176,9 +176,12 @@ class Client(BaseClient):
             raise Exception('Failed to prepare application for upload.')
 
         try:
-            with open(file_name, 'rb') as file:
-                result = self._http_request(method='POST', url_suffix='/malware/public/upload/app/',
-                                            headers=self._headers, files={'file': file.read()})
+            with open(file_path, 'rb') as file:
+                self._headers.update({'Content-Type': 'multipart/form-data'})
+                result = self._http_request(method='POST', url_suffix='/malware/public/upload/app',
+                                            headers=self._headers, files={'file1': file.read()})
+        except Exception as err:
+            raise Exception(str(err))
         finally:
             shutil.rmtree(file_name, ignore_errors=True)
 
