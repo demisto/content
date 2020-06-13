@@ -2521,6 +2521,11 @@
             "timeout": 1200
         },
         {
+            "integrations": "EWSO365",
+            "playbookID": "EWS_O365_test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 1200,
@@ -2848,7 +2853,6 @@
         "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "SentinelOne V2 - test": "Issue 24933",
         "DuoAdmin API test playbook": "Issue 24937",
-        "Wildfire Test": "Issue 24936",
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
@@ -2863,7 +2867,6 @@
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
-        "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "PAN-OS Create Or Edit Rule Test": "Issue 20037",
@@ -2890,7 +2893,6 @@
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
-        "VxStream Test": "Issue #23795",
         "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
         "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
