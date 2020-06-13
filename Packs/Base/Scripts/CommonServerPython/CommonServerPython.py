@@ -2705,7 +2705,7 @@ class CommandResults:
                     outputs[key].append(value)
 
                 timeline_item = indicator.extract_timeline(category=timeline_category)
-                if timeline_item['message'] != '':
+                if timeline_item['Message'] != '':
                     timeline_items.append(timeline_item)
 
         if self.raw_response:
