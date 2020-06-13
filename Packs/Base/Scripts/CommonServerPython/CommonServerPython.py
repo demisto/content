@@ -43,6 +43,8 @@ else:
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
+IS_INTEGRATION = hasattr(demisto, 'getIntegrationContext')
+
 
 # DEPRECATED - use EntryType enum instead
 entryTypes = {
@@ -1849,6 +1851,10 @@ class Common(object):
         def to_context(self):
             pass
 
+        @abstractmethod
+        def extract_timeline(self, message=None, category=None):
+            pass
+
     class DBotScore(object):
         """
         DBotScore class
@@ -1952,6 +1958,9 @@ class Common(object):
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
+        :type timeline_message: ``str``
+        :param timeline_message: The message to add to the timeline of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score:
 
@@ -1961,7 +1970,8 @@ class Common(object):
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
-                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
+                     timeline_message=''):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -1976,6 +1986,7 @@ class Common(object):
                 raise ValueError('dbot_score must be of type DBotScore')
 
             self.dbot_score = dbot_score
+            self.timeline_message = timeline_message
 
         def to_context(self):
             ip_context = {
@@ -2020,6 +2031,13 @@ class Common(object):
                 ret_value.update(self.dbot_score.to_context())
 
             return ret_value
+
+        def extract_timeline(self, message=None, category=None):
+            return {
+                'Value': self.ip,
+                'Message': message if message else self.timeline_message,
+                'Category': 'Integration Update' if not category else category
+            }
 
     class FileSignature(object):
         """
@@ -2115,6 +2133,9 @@ class Common(object):
         :type tags: ``str``
         :param tags: Tags of the file.
 
+        :type timeline_message: ``str``
+        :param timeline_message: The message to add to the timeline of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
@@ -2128,7 +2149,8 @@ class Common(object):
 
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
-                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None):
+                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
+                     timeline_message=''):
 
             self.name = name
             self.entry_id = entry_id
@@ -2150,6 +2172,7 @@ class Common(object):
             self.tags = tags
 
             self.dbot_score = dbot_score
+            self.timeline_message = timeline_message
 
         def to_context(self):
             file_context = {}
@@ -2208,25 +2231,47 @@ class Common(object):
 
             return ret_value
 
+        def extract_timeline(self, message=None, category=None):
+            value = None
+            for val in [self.md5, self.sha1, self.sha256, self.sha512]:
+                if val:
+                    value = val
+                    break
+
+            return {
+                'Value': value,
+                'Message': message if message else self.timeline_message,
+                'Category': 'Integration Update' if not category else category
+            }
+
     class CVE(Indicator):
         """
         CVE indicator class - https://xsoar.pan.dev/docs/context-standards#cve
+
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
+
         :type cvss: ``str``
         :param cvss: The CVSS of the CVE, for example: "10.0".
+
         :type published: ``str``
         :param published: The timestamp of when the CVE was published.
+
         :type modified: ``str``
         :param modified: The timestamp of when the CVE was last modified.
+
         :type description: ``str``
         :param description: A description of the CVE.
+
+        :type timeline_message: ``str``
+        :param timeline_message: The message to add to the timeline of the indicator.
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description):
+        def __init__(self, id, cvss, published, modified, description, timeline_message=''):
             # type (str, str, str, str, str) -> None
 
             self.id = id
@@ -2234,6 +2279,8 @@ class Common(object):
             self.published = published
             self.modified = modified
             self.description = description
+
+            self.timeline_message = timeline_message
 
         def to_context(self):
             cve_context = {
@@ -2258,6 +2305,13 @@ class Common(object):
 
             return ret_value
 
+        def extract_timeline(self, message=None, category=None):
+            return {
+                'Value': self.cvss,
+                'Message': message if message else self.timeline_message,
+                'Category': 'Integration Update' if not category else category
+            }
+
     class URL(Indicator):
         """
         URL indicator - https://xsoar.pan.dev/docs/context-standards#url
@@ -2273,17 +2327,21 @@ class Common(object):
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
+        :type timeline_message: ``str``
+        :param timeline_message: The message to add to the timeline of the indicator.
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, timeline_message=''):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
 
             self.dbot_score = dbot_score
+            self.timeline_message = timeline_message
 
         def to_context(self):
             url_context = {
@@ -2311,6 +2369,13 @@ class Common(object):
 
             return ret_value
 
+        def extract_timeline(self, message=None, category=None):
+            return {
+                'Value': self.url,
+                'Message': message if message else self.timeline_message,
+                'Category': 'Integration Update' if not category else category
+            }
+
 
     class Domain(Indicator):
         """ ignore docstring
@@ -2323,7 +2388,7 @@ class Common(object):
                      domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, timeline_message=''):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2353,6 +2418,7 @@ class Common(object):
             self.name_servers = name_servers
 
             self.dbot_score = dbot_score
+            self.timeline_message = timeline_message
 
         def to_context(self):
             domain_context = {
@@ -2439,6 +2505,13 @@ class Common(object):
 
             return ret_value
 
+        def extract_timeline(self, message=None, category=None):
+            return {
+                'Value': self.domain,
+                'Message': message if message else self.timeline_message,
+                'Category': 'Integration Update' if not category else category
+            }
+
     class Endpoint(Indicator):
         """ ignore docstring
         Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
@@ -2447,7 +2520,7 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None):
+                     memory=None, processors=None, processor=None, timeline_message=''):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -2461,6 +2534,8 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+
+            self.timeline_message = ''
 
         def to_context(self):
             endpoint_context = {
@@ -2509,6 +2584,12 @@ class Common(object):
 
             return ret_value
 
+        def extract_timeline(self, message=None, category=None):
+            return {
+                'Value': self.id,
+                'Message': message if message else self.timeline_message,
+                'Category': 'Integration Update' if not category else category
+            }
 
 class CommandResults:
     """
@@ -2536,11 +2617,6 @@ class CommandResults:
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
-    :type timeline: ``dict`` | ``list``
-    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an
-        indicator's timeline. if the 'Category' field is not present in the timeline dict(s), it will automatically
-        be be added to the dict(s) with its value set to 'Integration Update'.
-
     :type ignore_auto_extract: ``bool``
     :param ignore_auto_extract: expects a bool value. if true then the warroom entry readable_output will not be auto enriched.
 
@@ -2549,9 +2625,8 @@ class CommandResults:
     :rtype: ``None``
     """
     def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
-                 raw_response=None, timeline=None, ignore_auto_extract=False):
-
-        # type: (str, str, object, list, str, object, dict, bool) -> None
+                 raw_response=None, ignore_auto_extract=False):
+        # type: (str, str, object, list, str, object, bool) -> None
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
@@ -2561,15 +2636,23 @@ class CommandResults:
         self.raw_response = raw_response
         self.readable_output = readable_output
 
-        self.timeline_list = [timeline] if isinstance(timeline, dict) else timeline
         self.ignore_auto_extract = ignore_auto_extract
+
+    @staticmethod
+    def _get_timeline_category():
+        if IS_INTEGRATION:
+            return 'Integration Update'
+
+        return 'Automation Update'
 
     def to_context(self):
         outputs = {}  # type: dict
+        timeline_items = []
         human_readable = None
         raw_response = None
 
         if self.indicators:
+            timeline_category = CommandResults._get_timeline_category()
             for indicator in self.indicators:
                 context_outputs = indicator.to_context()
 
@@ -2578,6 +2661,10 @@ class CommandResults:
                         outputs[key] = []
 
                     outputs[key].append(value)
+
+                timeline_item = indicator.extract_timeline(category=timeline_category)
+                if timeline_item['message'] != '':
+                    timeline_items.append(timeline_item)
 
         if self.raw_response:
             raw_response = self.raw_response
@@ -2603,18 +2690,13 @@ class CommandResults:
                 outputs = self.outputs
                 human_readable = self.readable_output  # prefix and key field not provided, human readable should
 
-        if self.timeline_list:
-            for tl_obj in self.timeline_list:
-                if 'Category' not in tl_obj.keys():
-                    tl_obj['Category'] = 'Integration Update'
-
         return_entry = {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
-            'IndicatorTimeline': self.timeline_list,
+            'IndicatorTimeline': timeline_items,
             'IgnoreAutoExtract': self.ignore_auto_extract,
         }
 
