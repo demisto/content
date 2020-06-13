@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -1637,6 +1638,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1668,25 +1670,26 @@ inputs:
     simple: gcp-integrations
   required: true
   description: The Google Developers Console project ID or project number.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: cluster
   value:
     simple: xsoar-integration
   required: true
   description: The name of the cluster to retrieve. The name of the cluster to retrieve.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: zone
   value:
     simple: us-central1-c
   required: true
   description: The name of the Google Compute Engine zone in which the cluster resides.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: node_pools
   value:
     simple: default-pool
   required: true
   description: The name of the Google Compute Engine node pool.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
-  - GoogleKubernetesEngine_Test
+- GoogleKubernetesEngine_Test
+fromversion: 5.0.0
