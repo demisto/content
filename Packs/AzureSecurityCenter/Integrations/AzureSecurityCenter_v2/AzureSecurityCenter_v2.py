@@ -1,7 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-
-""" IMPORTS """
 import ast
 
 # disable insecure warnings
@@ -75,17 +73,17 @@ class MsClient:
     Microsoft Client enables authorized access to Azure Security Center.
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, server, verify, proxy, self_deployed, subscription_id):
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, server, verify, proxy, self_deployed, subscription_id,
+                 ok_codes):
         base_url_with_subscription = f"{server}subscriptions/{subscription_id}/"
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url_with_subscription, verify=verify, proxy=proxy,
-                                         self_deployed=self_deployed)
+                                         self_deployed=self_deployed, ok_codes=ok_codes)
         self.server = server
         self.subscription_id = subscription_id
 
     def get_alert(self, resource_group_name, asc_location, alert_id):
-        """Building query
-
+        """
         Args:
             resource_group_name (str): ResourceGroupName
             asc_location (str): Azure Security Center location
@@ -102,8 +100,7 @@ class MsClient:
             method="GET", url_suffix=cmd_url, params=params)
 
     def get_alerts(self, resource_group_name, asc_location, filter_query, select_query, expand_query):
-        """Building query
-
+        """
         Args:
             resource_group_name (str): ResourceGroupName
             asc_location (str): Azure Security Center location
@@ -116,10 +113,10 @@ class MsClient:
         """
         if resource_group_name:
             cmd_url = f"/resourceGroups/{resource_group_name}/providers/Microsoft.Security"
-            # ascLocation muse be using with specifying resourceGroupName
+            # ascLocation must be using with specifying resourceGroupName
             if asc_location:
                 cmd_url += f"/locations/{asc_location}"
-            cmd_url += f"/alerts"
+            cmd_url += "/alerts"
         else:
             cmd_url = "/providers/Microsoft.Security/alerts"
 
@@ -153,7 +150,7 @@ class MsClient:
             # ascLocation must be using with specifying resourceGroupName
             if asc_location:
                 cmd_url += f"/locations/{asc_location}"
-            cmd_url += f"/alerts"
+            cmd_url += "/alerts"
         else:
             cmd_url = "/providers/Microsoft.Security/alerts"
 
@@ -168,8 +165,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def update_alert(self, resource_group_name, asc_location, alert_id, alert_update_action_type):
-        """Building query
-
+        """
         Args:
             resource_group_name (str): Resource Name Group
             asc_location (str): Azure Security Center Location
@@ -187,8 +183,7 @@ class MsClient:
         self.ms_client.http_request(method="POST", url_suffix=cmd_url, params=params, resp_type='response')
 
     def list_locations(self):
-        """Building query
-
+        """
         Returns:
             dict: response body
         """
@@ -197,8 +192,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def update_atp(self, resource_group_name, storage_account, setting_name, is_enabled):
-        """Building query
-
+        """
         Args:
             resource_group_name (str): Resource Group Name
             storage_account (str): Storange Account
@@ -224,8 +218,7 @@ class MsClient:
         return self.ms_client.http_request(method="PUT", url_suffix=cmd_url, json_data=data, params=params)
 
     def get_atp(self, resource_group_name, storage_account, setting_name):
-        """Building query
-
+        """
         Args:
             resource_group_name (str): Resource Group Name
             storage_account (str): Storange Account
@@ -240,8 +233,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def update_aps(self, setting_name, auto_provision):
-        """Building query
-
+        """
         Args:
             setting_name (str): Setting name
             auto_provision (str): Auto provision setting (On/Off)
@@ -257,8 +249,7 @@ class MsClient:
         return self.ms_client.http_request(method="PUT", url_suffix=cmd_url, json_data=data, params=params)
 
     def list_aps(self):
-        """Build query
-
+        """
         Returns:
             dict: response body
         """
@@ -267,8 +258,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def get_aps(self, setting_name):
-        """Build query
-
+        """
         Args:
             setting_name: Setting name
 
@@ -281,8 +271,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def list_ipp(self, management_group=None):
-        """Building query
-
+        """
         Args:
             management_group: Managment group to pull (if needed)
 
@@ -299,8 +288,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def get_ipp(self, policy_name, management_group):
-        """Building query
-
+        """
         Args:
             policy_name (str): Policy name
             management_group (str): Managment group
@@ -318,8 +306,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def list_jit(self, asc_location, resource_group_name):
-        """Building query
-
+        """
         Args:
             asc_location: Machine location
             resource_group_name: Resource group name
@@ -334,8 +321,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def get_jit(self, policy_name, asc_location, resource_group_name):
-        """Building query
-
+        """
         Args:
             policy_name: Policy name
             asc_location: Machine location
@@ -389,8 +375,7 @@ class MsClient:
                                            resp_type="response")
 
     def delete_jit(self, asc_location, resource_group_name, policy_name):
-        """Building query
-
+        """
         Args:
             asc_location: Machine location
             resource_group_name: Resource group name
@@ -405,8 +390,7 @@ class MsClient:
         self.ms_client.http_request(method="DELETE", url_suffix=cmd_url, params=params, resp_type='text')
 
     def list_sc_storage(self):
-        """Building query
-
+        """
         Returns:
             dict: response body
 
@@ -416,8 +400,7 @@ class MsClient:
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
     def list_sc_subscriptions(self):
-        """Building query
-
+        """
         Returns:
             dict: response body
 
@@ -941,7 +924,7 @@ def get_ipp_command(client: MsClient, args: dict):
         for information_type_data in properties.get("informationTypes").values():
             keywords = ", ".join(
                 [(str(keyword.get("displayName")) + str(keyword.get("custom")) + str(keyword.get("canBeNumeric")))
-                 for keyword in information_type_data.get("keywords")])
+                 for keyword in information_type_data.get("keywords", [])])
             info_type_table_output.append(
                 {
                     "DisplayName": information_type_data.get("displayname"),
@@ -1040,12 +1023,12 @@ def get_jit_command(client: MsClient, args: dict):
             "Name": policy.get("name"),
             "Kind": policy.get("kind"),
             "ProvisioningState": policy.get("properties").get("provisioningState")
-            if policy.get("properties") and policy.get("properties").get("provisioningState") else None,
+            if policy.get("properties") and policy.get("properties", {}).get("provisioningState") else None,
             "Location": policy.get("location"),
             "Rules": policy.get("properties").get("virtualMachines")
-            if policy.get("properties") and policy.get("properties").get("virtualMachines") else None,
+            if policy.get("properties") and policy.get("properties", {}).get("virtualMachines") else None,
             "Requests": policy.get("properties").get("requests")
-            if policy.get("properties") and policy.get("properties").get("requests")
+            if policy.get("properties") and policy.get("properties", {}).get("requests")
             else None,
             "ID": policy.get("id"),
         }
@@ -1305,13 +1288,15 @@ def main():
     self_deployed: bool = params.get('self_deployed', False)
     proxy = params.get('proxy', False)
     subscription_id = demisto.args().get("subscription_id") or params.get("default_sub_id")
+    ok_codes = (200, 201, 202, 204)
 
     try:
         if not subscription_id:
             raise Exception("A subscription ID must be provided.")
 
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
-                          server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id)
+                          server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id,
+                          ok_codes=ok_codes)
 
         if demisto.command() == "test-module":
             # If the command will fail, error will be thrown from the request itself
