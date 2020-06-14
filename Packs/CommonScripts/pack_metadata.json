@@ -41,13 +41,4 @@
             "display_name": "Microsoft Graph Mail Single User"
         }
     },
-    "displayedImages": [
-        "DemistoRESTAPI",
-        "Gmail",
-        "EWSMailSender",
-        "MailSenderNew",
-        "GmailSingleUser",
-        "MicrosoftGraphMail",
-        "MicrosoftGraphListener"
-    ]
 }

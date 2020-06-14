@@ -45,13 +45,4 @@
             "display_name": "Microsoft Graph Mail"
         }
     },
-    "displayedImages": [
-        "EWSMailSender",
-        "Gmail",
-        "CommonScripts",
-        "MicrosoftGraphListener",
-        "GmailSingleUser",
-        "MailSenderNew",
-        "MicrosoftGraphMail"
-    ]
 }

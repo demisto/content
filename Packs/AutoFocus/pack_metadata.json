@@ -19,14 +19,4 @@
             "display_name": "Common Scripts"
         }
     },
-    "displayedImages": [
-        "CommonScripts",
-        "MailSenderNew",
-        "MicrosoftGraphMail",
-        "EWSMailSender",
-        "GmailSingleUser",
-        "DemistoRESTAPI",
-        "MicrosoftGraphListener",
-        "Gmail"
-    ]
 }

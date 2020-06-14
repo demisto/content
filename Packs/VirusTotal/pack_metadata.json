@@ -27,9 +27,4 @@
             "display_name": "Common Playbooks"
         }
     },
-    "displayedImages": [
-        "CommonScripts",
-        "PolySwarm",
-        "CommonPlaybooks"
-    ]
 }
