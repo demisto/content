@@ -573,6 +573,7 @@ def fetch_incidents():
     # end if no results returned
     if not alerts_raw_response or not alerts_raw_response.get('data'):
         demisto.incidents([])
+        demisto.setLastRun(last_run)
         return
 
     alerts = alerts_raw_response.get('data', [])
