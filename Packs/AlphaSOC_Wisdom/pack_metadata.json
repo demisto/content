@@ -3,7 +3,7 @@
     "description": "DNS and IP threat intelligence via the AlphaSOC platform",
     "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
+    "author": "AlphaSOC",
     "url": "",
     "email": "support@alphasoc.com",
     "created": "2020-04-14T00:00:00Z",
