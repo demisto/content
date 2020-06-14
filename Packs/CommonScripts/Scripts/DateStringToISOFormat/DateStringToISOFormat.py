@@ -1,9 +1,14 @@
 import demistomock as demisto
-from dateutil.parser import parse
+from dateutil.parser import ParserError, parse
 
 
 def parse_datestring_to_iso(date_value: str, day_first: bool, year_first: bool, fuzzy: bool) -> str:
-    return parse(date_value, dayfirst=day_first, yearfirst=year_first, fuzzy=fuzzy).isoformat()
+    try:
+        date_string = parse(date_value, dayfirst=day_first, yearfirst=year_first, fuzzy=fuzzy).isoformat()
+    except ParserError as e:
+        demisto.error(f'ParserError occurred: {e}\n Returning the original date string.')
+        date_string = date_value
+    return date_string
 
 
 def main():
