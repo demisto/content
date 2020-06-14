@@ -19,7 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integration with Okta's cloud-based identity management service
+description: Integration with Okta's cloud-based identity management service.
 display: Okta v2
 name: Okta v2
 script:
@@ -66,7 +66,7 @@ script:
       secret: false
     deprecated: false
     description: Suspends a single user. This operation can only be performed on users with
-      an ACTIVE status. The user has a status of SUSPENDED when the process is completed.
+      an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
     execution: false
     name: okta-suspend-user
   - arguments:
@@ -448,7 +448,7 @@ script:
     - default: false
       description: A comma-separated list of honorific suffix(es) of the user.
       isArray: false
-      name: honificSuffix
+      name: honorificSuffix
       required: false
       secret: false
     - default: false
@@ -909,8 +909,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates a user with a given login. All fields are optional, fields which
-      are not set will not be overridden.
+    description: Updates a user with a given login. All fields are optional. Fields which
+      are not set, will not be overwritten.
     execution: true
     name: okta-update-user
   - arguments:
@@ -1088,7 +1088,7 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The OS on which the client runs. For example, Microsoft
+      description: The operating system on which the client runs. For example, Microsoft
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
@@ -1197,7 +1197,7 @@ script:
       secret: false
     - default: false
       description: "The query parameter can be used to perform keyword matching against\
-        \ a LogEvents object’s attribute values. In order to satisfy the constraint,\
+        \ a LogEvents object’s attribute values. To satisfy the constraint,\
         \ all supplied keywords must be matched exactly. Note that matching is case-insensitive.\
         \  The following are some examples of common keyword filtering: \nEvents that\
         \ mention a specific city: query=San Francisco; \nEvents that mention a specific\
@@ -1259,7 +1259,7 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The operation system on which the client runs. For example, Microsoft
+      description: The operating system on which the client runs. For example, Microsoft
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
@@ -1406,7 +1406,7 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The OS on which the client runs. For example, Microsoft
+      description: The operating system on which the client runs. For example, Microsoft
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
@@ -1700,7 +1700,7 @@ script:
         OS fields can be derived from this field.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The OS on which the client runs. For example, Microsoft
+      description: The operating system on which the client runs. For example, Microsoft
         Windows 10.
       type: String
     - contextPath: Okta.Logs.Events.client.userAgent.browser
