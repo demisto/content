@@ -944,8 +944,11 @@ class TestCommandResults:
             outputs=None,
             indicators=[ip]
         )
+        context = results.to_context()
+        del context['IndicatorTimeline']
+        del context['IgnoreAutoExtract']
 
-        assert results.to_context() == {
+        assert context == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': None,
@@ -1016,8 +1019,11 @@ class TestCommandResults:
             outputs=None,
             indicators=[ip1, ip2]
         )
+        context = results.to_context()
+        del context['IgnoreAutoExtract']
+        del context['IndicatorTimeline']
 
-        assert results.to_context() == {
+        assert context == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': None,
@@ -1070,8 +1076,11 @@ class TestCommandResults:
             outputs_key_field='ticket_id',
             outputs=tickets
         )
+        context = results.to_context()
+        del context['IgnoreAutoExtract']
+        del context['IndicatorTimeline']
 
-        assert results.to_context() == {
+        assert context == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': tickets,
@@ -1101,8 +1110,11 @@ class TestCommandResults:
             },
             raw_response=tickets
         )
+        context = results.to_context()
+        del context['IgnoreAutoExtract']
+        del context['IndicatorTimeline']
 
-        assert results.to_context() == {
+        assert context == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': tickets,
@@ -1172,8 +1184,11 @@ class TestCommandResults:
             outputs=None,
             indicators=[domain]
         )
+        context = results.to_context()
+        del context['IndicatorTimeline']
+        del context['IgnoreAutoExtract']
 
-        assert results.to_context() == {
+        assert context == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': None,
