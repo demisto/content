@@ -311,10 +311,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
 
-        packs_to_install = ['Base']  # we save all the packs we want to install, to avoid duplications
+        packs_to_install = []  # we save all the packs we want to install, to avoid duplications
         installation_request_body = []  # the packs to install, in the request format
-        for pack_id in packs_to_install:
-            add_pack_to_installation_request(pack_id, installation_request_body)
 
         threads_list = []
         lock = Lock()

@@ -2839,6 +2839,11 @@
 
     ],
     "skipped_tests": {
+        "MSGraph_DeviceManagement_Test": "Issue 25603",
+        "CuckooTest": "Issue 25601",
+        "Active Directory - Get User Manager Details - Test": "Issue 25604",
+        "EWS_O365_test": "Issue 25605",
+        "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
         "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
@@ -2851,7 +2856,6 @@
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
-        "Akamai_WAF_SIEM-Test": "Issue 22225",
         "test_MsGraphFiles": "Issue 22853 ",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
