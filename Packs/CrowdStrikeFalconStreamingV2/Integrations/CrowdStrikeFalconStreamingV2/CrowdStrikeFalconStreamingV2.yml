@@ -59,7 +59,7 @@ description: Use the CrowdStrike Falcon Stream v2 integration to stream detectio
 display: CrowdStrike Falcon Streaming v2
 name: CrowdStrike Falcon Streaming v2
 script:
-  dockerimage: demisto/aiohttp:1.0.0.6695
+  dockerimage: demisto/aiohttp:1.0.0.8854
   feed: false
   isfetch: false
   longRunning: true
