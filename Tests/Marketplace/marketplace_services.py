@@ -564,6 +564,7 @@ class Pack(object):
 
         try:
             if should_encrypt:
+                print_error("Should Encrypt")
                 # The path below is custom made for the private repo's build.
                 zip_and_encrypt_script_path = "../server/cmd/zipAndEncryptDirectory/zipAndEncryptDirectory"
                 encryption_key = "3^zWkP?gB7YspY3sxCdv=m*bJaMcbJGc" # TODO : might need "" as part of the key
@@ -573,6 +574,7 @@ class Pack(object):
                 subprocess.call(full_command, shell=True)
 
             else:
+                print_error("Should Not Encrypt")
                 with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
                     for root, dirs, files in os.walk(self._pack_path, topdown=True):
                         for f in files:
@@ -892,9 +894,10 @@ class Pack(object):
 
             with open(user_metadata_path, "r") as user_metadata_file:
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
+                print_error(f'User Metadata is: {user_metadata}')
                 # part of old packs are initialized with empty list
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-
+                print_error(f'User Metadata changed to: {user_metadata}')
             # store important user metadata fields
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get('currentVersion', '')
