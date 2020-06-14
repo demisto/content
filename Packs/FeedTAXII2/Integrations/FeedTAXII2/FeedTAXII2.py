@@ -2,15 +2,20 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-import requests
+import types
+import re
 from taxii2client.exceptions import TAXIIServiceException
-from taxii2client import v20, v21, Collection
+from taxii2client import v20, v21
+
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 """ CONSTANT VARIABLES """
 CONTEXT_PREFIX = "TAXII2"
 TAXII_VER_2_0 = '2.0'
 TAXII_VER_2_1 = '2.1'
-DFLT_LIMIT_PER_FETCH = 50
+DFLT_LIMIT_PER_FETCH = 1000
+INDICATOR_VAL_PATTERN = r"(?<=value = ')(.*)(?=')"  # TODO: improve to deal with no / multiple spaces
 
 TAXII_TYPES_TO_DEMISTO_TYPES = {
     'ipv4-addr': FeedIndicatorType.IP,
@@ -23,10 +28,6 @@ TAXII_TYPES_TO_DEMISTO_TYPES = {
     'sha-256': FeedIndicatorType.File,
     'file:hashes': FeedIndicatorType.File,
 }
-
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 
 class FeedClient:
@@ -63,14 +64,13 @@ class FeedClient:
     def init_collection_to_fetch(self):
         if self.collections and self.collection_to_fetch:
             try:
-                self.collection_to_fetch = next(
-                    collection
-                    for collection in self.collections
-                    if collection.id == self.collection_to_fetch
-                )
+                for collection in self.collections:
+                    if collection.id == self.collection_to_fetch:
+                        self.collection_to_fetch = collection
+                        break
             except StopIteration:
                 raise DemistoException(
-                    "Could not find the provided Collection ID in the available tests. "
+                    "Could not find the provided Collection ID in the available collections. "
                     "Please make sure you entered the ID correctly."
                 )
 
@@ -81,27 +81,67 @@ class FeedClient:
         self.init_collection_to_fetch()
 
     def build_iterator(self, limit: int = -1, added_after=None) -> list:
-        if not isinstance(self.collection_to_fetch, Collection):
+        if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
             self.init_collection_to_fetch()
-        cur_limit = limit
-        page_size = self.get_page_size(limit, cur_limit)
-        envelope = self.collection_to_fetch.get_objects(
-            limit=page_size, added_after=added_after
-        )
-        # todo add indicators processing here
-        while envelope.get("more", False) and cur_limit > 0:
-            page_size = self.get_page_size(limit, cur_limit)
-            envelope = self.collection_to_fetch.get_objects(
-                limit=page_size, next=envelope.get("next", "")
-            )
-            cur_limit -= len(envelope)
-            # todo add indicators processing here
 
-    def get_page_size(self, max_limit, cur_limit):
+        page_size = self.get_page_size(limit, limit)
+        envelope = self.poll_collection(page_size, added_after)
+        indicators = self.extract_indicatros_from_envelope(envelope, limit)
+        return indicators
+
+    def extract_indicatros_from_envelope(self, envelope, limit):
+        indicators = []
+        # TAXII 2.0
+        if isinstance(envelope, types.GeneratorType):
+            obj_cnt = 0
+            for sub_envelope in envelope:
+                indicators.extend(self.parse_taxii_objects(sub_envelope.get('objects')))
+                obj_cnt += 1
+                if obj_cnt > limit:
+                    break
+        # TAXII 2.1
+        else:
+            cur_limit = limit
+            indicators = self.parse_taxii_objects(envelope.get('objects'))
+            while envelope.get("more", False) and cur_limit > 0:
+                page_size = self.get_page_size(limit, cur_limit)
+                envelope = self.poll_collection(page_size, envelope.get("next", ""))
+                cur_limit -= len(envelope)
+                indicators.extend(self.parse_taxii_objects(envelope.get('objects')))
+        return indicators[:limit]
+
+    def poll_collection(self, page_size, added_after):
+        get_objects = self.collection_to_fetch.get_objects
+        if isinstance(self.collection_to_fetch, v20.Collection):
+            envelope = v20.as_pages(get_objects, per_request=page_size, added_after=added_after)
+        else:
+            envelope = get_objects(limit=page_size, added_after=added_after)
+        return envelope
+
+    @staticmethod
+    def get_page_size(max_limit, cur_limit):
         return min(DFLT_LIMIT_PER_FETCH, cur_limit) if max_limit > -1 else DFLT_LIMIT_PER_FETCH
 
-    def parse_taxii_objects(self, envelope):
-        pass
+    @staticmethod
+    def parse_taxii_objects(objects):
+        indicators_objects = [item for item in objects if
+                              item.get('type') == 'indicator']  # retrieve only indicators
+
+        indicators = []
+        if indicators_objects:
+            for indicator_object in indicators_objects:
+                pattern = indicator_object.get('pattern')
+                for key in TAXII_TYPES_TO_DEMISTO_TYPES.keys():
+                    if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
+                        value = re.search(INDICATOR_VAL_PATTERN, pattern)
+                        if value:
+                            indicators.append({
+                                "value": value,
+                                "type": TAXII_TYPES_TO_DEMISTO_TYPES[key],
+                                "rawJSON": indicator_object,
+                            })
+
+        return indicators
 
 
 def test_module(client):

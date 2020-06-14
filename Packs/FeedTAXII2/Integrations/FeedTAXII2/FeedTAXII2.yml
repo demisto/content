@@ -102,7 +102,7 @@ script:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
-  dockerimage: demisto/taxii2:1.0.0.6793
+  dockerimage: demisto/taxii2:1.0.0.9219
   feed: true
   isfetch: false
   longRunning: false
