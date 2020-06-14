@@ -30,7 +30,7 @@ class Client(BaseClient):
         super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify, proxy=handle_proxy())
         self._api_key = api_key
 
-    def get_indicators(self) -> list:
+    def get_indicators(self):
         """Retrieves all entries from the feed.
 
         Returns:
