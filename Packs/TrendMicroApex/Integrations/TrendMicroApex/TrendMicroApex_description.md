@@ -1,1 +1,3 @@
 It is required to add an application in order to use the integration, follow the instructions [here](https://docs.trendmicro.com/en-us/enterprise/trend-micro-apex-central-2019-automation-api-guide/automation-api-guide/adding-an-applicatio.aspx) to do so.
+
+Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.

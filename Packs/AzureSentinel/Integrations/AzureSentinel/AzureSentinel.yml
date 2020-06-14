@@ -75,7 +75,7 @@ configuration:
   required: false
   type: 8
 description: Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
-display: Azure Sentinel
+display: Azure Sentinel (Beta)
 name: Azure Sentinel
 script:
   commands:

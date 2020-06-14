@@ -1,11 +1,11 @@
 {
   "name": "CounterCraft Deception Director",
   "description": "CounterCraft Deception Solution detects advanced adversaries. Automate counterintelligence campaigns to discover targeted attacks with real-time active response.",
-  "support": "xsoar",
+  "support": "partner",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
+  "author": "Counter Craft",
+  "url": "",
+  "email": "support@countercraft.zendesk.com",
   "created": "2020-04-14T00:00:00Z",
   "categories": [
     "Deception"

@@ -382,7 +382,7 @@ exampleDemistoUrls = {
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
 
-callingContext = {}
+callingContext = {}  # type: dict
 
 
 def params():
@@ -567,17 +567,22 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
 def updateModuleHealth(error):
     return ""
 
-def directMessage(message, username = None, email = None, anyoneCanOpenIncidents = None):
+
+def directMessage(message, username=None, email=None, anyoneCanOpenIncidents=None):
     return ""
 
-def createIncidents(incidents, lastRun = None, userID = None):
+
+def createIncidents(incidents, lastRun=None, userID=None):
     return []
 
-def findUser(username = None, email = None):
+
+def findUser(username=None, email=None):
     return {}
+
 
 def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
     return {}
+
 
 def demistoVersion():
     return {
@@ -585,17 +590,22 @@ def demistoVersion():
         'buildNumber': '12345'
     }
 
+
 def integrationInstance():
     return ""
+
 
 def createIndicators(indicators_batch):
     return ""
 
-def searchIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '', value = ''):
+
+def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value=''):
     return {}
+
 
 def getIndexHash():
     return ''
+
 
 def getLicenseID():
     return ''

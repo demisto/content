@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added support for multi-environment instances.
 
 
 ## [20.4.0] - 2020-04-14
