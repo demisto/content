@@ -1,6 +1,7 @@
 id: Falcon X - Test-Detonate URL
 version: 3
 name: CrowdStrike_Falcon_X_-Test-Detonate_URL
+description: ""
 starttaskid: "0"
 tasks:
   "0":
