@@ -492,7 +492,6 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
             event_id = event_data.get('eventId')
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
                 event_created_time = dateparser.parse(event_data.get('persistedTime'))
-                demisto.info(str(event_created_time))
                 incident = {
                     'name': event_data.get('incidentSummary'),
                     'occurred': event_created_time.strftime(timestamp_format),
