@@ -8,7 +8,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Bastille Networks",
+            "integrations": "Bastille Networks",-os
             "playbookID": "BastilleNetworks-Test"
         },
         {
@@ -2141,7 +2141,7 @@
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
