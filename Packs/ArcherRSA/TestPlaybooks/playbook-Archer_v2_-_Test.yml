@@ -79,6 +79,9 @@ tasks:
     nexttasks:
       '#none#':
       - "30"
+    scriptarguments:
+      retry-count:
+        simple: "4"
     separatecontext: false
     view: |-
       {
@@ -375,6 +378,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      retry-count:
+        simple: "4"
       level:
         simple: "67"
     separatecontext: false
@@ -1113,6 +1118,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      retry-count:
+        simple: "4"
       application-id:
         simple: "75"
       findById: {}
