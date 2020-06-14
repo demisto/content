@@ -2,11 +2,15 @@ import json
 import os
 import subprocess
 import fnmatch
+import re
 import shutil
 import yaml
+import google.auth
+from google.cloud import storage
 import enum
 import base64
 import urllib.parse
+import warnings
 from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
@@ -24,14 +28,42 @@ class GCPConfig(object):
     """ Google cloud storage basic configurations
 
     """
-    STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
+    STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
+    IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
+    PRODUCTION_BUCKET = "marketplace-dist"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    CORE_PACKS_LIST = [BASE_PACK]  # cores packs list
+    CORE_PACKS_LIST = [BASE_PACK,
+                       "rasterize",
+                       "DemistoRESTAPI",
+                       "DemistoLocking",
+                       "ImageOCR",
+                       "WhereIsTheEgg",
+                       "FeedAutofocus",
+                       "AutoFocus",
+                       "UrlScan",
+                       "Active_Directory_Query",
+                       "FeedTAXII",
+                       "VirusTotal",
+                       "Whois",
+                       "Phishing",
+                       "CommonScripts",
+                       "CommonPlaybooks",
+                       "CommonTypes",
+                       "CommonDashboards",
+                       "CommonReports",
+                       "CommonWidgets",
+                       "TIM_Processing",
+                       "TIM_SIEM",
+                       "HelloWorld",
+                       "ExportIndicators",
+                       "Malware",
+                       "DefaultPlaybook"
+                       ]  # cores packs list
 
 
 class Metadata(object):
@@ -43,6 +75,7 @@ class Metadata(object):
     XSOAR_AUTHOR = "Cortex XSOAR"
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
     CERTIFIED = "certified"
+    EULA_URL = "https://github.com/demisto/content/blob/master/LICENSE"  # disable-secrets-detection
 
 
 class PackFolders(enum.Enum):
@@ -66,22 +99,24 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def pack_displayed_items(cls):
-        return [
+        return {
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value
-        ]
+            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+        }
 
     @classmethod
     def yml_supported_folders(cls):
-        return [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value]
+        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
+                PackFolders.TEST_PLAYBOOKS.value}
 
     @classmethod
     def json_supported_folders(cls):
-        return [PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
                 PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.REPORTS.value]
+                PackFolders.WIDGETS.value}
 
 
 class PackStatus(enum.Enum):
@@ -286,10 +321,21 @@ class Pack(object):
             dependency_integration_images = dependency_data.get('integrations', [])
 
             for dependency_integration in dependency_integration_images:
-                if dependency_integration not in pack_integration_images:
+                dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
+                dependency_pack_name = os.path.basename(
+                    os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
+
+                if dependency_pack_name not in display_dependencies_images:
+                    continue  # skip if integration image is not part of displayed pack
+
+                if dependency_integration not in pack_integration_images:  # avoid duplicates in list
                     pack_integration_images.append(dependency_integration)
 
         return pack_integration_images
+
+    @staticmethod
+    def _clean_release_notes(changelog_lines):
+        return re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
 
     @staticmethod
     def _parse_pack_dependencies(first_level_dependencies, all_level_pack_dependencies_data):
@@ -326,8 +372,8 @@ class Pack(object):
         doesn't match xsoar default url, warning is raised.
 
         Args:
-            support_type (str): support type of pack, optional values are: partner, developer, xsoar and nonsupported
-            support_url (str): support full url
+            support_type (str): support type of pack.
+            support_url (str): support full url.
             support_email (str): support email address.
 
         Returns:
@@ -349,6 +395,10 @@ class Pack(object):
     def _get_author(support_type, author=None):
         """ Returns pack author. In case support type is xsoar, more additional validation are applied.
 
+        Args:
+            support_type (str): support type of pack.
+            author (str): author of the pack.
+
         Returns:
             str: returns author from the input.
         """
@@ -361,8 +411,31 @@ class Pack(object):
             return author
 
     @staticmethod
+    def _get_certification(support_type, certification=None):
+        """ Returns pack certification.
+
+        In case support type is xsoar, CERTIFIED is returned.
+        In case support is not xsoar but pack_metadata has certification field, certification value will be taken from
+        pack_metadata defined value.
+        Otherwise empty certification value (empty string) will be returned
+
+        Args:
+            support_type (str): support type of pack.
+            certification (str): certification value from pack_metadata, if exists.
+
+        Returns:
+            str: certification value
+        """
+        if support_type == Metadata.XSOAR_SUPPORT:
+            return Metadata.CERTIFIED
+        elif support_type != Metadata.XSOAR_SUPPORT and certification:
+            return certification
+        else:
+            return ""
+
+    @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version):
+                             dependencies_data, server_min_version, build_number):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -373,13 +446,12 @@ class Pack(object):
             author_image (str): gcs uploaded author image
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
             server_min_version (str): server minimum version found during the iteration over content items.
+            build_number (str): circleCI build number.
 
         Returns:
             dict: parsed pack metadata.
 
         """
-
-        # part of old packs are initialized with empty list
         pack_metadata = {}
         pack_metadata['name'] = user_metadata.get('name') or pack_id
         pack_metadata['id'] = pack_id
@@ -391,17 +463,17 @@ class Pack(object):
         pack_metadata['supportDetails'] = Pack._create_support_section(support_type=pack_metadata['support'],
                                                                        support_url=user_metadata.get('url'),
                                                                        support_email=user_metadata.get('email'))
+        pack_metadata['eulaLink'] = Metadata.EULA_URL
         pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
                                                    author=user_metadata.get('author', ''))
         pack_metadata['authorImage'] = author_image
-        pack_metadata['beta'] = get_valid_bool(user_metadata.get('beta', False))
-        pack_metadata['deprecated'] = get_valid_bool(user_metadata.get('deprecated', False))
-        pack_metadata['certification'] = user_metadata.get('certification', Metadata.CERTIFIED)
+        pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
+                                                                 certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
-        pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'), capitalize_input=True)
+        pack_metadata['versionInfo'] = build_number
+        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
@@ -441,7 +513,8 @@ class Pack(object):
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
             else:
-                raise Exception(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
+                print_warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
+                continue
 
         return dependencies_data_result
 
@@ -581,12 +654,13 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
-    def prepare_release_notes(self, index_folder_path):
+    def prepare_release_notes(self, index_folder_path, build_number):
         """
         Handles the creation and update of the changelog.json files.
 
         Args:
             index_folder_path (str): Path to the unzipped index json.
+            build_number (str): circleCI build number.
         Returns:
             bool: whether the operation succeeded.
         """
@@ -618,10 +692,14 @@ class Pack(object):
                             changelog = json.load(changelog_file)
 
                             if latest_release_notes in changelog:
-                                shutil.copyfile(changelog_index_path,
-                                                os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
-                                print_warning(f"Found existing release notes for version: {latest_release_notes} "
-                                              f"in the {self._pack_name} pack.")
+                                changelog[latest_release_notes][  # update latest release notes build numbers
+                                    'displayName'] = f'{latest_release_notes} - {build_number}'
+                                # write back the updated build number to the changelog in pack the folder
+                                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
+                                    json.dump(changelog, pack_changelog, indent=4)
+
+                                print(f"Found existing release notes for version: {latest_release_notes} "
+                                      f"in the {self._pack_name} pack.")
                                 task_status = True
                                 return task_status
 
@@ -630,8 +708,9 @@ class Pack(object):
 
                         with open(latest_rn_path, 'r') as changelog_md:
                             changelog_lines = changelog_md.read()
+                            changelog_lines = self._clean_release_notes(changelog_lines)
                         version_changelog = {'releaseNotes': changelog_lines,
-                                             'displayName': latest_release_notes,
+                                             'displayName': f'{latest_release_notes} - {build_number}',
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
 
@@ -639,13 +718,28 @@ class Pack(object):
                             json.dump(changelog, f, indent=4)
 
                 else:  # will enter only on initial version and release notes folder still was not created
-                    shutil.copyfile(changelog_index_path, os.path.join(self._pack_path, Pack.CHANGELOG_JSON))
-                    print(f"Keeping existing {Pack.CHANGELOG_JSON} of {self._pack_name} pack.")
+                    with open(changelog_index_path, "r") as changelog_file:
+                        changelog = json.load(changelog_file)
+
+                    if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
+                        print_error(
+                            f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
+                        task_status = False
+                        return task_status
+
+                    changelog[Pack.PACK_INITIAL_VERSION][  # update latest release notes build numbers
+                        'displayName'] = f'{Pack.PACK_INITIAL_VERSION} - {build_number}'
+                    # write back the updated build number to the changelog in pack the folder
+                    with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
+                        json.dump(changelog, pack_changelog, indent=4)
+
+                    print(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
+                          f"in the {self._pack_name} pack.")
 
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
                 changelog = {}
                 version_changelog = {'releaseNotes': self._description,
-                                     'displayName': Pack.PACK_INITIAL_VERSION,
+                                     'displayName': f'{Pack.PACK_INITIAL_VERSION} - {build_number}',
                                      'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                 changelog[Pack.PACK_INITIAL_VERSION] = version_changelog
 
@@ -688,11 +782,13 @@ class Pack(object):
                 PackFolders.DASHBOARDS.value: "dashboard",
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
-                PackFolders.INDICATOR_TYPES.value: "reputation"
+                PackFolders.INDICATOR_TYPES.value: "reputation",
+                PackFolders.LAYOUTS.value: "layout",
+                PackFolders.CLASSIFIERS.value: "classifier",
+                PackFolders.WIDGETS.value: "widget"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
-                pack_dirs[:] = [d for d in pack_dirs if d not in PackFolders.TEST_PLAYBOOKS.value]
                 current_directory = root.split(os.path.sep)[-1]
 
                 folder_collected_items = []
@@ -792,6 +888,23 @@ class Pack(object):
                             'reputationScriptName': content_item.get('reputationScriptName', ""),
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
+                    elif current_directory == PackFolders.LAYOUTS.value:
+                        folder_collected_items.append({
+                            'typeId': content_item.get('typeId', ""),
+                            'kind': content_item.get('kind', ""),
+                            'version': 'v2' if 'tabs' in content_item.get('layout', {}) else 'v1'
+                        })
+                    elif current_directory == PackFolders.CLASSIFIERS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name') or content_item.get('id', ""),
+                            'description': content_item.get('description', '')
+                        })
+                    elif current_directory == PackFolders.WIDGETS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'dataType': content_item.get('dataType', ""),
+                            'widgetType': content_item.get('widgetType', "")
+                        })
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
@@ -839,7 +952,8 @@ class Pack(object):
         finally:
             return task_status, user_metadata
 
-    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path):
+    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
+                        packs_dependencies_mapping, build_number):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -850,6 +964,8 @@ class Pack(object):
             public url.
             author_image (str): uploaded public gcs path to author image.
             index_folder_path (str): downloaded index folder directory path.
+            packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
+            build_number (str): circleCI build number.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -860,6 +976,16 @@ class Pack(object):
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
+            if 'dependencies' not in user_metadata:
+                user_metadata['dependencies'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('dependencies', {})
+                print(f"Adding auto generated dependencies for {self._pack_name} pack")
+
+            if 'displayedImages' not in user_metadata:
+                user_metadata['displayedImages'] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get('displayedImages', [])
+                print(f"Adding auto generated display images for {self._pack_name} pack")
+
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
@@ -869,7 +995,8 @@ class Pack(object):
                                                            integration_images=integration_images,
                                                            author_image=author_image,
                                                            dependencies_data=dependencies_data,
-                                                           server_min_version=self.server_min_version)
+                                                           server_min_version=self.server_min_version,
+                                                           build_number=build_number)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -1028,15 +1155,21 @@ class Pack(object):
                 image_name = os.path.basename(image_path)
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
-                print(f"Uploading {self._pack_name} pack integration image: {image_name}")
 
+                print(f"Uploading {self._pack_name} pack integration image: {image_name}")
                 with open(image_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
-                    uploaded_integration_images.append({
-                        'name': image_data.get('display_name', ''),
-                        'imagePath': urllib.parse.quote(pack_image_blob.name) if GCPConfig.USE_GCS_RELATIVE_PATH
-                        else pack_image_blob.public_url
-                    })
+
+                if GCPConfig.USE_GCS_RELATIVE_PATH:
+                    image_gcs_path = urllib.parse.quote(
+                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, image_name))
+                else:
+                    image_gcs_path = pack_image_blob.public_url
+
+                uploaded_integration_images.append({
+                    'name': image_data.get('display_name', ''),
+                    'imagePath': image_gcs_path
+                })
 
             print(f"Uploaded {len(pack_local_images)} images for {self._pack_name} pack.")
         except Exception as e:
@@ -1073,12 +1206,15 @@ class Pack(object):
                 with open(author_image_path, "rb") as author_image_file:
                     pack_author_image_blob.upload_from_file(author_image_file)
 
-                author_image_storage_path = pack_author_image_blob.name if GCPConfig.USE_GCS_RELATIVE_PATH \
-                    else pack_author_image_blob.public_url
+                if GCPConfig.USE_GCS_RELATIVE_PATH:
+                    author_image_storage_path = urllib.parse.quote(
+                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME))
+                else:
+                    author_image_storage_path = pack_author_image_blob.public_url
 
                 print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
             elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
-                author_image_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.BASE_PACK,
+                author_image_storage_path = os.path.join(GCPConfig.IMAGES_BASE_PATH, GCPConfig.BASE_PACK,
                                                          Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
                 if not GCPConfig.USE_GCS_RELATIVE_PATH:
@@ -1109,6 +1245,33 @@ class Pack(object):
 
 
 # HELPER FUNCTIONS
+
+def init_storage_client(service_account=None):
+    """Initialize google cloud storage client.
+
+    In case of local dev usage the client will be initialized with user default credentials.
+    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
+
+    Args:
+        service_account (str): full path to service account json.
+
+    Return:
+        storage.Client: initialized google cloud storage client.
+    """
+    if service_account:
+        storage_client = storage.Client.from_service_account_json(service_account)
+        print("Created gcp service account")
+
+        return storage_client
+    else:
+        # in case of local dev use, ignored the warning of non use of service account.
+        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
+        credentials, project = google.auth.default()
+        storage_client = storage.Client(credentials=credentials, project=project)
+        print("Created gcp private account")
+
+        return storage_client
+
 
 def input_to_list(input_data, capitalize_input=False):
     """ Helper function for handling input list or str from the user.

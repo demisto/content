@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
+* QRadar
 
 ### Scripts
 This playbook does not use any scripts.
@@ -19,12 +19,12 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| QRadarBlackListIPReferenceSetName | The name of the QRadar black list IP reference set to insert the data to. |  |  | Optional |
-|  |  |  |  | Optional |
-| QRadarWhiteListIPReferenceSetName | The name of the QRadar white list IP reference set to insert the data in to. |  |  | Optional |
-| QRadarWatchListIPReferenceSetName | The name of the QRadar watch list IP reference set to insert the data in to. |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| QRadarBlackListIPReferenceSetName | The name of the QRadar black list IP reference set to insert the data to. |  | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| QRadarWhiteListIPReferenceSetName | The name of the QRadar white list IP reference set to insert the data in to. |  | Optional |
+| QRadarWatchListIPReferenceSetName | The name of the QRadar watch list IP reference set to insert the data in to. |  | Optional |
 
 ## Playbook Outputs
 ---

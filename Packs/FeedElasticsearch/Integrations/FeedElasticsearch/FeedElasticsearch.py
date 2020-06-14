@@ -28,7 +28,7 @@ HTTP_ERRORS = {
 FETCH_SIZE = 50
 API_KEY_PREFIX = '_api_key_id:'
 MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
-FEED_TYPE_GENERIC = 'Generic Feed (fill in configuration below)'
+FEED_TYPE_GENERIC = 'Generic Feed'
 FEED_TYPE_CORTEX = 'Cortex XSOAR Feed'
 FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
 
@@ -91,7 +91,7 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
         return_error('Please provide an API ID when using API ID + API Key authentication')
 
     err_msg = ''
-    if feed_type == FEED_TYPE_GENERIC:
+    if FEED_TYPE_GENERIC in feed_type:
         if not src_val:
             err_msg += 'Please provide a "Indicator Value Field"\n'
         if not src_type and not default_type:
@@ -134,7 +134,7 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
 def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     """Implements es-get-indicators command"""
     now = datetime.now()
-    if feed_type == FEED_TYPE_GENERIC:
+    if FEED_TYPE_GENERIC in feed_type:
         search = get_scan_generic_format(client, now)
         ioc_lst = get_generic_indicators(search, src_val, src_type, default_type)
         hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
@@ -178,9 +178,9 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     now = datetime.now()
     ioc_lst: list = []
     ioc_enrch_lst: list = []
-    if feed_type != FEED_TYPE_GENERIC:
+    if FEED_TYPE_GENERIC not in feed_type:
         # Insight is the name of the indicator object as it's saved into the database
-        search = get_scan_insight_format(client, now, last_fetch_timestamp)
+        search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type)
         for hit in search.scan():
             hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
             ioc_lst.extend(hit_lst)
@@ -324,7 +324,7 @@ def main():
         username, password = (creds.get('identifier'), creds.get('password')) if creds else (None, None)
         insecure = not params.get('insecure')
         feed_type = params.get('feed_type')
-        time_field = params.get('time_field') if feed_type == FEED_TYPE_GENERIC else 'calculatedTime'
+        time_field = params.get('time_field') if FEED_TYPE_GENERIC in feed_type else 'calculatedTime'
         time_method = params.get('time_method')
         fetch_index = params.get('fetch_index')
         fetch_time = params.get('fetch_time', '3 days')
@@ -348,4 +348,5 @@ def main():
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)))
 
 
-main()
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()

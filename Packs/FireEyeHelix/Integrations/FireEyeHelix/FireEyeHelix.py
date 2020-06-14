@@ -297,7 +297,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        suffix = f'/api/v1/search'
+        suffix = '/api/v1/search'
         params = assign_params(query=query)
         return self._http_request('GET', suffix, params=params, timeout=DEFAULT_PAGE_SIZE)
 
@@ -310,7 +310,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        suffix = f'/api/v1/search/archive'
+        suffix = '/api/v1/search/archive'
         params = assign_params(query=query)
         return self._http_request('GET', suffix, params=params)
 
@@ -323,7 +323,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        suffix = f'/api/v1/search/archive'
+        suffix = '/api/v1/search/archive'
         params = assign_params(query=query)
         return self._http_request('GET', suffix, params=params)
 
@@ -360,7 +360,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        suffix = f'/api/v3/alerts'
+        suffix = '/api/v3/alerts'
         return self._http_request('POST', suffix, json_data=body)
 
     def get_alert_notes(self, alert_id):
@@ -1614,7 +1614,11 @@ def search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    query = build_mql_query(**args)
+    query = build_mql_query(
+        query=args.get('query', ''), start=args.get('start'), end=args.get('end'), page_size=args.get('page_size'),
+        limit=args.get('limit'), offset=args.get('offset'), groupby=args.get('groupby'), sort_by=args.get('sort_by'),
+        sort_order=args.get('sort_order')
+    )
     raw_response = client.search(query)
     headers = argToList(args.get('headers'))
     return build_search_result(raw_response, headers=headers)

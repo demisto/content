@@ -96,11 +96,11 @@ tasks:
     nexttasks:
       '#default#':
       - '9'
-      yes:
+      'yes':
       - '5'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: startWith
           left:
@@ -554,11 +554,11 @@ tasks:
     nexttasks:
       '#default#':
       - '9'
-      yes:
+      'yes':
       - '7'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -1317,7 +1317,7 @@ fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
 description: "Note: This is a beta playbook, which lets you implement and test pre-release
-               software. Since the playbook is beta, it might contain bugs. Updates to the playbook
+               software. Since the playbook is in beta, it might contain bugs. Updates to the playbook
                during the beta phase might include non-backward compatible features. We appreciate
                your feedback on the quality and usability of the playbook to help us identify issues,
                fix them, and continually improve. This playbook processes the survery responses. It updates that the employee responded to the survey and what their health status is. If necessary, it opens IT or HR incidents, and updates the process survey tracker."

@@ -7,7 +7,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+* Panorama
+* Mimecast-Auth
+* PaloAltoNetworksCortex
+* AlienVaultOTX
+* SymantecEndpointProtectionDeprecated
+* LightCyberMagna
+* Lastline
+* Flashpoint
+* SlashNextPhishingIncidentResponse
+* Pwned
+* Cymon
+* PaloAltoNetworks_Traps
+* PaloAlto_MineMeld
 
 ### Scripts
 This playbook does not use any scripts.
@@ -18,13 +30,13 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
-| EnrichBadIndicators | Enter a value of True to enrich indicators whose reputation from the feed is bad. |  |  | Optional |
-| EnrichGoodIndicators | Enter a value of True to enrich indicators whose reputation from the feed is good. |  |  | Optional |
-| EnrichSuspiciousIndicators | Enter a value of True to enrich indicators whose reputation from the feed is suspicious. |  |  | Optional |
-| EnrichUnknownIndicators | Enter a value of True to enrich indicators whose reputation from the feed is unknown. |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
+| EnrichBadIndicators | Enter a value of True to enrich indicators whose reputation from the feed is bad. |  | Optional |
+| EnrichGoodIndicators | Enter a value of True to enrich indicators whose reputation from the feed is good. |  | Optional |
+| EnrichSuspiciousIndicators | Enter a value of True to enrich indicators whose reputation from the feed is suspicious. |  | Optional |
+| EnrichUnknownIndicators | Enter a value of True to enrich indicators whose reputation from the feed is unknown. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -32,4 +44,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Playbook Image](https://github.com/demisto/content/blob/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Run_Enrichment_For_Domain_Indicators.png)
+![Playbook Image](https://github.com/demisto/content/raw/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Run_Enrichment_For_Domain_Indicators.png)
