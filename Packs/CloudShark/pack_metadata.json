@@ -1,11 +1,11 @@
 {
   "name": "CloudShark",
   "description": "Use the CloudShark integration to upload, share, and collaborate on network packet capture files using your on-premises CS Enterprise system.",
-  "support": "xsoar",
+  "support": "partner",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
+  "author": "CloudShark",
+  "url": "",
+  "email": "support@cloudshark.io",
   "created": "2020-04-14T00:00:00Z",
   "categories": [
     "Data Enrichment & Threat Intelligence"
