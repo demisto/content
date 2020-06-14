@@ -8,7 +8,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Bastille Networks",-os
+            "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
         },
         {
