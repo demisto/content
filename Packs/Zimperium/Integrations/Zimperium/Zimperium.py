@@ -437,11 +437,15 @@ def events_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     query = str(args.get('query', 'eventId==*'))
     size = str(args.get('size', '10'))
     page = str(args.get('page', '0'))
-    verbose = args.get('verbose') == 'false'
+    verbose = str(args.get('verbose')) == 'true'
 
     events = client.events_search_request(query, size, page, verbose)
-
     events_data = events.get('content')
+
+    if not verbose:
+        for event_data in events_data:
+            event_data.pop('eventDetail', None)
+
     table_name = ''
     if not events.get('last'):
         table_name = f' (To get the next events, run the command with the next page)'
@@ -484,6 +488,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     if events_data:
         last_event_ids = last_run.get('last_event_ids', [])
         for event_data in events_data:
+            event_data.pop('eventDetail', None)
             event_id = event_data.get('eventId')
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
                 event_created_time = dateparser.parse(event_data.get('persistedTime'))
