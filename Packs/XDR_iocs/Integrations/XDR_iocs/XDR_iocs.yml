@@ -125,7 +125,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sync your IOC with XDR and delete the old.
+    description: Sync your IOC with Cortex XDR and delete the old.
     execution: false
     name: xdr-iocs-sync
   - arguments:

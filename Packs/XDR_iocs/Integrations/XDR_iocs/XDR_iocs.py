@@ -127,8 +127,7 @@ def create_file_sync(file_path, batch_size: int = 200):
             iocs: List = get_iocs(page=i, size=batch_size)
             for ioc in map(lambda x: demisto_ioc_to_xdr(x), iocs):
                 if ioc:
-                    _file.write(json.dumps(ioc))
-                    _file.write('\n')
+                    _file.write(json.dumps(ioc) + '\n')
 
 
 def get_iocs_size(query=None) -> int:
@@ -262,7 +261,7 @@ def get_indicators(indicators: str) -> List:
             else:
                 not_found.append(indicator)
         if not_found:
-            return_warning('the indicator{} {} was not found.'.format('s' if len(not_found) > 1 else '', ', '.join(not_found)))
+            return_warning('The following indicators ware not found: {}'.format(', '.join(not_found)))
         else:
             return iocs
     return []
