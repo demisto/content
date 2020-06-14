@@ -11,21 +11,21 @@ from test_data.result_constants import EXPECTED_SEARCH_EVENTS, EXPECTED_SEARCH_U
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
-    # (events_search, {'query': 'eventId==*', 'size': '10', 'page': '0', 'verbose': False}, RESPONSE_SEARCH_EVENTS,
-    #  EXPECTED_SEARCH_EVENTS),
-    # (users_search, {'query': 'objectId==*', 'size': '10', 'page': '0'}, RESPONSE_SEARCH_USERS, EXPECTED_SEARCH_USERS),
-    # (user_get_by_id, {'object_id': '1B9182C7-8C12-4499-ADF0-A338DEFDFC33'}, RESPONSE_USER_GET_BY_ID,
-    #  EXPECTED_USER_GET_BY_ID),
-    # (devices_search, {'query': 'deviceId==*', 'size': '10', 'page': '0'}, RESPONSE_SEARCH_DEVICES,
-    #  EXPECTED_SEARCH_DEVICES),
-    # (device_get_by_id, {'zdid': "87a587de-283f-48c9-9ff2-047c8b025b6d"}, RESPONSE_DEVICE_GET_BY_ID,
-    #  EXPECTED_DEVICE_GET_BY_ID),
-    # (devices_get_last_updated, {'from_last_update': "5 days"}, RESPONSE_GET_LAST_UPDATED_DEVICES,
-    #  EXPECTED_GET_LAST_UPDATED_DEVICES),
-    # (app_classification_get, {'app_hash': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"},
-    #  RESPONSE_APP_CLASSIFICATION_GET, EXPECTED_APP_CLASSIFICATION_GET),
-    # (app_classification_get, {'app_name': "Duo"},
-    #  RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET),
+    (events_search, {'query': 'eventId==*', 'size': '10', 'page': '0', 'verbose': 'true'}, RESPONSE_SEARCH_EVENTS,
+     EXPECTED_SEARCH_EVENTS),
+    (users_search, {'query': 'objectId==*', 'size': '10', 'page': '0'}, RESPONSE_SEARCH_USERS, EXPECTED_SEARCH_USERS),
+    (user_get_by_id, {'object_id': '1B9182C7-8C12-4499-ADF0-A338DEFDFC33'}, RESPONSE_USER_GET_BY_ID,
+     EXPECTED_USER_GET_BY_ID),
+    (devices_search, {'query': 'deviceId==*', 'size': '10', 'page': '0'}, RESPONSE_SEARCH_DEVICES,
+     EXPECTED_SEARCH_DEVICES),
+    (device_get_by_id, {'zdid': "87a587de-283f-48c9-9ff2-047c8b025b6d"}, RESPONSE_DEVICE_GET_BY_ID,
+     EXPECTED_DEVICE_GET_BY_ID),
+    (devices_get_last_updated, {'from_last_update': "5 days"}, RESPONSE_GET_LAST_UPDATED_DEVICES,
+     EXPECTED_GET_LAST_UPDATED_DEVICES),
+    (app_classification_get, {'app_hash': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"},
+     RESPONSE_APP_CLASSIFICATION_GET, EXPECTED_APP_CLASSIFICATION_GET),
+    (app_classification_get, {'app_name': "Duo"},
+     RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET),
     (report_get, {'itunes_id': '331177714'}, RESPONSE_REPORT_GET_ITUNES_ID, EXPECTED_REPORT_GET_ITUNESID)
 ])
 def test_zimperium_commands(command, args, http_response, context, mocker):
