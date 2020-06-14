@@ -68,7 +68,7 @@ def delete_script_or_integration(path):
             os.remove(changelog_file)
 
     else:
-        shutil.rmtree(path)
+        os.system(f"rm -rf {path}")
     print(f" - Deleting {path}")
 
 
@@ -117,6 +117,8 @@ def main():
                     if not handle_yml_file(yml_file_path, old_version):
                         delete_script_or_integration(path)
         click.secho(f"Finished process for {pack_path}")
+
+    click.secho("Finished creating branch", fg="green")
 
 
 main()
