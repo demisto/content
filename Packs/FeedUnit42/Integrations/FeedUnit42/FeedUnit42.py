@@ -133,7 +133,7 @@ def main():
 
     try:
         client = Client(api_key, verify)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[Any, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[Any, Dict[Any, Any], List[Any]]]] = {
             'unit42-get-indicators': get_indicators_command,
         }
 
