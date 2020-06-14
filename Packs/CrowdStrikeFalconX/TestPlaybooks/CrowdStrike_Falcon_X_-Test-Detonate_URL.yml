@@ -1,5 +1,5 @@
-id: Falcon X - Test-Detonate URL
-version: 3
+id: CrowdStrike_Falcon_X_-Test-Detonate_URL
+version: -1
 name: CrowdStrike_Falcon_X_-Test-Detonate_URL
 description: ""
 starttaskid: "0"
@@ -76,6 +76,7 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
+      description: ''
       brand: ""
     nexttasks:
       '#none#':
@@ -112,6 +113,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: true
     view: |-
       {

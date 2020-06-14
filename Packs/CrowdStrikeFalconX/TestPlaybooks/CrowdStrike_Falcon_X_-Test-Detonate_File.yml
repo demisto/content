@@ -1,5 +1,5 @@
-id: Falcon X - Test-Detonate File
-version: 6
+id: CrowdStrike_Falcon_X_-Test-Detonate_File
+version: -1
 name: CrowdStrike_Falcon_X_-Test-Detonate_File
 description: ""
 starttaskid: "0"
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -150,5 +151,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: Test-Detonate URL - Crowdstrike
 fromversion: 5.0.0
