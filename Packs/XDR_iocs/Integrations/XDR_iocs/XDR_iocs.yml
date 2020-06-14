@@ -114,7 +114,9 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'false'
-      description: For first sync, set to true.
+      description: |-
+        For first sync, set to true.
+        (do NOT run this twice!)
       isArray: false
       name: firstTime
       predefined:
@@ -123,9 +125,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Run once when you configure the integration (do NOT run this twice!).
-      will all the indicators that were synced with XDR and then resync.
+    description: Sync your IOC with XDR and delete the old.
     execution: false
     name: xdr-iocs-sync
   - arguments:
