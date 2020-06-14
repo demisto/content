@@ -332,6 +332,32 @@ class TestConf(object):
 
         return all_integrations
 
+    def get_tested_integrations_for_collected_tests(self, collected_tests):
+        tested_integrations = []
+        conf_tests = self._conf['tests']
+
+        for t in conf_tests:
+            if t.get('playbookID') not in collected_tests:
+                continue
+
+            if 'integrations' in t:
+                if isinstance(t['integrations'], list):
+                    tested_integrations.extend(t['integrations'])
+                else:
+                    tested_integrations.append(t['integrations'])
+
+        return tested_integrations
+
+    def get_packs_of_tested_integrations(self, collected_tests, id_set):
+        packs = set([])
+        tested_integrations = self.get_tested_integrations_for_collected_tests(collected_tests)
+        for integration in tested_integrations:
+            int_path = id_set__get_integration_file_path(id_set, integration)
+            pack = get_pack_name(int_path)
+            if pack:
+                packs.add(pack)
+        return packs
+
     def get_test_playbooks_configured_with_integration(self, integration_id):
         test_playbooks = []
         conf_tests = self._conf['tests']
@@ -1151,6 +1177,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         packs_to_install.remove("NonSupported")
 
     packs_to_install.add("DeveloperTools")
+
+    packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
     return tests, packs_to_install
 
