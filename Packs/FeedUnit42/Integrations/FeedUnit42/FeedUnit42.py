@@ -27,10 +27,10 @@ class Client(BaseClient):
         :param api_key: unit42 API Key.
         :param verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         """
-        self._api_key = api_key
         super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify, proxy=handle_proxy())
+        self._api_key = api_key
 
-    def get_indicators(self) -> dict:
+    def get_indicators(self) -> list:
         """Retrieves all entries from the feed.
 
         Returns:

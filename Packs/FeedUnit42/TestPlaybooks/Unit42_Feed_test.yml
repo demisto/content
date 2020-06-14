@@ -1,6 +1,7 @@
 id: Unit42 Feed - Test
 version: -1
 name: Unit42 Feed - Test
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -11,6 +12,7 @@ tasks:
       id: 2d597788-c6f5-4f0f-87d0-14c80e37691f
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
