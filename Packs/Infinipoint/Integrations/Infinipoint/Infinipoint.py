@@ -90,7 +90,7 @@ def get_cve_command(method, token, route):
             outputs=res
         )
         return_results(command_results)
-        # demisto.results(res)
+        #demisto.results(res)
 
 
 def get_assets_programs_command(method, token, route, name, publisher, version):
@@ -129,11 +129,7 @@ def get_assets_programs_command(method, token, route, name, publisher, version):
         "page": 0,
         "ruleSet": {
             "condition": "AND",
-            "rules": [
-                {
-                    rules
-                }
-            ]
+            "rules": rules
         }
     }
 
@@ -147,6 +143,7 @@ def get_assets_programs_command(method, token, route, name, publisher, version):
             outputs=res['items']
         )
         return_results(command_results)
+        #demisto.results(res)
 
 
 def get_devices_command(method, token, route, host, os_type, os_name, status, agent_version):
@@ -211,6 +208,7 @@ def get_devices_command(method, token, route, host, os_type, os_name, status, ag
             outputs=res['items']
         )
         return_results(command_results)
+        #demisto.results(res)
 
 
 ''' EXECUTION '''
