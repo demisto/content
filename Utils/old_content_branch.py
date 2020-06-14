@@ -80,8 +80,8 @@ def main():
 
     click.secho("Starting Branch Editing")
     for pack_name in os.listdir('Packs'):
-        click.secho(f"Starting process for {pack_path}:")
         pack_path = os.path.join('Packs', pack_name)
+        click.secho(f"Starting process for {pack_path}:")
         for content_dir in os.listdir(pack_path):
             dir_path = os.path.join(pack_path, content_dir)
             if content_dir in ['Playbooks', 'TestPlaybooks']:
@@ -117,3 +117,6 @@ def main():
                     if not handle_yml_file(yml_file_path, old_version):
                         delete_script_or_integration(path)
         click.secho(f"Finished process for {pack_path}")
+
+
+main()
