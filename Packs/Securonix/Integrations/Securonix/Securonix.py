@@ -316,13 +316,15 @@ class Client(BaseClient):
                                            params=params)
         return violation_data
 
-    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str) -> Dict:
+    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str, max_incidents: str = '50')\
+            -> Dict:
         """List all incidents by sending a GET request.
 
         Args:
             from_epoch: from time in epoch
             to_epoch: to time in epoch
             incident_status: incident status e.g:closed, opened
+            max_incidents: max incidents to get
 
         Returns:
             Response from API.
@@ -331,7 +333,9 @@ class Client(BaseClient):
             'type': 'list',
             'from': from_epoch,
             'to': to_epoch,
-            'rangeType': incident_status
+            'rangeType': incident_status,
+            'max': max_incidents,
+            'order': 'asc',
         }
         incidents = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incidents.get('result').get('data')
@@ -797,7 +801,8 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     to_ = args.get('to') if 'to_' in args else datetime.now()
     to_epoch = date_to_timestamp(to_, date_format=timestamp_format)
     incident_types = str(args.get('incident_types')) if 'incident_types' in args else 'opened'
-    incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
+    max_incidents = str(args.get('max', '50'))
+    incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types, max_incidents)
 
     total_incidents = incidents.get('totalIncidents')
     if not total_incidents or float(total_incidents) <= 0.0:
@@ -1107,7 +1112,8 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: str, last_run: Dict) -> list:
+def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: str, max_fetch: str, last_run: Dict)\
+        -> list:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -1116,12 +1122,12 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
         fetch_time: From when to fetch if first time, e.g. `3 days`
         incident_status: Incident statuses to fetch, can be: all, opened, closed, updated
         last_run: Last fetch object.
+        max_fetch: maximum amount of incidents to fetch
 
     Returns:
         incidents, new last_run
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    now = datetime.now().strftime(timestamp_format)
     if not last_run:  # if first time running
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
@@ -1132,14 +1138,15 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
     to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
     # Get incidents from Securonix
     demisto.info(f'Fetching Securonix incidents. From: {from_epoch}. To: {to_epoch}')
-    securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status)
+    securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_status, max_fetch)
 
     if securonix_incidents:
+        already_fetched = last_run.get('already_fetched', [])
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
-        last_incident_id = last_run.get('id', '0')
         for incident in incidents_items:
-            incident_id = incident.get('incidentId')
-            if incident_id > last_incident_id:
+            incident_id = str(incident.get('incidentId', 0))
+            # check if incident was already fetched due to updating over lastUpdateDate
+            if incident_id not in already_fetched:
                 incident_name = get_incident_name(incident, incident_id)  # Try to get incident reason as incident name
                 demisto_incidents.append({
                     'name': incident_name,
@@ -1147,12 +1154,15 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
                     'severity': incident_priority_to_dbot_score(incident.get('priority')),
                     'rawJSON': json.dumps(incident)
                 })
-        if demisto_incidents:
-            last_incident_id = incidents_items[-1].get('incidentId')
-            new_last_run.update({'id': last_incident_id})
+                already_fetched.append(str(incident_id))  # add already fetched incidents ids to the set
 
-    new_last_run.update({'time': now})
-    demisto.setLastRun(new_last_run)
+        if incidents_items:
+            now = timestamp_to_datestring(incidents_items[-1].get('lastUpdateDate'))
+        else:
+            now = datetime.now().strftime(timestamp_format)
+        new_last_run.update({'time': now, 'already_fetched': already_fetched})
+
+    demisto.setLastRun({'value': json.dumps(new_last_run)})
     return demisto_incidents
 
 
@@ -1241,7 +1251,10 @@ def main():
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time', '1 hour')
             incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
-            incidents = fetch_incidents(client, fetch_time, incident_status, last_run=demisto.getLastRun())
+            max_fetch = str(params.get('max_fetch', '50'))
+            max_fetch = str(min('50', max_fetch))  # fetch size should no exceed 50
+            last_run = json.loads(demisto.getLastRun().get('value', '{}'))
+            incidents = fetch_incidents(client, fetch_time, incident_status, max_fetch, last_run=last_run)
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
