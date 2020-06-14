@@ -26,7 +26,7 @@ from test_data.result_constants import EXPECTED_SEARCH_EVENTS, EXPECTED_SEARCH_U
      RESPONSE_APP_CLASSIFICATION_GET, EXPECTED_APP_CLASSIFICATION_GET),
     (app_classification_get, {'app_name': "Duo"},
      RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET),
-    (report_get, {'itunes_id': '331177714'}, RESPONSE_REPORT_GET_ITUNES_ID, EXPECTED_REPORT_GET_ITUNESID)
+    (report_get, {'itunes_id': '331177714'}, RESPONSE_REPORT_GET_ITUNES_ID, EXPECTED_REPORT_GET_ITUNESID),
 ])
 def test_zimperium_commands(command, args, http_response, context, mocker):
     """Unit test

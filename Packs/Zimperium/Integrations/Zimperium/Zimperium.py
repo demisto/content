@@ -394,13 +394,20 @@ def report_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not report_data:
         return 'A report was not found.', {}, {}
 
+    # deleting analysis metadata to not load the context
+    app_analysis = report_data.get('app_analysis')
+    if app_analysis and app_analysis.get('application_type') == 'Android':
+        analysis = app_analysis.get('analysis')
+        if analysis:
+            report_data['app_analysis']['analysis'] = list(analysis.keys())
+
     app_md5 = report.get('md5') if 'md5' in report else report_data.get('app_analysis', {}).get('md5_hash')
     if app_md5:
         report_data.update({'md5': app_md5})
     human_readable = tableToMarkdown(name=f"Report:", t=report_data, removeNull=True)
     entry_context = {f'Zimperium.Reports(val.app_md5: === obj.app_md5)': report_data}
 
-    return human_readable, entry_context, report_data
+    return human_readable, entry_context, report
 
 
 def app_upload_for_analysis(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -488,7 +495,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     if events_data:
         last_event_ids = last_run.get('last_event_ids', [])
         for event_data in events_data:
-            event_data.pop('eventDetail', None)
+            event_data.pop('eventDetail', None)  # deleting eventDetail to not load the context
             event_id = event_data.get('eventId')
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
                 event_created_time = dateparser.parse(event_data.get('persistedTime'))
@@ -524,7 +531,7 @@ def event_severity_to_dbot_score(severity_str: str):
         Dbot representation of severity
     """
     severity = severity_str.lower()
-    if severity == 'LOW':
+    if severity == 'low':
         return 1
     if severity == 'important':
         return 2
