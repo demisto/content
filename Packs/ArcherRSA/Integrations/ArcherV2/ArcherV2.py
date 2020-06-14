@@ -884,7 +884,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
         ec = {'Record': records, 'RecordsAmount': len(records), 'ReportGUID': report_guid}
 
     markdown = tableToMarkdown('Search records by report results', records)
-    context: dict = {'Archer.SearchByReport.(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec}
+    context: dict = {'Archer.SearchByReport(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec}
 
     return_outputs(markdown, context, json.loads(xml2json(raw_res)))
 
