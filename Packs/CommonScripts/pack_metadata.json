@@ -10,5 +10,44 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "DemistoRESTAPI": {
+            "mandatory": true,
+            "display_name": "Demisto REST API"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        }
+    },
+    "displayedImages": [
+        "DemistoRESTAPI",
+        "Gmail",
+        "EWSMailSender",
+        "MailSenderNew",
+        "GmailSingleUser",
+        "MicrosoftGraphMail",
+        "MicrosoftGraphListener"
+    ]
 }
