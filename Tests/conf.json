@@ -1376,8 +1376,6 @@
         },
         {
             "playbookID": "Test-IsMaliciousIndicatorFound",
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
             "fromversion": "5.0.0"
         },
         {
@@ -2844,7 +2842,6 @@
         "RedLockTest": "Issue 24600",
         "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
-        "Test-IsMaliciousIndicatorFound": "Issue 24398",
         "SentinelOne V2 - test": "Issue 24933",
         "DuoAdmin API test playbook": "Issue 24937",
         "SignalSciences-Test": "Issue 24934",
