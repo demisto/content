@@ -1,5 +1,5 @@
 Sync a list of IP addresses to the Okta Network Zone with the given ID. 
-Existing IPs in the Okta Zone which are not in the input list will be removed and the indicator will be untagged on XSOAR.
+Existing IPs in the Okta Zone which are not in the input list will be removed and the indicator will be untagged in Cortex XSOAR.
 IDs can be retrieved  using !okta-list-zones. This playbook supports CIDR notation only (1.1.1.1/32) and not range notation (1.1.1.1-1.1.1.1)
 
 ## Dependencies
