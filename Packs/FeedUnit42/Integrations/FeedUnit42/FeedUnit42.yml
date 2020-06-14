@@ -8,6 +8,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -86,7 +87,7 @@ script:
     description: Retreives a limited number of the indicators.
     execution: false
     name: unit42-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: devtesting/taxii2:1.0.0.1592118513
   feed: true
   isfetch: false
   longRunning: false
