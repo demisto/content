@@ -67,7 +67,7 @@ tasks:
       id: 5ce745a5-3013-44aa-8f88-fd2c7ea0243e
       version: -1
       name: Add allowed Tag
-      description: commands.local.cmd.set.indicator
+      description: Adds the tag defined in inputs.IndicatorTagName.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -412,7 +412,7 @@ tasks:
       id: 224e4558-67e0-4a68-828a-781414358c9b
       version: -1
       name: Remove allowed Tag
-      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      description: Removes the tag defined in inputs.IndicatorTagName.
       script: Builtin|||removeIndicatorField
       type: regular
       iscommand: true
@@ -745,7 +745,7 @@ tasks:
     task:
       id: 810ac836-5ce8-4568-8f9b-6c3fda6ad566
       version: -1
-      name: Is the Security Group Empty?
+      name: Is the Security Group empty?
       type: condition
       iscommand: false
       brand: ""
