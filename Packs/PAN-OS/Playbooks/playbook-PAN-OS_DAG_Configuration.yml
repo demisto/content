@@ -120,10 +120,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: bede9976-ff25-47e4-8cfa-ba1ae6fca7de
+    taskid: 6523233b-4db1-4691-8ce8-51803456138b
     type: condition
     task:
-      id: bede9976-ff25-47e4-8cfa-ba1ae6fca7de
+      id: 6523233b-4db1-4691-8ce8-51803456138b
       version: -1
       name: Check if tag exists in address groups
       description: Checks if the given tag exists in the address groups.
@@ -139,23 +139,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: inList
           left:
+            value:
+              simple: inputs.tag_name
+            iscontext: true
+          right:
             value:
               complex:
                 root: Panorama
                 accessor: AddressGroups.Match
-                transformers:
-                - operator: Stringify
-                - operator: join
-                  args:
-                    separator:
-                      value:
-                        simple: ' '
-            iscontext: true
-          right:
-            value:
-              simple: inputs.tag_name
             iscontext: true
           ignorecase: true
     view: |-
@@ -438,7 +431,7 @@ inputs:
 - key: tag_name
   value: {}
   required: true
-  description: The name of the tag to add to PAN-OS.
+  description: The name of the tag to add to PAN-OS. This can be a single tag.
 - key: ip_list
   value: {}
   required: true
