@@ -34,7 +34,7 @@ EXPECTED_UPDATE_ATP_CONTEXT = {'AzureSecurityCenter.AdvancedThreatProtection(val
     'Name': 'current', 'IsEnabled': None}}
 client = MsClient(
     server="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", app_name="APP_NAME", verify="verify",
-    proxy="proxy", self_deployed="self_deployed", subscription_id="subscription_id")
+    proxy="proxy", self_deployed="self_deployed", subscription_id="subscription_id", ok_codes=(1, 3))
 
 
 def test_get_atp_command(mocker):
