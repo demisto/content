@@ -46,7 +46,7 @@ class Client(BaseClient):
         return data
 
 
-def parse_response(objects: dict) -> list:
+def parse_response(objects: list) -> list:
     """Parse the objects retrieved from the feed.
 
     Returns:
@@ -98,7 +98,7 @@ def fetch_indicators(client: Client) -> List[Dict]:
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[Any, Any], List[Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
