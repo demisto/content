@@ -312,16 +312,15 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
 
 def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
-    xdr_entry: Dict = {
-        "status": ioc.get('RULE_STATUS', '').lower(),
-        "score": score,
-        "expiration": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME'))
-    }
     entry: Dict = {
         "value": ioc.get('RULE_INDICATOR'),
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
-        "fields": {"xdr": xdr_entry},
+        "fields": {
+            "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
+            "score": score,
+            "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME'))
+        },
         "rawJSON": ioc
     }
     return entry

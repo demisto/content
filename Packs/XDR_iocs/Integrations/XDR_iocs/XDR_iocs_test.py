@@ -541,11 +541,9 @@ class TestXDRIOCToDemisto:
                 'type': 'File',
                 'score': 1,
                 'fields': {
-                    'xdr': {
-                        'expiration': 'Never',
-                        'score': 1,
-                        'status': 'disabled'
-                    }
+                    'expirationdate': 'Never',
+                    'score': 1,
+                    'xdrstatus': 'disabled'
                 }
             }
         ),
@@ -563,11 +561,9 @@ class TestXDRIOCToDemisto:
                 'type': 'Domain',
                 'score': 1,
                 'fields': {
-                    'xdr': {
-                        'expiration': 'Never',
-                        'score': 1,
-                        'status': 'disabled'
-                    }
+                    'expirationdate': 'Never',
+                    'score': 1,
+                    'xdrstatus': 'disabled'
                 }
             }
         ),
@@ -587,11 +583,9 @@ class TestXDRIOCToDemisto:
                 'type': 'Domain',
                 'score': 2,
                 'fields': {
-                    'xdr': {
-                        'expiration': 'Never',
-                        'score': 2,
-                        'status': 'enabled'
-                    }
+                    'expirationdate': 'Never',
+                    'score': 2,
+                    'xdrstatus': 'enabled'
                 }
             }
         )
