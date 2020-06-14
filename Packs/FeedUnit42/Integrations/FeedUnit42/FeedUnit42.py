@@ -77,7 +77,7 @@ def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     Returns:
         Outputs.
     """
-    objects = client.get_indicators()
+    objects: list = client.get_indicators()
     _ = parse_response(objects)
     return 'ok', {}, {}
 
@@ -91,7 +91,7 @@ def fetch_indicators(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    objects = client.get_indicators()
+    objects: list = client.get_indicators()
     demisto.info(str(f'Fetched Unit42 Indicators. {str(len(objects))} Objects were received.'))
     indicators = parse_response(objects)
     demisto.info(str(f'{str(len(indicators))} Demisto Indicators were created.'))
@@ -109,7 +109,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, D
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
-    objects = client.get_indicators()
+    objects: list = client.get_indicators()
     indicators = parse_response(objects)
     limited_indicators = indicators[:limit]
 
