@@ -3,7 +3,7 @@ version: -1
 name: Allow IP - Okta Zone
 description: "Sync a list of IP addresses to the Okta Network Zone with the given\
   \ ID. \nExisting IPs in the Okta Zone which are not in the input list will be removed\
-  \ and the indicator will be untagged on XSOAR.\nIDs can be retrieved  using !okta-list-zones.\
+  \ and the indicator will be untagged in Cortex XSOAR.\nIDs can be retrieved  using !okta-list-zones.\
   \ This playbook supports CIDR notation only (1.1.1.1/32) and not range notation\
   \ (1.1.1.1-1.1.1.1)"
 starttaskid: "0"
@@ -71,7 +71,7 @@ tasks:
       id: 1ff33616-3cb5-40c3-8136-0a54d99070f7
       version: -1
       name: Add indicator Tag
-      description: commands.local.cmd.set.indicator
+      description: Adds the tag defined in inputs.IndicatorTagName.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -238,7 +238,7 @@ tasks:
       id: 830f0b19-576d-4aaf-81df-c4bc0b1a0253
       version: -1
       name: Map IPs as CIDR ranges
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -283,7 +283,7 @@ tasks:
       id: 943f5208-bda4-44a3-8441-cbd4e4866b7d
       version: -1
       name: Remove indicator Tag
-      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      description: Removes the tag defined in inputs.IndicatorTagName.
       script: Builtin|||removeIndicatorField
       type: regular
       iscommand: true
@@ -330,7 +330,7 @@ tasks:
       id: fc3ba922-5683-4dad-83ea-bf1a6d015c1d
       version: -1
       name: Compare IP list with current Okta allow list
-      description: Compare  two lists and put the differences in context.
+      description: Compare two lists and put the differences in context.
       scriptName: CompareLists
       type: regular
       iscommand: false
@@ -428,7 +428,7 @@ tasks:
       version: -1
       name: List Sync - Any IPs to be added?
       description: Check whether any IPs in the playbook input are not already in
-        the Okta Zone and therefore need to be added during the list sync.
+        the Okta Zone and need to be added during the list sync.
       type: condition
       iscommand: false
       brand: ""
@@ -467,7 +467,7 @@ tasks:
       version: -1
       name: List Sync - Any IPs to be removed?
       description: Check whether any IPs are in the Okta Zone that are not included
-        in the current playbook input and therefore need to be removed during the
+        in the current playbook input and need to be removed during the
         list sync.
       type: condition
       iscommand: false
@@ -643,7 +643,7 @@ tasks:
       id: 48694f8c-1a12-4a80-8847-7ea84f81b15a
       version: -1
       name: Update Okta Zone with CIDR values
-      description: Update an Okta Zone
+      description: Update an Okta Zone.
       script: '|||okta-update-zone'
       type: regular
       iscommand: true
@@ -717,7 +717,7 @@ inputs:
 - key: ZoneID
   value: {}
   required: true
-  description: ID of the Okta Zone to update. Use !okta-list-zones to obtain
+  description: ID of the Okta Zone to update. Use !okta-list-zones to obtain the available zones.
   playbookInputQuery:
 - key: IndicatorTagName
   value:
