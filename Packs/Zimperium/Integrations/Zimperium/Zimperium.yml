@@ -241,7 +241,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: ios
+      defaultValue: android
       description: Application platform.
       isArray: false
       name: platform
