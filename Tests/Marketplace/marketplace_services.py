@@ -887,7 +887,7 @@ class Pack(object):
 
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
-
+            print_error(f'user_metadata_path: {user_metadata_path}')
             if not os.path.exists(user_metadata_path):
                 print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
                 return task_status, user_metadata
