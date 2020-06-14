@@ -1,7 +1,7 @@
 id: Prisma Access Whitelist Egress IPs on SaaS Services
 version: -1
 name: Prisma Access Whitelist Egress IPs on SaaS Services
-description: Retrieve Prisma Access Egress IP for specific geographic Zones and populate
+description: Retrieve Prisma Access Egress IP for specific geographic zones and populate
   in security groups within cloud services.
 starttaskid: "0"
 tasks:
@@ -100,7 +100,7 @@ tasks:
       id: 1b3817f1-b459-4fb5-8132-d7b0a8fa6405
       version: -1
       name: Close incident
-      description: commands.local.cmd.close.inv
+      description: Closes the incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -255,7 +255,7 @@ tasks:
       name: Allow IP - Okta Zone
       description: "Sync a list of IP addresses to the Okta Network Zone with the\
         \ given ID. \nExisting IPs in the Okta Zone which are not in the input list\
-        \ will be removed and the indicator will be untagged on XSOAR.\nIDs can be\
+        \ will be removed and the indicator will be untagged in Cortex XSOAR.\nIDs can be\
         \ retrieved  using !okta-list-zones. This playbook supports CIDR notation\
         \ only (1.1.1.1/32) and not range notation (1.1.1.1-1.1.1.1)"
       playbookName: Allow IP - Okta Zone
