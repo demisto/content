@@ -98,7 +98,7 @@ def fetch_indicators(client: Client) -> List[Dict]:
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[Any, Any], List[Any]]:
+def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[Any, Any], Any]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -133,7 +133,7 @@ def main():
 
     try:
         client = Client(api_key, verify)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[Any, Dict[Any, Any], List[Any]]]] = {
+        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[Any, Dict[Any, Any], Any]]] = {
             'unit42-get-indicators': get_indicators_command,
         }
 
