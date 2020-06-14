@@ -272,8 +272,7 @@ def set_integration_context(context, sync: bool = False, version: int = -1) -> d
         The new integration context
     """
     if is_versioned_context_available():
-        if version != -1:
-            context['version'] = str(version + 1)
+        context['version'] = str(version + 1)
         demisto.debug(f'Slack - updating integration context to version {version + 1}. Sync: {sync}')
         demisto.debug(f'Slack - setting integration context: {str(context)}')
         return demisto.setIntegrationContextVersioned(context, version, sync)
