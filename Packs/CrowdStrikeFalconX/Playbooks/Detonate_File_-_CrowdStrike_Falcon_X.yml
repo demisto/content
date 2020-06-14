@@ -1,6 +1,6 @@
-id: Falcon X - Detonate File
+id: Detonate File - CrowdStrike Falcon X
 version: -1
-name: Falcon X - Detonate File
+name: Detonate File - CrowdStrike Falcon X
 description: |-
   Detonates a File using the McAfee Advanced Threat Defense sandbox.
   Advanced Threat Defense supports the following File Types:
@@ -24,10 +24,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
+    taskid: 2e14779f-7f47-4445-845c-bfea5627cbe3
     type: start
     task:
-      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
+      id: 2e14779f-7f47-4445-845c-bfea5627cbe3
       version: -1
       name: ""
       description: '-'
@@ -47,14 +47,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 3f288a56-dd68-4d9b-83e6-f4bd2b7bd2c4
+    taskid: 334792b6-7e5d-4494-85a1-aa4bc2274105
     type: playbook
     task:
-      id: 3f288a56-dd68-4d9b-83e6-f4bd2b7bd2c4
+      id: 334792b6-7e5d-4494-85a1-aa4bc2274105
       version: -1
       name: GenericPolling
       description: |-
@@ -96,7 +94,6 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -107,14 +104,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: d28261ed-a72e-4276-81eb-b5e27a5ff98a
+    taskid: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
     type: regular
     task:
-      id: d28261ed-a72e-4276-81eb-b5e27a5ff98a
+      id: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
       version: -1
       name: CrowdStrike Falcon X Get Report
       description: Get a full version of a sandbox report.
@@ -139,14 +134,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
+    taskid: 73843b9d-b556-4e1c-895c-93ae4f6671dc
     type: title
     task:
-      id: e589b774-3cee-4dff-8e14-788ef3590dfa
+      id: 73843b9d-b556-4e1c-895c-93ae4f6671dc
       version: -1
       name: Done
       description: finished
@@ -164,14 +157,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
-    taskid: 16b7bc45-6b29-44fe-85ea-634e595f6c11
+    taskid: ee402758-5d33-4edd-89fb-816dee6233c5
     type: condition
     task:
-      id: 16b7bc45-6b29-44fe-85ea-634e595f6c11
+      id: ee402758-5d33-4edd-89fb-816dee6233c5
       version: -1
       name: Is CrowdStrike Falcon X enabled?
       description: |
@@ -222,14 +213,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
-    taskid: d83a7da9-b232-452b-8756-30671b706db9
+    taskid: 44e9c26f-c38e-4c1c-8b60-80a92220810e
     type: condition
     task:
-      id: d83a7da9-b232-452b-8756-30671b706db9
+      id: 44e9c26f-c38e-4c1c-8b60-80a92220810e
       version: -1
       name: Filter taskId
       description: Checks that valid files only have been sent to detonation.
@@ -260,14 +249,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
     id: "10"
-    taskid: 476cc589-1718-41ea-8f41-866508a28e15
+    taskid: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
     type: condition
     task:
-      id: 476cc589-1718-41ea-8f41-866508a28e15
+      id: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
       version: -1
       name: Is File type supported?
       description: Check if file type is supported.
@@ -329,14 +316,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
+    taskid: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
     type: regular
     task:
-      id: 3814f559-a639-4e80-8d6e-c74b9e96e495
+      id: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
       version: -1
       name: Set File to context
       description: Set the file object into context.
@@ -365,14 +350,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
-    taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
+    taskid: 813639b9-9c78-44dc-8600-afad5cc1c5db
     type: condition
     task:
-      id: 9b8022fc-dfd0-4806-8ead-65f53804065f
+      id: 813639b9-9c78-44dc-8600-afad5cc1c5db
       version: -1
       name: Is there a File to Detonate?
       description: Checks that there is a file in the playbook’s input.
@@ -403,14 +386,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "14":
     id: "14"
-    taskid: 5e3cd0f7-f0a7-4d5e-834b-14e7756b23a4
+    taskid: 33e04243-7824-4475-8ea1-5c2366c22fd6
     type: regular
     task:
-      id: 5e3cd0f7-f0a7-4d5e-834b-14e7756b23a4
+      id: 33e04243-7824-4475-8ea1-5c2366c22fd6
       version: -1
       name: CrowdStrike Falcon X Upload File to Sandbox
       description: Upload a file for sandbox analysis.
@@ -439,21 +420,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "15":
     id: "15"
-    taskid: 9726755c-cc9e-48fa-886e-8e0c1507f30f
+    taskid: 5a968f27-55f8-4761-88d0-a89b4d023bda
     type: regular
     task:
-      id: 9726755c-cc9e-48fa-886e-8e0c1507f30f
+      id: 5a968f27-55f8-4761-88d0-a89b4d023bda
       version: -1
       name: CrowdStrike FalconX Detonate Uploaded File
       description: Submit a sample SHA256 for sandbox analysis.
-      script: CrowdStrike Falcon X|||cs-fx-detonate-uploaded-file
+      script: '|||cs-fx-submit-uploaded-file'
       type: regular
       iscommand: true
-      brand: CrowdStrike Falcon X
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -481,8 +460,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -502,19 +479,16 @@ inputs:
       root: File
   required: false
   description: The file to detonate. File is taken from the context.
-  playbookInputQuery: null
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-  playbookInputQuery: null
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
-  playbookInputQuery: null
 outputs:
 - contextPath: ATD.Task.taskId
   description: The task ID of the sample uploaded
@@ -612,7 +586,6 @@ outputs:
 - contextPath: InfoFile
   description: Report file object
   type: unknown
-sourceplaybookid: ATD - Detonate File
 fromversion: 5.0.0
 tests:
  -  No tests

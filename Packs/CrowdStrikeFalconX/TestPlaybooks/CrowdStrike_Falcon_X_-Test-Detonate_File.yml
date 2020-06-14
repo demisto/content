@@ -1,20 +1,18 @@
 id: Falcon X - Test-Detonate File
-version: -1
-name: Falcon X - Test-Detonate File
-description: ""
+version: 6
+name: CrowdStrike_Falcon_X_-Test-Detonate_File
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4c8ad218-7568-4792-8e52-bc5421bebb4b
+    taskid: 0febfd58-06a1-4831-8160-30b15e923847
     type: start
     task:
-      id: 4c8ad218-7568-4792-8e52-bc5421bebb4b
+      id: 0febfd58-06a1-4831-8160-30b15e923847
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -33,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 7bee7513-f3cf-4dca-8bd8-26cecec90bcf
+    taskid: 3bc7bc7b-cf09-40c9-8191-658cf6ce571b
     type: regular
     task:
-      id: 7bee7513-f3cf-4dca-8bd8-26cecec90bcf
+      id: 3bc7bc7b-cf09-40c9-8191-658cf6ce571b
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -67,10 +65,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: ec7e6444-ec59-4b3d-8c35-aeb9508939d0
+    taskid: 7fc6a518-4ddb-425c-8f12-1ca517d6bf45
     type: regular
     task:
-      id: ec7e6444-ec59-4b3d-8c35-aeb9508939d0
+      id: 7fc6a518-4ddb-425c-8f12-1ca517d6bf45
       version: -1
       name: Set File
       description: Sends http request. Returns the response as json.
@@ -112,13 +110,14 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 583889be-6fbe-42e9-86da-962df691794d
+    taskid: 7043a945-5200-40c5-8f48-b62e4b1c7573
     type: playbook
     task:
-      id: 583889be-6fbe-42e9-86da-962df691794d
+      id: 7043a945-5200-40c5-8f48-b62e4b1c7573
       version: -1
-      name: FalconX - Detonate File
-      playbookName: FalconX - Detonate File
+      name: Detonate File - CrowsStrike Falcon X
+      playbookName: Detonate File - CrowsStrike Falcon X
+      playbookId: Detonate File - CrowdStrike Falcon X
       type: playbook
       iscommand: false
       brand: ""
@@ -128,7 +127,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 570
+          "y": 580
         }
       }
     note: false
@@ -141,7 +140,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 615,
+        "height": 625,
         "width": 380,
         "x": 50,
         "y": 50

@@ -1,6 +1,6 @@
-id: Falcon X - Detonate URL
+id: Detonate URL - CrowdStrike Falcon X
 version: -1
-name: Falcon X - Detonate URL
+name: Detonate URL - CrowdStrike Falcon X
 description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
   This playbook returns relevant reports to the War Room and file reputations to the
   context data.
@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    taskid: 5efceda5-4236-42ed-882f-e26acb6f4756
     type: start
     task:
-      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      id: 5efceda5-4236-42ed-882f-e26acb6f4756
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 35c807e9-9144-4a65-8cd4-a4ffe3715c6f
+    taskid: fc1f205f-4605-402d-805d-57b7d4b4cef7
     type: condition
     task:
-      id: 35c807e9-9144-4a65-8cd4-a4ffe3715c6f
+      id: fc1f205f-4605-402d-805d-57b7d4b4cef7
       version: -1
       name: Is CrowdStrike Falcon X enabled?
       description: |
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 155
+          "y": 165
         }
       }
     note: false
@@ -95,10 +95,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    taskid: 66063116-5734-4166-82b3-aa4c0f629285
     type: title
     task:
-      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      id: 66063116-5734-4166-82b3-aa4c0f629285
       version: -1
       name: Done
       description: Done
@@ -120,10 +120,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 0f6c1a40-1427-4d4a-8fbe-bc69f49b1de8
+    taskid: 9ab16bf8-de8e-4201-8561-992345b51280
     type: regular
     task:
-      id: 0f6c1a40-1427-4d4a-8fbe-bc69f49b1de8
+      id: 9ab16bf8-de8e-4201-8561-992345b51280
       version: -1
       name: CrowdStrike Falcon X Get Report
       description: Get a full version of a sandbox report.
@@ -142,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 925
+          "y": 935
         }
       }
     note: false
@@ -152,22 +152,21 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 2f30cbc5-cca8-4a5d-8574-f4e5fcd7d2e7
+    taskid: 251b7acf-b9ad-4122-8968-788528be9bc1
     type: regular
     task:
-      id: 2f30cbc5-cca8-4a5d-8574-f4e5fcd7d2e7
+      id: 251b7acf-b9ad-4122-8968-788528be9bc1
       version: -1
-      name: CrowdStrike Falcon X Detonate URL
+      name: CrowdStrike Falcon X Submit URL
       description: Submit a URL or FTP for sandbox analysis.
-      script: CrowdStrike Falcon X|||cs-fx-detonate-url
+      script: '|||cs-fx-submit-url'
       type: regular
       iscommand: true
-      brand: CrowdStrike Falcon X
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
-      System Time: {}
       action_script: {}
       command_line: {}
       document_password: {}
@@ -176,6 +175,7 @@ tasks:
         simple: '160: Windows 10'
       submit_name: {}
       system_date: {}
+      system_time: {}
       url:
         complex:
           root: inputs.URL
@@ -184,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 550
+          "y": 590
         }
       }
     note: false
@@ -194,10 +194,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 6ffba508-37e1-4647-88ea-265cd5475d61
+    taskid: 7bda06fb-0f5a-487b-8242-69d776363760
     type: condition
     task:
-      id: 6ffba508-37e1-4647-88ea-265cd5475d61
+      id: 7bda06fb-0f5a-487b-8242-69d776363760
       version: -1
       name: Is there a URL to detonate?
       description: Checks whether there's a file to detonate.
@@ -222,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 370
+          "y": 380
         }
       }
     note: false
@@ -232,10 +232,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 662d2be0-9a41-45ed-8748-db873e9cfe22
+    taskid: 92f6cd66-9c00-4782-85e6-4b9ebe0fd014
     type: playbook
     task:
-      id: 662d2be0-9a41-45ed-8748-db873e9cfe22
+      id: 92f6cd66-9c00-4782-85e6-4b9ebe0fd014
       version: -1
       name: GenericPolling
       description: |-
@@ -282,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 730
+          "y": 760
         }
       }
     note: false

@@ -1,15 +1,14 @@
 id: Falcon X - Test-Detonate URL
-version: -1
-name: Falcon X - Test-Detonate URL
-description: ""
+version: 3
+name: CrowdStrike_Falcon_X_-Test-Detonate_URL
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4c8ad218-7568-4792-8e52-bc5421bebb4b
+    taskid: 80a1754e-b8e6-406a-8108-337eed83ff43
     type: start
     task:
-      id: 4c8ad218-7568-4792-8e52-bc5421bebb4b
+      id: 80a1754e-b8e6-406a-8108-337eed83ff43
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 7bee7513-f3cf-4dca-8bd8-26cecec90bcf
+    taskid: 8da20376-add7-41e7-817e-8ee2a32dee59
     type: regular
     task:
-      id: 7bee7513-f3cf-4dca-8bd8-26cecec90bcf
+      id: 8da20376-add7-41e7-817e-8ee2a32dee59
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -67,20 +66,19 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 388c23ee-ab6f-4ea7-8af6-70302f35822f
+    taskid: d5fd2168-0e80-4f43-8294-b3e7cee570d8
     type: regular
     task:
-      id: 388c23ee-ab6f-4ea7-8af6-70302f35822f
+      id: d5fd2168-0e80-4f43-8294-b3e7cee570d8
       version: -1
       name: Set URL
       scriptName: Set
       type: regular
       iscommand: false
-      description: ''
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "4"
     scriptarguments:
       append: {}
       key:
@@ -100,25 +98,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: a19f504f-57d7-467a-807e-54d194efc612
+  "4":
+    id: "4"
+    taskid: 402c0b9a-94f9-4a17-82a5-0478df6c5da9
     type: playbook
     task:
-      id: a19f504f-57d7-467a-807e-54d194efc612
+      id: 402c0b9a-94f9-4a17-82a5-0478df6c5da9
       version: -1
-      name: FalconX - Detonate URL
-      playbookName: FalconX - Detonate URL
+      name: Detonate URL - CrowsStrike Falcon X
+      playbookName: Detonate URL - CrowsStrike Falcon X
+      playbookId: Detonate URL - CrowdStrike Falcon X
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 570
         }
       }
     note: false
@@ -131,7 +129,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 620,
+        "height": 615,
         "width": 380,
         "x": 50,
         "y": 50
