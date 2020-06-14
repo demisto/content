@@ -520,7 +520,6 @@ def getIntegrationContextVersioned(refresh=False):
     """
     return integrationContextVersioned
 
-
 def incidents(incidents=None):
     """
     In Scripts this returns the `Incidents` list from the context

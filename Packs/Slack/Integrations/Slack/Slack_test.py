@@ -320,6 +320,23 @@ def set_integration_context(integration_context):
     INTEGRATION_CONTEXT = integration_context
 
 
+def set_integration_context_versioned(integration_context, version=-1, sync=False):
+    global INTEGRATION_CONTEXT_VERSIONED
+
+    if not INTEGRATION_CONTEXT_VERSIONED:
+        INTEGRATION_CONTEXT_VERSIONED = {'context': {}, 'version': 0}
+
+    current_version = INTEGRATION_CONTEXT_VERSIONED['version']
+    if version != -1 and version <= current_version:
+        raise ValueError(f'DB Insert version {current_version} does not match version {version}')
+
+    INTEGRATION_CONTEXT_VERSIONED = {'context': integration_context, 'version': current_version + 1}
+
+
+def get_integration_context_versioned(refresh=False):
+    return INTEGRATION_CONTEXT_VERSIONED
+
+
 RETURN_ERROR_TARGET = 'Slack.return_error'
 
 
@@ -330,6 +347,8 @@ def setup(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '5.0.0'})
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', side_effecet=get_integration_context_versioned)
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
     set_integration_context({
         'mirrors': MIRRORS,
         'users': USERS,
@@ -344,8 +363,8 @@ def test_merge_lists():
     from Slack import merge_lists
 
     # Set
-    original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}]
-    updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}]
+    original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
+    updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n', 'remove': True}]
     expected = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
 
     # Arrange
@@ -353,6 +372,25 @@ def test_merge_lists():
 
     # Assert
     assert result == expected
+
+
+@pytest.mark.parametrize('version, expected', [({'version': '5.5.0'}, False), ({'version': '6.0.0'}, True)])
+def test_is_versioned_context_available(mocker, version, expected):
+    from Slack import is_versioned_context_available
+    # Set
+    mocker.patch.object(demisto, 'demistoVersion', return_value=version)
+
+    # Arrange
+    result = is_versioned_context_available()
+
+    # Assert
+    assert expected == result
+
+
+def test_update_context(mocker):
+    import Slack
+
+    mocker.patch.object(Slack, 'is_versioned_context_available', return_value=True)
 
 
 @pytest.mark.asyncio
