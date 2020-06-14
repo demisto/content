@@ -17,7 +17,21 @@ testdata = [
     ('2020-06-11T17:34:35.754203+03:00', True, False, False, '2020-11-06T17:34:35.754203+03:00'),
     ('2020-06-11T17:34:35.754203+03:00', False, True, True, '2020-06-11T17:34:35.754203+03:00'),
     ('2020-06-11T17:34:35.754203+03:00', False, False, True, '2020-06-11T17:34:35.754203+03:00'),
-    ('2020-06-11T17:34:35.754203+03:00', False, False, False, '2020-06-11T17:34:35.754203+03:00')
+    ('2020-06-11T17:34:35.754203+03:00', False, False, False, '2020-06-11T17:34:35.754203+03:00'),
+    ("June 21st 2020 Eastern Standard Time", True, True, True, "2020-06-21T00:00:00"),
+    ("June 21st 2020 Eastern Standard Time", True, False, True, "2020-06-21T00:00:00"),
+    ("June 21st 2020 Eastern Standard Time", True, True, False, "June 21st 2020 Eastern Standard Time"),
+    ("June 21st 2020 Eastern Standard Time", True, False, False, "June 21st 2020 Eastern Standard Time"),
+    ("June 21st 2020 Eastern Standard Time", False, True, True, "2020-06-21T00:00:00"),
+    ("June 21st 2020 Eastern Standard Time", False, False, True, "2020-06-21T00:00:00"),
+    ("June 21st 2020 Eastern Standard Time", False, False, False, "June 21st 2020 Eastern Standard Time"),
+    ("The 1st of June 2020", True, True, True, "2020-06-01T00:00:00"),
+    ("The 1st of June 2020", True, False, True, "2020-06-01T00:00:00"),
+    ("The 1st of June 2020", True, True, False, "The 1st of June 2020"),
+    ("The 1st of June 2020", True, False, False, "The 1st of June 2020"),
+    ("The 1st of June 2020", False, True, True, "2020-06-01T00:00:00"),
+    ("The 1st of June 2020", False, False, True, "2020-06-01T00:00:00"),
+    ("The 1st of June 2020", False, False, False, "The 1st of June 2020")
 ]
 
 
@@ -28,7 +42,8 @@ def test_parse_datestring_to_iso(date_value, day_first, year_first, fuzzy, expec
     Given
     - An arbitrary date string
     When
-    - The date string can be an ambiguous 3-integer date or already an iso-8601 formatted date string
+    - The date string can be an ambiguous 3-integer date, fuzzy date string or an 
+      already iso-8601 formatted date string
     Then
     - Ensure the output date string is in iso-8601 format in all cases
 
