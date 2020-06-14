@@ -48,10 +48,6 @@
             "mandatory": false,
             "display_name": "Carbon Black Enterprise Protection"
         },
-        "CalculateTimeDifference": {
-            "mandatory": false,
-            "display_name": "CalculateTimeDifference"
-        },
         "CrowdStrikeIntel": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon Intel"
