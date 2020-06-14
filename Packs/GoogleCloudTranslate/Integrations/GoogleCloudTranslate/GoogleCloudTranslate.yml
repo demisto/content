@@ -68,7 +68,6 @@ script:
     - contextPath: GoogleCloudTranslate.TranslateText.translated_text
       description: The translated text.
       type: String
-  dockerimage45: demisto/google-cloud-translate:1.0.0.5038
   dockerimage: demisto/google-cloud-translate:1.0.0.8773
   isfetch: false
   runonce: false
