@@ -425,6 +425,24 @@
 <p>Retrieves all endpoints (computers).</p>
 <h5>Base Command</h5>
 <pre><code>bigfix-get-endpoints</code></pre>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 132px;"><strong>Argument Name</strong></th>
+<th style="width: 505px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 132px;">get_endpoint_details</td>
+<td style="width: 505px;">Whether to get endpoint full details of each endpoint or just basic details, such as ID and last reported time. We recommend setting this to false if there are many endpoints to retrieve.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
