@@ -67,7 +67,7 @@ tasks:
       id: 08f244c8-d3c9-4aeb-82c7-7ddfebd9770c
       version: -1
       name: Add allowed Tag
-      description: commands.local.cmd.set.indicator
+      description: Add the tag defined in inputs.IndicatorTagName.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -448,7 +448,7 @@ tasks:
     task:
       id: b834cad2-8f3f-4de0-8da2-4d51c6f5dfa2
       version: -1
-      name: GCP Firewall Name Not Founnd
+      name: GCP Firewall Name Not Found
       type: title
       iscommand: false
       brand: ""
@@ -476,7 +476,7 @@ tasks:
     task:
       id: f37607b7-3163-49b1-8e70-4f65e5af5635
       version: -1
-      name: Engineer - Fix Firewall Name and rerun
+      name: Engineer - Fix Firewall name and rerun
       type: regular
       iscommand: false
       brand: ""
@@ -502,7 +502,7 @@ tasks:
       id: 08d094f2-d55a-4865-8a9b-1b48e6c494c5
       version: -1
       name: Remove blocked Tag
-      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      description: Remove the tag defined in inputs.IndicatorTagName.
       script: Builtin|||removeIndicatorField
       type: regular
       iscommand: true
