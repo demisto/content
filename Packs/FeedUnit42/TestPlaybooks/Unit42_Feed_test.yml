@@ -1,5 +1,6 @@
 id: Unit42 Feed - Test
 version: -1
+fromversion: 5.5.0
 name: Unit42 Feed - Test
 description: Testing Unit42 Feed
 starttaskid: "0"
