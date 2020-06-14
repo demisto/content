@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import requests
+import traceback
 from asyncio import Event, create_task, sleep, run
 from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector
@@ -116,6 +117,7 @@ class EventStream:
                     raise ValueError(f'Did not get event stream resources - {str(discover_stream_response)}')
                 resource = resources[0]
                 self.data_feed_url = resource.get('dataFeedURL')
+                demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
                 self.session_token = resource.get('sessionToken', {}).get('token')
                 refresh_url = resource.get('refreshActiveSessionURL')
                 client.refresh_stream_url = refresh_url
@@ -123,40 +125,64 @@ class EventStream:
             await sleep(MINUTES_25)
             event.clear()
 
-    async def fetch_event(self, offset: int = 0, event_type: str = '') -> AsyncGenerator[Dict, None]:
+    async def fetch_event(self, initial_offset: int = 0, event_type: str = '') -> AsyncGenerator[Dict, None]:
         """Retrieves events from a CrowdStrike Falcon stream starting from given offset.
 
         Args:
-            offset (int): Stream offset to start the fetch from.
+            initial_offset (int): Stream offset to start the fetch from.
             event_type (str): Stream event type to fetch.
 
         Yields:
             AsyncGenerator[Dict, None]: Event fetched from the stream.
         """
-        demisto.debug('Fetching event')
-        event = Event()
-        create_task(self._discover_refresh_stream(event))
-        demisto.debug('Waiting for stream discovery or refresh')
-        await event.wait()
-        demisto.debug('Done waiting for stream discovery or refresh')
-        async with ClientSession(
-            connector=TCPConnector(ssl=self.verify_ssl),
-            headers={'Authorization': f'Token {self.session_token}'},
-            trust_env=self.proxy
-        ) as session:
-            try:
-                async with session.get(self.data_feed_url, params={'offset': offset, 'eventType': event_type}) as res:
-                    demisto.debug(f'Fetched event: {res.content}')
-                    async for line in res.content:
-                        stripped_line = line.strip()
-                        if stripped_line:
-                            try:
-                                yield json.loads(stripped_line)
-                            except json.decoder.JSONDecodeError:
-                                demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
-            except Exception as e:
-                demisto.debug(f'Failed to fetch event: {e} - Going to sleep for 10 seconds and then retry')
-                await sleep(10)
+        while True:
+            demisto.debug('Fetching event')
+            event = Event()
+            create_task(self._discover_refresh_stream(event))
+            demisto.debug('Waiting for stream discovery or refresh')
+            await event.wait()
+            demisto.debug('Done waiting for stream discovery or refresh')
+            events_fetched = 0
+            new_lines_fetched = 0
+            last_fetch_stats_print = datetime.utcnow()
+            async with ClientSession(
+                connector=TCPConnector(ssl=self.verify_ssl),
+                headers={'Authorization': f'Token {self.session_token}'},
+                trust_env=self.proxy,
+                timeout=None
+            ) as session:
+                try:
+                    integration_context = demisto.getIntegrationContext()
+                    offset = integration_context.get('offset', 0) or initial_offset
+                    demisto.debug(f'Starting to fetch from offset {offset}')
+                    async with session.get(
+                        self.data_feed_url,
+                        params={'offset': offset, 'eventType': event_type},
+                        timeout=None
+                    ) as res:
+                        demisto.debug(f'Fetched event: {res.content}')
+                        async for line in res.content:
+                            stripped_line = line.strip()
+                            if stripped_line:
+                                events_fetched += 1
+                                try:
+                                    yield json.loads(stripped_line)
+                                except json.decoder.JSONDecodeError:
+                                    demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
+                            else:
+                                new_lines_fetched += 1
+                            if last_fetch_stats_print + timedelta(minutes=1) <= datetime.utcnow():
+                                demisto.info(
+                                    f'Fetched {events_fetched} events and'
+                                    f' {new_lines_fetched} new lines'
+                                    f' from the stream in the last minute.')
+                                events_fetched = 0
+                                new_lines_fetched = 0
+                                last_fetch_stats_print = datetime.utcnow()
+                except Exception as e:
+                    demisto.debug(f'Failed to fetch event: {e} - Going to sleep for 10 seconds and then retry -'
+                                  f' {traceback.format_exc()}')
+                    await sleep(10)
 
 
 class RefreshToken:
@@ -288,7 +314,8 @@ async def long_running_loop(
         offset: int,
         event_type: str,
         verify_ssl: bool,
-        proxy: bool
+        proxy: bool,
+        incident_type: str
 ) -> None:
     """Connects to a CrowdStrike Falcon stream and fetches events from it in a loop.
 
@@ -301,13 +328,14 @@ async def long_running_loop(
         event_type (str): Stream event type to fetch.
         verify_ssl (bool): Whether the request should verify the SSL certificate.
         proxy (bool): Whether to run the integration using the system proxy.
+        incident_type (str): Type of incident to create.
 
     Returns:
         None: No data returned.
     """
     async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
         stream.set_refresh_token(refresh_token)
-        async for event in stream.fetch_event(offset=offset, event_type=event_type):
+        async for event in stream.fetch_event(initial_offset=offset, event_type=event_type):
             event_metadata = event.get('metadata', {})
             event_type = event_metadata.get('eventType', '')
             event_offset = event_metadata.get('offset', '')
@@ -315,9 +343,11 @@ async def long_running_loop(
             incident_name = f'{event_type} - offset {event_offset}'
             incident = [{
                 'name': incident_name,
-                'details': json.dumps(event)
+                'details': json.dumps(event),
+                'type': incident_type
             }]
             demisto.createIncidents(incident)
+            demisto.setIntegrationContext({'offset': int(event_offset) + 1})
 
 
 async def test_module(base_url: str, client_id: str, client_secret: str, verify_ssl: bool, proxy: bool) -> None:
@@ -339,6 +369,7 @@ def main():
         offset = int(offset)
     except ValueError:
         offset = 0
+    incident_type = params.get('incidentType', '')
 
     stream = EventStream(base_url=base_url, app_id='Demisto', verify_ssl=verify_ssl, proxy=proxy)
 
@@ -347,7 +378,9 @@ def main():
         if demisto.command() == 'test-module':
             run(test_module(base_url, client_id, client_secret, verify_ssl, proxy))
         elif demisto.command() == 'long-running-execution':
-            run(long_running_loop(base_url, client_id, client_secret, stream, offset, event_type, verify_ssl, proxy))
+            run(long_running_loop(
+                base_url, client_id, client_secret, stream, offset, event_type, verify_ssl, proxy, incident_type
+            ))
     except Exception as e:
         error_msg = f'Error in CrowdStrike Falcon Streaming v2: {str(e)}'
         demisto.error(error_msg)
