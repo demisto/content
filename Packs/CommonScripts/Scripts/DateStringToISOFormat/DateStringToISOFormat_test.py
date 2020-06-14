@@ -42,7 +42,7 @@ def test_parse_datestring_to_iso(date_value, day_first, year_first, fuzzy, expec
     Given
     - An arbitrary date string
     When
-    - The date string can be an ambiguous 3-integer date, fuzzy date string or an 
+    - The date string can be an ambiguous 3-integer date, fuzzy date string or an
       already iso-8601 formatted date string
     Then
     - Ensure the output date string is in iso-8601 format in all cases
