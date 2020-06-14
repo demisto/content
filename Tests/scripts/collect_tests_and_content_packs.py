@@ -1150,7 +1150,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if 'NonSupported' in packs_to_install:
         packs_to_install.remove("NonSupported")
 
-    packs_to_install.add("DeveloperTools")
+    packs_to_install.update(["DeveloperTools", "Base"])
 
     return tests, packs_to_install
 
