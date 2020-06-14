@@ -11,7 +11,7 @@ ID_SET=$CIRCLE_ARTIFACTS/id_set.json
 EXTRACT_FOLDER=$(mktemp -d)
 
 if [[ -z "$GCS_MARKET_KEY" ]]; then
-    echo "$GCS_MARKET_KEY not set aborting!"
+    echo "GCS_MARKET_KEY not set aborting!"
     exit 1
 fi
 
