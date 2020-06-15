@@ -447,7 +447,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${88_88_88_88.status}
+              simple: ${88_88_88_88}
             iscontext: true
           right:
             value:
@@ -488,7 +488,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${test_com.status}
+              simple: ${test_com}
             iscontext: true
           right:
             value:
@@ -529,7 +529,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e.status}
+              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e}
             iscontext: true
           right:
             value:
@@ -834,7 +834,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e.status}
+              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e}
             iscontext: true
           right:
             value:
@@ -875,7 +875,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${test_com.status}
+              simple: ${test_com}
             iscontext: true
           right:
             value:
@@ -916,7 +916,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${88_88_88_88.status}
+              simple: ${88_88_88_88}
             iscontext: true
           right:
             value:
