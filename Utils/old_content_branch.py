@@ -29,8 +29,10 @@ def get_file(method, file_path, type_of_file):
 def get_yaml(file_path):
     return get_file(yaml.safe_load, file_path, ('yml', 'yaml'))
 
+
 def get_json(file_path):
     return get_file(json.load, file_path, 'json')
+
 
 def handle_yml_file(file_path, yml_old_version):
     yml_content = get_yaml(file_path)
@@ -59,7 +61,7 @@ def handle_json_file(file_path, old_version):
         if parse_version(str(json_content.get('fromVersion'))) > parse_version(old_version):
             return False
 
-    json_content['fromVersion'] = old_version
+    json_content['toVersion'] = old_version
     with open(file_path, 'w') as f:
         json.dump(json_content, f, indent=4)
         print(f" - Updating {file_path}")
