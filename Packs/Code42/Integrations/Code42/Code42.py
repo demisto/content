@@ -169,7 +169,7 @@ class Code42Client(BaseClient):
 
     def get_current_user(self):
         try:
-            res = self._sdk.users.get_current_user()
+            res = self._sdk.users.get_current()
         except Exception:
             return None
         return res
