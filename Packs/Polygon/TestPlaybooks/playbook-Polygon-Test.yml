@@ -60,17 +60,17 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 7071fba0-69a3-47ef-8c2a-db21c381771c
+    taskid: f2c79940-810a-4b85-8f40-2178bf01d258
     type: regular
     task:
-      id: 7071fba0-69a3-47ef-8c2a-db21c381771c
+      id: f2c79940-810a-4b85-8f40-2178bf01d258
       version: -1
       name: polygon-upload-file
-      script: '|||polygon-upload-file'
+      description: Upload file for analysis
+      script: Group-IB TDS Polygon|||polygon-upload-file
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: Group-IB TDS Polygon
     nexttasks:
       '#none#':
       - "5"
@@ -146,17 +146,17 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 9da8252b-bad3-4954-8665-c03b999a187b
+    taskid: 1057f59f-3a58-486c-8c2d-95fc59aa9158
     type: regular
     task:
-      id: 9da8252b-bad3-4954-8665-c03b999a187b
+      id: 1057f59f-3a58-486c-8c2d-95fc59aa9158
       version: -1
       name: polygon-analysis-info
-      script: '|||polygon-analysis-info'
+      description: Get TDS Polygon analysis info
+      script: Group-IB TDS Polygon|||polygon-analysis-info
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: Group-IB TDS Polygon
     nexttasks:
       '#none#':
       - "7"
@@ -294,17 +294,17 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 034ee9f3-88ba-4905-8b3a-a3c5472b92c4
+    taskid: 282385ad-a465-47b0-8450-c794cbbd8f74
     type: regular
     task:
-      id: 034ee9f3-88ba-4905-8b3a-a3c5472b92c4
+      id: 282385ad-a465-47b0-8450-c794cbbd8f74
       version: -1
-      name: polygon-report-export
-      script: '|||polygon-report-export'
+      name: polygon-export-report
+      description: Export an archive with TDS Polygon report to War Room
+      script: Group-IB TDS Polygon|||polygon-export-report
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: Group-IB TDS Polygon
     nexttasks:
       '#none#':
       - "9"
@@ -378,17 +378,17 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 41edae72-2804-4f14-807f-9aa8ec995183
+    taskid: 276e0b7c-b587-46c0-8ebe-aac50f839c80
     type: regular
     task:
-      id: 41edae72-2804-4f14-807f-9aa8ec995183
+      id: 276e0b7c-b587-46c0-8ebe-aac50f839c80
       version: -1
-      name: polygon-pcap-export
-      script: '|||polygon-pcap-export'
+      name: polygon-export-pcap
+      description: Network activity dump export
+      script: Group-IB TDS Polygon|||polygon-export-pcap
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: Group-IB TDS Polygon
     nexttasks:
       '#none#':
       - "11"
@@ -462,17 +462,17 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 9e50da12-6ecb-4787-8755-df749edc01bf
+    taskid: ea56a856-4564-4525-851c-f451d97d4eb5
     type: regular
     task:
-      id: 9e50da12-6ecb-4787-8755-df749edc01bf
+      id: ea56a856-4564-4525-851c-f451d97d4eb5
       version: -1
-      name: polygon-video-export
-      script: '|||polygon-video-export'
+      name: polygon-export-video
+      description: Screen activity video export
+      script: Group-IB TDS Polygon|||polygon-export-video
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: Group-IB TDS Polygon
     nexttasks:
       '#none#':
       - "13"
@@ -546,17 +546,17 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 2a6805df-0178-4934-84bc-3161283b9ed4
+    taskid: e3161325-9e6e-4ee7-8f09-0bd8e46c7c57
     type: regular
     task:
-      id: 2a6805df-0178-4934-84bc-3161283b9ed4
+      id: e3161325-9e6e-4ee7-8f09-0bd8e46c7c57
       version: -1
       name: file
-      script: '|||file'
+      description: Check file reputation
+      script: Group-IB TDS Polygon|||file
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: Group-IB TDS Polygon
     nexttasks:
       '#none#':
       - "15"
