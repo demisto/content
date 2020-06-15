@@ -62,8 +62,10 @@ def handle_json_file(file_path, old_version):
     json_content['fromVersion'] = old_version
     with open(file_path, 'w') as f:
         json.dump(json_content, f, indent=4)
+        print(f" - Updating {file_path}")
 
     return True
+
 
 def delete_playbook(file_path):
     os.remove(file_path)
@@ -152,7 +154,10 @@ def main():
                         if not handle_json_file(file_path, old_version):
                             delete_json(file_path)
 
-        click.secho(f"Finished process for {pack_path}")
+        click.secho(f"Finished process for {pack_path}\n")
+
+    click.secho("Deleting empty directories\n")
+    os.system("find Packs -type d -empty -delete")
 
     click.secho("Finished creating branch", fg="green")
 
