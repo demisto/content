@@ -43,6 +43,7 @@ tasks:
       type: regular
       iscommand: true
       brand: epo
+      description: Retrieve ePO's current DAT version from local repository
     nexttasks:
       '#none#':
       - "3"
@@ -136,6 +137,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: Isolate dangerous systems from network
     nexttasks:
       '#none#':
       - "6"
@@ -199,6 +201,7 @@ tasks:
       type: regular
       iscommand: true
       brand: epo
+      description: Trigger signature update on outdated endpoints
     nexttasks:
       '#none#':
       - "9"

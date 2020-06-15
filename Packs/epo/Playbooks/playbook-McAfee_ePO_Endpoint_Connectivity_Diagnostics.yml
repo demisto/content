@@ -200,6 +200,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: Check connectivity for each endpoint using ping
     nexttasks:
       '#none#':
       - "7"
@@ -230,6 +231,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: Remotely check that McAfee Agent is installed and running
     nexttasks:
       '#none#':
       - "8"
@@ -255,6 +257,7 @@ tasks:
         ePO
       iscommand: false
       brand: ""
+      description: force communication with ePO
     nexttasks:
       '#none#':
       - "9"
@@ -280,6 +283,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: etrieve McAfee Agent logs from non-communicating endpoints
     separatecontext: false
     view: |-
       {

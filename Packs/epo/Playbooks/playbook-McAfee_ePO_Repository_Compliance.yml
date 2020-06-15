@@ -44,6 +44,7 @@ tasks:
       type: regular
       iscommand: true
       brand: epo
+      description: Check the latest DAT file in local ePO repository
     nexttasks:
       '#none#':
       - "12"
@@ -70,6 +71,7 @@ tasks:
       type: regular
       iscommand: true
       brand: epo
+      description: Update local ePO repository
     nexttasks:
       '#none#':
       - "13"
