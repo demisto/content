@@ -201,7 +201,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             xdr_ioc['class'] = threat_type
         return xdr_ioc
     except KeyError as error:
-        demisto.debug(f'unexpected IOC format in key: {str(error)}, {json.dumps(ioc)}')
+        demisto.debug(f'unexpected IOC format in key: {str(error)}, {str(ioc)}')
         return {}
 
 
