@@ -116,6 +116,12 @@ def main():
                         yml_file_path = os.path.join(path, script_name + '.yml')
                     if not handle_yml_file(yml_file_path, old_version):
                         delete_script_or_integration(path)
+
+            elif content_dir in ['IncidentFields', 'IncidentTypes', 'IndicatorFields', 'Layouts', 'Classifiers',
+                                 'Connections', 'Dashboards', 'IndicatorTypes', 'Reports', 'Widgets']:
+                for file_name in os.listdir(dir_path):
+
+
         click.secho(f"Finished process for {pack_path}")
 
     click.secho("Finished creating branch", fg="green")
