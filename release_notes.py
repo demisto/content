@@ -103,7 +103,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
     @classmethod
     def get_release_notes(cls, file_path, data):  # pylint: disable=unused-argument
         """
-        Return the release notes relevant to the added yml file.
+        Return the release notes relevant to the added yml file
 
         :param file_path: yml/json (or package yml)
         :param data: object data
