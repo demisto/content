@@ -1,0 +1,174 @@
+id: Enrich McAfee DXL using 3rd party sandbox
+version: -1
+name: Enrich McAfee DXL using 3rd party sandbox
+description: |-
+  Example of bridging DXL to a third party sandbox.
+  Detonate a file in Wildfire and if malicious - push its MD5, SHA1 and SHA256 hashes to McAfee DXL.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f0825cf1-1ad4-4e7d-8153-da160deff742
+    type: start
+    task:
+      id: f0825cf1-1ad4-4e7d-8153-da160deff742
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": -19
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a57644c8-775a-42ad-8800-3ac1a1d138cd
+    type: condition
+    task:
+      id: a57644c8-775a-42ad-8800-3ac1a1d138cd
+      version: -1
+      name: Any malicious files detected?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        simple: ${File.Malicious}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 302
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: add5699f-7748-449f-8461-dacbd6722e63
+    type: regular
+    task:
+      id: add5699f-7748-449f-8461-dacbd6722e63
+      version: -1
+      name: Close incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 37bc441a-8053-49ea-8abf-2ffae14fe359
+    type: regular
+    task:
+      id: 37bc441a-8053-49ea-8abf-2ffae14fe359
+      version: -1
+      name: DXL - Push file hashes as malicious
+      description: Deliver the specified event to the DXL fabric
+      script: McAfee DXL|||dxl-send-event
+      type: regular
+      iscommand: true
+      brand: McAfee DXL
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      payload:
+        simple: ${File(val.Malicious).MD5} ${File(val.Malicious).SHA1} ${File(val.Malicious).SHA256}
+      topic:
+        simple: MALICIOUS_FILE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 486
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: bfffbaa1-a550-47bd-8e84-e6c941cde205
+    type: playbook
+    task:
+      id: bfffbaa1-a550-47bd-8e84-e6c941cde205
+      version: -1
+      name: "WildFire - Detonate file"
+      playbookName: WildFire - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 122
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 804,
+        "width": 671,
+        "x": 240,
+        "y": -19
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
