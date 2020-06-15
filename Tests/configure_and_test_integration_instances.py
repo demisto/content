@@ -618,7 +618,8 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         ci_build_number (str): CI build number
 
     Returns:
-        None
+        response_data: The response data
+        status_code: The response status code
     """
     host = client.api_client.configuration.host
     installed_content_message = \
@@ -636,7 +637,7 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
 
     }
     error_msg = "Failed to set GCP bucket server config - with status code "
-    response_data, status_code, _ = update_server_configuration(client, server_configuration, error_msg)
+    return update_server_configuration(client, server_configuration, error_msg)
 
 
 def set_docker_hardening_for_build(client, prints_manager):
@@ -647,7 +648,8 @@ def set_docker_hardening_for_build(client, prints_manager):
         prints_manager (ParallelPrintsManager): Print manager object
 
     Returns:
-        None
+        response_data: The response data
+        status_code: The response status code
     """
     host = client.api_client.configuration.host
     installed_content_message = \
@@ -663,13 +665,7 @@ def set_docker_hardening_for_build(client, prints_manager):
     }
     error_msg = "Failed to set docker hardening server config - with status code "
 
-    response_data, status_code, _ = update_server_configuration(client, server_configuration, error_msg)
-
-
-def get_pack_ids_to_install():
-    with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
-        pack_ids = packs_stream.readlines()
-        return [pack_id.rstrip('\n') for pack_id in pack_ids]
+    return update_server_configuration(client, server_configuration, error_msg)
 
 
 def update_server_configuration(client, server_configuration, error_msg):
@@ -706,10 +702,16 @@ def update_server_configuration(client, server_configuration, error_msg):
 
     if status_code >= 300 or status_code < 200:
         message = result_object.get('message', '')
-        msg = error_msg + str(status_code) + '\n' + message
+        msg = f'{error_msg} {status_code}\n{message}'
         print_error(msg)
     # client.api_client.pool.close()
-    return response_data, status_code, _
+    return response_data, status_code
+
+
+def get_pack_ids_to_install():
+    with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+        pack_ids = packs_stream.readlines()
+        return [pack_id.rstrip('\n') for pack_id in pack_ids]
 
 
 def main():
