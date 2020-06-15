@@ -67,8 +67,8 @@ def test_mine_pcap():
     hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
     assert raw['EntryID'] == 'entry_id'
     assert raw['Packets'] == 1000
-    assert len(ec['PcapResultsDNS']) == 80
-    assert len(ec['PcapResultsSMB2']) == 7
+    assert len(ec['PCAPResultsDNS']) == 80
+    assert len(ec['PCAPResultsSMB2']) == 7
     assert raw['URL'][0] == 'http://239.255.255.250:1900*'
 
 

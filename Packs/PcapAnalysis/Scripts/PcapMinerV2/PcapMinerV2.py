@@ -666,7 +666,8 @@ def flows_to_ec(flows: dict) -> list:
             'StartTime': formatEpochDate(flow_data.get('min_time', 0)),
             'EndTime': formatEpochDate(flow_data.get('max_time', 0)),
             'Bytes': flow_data.get('bytes', 0),
-            'EntryID': flow_data.get('EntryID')
+            'EntryID': flow_data.get('EntryID'),
+            'Transport': flow_data.get('Transport')
         }
         flows_ec.append(flow_ec)
     return flows_ec

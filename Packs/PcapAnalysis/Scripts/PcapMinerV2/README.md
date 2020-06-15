@@ -43,6 +43,7 @@ b) Copy the automation and change the `default timeout` parameter to match your 
 | PcapResultsFlow.Bytes | The number of bytes transmitted in the flow. | String |
 | PcapResultsFlow.DestIP | The destination IP of the flow. | String |
 | PcapResultsFlow.SourceIP | The source IP of the flow. | String |
+| PcapResultsFlow.Transport | The transport protocol of the flow. | String|
 | PcapResultsFlow.SourcePort | The source port of the flow. | String |
 | PcapResultsFlow.DestPort | The destination port of the flow. | String |
 | PcapResultsFlow.Duration | The duration of the flow \(in seconds\). | String |
