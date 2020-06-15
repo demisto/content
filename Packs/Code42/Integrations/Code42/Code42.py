@@ -113,6 +113,7 @@ SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description",
 
 
 def _get_severity_filter_value(severity_arg):
+    """Converts single str to upper case. If given list of strs, converts all to upper case."""
     if severity_arg:
         return (
             [severity_arg.upper()]
@@ -122,6 +123,7 @@ def _get_severity_filter_value(severity_arg):
 
 
 def _create_alert_query(event_severity_filter, start_time):
+    """Creates an alert query for the given severity (or severities) and start time."""
     alert_filters = AlertSearchFilters()
     severity = event_severity_filter
     alert_filters.append_result(_get_severity_filter_value(severity), Severity.is_in)
@@ -152,7 +154,7 @@ class Code42Client(BaseClient):
             return None
         return user_id
 
-    def fetch_alerts(self, start_time, event_severity_filter=None):
+    def fetch_alerts(self, start_time, event_severity_filter):
         try:
             query = _create_alert_query(event_severity_filter, start_time)
             res = self._sdk.alerts.search_alerts(query)
