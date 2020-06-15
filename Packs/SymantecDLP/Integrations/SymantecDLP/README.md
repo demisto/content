@@ -1,6 +1,13 @@
 <p>
 Symantec Data Loss Prevention let's you discover, monitor and protect your sensitive corporate information.
 </p>
+<h2>Permissions</h2>
+<p>Symantec Data Loss Prevention requires the integration user to have a "Incident Reporting API Web Service role". Make sure to follow Symantec's documentation on how to create such a role and assign it to the user:
+<ul>
+<li>Symantec DLP 15.5: <a href="https://help.symantec.com/cs/DLP15.5/DLP/id-SF0B0167317a_v128674454/Configuring-roles?locale=EN_US">Configuring Roles</a></li>
+<li>Symantec DLP 15.7: <a href="https://apidocs.symantec.com/home/DLP15.7#_creating_a_user_and_role_for_an_incident_reporting_api_client"> Creating a user and role for an Incident Reporting API client</a></li>
+</ul>
+</p>
 <h2>Fetch Incidents</h2>
 <p>The Symantec Data Loss Prevention integration is configured to fetch incidents and integrate them into Demisto's incidents and has the fetch limit parameter.</p>
 <h2>Configure Symantec Data Loss Prevention on Demisto</h2>
