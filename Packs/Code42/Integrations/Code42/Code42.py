@@ -157,7 +157,7 @@ class Code42Client(BaseClient):
     def fetch_alerts(self, start_time, event_severity_filter):
         try:
             query = _create_alert_query(event_severity_filter, start_time)
-            res = self._sdk.alerts.search_alerts(query)
+            res = self._sdk.alerts.search(query)
         except Exception:
             return None
         return res["alerts"]
