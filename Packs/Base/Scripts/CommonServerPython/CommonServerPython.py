@@ -30,8 +30,8 @@ except Exception:
     pass
 
 
-CONTENT_RELEASE_VERSION = '0.0.0'
-CONTENT_BRANCH_NAME = 'master'
+CONTENT_RELEASE_VERSION = '2.5.0'
+CONTENT_BRANCH_NAME = 'test_roy'
 IS_PY3 = sys.version_info[0] == 3
 
 # pylint: disable=undefined-variable
