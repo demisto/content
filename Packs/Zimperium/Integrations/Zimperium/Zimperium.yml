@@ -899,7 +899,7 @@ script:
         description: 'System token.'
         type: String
       - contextPath: Zimperium.Application.type
-        description: 'TTODO'
+        description: 'TODO'
         type: Number
       - contextPath: Zimperium.Application.version
         description: 'Application version'
