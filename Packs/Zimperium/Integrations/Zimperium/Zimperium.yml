@@ -83,9 +83,129 @@ script:
     execution: false
     name: zimperium-events-search
     outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
+      - contextPath: Zimperium.Events.appName
+        description: 'Application name.'
+        type: String
+      - contextPath: Zimperium.Events.bssid
+        description: 'BSS ID.'
+        type: String
+      - contextPath: Zimperium.Events.bundleId
+        description: 'Bundle ID.'
+        type: String
+      - contextPath: Zimperium.Events.country
+        description: 'Country.'
+        type: String
+      - contextPath: Zimperium.Events.customerContactName
+        description: 'Customer contact name.'
+        type: String
+      - contextPath: Zimperium.Events.customerContactPhone
+        description: 'Customer contact phone.'
+        type: String
+      - contextPath: Zimperium.Events.customerId
+        description: 'Customer ID.'
+        type: String
+      - contextPath: Zimperium.Events.deviceHash
+        description: 'Device hash.'
+        type: String
+      - contextPath: Zimperium.Events.deviceId
+        description: 'Device ID.'
+        type: string
+      - contextPath: Zimperium.Events.deviceModel
+        description: 'Device Model.'
+        type: String
+      - contextPath: Zimperium.Events.deviceTime
+        description: 'Device time.'
+        type: String
+      - contextPath: Zimperium.Events.eventDetail
+        description: 'Event additional details.'
+        type: Unknown
+      - contextPath: Zimperium.Events.eventFullName
+        description: 'Event full name.'
+        type: String
+      - contextPath: Zimperium.Events.eventId
+        description: 'Event ID.'
+        type: String
+      - contextPath: Zimperium.Events.eventName
+        description: 'Event name.'
+        type: String
+      - contextPath: Zimperium.Events.eventState
+        description: 'Event state.'
+        type: String
+      - contextPath: Zimperium.Events.eventStateCode
+        description: 'Event status code'
+        type: Number
+      - contextPath: Zimperium.Events.eventVector
+        description: 'Event vector.'
+        type: String
+      - contextPath: Zimperium.Events.firstName
+        description: 'First name of the phone owner.'
+        type: String
+      - contextPath: Zimperium.Events.incidentSummary
+        description: 'Incident summary.'
+        type: String
+      - contextPath: Zimperium.Events.lastName
+        description: 'Last name of the phone owner.'
+        type: String
+      - contextPath: Zimperium.Events.lastSeenTime
+        description: 'Last seen time.'
+        type: Date
+      - contextPath: Zimperium.Events.latitude
+        description: 'Latitude of the phone.'
+        type: String
+      - contextPath: Zimperium.Events.locationDetail
+        description: 'Location  details.'
+        type: Sttring
+      - contextPath: Zimperium.Events.longitude
+        description: 'Latitude of the phone.'
+        type: String
+      - contextPath: Zimperium.Events.mdmId
+        description: 'MD ID.'
+        type: String
+      - contextPath: Zimperium.Events.middleName
+        description: 'Middle name of the phone owner.'
+        type: String
+      - contextPath: Zimperium.Events.mitigatedDate
+        description: 'Mitigated date of the phone.'
+        type: Date
+      - contextPath: Zimperium.Events.osType
+        description: 'OS type of the phone.'
+        type: String
+      - contextPath: Zimperium.Events.osVersion
+        description: 'OS version of the phone.'
+        type: String
+      - contextPath: Zimperium.Events.persistedTime
+        description: 'Persisted time of the event.'
+        type: Date
+      - contextPath: Zimperium.Events.queuedTime
+        description: 'Queued time of the event.'
+        type: Date
+      - contextPath: Zimperium.Events.severity
+        description: 'Severity of the event.'
+        type: String
+      - contextPath: Zimperium.Events.ssid
+        description: 'SS ID'
+        type: String
+      - contextPath: Zimperium.Events.tag1
+        description: 'TODO'
+        type: String
+      - contextPath: Zimperium.Events.tag2
+        description: 'TODO'
+        type: String
+      - contextPath: Zimperium.Events.typeDesc
+        description: 'TODO'
+        type: String
+      - contextPath: Zimperium.Events.userEmail
+        description: 'Email of the phone user.'
+        type: String
+      - contextPath: Zimperium.Events.userPhoneNumber
+        description: 'Phone number of the user.'
+        type: String
+      - contextPath: Zimperium.Events.zdid
+        description: 'ZD ID.'
+        type: String
+      - contextPath: Zimperium.Events.zipsVersion
+        description: 'TODO'
+        type: String
   - arguments:
     - default: false
       defaultValue: objectId==*
