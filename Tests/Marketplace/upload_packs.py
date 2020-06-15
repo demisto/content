@@ -569,8 +569,9 @@ def main():
         private_packs = []
 
     # clean index and gcs from non existing or invalid packs
+    print_error(f'packs_list length: {len(packs_list)}')
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
-
+    print_error(f'packs_list length: {len(packs_list)}')
     # starting iteration over packs
     for pack in packs_list:
         task_status, user_metadata = pack.load_user_metadata()
@@ -634,6 +635,7 @@ def main():
             pack.cleanup()
             continue
 
+        print_error(f'BEFORE STORAGE - packs_list length: {len(packs_list)}')
         task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
                                                                      override_pack)
         if not task_status:
@@ -661,11 +663,11 @@ def main():
             continue
 
         pack.status = PackStatus.SUCCESS.name
-
+    print_error(f'packs_list length: {len(packs_list)}')
     # upload core packs json to bucket
     if storage_bucket_name != GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         upload_core_packs_config(storage_bucket, build_number, index_folder_path)
-
+    print_error(f'packs_list length: {len(packs_list)}')
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
 
