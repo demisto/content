@@ -523,6 +523,10 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-enc', '--encrypt_pack', type=str2bool,
                         help='Should encrypt pack or not.', default=False)
+    parser.add_argument('-ek', '--encryption_key', type=str,
+                        help='The encryption key for the pack, if it should be encrypted.', default='')
+    parser.add_argument('-ep', '--encryption_script_path', type=str,
+                        help='Path to the ZipAndEncryptDirectory script.', default='')
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -539,6 +543,9 @@ def main():
     override_pack = option.override_pack
     signature_key = option.key_string
     id_set_path = option.id_set_path
+    should_encrypt_pack = option.encrypt_pack
+    enc_key = option.encryption_key
+    enc_script_path = option.encryption_script_path
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
     storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
@@ -626,7 +633,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, zip_pack_path = pack.zip_pack(option.encrypt_pack)
+        task_status, zip_pack_path = pack.zip_pack(should_encrypt_pack, enc_key, enc_script_path)
 
         if not task_status:
             pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name

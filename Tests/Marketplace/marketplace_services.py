@@ -588,7 +588,24 @@ class Pack(object):
         finally:
             return task_status
 
-    def zip_pack(self, should_encrypt=False):
+    def zip_and_encrypt_pack(self, zip_pack_path, zip_and_encrypt_script_path, encryption_key):
+        print_error("Should Encrypt")
+        # The path below is custom made for the private repo's build.
+        path_to_directory = self._pack_path
+        output_file = zip_pack_path
+        full_command = f'{zip_and_encrypt_script_path} {path_to_directory} {output_file} {encryption_key}'
+        subprocess.call(full_command, shell=True)
+
+    def zip_pack_without_encrypting(self, zip_pack_path):
+        print_error("Should Not Encrypt")
+        with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
+            for root, dirs, files in os.walk(self._pack_path, topdown=True):
+                for f in files:
+                    full_file_path = os.path.join(root, f)
+                    relative_file_path = os.path.relpath(full_file_path, self._pack_path)
+                    pack_zip.write(filename=full_file_path, arcname=relative_file_path)
+
+    def zip_pack(self, should_encrypt=False, zip_and_encrypt_script_path="", encryption_key=""):
         """ Zips pack folder.
 
         Returns:
@@ -600,24 +617,9 @@ class Pack(object):
 
         try:
             if should_encrypt:
-                print_error("Should Encrypt")
-                # The path below is custom made for the private repo's build.
-                zip_and_encrypt_script_path = "../server/cmd/zipAndEncryptDirectory/zipAndEncryptDirectory"
-                encryption_key = "3^zWkP?gB7YspY3sxCdv=m*bJaMcbJGc" # TODO : might need "" as part of the key
-                path_to_directory = self._pack_path
-                output_file = zip_pack_path
-                full_command = f'{zip_and_encrypt_script_path} {path_to_directory} {output_file} {encryption_key}'
-                subprocess.call(full_command, shell=True)
-
+                self.zip_and_encrypt_pack(self, zip_pack_path, zip_and_encrypt_script_path, encryption_key)
             else:
-                print_error("Should Not Encrypt")
-                with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
-                    for root, dirs, files in os.walk(self._pack_path, topdown=True):
-                        for f in files:
-                            full_file_path = os.path.join(root, f)
-                            relative_file_path = os.path.relpath(full_file_path, self._pack_path)
-                            pack_zip.write(filename=full_file_path, arcname=relative_file_path)
-
+                self.zip_pack_without_encrypting(zip_pack_path)
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
         except Exception as e:
