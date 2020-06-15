@@ -322,6 +322,85 @@ script:
     description: Retrieve details for a single user.
     execution: false
     name: zimperium-user-get-by-id
+    outputs:
+      - contextPath: Zimperium.Users.activationTokenUrl
+        description: 'TODO'
+        type: String
+      - contextPath: Zimperium.Users.agreedToTerms
+        description: 'TODO'
+        type: Number
+      - contextPath: Zimperium.Users.alias
+        description: 'User alias.'
+        type: String
+      - contextPath: Zimperium.Users.createdDate
+        description: 'User created date.'
+        type: Date
+      - contextPath: Zimperium.Users.dateJoined
+        description: 'User joined date.'
+        type: Date
+      - contextPath: Zimperium.Users.email
+        description: 'User email.'
+        type: String
+      - contextPath: Zimperium.Users.firstName
+        description: 'User first name.'
+        type: String
+      - contextPath: Zimperium.Users.lastLogin
+        description: 'User last login date.'
+        type: Date
+      - contextPath: Zimperium.Users.lastName
+        description: 'User last name.'
+        type: String
+      - contextPath: Zimperium.Users.lastSyncFromMdm
+        description: 'TODO'
+        type: Unknown
+      - contextPath: Zimperium.Users.lastZconsoleLogin
+        description: 'User last zimperium console login.'
+        type: Date
+      - contextPath: Zimperium.Users.middleName
+        description: 'User middle name.'
+        type: String
+      - contextPath: Zimperium.Users.modifiedDate
+        description: 'User modified date.'
+        type: Date
+      - contextPath: Zimperium.Users.objectId
+        description: 'User object ID.'
+        type: String
+      - contextPath: Zimperium.Users.passwordExpirationDate
+        description: 'Use password expiration date.'
+        type: Date
+      - contextPath: Zimperium.Users.phoneNumber
+        description: 'User phone number.'
+        type: String
+      - contextPath: Zimperium.Users.phoneNumberVerified
+        description: 'Whethe the user phone number is verified.'
+        type: bool
+      - contextPath: Zimperium.Users.pwdRecoveryRequest
+        description: 'Whether the user requested password recovery.'
+        type: bool
+      - contextPath: Zimperium.Users.role
+        description: 'User role.'
+        type: Number
+      - contextPath: Zimperium.Users.roles.roleId
+        description: 'User role ID.'
+        type: Number
+      - contextPath: Zimperium.Users.signupSteps
+        description: 'User sign up steps.'
+        type: Number
+      - contextPath: Zimperium.Users.staff
+        description: 'Whether the user is a staff member.'
+        type: bool
+      - contextPath: Zimperium.Users.status
+        description: 'TODO'
+        type: Number
+      - contextPath: Zimperium.Users.superuser
+        description: 'Whether the user is a superuser.'
+        type: bool
+      - contextPath: Zimperium.Users.syncedFromMdm
+        description: 'TODO'
+        type: bool
+      - contextPath: Zimperium.Users.termsVersion
+        description: 'TODO'
+        type: String
   - arguments:
     - default: false
       defaultValue: deviceId==*
