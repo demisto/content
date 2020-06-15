@@ -153,15 +153,14 @@ class Client(BaseClient):
                 pass
         return resp
 
-    def get_url(self, tds_analysis_id):
-        file = self.get_attach(tds_analysis_id)
+    def get_url(self, file):
         if self._check_report_available(file):
             return self._http_request(
                 method='get',
-                url_suffix=file["file_url"][1:],
+                url_suffix=file.get("file_url")[1:],
                 resp_type="content"
-            )
-        raise DemistoException(f"No reports for analysis: {tds_analysis_id}")
+            ).decode()
+        raise DemistoException("No reports found")
 
     def export_report(self, tds_analysis_id):
         file = self.get_attach(tds_analysis_id)
@@ -332,7 +331,7 @@ def get_network_indicators(report):
     for dns in network.get('dns', []):
         domain = Common.Domain(
             domain=dns.get('request'),
-            dns=", ".join(list(map(lambda x: x.get('data'), dns.get('answers', [])))),
+            dns=", ".join([answer.get('data') for answer in dns.get('answers')]),
             dbot_score=Common.DBotScore(
                 indicator=dns.get('request'),
                 indicator_type=DBotScoreType.DOMAIN,
@@ -409,7 +408,7 @@ def analysis_info_command(client, args):
         indicators = []
         if 'report' in res:
             if analysis_type == URL_TYPE:
-                res['report']['target']['url'] = client.get_url(drop_prefix(tds_analysis_id)).decode()
+                res['report']['target']['url'] = client.get_url(res.get('file'))
             analysis_info.update(serialize_report_info(res['report'], analysis_type))
             indicators = get_report_indicators(res["report"], analysis_type)
         human_readable = get_human_readable_analysis_info(analysis_info)
@@ -418,7 +417,8 @@ def analysis_info_command(client, args):
             outputs_prefix="Polygon.Analysis",
             outputs_key_field="ID",
             outputs=analysis_info,
-            indicators=indicators
+            indicators=indicators,
+            raw_response=res
         )
         all_results.append(results)
     return all_results
@@ -429,8 +429,7 @@ def export_report_command(client, args):
     report = client.export_report(tds_analysis_id)
     demisto.results(fileResult(
         filename='report.tar',
-        data=report,
-        file_type=EntryType.ENTRY_INFO_FILE
+        data=report
     ))
 
 
@@ -439,8 +438,7 @@ def export_pcap_command(client, args):
     pcap = client.export_pcap(tds_analysis_id)
     demisto.results(fileResult(
         filename='dump.pcap',
-        data=pcap,
-        file_type=EntryType.ENTRY_INFO_FILE
+        data=pcap
     ))
 
 
@@ -452,8 +450,7 @@ def export_video_command(client, args):
     else:
         demisto.results(fileResult(
             filename='video.webm',
-            data=video,
-            file_type=EntryType.ENTRY_INFO_FILE
+            data=video
         ))
 
 
@@ -467,10 +464,11 @@ def upload_url_command(client, args):
         'Status': 'In Progress',
     }
     results = CommandResults(
-        readable_output=f"Url uploaded successfully. Analysis ID: {res}",
+        readable_output=tableToMarkdown("Url uploaded successfully", outputs),
         outputs_prefix='Polygon.Analysis',
         outputs_key_field='ID',
-        outputs=outputs
+        outputs=outputs,
+        raw_response=res
     )
     return results
 
@@ -491,10 +489,11 @@ def upload_file_command(client, args):
         'Status': 'In Progress'
     }
     results = CommandResults(
-        readable_output=f"File uploaded successfully. Analysis ID: {res}",
+        readable_output=tableToMarkdown("File uploaded successfully", outputs),
         outputs_prefix='Polygon.Analysis',
         outputs_key_field='ID',
-        outputs=outputs
+        outputs=outputs,
+        raw_response=res
     )
     return results
 
@@ -535,7 +534,8 @@ def file_command(client, args):
                 outputs_prefix="Polygon.Analysis",
                 outputs_key_field=hash_type.upper(),
                 outputs=analysis_info,
-                indicators=[indicator]
+                indicators=[indicator],
+                raw_response=res
             )
             all_results.append(result)
     return all_results
