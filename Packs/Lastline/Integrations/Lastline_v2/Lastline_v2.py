@@ -19,7 +19,6 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False):
         self.command_params = api_params
-
         super(Client, self).__init__(base_url, verify, proxy)
 
     def file(self):
@@ -89,7 +88,6 @@ class Client(BaseClient):
         return human_readable, context_entry, result
 
     def test_module_command(self):
-        return False
         try:
             self.get_report()
         except DemistoException as error:
