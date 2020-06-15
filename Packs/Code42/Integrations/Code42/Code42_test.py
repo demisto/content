@@ -709,7 +709,7 @@ def code42_sdk_mock(mocker):
 
     # Setup alerts for querying
     alerts_response = create_mock_code42_sdk_response(mocker, MOCK_ALERTS_RESPONSE)
-    c42_sdk_mock.alerts.search_alerts.return_value = alerts_response
+    c42_sdk_mock.alerts.search.return_value = alerts_response
 
     # Setup mock get user
     get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
