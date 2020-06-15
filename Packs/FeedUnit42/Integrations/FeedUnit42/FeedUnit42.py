@@ -64,6 +64,13 @@ def parse_response(objects: list) -> list:
                         "value": indicator_object.get('name'),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
                         "rawJSON": indicator_object,
+                        "fields": {
+                            "firstseenbysource": indicator_object.get('created'),
+                            "indicatoridentification": indicator_object.get('id'),
+                            "tags": indicator_object.get('labels'),
+                            "modified": indicator_object.get('modified'),
+                            "reportedby": 'Unit42',
+                        }
                     })
 
     return indicators
