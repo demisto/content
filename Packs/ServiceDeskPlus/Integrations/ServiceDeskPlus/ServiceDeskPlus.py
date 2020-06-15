@@ -12,9 +12,9 @@ import hashlib
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-SERVER_URL = 'https://sdpondemand.manageengine.com'
+# SERVER_URL = 'https://sdpondemand.manageengine.com'
 API_VERSION = '/api/v3/'
-OAUTH = '/oauth/v2/token'
+OAUTH = 'https://accounts.zoho.com/oauth/v2/token'
 
 REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority',
                   'service_category', 'requester', 'assets', 'site', 'group', 'technician', 'category', 'subcategory',
@@ -22,6 +22,13 @@ REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 
 FIELDS_WITH_NAME = ['request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority', 'service_category',
                     'requester', 'site', 'group', 'technician', 'category', 'subcategory', 'item']
 
+SERVER_URL = {
+    'United States': 'https://sdpondemand.manageengine.com',
+    'Europe': 'https://sdpondemand.manageengine.eu',
+    'India': 'https://sdpondemand.manageengine.in',
+    'China': 'https://servicedeskplus.cn',
+    'Australia': 'https://servicedeskplus.net.au',
+}
 
 class Client(BaseClient):
     """
@@ -34,10 +41,13 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
-        self.access_token = None
-        self.generate_access_token()  # will create a valid access token
+        self.access_token = '1000.249597ce7f6c32fd110a9b5c1149a55d.c457853d237421b945a22e1deec95593'
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/v3+json',
                                                                         'Authorization': 'Bearer ' + self.access_token})
+        # super().__init__(url, verify=use_ssl, proxy=use_proxy)  #, headers={'Accept': 'application/v3+json',
+                                                                       # 'Authorization': 'Bearer ' + self.access_token})
+        self.generate_access_token()  # will create a valid access token
+
 
     def generate_access_token(self):
         """
@@ -49,7 +59,7 @@ class Client(BaseClient):
             'client_id': self.client_id,
             'client_secret': self.client_secret
         }
-        res = self.http_request('POST', url_suffix=OAUTH, params=params)
+        res = self._http_request('POST', url_suffix='', full_url=OAUTH, params=params)
         self.access_token = res.get('access_token', None)
 
     def http_request(self, method, url_suffix, params=None):
@@ -371,7 +381,8 @@ def test_module(client=None):
 
 def main():
     params = demisto.params()
-    server_url = params.get('server_url') if params.get('server_url') else SERVER_URL
+    server_url = SERVER_URL[params.get('server_url')]
+    server_url = 'https://sdpondemand.manageengine.com'
 
     client = Client(url=server_url,
                     use_ssl=not params.get('insecure', False),

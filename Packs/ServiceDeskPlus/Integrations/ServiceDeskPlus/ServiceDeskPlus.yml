@@ -3,11 +3,17 @@ commonfields:
   id: ea49692b-3ad1-42c3-9881-09625da8cf8e
   version: -1
 configuration:
-- defaultvalue: https://sdpondemand.manageengine.com
-  display: Server URL (e.g. https://sdpondemand.manageengine.com)
-  name: url
+- display: 'Data Center Location: Select the domain location that is applicable for
+    you application'
+  name: server_url
+  options:
+  - United States
+  - Europe
+  - India
+  - China
+  - Australia
   required: true
-  type: 0
+  type: 15
 - additionalinfo: test additional
   display: Client ID
   name: client_id
