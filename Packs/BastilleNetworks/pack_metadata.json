@@ -16,10 +16,6 @@
         "wireless"
     ],
     "created": "2020-05-07T16:59:04Z",
-    "updated": "2020-05-07T16:59:04Z",
-    "beta": false,
-    "deprecated": false,
     "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+    "keywords": []
 }
