@@ -420,7 +420,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
         client: The slack client.
         method: The method to use.
         http_verb: The HTTP method to use.
-        file_: A file to send.
+        file_: A file path to send.
         body: The request body.
 
     Returns:
@@ -461,7 +461,7 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
         client: The slack client.
         method: The method to use.
         http_verb: The HTTP method to use.
-        file_: A file to send.
+        file_: A file path to send.
         body: The request body.
 
     Returns:
@@ -1584,16 +1584,14 @@ def slack_send_file():
         return_error('Either a user, group or channel must be provided.')
 
     file_path = demisto.getFilePath(entry_id)
-    with open(file_path['path'], 'rb') as file:
-        data = file.read()
 
     file = {
-        'data': data,
+        'path': file_path['path'],
         'name': file_path['name'],
         'comment': comment
     }
 
-    response = slack_send_request(to, channel, group, thread_id=thread_id, file=file)
+    response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file)
     if response:
         demisto.results('File sent to Slack successfully.')
     else:
@@ -1686,13 +1684,13 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     return response
 
 
-def send_file(destinations: list, file: dict, integration_context: dict, thread_id: str) -> Optional[SlackResponse]:
+def send_file(destinations: list, file_dict: dict, integration_context: dict, thread_id: str) -> Optional[SlackResponse]:
     """
     Sends a file to Slack.
 
     Args:
         destinations: Destinations to send the file to.
-        file: The file to send.
+        file_dict: The file to send.
         integration_context: The current integration context.
         thread_id: A Slack thread to send to.
 
@@ -1700,7 +1698,7 @@ def send_file(destinations: list, file: dict, integration_context: dict, thread_
         The Slack send response.
     """
     try:
-        response = send_file_to_destinations(destinations, file, thread_id)
+        response = send_file_to_destinations(destinations, file_dict, thread_id)
     except SlackApiError as e:
         if str(e).find('not_in_channel') == -1 and str(e).find('channel_not_found') == -1:
             raise
@@ -1710,18 +1708,18 @@ def send_file(destinations: list, file: dict, integration_context: dict, thread_
             integration_context['bot_id'] = bot_id
         for dest in destinations:
             invite_users_to_conversation(dest, [bot_id])
-        response = send_file_to_destinations(destinations, file, thread_id)
+        response = send_file_to_destinations(destinations, file_dict, thread_id)
 
     return response
 
 
-def send_file_to_destinations(destinations: list, file: dict, thread_id: str) -> Optional[SlackResponse]:
+def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: str) -> Optional[SlackResponse]:
     """
     Sends a file to provided destinations in Slack.
 
     Args:
         destinations: The destinations to send to.
-        file: The file to send.
+        file_dict: The file to send.
         thread_id: A thread ID to send to.
 
     Returns:
@@ -1729,24 +1727,24 @@ def send_file_to_destinations(destinations: list, file: dict, thread_id: str) ->
     """
     response: Optional[SlackResponse] = None
     body = {
-        'filename': file['name']
+        'filename': file_dict['name']
     }
 
-    if 'comment' in file:
-        body['initial_comment'] = file['comment']
+    if 'comment' in file_dict:
+        body['initial_comment'] = file_dict['comment']
 
     for destination in destinations:
         body['channels'] = destination
         if thread_id:
             body['thread_ts'] = thread_id
 
-        response = send_slack_request_sync(CLIENT, 'files.upload', file_=file['data'], body=body)
+        response = send_slack_request_sync(CLIENT, 'files.upload', file_=file_dict['path'], body=body)
 
     return response
 
 
 def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignore_add_url: bool = False,
-                       thread_id: str = '', message: str = '', blocks: str = '', file: dict = None)\
+                       thread_id: str = '', message: str = '', blocks: str = '', file_dict: dict = None)\
         -> Optional[SlackResponse]:
     """
     Requests to send a message or a file to Slack.
@@ -1760,7 +1758,7 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
         thread_id: The Slack thread ID to send to.
         message: A message to send.
         blocks: Blocks to send with a slack message
-        file: A file to send.
+        file_dict: A file to send.
 
     Returns:
         The Slack send response.
@@ -1816,8 +1814,8 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     if not destinations:
         return_error('Could not find any destination to send to.')
 
-    if file:
-        response = send_file(destinations, file, integration_context, thread_id)
+    if file_dict:
+        response = send_file(destinations, file_dict, integration_context, thread_id)
         return response
 
     response = send_message(destinations, entry, ignore_add_url, integration_context, message,
