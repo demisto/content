@@ -2594,7 +2594,7 @@ def test_send_request(mocker):
     # Arrange
 
     user_res = Slack.slack_send_request('spengler', None, None, message='Hi')
-    channel_res = Slack.slack_send_request(None, 'general', None, file='file')
+    channel_res = Slack.slack_send_request(None, 'general', None, file_dict='file')
 
     user_args = Slack.send_message.call_args[0]
     channel_args = Slack.send_file.call_args[0]
@@ -3521,7 +3521,7 @@ def test_send_file_no_args_investigation(mocker):
     assert success_results[0] == 'File sent to Slack successfully.'
 
     assert send_args[0][1] == 'incident-681'
-    assert send_args[1]['file'] == {
+    assert send_args[1]['file_dict'] == {
         'path': 'path',
         'name': 'name',
         'comment': ''

@@ -1585,13 +1585,13 @@ def slack_send_file():
 
     file_path = demisto.getFilePath(entry_id)
 
-    file = {
+    file_dict = {
         'path': file_path['path'],
         'name': file_path['name'],
         'comment': comment
     }
 
-    response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file)
+    response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict)
     if response:
         demisto.results('File sent to Slack successfully.')
     else:
