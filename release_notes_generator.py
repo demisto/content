@@ -80,9 +80,10 @@ def get_new_entity_record(entity_path: str) -> (str, str):
 
 def get_pack_entities(pack_path):
     print(f'Processing "{pack_path}" files:')
-    pack_entities = (glob.glob(f'{pack_path}/*/*.json') +
-                     glob.glob(f'{pack_path}/*/*.yml') +
-                     glob.glob(f'{pack_path}/*/*/*.yml'))
+    pack_entities = sum([
+        glob.glob(f'{pack_path}/*/*.json'),
+        glob.glob(f'{pack_path}/*/*.yml'),
+        glob.glob(f'{pack_path}/*/*/*.yml')], [])
     pack_entities.sort()
 
     entities_data = {}
