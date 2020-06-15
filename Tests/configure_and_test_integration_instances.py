@@ -895,6 +895,12 @@ def main():
         __disable_integrations_instances(client, all_module_instances, prints_manager)
     prints_manager.execute_thread_prints(0)
 
+    prints_manager.add_print_job(f'\nfailing before {preupdate_fails}\n ',print_warning, 0)
+    prints_manager.add_print_job(f'\nfailing after {postupdate_fails}\n ',print_warning, 0)
+    prints_manager.add_print_job(f'\nsuccess before {preupdate_success}\n ',print_warning, 0)
+    prints_manager.add_print_job(f'\nsuccess after {postupdate_success}\n ',print_warning, 0)
+    prints_manager.execute_thread_prints(0)
+
     success = report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
                                   new_integrations_names, prints_manager)
     prints_manager.execute_thread_prints(0)
