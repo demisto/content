@@ -387,90 +387,90 @@ jobs:
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
             fi
             python3 ./Tests/scripts/wait_until_server_ready.py
-      - run:
-          name: Run Tests - Server 4.1
-          shell: /bin/bash
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
-            echo "Demisto two before GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto two before GA"
-
-              else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - run:
-          name: Run Tests - Server 4.5
-          shell: /bin/bash
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
-            echo "Demisto one before GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto one before GA"
-
-              else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - run:
-          name: Run Tests - Server 5.0
-          shell: /bin/bash
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
-            echo "Demisto GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto GA"
-
-            else
-                ./Tests/scripts/run_tests.sh "master"
-            fi
+#      - run:
+#          name: Run Tests - Server 4.1
+#          shell: /bin/bash
+#          when: always
+#          command: |
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+#              then
+#                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+#                exit 0
+#            fi
+#            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
+#            echo "Demisto two before GA filter=$TEMP"
+#            if [[ "$TEMP" == "false" ]];
+#              then
+#                echo "Skipping - instance was not setup"
+#                exit 0
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                ./Tests/scripts/run_tests.sh "Demisto two before GA"
+#
+#              else
+#                echo "Not AMI run, can't run on this version"
+#            fi
+#      - run:
+#          name: Run Tests - Server 4.5
+#          shell: /bin/bash
+#          when: always
+#          command: |
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+#              then
+#                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+#                exit 0
+#            fi
+#            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
+#            echo "Demisto one before GA filter=$TEMP"
+#            if [[ "$TEMP" == "false" ]];
+#              then
+#                echo "Skipping - instance was not setup"
+#                exit 0
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                ./Tests/scripts/run_tests.sh "Demisto one before GA"
+#
+#              else
+#                echo "Not AMI run, can't run on this version"
+#            fi
+#      - run:
+#          name: Run Tests - Server 5.0
+#          shell: /bin/bash
+#          when: always
+#          command: |
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+#              then
+#                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+#                exit 0
+#            fi
+#            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
+#            echo "Demisto GA filter=$TEMP"
+#            if [[ "$TEMP" == "false" ]];
+#              then
+#                echo "Skipping - instance was not setup"
+#                exit 0
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                ./Tests/scripts/run_tests.sh "Demisto GA"
+#
+#            else
+#                ./Tests/scripts/run_tests.sh "master"
+#            fi
       - run:
           name: Run Tests - Server 5.5
           shell: /bin/bash
