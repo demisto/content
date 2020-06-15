@@ -34,15 +34,15 @@ def get_json(file_path):
     return get_file(json.load, file_path, 'json')
 
 
-def handle_yml_file(file_path, yml_old_version):
+def handle_yml_file(file_path, yml_old_version, conf_json_content):
     yml_content = get_yaml(file_path)
-    if 'toversion' in yml_content:
-        if parse_version(str(yml_content['toversion'])) < parse_version(yml_old_version):
-            return False
-
-    if 'fromversion' in yml_content:
-        if parse_version(str(yml_content['fromversion'])) > parse_version(yml_old_version):
-            return False
+    if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(yml_old_version) or \
+            parse_version(yml_content.get('fromversion', '0.0.0')) > parse_version(yml_old_version):
+        if 'commonfields' in yml_content:
+            remove_from_tests_list(yml_content.get('commonfields').get('id'), conf_json_content)
+        else:
+            remove_from_tests_list(yml_content.get('id'), conf_json_content)
+        return False
 
     yml_content['toversion'] = yml_old_version
     with open(file_path, 'w') as f:
@@ -51,17 +51,14 @@ def handle_yml_file(file_path, yml_old_version):
 
     return True
 
+
 def handle_json_file(file_path, old_version):
     json_content = get_json(file_path)
-    if 'toVersion' in json_content:
-        if parse_version(str(json_content.get('toVersion'))) < parse_version(old_version):
-            return False
+    if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(old_version) or \
+            parse_version(json_content.get('fromVersion', '0.0.0')) > parse_version(old_version):
+        return False
 
-    if 'fromVersion' in json_content:
-        if parse_version(str(json_content.get('fromVersion'))) > parse_version(old_version):
-            return False
-
-    json_content['toVersion'] = old_version
+    json_content['fromVersion'] = old_version
     with open(file_path, 'w') as f:
         json.dump(json_content, f, indent=4)
         print(f" - Updating {file_path}")
@@ -103,11 +100,30 @@ def delete_json(file_path):
         os.remove(changelog_file)
 
 
+def remove_from_tests_list(given_id, conf_json_content):
+    for index in range(len(conf_json_content.get('tests'))):
+        if conf_json_content.get('tests')[index].get('integrations', '') == given_id or \
+                conf_json_content.get('tests')[index].get('playbookID') == given_id:
+            conf_json_content.get('tests').pop(index)
+
+
+def get_conf_json():
+    return get_json('Tests/conf.json')
+
+
+def write_conf_json(conf_json_content):
+    with open('Tests/conf.json', 'w') as f:
+        json.dump(conf_json_content, f, indent=4)
+        print("Updating conf.json")
+
+
 def main():
     arguments = sys.argv
     old_version = arguments[1]
     if old_version.count('.') == 1:
         old_version = old_version + ".9"
+
+    conf_json_content = get_conf_json()
 
     click.secho("Starting Branch Editing")
     for pack_name in os.listdir('Packs'):
@@ -123,7 +139,7 @@ def main():
 
                     if os.path.isfile(file_path):
                         if file_path.endswith('.yml'):
-                            if not handle_yml_file(file_path, old_version):
+                            if not handle_yml_file(file_path, old_version, conf_json_content):
                                 delete_playbook(file_path)
 
                     else:
@@ -131,7 +147,7 @@ def main():
                         for inner_file_name in os.listdir(inner_dir_path):
                             file_path = os.path.join(inner_dir_path, inner_file_name)
                             if file_path.endswith('.yml'):
-                                if not handle_yml_file(file_path, old_version):
+                                if not handle_yml_file(file_path, old_version, conf_json_content):
                                     delete_playbook(file_path)
 
             if content_dir in ['Scripts', 'Integrations']:
@@ -145,7 +161,7 @@ def main():
 
                     else:
                         yml_file_path = os.path.join(path, script_name + '.yml')
-                    if not handle_yml_file(yml_file_path, old_version):
+                    if not handle_yml_file(yml_file_path, old_version, conf_json_content):
                         delete_script_or_integration(path)
 
             elif content_dir in ['IncidentFields', 'IncidentTypes', 'IndicatorFields', 'Layouts', 'Classifiers',
@@ -160,6 +176,9 @@ def main():
 
     click.secho("Deleting empty directories\n")
     os.system("find Packs -type d -empty -delete")
+
+    click.secho('Rewriting conf.json')
+    write_conf_json(conf_json_content)
 
     click.secho("Finished creating branch", fg="green")
 
