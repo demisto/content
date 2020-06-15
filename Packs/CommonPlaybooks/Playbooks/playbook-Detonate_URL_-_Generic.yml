@@ -400,6 +400,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -451,7 +452,7 @@ inputs:
       root: URL
   required: false
   description: URL object of url to be detonated.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File
   description: The File's object
@@ -784,3 +785,4 @@ outputs:
   type: String
 tests:
 - Detonate URL - Generic Test
+fromversion: 4.0.0
