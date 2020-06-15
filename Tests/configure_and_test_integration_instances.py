@@ -833,7 +833,7 @@ def main():
         prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
         # If there is a failure, __test_integration_instance will print it
-        success = __test_integration_instance(testing_client, instance, prints_manager)
+        success, _ = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
@@ -883,7 +883,7 @@ def main():
         prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
         # If there is a failure, __test_integration_instance will print it
-        success = __test_integration_instance(testing_client, instance, prints_manager)
+        success, _ = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
