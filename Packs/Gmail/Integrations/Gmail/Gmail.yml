@@ -12,7 +12,7 @@ configuration:
   name: gappsID
   required: false
   type: 0
-- display: Events query (e.g. "from:example@demisto.com") - test
+- display: Events query (e.g. "from:example@demisto.com")
   name: query
   required: false
   type: 0

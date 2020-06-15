@@ -119,7 +119,7 @@ def run():
 
     add_to_conf_json(new_conf_json_objects)
     print(f'Added {len(new_conf_json_objects)} tests to the conf.json')
-    print(f'Added the following objects to the conf.json:\n{json.dumps(new_conf_json_objects)}')
+    print(f'Added the following objects to the conf.json:\n{json.dumps(new_conf_json_objects, indent=4)}')
 
 
 if __name__ == '__main__':
