@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: add Service Account Private Key file contents (JSON) to "Password"
   name: credentials
-  required: false
+  required: true
   type: 9
 - display: Use system proxy settings
   name: proxy
