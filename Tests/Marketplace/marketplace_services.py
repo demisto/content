@@ -617,7 +617,7 @@ class Pack(object):
 
         try:
             if should_encrypt:
-                self.zip_and_encrypt_pack(self, zip_pack_path, zip_and_encrypt_script_path, encryption_key)
+                self.zip_and_encrypt_pack(zip_pack_path, zip_and_encrypt_script_path, encryption_key)
             else:
                 self.zip_pack_without_encrypting(zip_pack_path)
             task_status = True
