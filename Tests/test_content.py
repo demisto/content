@@ -696,7 +696,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    # If queue is None- it means we're in mocked tests, no need to actually lock integrations
+    # If queue is None - it means we're in mocked tests, no need to actually lock integrations
     with acquire_test_lock(t, default_test_timeout, prints_manager, thread_index, bool(tests_queue)) as lock:
         if lock:
             run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
@@ -1066,7 +1066,7 @@ def acquire_test_lock(test_details: dict,
     This is a context manager that handles all the locking and unlocking of integrations.
     Execution is as following:
     * Attempts to lock the test's integrations and yields the result of this attempt
-    * If lock attempt has failed- puts the test back in the queue
+    * If lock attempt has failed - yields False, if it succeeds - yields True
     * Once the test is done- will unlock all integrations
     Args:
         test_details: Details of the currently executed test
@@ -1074,6 +1074,8 @@ def acquire_test_lock(test_details: dict,
         prints_manager: ParallelPrintsManager object
         thread_index: The index of the thread that executes the unlocking
         is_not_mocked: If the test is mockable - no need to actually lock it
+    Yields:
+        A boolean indicating the lock attempt result
     """
     storage_client = storage.Client()
     if is_not_mocked:
@@ -1087,7 +1089,7 @@ def acquire_test_lock(test_details: dict,
             return
         # executing the test could take a while, re-instancing the storage client
         storage_client = storage.Client()
-        unlock_integrations(get_integrations_list(test_details), prints_manager, storage_client, thread_index)
+        unlock_integrations(test_details, prints_manager, storage_client, thread_index)
 
 
 def lock_integrations(test_details: dict,
@@ -1111,12 +1113,12 @@ def lock_integrations(test_details: dict,
     if not integrations:
         return True
     existing_integrations_lock_files = get_locked_integrations(integrations, storage_client)
-    for _, lock_file in existing_integrations_lock_files.items():
+    for build_number, lock_file in existing_integrations_lock_files.items():
         # Each file has content in the form of <circleci-build-number>:<timeout in seconds>
-        # In this iteration we only need the timeout
-        _, lock_timeout = lock_file.download_as_string().decode().split(':')
+        # If it has not expired - it means the integration is currently locked by another test.
+        build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
         if not lock_expired(lock_file, lock_timeout):
-            # there is a locked integration for which the lock is not expired- test cannot be executed at the moment
+            # there is a locked integration for which the lock is not expired - test cannot be executed at the moment
             return False
     integrations_generation_number = {}
     # Gathering generation number with which the new file will be created,
@@ -1194,27 +1196,33 @@ def create_lock_files(integrations_generation_number: dict,
                 print_warning,
                 thread_index,
                 include_timestamp=True)
-            unlock_integrations(locked_integrations, prints_manager, storage_client, thread_index)
+            unlock_integrations(test_details, prints_manager, storage_client, thread_index)
             return False
     return True
 
 
-def unlock_integrations(locked_integrations: list,
+def unlock_integrations(test_details: dict,
                         prints_manager: ParallelPrintsManager,
                         storage_client: storage.Client,
                         thread_index: int) -> None:
     """
     Delete all integration lock files for integrations specified in 'locked_integrations'
     Args:
-        locked_integrations: Integration to unlock
+        test_details: Details of the currently executed test
         prints_manager: ParallelPrintsManager object
         storage_client: The GCP storage client
         thread_index: The index of the thread that executes the unlocking
     """
+    locked_integrations = get_integrations_list(test_details)
     locked_integration_blobs = get_locked_integrations(locked_integrations, storage_client)
     for integration, lock_file in locked_integration_blobs.items():
         try:
             lock_file.delete(if_generation_match=lock_file.generation)
+            prints_manager.add_print_job(
+                f'Integration {integration} unlocked',
+                print,
+                thread_index,
+                include_timestamp=True)
         except PreconditionFailed:
             prints_manager.add_print_job(f'Could not unlock integration {integration}',
                                          print_warning,
@@ -1235,15 +1243,15 @@ def get_locked_integrations(integrations: list, storage_client: storage.Client) 
     # Listing all files in lock folder
     # Wrapping in 'list' operator because list_blobs return a generator which can only be iterated once
     lock_files_ls = list(storage_client.list_blobs(BUCKET_NAME, prefix=f'{LOCKS_PATH}'))
-    existing_integrations_lock_files = {}
+    current_integrations_lock_files = {}
     # Getting all existing files details for integrations that we want to lock
     for integration in integrations:
-        existing_integrations_lock_files.update({integration: [lock_file_blob for lock_file_blob in lock_files_ls if
-                                                               lock_file_blob.name == f'{LOCKS_PATH}/{integration}']})
-    # Filtering 'existing_integrations_lock_files' from integrations with no files
-    existing_integrations_lock_files = {integration: blob_files[0] for integration, blob_files in
-                                        existing_integrations_lock_files.items() if blob_files}
-    return existing_integrations_lock_files
+        current_integrations_lock_files.update({integration: [lock_file_blob for lock_file_blob in lock_files_ls if
+                                                              lock_file_blob.name == f'{LOCKS_PATH}/{integration}']})
+    # Filtering 'current_integrations_lock_files' from integrations with no files
+    current_integrations_lock_files = {integration: blob_files[0] for integration, blob_files in
+                                       current_integrations_lock_files.items() if blob_files}
+    return current_integrations_lock_files
 
 
 def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
