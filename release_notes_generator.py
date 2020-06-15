@@ -5,10 +5,10 @@ import sys
 import json
 import glob
 import argparse
-import requests
-
 from datetime import datetime
+
 from distutils.version import LooseVersion
+import requests
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, get_dict_from_file
 
 
@@ -55,7 +55,7 @@ def get_new_packs(git_sha1):
     return pack_paths
 
 
-def get_new_entity_record(entity_path : str) -> (str, str):
+def get_new_entity_record(entity_path: str) -> (str, str):
     data, _ = get_dict_from_file(entity_path)
 
     if 'layouts' in entity_path.lower():
@@ -64,6 +64,9 @@ def get_new_entity_record(entity_path : str) -> (str, str):
         return f'{type_id} - {layout_kind}', ''
 
     name = data.get('name', '')
+    if 'integrations' in entity_path.lower() and data.get('display'):
+        name = data.get('display')
+
     if not name:
         print_error(f'missing name for {entity_path}')
 
@@ -214,22 +217,18 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
     release_notes = f'# Cortex XSOAR Content Release Notes for version {version} ({asset_id})\n' \
         f'##### Published on {current_date}\n'
 
-    if new_packs_release_notes:
-        release_notes += '## New Content\n'
-        for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
-            release_notes += f'### {pack_name} Pack v1.0.0\n' \
-                             f'{pack_summary}\n---\n\n'
+    pack_rn_blocks = []
+    for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
+        pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0\n'
+                              f'{pack_summary}')
 
-    if modified_release_notes_dict:
-        release_notes += '## Improved Content\n'
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
         for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
                                                        key=lambda pack_item: LooseVersion(pack_item[0])):
-            release_notes += f'### {pack_name} Pack v{pack_version}\n' \
-                f'{pack_release_notes}\n---\n\n'
+            pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
+                                  f'{pack_release_notes}')
 
-    if release_notes.endswith('---\n\n'):
-        release_notes = release_notes[:-5]
+    release_notes += '\n\n---\n\n'.join(pack_rn_blocks)
 
     with open(release_notes_file, 'w') as outfile:
         outfile.write(release_notes)
