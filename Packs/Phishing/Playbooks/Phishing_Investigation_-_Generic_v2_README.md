@@ -1,6 +1,6 @@
 ## Usage
 
-Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
+Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident while investigating the incident itself.
 
 The final remediation tasks are always decided by a human analyst.
 
