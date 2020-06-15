@@ -2,7 +2,6 @@
     "name": "Logz.io",
     "description": "Logz.io Integration ",
     "support": "partner",
-    "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.2",
     "author": "Logz.io",
     "url": "",
@@ -16,12 +15,6 @@
         "Security"
     ],
     "created": "2020-04-14T08:25:21Z",
-    "updated": "2020-04-14T08:25:21Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
     "useCases": [],
-    "keywords": [],
-    "price": "0",
-    "dependencies": {}
+    "keywords": []
 }
