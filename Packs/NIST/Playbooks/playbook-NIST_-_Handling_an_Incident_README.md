@@ -29,7 +29,7 @@ There are no outputs for this playbook.
 
 ## Playbook Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content/raw/037ec5ad043bb260e7c1afffea8badbca8aa1041/Packs/NIST/doc_files/NIST-Demo.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/NIST/NIST-Demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/037ec5ad043bb260e7c1afffea8badbca8aa1041/Packs/NIST/doc_files/NIST-Demo.mp4
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/NIST/NIST-Demo.mp4
 </video>
