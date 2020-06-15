@@ -8,7 +8,6 @@ import threading
 
 import json as js
 import datetime
-from unittest.mock import mock_open
 
 USERS = '''[{
     "id": "U012A3CDE",
