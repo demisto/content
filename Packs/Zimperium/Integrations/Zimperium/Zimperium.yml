@@ -294,7 +294,7 @@ script:
         description: 'User role ID.'
         type: Number
       - contextPath: Zimperium.Users.signupSteps
-        description: 'User sign up steps'
+        description: 'User sign up steps.'
         type: Number
       - contextPath: Zimperium.Users.staff
         description: 'Whether the user is a staff member.'
