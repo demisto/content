@@ -827,6 +827,39 @@ def test_security_data_search_command(code42_sdk_mock):
     assert "ApplicationRead" in actual_query
 
 
+def test_fetch_incidents_handles_single_severity(code42_sdk_mock):
+    client = Code42Client(
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
+    )
+    fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter="High",
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    assert "HIGH" in str(code42_sdk_mock.alerts.search.call_args[0][0])
+
+
+def test_fetch_incidents_handles_multi_severity(code42_sdk_mock):
+    client = Code42Client(
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
+    )
+    fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=["High", "Low"],
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    assert "HIGH" in str(code42_sdk_mock.alerts.search.call_args[0][0])
+    assert "LOW" in str(code42_sdk_mock.alerts.search.call_args[0][0])
+
+
 def test_fetch_incidents_first_run(code42_sdk_mock):
     client = Code42Client(
         sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
