@@ -15,5 +15,7 @@
     "keywords": [
         "Elasticsearch",
         "Feed"
-    ]
+    ],
+    "price": 0,
+    "dependencies": {}
 }
