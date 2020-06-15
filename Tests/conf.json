@@ -2839,7 +2839,6 @@
 
     ],
     "skipped_tests": {
-        "MSGraph_DeviceManagement_Test": "Issue 25603",
         "CuckooTest": "Issue 25601",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "Cortex XDR - IOC - Test": "Issue 25598",
