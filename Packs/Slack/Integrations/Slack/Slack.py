@@ -411,7 +411,7 @@ def set_name_and_icon(body, method):
             body['icon_url'] = BOT_ICON_URL
 
 
-def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: dict = None,
+def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
                             body: dict = None) -> SlackResponse:
     """
     Sends a request to slack API while handling rate limit errors.
@@ -452,7 +452,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
     return response  # type: ignore[return-value]
 
 
-async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: dict = None,
+async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
                                    body: dict = None) -> SlackResponse:
     """
     Sends an async request to slack API while handling rate limit errors.
@@ -656,10 +656,11 @@ def mirror_investigation():
             body = {
                 'name': channel_name
             }
-            if mirror_to == 'channel':
-                conversation = send_slack_request_sync(CHANNEL_CLIENT, 'channels.create', body=body).get('channel', {})
-            else:
-                conversation = send_slack_request_sync(CHANNEL_CLIENT, 'groups.create', body=body).get('group', {})
+
+            if mirror_to != 'channel':
+                body['is_private'] = True
+
+            conversation = send_slack_request_sync(CHANNEL_CLIENT, 'conversations.create', body=body).get('channel', {})
 
             conversation_name = conversation.get('name')
             conversation_id = conversation.get('id')
@@ -1117,9 +1118,9 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
     if not data:
         data = 'Sorry, I could not perform the selected operation.'
     body = {
-        'user': user.get('id')
+        'users': user.get('id')
     }
-    im = await send_slack_request_async(client, 'im.open', body=body)
+    im = await send_slack_request_async(client, 'conversations.open', body=body)
     channel = im.get('channel', {}).get('id')
     body = {
         'text': data,
@@ -1784,9 +1785,9 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
             demisto.error(f'Could not find the Slack user {to}')
         else:
             body = {
-                'user': user.get('id')
+                'users': user.get('id')
             }
-            im = send_slack_request_sync(CLIENT, 'im.open', body=body)
+            im = send_slack_request_sync(CLIENT, 'conversations.open', body=body)
             destinations.append(im.get('channel', {}).get('id'))
     if channel or group:
         if not destinations:
@@ -1947,10 +1948,11 @@ def create_channel():
     body = {
         'name': channel_name
     }
-    if channel_type != 'private':
-        conversation = send_slack_request_sync(CHANNEL_CLIENT, 'channels.create', body=body).get('channel', {})
-    else:
-        conversation = send_slack_request_sync(CHANNEL_CLIENT, 'groups.create', body=body).get('group', {})
+
+    if channel_type == 'private':
+        body['is_private'] = True
+
+    conversation = send_slack_request_sync(CHANNEL_CLIENT, 'conversations.create', body=body).get('channel', {})
 
     if users:
         slack_users = search_slack_users(users)
