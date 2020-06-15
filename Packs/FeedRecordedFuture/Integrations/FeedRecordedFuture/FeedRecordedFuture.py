@@ -281,7 +281,7 @@ def format_risk_string(risk_string):
     return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
 
 
-def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
+def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
         client(Client): Recorded Future Feed client.
@@ -295,18 +295,23 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
         iterator = client.build_iterator(service, indicator_type)
         for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
             raw_json = dict(item)
-            evidence_details = json.loads(item.get('EvidenceDetails')).get('EvidenceDetails')
-            raw_json['EvidenceDetails'] = evidence_details
-            raw_json['RiskString'] = format_risk_string(item.get('RiskString'))
             raw_json['value'] = value = item.get('Name')
             raw_json['type'] = get_indicator_type(indicator_type, item)
-            raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
-            raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(item['Risk'])
+            score = 0
+            risk = item.get('Risk')
+            if isinstance(risk, str) and risk.isdigit():
+                raw_json['score'] = score = client.calculate_indicator_score(risk)
+                raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
             lower_case_evidence_details_keys = []
-            for rule in evidence_details:
-                rule = dict((k.lower(), v) for k, v in rule.items())
-                lower_case_evidence_details_keys.append(rule)
-
+            evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
+            if evidence_details:
+                raw_json['EvidenceDetails'] = evidence_details
+                for rule in evidence_details:
+                    rule = dict((k.lower(), v) for k, v in rule.items())
+                    lower_case_evidence_details_keys.append(rule)
+            risk_string = item.get('RiskString')
+            if isinstance(risk_string, str):
+                raw_json['RiskString'] = format_risk_string(risk_string)
             indicators.append({
                 "value": value,
                 "type": raw_json['type'],
@@ -377,7 +382,7 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, client.indicator_type, None)
+            indicators = fetch_indicators_command(client, client.indicator_type)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

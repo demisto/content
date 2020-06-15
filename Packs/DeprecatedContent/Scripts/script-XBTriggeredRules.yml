@@ -21,7 +21,7 @@ tags:
 - server
 - analytics
 - exabeam
-comment: Retrieve the triggered rules for a session
+comment: This script is deprecated. Use the Exabeam integration instead.
 system: true
 deprecated: true
 args:
