@@ -938,6 +938,82 @@ script:
     description: Get a report.
     execution: false
     name: zimperium-report-get
+    outputs:
+      - contextPath: Zimperium.Reports.app_analysis.analysis
+        description: 'Application analysis data.'
+        type: Unknown
+      - contextPath: Zimperium.Reports.behavior.count_sms
+        description: 'TODO'
+        type: Number
+      - contextPath: Zimperium.Reports.behavior.network.http_requests
+        description: 'TODO'
+        type: Unknown
+      - contextPath: Zimperium.Reports.behavior.telephony
+        description: 'TODO'
+        type: Unknown
+      - contextPath: Zimperium.Reports.certificate.app_signature
+        description: 'Application signature.'
+        type: String
+      - contextPath: Zimperium.Reports.certificate.serial_number_app_instances
+        description: 'Application serial number.'
+        type: Number
+      - contextPath: Zimperium.Reports.certificate.serial_number_risk_score
+        description: 'Application risk score.'
+        type: Number
+      - contextPath: Zimperium.Reports.distribution
+        description: 'Related distribution data.'
+        type: Unknown
+      - contextPath: Zimperium.Reports.md5
+        description: 'Application md5 hash.'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.detection_rate
+        description: 'TODO'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.intell_privacy
+        description: 'TODO'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.intell_security
+        description: 'TODO.'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.overall_risk
+        description: 'Overall  risk.'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.privacy.Category
+        description: 'Privacy category'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.privacy.Risk Level
+        description: 'Privacy risk level.'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.privacy.desc
+        description: 'Privacy description.'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.privacy_risk
+        description: 'Privacy risk.'
+        type: Number
+      - contextPath: Zimperium.Reports.risk_profile.security.Category
+        description: 'Securoty category.'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.security.Risk Level
+        description: 'Security risk level.'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.security.desc
+        description: 'Security description.'
+        type: String
+      - contextPath: Zimperium.Reports.risk_profile.security_risk
+        description: 'Security risk.'
+        type: Number
+      - contextPath: Zimperium.Reports.threats.detected
+        description: 'Threats detected.'
+        type: Number
+      - contextPath: Zimperium.Reports.threats.detected_skip
+        description: 'TODO'
+        type: Number
+      - contextPath: Zimperium.Reports.threats.status
+        description: 'Threats status.'
+        type: String
+      - contextPath: Zimperium.Reports.threats.total
+        description: 'Total threats.'
+        type: Number
   - arguments:
     - default: false
       description: ID of the entry containing the file to upload.
