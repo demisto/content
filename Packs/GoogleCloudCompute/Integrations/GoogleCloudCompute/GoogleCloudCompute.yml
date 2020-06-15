@@ -3,10 +3,10 @@ commonfields:
   id: Google Cloud Compute
   version: -1
 configuration:
-- display: Service Account Private Key file contents (JSON)
-  name: service
-  required: true
-  type: 4
+- display: add Service Account Private Key file contents (JSON) to "Password"
+  name: credentials
+  required: false
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -12823,26 +12823,23 @@ script:
       description: Progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GoogleCloudCompute.ProjectMetadata.targetId
-      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      description: The unique target ID, which identifies a specific incarnation of
+        the target resource.
       type: String
     - contextPath: GoogleCloudCompute.ProjectMetadata.startTime
       description: The time that this operation was started by the server.
       type: String
     - contextPath: GoogleCloudCompute.ProjectMetadata.status
-      description: The status of the operation, which can be one of the following PENDING, RUNNING, or DONE
+      description: The status of the operation, which can be one of the following
+        PENDING, RUNNING, or DONE
       type: String
     - contextPath: GoogleCloudCompute.ProjectMetadata.kind
       description: Type of the resource. Always compute#operation.
       type: String
-  dockerimage45: demisto/google-api:1.0.0.235
   dockerimage: demisto/google-api:1.0.0.7874
-  feed: false
   isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
   type: python
 tests:
 - No tests
