@@ -89,6 +89,7 @@ class Client(BaseClient):
         return human_readable, context_entry, result
 
     def test_module_command(self):
+        return False
         try:
             self.get_report()
         except DemistoException as error:
