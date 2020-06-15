@@ -121,7 +121,7 @@ def filter_tests_with_incompatible_version(tests, server_version, prints_manager
     return filtered_tests
 
 
-def configure_integration_instance(integration, client, prints_manager, server_host):
+def configure_integration_instance(integration, client, prints_manager, placeholders_map):
     """
     Configure an instance for an integration
 
@@ -132,6 +132,8 @@ def configure_integration_instance(integration, client, prints_manager, server_h
             The client to connect to
         prints_manager: (ParallelPrintsManager)
             Print manager object
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
 
     Returns:
         (dict): Configured integration instance
@@ -141,8 +143,7 @@ def configure_integration_instance(integration, client, prints_manager, server_h
                                  print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
     integration_instance_name = integration.get('instance_name', '')
-    changes_map = {'%%SERVER_HOST%%': server_host}
-    integration_params = change_placeholders_to_values(changes_map, integration.get('params'))
+    integration_params = change_placeholders_to_values(placeholders_map, integration.get('params'))
     is_byoi = integration.get('byoi', True)
     validate_test = integration.get('validate_test', True)
 
@@ -274,14 +275,25 @@ def get_content_version_details(client, ami_name, prints_manager, thread_index):
     return result_object.get('release', ''), result_object.get('assetId', 0)
 
 
-def change_placeholders_to_values(changes_map, config_item):
+def change_placeholders_to_values(placeholders_map, config_item):
+    """Replaces placeholders in the object to their real values
+
+    Args:
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
+        config_item: (json object)
+            Integration configuration object.
+
+    Returns:
+        dict. json object with the real configuration.
+    """
     item_as_string = json.dumps(config_item)
-    for key, value in changes_map.items():
+    for key, value in placeholders_map.items():
         item_as_string = item_as_string.replace(key, value)
     return json.loads(item_as_string)
 
 
-def set_integration_params(integrations, secret_params, instance_names, server_host):
+def set_integration_params(integrations, secret_params, instance_names, placeholders_map):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -302,13 +314,14 @@ def set_integration_params(integrations, secret_params, instance_names, server_h
         instance_names: (list)
             The names of particular instances of an integration to use the secret_params of as the
             configuration values.
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
 
     Returns:
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
     for integration in integrations:
-        changes_map = {'%%SERVER_HOST%%': server_host}
-        integration_params = [change_placeholders_to_values(changes_map, item) for item
+        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
 
         if integration_params:
@@ -381,6 +394,15 @@ def set_module_params(param_conf, integration_params):
 
 
 def __set_server_keys(client, prints_manager, integration_params, integration_name):
+    """Adds server configuration keys using the demisto_client.
+
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object.
+        integration_params (dict): The values to use for an integration's parameters to configure an instance.
+        integration_name (str): The name of the integration which the server configurations keys are related to.
+
+    """
     if 'server_keys' not in integration_params:
         return
 
@@ -835,9 +857,11 @@ def main():
 
         # set params for new integrations and [modified + unchanged] integrations, then add the new ones
         # to brand_new_integrations list for later use
-        new_ints_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf, servers[0])
+        placeholders_map = {'%%SERVER_HOST%%': servers[0]}
+        new_ints_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf,
+                                                     placeholders_map)
         ints_to_configure_params_set = set_integration_params(integrations_to_configure, secret_params,
-                                                              instance_names_conf, servers[0])
+                                                              instance_names_conf, placeholders_map)
         if not new_ints_params_set:
             prints_manager.add_print_job(
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
@@ -853,7 +877,9 @@ def main():
 
         module_instances = []
         for integration in integrations_to_configure:
-            module_instance = configure_integration_instance(integration, testing_client, prints_manager, servers[0])
+            placeholders_map = {'%%SERVER_HOST%%': servers[0]}
+            module_instance = configure_integration_instance(integration, testing_client, prints_manager,
+                                                             placeholders_map)
             if module_instance:
                 module_instances.append(module_instance)
 
@@ -909,8 +935,9 @@ def main():
     # configure instances for new integrations
     new_integration_module_instances = []
     for integration in brand_new_integrations:
+        placeholders_map = {'%%SERVER_HOST%%': servers[0]}
         new_integration_module_instance = configure_integration_instance(integration, testing_client, prints_manager,
-                                                                         servers[0])
+                                                                         placeholders_map)
         if new_integration_module_instance:
             new_integration_module_instances.append(new_integration_module_instance)
 

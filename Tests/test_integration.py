@@ -408,6 +408,15 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
 
 
 def __set_server_keys(client, prints_manager, integration_params, integration_name):
+    """Adds server configuration keys using the demisto_client.
+
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object.
+        integration_params (dict): The values to use for an integration's parameters to configure an instance.
+        integration_name (str): The name of the integration which the server configurations keys are related to.
+
+    """
     if 'server_keys' not in integration_params:
         return
 
@@ -439,6 +448,21 @@ def __set_server_keys(client, prints_manager, integration_params, integration_na
 
 
 def __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index=0):
+    """Deletes integration instance by it's name.
+
+    Args:
+        client (demisto_client): The configured client to use.
+        instance_name (str): The name of the instance to delete.
+        prints_manager (ParallelPrintsManager): Print manager object.
+        thread_index: The index of the thread running the execution.
+
+    Notes:
+        This function is needed when the name of the instance is pre-defined in the tests configuration, and the test
+        itself depends on the instance to be called as the `instance name`.
+        In case we need to configure another instance with the same name, the client will throw an error, so we
+        will call this function first, to delete the instance with this name.
+
+    """
     try:
         int_resp = demisto_client.generic_request_func(self=client, method='POST',
                                                        path='/settings/integration/search',
