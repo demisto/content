@@ -252,6 +252,7 @@ class FileEventSearchFilters(SearchFilters):
 class AlertSearchFilters(SearchFilters):
     def to_all_query(self):
         query = AlertQuery.all(*self._filters)
+        query.page_size = 500
         query.sort_direction = "asc"
         return query
 
