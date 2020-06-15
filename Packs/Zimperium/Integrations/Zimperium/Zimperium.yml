@@ -717,7 +717,6 @@ script:
     description: Retrieve Devices from Greater than Last Updated.
     execution: false
     name: zimperium-devices-get-last-updated
-    name: zimperium-device-get-by-id
     outputs:
       - contextPath: Zimperium.Devices.appName
         description: 'Application name.'
@@ -853,6 +852,58 @@ script:
     description: Retrieve appliction classification.
     execution: false
     name: zimperium-app-classification-get
+    outputs:
+      - contextPath: Zimperium.Application.classification
+        description: 'Application classification.'
+        type: String
+      - contextPath: Zimperium.Application.deviceCount
+        description: 'Application device count.'
+        type: Number
+      - contextPath: Zimperium.Application.hash
+        description: 'Application hash.'
+        type: String
+      - contextPath: Zimperium.Application.metadata
+        description: 'Application metada.'
+        type: Unknown
+      - contextPath: Zimperium.Application.modifiedDate
+        description: 'Application modified date.'
+        type: Date
+      - contextPath: Zimperium.Application.name
+        description: 'Application name'
+        type: String
+      - contextPath: Zimperium.Application.namespace
+        description: 'Application name space.'
+        type: String
+      - contextPath: Zimperium.Application.objectId
+        description: 'Application object ID.'
+        type: String
+      - contextPath: Zimperium.Application.privacyEnum
+        description: 'Application privacy enum.'
+        type: Number
+      - contextPath: Zimperium.Application.privacyRisk
+        description: 'Application privacy risk.'
+        type: String
+      - contextPath: Zimperium.Application.processState
+        description: 'Application process state.'
+        type: String
+      - contextPath: Zimperium.Application.score
+        description: 'Application score.'
+        type: Number
+      - contextPath: Zimperium.Application.securityEnum
+        description: 'Application security enum.'
+        type: Number
+      - contextPath: Zimperium.Application.securityRisk
+        description: 'Application security risk.'
+        type: String
+      - contextPath: Zimperium.Application.systemToken
+        description: 'System token.'
+        type: String
+      - contextPath: Zimperium.Application.type
+        description: 'TTODO'
+        type: Number
+      - contextPath: Zimperium.Application.version
+        description: 'Application version'
+        type: String
   - arguments:
     - default: false
       description: Bundle ID.
