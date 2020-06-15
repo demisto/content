@@ -343,7 +343,7 @@ def devices_get_last_updated(client: Client, args: Dict) -> Tuple[str, Dict, Dic
     headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
     human_readable = tableToMarkdown(name=f"Last updated devices{table_name}:", t=devices_data, headers=headers,
                                      removeNull=True)
-    entry_context = {f'Zimperium.LastUpdatedDevices(val.deviceId === obj.deviceId)': devices_data}
+    entry_context = {f'Zimperium.Devices(val.deviceId === obj.deviceId)': devices_data}
 
     return human_readable, entry_context, devices
 
