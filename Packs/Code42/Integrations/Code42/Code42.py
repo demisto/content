@@ -149,7 +149,8 @@ class Code42Client(BaseClient):
         try:
             user_id = self.get_user_id(username)
             self._sdk.detectionlists.departing_employee.add(user_id, departure_date=departure_date)
-            not note or self._sdk.detectionlists.update_user_notes(note)
+            if note:
+                self._sdk.detectionlists.update_user_notes(user_id, note)
         except Exception:
             return None
         return user_id

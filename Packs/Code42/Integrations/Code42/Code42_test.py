@@ -703,7 +703,7 @@ MOCK_GET_USER_RESPONSE = """
 def code42_sdk_mock(mocker):
     c42_sdk_mock = mocker.MagicMock(spec=SDKClient)
 
-    # Setup mock alert details
+    # Setup mock alert detailsuser
     alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
     c42_sdk_mock.alerts.get_details.return_value = alert_details_response
 
@@ -801,12 +801,13 @@ def test_departing_employee_add_command(code42_sdk_mock):
     )
     _, _, res = departingemployee_add_command(
         client,
-        {"username": "user1@example.com", "departuredate": "2020-01-01", "notes": "Dummy note"},
+        {"username": "user1@example.com", "departuredate": "2020-01-01", "note": "Dummy note"},
     )
-    expected = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected
+    expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
+    assert res == expected_user_id
     add_func = code42_sdk_mock.detectionlists.departing_employee.add
-    add_func.assert_called_once_with(expected, departure_date="2020-01-01")
+    add_func.assert_called_once_with(expected_user_id, departure_date="2020-01-01")
+    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(expected_user_id, "Dummy note")
 
 
 def test_security_data_search_command(code42_sdk_mock):
