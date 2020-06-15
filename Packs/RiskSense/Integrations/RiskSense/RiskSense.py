@@ -899,7 +899,7 @@ def get_threat_detail(threats):
         'Category': threat.get('category', ''),
         'Severity': threat.get('severity', ''),
         'Description': threat.get('description', ''),
-        'Cve': threat.get('cves', ''),
+        'Cve': threat.get('cves', []),
         'Source': threat.get('source', ''),
         'Published': threat.get('published', ''),
         'Updated': threat.get('updated', ''),
