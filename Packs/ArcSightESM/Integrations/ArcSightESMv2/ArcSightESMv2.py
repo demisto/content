@@ -11,7 +11,7 @@ import base64
 requests.packages.urllib3.disable_warnings()
 
 """ GLOBALS """
-MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
+MAX_UNIQUE = int(demisto.params().get('max_unique', 4000))
 FETCH_CHUNK_SIZE = int(demisto.params().get('fetch_chunk_size', 50))
 FETCH_CHUNK_SIZE = min(50, FETCH_CHUNK_SIZE)  # fetch size should no exceed 50
 
@@ -371,12 +371,13 @@ def fetch():
             }
 
             incidents.append(incident)
-            if len(incidents) >= FETCH_CHUNK_SIZE:
-                break
 
             if len(already_fetched) > MAX_UNIQUE:
                 already_fetched.pop(0)
             already_fetched.append(r_id)
+
+            if len(incidents) >= FETCH_CHUNK_SIZE:
+                break
 
     last_run = {
         'already_fetched': already_fetched,
