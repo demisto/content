@@ -434,7 +434,7 @@ This command requires one of the following roles:
 
 ## Additional Information
 ---
-For additional infromation on Code42 features and functionality please visit [https://support.code42.com/Administrator/Cloud/Monitoring\_and\_managing](https://support.code42.com/Administrator/Cloud/Monitoring_and_managing)
+For additional information on Code42 features and functionality please visit [https://support.code42.com/Administrator/Cloud/Monitoring\_and\_managing](https://support.code42.com/Administrator/Cloud/Monitoring_and_managing)
 
 ## Known Limitations
 ---
