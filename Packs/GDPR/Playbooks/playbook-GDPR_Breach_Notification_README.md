@@ -35,7 +35,7 @@ There are no outputs for this playbook.
 
 ## Playbook Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content/raw/b0962770bbabf8a1c1923261d4b43d9a1c25eb99/Packs/GDPR/doc_files/GDPR_Data_Breach_Notification.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/GDPR/GDPR_Data_Breach_Notification.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/b0962770bbabf8a1c1923261d4b43d9a1c25eb99/Packs/GDPR/doc_files/GDPR_Data_Breach_Notification.mp4
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/GDPR/GDPR_Data_Breach_Notification.mp4
 </video>
