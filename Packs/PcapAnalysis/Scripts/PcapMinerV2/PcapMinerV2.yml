@@ -128,6 +128,9 @@ outputs:
 - contextPath: PcapResultsFlow.DestIP
   description: The destination IP of the flow.
   type: String
+- contextPath: PcapResultsFlow.Transport
+  description: The transport protocol of the flow.
+  type: String
 - contextPath: PcapResultsFlow.SourceIP
   description: The source IP of the flow.
   type: String

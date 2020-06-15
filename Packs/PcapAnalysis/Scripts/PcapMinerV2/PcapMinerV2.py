@@ -445,7 +445,7 @@ class PCAP():
                                       decryption_key=wpa_password, encryption_type='WPA-PWD', keep_packets=False)
             for packet in cap:
                 self.last_packet = int(packet.number)
-                self.last_layer.add(packet.layers[-1].layer_name)
+                self.last_layer.add(packet.layers[-1].layer_name.upper())
 
                 layers = str(packet.layers)
                 # remove duplicate layer names such as [ETH,DATA,DATA] -> # [ETH, DATA]
@@ -466,17 +466,19 @@ class PCAP():
 
                 # count num of streams + get src/dest ports
                 tcp = packet.get_multiple_layers('tcp')
-
+                tcp_or_udp = 'Not TCP and not UDP'
                 if tcp:
                     self.tcp_streams = max(int(tcp[0].get('stream', 0)) + 1, self.tcp_streams)
                     src_port = int(tcp[0].get('srcport', 0))
                     dest_port = int(tcp[0].get('dstport', 0))
+                    tcp_or_udp = 'TCP'
 
                 udp = packet.get_multiple_layers('udp')
                 if udp:
                     self.udp_streams = max(int(udp[0].get('stream', 0)) + 1, self.udp_streams)
                     src_port = int(udp[0].get('srcport', 0))
                     dest_port = int(udp[0].get('dstport', 0))
+                    tcp_or_udp = 'UDP'
 
                 # add conversations
                 ip_layer = packet.get_multiple_layers('ip')
@@ -494,6 +496,7 @@ class PCAP():
                             b, a, src_port, dest_port = a, b, dest_port, src_port
                         flow = (a, src_port, b, dest_port)
                         flow_data = self.flows.get(flow, {'EntryID': self.entry_id,
+                                                          'Transport': tcp_or_udp,
                                                           'min_time': float('inf'),
                                                           'max_time': -float('inf'),
                                                           'bytes': 0,
