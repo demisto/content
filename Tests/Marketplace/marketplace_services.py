@@ -34,6 +34,7 @@ class GCPConfig(object):
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
+    PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name

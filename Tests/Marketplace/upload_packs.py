@@ -663,7 +663,8 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # upload core packs json to bucket
-    upload_core_packs_config(storage_bucket, build_number, index_folder_path)
+    if storage_bucket_name != GCPConfig.PRODUCTION_PRIVATE_BUCKET:
+        upload_core_packs_config(storage_bucket, build_number, index_folder_path)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs)
