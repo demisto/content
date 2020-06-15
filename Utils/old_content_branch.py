@@ -4,6 +4,7 @@ import os
 import click
 import yaml
 import io
+import json
 from pkg_resources import parse_version
 
 
@@ -28,6 +29,8 @@ def get_file(method, file_path, type_of_file):
 def get_yaml(file_path):
     return get_file(yaml.safe_load, file_path, ('yml', 'yaml'))
 
+def get_json(file_path):
+    return get_file(json.load, file_path, 'json')
 
 def handle_yml_file(file_path, yml_old_version):
     yml_content = get_yaml(file_path)
@@ -46,6 +49,21 @@ def handle_yml_file(file_path, yml_old_version):
 
     return True
 
+def handle_json_file(file_path, old_version):
+    json_content = get_json(file_path)
+    if 'toVersion' in json_content:
+        if parse_version(str(json_content.get('toVersion'))) < parse_version(old_version):
+            return False
+
+    if 'fromVersion' in json_content:
+        if parse_version(str(json_content.get('fromVersion'))) > parse_version(old_version):
+            return False
+
+    json_content['fromVersion'] = old_version
+    with open(file_path, 'w') as f:
+        json.dump(json_content, f, indent=4)
+
+    return True
 
 def delete_playbook(file_path):
     os.remove(file_path)
@@ -70,6 +88,15 @@ def delete_script_or_integration(path):
     else:
         os.system(f"rm -rf {path}")
     print(f" - Deleting {path}")
+
+
+def delete_json(file_path):
+    os.remove(file_path)
+    print(f" - Deleting {file_path}")
+
+    changelog_file = os.path.join(os.path.splitext(file_path)[0] + '_CHANGELOG.md')
+    if os.path.isfile(changelog_file):
+        os.remove(changelog_file)
 
 
 def main():
@@ -120,7 +147,10 @@ def main():
             elif content_dir in ['IncidentFields', 'IncidentTypes', 'IndicatorFields', 'Layouts', 'Classifiers',
                                  'Connections', 'Dashboards', 'IndicatorTypes', 'Reports', 'Widgets']:
                 for file_name in os.listdir(dir_path):
-
+                    file_path = os.path.join(dir_path, file_name)
+                    if os.path.isfile(file_path) and file_name.endswith('.json'):
+                        if not handle_json_file(file_path, old_version):
+                            delete_json(file_path)
 
         click.secho(f"Finished process for {pack_path}")
 
