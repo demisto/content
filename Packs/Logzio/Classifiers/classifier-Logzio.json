@@ -1,38 +1,11 @@
 {
     "defaultIncidentType": "Logz.io Alert",
     "id": "Logz.io",
+    "name": "Logz.io - Classifier",
     "type": "classification",
-    "name": "Logz.io Classifier",
     "description": "Classifies Logz.io alerts.",
     "keyTypeMap": {
         "Logz.Io": "Logz.io Alert"
-    },
-    "mapping": {
-        "Logz.io Alert": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Logz.Io Alert ID": {
-                    "complex": null,
-                    "simple": "alertId"
-                },
-                "Logz.io Alert Event ID": {
-                    "complex": null,
-                    "simple": "alertEventId"
-                },
-                "Logz.io Alert Summary": {
-                    "complex": null,
-                    "simple": "alertSummary"
-                },
-                "Logz.io Tags": {
-                    "complex": null,
-                    "simple": "tags"
-                },
-                "details": {
-                    "complex": null,
-                    "simple": "description"
-                }
-            }
-        }
     },
     "transformer": {
         "complex": null,

@@ -2,26 +2,27 @@ from __future__ import print_function
 
 import argparse
 import os
-import re
 import uuid
 import json
 import ast
+import subprocess
 import sys
-import demisto_client
 from time import sleep
 from threading import Thread
+from distutils.version import LooseVersion
+import demisto_client
+
+from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
+    run_command, get_last_release_version, checked_type, get_yaml, str2bool, server_version_compare
+from demisto_sdk.commands.validate.file_validator import FilesValidator
+from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
 
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
-from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_last_release_version, checked_type, get_yaml, str2bool
-from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager
-from demisto_sdk.commands.validate.file_validator import FilesValidator
-from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, \
-    BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
-from demisto_sdk.commands.common.tools import server_version_compare
+from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager, \
+    get_server_numeric_version
 from Tests.update_content_data import update_content
-# from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 
 MARKET_PLACE_MACHINES = ('master',)
 
@@ -37,6 +38,8 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('--branch', help='GitHub branch name', required=True)
+    parser.add_argument('--build-number', help='CI build number', required=True)
 
     options = parser.parse_args()
 
@@ -59,49 +62,14 @@ def determine_servers_urls(ami_env):
 
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
-        env_to_instance_dns = [{env.get('Role'): env.get('InstanceDNS')} for env in env_results]
-        instances_dns = [env.get(ami_env) for env in env_to_instance_dns if ami_env in env]
+
+    instances_dns = [env.get('InstanceDNS') for env in env_results if ami_env in env.get('Role', '')]
+
     server_urls = []
     for dns in instances_dns:
-        server_url = dns if dns.startswith('http') else ('https://{}'.format(dns) if
-                                                         dns else '')
+        server_url = dns if not dns or dns.startswith('http') else f'https://{dns}'
         server_urls.append(server_url)
     return server_urls
-
-
-def get_server_numeric_version(ami_env, prints_manager):
-    """
-    Gets the current server version
-    Arguments:
-        ami_env: (str)
-            AMI version name.
-        prints_manager: (ParallelPrintsManager)
-            Print manager object.
-
-    Returns:
-        (str) Server numeric version
-    """
-    images_file_name = './Tests/images_data.txt'
-    if not os.path.isfile(images_file_name):
-        prints_manager.add_print_job('Did not find image data file.', print_warning, 0)
-        return '99.99.98'  # latest
-    with open(images_file_name, 'r') as image_data_file:
-        image_data = [line for line in image_data_file if line.startswith(ami_env)]
-        if len(image_data) != 1:
-            warning_message = 'Did not get one image data for server version, got {}'.format(image_data)
-            prints_manager.add_print_job(warning_message, print_warning, 0)
-            return '99.99.98'
-        else:
-            server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-            if server_numeric_version:
-                server_numeric_version = server_numeric_version[0]
-            else:
-                server_numeric_version = '99.99.98'  # latest
-            server_image_message = 'Server image info: {}'.format(image_data[0])
-            prints_manager.add_print_job(server_image_message, print_color, 0, LOG_COLORS.GREEN)
-            server_version_message = 'Server version: {}'.format(server_numeric_version)
-            prints_manager.add_print_job(server_version_message, print_color, 0, LOG_COLORS.GREEN)
-            return server_numeric_version
 
 
 def check_test_version_compatible_with_server(test, server_version, prints_manager):
@@ -226,9 +194,8 @@ def get_new_and_modified_integration_files(git_sha1):
     tag = get_last_release_version()
     file_validator = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(git_sha1))
-    modified_files, added_files, removed_files, old_format_files = file_validator.get_modified_files(change_log, tag)
+    modified_files, added_files, _, _ = file_validator.get_modified_files(change_log, tag)
     all_integration_regexes = YML_INTEGRATION_REGEXES
-    all_integration_regexes.extend([INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX])
 
     new_integration_files = [
         file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
@@ -268,8 +235,8 @@ def is_content_update_in_progress(client, prints_manager, thread_index):
         msg = "Failed to check if content is installing - with status code " + str(status_code) + '\n' + message
         prints_manager.add_print_job(msg, print_error, thread_index)
         return 'request unsuccessful'
-    else:
-        return response_data
+
+    return response_data
 
 
 def get_content_version_details(client, ami_name, prints_manager, thread_index):
@@ -479,7 +446,8 @@ def group_integrations(integrations, skipped_integrations_conf, new_integrations
         integration_name = integration.get('name', '')
         if integration_name in skipped_integrations_conf.keys():
             continue
-        elif integration_name in new_integrations_names:
+
+        if integration_name in new_integrations_names:
             new_integrations.append(integration)
         elif integration_name in modified_integrations_names:
             modified_integrations.append(integration)
@@ -640,25 +608,93 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     return testing_status
 
 
+def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number):
+    """Sets custom marketplace GCP bucket based on branch name and build number
+
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object
+        branch_name (str): GitHub branch name
+        ci_build_number (str): CI build number
+
+    Returns:
+        None
+    """
+    host = client.api_client.configuration.host
+    installed_content_message = \
+        '\nMaking "POST" request to server - "{}" to set GCP bucket server configuration.'.format(host)
+    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
+
+    # make request to update server configs
+    data = {
+        'data': {
+            'content.pack.verify': 'false',
+            'marketplace.initial.sync.delay': '0',
+            'content.pack.ignore.missing.warnings.contentpack': 'true',
+            'marketplace.bootstrap.bypass.url':
+                'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
+                    branch_name, ci_build_number
+                )
+        },
+        'version': -1
+    }
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                                        method='POST', body=data)
+
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return
+
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = "Failed to set GCP bucket server config - with status code " + str(status_code) + '\n' + message
+        print_error(msg)
+
+
+def get_pack_ids_to_install():
+    with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+        pack_ids = packs_stream.readlines()
+        return [pack_id.rstrip('\n') for pack_id in pack_ids]
+
+
 def main():
     options = options_handler()
     username = options.user
     password = options.password
     ami_env = options.ami_env
     git_sha1 = options.git_sha1
-    servers = determine_servers_urls(ami_env)
     conf_path = options.conf
     secret_conf_path = options.secret
+    branch_name = options.branch
+    ci_build_number = options.build_number
+
+    servers = determine_servers_urls(ami_env)
+    server_numeric_version = get_server_numeric_version(ami_env)
 
     prints_manager = ParallelPrintsManager(1)
-    server_numeric_version = get_server_numeric_version(ami_env, prints_manager)
-    prints_manager.execute_thread_prints(0)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
 
     username = secret_conf.get('username') if not username else username
     password = secret_conf.get('userPassword') if not password else password
+
+    if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
+        for server in servers:
+            client = demisto_client.configure(base_url=server, username=username, password=password,
+                                              verify_ssl=False)
+            set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
+            print('Restarting servers to apply GCS server config ...')
+            ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
+                         '"sudo systemctl restart demisto"'
+            try:
+                subprocess.check_output(
+                    ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
+            except subprocess.CalledProcessError as exc:
+                print(exc.output)
+        print('Done restarting servers.')
 
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
@@ -683,27 +719,33 @@ def main():
     new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
     new_integrations_names, modified_integrations_names = [], []
 
-    if new_integrations_files:
-        # TODO: uncomment when we start testing packs
-        # if server_version_compare(server_numeric_version, '6.0') >= 0:
-        #    # Test packs search and installation - beginning of infrastructure
-        #    client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-        #                                      verify_ssl=False)
-        #    search_and_install_packs_and_their_dependencies(new_integrations_files, client, prints_manager)
+    installed_content_packs_successfully = True
 
+    if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
+        # sleep for one minute before starting to search and install packs to ensure bucket is ready
+        prints_manager.add_print_job('Sleeping for 1 minute...', print_warning, 0)
+        prints_manager.execute_thread_prints(0)
+        sleep(60)
+
+        pack_ids = get_pack_ids_to_install()
+        # install content packs in every server
+        for server_url in servers:
+            try:
+                client = demisto_client.configure(base_url=server_url, username=username, password=password,
+                                                  verify_ssl=False)
+                search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, options.is_nightly)
+            except Exception as exc:
+                prints_manager.add_print_job(str(exc), print_error, 0)
+                prints_manager.execute_thread_prints(0)
+                installed_content_packs_successfully = False
+
+    if new_integrations_files:
         new_integrations_names = get_integration_names_from_files(new_integrations_files)
         new_integrations_names_message = \
             'New Integrations Since Last Release:\n{}\n'.format('\n'.join(new_integrations_names))
         prints_manager.add_print_job(new_integrations_names_message, print_warning, 0)
 
     if modified_integrations_files:
-        # TODO: uncomment when we start testing packs
-        # if server_version_compare(server_numeric_version, '6.0') >= 0:
-        #     # Test packs search and installation - beginning of infrastructure
-        #     client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-        #                                       verify_ssl=False)
-        #     search_and_install_packs_and_their_dependencies(modified_integrations_files, client, prints_manager)
-
         modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
         modified_integrations_names_message = \
             'Updated Integrations Since Last Release:\n{}\n'.format('\n'.join(modified_integrations_names))
@@ -717,9 +759,9 @@ def main():
     # of an integration that we want to configure with different configuration values. Look at
     # [conf.json](../conf.json) for examples
     brand_new_integrations = []
-    testing_server = servers[0]  # test integration instances only on a single server
+
     for test in tests_for_iteration:
-        testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
+        testing_client = demisto_client.configure(base_url=servers[0], username=username, password=password,
                                                   verify_ssl=False)
         integrations = get_integrations_for_test(test, skipped_integrations_conf)
         instance_names_conf = test.get('instance_names', [])
@@ -798,18 +840,20 @@ def main():
         else:
             preupdate_success.add((instance_name, integration_of_instance))
 
-    threads_list = []
-    threads_prints_manager = ParallelPrintsManager(len(servers))
-    # For each server url we install content
-    for thread_index, server_url in enumerate(servers):
-        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
-        t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
-                           'prints_manager': threads_prints_manager,
-                           'thread_index': thread_index})
-        threads_list.append(t)
+    if LooseVersion(server_numeric_version) < LooseVersion('6.0.0'):
+        threads_list = []
+        threads_prints_manager = ParallelPrintsManager(len(servers))
+        # For each server url we install content
+        for thread_index, server_url in enumerate(servers):
+            client = demisto_client.configure(base_url=server_url, username=username,
+                                              password=password, verify_ssl=False)
+            t = Thread(target=update_content_on_demisto_instance,
+                       kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
+                               'prints_manager': threads_prints_manager,
+                               'thread_index': thread_index})
+            threads_list.append(t)
 
-    run_threads_list(threads_list)
+        run_threads_list(threads_list)
 
     # configure instances for new integrations
     new_integration_module_instances = []
@@ -854,7 +898,7 @@ def main():
     success = report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
                                   new_integrations_names, prints_manager)
     prints_manager.execute_thread_prints(0)
-    if not success:
+    if not success or not installed_content_packs_successfully:
         sys.exit(2)
 
 

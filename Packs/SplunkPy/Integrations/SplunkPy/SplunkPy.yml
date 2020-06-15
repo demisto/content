@@ -392,3 +392,5 @@ script:
   type: python
 tests:
 - SplunkPy-Test-V2
+defaultClassifier: SplunkPy
+defaultMapperIn: SplunkPy-mapper

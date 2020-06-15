@@ -80,20 +80,22 @@ def login():
     viewState = p.findall(response.text.encode('utf-8'))
     VIEW_STATE = viewState[0][len('value="'):][:-1]
 
-    headers = {
-        'Upgrade-Insecure-Requests': '1',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'en-US,en;q=0.9,he;q=0.8'
-    }
     data = {
         'loginHtml': 'loginHtml',
         'loginHtml:username': USERNAME,
         'loginHtml:password': PASSWORD,
         'loginHtml:userDomain': 'Empty',
         'loginHtml:loginBtn': 'Log In',
+        'loginHtml:domain': 'super',
         'javax.faces.ViewState': VIEW_STATE
+    }
+
+    headers = {
+        'Upgrade-Insecure-Requests': '1',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,'
+                  'application/signed-exchange;v=b3;q=0.9',
+        'Accept-Language': 'en-US,en;q=0.9,pt-PT;q=0.8,pt;q=0.7'
     }
 
     response = session.post(login_url, headers=headers, data=data, verify=VERIFY_SSL)  # type: ignore
@@ -130,15 +132,30 @@ def clear_incident(incident_id, reason):
 @logger
 def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
     session = login()
-    response = session.get(HOST + '/phoenix/rest/h5/report/triggerEvent?rawMsg=' + incident_id)
-    validateSuccessfulResponse(response, "triggering events report")
+    # response = session.get(HOST + '/phoenix/rest/h5/report/triggerEvent?rawMsg=' + incident_id)
+    # validateSuccessfulResponse(response, "triggering events report")
+    #
+    # try:
+    #     jsonRes = response.json()
+    #     queryData = jsonRes[0]['right']
+    # except (ValueError, KeyError):
+    #     return_error("Got wrong response format when triggering events report. "
+    #                  "Expected a json array but got:\n" + response.text)
 
-    try:
-        jsonRes = response.json()
-        queryData = jsonRes[0]['right']
-    except (ValueError, KeyError):
-        return_error("Got wrong response format when triggering events report. "
-                     "Expected a json array but got:\n" + response.text)
+    queryData = {
+        "isReportService": True,
+        "selectClause": "eventSeverityCat,incidentLastSeen,eventName,incidentRptDevName,incidentSrc,incidentTarget,"
+                        "incidentDetail,incidentStatus,incidentReso,incidentId,eventType,incidentTicketStatus,"
+                        "bizService,count,incidentClearedTime,incidentTicketUser,incidentNotiRecipients,"
+                        "incidentClearedReason,incidentComments,eventSeverity,incidentFirstSeen,incidentRptIp,"
+                        "incidentTicketId,customer,incidentNotiStatus,incidentClearedUser,incidentExtUser,"
+                        "incidentExtClearedTime,incidentExtResoTime,incidentExtTicketId,incidentExtTicketState,"
+                        "incidentExtTicketType,incidentViewStatus,rawEventMsg,phIncidentCategory,phSubIncidentCategory,"
+                        "incidentRptDevStatus",
+        "eventFilters": [{"name": "Filter_OVERALL_STATUS",
+                          "singleConstraint": "(phEventCategory = 1) AND incidentId = {}".format(incident_id)}],
+        "hints": "IgnoreTime",
+    }
 
     return getEventsByQuery(session, queryData, max_results, extended_data, max_wait_time,
                             "FortiSIEM events for Incident " + incident_id, incident_id=incident_id)
