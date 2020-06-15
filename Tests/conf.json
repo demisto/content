@@ -2842,7 +2842,6 @@
         "MSGraph_DeviceManagement_Test": "Issue 25603",
         "CuckooTest": "Issue 25601",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
-        "EWS_O365_test": "Issue 25605",
         "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
         "Test - Cofense Intelligence": "Issue 25498",
