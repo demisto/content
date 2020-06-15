@@ -275,8 +275,9 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
     """
     core_packs_public_urls = []
     found_core_packs = set()
-
+    print_error(f'storage_bucket is:{storage_bucket}, build_number is:{build_number}, index_folder_path is:{index_folder_path}')
     for pack in os.scandir(index_folder_path):
+        print_error(f'current pack is:{pack.name}')
         if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
             pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
@@ -557,6 +558,7 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    print_error(index_folder_path)
 
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
