@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b8715e0a-c403-429f-8d9a-9709575203b7
+    taskid: 3e4867dd-cbdb-44c7-8cfb-ddb2bbb2edfb
     type: start
     task:
-      id: b8715e0a-c403-429f-8d9a-9709575203b7
+      id: 3e4867dd-cbdb-44c7-8cfb-ddb2bbb2edfb
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ff85b308-1c3c-4eae-8a68-95c21205f33e
+    taskid: 074b0756-df35-4f8a-87b0-9cf57f5d8675
     type: regular
     task:
-      id: ff85b308-1c3c-4eae-8a68-95c21205f33e
+      id: 074b0756-df35-4f8a-87b0-9cf57f5d8675
       version: -1
       name: Get ATP list alerts
       script: '|||microsoft-atp-list-alerts'
@@ -64,10 +64,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 657188f7-1e28-446d-8fbd-ff4f0794be5b
+    taskid: 03a8146f-0b28-40cd-833f-2b321da3a2fe
     type: condition
     task:
-      id: 657188f7-1e28-446d-8fbd-ff4f0794be5b
+      id: 03a8146f-0b28-40cd-833f-2b321da3a2fe
       version: -1
       name: Assert an alert was fetched
       type: condition
@@ -107,10 +107,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 9d43fdce-80ae-4b06-8c6d-e242bb94b9cc
+    taskid: 12dbb3d9-9584-47a0-84ee-3b9f684a8300
     type: condition
     task:
-      id: 9d43fdce-80ae-4b06-8c6d-e242bb94b9cc
+      id: 12dbb3d9-9584-47a0-84ee-3b9f684a8300
       version: -1
       name: Assert right machine was fetched
       type: condition
@@ -147,10 +147,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: caa6576f-139e-47a3-8bd9-605ad1bafe6b
+    taskid: 31163948-f511-4761-8d59-c1d79c965564
     type: title
     task:
-      id: caa6576f-139e-47a3-8bd9-605ad1bafe6b
+      id: 31163948-f511-4761-8d59-c1d79c965564
       version: -1
       name: Done
       type: title
@@ -171,10 +171,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 50e427dd-48a9-4698-8dc4-1d52e5218f2c
+    taskid: 933fdf1c-aa90-4bd7-8720-70ce112b461f
     type: regular
     task:
-      id: 50e427dd-48a9-4698-8dc4-1d52e5218f2c
+      id: 933fdf1c-aa90-4bd7-8720-70ce112b461f
       version: -1
       name: Get machines by health status
       description: Retrieves a collection of machines that have communicated with
@@ -208,10 +208,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 686d0e9a-71a7-42dc-8674-78fa584fe60b
+    taskid: fea88a94-ff88-4fea-8af6-e32322dae30f
     type: regular
     task:
-      id: 686d0e9a-71a7-42dc-8674-78fa584fe60b
+      id: fea88a94-ff88-4fea-8af6-e32322dae30f
       version: -1
       name: Create alert with time as name
       script: '|||microsoft-atp-create-alert'
@@ -235,11 +235,17 @@ tasks:
             args:
               field:
                 value:
-                  simple: EventTime
+                  simple: Timestamp
       machine_id:
         complex:
           root: MicrosoftATP
-          accessor: Hunt.Result.MachineId
+          accessor: Hunt.Result.DeviceId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       recommended_action:
         simple: test alert
       report_id:
@@ -271,10 +277,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: ff9c6dfb-0fca-4203-8da3-3b32bd35c10c
+    taskid: fa899569-b94e-48cc-856a-bdf4c114046d
     type: condition
     task:
-      id: ff9c6dfb-0fca-4203-8da3-3b32bd35c10c
+      id: fa899569-b94e-48cc-856a-bdf4c114046d
       version: -1
       name: Assert alert created
       type: condition
@@ -308,10 +314,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 70cee97f-2de0-4f9d-8b77-b8554c96c6cd
+    taskid: d60d31e0-f581-400e-83ff-e18697d3df7f
     type: regular
     task:
-      id: 70cee97f-2de0-4f9d-8b77-b8554c96c6cd
+      id: d60d31e0-f581-400e-83ff-e18697d3df7f
       version: -1
       name: Advance query
       script: '|||microsoft-atp-advanced-hunting'
@@ -323,7 +329,7 @@ tasks:
       - "21"
     scriptarguments:
       query:
-        simple: RegistryEvents | take 1 | project MachineId, ReportId, tostring(EventTime)
+        simple: DeviceLogonEvents | take 1 | project DeviceId, ReportId, tostring(Timestamp)
     separatecontext: false
     view: |-
       {
@@ -339,10 +345,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: e89f2c9b-5782-4f35-80a8-9c874321ccf2
+    taskid: 2bf7e0c4-823e-47d2-8cd5-5e8d159e514a
     type: condition
     task:
-      id: e89f2c9b-5782-4f35-80a8-9c874321ccf2
+      id: 2bf7e0c4-823e-47d2-8cd5-5e8d159e514a
       version: -1
       name: Assert query results
       type: condition
@@ -360,7 +366,7 @@ tasks:
             value:
               complex:
                 root: MicrosoftATP
-                accessor: Hunt.Result.MachineId
+                accessor: Hunt.Result.ReportId
             iscontext: true
     view: |-
       {
@@ -376,10 +382,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 1de85d22-ed66-4c96-8b15-5858846b677c
+    taskid: ec83adb8-7687-4cea-80f7-ac225134fb4e
     type: regular
     task:
-      id: 1de85d22-ed66-4c96-8b15-5858846b677c
+      id: ec83adb8-7687-4cea-80f7-ac225134fb4e
       version: -1
       name: Get machine related to file
       description: Get a collection of machines related to a given file hash.
@@ -410,10 +416,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 79cee876-0e9e-4763-81b5-72806f48f0ff
+    taskid: fae8c95b-f289-4cb1-8d0f-b6c6e3823585
     type: regular
     task:
-      id: 79cee876-0e9e-4763-81b5-72806f48f0ff
+      id: fae8c95b-f289-4cb1-8d0f-b6c6e3823585
       version: -1
       name: Get alert related files
       description: Retrieves the files associated to a specific alert.
@@ -445,10 +451,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 5c181bbb-8d06-42ba-8e61-5e585d74092f
+    taskid: 30cda336-7da2-46a3-834e-d764018accf3
     type: regular
     task:
-      id: 5c181bbb-8d06-42ba-8e61-5e585d74092f
+      id: 30cda336-7da2-46a3-834e-d764018accf3
       version: -1
       name: Get file related alerts
       description: Retrieves a collection of alerts related to a given file hash.
@@ -487,10 +493,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 81595274-3c30-4de2-8e53-6e9baf929615
+    taskid: 2b56578b-27a1-4c5f-8d07-98936b832773
     type: regular
     task:
-      id: 81595274-3c30-4de2-8e53-6e9baf929615
+      id: 2b56578b-27a1-4c5f-8d07-98936b832773
       version: -1
       name: Delete context
       description: Delete field from context
@@ -525,10 +531,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 9f4667b6-7c52-470e-8b00-6627fda9509e
+    taskid: a6140e18-59c7-4087-8081-9441639574d1
     type: regular
     task:
-      id: 9f4667b6-7c52-470e-8b00-6627fda9509e
+      id: a6140e18-59c7-4087-8081-9441639574d1
       version: -1
       name: Get file statistics
       description: Retrieves the statistics for the given file.
@@ -567,10 +573,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 61079179-a568-4fc9-8c9e-54701597e1ef
+    taskid: 8903c2de-bf94-4199-8248-2d268fdd5f10
     type: regular
     task:
-      id: 61079179-a568-4fc9-8c9e-54701597e1ef
+      id: 8903c2de-bf94-4199-8248-2d268fdd5f10
       version: -1
       name: Get machine action data
       description: Return the machine's actions. If you set an action id it will return
@@ -603,10 +609,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: f6879cc4-31da-4eb3-817c-f4eda0de4a9e
+    taskid: 021aab59-e564-4183-8fb3-d5d88e4a5f32
     type: regular
     task:
-      id: f6879cc4-31da-4eb3-817c-f4eda0de4a9e
+      id: 021aab59-e564-4183-8fb3-d5d88e4a5f32
       version: -1
       name: Get domain statistics
       description: Retrieves the statistics on the given domain.
@@ -635,10 +641,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: e3d5742d-2756-4309-8c50-f20ed51a81c2
+    taskid: a429583c-1abd-4d3b-8bc6-d71e5a8b8b9c
     type: regular
     task:
-      id: e3d5742d-2756-4309-8c50-f20ed51a81c2
+      id: a429583c-1abd-4d3b-8bc6-d71e5a8b8b9c
       version: -1
       name: Get ip statistics
       description: Retrieves the statistics for the given IP.
@@ -667,10 +673,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 1b144c05-0ba6-49a2-8080-7cc90926ad86
+    taskid: 87891079-a528-4769-887a-dbdd8068f8f4
     type: regular
     task:
-      id: 1b144c05-0ba6-49a2-8080-7cc90926ad86
+      id: 87891079-a528-4769-887a-dbdd8068f8f4
       version: -1
       name: Get user alerts
       description: Retrieves a collection of alerts related to a given user ID.
@@ -699,10 +705,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: fd3dd08d-e746-4640-86d7-a6a60e727e18
+    taskid: 4aa07009-2be2-415a-8d5f-e20d487a8b0b
     type: regular
     task:
-      id: fd3dd08d-e746-4640-86d7-a6a60e727e18
+      id: 4aa07009-2be2-415a-8d5f-e20d487a8b0b
       version: -1
       name: Get user machines
       description: Retrieves a collection of machines related to a given user ID.
@@ -731,10 +737,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: dc8d8b47-5a82-44c4-8f3a-723b35281ed5
+    taskid: bdb07739-68a0-4517-885a-009efc07cad0
     type: regular
     task:
-      id: dc8d8b47-5a82-44c4-8f3a-723b35281ed5
+      id: bdb07739-68a0-4517-885a-009efc07cad0
       version: -1
       name: Add machine tag
       description: Adds or remove tag to a specific Machine.
@@ -767,10 +773,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: c4b963f0-d367-439e-8c6d-91a0a97f5a6e
+    taskid: 8544a7a1-aa04-47ad-8433-8d4dc1cc7638
     type: regular
     task:
-      id: c4b963f0-d367-439e-8c6d-91a0a97f5a6e
+      id: 8544a7a1-aa04-47ad-8433-8d4dc1cc7638
       version: -1
       name: Remove machine tag
       description: Adds or remove tag to a specific Machine.
@@ -803,10 +809,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: e5538e73-b803-47ac-832b-b559176e1f83
+    taskid: 242c3e73-4c7c-41b5-8f0d-46e21bad8257
     type: regular
     task:
-      id: e5538e73-b803-47ac-832b-b559176e1f83
+      id: 242c3e73-4c7c-41b5-8f0d-46e21bad8257
       version: -1
       name: Get file related machines
       description: Get a collection of machines related to a given file hash.
@@ -837,10 +843,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: b028e1b2-deb3-4a18-803d-6a8a9e6d1f09
+    taskid: 06c9050b-1a92-4105-80b3-71ddcf809d12
     type: regular
     task:
-      id: b028e1b2-deb3-4a18-803d-6a8a9e6d1f09
+      id: 06c9050b-1a92-4105-80b3-71ddcf809d12
       version: -1
       name: update alert
       description: Update the properties of an alert entity
