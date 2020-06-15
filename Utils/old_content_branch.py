@@ -54,7 +54,7 @@ def handle_json_file(file_path, old_version):
             parse_version(json_content.get('fromVersion', '0.0.0')) > parse_version(old_version):
         return False
 
-    json_content['fromVersion'] = old_version
+    json_content['toVersion'] = old_version
     with open(file_path, 'w') as f:
         json.dump(json_content, f, indent=4)
         print(f" - Updating {file_path}")
