@@ -1,25 +1,23 @@
 {
-	"associatedToAll": false,
-	"associatedTypes": [
-		"Traps",
-		"Malware"
-	],
+	"fromVersion": "5.0.0",
+	"associatedToAll": true,
+	"associatedTypes": [],
 	"breachScript": "",
 	"caseInsensitive": true,
-	"cliName": "agentid",
+	"cliName": "sourceport",
 	"closeForm": false,
 	"columns": null,
 	"content": true,
 	"defaultRows": null,
-	"description": "Agent ID",
+	"description": "The source port that was used",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"group": 0,
 	"hidden": false,
-	"id": "incident_agentid",
+	"id": "incident_sourceport",
 	"isReadOnly": false,
 	"locked": false,
-	"name": "Agent ID",
+	"name": "Source Port",
 	"neverSetAsRequired": false,
 	"ownerOnly": false,
 	"placeholder": "",
@@ -33,8 +31,7 @@
 	"type": "shortText",
 	"unmapped": false,
 	"unsearchable": false,
-	"useAsKpi": false,
+	"useAsKpi": true,
 	"validationRegex": "",
-	"version": -1,
-	"fromVersion": "5.0.0"
+	"version": -1
 }
