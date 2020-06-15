@@ -1,5 +1,5 @@
 Threat intelligence platform.
-This integration was integrated and tested with version xx of ThreatConnect v2
+
 ## Configure ThreatConnect v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
