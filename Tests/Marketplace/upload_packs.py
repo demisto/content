@@ -633,7 +633,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, zip_pack_path = pack.zip_pack(should_encrypt_pack, enc_key, enc_script_path)
+        task_status, zip_pack_path = pack.zip_pack(should_encrypt_pack, enc_script_path, enc_key)
 
         if not task_status:
             pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
