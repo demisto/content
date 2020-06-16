@@ -283,15 +283,14 @@ def get_vulnerable_devices_command(token, device_os, device_risk):
 
     res = call_api(method, route, token, query)
     LOG('res %s' % (res,))
-    demisto.results(res)
     if res:
         command_results = CommandResults(
             outputs_prefix='Vulnerability.Devices',
-            outputs_key_field='itemsTotal',
+            outputs_key_field='$host',
             outputs=res
         )
         return_results(command_results)
-    demisto.results(res)
+        #   demisto.results(res)
 
 
 ''' EXECUTION '''
