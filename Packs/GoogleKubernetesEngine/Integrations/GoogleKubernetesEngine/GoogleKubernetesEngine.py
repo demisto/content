@@ -56,7 +56,7 @@ def handle_default_configuration():
     integration_parameters = demisto.params()
     default_parameters = ['project', 'zone']
     for param in default_parameters:
-        if param not in command_arguments.keys():
+        if param not in command_arguments:
             command_arguments[param] = integration_parameters.get(f'default_{param}')
 
     return command_arguments
