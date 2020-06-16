@@ -703,7 +703,7 @@ MOCK_GET_USER_RESPONSE = """
 def code42_sdk_mock(mocker):
     c42_sdk_mock = mocker.MagicMock(spec=SDKClient)
 
-    # Setup mock alert detailsuser
+    # Setup mock alert details
     alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
     c42_sdk_mock.alerts.get_details.return_value = alert_details_response
 
@@ -711,11 +711,11 @@ def code42_sdk_mock(mocker):
     alerts_response = create_mock_code42_sdk_response(mocker, MOCK_ALERTS_RESPONSE)
     c42_sdk_mock.alerts.search.return_value = alerts_response
 
-    # Setup mock get user
+    # Setup mock user
     get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
     c42_sdk_mock.users.get_by_username.return_value = get_user_response
 
-    # Setup securitydata search file events
+    # Setup file events
     search_file_events_response = create_mock_code42_sdk_response(
         mocker, MOCK_SECURITY_EVENT_RESPONSE
     )
@@ -728,6 +728,9 @@ def create_mock_code42_sdk_response(mocker, response_text):
     response_mock = mocker.MagicMock(spec=Response)
     response_mock.text = response_text
     return Py42Response(response_mock)
+
+
+"""TESTS"""
 
 
 def test_build_query_payload():
