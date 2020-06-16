@@ -500,14 +500,25 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
     title = args.get("title")
     summary = args.get('summary')
     if args.get('impact'):
-        impact = TICKETS_OBJECTS.get('impact').get(args.get('impact'), args.get('impact'))
+        dict_of_obj = TICKETS_OBJECTS.get('impact')
+        impact = args.get('impact')
+        if dict_of_obj:
+            impact = dict_of_obj.get(args.get('impact'), args.get('impact'))
     if args.get('category'):
-        category = TICKETS_OBJECTS.get('category').get(args.get('category'), args.get('category'))
+        dict_of_obj = TICKETS_OBJECTS.get('category')
+        impact = args.get('category')
+        if dict_of_obj:
+            impact = dict_of_obj.get(args.get('category'), args.get('category'))
     if args.get('status'):
-        status = TICKETS_OBJECTS.get('status').get(args.get('status'), args.get('status'))
+        dict_of_obj = TICKETS_OBJECTS.get('status')
+        impact = args.get('status')
+        if dict_of_obj:
+            impact = dict_of_obj.get(args.get('status'), args.get('status'))
     if args.get('priority'):
-        priority = TICKETS_OBJECTS.get('priority').get(args.get('priority'), args.get('priority'))
-
+        dict_of_obj = TICKETS_OBJECTS.get('priority')
+        impact = args.get('priority')
+        if dict_of_obj:
+            impact = dict_of_obj.get(args.get('priority'), args.get('priority'))
     machine = args.get('machine')
     asset = args.get('asset')
     body_from_args = create_body_from_args(hd_queue_id, title, summary, impact, category, status, priority, machine,
