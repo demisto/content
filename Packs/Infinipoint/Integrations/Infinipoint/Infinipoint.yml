@@ -413,6 +413,35 @@ script:
         return_error(e)
   type: python
   commands:
+  - name: infinipoint-get-vulnerable-devices
+    description: ''
+    arguments:
+      - name: device_os
+        description: ''
+      - name: device_risk
+        description: ''
+    outputs:
+    - contextPath: Vulnerability.Devices.$device
+      description: ''
+      type: String
+    - contextPath: Vulnerability.Devices.$host
+      description: ''
+      type: String
+    - contextPath: Vulnerability.Devices.cve_id
+      description: ''
+      type: Unknown
+    - contextPath: Vulnerability.Devices.device_risk
+      description: ''
+      type: Number
+    - contextPath: Vulnerability.Devices.device_risk_type
+      description: ''
+      type: Number
+    - contextPath: Vulnerability.Devices.software_name
+      description: ''
+      type: Unknown
+    - contextPath: Vulnerability.Devices.vulnerability_count
+      description: ''
+      type: Number
   - name: infinipoint-get-assets-programs
     description: ''
     arguments:
