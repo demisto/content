@@ -19,7 +19,6 @@ from py42.sdk.queries.fileevents.filters import (
     EventType,
     FileCategory,
 )
-from py42.sdk.queries.query_filter import create_query_filter, create_filter_group
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
 
