@@ -137,7 +137,7 @@ def get_all_modified_release_note_files(git_sha1):
                     'these steps will merge your branch with content master as a base.')
         sys.exit(1)
 
-    release_notes_files = [os.path.dirname(file_path) for file_path in diff_result.split('\n')
+    release_notes_files = [file_path for file_path in diff_result.split('\n')
                            if file_path.startswith(PACKS_DIR)]
     return release_notes_files
 
