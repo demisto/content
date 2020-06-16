@@ -2,6 +2,7 @@ import demistomock as demisto
 import CommonServerPython
 import pytest
 import json
+import requests_mock
 
 
 class ResponseMock:
@@ -122,3 +123,50 @@ def test_get_whitelist(mocker):
                      response_path='test_data/responses/whitelist_url.json',
                      expected_result_path='test_data/results/whitelist.json',
                      mocker=mocker)
+
+
+# disable-secrets-detection-start
+test_data = [
+    ('https://madeup.fake.com/css?family=blah:1,2,3', 'true', ['https://madeup.fake.com/css?family=blah:1', '2', '3']),
+    ('https://madeup.fake.com/css?family=blah:1,2,3', 'false', ['https://madeup.fake.com/css?family=blah:1,2,3'])
+]
+# disable-secrets-detection-end
+@pytest.mark.parametrize('url,multiple,expected_data', test_data)
+def test_url_multiple_arg(mocker, url, multiple, expected_data):
+    '''Scenario: Submit a URL with commas in it
+
+    Given
+    - A URL with commas in it
+    When
+    - case A: 'multiple' argument is set to "true" (the default)
+    - case B: 'multiple' argument is set to "false"
+    Then
+    - case A: Ensure the URL is interpreted as multiple values to be sent in the subsequent API call
+    - case B: Ensure the URL is interpreted as a single value to be sent in the subsequent API call
+
+    Args:
+        mocker (Mocker): Mocker module.
+        url (str): The URL to submit.
+        multiple (str): "true" or "false" - whether to interpret the 'url' argument as multiple comma separated values.
+        expected_data (list): The data expected to be sent in the API call.
+    '''
+    params = demisto.params()
+    params['cloud'] = 'http://cloud'
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    import Zscaler
+    with requests_mock.mock() as m:
+        # 'fake_resp_content' doesn't really matter here since we are checking the data being sent in the call,
+        # not what it is that we expect to get in response
+        fake_resp_content = '[{"url": "blah", "urlClassifications": [], "urlClassificationsWithSecurityAlert": []}]'
+        m.post(Zscaler.BASE_URL + '/urlLookup', content=fake_resp_content)
+        args = {
+            'url': url,
+            'multiple': multiple
+        }
+        Zscaler.url_lookup(args)
+    assert m.called
+    assert m.call_count == 1
+    request_data = m.last_request.json()
+    assert len(request_data) == len(expected_data)
+    assert request_data == expected_data
