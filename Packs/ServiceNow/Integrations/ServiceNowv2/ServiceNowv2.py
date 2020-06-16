@@ -474,7 +474,7 @@ class Client(BaseClient):
                     raise Exception(f'ServiceNow Error: {message}, details: {details}')
 
             if res.status_code < 200 or res.status_code >= 300:
-                if res.status_code != 401:
+                if res.status_code != 401 or num_of_tries == (max_retries - 1):
                     raise Exception(
                         f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
                         f' with headers {str(res.headers)}')
