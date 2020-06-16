@@ -78,26 +78,6 @@ def google_client_setup(json_configuration: str) -> ClusterManagerClient:
     return client
 
 
-def safe_get(dict_object: dict, *keys, key_return_value: Optional[Any] = None) -> Any:
-    """ Recursive safe get query, If keys found return value othewise return None
-
-    Args:
-        key_return_value: Value to return when no key availble
-        dict_object: dictionary to query.
-        *keys: keys for recursive get.
-
-    Returns:
-        Optional[str]: Value found.
-    """
-    for key in keys:
-        try:
-            dict_object = dict_object[key]
-        except KeyError:
-            return key_return_value
-
-    return dict_object
-
-
 def parse_cluster(cluster: dict) -> dict:
     """ Build entry contect entry for a cluster entry.
 
@@ -108,72 +88,73 @@ def parse_cluster(cluster: dict) -> dict:
         dict: Cluster as defined entry context.
     """
     return {
-        "Name": safe_get(cluster, "name"),
+        "Name": dict_safe_get(cluster, ["name"]),
         "MasterAuth": {
-            "ClusterCaCertificate": safe_get(cluster, "masterAuth", "clusterCaCertificate"),
+            "ClusterCaCertificate": dict_safe_get(cluster, ["masterAuth", "clusterCaCertificate"]),
         },
-        "LoggingService": safe_get(cluster, "loggingService"),
-        "MonitoringService": safe_get(cluster, "monitoringService"),
-        "Network": safe_get(cluster, "network"),
-        "ClusterIpv4Cidr": safe_get(cluster, "clusterIpv4Cidr"),
+        "LoggingService": dict_safe_get(cluster, ["loggingService"]),
+        "MonitoringService": dict_safe_get(cluster, ["monitoringService"]),
+        "Network": dict_safe_get(cluster, ["network"]),
+        "ClusterIpv4Cidr": dict_safe_get(cluster, ["clusterIpv4Cidr"]),
         "AddonsConfig": {
             "HttpLoadBalancing": {
-                "Disbaled": safe_get(cluster, "addonsConfig", "httpLoadBalancing"),
+                "Disbaled": dict_safe_get(cluster, ["addonsConfig", "httpLoadBalancing"]),
             },
             "HorizontalPodAutoscaling": {
-                "Disabled": safe_get(cluster, "addonsConfig", "horizontalPodAutoscaling"),
+                "Disabled": dict_safe_get(cluster, ["addonsConfig", "horizontalPodAutoscaling"]),
             },
             "KubernetesDashboard": {
-                "Disabled": safe_get(cluster, "addonsConfig", "kubernetesDashboard", "disabled"),
+                "Disabled": dict_safe_get(cluster, ["addonsConfig", "kubernetesDashboard", "disabled"]),
             },
             "NetworkPolicyConfig": {
-                "Disabled": safe_get(cluster, "addonsConfig", "networkPolicyConfig", "disabled"),
+                "Disabled": dict_safe_get(cluster, ["addonsConfig", "networkPolicyConfig", "disabled"]),
             }
         },
-        "SubNetwork": safe_get(cluster, "subnetwork"),
+        "SubNetwork": dict_safe_get(cluster, ["subnetwork"]),
         "NodePools": [parse_node_pool(node_pool) for node_pool in cluster.get("nodePools", [])],
-        "Locations": safe_get(cluster, "locations"),
-        "LabelFingerprint": safe_get(cluster, "labelFingerprint"),
+        "Locations": dict_safe_get(cluster, ["locations"]),
+        "LabelFingerprint": dict_safe_get(cluster, ["labelFingerprint"]),
         "LegacyAbac": {
-            "Enabled": safe_get(cluster, "legacyAbac", "enabled"),
+            "Enabled": dict_safe_get(cluster, ["legacyAbac", "enabled"]),
         },
-        "NetworkPolicy": safe_get(cluster, "networkPolicy"),
+        "NetworkPolicy": dict_safe_get(cluster, ["networkPolicy"]),
         "IpAllocationPolicy": {
-            "UseIpAliases": safe_get(cluster, "ipAllocationPolicy", "useIpAliases"),
-            "ClusterIpv4Cidr": safe_get(cluster, "ipAllocationPolicy", "clusterIpv4Cidr"),
-            "ServicesIpv4Cidr": safe_get(cluster, "ipAllocationPolicy", "servicesIpv4Cidr"),
-            "ClusterSecondaryRangeName": safe_get(cluster, "ipAllocationPolicy", "clusterSecondaryRangeName"),
-            "ServicesSecondaryRangeName": safe_get(cluster, "ipAllocationPolicy", "servicesSecondaryRangeName"),
-            "ClusterIpv4CidrBlock": safe_get(cluster, "ipAllocationPolicy", "clusterIpv4CidrBlock"),
-            "ServicesIpv4CidrBlock": safe_get(cluster, "ipAllocationPolicy", "servicesIpv4CidrBlock"),
+            "UseIpAliases": dict_safe_get(cluster, ["ipAllocationPolicy", "useIpAliases"]),
+            "ClusterIpv4Cidr": dict_safe_get(cluster, ["ipAllocationPolicy", "clusterIpv4Cidr"]),
+            "ServicesIpv4Cidr": dict_safe_get(cluster, ["ipAllocationPolicy", "servicesIpv4Cidr"]),
+            "ClusterSecondaryRangeName": dict_safe_get(cluster, ["ipAllocationPolicy", "clusterSecondaryRangeName"]),
+            "ServicesSecondaryRangeName": dict_safe_get(cluster, ["ipAllocationPolicy", "servicesSecondaryRangeName"]),
+            "ClusterIpv4CidrBlock": dict_safe_get(cluster, ["ipAllocationPolicy", "clusterIpv4CidrBlock"]),
+            "ServicesIpv4CidrBlock": dict_safe_get(cluster, ["ipAllocationPolicy", "servicesIpv4CidrBlock"]),
         },
         "MasterAuthorizedNetworksConfig": {
-            "CIDR": [cidr.get('cidrBlock') for cidr in safe_get(cluster, "masterAuthorizedNetworksConfig",
-                                                                "cidrBlocks", key_return_value={})],
-            "Enabled": safe_get(cluster, "masterAuthorizedNetworksConfig", "enabled"),
+            "CIDR": [cidr.get('cidrBlock') for cidr in dict_safe_get(cluster,
+                                                                     keys=["masterAuthorizedNetworksConfig", "cidrBlocks"],
+                                                                     default_return_value={})],
+            "Enabled": dict_safe_get(cluster, ["masterAuthorizedNetworksConfig", "enabled"]),
         },
         "MaintenancePolicy": {
-            "ResourceVersion": safe_get(cluster, "maintenancePolicy", "resourceVersion"),
+            "ResourceVersion": dict_safe_get(cluster, ["maintenancePolicy", "resourceVersion"]),
         },
         "NetworkConfig": {
-            "Network": safe_get(cluster, "networkConfig", "network"),
-            "Subnetwork": safe_get(cluster, "networkConfig", "subnetwork"),
+            "Network": dict_safe_get(cluster, ["networkConfig", "network"]),
+            "Subnetwork": dict_safe_get(cluster, ["networkConfig", "subnetwork"]),
         },
         "DefaultMaxPodsConstraint": {
-            "MaxPodsPerNode": safe_get(cluster, "defaultMaxPodsConstraint", "maxPodsPerNode"),
+            "MaxPodsPerNode": dict_safe_get(cluster, ["defaultMaxPodsConstraint", "maxPodsPerNode"]),
         },
-        "AuthenticatorGroupsConfig": safe_get(cluster, "authenticatorGroupsConfig"),
+        "AuthenticatorGroupsConfig": dict_safe_get(cluster, ["authenticatorGroupsConfig"]),
         "DatabaseEncryption": {
-            "State": safe_get(cluster, "databaseEncryption", "state"),
+            "State": dict_safe_get(cluster, ["databaseEncryption", "state"]),
         },
-        "SelfLink": safe_get(cluster, "selfLink"),
-        "Endpoint": safe_get(cluster, "endpoint"),
-        "InitialClusterVersion": safe_get(cluster, "initialClusterVersion"),
-        "CurrentMasterVersion": safe_get(cluster, "currentMasterVersion"),
-        "CreateTime": safe_get(cluster, "createTime"),
-        "Status": safe_get(cluster, "status"),
-        "ServicesIpv4Cidr": safe_get(cluster, "servicesIpv4Cidr"),
-        "Location": safe_get(cluster, "location"),
+        "SelfLink": dict_safe_get(cluster, ["selfLink"]),
+        "Endpoint": dict_safe_get(cluster, ["endpoint"]),
+        "InitialClusterVersion": dict_safe_get(cluster, ["initialClusterVersion"]),
+        "CurrentMasterVersion": dict_safe_get(cluster, ["currentMasterVersion"]),
+        "CreateTime": dict_safe_get(cluster, ["createTime"]),
+        "Status": dict_safe_get(cluster, ["status"]),
+        "ServicesIpv4Cidr": dict_safe_get(cluster, ["servicesIpv4Cidr"]),
+        "Location": dict_safe_get(cluster, ["location"]),
     }
 
 
@@ -187,11 +168,11 @@ def parse_cluster_table(entry: dict) -> dict:
         dict: dict object as required for table markdown.
     """
     return {
-        'Name': safe_get(entry, "Name"),
-        'Location': safe_get(entry, "Location"),
-        'Master version': safe_get(entry, "CurrentMasterVersion"),
-        'Master IP': safe_get(entry, "Endpoint"),
-        'Status': safe_get(entry, "Status")
+        'Name': dict_safe_get(entry, ["Name"]),
+        'Location': dict_safe_get(entry, ["Location"]),
+        'Master version': dict_safe_get(entry, ["CurrentMasterVersion"]),
+        'Master IP': dict_safe_get(entry, ["Endpoint"]),
+        'Status': dict_safe_get(entry, ["Status"])
     }
 
 
@@ -205,39 +186,40 @@ def parse_node_pool(node_pool: dict) -> dict:
         dict: Node pool as defined entry context.
     """
     return {
-        "Name": safe_get(node_pool, "name"),
+        "Name": dict_safe_get(node_pool, ["name"]),
         "Config": {
-            "MachineType": safe_get(node_pool, "config", "machineType"),
-            "DiskSizeGb": safe_get(node_pool, "config", "diskSizeGb"),
-            "OauthScopes": safe_get(node_pool, "config", "oauthScopes"),
+            "MachineType": dict_safe_get(node_pool, ["config", "machineType"]),
+            "DiskSizeGb": dict_safe_get(node_pool, ["config", "diskSizeGb"]),
+            "OauthScopes": dict_safe_get(node_pool, ["config", "oauthScopes"]),
             "Metadata": {
-                "DisableLegacyEndpoints": safe_get(node_pool, "config", "metadata", "disable-legacy-endpoints")
+                "DisableLegacyEndpoints": dict_safe_get(node_pool, ["config", "metadata", "disable-legacy-endpoints"])
             },
-            "ImageType": safe_get(node_pool, "config", "imageType"),
-            "ServiceAccount": safe_get(node_pool, "config", "serviceAccount"),
-            "DiskType": safe_get(node_pool, "config", "diskType"),
+            "ImageType": dict_safe_get(node_pool, ["config", "imageType"]),
+            "ServiceAccount": dict_safe_get(node_pool, ["config", "serviceAccount"]),
+            "DiskType": dict_safe_get(node_pool, ["config", "diskType"]),
             "ShieldedInstanceConfig": {
-                "EnableIntegrityMonitoring": safe_get(node_pool, "config", "shieldedInstanceConfig",
-                                                      "enableIntegrityMonitoring")
+                "EnableIntegrityMonitoring": dict_safe_get(node_pool, ["config",
+                                                                       "shieldedInstanceConfig",
+                                                                       "enableIntegrityMonitoring"])
             }
         },
-        "InitialNodeCount": safe_get(node_pool, "initialNodeCount"),
+        "InitialNodeCount": dict_safe_get(node_pool, ["initialNodeCount"]),
         "Autoscaling": {
-            "Enabled": safe_get(node_pool, "autoscaling", "enabled"),
-            "MinNodeCount": safe_get(node_pool, "autoscaling", "minNodeCount"),
-            "MaxNodeCount": safe_get(node_pool, "autoscaling", "maxNodeCount")
+            "Enabled": dict_safe_get(node_pool, ["autoscaling", "enabled"]),
+            "MinNodeCount": dict_safe_get(node_pool, ["autoscaling", "minNodeCount"]),
+            "MaxNodeCount": dict_safe_get(node_pool, ["autoscaling", "maxNodeCount"])
         },
         "Management": {
-            "AutoRepair": safe_get(node_pool, "management", "autoRepair")
+            "AutoRepair": dict_safe_get(node_pool, ["management", "autoRepair"])
         },
         "MaxPodsConstraint": {
-            "MaxPodsPerNode": safe_get(node_pool, "maxPodsConstraint", "maxPodsPerNode")
+            "MaxPodsPerNode": dict_safe_get(node_pool, ["maxPodsConstraint", "maxPodsPerNode"])
         },
-        "PodIpv4CidrSize": safe_get(node_pool, "podIpv4CidrSize"),
-        "SelfLink": safe_get(node_pool, "selfLink"),
-        "Version": safe_get(node_pool, "version"),
-        "InstanceGroupUrls": safe_get(node_pool, "instanceGroupUrls"),
-        "Status": safe_get(node_pool, "status")
+        "PodIpv4CidrSize": dict_safe_get(node_pool, ["podIpv4CidrSize"]),
+        "SelfLink": dict_safe_get(node_pool, ["selfLink"]),
+        "Version": dict_safe_get(node_pool, ["version"]),
+        "InstanceGroupUrls": dict_safe_get(node_pool, ["instanceGroupUrls"]),
+        "Status": dict_safe_get(node_pool, ["status"])
     }
 
 
@@ -251,10 +233,10 @@ def parse_node_pool_table(entry: dict) -> dict:
         dict: dict object as required for table markdown.
     """
     return {
-        'Name': safe_get(entry, "Name"),
-        'Machine Type': safe_get(entry, "Config", "MachineType"),
-        'Disk size': safe_get(entry, "Config", "DiskSizeGb"),
-        'Node version': safe_get(entry, "Version")
+        'Name': dict_safe_get(entry, ["Name"]),
+        'Machine Type': dict_safe_get(entry, ["Config", "MachineType"]),
+        'Disk size': dict_safe_get(entry, ["Config", "DiskSizeGb"]),
+        'Node version': dict_safe_get(entry, ["Version"])
     }
 
 

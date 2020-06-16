@@ -3132,7 +3132,7 @@
                 "pid_threshold": 11
             },
             "demisto/google-k8s-engine:1.0.0.8803": {
-                "pid_threshold": 150
+                "pid_threshold": 11
             }
         }
     }

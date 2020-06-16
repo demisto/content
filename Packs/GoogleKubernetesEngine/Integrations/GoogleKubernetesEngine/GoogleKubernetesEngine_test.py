@@ -1,18 +1,6 @@
 import pytest
 
 
-@pytest.mark.parametrize(argnames="dict_obj, keys, expected",
-                         argvalues=[
-                             ({'a': '1'}, ['a'], '1'),
-                             ({'a': {'b': '2'}}, ['a', 'b'], '2'),
-                             ({'a': {'b': '2'}}, ['a', 'c'], None),
-                         ])
-def test_safe_get(dict_obj: dict, keys: list, expected: str):
-    from GoogleKubernetesEngine import safe_get
-    assert expected == safe_get(dict_obj,
-                                *keys)
-
-
 def test_parse_cluster(datadir):
     from GoogleKubernetesEngine import parse_cluster
     from json import load
