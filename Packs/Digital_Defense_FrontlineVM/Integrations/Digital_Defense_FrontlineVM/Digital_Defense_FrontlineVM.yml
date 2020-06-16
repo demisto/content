@@ -161,7 +161,7 @@ script:
     - name: ip_range_end
       description: The IP address end range of the asset to scan.
     - name: scan_name
-      description: The name of this scan to run in FrontlineVM. Default value will
+      description: A unique name for the scan to run in FrontlineVM. Default value will
         be "Cortex XSOAR Scan [<asset_ip_address>]. Limited to 100 characters."
     outputs:
     - contextPath: FrontlineVM.Scan.ID
