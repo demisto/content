@@ -9,7 +9,7 @@ import email
 import hashlib
 from typing import List
 from dateutil.parser import parse
-from typing import Dict, Tuple, Any, Optional
+from typing import Dict, Tuple, Any, Optional, Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -205,7 +205,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
-def create_entry_object(contents: dict='', ec: dict=None, hr: str=''):
+def create_entry_object(contents: Union[List[Any],Dict[str,Any]]={}, ec: Union[List[Any],Dict[str,Any]]=None, hr: str=''):
     """
         Creates an entry object
 
