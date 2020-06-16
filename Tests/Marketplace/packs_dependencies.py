@@ -45,7 +45,6 @@ def main():
 
         try:
             dependency_graph = PackDependencies.build_dependency_graph(pack_id=pack.name, id_set=id_set)
-            # currently all level of dependencies is not in use
             first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(dependency_graph, pack.name)
 
         except Exception as e:
@@ -55,6 +54,7 @@ def main():
         pack_dependencies_result[pack.name] = {
             "dependencies": first_level_dependencies,
             "displayedImages": list(first_level_dependencies.keys()),
+            "allLevelDependencies": all_level_dependencies,
             "path": os.path.join(PACKS_FOLDER, pack.name),
             "fullPath": pack.path
         }

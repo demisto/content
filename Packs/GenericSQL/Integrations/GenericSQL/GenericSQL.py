@@ -166,7 +166,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
             'Query': sql_query,
             'InstanceName': f'{client.dialect}_{client.dbname}'
         }
-        entry_context: Dict = {f'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
+        entry_context: Dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
         return human_readable, entry_context, table
 
     except Exception as err:
