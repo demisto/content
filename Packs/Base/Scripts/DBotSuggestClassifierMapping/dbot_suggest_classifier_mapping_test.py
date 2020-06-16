@@ -68,6 +68,13 @@ def test_validator():
     assert validator.validate_date("", "1582816207")
     assert validator.validate_date("", "2020-05-14T12:58:31Z")
 
+    assert validator.validate_url("", "http://google.com")
+    assert validator.validate_url("", "https://google.com")
+    assert validator.validate_url("", "hxxp://google.com")
+    assert validator.validate_url("", "https://paloaltonetworks.zoom.us/j/12345?pwd=1234&status=success")
+    assert not validator.validate_url("", "word")
+    assert not validator.validate_url("", "https:// google.com")
+
 
 def test_list_utils():
     assert is_sublist_of_list([1, 2], [1, 1, 2, 3, 4])
@@ -223,3 +230,21 @@ def test_main_outgoing(mocker):
     assert 'severity' == get_complex_value_key(mapper['user_priority'])
     assert 'category' == get_complex_value_key(mapper['category'])
     assert 'severity' == get_complex_value_key(mapper['user_priority'])
+
+
+def test_main_splunk_schemes(mocker, capfd):
+    incidents = json.load(open('TestData/splunk_scheme.json'))
+    fields = []
+    for siem_field in SIEM_FIELDS:
+        machine_name = siem_field.replace(" ", "").lower()
+        fields.append({INCIDENT_FIELD_NAME: siem_field, INCIDENT_FIELD_MACHINE_NAME: machine_name})
+    args = {
+        'incidentSamples': incidents,
+        'incidentSamplesType': 'scheme',
+        'incidentFields': all_incident_fields,
+    }
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mapper = main()
+    with capfd.disabled():
+        for k, v in mapper.items():
+            print k, get_complex_value_key(v)

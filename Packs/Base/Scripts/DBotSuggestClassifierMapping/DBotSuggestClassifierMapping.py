@@ -17,14 +17,17 @@ SAMPLES_OUTGOING = 'outgoingSamples'
 
 COUNT_KEYWORD = "count"
 
-SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
+SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
+                       'validators': ['validate_alphanumeric_with_common_punct']},
+
+               'Account ID': {'aliases': ['accountid', 'account id'],
                               'validators': []},
                'Account Name': {'aliases': ['accountname', 'account name'],
                                 'validators': ['validate_alphanumeric_with_common_punct']},
                'Account Type': {'aliases': ['accounttype', 'account type'],
                                 'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'Agent ID': {'aliases': ['agentid', 'agent id'],
+               'Agent ID': {'aliases': ['agentid', 'agent id', 'sensor id', 'tenant id'],
                             'validators': []},
 
                'App': {'aliases': ['app', 'app'], 'validators': ['validate_alphanumeric_with_common_punct']},
@@ -41,6 +44,11 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                                             'process full path', 'process full path'],
                                 'validators': ['validate_file_full_path']},
 
+               'Event ID': {'aliases': ['eventid', 'event id', 'alert id', 'offense id'],
+                            'validators': ['validate_alphanumeric_with_common_punct']},
+               'Event Type': {'aliases': ['eventtype', 'event type', 'alert type'],
+                              'validators': ['validate_alphanumeric_with_common_punct']},
+
                'Company Name': {'aliases': ['companyname',
                                             'company name',
                                             'company',
@@ -55,9 +63,9 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
 
                'Description': {'aliases': ['description'], 'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'Dest': {'aliases': ['dest', 'dst'], 'validators': ['validate_hostname']},
 
                'Dest NT Domain': {'aliases': ['destntdomain',
+                                              'destination nt domain',
                                               'dest nt domain',
                                               'destination network',
                                               'destination domain',
@@ -76,6 +84,11 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                                               'target address',
                                               'dst'],
                                   'validators': ['validate_ip']},
+               'Destination Port': {'aliases': ['destinationport',
+                                                'destination port',
+                                                'dst port',
+                                                'dest port'],
+                                    'validators': ['validate_number']},
 
                'Email BCC': {'aliases': ['emailbcc', 'email bcc', 'bcc recipient', 'bcc'],
                              'validators': ['validate_email']},
@@ -170,8 +183,10 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                                'attacker address', 'attacker ip', 'sender ip', 'sender address', 'offense source',
                                'agent ip'],
                    'validators': ['validate_ip']},
-
-               'Src': {'aliases': ['src', 'src'], 'validators': ['validate_hostname']},
+               'Source Port': {'aliases': ['sourceport',
+                                           'source port',
+                                           'src port'],
+                               'validators': ['validate_number']},
 
                'Src NT Domain': {'aliases': ['srcntdomain',
                                              'src nt domain',
@@ -196,8 +211,14 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
 
                'Traps ID': {'aliases': ['trapsid', 'traps id', 'trap id'], 'validators': []},
 
-               'Username': {'aliases': ['username', 'username', 'user name', 'src user name', 'target user name',
-                                        'target username'], 'validators': ['validate_alphanumeric_with_common_punct']},
+               'Username': {'aliases': ['username', 'username', 'user name', 'src user name',
+                                        'src username', 'source username', 'source user name',
+                                        'target user name', 'target username'],
+                            'validators': ['validate_alphanumeric_with_common_punct']},
+
+               'URL': {'aliases': ['url', 'detection url'],
+                       'validators': ['validate_url']},
+
                'Vendor ID': {'aliases': ['vendorid', 'vendor id'], 'validators': []},
                'Vendor Product': {'aliases': ['vendorproduct', 'vendor product'],
                                   'validators': ['validate_alphanumeric_with_common_punct']},
@@ -300,6 +321,13 @@ class Validator:
         self.MD5_REGEX = re.compile('^[a-fA-F0-9]{32}$')
         self.HASH_REGEX = re.compile('^[a-fA-F0-9]+$')
         self.MAC_REGEX = re.compile('^[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$', re.IGNORECASE)
+        self.URL_REGEX = re.compile(
+            r'^(?:http|ftp|hxxp)s?://'  # http:// or https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+            r'localhost|'  # localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+            r'(?::\d+)?'  # optional port
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         self.COMMON_NAME_CHARECTERS = re.compile('^[a-zA-Z"\s_\-\']+$')
         self.HOSTNAME_PART_REGEX = re.compile('(?!-)[A-Z\d-]{1,63}(?<!-)$')
         self.FULL_FILE_PATH_REGEX = re.compile('^((?:/[^/\n]+)*|.*(\\\\.*))$')
@@ -316,6 +344,9 @@ class Validator:
             return True
         except socket.error:
             return False
+
+    def validate_url(self, field_name, value, json_field_name=None):
+        return self.validate_regex(self.URL_REGEX, value)
 
     def validate_email(self, field_name, value, json_field_name=None):
         return self.validate_regex(self.EMAIL_REGEX, value)
@@ -564,7 +595,8 @@ def match_for_incidents(incidents_to_match):
             if k not in fields_cnt:
                 fields_cnt[k] = Counter()
             fields_cnt[k][v] += 1
-    mapping_result = {k: v.most_common()[0][0] for k, v in fields_cnt.items()}
+    mapping_result = {field_name: get_most_relevant_match_for_field(field_name, field_cnt) for field_name, field_cnt in
+                      fields_cnt.items()}
     return mapping_result
 
 
@@ -631,7 +663,10 @@ def parse_incident_sample(sample):
     if type(sample) is dict and 'rawJSON' in sample:
         incident = json.loads(sample['rawJSON'])
     else:
-        incident = json.loads(sample)
+        try:
+            incident = json.loads(sample)
+        except Exception:
+            incident = sample
     return incident
 
 
