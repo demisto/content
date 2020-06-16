@@ -46,9 +46,11 @@ class Client(BaseClient):
         return data
 
 
-def parse_response(objects: list) -> list:
+def parse_response(objects: list, feed_tags: list = []) -> list:
     """Parse the objects retrieved from the feed.
-
+    Args:
+      objects: a list of objects containing the indicators.
+      feed_tags: feed tags.
     Returns:
         A list of indicators, containing the indicators.
     """
@@ -67,7 +69,7 @@ def parse_response(objects: list) -> list:
                         "fields": {
                             "firstseenbysource": indicator_object.get('created'),
                             "indicatoridentification": indicator_object.get('id'),
-                            "tags": indicator_object.get('labels'),
+                            "tags": list((set(indicator_object.get('labels'))).union(set(feed_tags))),
                             "modified": indicator_object.get('modified'),
                             "reportedby": 'Unit42',
                         }
@@ -89,35 +91,35 @@ def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client) -> List[Dict]:
+def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
     """Retrieves indicators from the feed
 
     Args:
         client: Client object with request
-
+        feed_tags: feed tags.
     Returns:
         Indicators.
     """
     objects: list = client.get_indicators()
     demisto.info(str(f'Fetched Unit42 Indicators. {str(len(objects))} Objects were received.'))
-    indicators = parse_response(objects)
+    indicators = parse_response(objects, feed_tags)
     demisto.info(str(f'{str(len(indicators))} Demisto Indicators were created.'))
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[Any, Any], Any]:
+def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = []) -> Tuple[Any, Dict[Any, Any], Any]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
         client: Client object with request
         args: demisto.args()
-
+        feed_tags: feed tags.
     Returns:
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
     objects: list = client.get_indicators()
-    indicators = parse_response(objects)
+    indicators = parse_response(objects, feed_tags)
     limited_indicators = indicators[:limit]
 
     human_readable = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
@@ -134,27 +136,25 @@ def main():
     args = demisto.args()
     api_key = str(params.get('api_key', ''))
     verify = not params.get('insecure', False)
+    feed_tags = argToList(params.get('feedTags'))
 
     command = demisto.command()
     demisto.info(f'Command being called in Unit42 feed is: {command}')
 
     try:
         client = Client(api_key, verify)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[Any, Dict[Any, Any], Any]]] = {
-            'unit42-get-indicators': get_indicators_command,
-        }
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             md_, ec_, raw = test_module(client)
             return_outputs(md_, ec_, raw)
 
-        elif demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators(client)
+        elif command == 'fetch-indicators':
+            indicators = fetch_indicators(client, feed_tags)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
-        else:
-            md_, ec_, raw = commands[command](client, args)
+        elif command == 'unit42-get-indicators':
+            md_, ec_, raw = get_indicators_command(client, args, feed_tags)
             return_outputs(md_, ec_, raw)
 
     except Exception as err:

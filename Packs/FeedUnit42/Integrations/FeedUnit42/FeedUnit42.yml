@@ -3,6 +3,11 @@ commonfields:
   id: Unit42 Feed
   version: -1
 configuration:
+- display: API Key
+  hidden: false
+  name: api_key
+  required: false
+  type: 4
 - display: Fetch indicators
   name: feed
   required: false
@@ -65,11 +70,11 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: API Key
+- display: Tags
   hidden: false
-  name: api_key
+  name: feedTags
   required: false
-  type: 4
+  type: 0
 description: Unit42 Feed for fetching indicators.
 display: Unit42 Feed
 name: Unit42 Feed
