@@ -59,8 +59,11 @@ class Client:
 
         if res.status_code in self.error_codes:
             raise DemistoException(f'{self.error_codes[res.status_code]}\t({res.content.decode()})')
-
-        return res.json()
+        try:
+            return res.json()
+        except json.decoder.JSONDecodeError as error:
+            demisto.error(str(res.content))
+            raise error
 
 
 def get_headers(params: Dict) -> Dict:
@@ -115,9 +118,8 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
         total_size: int = get_iocs_size()
         for i in range(0, ceil(total_size / batch_size)):
             iocs: List = get_iocs(page=i, size=batch_size)
-            for ios in map(lambda x: x.get('value'), iocs):
-                _file.write(ios)
-                _file.write('\n')
+            for ios in map(lambda x: x.get('value', ''), iocs):
+                _file.write(ios + '\n')
 
 
 def create_file_sync(file_path, batch_size: int = 200):
