@@ -12,13 +12,8 @@
     ],
     "tags": [],
     "created": "2020-03-10T08:37:18Z",
-    "updated": "2020-03-10T08:37:18Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
     "useCases": [],
     "keywords": [],
     "price": 0,
-    "dependencies": {},
-    "displayedImages": []
+    "dependencies": {}
 }
