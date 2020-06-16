@@ -9,7 +9,7 @@ import email
 import hashlib
 from typing import List
 from dateutil.parser import parse
-from typing import Dict, Tuple, Any
+from typing import Dict, Tuple, Any, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
