@@ -604,7 +604,7 @@ jobs:
             GCS_PATH=$(mktemp)
             ZIP_FOLDER=$(mktemp -d)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -n $CIRCLE_BUILD_NUM -br $CIRCLE_BRANCH
+            python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -gp content/packs
             rm $GCS_PATH
           when: always
       - store_artifacts:
