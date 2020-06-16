@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Any, Callable
+from typing import List, Dict, Tuple, Any
 
 from taxii2client.v20 import Server, as_pages
 from taxii2client.common import TokenAuth
