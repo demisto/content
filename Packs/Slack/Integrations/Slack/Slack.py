@@ -2153,8 +2153,9 @@ def main():
         if is_debug_mode():
             print_thread_dump()
 
-        # Refresh the integration context
-        demisto.getIntegrationContextVersioned(True)
+        if is_versioned_context_available():
+            # Refresh the integration context
+            demisto.getIntegrationContextVersioned(True)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
