@@ -1176,7 +1176,7 @@ tasks:
       entity_ip: {}
       entity_name: {}
       timeframe:
-        simple: 1-Hour
+        simple: 1-Day
     separatecontext: false
     view: |-
       {
