@@ -553,7 +553,7 @@ def upload_sample():
     if res.get('name') == 'Failed':
         ec = None
     else:
-        ec = {f"MISP.UploadedSample": {filename: event_id}}
+        ec = {"MISP.UploadedSample": {filename: event_id}}
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -891,7 +891,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
             }
             md += tableToMarkdown(f'Event ID: {md_event.get("ID")}', event_highlights)
             if md_event.get('Galaxy'):
-                md += tableToMarkdown(f'Galaxy:', md_event.get('Galaxy'))
+                md += tableToMarkdown('Galaxy:', md_event.get('Galaxy'))
 
             demisto.results({
                 'Type': entryTypes['note'],
