@@ -1,6 +1,7 @@
 id: QuestKace test
 version: -1
 name: QuestKace test
+description: Testing Dell Quest KACE integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -13,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: 'a'
+      description: ''
     nexttasks:
       '#none#':
       - "1"
