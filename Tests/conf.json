@@ -2840,7 +2840,8 @@
         },
         {
             "integrations": "Recorded Future v2",
-            "playbookID": "Recorded Future Test Playbook"
+            "playbookID": "Recorded Future Test Playbook",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
