@@ -3165,6 +3165,19 @@
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK"
     },
+    "parallel_integrations": [
+        "Whois",
+        "Rasterize",
+        "CVE Search v2",
+        "VulnDB",
+        "VirusTotal",
+        "CheckPhish",
+        "Tanium",
+        "LogRhythmRest",
+        "ipinfo",
+        "Demisto REST API",
+        "syslog"
+    ],
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
