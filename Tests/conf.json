@@ -2837,7 +2837,6 @@
     ],
     "skipped_tests": {
         "CuckooTest": "Issue 25601",
-        "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
         "Test - Cofense Intelligence": "Issue 25498",
@@ -2893,6 +2892,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
         "Cisco Umbrella Investigate": "Issue 24338",
@@ -2987,6 +2987,7 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
         "XFE": "We have the new integration XFE_v2, so n`o need to test the old one because they use the same quote",
@@ -3026,6 +3027,7 @@
     ],
     "unmockable_integrations": {
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
+        "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
