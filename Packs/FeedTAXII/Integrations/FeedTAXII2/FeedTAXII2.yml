@@ -58,11 +58,12 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
+- display: Username / API Key
   name: credentials
   required: false
   type: 9
-- additionalinfo: Indicators will be fetched from this collection.
+- additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections"
+    command to get a valid value.
   display: Collection Name To Fetch Indicators From
   name: collection_to_fetch
   required: false
@@ -75,41 +76,51 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
-    unit> of type minute/hour/day. For example, 1 minute, 12 hour
-  display: First Fetch Time
-  hidden: false
-  name: initial_interval
-  required: false
-  type: 0
-- additionalinfo: Limit the numbe of indicators that can be fetched for every fetch.
-    If this field is left empty, there will be no limit on the number of indicators
-    fetched.
-  display: Max Indicators Per Fetch
-  hidden: false
-  name: limit
-  required: false
-  type: 0
-description: This is the Hello World integration for getting started.
+description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
 display: FeedTAXII2
 name: FeedTAXII2
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of whom you want to say hello to.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Will return only the rawJSON of the indicator object.
       isArray: false
-      name: name
+      name: raw
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Max amount of indicators to fetch
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Fetch only indicators that were added to the server after the
+        given  time. Please provide a <number> and <time unit> of type minute/hour/day.
+        For example, 1 minute, 12 hour, 24 days.
+      isArray: false
+      name: added_after
       required: false
       secret: false
     deprecated: false
-    description: Hello command - prints hello to anyone
+    description: Allows you to test your feed, and to make sure you can fetch indicators
+      successfuly .
     execution: false
-    name: helloworld-say-hello
+    name: taxii2-get-indicators
     outputs:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
+  - deprecated: false
+    description: Get the list of collections from the discovery service.
+    execution: false
+    name: taxii2-get-collections
   dockerimage: demisto/taxii2:1.0.0.9219
   feed: true
   isfetch: false
