@@ -2261,9 +2261,6 @@
             "playbookID": "Cisco Spark Test New"
         },
         {
-            "playbookID": "get_file_sample_from_path_-_d2_-_test"
-        },
-        {
             "integrations": "Remedy On-Demand",
             "playbookID": "Remedy-On-Demand-Test"
         },
