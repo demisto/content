@@ -1392,7 +1392,7 @@ def send_email_command(client: MsGraphClient, args):
     message_content['bccRecipients'] = bcc_recipients
 
     message_content = assign_params(**message_content)
-    human_readable = tableToMarkdown(f'Email was sent successfully.', message_content)
+    human_readable = tableToMarkdown('Email was sent successfully.', message_content)
     ec = {CONTEXT_SENT_EMAIL_PATH: message_content}
 
     return_outputs(human_readable, ec)
