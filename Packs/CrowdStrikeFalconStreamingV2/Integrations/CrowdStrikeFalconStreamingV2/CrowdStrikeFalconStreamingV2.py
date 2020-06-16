@@ -341,9 +341,11 @@ async def long_running_loop(
             event_offset = event_metadata.get('offset', '')
             demisto.info(f'Fetching event with offset: {event_offset}')
             incident_name = f'{event_type} - offset {event_offset}'
+            event_dump = json.dumps(event)
             incident = [{
                 'name': incident_name,
-                'details': json.dumps(event),
+                'details': event_dump,
+                'rawJSON': event_dump,
                 'type': incident_type
             }]
             demisto.createIncidents(incident)
