@@ -1,0 +1,351 @@
+id: Prisma Access - Connection Health Check
+version: -1
+name: Prisma Access - Connection Health Check
+description: Use the Prisma Access integration to run SSH CLI commands and query the
+  connection states for all tunnels. If any tunnels are down - the playbook escalates
+  to a manual task for remediation and provides recommendations on next steps in the
+  task description. The playbook can be run as a job, or triggered from an incoming
+  event to confirm an initial suspicion (such as a tunnel log from Cortex Data Lake)
+  to validate that the issue still exists.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ad53268e-d021-4b6e-843d-24bd15c4b0c0
+    type: start
+    task:
+      id: ad53268e-d021-4b6e-843d-24bd15c4b0c0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 607.5,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 00d8382e-5990-41f3-8a8c-fcf6616041b4
+    type: regular
+    task:
+      id: 00d8382e-5990-41f3-8a8c-fcf6616041b4
+      version: -1
+      name: Prisma Access - Get Service Connection Status
+      script: '|||prisma-access-query'
+      description: ''
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit: {}
+      query:
+        simple: action getServiceConnectionRegionalStat
+      querystring:
+        simple: query action getServiceConnectionRegionalStat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a00a461c-2e26-4d6c-80f5-0e735e6ea15e
+    type: regular
+    task:
+      id: a00a461c-2e26-4d6c-80f5-0e735e6ea15e
+      version: -1
+      name: Prisma Access - Get Firewall Status
+      script: '|||prisma-access-query'
+      description: ''
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      query:
+        simple: action getFWaaSRegionalStat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 625179bc-2292-4504-89dd-3861bf40609b
+    type: condition
+    task:
+      id: 625179bc-2292-4504-89dd-3861bf40609b
+      version: -1
+      name: Any tunnels down?
+      description: Check for OK status on all tunnels.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: PrismaAccess.QueryResults.Status.value
+            iscontext: true
+          right:
+            value:
+              simple: OK
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4e05599a-218b-41fd-80ae-3209e65d5774
+    type: regular
+    task:
+      id: 4e05599a-218b-41fd-80ae-3209e65d5774
+      version: -1
+      name: Close incident
+      description: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 59a55bbc-ce73-47da-812f-cb01e297513d
+    type: condition
+    task:
+      id: 59a55bbc-ce73-47da-812f-cb01e297513d
+      version: -1
+      name: Is Prisma Access Enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Prisma Access
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Prisma Access
+    view: |-
+      {
+        "position": {
+          "x": 607.5,
+          "y": 35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: de800a04-5067-42ca-8694-3cb346006f23
+    type: title
+    task:
+      id: de800a04-5067-42ca-8694-3cb346006f23
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: c8e8d4d3-7cc1-4021-859e-3e745d63a6aa
+    type: title
+    task:
+      id: c8e8d4d3-7cc1-4021-859e-3e745d63a6aa
+      version: -1
+      name: Query Prisma Access
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 1cbc360a-e718-41d1-857c-b5c22e5fdd8c
+    type: regular
+    task:
+      id: 1cbc360a-e718-41d1-857c-b5c22e5fdd8c
+      version: -1
+      name: Investigate and remediate tunnel issue
+      description: |-
+        ### Recommendations for investigation and remediation steps:
+         - Verify that the backup tunnel activated successfully
+         - Collect and analyze relevant logs from Prisma Access
+         - Make the necessary changes to remediate the issue
+         - Revert to using the main tunnel connection
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_5_#default#": 0.5,
+      "6_7_#default#": 0.14,
+      "6_8_yes": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1675,
+        "width": 1220,
+        "x": 50,
+        "y": -110
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
