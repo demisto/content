@@ -163,12 +163,20 @@ class Code42Client(BaseClient):
             return None
         return user_id
 
-    def add_user_to_high_risk_employee(self, username, risk_tags=None, note=None):
+    def get_all_departing_employees(self):
+        try:
+            res = []
+            pages = self._sdk.detectionlists.departing_employee.get_all()
+            for page in pages:
+                res.extend(page["items"])
+        except Exception:
+            return None
+        return res
+
+    def add_user_to_high_risk_employee(self, username, note=None):
         try:
             user_id = self.get_user_id(username)
             self._sdk.detectionlists.high_risk_employee.add(user_id)
-            if risk_tags:
-                self._sdk.detectionlists.add_user_risk_tags(user_id, risk_tags)
             if note:
                 self._sdk.detectionlists.update_user_notes(user_id, note)
         except Exception:
@@ -182,6 +190,49 @@ class Code42Client(BaseClient):
         except Exception:
             return None
         return user_id
+
+    def add_user_risk_tags(self, username, risk_tags):
+        try:
+            user_id = self.get_user_id(username)
+            self._sdk.detectionlists.add_user_risk_tags(user_id, risk_tags)
+        except Exception:
+            return None
+        return user_id
+
+    def remove_user_risk_tags(self, username, risk_tags):
+        try:
+            user_id = self.get_user_id(username)
+            self._sdk.detectionlists.remove_user_risk_tags(user_id, risk_tags)
+        except Exception:
+            return None
+        return user_id
+
+    def get_all_high_risk_employees(self, risk_tags=None):
+        if isinstance(risk_tags, str):
+            risk_tags = [risk_tags]
+        try:
+            res = []
+            pages = self._sdk.detectionlists.high_risk_employee.get_all()
+            for page in pages:
+                res.extend(self._get_all_high_risk_employees_from_page(page, risk_tags))
+        except Exception:
+            return None
+        return res
+
+    def _get_all_high_risk_employees_from_page(self, page, risk_tags):
+        res = []
+        for employee in page["items"]:
+            if not risk_tags:
+                res.append(employee)
+                continue
+
+            username = employee["userName"]
+            employee_tags = self._sdk.detectionlists.get_user(username)["riskFactors"]
+
+            # If the employee risk tags contain all the given risk tags
+            if set(risk_tags) <= set(employee_tags):
+                res.append(employee)
+        return res
 
     def fetch_alerts(self, start_time, event_severity_filter):
         try:
@@ -271,6 +322,7 @@ class FileEventQueryFilters(Code42SearchFilters):
 
 class AlertQueryFilters(Code42SearchFilters):
     """Class for simplifying building up an alert search query"""
+
     def to_all_query(self):
         query = AlertQuery.all(*self._filters)
         query.page_size = 500
@@ -436,6 +488,9 @@ def _map_obj_to_context(obj, context_mapper):
     return {v: obj.get(k) for k, v in context_mapper.items() if obj.get(k)}
 
 
+"""Commands"""
+
+
 @logger
 def alert_get_command(client, args):
     code42_securityalert_context = []
@@ -514,19 +569,32 @@ def departingemployee_remove_command(client, args):
 
 
 @logger
+def departingemployee_get_all_command(client, args):
+    employees = client.get_all_departing_employees()
+    if employees:
+        employees_context = [{
+            "UserID": e["userId"],
+            "Username": e["userName"],
+            "DepartureDate": e.get("departureDate"),
+            "Note": e["notes"]
+        } for e in employees]
+        readable_outputs = tableToMarkdown(
+            f"All Departing Employees", employees_context, headers=DEPARTING_EMPLOYEE_HEADERS
+        )
+        return readable_outputs, {"Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)": employees_context}, employees
+    else:
+        return_error(message="Could not get all Departing Employees")
+
+
+@logger
 def highriskemployee_add_command(client, args):
-    tags = args.get("risktags")
     username = args["username"]
     note = args.get("note")
-    user_id = client.add_user_to_high_risk_employee(username, tags, note)
+    user_id = client.add_user_to_high_risk_employee(username, note)
     if not user_id:
         return_error(message="Could not add user to the High Risk Employee List")
 
-    hr_context = {
-        "UserID": user_id,
-        "Username": username,
-        "RiskTags": tags,
-    }
+    hr_context = {"UserID": user_id, "Username": username}
     readable_outputs = tableToMarkdown(f"Code42 High Risk Employee List User Added", hr_context)
     return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
 
@@ -543,6 +611,46 @@ def highriskemployee_remove_command(client, args):
         return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
     else:
         return_error(message="Could not remove user from the High Risk Employee List")
+
+
+@logger
+def highriskemployee_get_all_command(client, args):
+    tags = args.get("risktags")
+    employees = client.get_all_high_risk_employees(tags)
+    if employees:
+        hr_context = {"HighRiskEmployees": employees}
+        readable_outputs = tableToMarkdown(
+            f"Retrieved All High Risk Employees", hr_context
+        )
+        return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, employees
+    else:
+        return_error(message="Could not get all High Risk Employees")
+
+
+@logger
+def highriskemployee_add_risk_tags_command(client, args):
+    username = args["username"]
+    tags = args["risktags"]
+    user_id = client.add_user_risk_tags(username, tags)
+    if user_id:
+        hr_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
+        readable_outputs = tableToMarkdown(f"Code42 Risk Tags Added", hr_context)
+        return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
+    else:
+        return_error(message="Could not add user risk tags")
+
+
+@logger
+def highriskemployee_remove_risk_tags_command(client, args):
+    username = args["username"]
+    tags = args["risktags"]
+    user_id = client.remove_user_risk_tags(username, tags)
+    if user_id:
+        hr_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
+        readable_outputs = tableToMarkdown(f"Code42 Risk Tags Removed", hr_context)
+        return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
+    else:
+        return_error(message="Could not remove user risk tags")
 
 
 def _create_incident_from_alert_details(details):
@@ -594,7 +702,7 @@ class Code42SecurityIncidentFetcher(object):
         incidents = [self._create_incident_from_alert(a) for a in alerts]
         save_time = datetime.utcnow().timestamp()
         next_run = {"last_fetch": save_time}
-        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
+        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit :]
 
     def _fetch_remaining_incidents_from_last_run(self):
         if self._integration_context:
@@ -604,7 +712,7 @@ class Code42SecurityIncidentFetcher(object):
                 return (
                     self._last_run,
                     remaining_incidents[: self._fetch_limit],
-                    remaining_incidents[self._fetch_limit:],
+                    remaining_incidents[self._fetch_limit :],
                 )
 
     def _get_start_query_time(self):
@@ -726,6 +834,12 @@ def main():
             "code42-securitydata-search": securitydata_search_command,
             "code42-departingemployee-add": departingemployee_add_command,
             "code42-departingemployee-remove": departingemployee_remove_command,
+            "code42-departingemployee-get-all": departingemployee_get_all_command,
+            "code42-highriskemployee-add": highriskemployee_add_command,
+            "code42-highriskemployee-remove": highriskemployee_remove_command,
+            "code42-highriskemployee-get-all": highriskemployee_get_all_command,
+            "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
+            "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
         }
         command = demisto.command()
         if command == "test-module":

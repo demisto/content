@@ -16,6 +16,8 @@ from Code42 import (
     departingemployee_remove_command,
     highriskemployee_add_command,
     highriskemployee_remove_command,
+    highriskemployee_add_risk_tags_command,
+    highriskemployee_remove_risk_tags_command,
     fetch_incidents,
     securitydata_search_command,
 )
@@ -573,14 +575,8 @@ MOCK_OBSERVATION_QUERIES = [
             },
             {
                 "filterClause": "AND",
-                "filters": [
-                    {
-                        "operator": "IS",
-                        "term": "fileCategory",
-                        "value": "IMAGE"
-                    }
-                ]
-            }
+                "filters": [{"operator": "IS", "term": "fileCategory", "value": "IMAGE"}],
+            },
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -620,7 +616,7 @@ MOCK_OBSERVATION_QUERIES = [
                     {"operator": "IS", "term": "exposure", "value": "IsPublic"},
                     {"operator": "IS", "term": "exposure", "value": "SharedViaLink"},
                 ],
-            }
+            },
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -804,17 +800,7 @@ def test_alert_resolve_command(code42_sdk_mock):
     assert res["id"] == "36fb8ca5-0533-4d25-9763-e09d35d60610"
 
 
-def test_departing_employee_remove_command(code42_sdk_mock):
-    client = Code42Client(
-        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
-    )
-    _, _, res = departingemployee_remove_command(client, {"username": "user1@example.com"})
-    expected = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected
-    code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(expected)
-
-
-def test_departing_employee_add_command(code42_sdk_mock):
+def test_departingemployee_add_command(code42_sdk_mock):
     client = Code42Client(
         sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
@@ -826,10 +812,37 @@ def test_departing_employee_add_command(code42_sdk_mock):
     assert res == expected_user_id
     add_func = code42_sdk_mock.detectionlists.departing_employee.add
     add_func.assert_called_once_with(expected_user_id, departure_date="2020-01-01")
-    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(expected_user_id, "Dummy note")
+    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(
+        expected_user_id, "Dummy note"
+    )
 
 
-def test_high_risk_employee_remove_command(code42_sdk_mock):
+def test_departingemployee_remove_command(code42_sdk_mock):
+    client = Code42Client(
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
+    )
+    _, _, res = departingemployee_remove_command(client, {"username": "user1@example.com"})
+    expected = "123412341234123412"  # value found in GET_USER_RESPONSE
+    assert res == expected
+    code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(expected)
+
+
+def test_highriskemployee_add_command(code42_sdk_mock):
+    client = Code42Client(
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
+    )
+    _, _, res = highriskemployee_add_command(
+        client, {"username": "user1@example.com", "note": "Dummy note"}
+    )
+    expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
+    assert res == expected_user_id
+    code42_sdk_mock.detectionlists.high_risk_employee.add.assert_called_once_with(expected_user_id)
+    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(
+        expected_user_id, "Dummy note"
+    )
+
+
+def test_highriskemployee_remove_command(code42_sdk_mock):
     client = Code42Client(
         sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
@@ -839,19 +852,32 @@ def test_high_risk_employee_remove_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(expected)
 
 
-def test_high_risk_employee_add_command(code42_sdk_mock):
+def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     client = Code42Client(
         sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
     )
-    _, _, res = highriskemployee_add_command(
-        client,
-        {"username": "user1@example.com", "risktags": "FLIGHT_RISK", "note": "Dummy note"},
+    _, _, res = highriskemployee_add_risk_tags_command(
+        client, {"username": "user1@example.com", "risktags": "FLIGHT_RISK"}
     )
     expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected_user_id
-    code42_sdk_mock.detectionlists.high_risk_employee.add.assert_called_once_with(expected_user_id)
-    code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(expected_user_id, "FLIGHT_RISK")
-    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(expected_user_id, "Dummy note")
+    code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(
+        expected_user_id, "FLIGHT_RISK"
+    )
+
+
+def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
+    client = Code42Client(
+        sdk=code42_sdk_mock, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None
+    )
+    _, _, res = highriskemployee_remove_risk_tags_command(
+        client, {"username": "user1@example.com", "risktags": ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]}
+    )
+    expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
+    assert res == expected_user_id
+    code42_sdk_mock.detectionlists.remove_user_risk_tags.assert_called_once_with(
+        expected_user_id, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
+    )
 
 
 def test_security_data_search_command(code42_sdk_mock):

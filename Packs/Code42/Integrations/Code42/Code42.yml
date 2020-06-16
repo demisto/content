@@ -263,15 +263,44 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
     description: Adds a user to the Departing Employee List.
-  - name: code42-departingemployee-remove
-    arguments:
-    - name: username
-      description: The username to remove from the Departing Employee List.
+  - name: code42-departingemployee-get-all
     outputs:
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
+      type: string
     - contextPath: Code42.DepartingEmployee.Username
       description: The username of the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Note
+      description: Note associated with the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.DepartureDate
+      description: The departure date for the Departing Employee.
+    description: Get all employees on the Departing Employee List.
+  - name: code42-departingemployee-remove
+    arguments:
+      - name: username
+        description: The username to remove from the Departing Employee List.
+    outputs:
+      - contextPath: Code42.DepartingEmployee.UserID
+        description: Internal Code42 User ID for the Departing Employee.
+      - contextPath: Code42.DepartingEmployee.Username
+        description: The username of the Departing Employee.
+    description: Removes a user from the Departing Employee List.
+  - name: code42-high-risk-employee-add
+    arguments:
+      - name: username
+        description: The username to add to the High Risk Employee List.
+      - name: note
+        description: Note to attach to the High Risk Employee.
+    outputs:
+      - contextPath: Code42.HighRiskEmployee.UserID
+        description: Internal Code42 User ID for the High Risk Employee.
+      - contextPath: Code42.HighRiskEmployee.Username
+        description: The username of the High Risk Employee.
+      - contextPath: Code42.DepartingEmployee.Note
+        description: Note associated with the High Risk Employee.
+    type: string
     description: Removes a user from the Departing Employee List.
   - name: code42-alert-resolve
     arguments:
