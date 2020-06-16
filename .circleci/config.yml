@@ -116,9 +116,9 @@ jobs:
           name: Validate Files and Yaml
           when: always
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container or Nightly run"
                 exit 0
             fi
 
