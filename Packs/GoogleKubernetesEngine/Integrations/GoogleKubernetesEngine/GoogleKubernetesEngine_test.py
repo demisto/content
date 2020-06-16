@@ -1,4 +1,3 @@
-import pytest
 
 
 def test_parse_cluster(datadir):
