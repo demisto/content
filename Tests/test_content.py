@@ -1077,6 +1077,53 @@ def acquire_test_lock(test_details: dict,
     Yields:
         A boolean indicating the lock attempt result
     """
+    locked = safe_lock_integrations(default_test_timeout, is_not_mocked, prints_manager, test_details, thread_index)
+    try:
+        yield locked
+    finally:
+        if not locked or not is_not_mocked:
+            return
+        safe_unlock_integrations(prints_manager, test_details, thread_index)
+
+
+def safe_unlock_integrations(prints_manager: ParallelPrintsManager, test_details: dict, thread_index: int):
+    """
+    This integration safely unlocks the test's integrations.
+    If an unexpected error occurs - this method will log it's details and other tests execution will continue
+    Args:
+        prints_manager: ParallelPrintsManager object
+        test_details: Details of the currently executed test
+        thread_index: The index of the thread that executes the unlocking
+    """
+    try:
+        # executing the test could take a while, re-instancing the storage client
+        storage_client = storage.Client()
+        unlock_integrations(test_details, prints_manager, storage_client, thread_index)
+    except Exception as e:
+        prints_manager.add_print_job(f'attempt to unlock integration failed for unknown reason.\nError: {e}',
+                                     print_warning,
+                                     thread_index,
+                                     include_timestamp=True)
+
+
+def safe_lock_integrations(default_test_timeout: int,
+                           is_not_mocked: bool,
+                           prints_manager: ParallelPrintsManager,
+                           test_details: dict,
+                           thread_index: int) -> bool:
+    """
+    This integration safely locks the test's integrations and return it's result
+    If an unexpected error occurs - this method will log it's details and return False
+    Args:
+        default_test_timeout: Default test timeout in seconds
+        is_not_mocked: If the test is mockable - no need to actually lock it
+        prints_manager: ParallelPrintsManager object
+        test_details: Details of the currently executed test
+        thread_index: The index of the thread that executes the unlocking
+
+    Returns:
+        A boolean indicating the lock attempt result
+    """
     if is_not_mocked:
         try:
             storage_client = storage.Client()
@@ -1089,21 +1136,7 @@ def acquire_test_lock(test_details: dict,
             locked = False
     else:
         locked = True
-    try:
-        yield locked
-    finally:
-        if not locked or is_not_mocked:
-            return
-        # executing the test could take a while, re-instancing the storage client
-        try:
-            storage_client = storage.Client()
-            unlock_integrations(test_details, prints_manager, storage_client, thread_index)
-        except Exception as e:
-            prints_manager.add_print_job(f'attempt to unlock integration failed for unknown reason.\nError: {e}',
-                                         print_warning,
-                                         thread_index,
-                                         include_timestamp=True)
-
+    return locked
 
 
 def lock_integrations(test_details: dict,
