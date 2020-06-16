@@ -3,7 +3,7 @@
     "description": "Tools associated with CVSS scores and calculations.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Adam Burt",
+    "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-06-16T07:58:55Z",
@@ -12,5 +12,8 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [
+        "cvss",
+        "score"
+    ]
 }
