@@ -708,3 +708,5 @@ def test_fetch_incidents_all_inclusive(mocker, requests_mock):
     assert threat_incident.get('occurred', '') == '2019-09-16T09:36:02.331000Z'
     threat_incident = incidents[2]
     assert threat_incident.get('occurred', '') == '2019-09-15T14:25:48.988000Z'
+    threat_incident = incidents[3]
+    assert threat_incident.get('occurred', '') == '2020-06-13T22:59:02Z'
