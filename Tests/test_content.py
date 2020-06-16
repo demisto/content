@@ -1127,7 +1127,7 @@ def lock_integrations(test_details: dict,
     if not integrations:
         return True
     existing_integrations_lock_files = get_locked_integrations(integrations, storage_client)
-    for build_number, lock_file in existing_integrations_lock_files.items():
+    for _, lock_file in existing_integrations_lock_files.items():
         # Each file has content in the form of <circleci-build-number>:<timeout in seconds>
         # If it has not expired - it means the integration is currently locked by another test.
         build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
@@ -1231,12 +1231,15 @@ def unlock_integrations(test_details: dict,
     locked_integration_blobs = get_locked_integrations(locked_integrations, storage_client)
     for integration, lock_file in locked_integration_blobs.items():
         try:
-            lock_file.delete(if_generation_match=lock_file.generation)
-            prints_manager.add_print_job(
-                f'Integration {integration} unlocked',
-                print,
-                thread_index,
-                include_timestamp=True)
+            # Verifying build number is the same as current build number to avoid deleting other tests lock files
+            build_number, _ = lock_file.download_as_string().decode().split(':')
+            if build_number == CIRCLE_BUILD_NUM:
+                lock_file.delete(if_generation_match=lock_file.generation)
+                prints_manager.add_print_job(
+                    f'Integration {integration} unlocked',
+                    print,
+                    thread_index,
+                    include_timestamp=True)
         except PreconditionFailed:
             prints_manager.add_print_job(f'Could not unlock integration {integration}',
                                          print_warning,
