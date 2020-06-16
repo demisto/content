@@ -12,11 +12,13 @@ import requests
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, get_dict_from_file
 
 
-COMMENT_REGEX = r'<!--(.*?)-->'
 PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
 PACK_METADATA = 'pack_metadata.json'
 PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
+
+EMPTY_LINES_REGEX = re.compile(r'\s*-\s*\n')
+IGNORED_LINES_REGEX = re.compile(r'<!-[\W\w]*?-->')
 
 LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
@@ -167,14 +169,10 @@ def read_and_format_release_note(rn_file):
     with open(rn_file, 'r') as stream:
         release_notes = stream.read()
 
-    ignored_rn_regex = re.compile(COMMENT_REGEX)
-    if ignored_rn_regex.match(release_notes):
-        return ''
+    release_notes = EMPTY_LINES_REGEX.sub('', release_notes)
+    release_notes = IGNORED_LINES_REGEX.sub('', release_notes)
 
-    empty_lines_regex = r'\s*-\s*\n'
-    release_notes = re.sub(empty_lines_regex, '', release_notes)
-
-    return release_notes
+    return release_notes.strip()
 
 
 def get_release_notes_dict(release_notes_files):

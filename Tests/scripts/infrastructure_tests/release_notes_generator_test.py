@@ -1,13 +1,70 @@
 import os
 import re
-from release_notes_generator import get_release_notes_dict, generate_release_notes_summary, get_pack_entities
+from release_notes_generator import (get_release_notes_dict,
+                                     generate_release_notes_summary,
+                                     get_pack_entities,
+                                     read_and_format_release_note,
+                                     EMPTY_LINES_REGEX)
 
 TEST_DATA_PATH = 'Tests/scripts/infrastructure_tests/tests_data/RN_tests_data'
 
 VERSION = 'VERSION'
 ASSET_ID = 'ASSET_ID'
 
-EMPTY_LINES_REGEX = r'\s*-\s*\n'
+
+class TestReadAndFormatReleaseNote:
+    def test_sanity(self):
+        """
+        Given
+        - A release note file with 2 Integrations:
+            - FakePack1_Integration1
+            - FakePack1_Integration2
+
+        When
+        - Formatting a release notes file.
+
+        Then
+        - Ensure both integration appear in the formatted string
+        """
+        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md')
+        formatted_text = read_and_format_release_note(rn_file)
+        assert 'FakePack1_Integration1' in formatted_text
+        assert 'FakePack1_Integration2' in formatted_text
+
+    def test_ignored_release_notes_block(self):
+        """
+        Given
+        - A release note file with an Integration and a Script:
+            - FakePack4_Script1
+            - FakePack4_Integration1 - should be ignored
+
+        When
+        - Formatting a release notes file.
+
+        Then
+        - Ensure only the script appears in the formatted string
+        """
+        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md')
+        formatted_text = read_and_format_release_note(rn_file)
+        assert 'FakePack4_Script1' in formatted_text
+        assert 'FakePack4_Integration1' not in formatted_text
+
+    def test_ignored_entire_release_note(self):
+        """
+        Given
+        - A release note file with an Integration and a Script:
+            - FakePack4_Script1
+            - FakePack4_Integration1
+
+        When
+        - Formatting a release notes file.
+
+        Then
+        - Ensure both integration appear in the formatted string
+        """
+        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md')
+        formatted_text = read_and_format_release_note(rn_file)
+        assert formatted_text == ''
 
 
 class TestGenerateReleaseNotesSummary:
