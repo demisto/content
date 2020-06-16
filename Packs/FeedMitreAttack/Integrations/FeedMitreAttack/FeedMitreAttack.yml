@@ -139,7 +139,6 @@ script:
     description: Lookup reputation in the indicators.
   dockerimage: demisto/taxii2:1.0.0.9219
   feed: true
-
   runonce: false
   subtype: python3
 fromversion: 5.5.0
