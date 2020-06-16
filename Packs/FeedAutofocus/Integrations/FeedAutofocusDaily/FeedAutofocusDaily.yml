@@ -51,7 +51,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- additionalInfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: true
@@ -107,7 +107,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.6980
+  dockerimage: demisto/python3:3.8.3.8715
   feed: true
   isfetch: false
   longRunning: false
