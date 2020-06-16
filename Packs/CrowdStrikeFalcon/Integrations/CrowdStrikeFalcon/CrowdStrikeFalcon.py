@@ -1369,12 +1369,12 @@ def run_command():
             })
         
         human_readable = tableToMarkdown(f'Command {full_command} results', output, removeNull=True)
-        entry_context = {
+        entry_context_batch = {
             'CrowdStrike' : {
               'Command': output
             }
         }
-        return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+        return create_entry_object(contents=response, ec=entry_context_batch, hr=human_readable)
     else: # target = 'single'
         responses = []
         for host_id in host_ids:
@@ -1404,10 +1404,10 @@ def run_command():
                 })
 
         human_readable = tableToMarkdown(f'Command {full_command} results', output, removeNull=True)
-        entry_context = {
+        entry_context_single = {
             'CrowdStrike.Command(val.TaskID === obj.TaskID)': output
         }
-        return create_entry_object(contents=responses, ec=entry_context, hr=human_readable)
+        return create_entry_object(contents=responses, ec=entry_context_single, hr=human_readable)
 
 
 def upload_script_command():
