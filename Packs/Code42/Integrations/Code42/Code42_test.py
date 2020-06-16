@@ -570,7 +570,7 @@ MOCK_OBSERVATION_QUERIES = [
                 "filters": [{"operator": "IS", "term": "exposure", "value": "ApplicationRead"}],
             },
             {
-                "filterClause": "OR",
+                "filterClause": "AND",
                 "filters": [
                     {
                         "operator": "IS",

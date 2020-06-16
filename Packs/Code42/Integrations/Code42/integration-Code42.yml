@@ -448,14 +448,8 @@ script:
         def _create_file_category_filters(self):
             """Determine if file categorization is significant"""
             observed_file_categories = self._observation_data["fileCategories"]
-            filters = [_create_file_category_filter(c["category"]) for c in observed_file_categories if c["isSignificant"]]
-            group = create_filter_group(filters, "OR")
-            return group
-
-
-    def _create_file_category_filter(value):
-        _filter = create_query_filter(FileCategory._term, u"IS", value.upper())
-        return _filter
+            categories = [c["category"].upper() for c in observed_file_categories if c["isSignificant"]]
+            return FileCategory.is_in(categories)
 
 
     def map_observation_to_security_query(observation, actor):
