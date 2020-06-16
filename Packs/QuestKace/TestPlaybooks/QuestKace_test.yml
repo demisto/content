@@ -13,7 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: 'start'
     nexttasks:
       '#none#':
       - "1"
@@ -333,7 +333,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Failed'
     separatecontext: false
     view: |-
       {
