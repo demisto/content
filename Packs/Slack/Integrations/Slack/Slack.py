@@ -1913,10 +1913,12 @@ def close_channel():
             integration_context = get_integration_context(SYNC_CONTEXT)
             mirrors = json.loads(integration_context['mirrors'])
             channel_id = mirror['channel_id']
-            # Check for other mirrors on the archived channel
+            # Check for mirrors on the archived channel
             channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
             for mirror in channel_mirrors:
                 mirror['remove'] = True
+                demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
+                                            mirror['auto_close'])
 
             set_to_latest_integration_context({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     else:
@@ -2150,6 +2152,9 @@ def main():
         demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')  # type: ignore[arg-type]
         if is_debug_mode():
             print_thread_dump()
+
+        # Refresh the integration context
+        demisto.getIntegrationContextVersioned(True)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

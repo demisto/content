@@ -3418,6 +3418,7 @@ def test_close_channel_should_delete_mirror(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'mirrorInvestigation')
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
     mocker.patch.object(slack.WebClient, 'api_call')
 
@@ -3427,11 +3428,13 @@ def test_close_channel_should_delete_mirror(mocker):
     archive_args = slack.WebClient.api_call.call_args
     context_args = demisto.setIntegrationContext.call_args[0][0]
     context_args_mirrors = js.loads(context_args['mirrors'])
+    mirror_args = demisto.mirrorInvestigation.call_args[0]
 
     # Assert
     assert archive_args[0][0] == 'conversations.archive'
     assert archive_args[1]['json']['channel'] == 'GKQ86DVPH'
     assert context_args_mirrors == mirrors
+    assert mirror_args == ('681', 'none:both', True)
 
 
 def test_close_channel_should_delete_mirrors(mocker):
@@ -3445,6 +3448,7 @@ def test_close_channel_should_delete_mirrors(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '684'})
+    mocker.patch.object(demisto, 'mirrorInvestigation')
     mocker.patch.object(slack.WebClient, 'api_call')
 
     # Arrange
@@ -3452,12 +3456,14 @@ def test_close_channel_should_delete_mirrors(mocker):
 
     archive_args = slack.WebClient.api_call.call_args
     context_args = demisto.setIntegrationContext.call_args[0][0]
+    mirrors_args = [args[0] for args in demisto.mirrorInvestigation.call_args_list]
     context_args_mirrors = js.loads(context_args['mirrors'])
 
     # Assert
     assert archive_args[0][0] == 'conversations.archive'
     assert archive_args[1]['json']['channel'] == 'GKB19PA3V'
     assert context_args_mirrors == mirrors
+    assert mirrors_args == [('684', 'none:both', True), ('692', 'none:both', True)]
 
 
 def test_get_conversation_by_name_paging(mocker):
