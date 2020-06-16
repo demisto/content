@@ -19,6 +19,7 @@ from py42.sdk.queries.fileevents.filters import (
     EventType,
     FileCategory,
 )
+from py42.sdk.queries.query_filter import create_query_filter, create_filter_group
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
 
@@ -274,9 +275,8 @@ def build_query_payload(args):
     search_args.append_result(exposure, _create_exposure_filter)
 
     query = search_args.to_all_query()
-    query_str = str(query)
-    LOG("File Event Query: {}".format(query_str))
-    return query_str
+    LOG("File Event Query: {}".format(str(query)))
+    return query
 
 
 def _create_hash_filter(hash_arg):
@@ -337,7 +337,7 @@ class ObservationToSecurityQueryMapper(object):
 
     def map(self):
         search_args = self._create_search_args()
-        query = str(search_args.to_all_query())
+        query = search_args.to_all_query()
         LOG("Alert Observation Query: {}".format(query))
         return query
 
@@ -351,7 +351,7 @@ class ObservationToSecurityQueryMapper(object):
         filters.append(EventTimestamp.on_or_after(begin_time))
         filters.append(EventTimestamp.on_or_before(end_time))
         filters.extend(self._create_exposure_filters(exposure_types))
-        filters.extend(self._create_file_category_filters())
+        filters.append(self._create_file_category_filters())
 
         return filters
 
@@ -375,9 +375,14 @@ class ObservationToSecurityQueryMapper(object):
     def _create_file_category_filters(self):
         """Determine if file categorization is significant"""
         observed_file_categories = self._observation_data["fileCategories"]
-        filters = [c for c in observed_file_categories if c["isSignificant"]]
-        if filters:
-            return json.dumps({"filterClause": "OR", "filters": filters})
+        filters = [_create_file_category_filter(c["category"]) for c in observed_file_categories if c["isSignificant"]]
+        group = create_filter_group(filters, "OR")
+        return group
+
+
+def _create_file_category_filter(value):
+    _filter = create_query_filter(FileCategory._term, u"IS", value.upper())
+    return _filter
 
 
 def map_observation_to_security_query(observation, actor):

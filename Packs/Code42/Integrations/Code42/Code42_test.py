@@ -426,7 +426,7 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
                             "category": "Image",
                             "fileCount": 3,
                             "totalFileSize": 533846,
-                            "isSignificant": false
+                            "isSignificant": true
                         }
                     ],
                     "files": [
@@ -434,7 +434,7 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
                             "type$": "OBSERVED_FILE",
                             "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
                             "path": "C:/Users/QA/Downloads/",
-                            "name": "Customers..jpg",
+                            "name": "Customers.jpg",
                             "category": "Image",
                             "size": 265122
                         },
@@ -569,6 +569,16 @@ MOCK_OBSERVATION_QUERIES = [
                 "filterClause": "AND",
                 "filters": [{"operator": "IS", "term": "exposure", "value": "ApplicationRead"}],
             },
+            {
+                "filterClause": "OR",
+                "filters": [
+                    {
+                        "operator": "IS",
+                        "term": "fileCategory",
+                        "value": "IMAGE"
+                    }
+                ]
+            }
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -608,7 +618,7 @@ MOCK_OBSERVATION_QUERIES = [
                     {"operator": "IS", "term": "exposure", "value": "IsPublic"},
                     {"operator": "IS", "term": "exposure", "value": "SharedViaLink"},
                 ],
-            },
+            }
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -735,7 +745,9 @@ def create_mock_code42_sdk_response(mocker, response_text):
 
 def test_build_query_payload():
     query = build_query_payload(MOCK_SECURITY_DATA_SEARCH_QUERY)
-    assert json.loads(query) == MOCK_FILE_EVENT_QUERY_PAYLOAD
+    assert query.sort_key == MOCK_FILE_EVENT_QUERY_PAYLOAD["srtKey"]
+    assert query.page_number == MOCK_FILE_EVENT_QUERY_PAYLOAD["pgNum"]
+    assert json.loads((str(query))) == MOCK_FILE_EVENT_QUERY_PAYLOAD
 
 
 def test_map_observation_to_security_query():
@@ -745,7 +757,9 @@ def test_map_observation_to_security_query():
         observation = alerts[i]["observations"][0]
         actor = alerts[i]["actor"]
         query = map_observation_to_security_query(observation, actor)
-        assert json.loads(query) == MOCK_OBSERVATION_QUERIES[i]
+        assert query.sort_key == MOCK_OBSERVATION_QUERIES[i]["srtKey"]
+        assert query.page_number == MOCK_OBSERVATION_QUERIES[i]["pgNum"]
+        assert json.loads(str(query)) == MOCK_OBSERVATION_QUERIES[i]
 
 
 def test_map_to_code42_event_context():
@@ -820,14 +834,15 @@ def test_security_data_search_command(code42_sdk_mock):
     _, _, res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
     assert len(res) == 3
     actual_query = code42_sdk_mock.securitydata.search_file_events.call_args[0][0]
-    assert "md5Checksum" in actual_query
-    assert "d41d8cd98f00b204e9800998ecf8427e" in actual_query
-    assert "osHostName" in actual_query
-    assert "DESKTOP-0001" in actual_query
-    assert "deviceUserName" in actual_query
-    assert "user3@example.com" in actual_query
-    assert "exposure" in actual_query
-    assert "ApplicationRead" in actual_query
+    filter_groups = json.loads(str(actual_query))["groups"]
+    assert filter_groups[0]["filters"][0]["term"] == "md5Checksum"
+    assert filter_groups[0]["filters"][0]["value"] == "d41d8cd98f00b204e9800998ecf8427e"
+    assert filter_groups[1]["filters"][0]["term"] == "osHostName"
+    assert filter_groups[1]["filters"][0]["value"] == "DESKTOP-0001"
+    assert filter_groups[2]["filters"][0]["term"] == "deviceUserName"
+    assert filter_groups[2]["filters"][0]["value"] == "user3@example.com"
+    assert filter_groups[3]["filters"][0]["term"] == "exposure"
+    assert filter_groups[3]["filters"][0]["value"] == "ApplicationRead"
 
 
 def test_fetch_incidents_handles_single_severity(code42_sdk_mock):
