@@ -13,6 +13,8 @@
   "tags": [
     "NIST"
   ],
-  "useCases": [],
+  "useCases": [
+    "Incident Handling"
+  ],
   "keywords": []
 }

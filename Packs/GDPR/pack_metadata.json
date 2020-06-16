@@ -11,6 +11,8 @@
         "Case Management"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": [
+        "Data Exfiltration"
+    ],
     "keywords": []
 }
