@@ -472,17 +472,17 @@ def print_packs_summary(packs_list):
 
     if successful_packs:
         print_color(f"Number of successful uploaded packs: {len(successful_packs)}", LOG_COLORS.GREEN)
-        print_color("Uploaded packs:", LOG_COLORS.GREEN)
+        print_color("Uploaded packs:\n", LOG_COLORS.GREEN)
         successful_packs_table = _build_summary_table(successful_packs)
         print_color(successful_packs_table, LOG_COLORS.GREEN)
     if skipped_packs:
         print_warning(f"Number of skipped packs: {len(skipped_packs)}")
-        print_warning("Skipped packs:")
+        print_warning("Skipped packs:\n")
         skipped_packs_table = _build_summary_table(skipped_packs)
         print_warning(skipped_packs_table)
     if failed_packs:
         print_error(f"Number of failed packs: {len(failed_packs)}")
-        print_error("Failed packs:")
+        print_error("Failed packs:\n")
         failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         print_error(failed_packs_table)
         sys.exit(1)
