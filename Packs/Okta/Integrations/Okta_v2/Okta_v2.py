@@ -268,7 +268,7 @@ class Client(BaseClient):
         return response
 
     def search(self, term, limit):
-        uri = f"users"
+        uri = "users"
         query_params = {
             'q': encode_string_results(term),
             'limit': limit
@@ -451,7 +451,7 @@ class Client(BaseClient):
 
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
-        uri = f"groups"
+        uri = "groups"
         query_params = {}
         for key, value in args.items():
             if key == 'query':
@@ -466,7 +466,7 @@ class Client(BaseClient):
         return self.get_paged_results(uri, query_params)
 
     def get_logs(self, args):
-        uri = f'logs'
+        uri = 'logs'
         query_params = {}
         for key, value in args.items():
             if key == 'query':
