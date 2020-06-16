@@ -594,6 +594,7 @@ class Pack(object):
         path_to_directory = self._pack_path
         output_file = zip_pack_path
         full_command = f'{zip_and_encrypt_script_path} {path_to_directory} {output_file} "{encryption_key}"'
+        subprocess.call('ls', shell=True)
         print_error(f'Full command is: {full_command}')
         subprocess.call(full_command, shell=True)
 
