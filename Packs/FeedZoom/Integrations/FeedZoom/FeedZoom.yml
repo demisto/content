@@ -57,7 +57,7 @@ configuration:
   defaultvalue: "30"
   type: 19
   required: false
-- display: The Zoom Endpoint URL
+- display: Zoom Endpoint URL
   name: url
   defaultvalue: https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom
   type: 0
@@ -94,7 +94,7 @@ script:
     arguments:
     - name: limit
       description: The maximum number of results to return. The default value is 10.
-      defaultValue: "0"
+      defaultValue: "10"
     description: Gets indicators from the feed.
   dockerimage: demisto/btfl-soup:1.0.1.8854
   feed: true
