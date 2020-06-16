@@ -163,6 +163,26 @@ class Code42Client(BaseClient):
             return None
         return user_id
 
+    def add_user_to_high_risk_employee(self, username, risk_tags=None, note=None):
+        try:
+            user_id = self.get_user_id(username)
+            self._sdk.detectionlists.high_risk_employee.add(user_id)
+            if risk_tags:
+                self._sdk.detectionlists.add_user_risk_tags(user_id, risk_tags)
+            if note:
+                self._sdk.detectionlists.update_user_notes(user_id, note)
+        except Exception:
+            return None
+        return user_id
+
+    def remove_user_from_high_risk_employee(self, username):
+        try:
+            user_id = self.get_user_id(username)
+            self._sdk.detectionlists.high_risk_employee.remove(user_id)
+        except Exception:
+            return None
+        return user_id
+
     def fetch_alerts(self, start_time, event_severity_filter):
         try:
             query = _create_alert_query(event_severity_filter, start_time)
@@ -467,7 +487,7 @@ def departingemployee_add_command(client, args):
     note = args.get("note")
     user_id = client.add_user_to_departing_employee(username, departing_date, note)
     if not user_id:
-        return_error(message="Could not add user to Departing Employee List")
+        return_error(message="Could not add user to the Departing Employee List")
 
     de_context = {
         "UserID": user_id,
@@ -490,7 +510,39 @@ def departingemployee_remove_command(client, args):
         )
         return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
     else:
-        return_error(message="Could not remove user from Departing Employee List")
+        return_error(message="Could not remove user from the Departing Employee List")
+
+
+@logger
+def highriskemployee_add_command(client, args):
+    tags = args.get("risktags")
+    username = args["username"]
+    note = args.get("note")
+    user_id = client.add_user_to_high_risk_employee(username, tags, note)
+    if not user_id:
+        return_error(message="Could not add user to the High Risk Employee List")
+
+    hr_context = {
+        "UserID": user_id,
+        "Username": username,
+        "RiskTags": tags,
+    }
+    readable_outputs = tableToMarkdown(f"Code42 High Risk Employee List User Added", hr_context)
+    return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
+
+
+@logger
+def highriskemployee_remove_command(client, args):
+    username = args["username"]
+    user_id = client.remove_user_from_high_risk_employee(username)
+    if user_id:
+        hr_context = {"UserID": user_id, "Username": username}
+        readable_outputs = tableToMarkdown(
+            f"Code42 High Risk Employee List User Removed", hr_context
+        )
+        return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
+    else:
+        return_error(message="Could not remove user from the High Risk Employee List")
 
 
 def _create_incident_from_alert_details(details):
