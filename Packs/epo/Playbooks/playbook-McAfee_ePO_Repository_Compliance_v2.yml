@@ -1,6 +1,6 @@
-id: playbook11
+id: McAfee ePO Repository Compliance Playbook v2
 version: -1
-name: McAfee ePO Repository Compliance Playbook
+name: McAfee ePO Repository Compliance Playbook v2
 description: Ensures that ePO servers are updated to the latest McAfee published AV
   signatures (DAT file version).
 starttaskid: "0"

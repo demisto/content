@@ -1,6 +1,6 @@
-id: playbook13
+id: McAfee ePO Endpoint Connectivity Diagnostics Playbook v2
 version: -1
-name: McAfee ePO Endpoint Connectivity Diagnostics Playbook
+name: McAfee ePO Endpoint Connectivity Diagnostics Playbook v2
 description: Perform a check on ePO endpoints to see if any endpoints are unmanaged
   or lost connectivity with ePO and take steps to return to valid state.
 starttaskid: "0"
