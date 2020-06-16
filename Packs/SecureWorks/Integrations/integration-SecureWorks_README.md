@@ -10,7 +10,7 @@
 <li>A Secureworks account with API User role</li>
 <li>A persistent API key with the Security Roles permission</li>
 <li>For more information about setting up the API, see the SecureWorks <a href="https://portal.secureworks.com/portal/">ticketing API guide</a>.</li>
-<li>For tickets to be fetched, they first need updated to be acknowledged.</li>
+<li>For tickets to be fetched, they first need to be updated as acknowledged.</li>
 </ul>
 <h2>Configure Dell Secureworks on Demisto</h2>
 <ol>
