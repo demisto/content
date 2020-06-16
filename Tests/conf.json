@@ -2267,9 +2267,6 @@
             "playbookID": "Cisco Spark Test New"
         },
         {
-            "playbookID": "get_file_sample_from_path_-_d2_-_test"
-        },
-        {
             "integrations": "Remedy On-Demand",
             "playbookID": "Remedy-On-Demand-Test"
         },
@@ -2845,10 +2842,7 @@
 
     ],
     "skipped_tests": {
-        "MSGraph_DeviceManagement_Test": "Issue 25603",
         "CuckooTest": "Issue 25601",
-        "Active Directory - Get User Manager Details - Test": "Issue 25604",
-        "EWS_O365_test": "Issue 25605",
         "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
         "Test - Cofense Intelligence": "Issue 25498",
@@ -2879,7 +2873,6 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
-        "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
         "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
@@ -2898,12 +2891,14 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
+        "dedup_-_generic_-_test": "Issue 25681",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
         "Cisco Umbrella Investigate": "Issue 24338",
@@ -2956,7 +2951,6 @@
         "Check Point": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
-        "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
         "Anomali ThreatStream v2": "Issue 19182",
@@ -2999,6 +2993,7 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
         "XFE": "We have the new integration XFE_v2, so n`o need to test the old one because they use the same quote",
@@ -3028,7 +3023,8 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
-        "Cymulate": "Partner didn't provided test playbook"
+        "Cymulate": "Partner didn't provided test playbook",
+        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3038,6 +3034,7 @@
     ],
     "unmockable_integrations": {
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
+        "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",

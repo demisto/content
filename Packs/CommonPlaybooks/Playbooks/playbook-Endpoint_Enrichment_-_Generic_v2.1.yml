@@ -76,7 +76,8 @@ tasks:
       id: c9799048-288a-40cc-8d2f-c561d0ea2f6b
       version: -1
       name: Is McAfee ePolicy Orchestrator enabled?
-      description: Checks if there is an active instance of the McAfee ePolicy Orchestrator integration enabled.
+      description: Checks if there is an active instance of the McAfee ePolicy Orchestrator
+        integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -225,7 +226,8 @@ tasks:
       id: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Checks if there is an active instance of the Carbon Black Enterprise Response integration enabled.
+      description: Checks if there is an active instance of the Carbon Black Enterprise
+        Response integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -314,7 +316,8 @@ tasks:
       id: 216aed2b-2f34-4c5e-8c54-60b978218896
       version: -1
       name: Is CrowdStrike Falcon Host enabled?
-      description: Checks if there is an active instance of the CrowdStrike Falcon Host integration enabled.
+      description: Checks if there is an active instance of the CrowdStrike Falcon
+        Host integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -469,7 +472,8 @@ tasks:
       id: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there is an active instance of the Active Directory Query v2 integration enabled.
+      description: Checks if there is an active instance of the Active Directory Query
+        v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -999,4 +1003,4 @@ outputs:
   description: Link to the device details page in ExtraHop.
   type: string
 tests:
-  - Endpoint Enrichment - Generic v2.1 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
