@@ -340,7 +340,7 @@
         {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test",
-            "timeout": 3600
+            "timeout": 600
         },
         {
             "integrations": "Akamai WAF SIEM",
