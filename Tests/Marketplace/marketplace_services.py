@@ -1216,7 +1216,7 @@ class Pack(object):
         author_image_storage_path = ""
 
         try:
-            author_image_path = os.path.join(self._pack_name, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+            author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
                 image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
