@@ -205,7 +205,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
-def create_entry_object(contents='', ec=None, hr=''):
+def create_entry_object(contents: dict='', ec: dict=None, hr: str=''):
     """
         Creates an entry object
 
@@ -331,7 +331,9 @@ def init_rtr_single_session(host_id: str) -> str:
     response = http_request('POST', endpoint_url, data=body)
     resources = response.get('resources')
     if resources and isinstance(resources, list) and isinstance(resources[0], dict):
-        return resources[0].get('session_id')
+        session_id = resources[0].get('session_id')
+        if isinstance(session_id, str):
+            return session_id
     raise ValueError('No session id found in the response')
 
 
