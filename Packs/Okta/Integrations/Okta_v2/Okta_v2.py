@@ -496,6 +496,30 @@ class Client(BaseClient):
             resp_type='text'
         )
 
+    def get_zone(self, zoneID):
+        uri = f'zones/{zoneID}'
+        return self._http_request(
+            method='GET',
+            url_suffix=uri
+        )
+
+    def list_zones(self):
+        uri = 'zones'
+        return self._http_request(
+            method='GET',
+            url_suffix=uri
+        )
+
+    def update_zone(self, zoneObject):
+        zoneID = zoneObject['id']
+        uri = f'zones/{zoneID}'
+
+        return self._http_request(
+            method='PUT',
+            url_suffix=uri,
+            data=json.dumps(zoneObject)
+        )
+
 
 def test_module(client, args):
     """
@@ -952,6 +976,89 @@ def clear_user_sessions_command(client, args):
     return readable_output, {}, raw_response
 
 
+def get_zone_command(client, args):
+    raw_response = client.get_zone(args.get('zoneID', ''))
+    if not raw_response:
+        return 'No zones found.', {}, raw_response
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+                                      'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+    outputs = {
+        'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+    }
+    return (
+        readable_output,
+        outputs,
+        raw_response
+    )
+
+
+def list_zones_command(client, args):
+    raw_response = client.list_zones()
+    if not raw_response:
+        return 'No zones found.', {}, raw_response
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+                                      'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+    outputs = {
+        'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+    }
+    return (
+        readable_output,
+        outputs,
+        raw_response
+    )
+
+
+def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs):
+    # If user provided a new zone name - set it
+    if zoneName:
+        zoneObject["name"] = zoneName
+
+    # Set IPs in CIDR mode. Single IPs will be added as /32.
+    if gatewayIPs:
+        CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in gatewayIPs]
+        zoneObject["gateways"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+
+    if proxyIPs:
+        CIDRs = [f"{ip}/32" if '/' not in ip else f'{ip}' for ip in proxyIPs]
+        zoneObject["proxies"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
+
+    return zoneObject
+
+
+def update_zone_command(client, args):
+
+    if not args.get('zoneName', '') and not args.get('gatewayIPs', '') and not args.get('proxyIPs', ''):
+        return (
+            'Nothing to update',
+            {},
+            'Nothing to update'
+        )
+    zoneID = args.get('zoneID', '')
+    zoneObject = client.get_zone(zoneID)
+    if zoneID == zoneObject.get('id'):
+        zoneName = args.get('zoneName', '')
+        gatewayIPs = argToList(args.get('gatewayIPs', ''))
+        proxyIPs = argToList(args.get('proxyIPs', ''))
+        zoneObject = apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs)
+
+        raw_response = client.update_zone(zoneObject)
+        if not raw_response:
+            return 'Got empty response.', {}, raw_response
+
+        readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+                                          'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+        outputs = {
+            'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+        }
+        return (
+            readable_output,
+            outputs,
+            raw_response
+        )
+    else:
+        return 'No zone found in Okta with this ID.', {}, {}
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -990,7 +1097,11 @@ def main():
         'okta-get-group-assignments': get_group_assignments_command,
         'okta-get-application-authentication': get_application_authentication_command,
         'okta-delete-user': delete_user_command,
-        'okta-clear-user-sessions': clear_user_sessions_command
+        'okta-clear-user-sessions': clear_user_sessions_command,
+        'okta-list-zones': list_zones_command,
+        'okta-get-zone': get_zone_command,
+        'okta-update-zone': update_zone_command
+
     }
 
     command = demisto.command()
