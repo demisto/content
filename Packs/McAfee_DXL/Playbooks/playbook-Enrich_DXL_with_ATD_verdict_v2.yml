@@ -43,6 +43,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Conditional task to verify if any malicuos file deteced.
     nexttasks:
       '#default#':
       - "4"

@@ -338,6 +338,7 @@ tasks:
       type: regular
       iscommand: true
       brand: FalconHost
+      description: Enrcich device information
     nexttasks:
       '#none#':
       - "12"
@@ -412,6 +413,7 @@ tasks:
       name: Analyst - review information
       type: regular
       iscommand: false
+      description: Review incident information
       brand: ""
     nexttasks:
       '#none#':
@@ -439,6 +441,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Conditional task to verify if devices found with suspicious indicator
     nexttasks:
       '#default#':
       - "15"
