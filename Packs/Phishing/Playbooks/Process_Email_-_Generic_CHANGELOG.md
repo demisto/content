@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added a check that verifies whether the Rasterize integration is enabled before attempting to rasterize HTML-formatted emails.
 
 ## [20.5.2] - 2020-05-26
 -

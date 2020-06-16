@@ -23,11 +23,9 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [
-        "ExtraHop Detection"
-    ],
+    "associatedTypes": [],
     "systemAssociatedTypes": null,
-    "associatedToAll": false,
+    "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
