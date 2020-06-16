@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Improved parsing of response returned from Proofpoint.
 
 ## [20.5.2] - 2020-05-26
 -
