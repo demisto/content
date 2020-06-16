@@ -557,9 +557,11 @@ jobs:
       - run:
           name: Instance Test
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+#            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+            if [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
                 ./Tests/scripts/instance_test.sh
+                cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
               else
                 echo "Skipping instance tests"
                 exit 0
