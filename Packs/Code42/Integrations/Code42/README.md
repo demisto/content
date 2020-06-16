@@ -20,7 +20,7 @@ This integration was integrated and tested with the fully-hosted SaaS implementa
 * Management of Departing Employees within Code42
 * General file event and metadata search
 
-## Configure Code42 on Demisto
+## Configure Code42 on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -30,7 +30,7 @@ This integration was integrated and tested with the fully-hosted SaaS implementa
     * __credentials__
     * __Code42 Console URL for the pod your Code42 instance is running in__: This defaults to console.us.code42.com for U.S. SaaS Pod customers; replace with the domain that you use to log into your Code42 console if located in a different SaaS pod.
     * __Fetch incidents__: Check this box to enable fetching of incidents
-    * __Incident type__: Select which Demisto incident type to map ingested Code42 alerts to
+    * __Incident type__: Select which Cortex XSOAR incident type to map ingested Code42 alerts to
     * __Alert severities to fetch when fetching incidents__: If desired, select which Alert severities to ingest.
     * __First fetch time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes)__: When first run, how long to go back to retrieve alerts.
     * __Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once__: Alerts to fetch and process per run. Setting this value too high may have a negative impact on performance.
@@ -64,6 +64,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ---
 Search for a file in Security Data by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one parameter must be passed to the command. If a JSON parameter is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
 ##### Required Permissions
+
 This command requires one of the following roles:
 
 * Security Center User 
