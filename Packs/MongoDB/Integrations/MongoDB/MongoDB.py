@@ -27,7 +27,7 @@ class Client:
     ):
         if insecure and not ssl:
             raise DemistoException(
-                f'"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
+                '"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"')
         if not insecure and not ssl:
             self._client = MongoClient(
                 urls, username=username, password=password, ssl=ssl, socketTimeoutMS=timeout
