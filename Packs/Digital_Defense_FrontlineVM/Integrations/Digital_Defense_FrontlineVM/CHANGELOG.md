@@ -1,7 +1,7 @@
 ## [Unreleased]
-- Update to frontline-scan-asset command
-  - Update default scan name from 'Demisto Scan' to 'Cortex XSOAR Scan'
-  - scan_name argument added for users to define their own scan name
+Made several improvements to the ***frontline-scan-asset*** command.
+  - Updated the default scan name from **Demisto Scan** to **Cortex XSOAR Scan**.
+  - Added the *scan_name* argument, which enables you to assign a unique name to the scan.
 
 ## [20.5.0] - 2020-05-12
 -
