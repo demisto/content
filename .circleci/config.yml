@@ -557,7 +557,6 @@ jobs:
       - run:
           name: Instance Test
           command: |
-#            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
             if [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
                 ./Tests/scripts/instance_test.sh
