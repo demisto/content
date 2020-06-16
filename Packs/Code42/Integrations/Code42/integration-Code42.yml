@@ -421,19 +421,19 @@ script:
             begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
             end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
 
-<<<<<<< HEAD
+    <<<<<<< HEAD
             filters.append(self._create_user_filter())
             filters.append(EventTimestamp.on_or_after(begin_time))
             filters.append(EventTimestamp.on_or_before(end_time))
             filters.extend(self._create_exposure_filters(exposure_types))
             filters.append(self._create_file_category_filters())
-=======
+    =======
             filters.append_filter(self._create_user_filter())
             filters.append_filter(EventTimestamp.on_or_after(begin_time))
             filters.append_filter(EventTimestamp.on_or_before(end_time))
             filters.extend_filters(self._create_exposure_filters(exposure_types))
             filters.extend_filters(self._create_file_category_filters())
->>>>>>> af5a551513234643ea5ae01b2a1b9608d8decc7f
+    >>>>>>> af5a551513234643ea5ae01b2a1b9608d8decc7f
 
             return filters
 

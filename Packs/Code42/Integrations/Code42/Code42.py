@@ -125,11 +125,11 @@ def _get_severity_filter_value(severity_arg):
 
 def _create_alert_query(event_severity_filter, start_time):
     """Creates an alert query for the given severity (or severities) and start time."""
-    alert_filters = AlertCode42SearchQueryBuilder()
+    alert_filters = AlertQueryFilters()
     severity = event_severity_filter
-    alert_filters.append_filter_from_result(_get_severity_filter_value(severity), Severity.is_in)
-    alert_filters.append_filter(AlertState.eq(AlertState.OPEN))
-    alert_filters.append_filter_from_result(start_time, DateObserved.on_or_after)
+    alert_filters.append_result(_get_severity_filter_value(severity), Severity.is_in)
+    alert_filters.append(AlertState.eq(AlertState.OPEN))
+    alert_filters.append_result(start_time, DateObserved.on_or_after)
     alert_query = alert_filters.to_all_query()
     return alert_query
 
@@ -208,7 +208,7 @@ class Code42Client(BaseClient):
         return res["fileEvents"]
 
 
-class Code42SearchQueryBuilder(object):
+class Code42SearchFilters(object):
     def __init__(self):
         self._filters = []
 
@@ -219,28 +219,28 @@ class Code42SearchQueryBuilder(object):
     def to_all_query(self):
         """Override"""
 
-    def append_filter(self, _filter):
+    def append(self, _filter):
         if _filter:
             self._filters.append(_filter)
 
-    def extend_filters(self, _filters):
+    def extend(self, _filters):
         if _filters:
             self._filters.extend(_filters)
 
-    def append_filter_from_result(self, value, create_filter):
+    def append_result(self, value, create_filter):
         """Safely creates and appends the filter to the working list."""
         if not value:
             return
         _filter = create_filter(value)
-        self.append_filter(_filter)
+        self.append(_filter)
 
 
-class FileEventCode42SearchQueryBuilder(Code42SearchQueryBuilder):
+class FileEventQueryFilters(Code42SearchFilters):
     """Class for simplifying building up a file event search query"""
 
     def __init__(self, pg_size=None):
         self._pg_size = pg_size
-        super(FileEventCode42SearchQueryBuilder, self).__init__()
+        super(FileEventQueryFilters, self).__init__()
 
     def to_all_query(self):
         """Convert list of search criteria to *args"""
@@ -250,7 +250,7 @@ class FileEventCode42SearchQueryBuilder(Code42SearchQueryBuilder):
         return query
 
 
-class AlertCode42SearchQueryBuilder(Code42SearchQueryBuilder):
+class AlertQueryFilters(Code42SearchFilters):
     """Class for simplifying building up an alert search query"""
     def to_all_query(self):
         query = AlertQuery.all(*self._filters)
@@ -269,11 +269,11 @@ def build_query_payload(args):
     username = args.get("username")
     exposure = args.get("exposure")
 
-    search_args = FileEventCode42SearchQueryBuilder(pg_size)
-    search_args.append_filter_from_result(_hash, _create_hash_filter)
-    search_args.append_filter_from_result(hostname, OSHostname.eq)
-    search_args.append_filter_from_result(username, DeviceUsername.eq)
-    search_args.append_filter_from_result(exposure, _create_exposure_filter)
+    search_args = FileEventQueryFilters(pg_size)
+    search_args.append_result(_hash, _create_hash_filter)
+    search_args.append_result(hostname, OSHostname.eq)
+    search_args.append_result(username, DeviceUsername.eq)
+    search_args.append_result(exposure, _create_exposure_filter)
 
     query = search_args.to_all_query()
     LOG("File Event Query: {}".format(str(query)))
@@ -343,24 +343,16 @@ class ObservationToSecurityQueryMapper(object):
         return query
 
     def _create_search_args(self):
-        filters = FileEventCode42SearchQueryBuilder()
+        filters = FileEventQueryFilters()
         exposure_types = self._observation_data["exposureTypes"]
         begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
         end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
 
-<<<<<<< HEAD
         filters.append(self._create_user_filter())
         filters.append(EventTimestamp.on_or_after(begin_time))
         filters.append(EventTimestamp.on_or_before(end_time))
         filters.extend(self._create_exposure_filters(exposure_types))
         filters.append(self._create_file_category_filters())
-=======
-        filters.append_filter(self._create_user_filter())
-        filters.append_filter(EventTimestamp.on_or_after(begin_time))
-        filters.append_filter(EventTimestamp.on_or_before(end_time))
-        filters.extend_filters(self._create_exposure_filters(exposure_types))
-        filters.extend_filters(self._create_file_category_filters())
->>>>>>> af5a551513234643ea5ae01b2a1b9608d8decc7f
 
         return filters
 
