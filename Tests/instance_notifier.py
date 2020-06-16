@@ -83,6 +83,8 @@ def test_instances(secret_conf_path, server, username, password):
                 __delete_integrations_instances(c, instance_ids, prints_manager)
 
             prints_manager.execute_thread_prints(0)
+        if len(failed_integrations) > 10:
+            break
 
     return failed_integrations, integrations_counter
 
