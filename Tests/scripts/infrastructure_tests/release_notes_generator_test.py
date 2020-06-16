@@ -140,4 +140,3 @@ class TestGenerateReleaseNotesSummary:
 
         assert '## FakePack4 Pack v1.1.0' in rn_summary
         assert '- __FakePack4_Script1__' in rn_summary
-
