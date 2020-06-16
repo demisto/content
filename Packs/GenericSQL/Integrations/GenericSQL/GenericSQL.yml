@@ -123,7 +123,7 @@ script:
     execution: false
     name: sql-command
   dockerimage45: demisto/genericsql:1.0.0.6768
-  dockerimage: demisto/genericsql:1.1.0.8102
+  dockerimage: demisto/genericsql:1.1.0.8843
   feed: false
   isfetch: false
   longRunning: false

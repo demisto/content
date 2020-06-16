@@ -324,10 +324,10 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "XDR iocs",
-            "playbookID": "XDR iocs - Test",
+            "integrations": "Cortex XDR - IOC",
+            "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 300
+            "timeout": 600
         },
         {
             "integrations": "Cloaken",
@@ -339,7 +339,8 @@
         },
         {
             "integrations": "ThreatX",
-            "playbookID": "ThreatX-test"
+            "playbookID": "ThreatX-test",
+            "timeout": 600
         },
         {
             "integrations": "Akamai WAF SIEM",
@@ -1376,8 +1377,6 @@
         },
         {
             "playbookID": "Test-IsMaliciousIndicatorFound",
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
             "fromversion": "5.0.0"
         },
         {
@@ -2263,9 +2262,6 @@
             "playbookID": "Cisco Spark Test New"
         },
         {
-            "playbookID": "get_file_sample_from_path_-_d2_-_test"
-        },
-        {
             "integrations": "Remedy On-Demand",
             "playbookID": "Remedy-On-Demand-Test"
         },
@@ -2513,6 +2509,11 @@
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
             "timeout": 1200
+        },
+        {
+            "integrations": "EWSO365",
+            "playbookID": "EWS_O365_test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "QRadar",
@@ -2836,27 +2837,25 @@
 
     ],
     "skipped_tests": {
+        "CuckooTest": "Issue 25601",
+        "Cortex XDR - IOC - Test": "Issue 25598",
+        "RedLockTest": "Issue 24600",
+        "Test - Cofense Intelligence": "Issue 25498",
+        "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
-        "DuoAdmin API test playbook": "Issue 24937",
-        "Wildfire Test": "Issue 24936",
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
-        "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
         "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
-        "Akamai_WAF_SIEM-Test": "Issue 22225",
         "test_MsGraphFiles": "Issue 22853 ",
-        "TestCofenseFeed": "Issue 22854",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
-        "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "PAN-OS Create Or Edit Rule Test": "Issue 20037",
@@ -2869,7 +2868,6 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
-        "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
         "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
@@ -2883,24 +2881,27 @@
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
-        "VxStream Test": "Issue #23795",
         "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
         "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
+        "dedup_-_generic_-_test": "Issue 25681",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Infoblox": "Issue 25651",
+        "Traps": "Issue 24122",
+        "McAfee Advanced Threat Defense": "Issue 16909",
+        "Cisco Umbrella Investigate": "Issue 24338",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
         "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
-        "Traps": "Issue 24122",
         "Skyformation": "No instance, old partner",
         "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
         "AlphaSOC Network Behavior Analytics": "No instance",
@@ -2916,7 +2917,6 @@
         "Cisco CloudLock": "No instance",
         "SentinelOne": "No instance",
         "Vectra v2": "No instance",
-        "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",
@@ -2946,8 +2946,6 @@
         "Check Point": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
-        "Joe Security": "Issue 17996",
-        "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
         "Anomali ThreatStream v2": "Issue 19182",
@@ -2990,6 +2988,7 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
         "XFE": "We have the new integration XFE_v2, so n`o need to test the old one because they use the same quote",
@@ -3019,7 +3018,8 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
-        "Cymulate": "Partner didn't provided test playbook"
+        "Cymulate": "Partner didn't provided test playbook",
+        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3029,7 +3029,7 @@
     ],
     "unmockable_integrations": {
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
-        "Test-IsMaliciousIndicatorFound": "Issue 24398",
+        "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
