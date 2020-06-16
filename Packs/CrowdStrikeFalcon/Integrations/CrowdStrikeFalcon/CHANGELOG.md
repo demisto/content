@@ -9,6 +9,8 @@
     
   - Added the *target* argument to the ***cs-falcon-run-command*** command to support single and batch operations.
   - Fixed entry context keys
+  - Fixed cs-falcon-get-script, A script entry returned from the command replaces the entry identifying with `ID` in `CrowdStrike.Script`.
+  - Fixed cs-falcon-list-scripts, Script entries returned from the command replace the entries identifying with `ID`s in `CrowdStrike.Script`.
 
 
 ## [20.5.0] - 2020-05-12

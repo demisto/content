@@ -6,8 +6,7 @@ import json
 import requests
 import base64
 import email
-import random
-import string
+import hashlib
 from typing import List
 from dateutil.parser import parse
 from typing import Dict, Tuple, Any
@@ -37,11 +36,7 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 # Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    os.environ.pop('HTTP_PROXY', None)
-    os.environ.pop('HTTPS_PROXY', None)
-    os.environ.pop('http_proxy', None)
-    os.environ.pop('https_proxy', None)
+handle_proxy()
 
 ''' KEY DICTIONARY '''
 
@@ -335,20 +330,9 @@ def init_rtr_single_session(host_id: str) -> str:
     })
     response = http_request('POST', endpoint_url, data=body)
     resources = response.get('resources')
-    return resources[0].get('session_id') if isinstance(resources,list) and len(resources) != 0 else None
-
-
-def delete_rtr_single_session(session_id: str, safe: bool = False):
-    """
-        Delete a session.
-        :param session_id: A session ID.
-        :param safe: If set to true will not raise an exception for http_error
-    """
-    endpoint_url = '/real-time-response/entities/sessions/v1'
-    params = {
-        'session_id': session_id
-    }
-    http_request('DELETE', endpoint_url, params=params, safe=safe, no_json=True)
+    if resources and isinstance(resources, list) and isinstance(resources[0], dict):
+        return resources[0].get('session_id')
+    return None
 
 
 def init_rtr_batch_session(host_ids: list) -> str:
@@ -438,7 +422,7 @@ def run_batch_admin_cmd(host_ids: list, command_type: str, full_command: str) ->
     return response
 
 
-def run_batch_get_cmd(host_ids: list, file_path:str, optional_hosts:list = None, timeout:int = None, timeout_duration:str = None) -> Dict:
+def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None, timeout_duration: str = None) -> Dict:
     """
         Batch executes `get` command across hosts to retrieve files.
         After this call is made `/real-time-response/combined/get-command-status/v1` is used to query for the results.
@@ -448,6 +432,7 @@ def run_batch_get_cmd(host_ids: list, file_path:str, optional_hosts:list = None,
       :param optional_hosts: List of a subset of hosts we want to run the command on. If this list is supplied, only these hosts will receive the command.
       :param timeout: Timeout for how long to wait for the request in seconds
       :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
+      :return: Response JSON which contains errors (if exist) and retrieved resources      
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
     batch_id = init_rtr_batch_session(host_ids)
@@ -459,32 +444,23 @@ def run_batch_get_cmd(host_ids: list, file_path:str, optional_hosts:list = None,
     if optional_hosts:
         body['optional_hosts'] = optional_hosts
 
-    params = {k:v for k,v in {
-        'timeout': timeout,
-        'timeout_duration': timeout_duration
-    }.items() if v}
-
+    params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
     response = http_request('POST', endpoint_url, data=json.dumps(body), params=params)
     return response
 
 
-def status_get_cmd(request_id: str, timeout:int = None, timeout_duration:str = None) -> Dict:
+def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str = None) -> Dict:
     """
         Retrieves the status of the specified batch get command. Will return successful files when they are finished processing.
 
       :param request_id: ID to the request of `get` command.
       :param timeout: Timeout for how long to wait for the request in seconds
       :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
+      :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
 
-    params = {k:v for k,v in {
-        'timeout': timeout,
-        'timeout_duration': timeout_duration
-    }.items() if v}
-
-    params['batch_get_cmd_req_id'] = request_id
-
+    params = assign_params(timeout=timeout, timeout_duration=timeout_duration, batch_get_cmd_req_id=request_id)
     response = http_request('GET', endpoint_url, params=params)
     return response
 
@@ -1842,14 +1818,15 @@ def get_extracted_file_command():
     response = get_extracted_file(host_id, sha256, filename)
 
     # save an extracted file
-    ct = response.headers.get('Content-Type','').lower()
-    if ct == 'application/x-7z-compressed':
-        ctd = response.headers.get('Content-Disposition','').lower()
-        if ctd:
-            filename = email.message_from_string(f'Content-Disposition: {ctd}\n\n').get_filename()
+    content_type = response.headers.get('Content-Type','').lower()
+    if content_type == 'application/x-7z-compressed':
+        content_disposition = response.headers.get('Content-Disposition','').lower()
+        if content_disposition:
+            filename = email.message_from_string(f'Content-Disposition: {content_disposition}\n\n').get_filename()
 
         if not filename:
-            filename = ''.join([random.choice(string.ascii_lowercase + string.digits) for i in range(16)]) + '.dat'
+            sha256 = sha256 or hashlib.sha256(response.content).hexdigest()
+            filename = sha256.lower() + '.dat'
 
         return fileResult(filename, response.content)
 

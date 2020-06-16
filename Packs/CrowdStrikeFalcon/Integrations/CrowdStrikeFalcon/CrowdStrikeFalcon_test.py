@@ -161,7 +161,7 @@ def test_run_command_read_scope(requests_mock, mocker):
     )
     results = run_command()
     expected_results = {
-        'CrowdStrike' : {
+        'CrowdStrike': {
             'Command': [{
                 'HostID': '284771ee197e422d5176d6634a62b934',
                 'SessionID': '1113b475-2c28-4486-8617-d000b8f3bc8d',
