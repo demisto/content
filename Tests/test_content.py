@@ -1265,7 +1265,7 @@ def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
     Returns:
         True if the lock has expired it's timeout, else False
     """
-    return datetime.datetime.now(tz=pytz.utc) - lock_file.time_created >= datetime.timedelta(seconds=int(lock_timeout))
+    return datetime.datetime.now(tz=pytz.utc) - lock_file.updated >= datetime.timedelta(seconds=int(lock_timeout))
 
 
 def main():
