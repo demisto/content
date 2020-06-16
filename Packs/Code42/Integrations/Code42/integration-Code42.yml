@@ -654,16 +654,23 @@ script:
     def departingemployee_get_all_command(client, args):
         employees = client.get_all_departing_employees()
         if employees:
-            employees_context = [{
-                "UserID": e["userId"],
-                "Username": e["userName"],
-                "DepartureDate": e.get("departureDate"),
-                "Note": e["notes"]
-            } for e in employees]
+            employees_context = [
+                {
+                    "UserID": e["userId"],
+                    "Username": e["userName"],
+                    "DepartureDate": e.get("departureDate"),
+                    "Note": e["notes"],
+                }
+                for e in employees
+            ]
             readable_outputs = tableToMarkdown(
                 f"All Departing Employees", employees_context, headers=DEPARTING_EMPLOYEE_HEADERS
             )
-            return readable_outputs, {"Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)": employees_context}, employees
+            return (
+                readable_outputs,
+                {"Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)": employees_context},
+                employees,
+            )
         else:
             return_error(message="Could not get all Departing Employees")
 
@@ -703,11 +710,16 @@ script:
         tags = args.get("risktags")
         employees = client.get_all_high_risk_employees(tags)
         if employees:
-            hr_context = {"HighRiskEmployees": employees}
-            readable_outputs = tableToMarkdown(
-                f"Retrieved All High Risk Employees", hr_context
+            employees_context = [
+                {"UserID": e["userId"], "Username": e["userName"], "Note": e["notes"]}
+                for e in employees
+            ]
+            readable_outputs = tableToMarkdown(f"Retrieved All High Risk Employees", employees_context)
+            return (
+                readable_outputs,
+                {"Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)": employees_context},
+                employees,
             )
-            return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, employees
         else:
             return_error(message="Could not get all High Risk Employees")
 
@@ -719,9 +731,9 @@ script:
         tags = args["risktags"]
         user_id = client.add_user_risk_tags(username, tags)
         if user_id:
-            hr_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-            readable_outputs = tableToMarkdown(f"Code42 Risk Tags Added", hr_context)
-            return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
+            rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
+            readable_outputs = tableToMarkdown(f"Code42 Risk Tags Added", rt_context)
+            return readable_outputs, {"Code42.HighRiskEmployee": rt_context}, user_id
         else:
             return_error(message="Could not add user risk tags")
 
@@ -733,9 +745,9 @@ script:
         tags = args["risktags"]
         user_id = client.remove_user_risk_tags(username, tags)
         if user_id:
-            hr_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-            readable_outputs = tableToMarkdown(f"Code42 Risk Tags Removed", hr_context)
-            return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
+            rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
+            readable_outputs = tableToMarkdown(f"Code42 Risk Tags Removed", rt_context)
+            return readable_outputs, {"Code42.HighRiskEmployee": rt_context}, user_id
         else:
             return_error(message="Could not remove user risk tags")
 
