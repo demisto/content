@@ -584,7 +584,8 @@
         {
             "integrations": "QRadar",
             "playbookID" :  "test playbook - QRadarCorreltaions",
-            "timeout": 600
+            "timeout": 600,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Awake Security",
@@ -1599,7 +1600,8 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID": "test_Qradar"
+            "playbookID": "test_Qradar",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "VMware",
