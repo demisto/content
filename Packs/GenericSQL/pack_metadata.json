@@ -2,7 +2,6 @@
     "name": "GenericSQL",
     "description": "Connecting ang executing sql queries in 4 Databases: MYSQL, PostgreSQL, Microsoft SQL Server and Oracle",
     "support": "xsoar",
-    "serverMinVersion": "5.0.0",
     "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -12,13 +11,8 @@
     ],
     "tags": [],
     "created": "2020-03-10T08:37:18Z",
-    "updated": "2020-03-10T08:37:18Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
     "useCases": [],
     "keywords": [],
     "price": 0,
-    "dependencies": {},
-    "displayedImages": []
+    "dependencies": {}
 }

@@ -1,11 +1,11 @@
 {
   "name": "DomainTools",
   "description": "Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercrime forensics products and data",
-  "support": "xsoar",
+  "support": "partner",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
+  "author": "DomainTools",
+  "url": "https://www.domaintools.com/support/",
+  "email": "memberservices@domaintools.com",
   "created": "2020-04-14T00:00:00Z",
   "categories": [
     "Data Enrichment & Threat Intelligence"
