@@ -332,7 +332,7 @@ def init_rtr_single_session(host_id: str) -> str:
     resources = response.get('resources')
     if resources and isinstance(resources, list) and isinstance(resources[0], dict):
         return resources[0].get('session_id')
-    return None
+    raise ValueError('No session id found in the response')
 
 
 def init_rtr_batch_session(host_ids: list) -> str:
@@ -437,13 +437,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
     batch_id = init_rtr_batch_session(host_ids)
 
-    body = {
-        'batch_id': batch_id,
-        'file_path': file_path
-    }
-    if optional_hosts:
-        body['optional_hosts'] = optional_hosts
-
+    body = assign_params(batch_id=batch_id, file_path=file_path, optional_hosts=optional_hosts)
     params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
     response = http_request('POST', endpoint_url, data=json.dumps(body), params=params)
     return response
@@ -525,7 +519,7 @@ def run_single_admin_cmd(host_id: str, command_type: str, full_command: str) -> 
     return response
 
 
-def status_read_cmd(request_id: str, sequence_id: int) -> Dict:
+def status_read_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     """
         Get status of an executed command with read access on a single host.
 
@@ -543,7 +537,7 @@ def status_read_cmd(request_id: str, sequence_id: int) -> Dict:
     return response
 
 
-def status_write_cmd(request_id: str, sequence_id: int) -> Dict:
+def status_write_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     """
         Get status of an executed command with write access on a single host.
 
@@ -560,7 +554,7 @@ def status_write_cmd(request_id: str, sequence_id: int) -> Dict:
     response = http_request('GET', endpoint_url, params=params)
     return response
 
-def status_admin_cmd(request_id: str, sequence_id: int) -> Dict:
+def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     """
         Get status of an executed command with admin access on a single host.
 
@@ -1378,8 +1372,9 @@ def run_command():
               'Command': output
             }
         }
+        return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
     else: # target = 'single'
-        response = []
+        responses = []
         for host_id in host_ids:
             if scope == 'read':
                 response1 = run_single_read_cmd(host_id, command_type, full_command)
@@ -1387,11 +1382,9 @@ def run_command():
                 response1 = run_single_write_cmd(host_id, command_type, full_command)
             else:  # scope = admin
                 response1 = run_single_admin_cmd(host_id, command_type, full_command)
-            response.append(response1)
+            responses.append(response1)
 
-            resources: dict = response1.get('resources', [])
-
-            for resource in resources:
+            for resource in response1.get('resources', []):
                 errors = resource.get('errors', [])
                 if errors:
                     error_message = errors[0].get('message', '')
@@ -1412,8 +1405,7 @@ def run_command():
         entry_context = {
             'CrowdStrike.Command(val.TaskID === obj.TaskID)': output
         }
-
-    return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+        return create_entry_object(contents=responses, ec=entry_context, hr=human_readable)
 
 
 def upload_script_command():
@@ -1758,9 +1750,10 @@ def status_get_command():
         'CrowdStrike.File(val.ID === obj.ID || val.TaskID === obj.TaskID)': files_output,
         outputPaths['file']: file_standard_context
     }
-
-    response = responses[0] if len(responses) == 1 else responses
-    return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+    if len(responses) == 1:
+        return create_entry_object(contents=responses[0], ec=entry_context, hr=human_readable)
+    else:
+        return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
 def status_command():

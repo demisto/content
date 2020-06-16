@@ -1478,6 +1478,22 @@ def test_get_extracted_file(requests_mock, mocker):
     from CrowdStrikeFalcon import get_extracted_file_command
     response_content = b'file-data'
     
+    session_id = 'fdd6408f-6688-441b-8659-41bcad25441c'
+    response_session = {
+      "errors": [],
+      "meta": {
+        "powered_by": "empower-api",
+        "query_time": 0.025573986,
+        "trace_id": "291d3fda-9684-4ed7-ae88-bcc3940a2104"
+      },
+      "resources": [{
+          "created_at": "2020-05-01T17:52:16.781771496Z",
+          "existing_aid_sessions": 1,
+          "scripts": [],
+          "session_id": f"{session_id}"
+        }
+      ]
+    }
     mocker.patch.object(
         demisto,
         'args',
@@ -1489,9 +1505,7 @@ def test_get_extracted_file(requests_mock, mocker):
     )
     requests_mock.post(
         f'{SERVER_URL}/real-time-response/entities/sessions/v1',
-        json={
-            'device_id': 'device_id'
-        },
+        json=response_session,
         status_code=201
     )
     requests_mock.get(
@@ -1533,6 +1547,23 @@ def test_list_host_files(requests_mock, mocker):
         }
       ]
     }
+    
+    session_id = 'fdd6408f-6688-441b-8659-41bcad25441c'
+    response_session = {
+      "errors": [],
+      "meta": {
+        "powered_by": "empower-api",
+        "query_time": 0.025573986,
+        "trace_id": "291d3fda-9684-4ed7-ae88-bcc3940a2104"
+      },
+      "resources": [{
+          "created_at": "2020-05-01T17:52:16.781771496Z",
+          "existing_aid_sessions": 1,
+          "scripts": [],
+          "session_id": f"{session_id}"
+        }
+      ]
+    }
     mocker.patch.object(
         demisto,
         'args',
@@ -1543,9 +1574,7 @@ def test_list_host_files(requests_mock, mocker):
     )
     requests_mock.post(
         f'{SERVER_URL}/real-time-response/entities/sessions/v1',
-        json={
-            'device_id': 'device_id'
-        },
+        json=response_session,
         status_code=201
     )
     requests_mock.get(
