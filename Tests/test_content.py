@@ -1077,9 +1077,16 @@ def acquire_test_lock(test_details: dict,
     Yields:
         A boolean indicating the lock attempt result
     """
-    storage_client = storage.Client()
     if is_not_mocked:
-        locked = lock_integrations(test_details, default_test_timeout, storage_client, prints_manager, thread_index)
+        try:
+            storage_client = storage.Client()
+            locked = lock_integrations(test_details, default_test_timeout, storage_client, prints_manager, thread_index)
+        except Exception as e:
+            prints_manager.add_print_job(f'attempt to lock integration failed for unknown reason.\nError: {e}',
+                                         print_warning,
+                                         thread_index,
+                                         include_timestamp=True)
+            locked = False
     else:
         locked = True
     try:
@@ -1088,8 +1095,15 @@ def acquire_test_lock(test_details: dict,
         if not locked or is_not_mocked:
             return
         # executing the test could take a while, re-instancing the storage client
-        storage_client = storage.Client()
-        unlock_integrations(test_details, prints_manager, storage_client, thread_index)
+        try:
+            storage_client = storage.Client()
+            unlock_integrations(test_details, prints_manager, storage_client, thread_index)
+        except Exception as e:
+            prints_manager.add_print_job(f'attempt to unlock integration failed for unknown reason.\nError: {e}',
+                                         print_warning,
+                                         thread_index,
+                                         include_timestamp=True)
+
 
 
 def lock_integrations(test_details: dict,
