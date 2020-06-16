@@ -484,7 +484,6 @@ class Client(BaseClient):
 
         return json_res
 
-
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
 
