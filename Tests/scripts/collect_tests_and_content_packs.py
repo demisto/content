@@ -1144,7 +1144,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         test = collect_ids(file_path)
         if test not in tests:
             tests.add(test)
-        packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
+
+    packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
 
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
@@ -1176,7 +1177,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if 'NonSupported' in packs_to_install:
         packs_to_install.remove("NonSupported")
 
-    packs_to_install.add("DeveloperTools")
+    packs_to_install.update(["DeveloperTools", "Base"])
 
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
