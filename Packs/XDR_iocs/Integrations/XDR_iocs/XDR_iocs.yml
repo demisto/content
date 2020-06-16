@@ -91,6 +91,7 @@ configuration:
   type: 1
 - display: ''
   defaultvalue: 'true'
+  hidden: true
   name: feedIncremental
   required: false
   type: 8
