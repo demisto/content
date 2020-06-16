@@ -233,7 +233,8 @@ def test_create_indicator_command(mocker, requests_mock):
     create_indicator_command()
 
     results = demisto.results.call_args[0]
-    entry_context = results[0]['EntryContext']['ThreatQ.Indicator(val.ID === obj.ID)']
+    entry_context = results[0]['EntryContext'][
+        'ThreatQ.Indicator((val.ID && val.ID === obj.ID) || (val.Value && val.Value === obj.Value))']
 
     assert 'Indicator was successfully created.' in results[0]['HumanReadable']
     assert entry_context['Value'] == 'foo@demisto.com'
@@ -298,7 +299,8 @@ def test_get_email_reputation(mocker, requests_mock):
     get_email_reputation()
 
     results = demisto.results.call_args[0]
-    entry_context = results[0]['EntryContext']['ThreatQ.Indicator(val.ID === obj.ID)']
+    entry_context = results[0]['EntryContext'][
+        'ThreatQ.Indicator((val.ID && val.ID === obj.ID) || (val.Value && val.Value === obj.Value))']
     generic_context = results[0]['EntryContext']['Account.Email(val.Address && val.Address == obj.Address)']
 
     assert 'Search results for email foo@demisto.com' in results[0]['HumanReadable']
@@ -344,7 +346,8 @@ def test_get_all_objs_command(mocker, requests_mock):
     get_all_objs_command('indicator')
 
     results = demisto.results.call_args[0]
-    entry_context = results[0]['EntryContext']['ThreatQ.Indicator(val.ID === obj.ID)']
+    entry_context = results[0]['EntryContext'][
+        'ThreatQ.Indicator((val.ID && val.ID === obj.ID) || (val.Value && val.Value === obj.Value))']
     assert 'List of all objects of type indicator - 0-1' in results[0]['HumanReadable']
     assert len(entry_context) == 2
     assert entry_context[0]['Type'] == 'Email Address'

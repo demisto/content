@@ -48,7 +48,7 @@
 </ul>
 </li>
 </ol>
-<p class="wysiwyg-indent3"><img src="https://raw.githubusercontent.com/demisto/content/a2c287c5ab0bf88b6aece7bcf70c45b0500ca572/docs/images/Integrations/integration-McAfee-MAR_McAfee_Active_Response.png" alt="McAfee_Active_Response.png"></p>
+<p class="wysiwyg-indent3"><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-McAfee-MAR_McAfee_Active_Response.png" alt="McAfee_Active_Response.png"></p>
 <div class="cl-preview-section">
 <h2 id="configure-mcafee-active-response-on-demisto">Configure McAfee Active Response on Demisto</h2>
 </div>
@@ -455,7 +455,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 330px;"><a href="http://mar.services.name/">MAR.Services.Name</a></td>
+<td style="width: 330px;">MAR.Services.Name</td>
 <td style="width: 133px;">unknown</td>
 <td style="width: 277px;">Service name.</td>
 </tr>
@@ -594,12 +594,12 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 337px;"><a href="http://mar.processes.name/">MAR.Processes.Name</a></td>
+<td style="width: 337px;">MAR.Processes.Name</td>
 <td style="width: 123px;">unknown</td>
 <td style="width: 280px;">Process name.</td>
 </tr>
 <tr>
-<td style="width: 337px;"><a href="http://mar.processes.id/">MAR.Processes.Id</a></td>
+<td style="width: 337px;">MAR.Processes.Id</td>
 <td style="width: 123px;">unknown</td>
 <td style="width: 280px;">Process ID.</td>
 </tr>
@@ -873,7 +873,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 257px;"><a href="http://mar.files.name/">MAR.Files.Name</a></td>
+<td style="width: 257px;">MAR.Files.Name</td>
 <td style="width: 121px;">unknown</td>
 <td style="width: 362px;">File name.</td>
 </tr>

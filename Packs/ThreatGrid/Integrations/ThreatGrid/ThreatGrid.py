@@ -683,6 +683,7 @@ def create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process
     directory = demisto.get(sample_process, 'startup_info.current_directory')
     if directory:
         directory = directory[:len(directory) - 1]
+    domain_with_limit = get_with_limit(analysis_json, 'domains', limit)
     return {
         'ID': sample_id,
         'VM': {'ID': demisto.get(analysis_json, 'metadata.sandcastle_env.vm_id'),
@@ -701,8 +702,7 @@ def create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process
         'Stream': extract_network_from_analysis_networks(get_with_limit(analysis_json, 'network', limit),
                                                          full_extraction=False),
         'VT': extract_vt_from_analysis_artifact(demisto.get(analysis_json, 'artifacts')),
-        'Domain': map(lambda k, v: {'Name': str(k), 'Status': str(demisto.get(v, 'status'))},  # type: ignore
-                      get_with_limit(analysis_json, 'domains', limit).iteritems() or [])
+        'Domain': [{'Name': str(key), 'Status': str(val.get('status'))} for key, val in domain_with_limit.iteritems()]
     }
 
 

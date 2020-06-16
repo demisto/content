@@ -90,6 +90,12 @@ def translate_triage_submission(submissions):
     return submission_dicts, ec
 
 
+def translate_phishing_indicators(indicators):
+    indicator_dicts = [i.to_dict(remove_nones=True) for i in indicators]
+    ec = {'TruSTAR.PhishingIndicator(val.value == obj.value)': indicator_dicts}
+    return indicator_dicts, ec
+
+
 def translate_specific_indicators(ts_indicators, specific_types):
     res = []
     for indicator in ts_indicators:
@@ -652,20 +658,20 @@ def get_enclaves():
     return entry
 
 
-def get_all_phishing_indicators(normalized_triage_score,
-                                normalized_source_score,
+def get_all_phishing_indicators(priority_event_score,
+                                normalized_indicator_score,
                                 from_time,
                                 to_time,
                                 status):
     cursor = encode_cursor(1000, 0)
-    args = {'normalized_triage_score': normalized_triage_score,
-            'normalized_source_score': normalized_source_score,
+    args = {'priority_event_score': priority_event_score,
+            'normalized_indicator_score': normalized_indicator_score,
             'status': status,
             'cursor': cursor,
             'from_time': date_to_unix(from_time) if from_time else None,
             'to_time': date_to_unix(to_time) if to_time else None}
     response = ts.get_phishing_indicators_page(**args)
-    indicators, ec = translate_indicators(response.items, 'TruSTAR.PhishingIndicator')
+    indicators, ec = translate_phishing_indicators(response.items)
     if indicators:
         title = 'TruSTAR phishing indicators'
         entry = {
@@ -680,12 +686,12 @@ def get_all_phishing_indicators(normalized_triage_score,
     return 'No phishing indicators were found.'
 
 
-def get_phishing_submissions(normalized_triage_score,
+def get_phishing_submissions(priority_event_score,
                              from_time,
                              to_time,
                              status):
     cursor = encode_cursor(1000, 0)
-    args = {'normalized_triage_score': normalized_triage_score,
+    args = {'priority_event_score': priority_event_score,
             'status': status,
             'cursor': cursor,
             'from_time': date_to_unix(from_time) if from_time else None,
@@ -811,15 +817,15 @@ try:
                                                  ('Domain', 'URL',), create_domain_ec))
 
     elif demisto.command() == 'trustar-get-phishing-indicators':
-        nts = argToList(demisto.args().get('normalized_triage_score'))
-        nss = argToList(demisto.args().get('normalized_source_score'))
+        nts = argToList(demisto.args().get('priority_event_score'))
+        nss = argToList(demisto.args().get('normalized_indicator_score'))
         ft = demisto.args().get('from_time')
         tt = demisto.args().get('to_time')
         st = argToList(demisto.args().get('status'))
         demisto.results(get_all_phishing_indicators(nts, nss, ft, tt, st))
 
     elif demisto.command() == 'trustar-get-phishing-submissions':
-        nts = argToList(demisto.args().get('normalized_triage_score'))
+        nts = argToList(demisto.args().get('priority_event_score'))
         ft = demisto.args().get('from_time')
         tt = demisto.args().get('to_time')
         st = argToList(demisto.args().get('status'))
