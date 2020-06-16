@@ -32,6 +32,8 @@ HEADERS = {
 USE_SSL = not PARAMS.get('insecure', False)
 
 ''' HELPER FUNCTIONS '''
+
+
 @logger
 def http_request(method, url_suffix, params=None, max_retry=3):
     res = None
