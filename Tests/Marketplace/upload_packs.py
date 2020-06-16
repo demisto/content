@@ -511,7 +511,7 @@ def option_handler():
                         required=False, default="All")
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
-    parser.add_argument('-o', '--override_pack', help="Override existing packs in cloud storage", default=False,
+    parser.add_argument('-o', '--override_all_packs', help="Override existing packs in cloud storage", default=False,
                         action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
                         required=False)
@@ -533,7 +533,7 @@ def main():
     service_account = option.service_account
     target_packs = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
-    override_pack = option.override_pack
+    override_all_packs = option.override_all_packs
     signature_key = option.key_string
     id_set_path = option.id_set_path
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
@@ -628,7 +628,7 @@ def main():
             continue
 
         task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
-                                                                     override_pack)
+                                                                     override_all_packs or pack.override_current)
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()

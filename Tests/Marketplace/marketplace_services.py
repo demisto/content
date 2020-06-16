@@ -178,6 +178,7 @@ class Pack(object):
         self._current_version = None  # initialized in load_user_metadata function
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
+        self._override_current = None  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -277,6 +278,18 @@ class Pack(object):
             return Metadata.SERVER_DEFAULT_MIN_VERSION
         else:
             return self._sever_min_version
+
+    @property
+    def override_current(self):
+        """ str: whether to override current pack (found in pack_metadata.json).
+        """
+        return self._override_current
+
+    @override_current.setter
+    def override_current(self, override_value):
+        """ setter of override pack property of the pack.
+        """
+        self._override_current = override_value
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -945,6 +958,7 @@ class Pack(object):
             self.current_version = user_metadata.get('currentVersion', '')
             self.hidden = user_metadata.get('hidden', False)
             self.description = user_metadata.get('description', False)
+            self.override_current = user_metadata.get('override', False)
 
             print(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
