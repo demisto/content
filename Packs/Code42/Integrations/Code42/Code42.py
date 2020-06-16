@@ -155,6 +155,14 @@ class Code42Client(BaseClient):
             return None
         return user_id
 
+    def remove_user_from_departing_employee(self, username):
+        try:
+            user_id = self.get_user_id(username)
+            self._sdk.detectionlists.departing_employee.remove(user_id)
+        except Exception:
+            return None
+        return user_id
+
     def fetch_alerts(self, start_time, event_severity_filter):
         try:
             query = _create_alert_query(event_severity_filter, start_time)
@@ -170,27 +178,19 @@ class Code42Client(BaseClient):
             return None
         return res["alerts"][0]
 
-    def get_current_user(self):
-        try:
-            res = self._sdk.users.get_current()
-        except Exception:
-            return None
-        return res
-
-    def remove_user_from_departing_employee(self, username):
-        try:
-            user_id = self.get_user_id(username)
-            self._sdk.detectionlists.departing_employee.remove(user_id)
-        except Exception:
-            return None
-        return user_id
-
     def resolve_alert(self, id):
         try:
             self._sdk.alerts.resolve(id)
         except Exception:
             return None
         return id
+
+    def get_current_user(self):
+        try:
+            res = self._sdk.users.get_current()
+        except Exception:
+            return None
+        return res
 
     def get_user_id(self, username):
         try:
@@ -199,7 +199,7 @@ class Code42Client(BaseClient):
             return None
         return res["users"][0]["userUid"]
 
-    def search_json(self, payload):
+    def search_file_events(self, payload):
         try:
             res = self._sdk.securitydata.search_file_events(payload)
         except Exception:
@@ -587,7 +587,7 @@ class Code42SecurityIncidentFetcher(object):
 
     def _get_file_events_from_alert_details(self, observation, alert_details):
         security_data_query = map_observation_to_security_query(observation, alert_details["actor"])
-        return self._client.search_json(security_data_query)
+        return self._client.search_file_events(security_data_query)
 
 
 def fetch_incidents(
@@ -618,11 +618,11 @@ def securitydata_search_command(client, args):
     file_context = []
     # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
     if _json is not None:
-        file_events = client.search_json(_json)
+        file_events = client.search_file_events(_json)
     else:
         # Build payload
         payload = build_query_payload(args)
-        file_events = client.search_json(payload)
+        file_events = client.search_file_events(payload)
     if file_events:
         for file_event in file_events:
             code42_context_event = map_to_code42_event_context(file_event)
