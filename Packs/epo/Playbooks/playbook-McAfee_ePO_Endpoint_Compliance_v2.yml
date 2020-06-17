@@ -43,7 +43,7 @@ tasks:
       type: regular
       iscommand: true
       brand: epo
-      description: Retrieve ePO's current DAT version from local repository
+      description: Retrieve ePO's current DAT version from the local repository.
     nexttasks:
       '#none#':
       - "3"
@@ -69,7 +69,7 @@ tasks:
       id: b8d7abd0-0a4f-4e52-8aac-5fd4e6949fd6
       version: -1
       name: Are any endpoints outdated and using an older DAT version?
-      description: Type list of systems in comments - comma separated
+      description: A list of comma-separated systems on which an out-of-date DAT file is in use.
       type: condition
       iscommand: false
       brand: ""
@@ -103,7 +103,7 @@ tasks:
       id: aa4a2429-7901-440e-8d5a-e46557154f5b
       version: -1
       name: Are any endpoints faulty and dangerously outdated?
-      description: Type system names in comments - comma separated
+      description: A list of comma-separated systems on which an out-of-date DAT file is in use.
       type: condition
       iscommand: false
       brand: ""
@@ -137,7 +137,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: Isolate dangerous systems from network
+      description: Isolate dangerous systems from the network.
     nexttasks:
       '#none#':
       - "6"
@@ -236,7 +236,7 @@ tasks:
       id: 291e3146-5e99-4b7c-80d5-f0b13e9da469
       version: -1
       name: Close the investigation
-      description: commands.local.cmd.close.inv
+      description: Close the incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -268,7 +268,7 @@ tasks:
       id: a8019bd1-dd82-4437-8b23-a38d82a0fe5e
       version: -1
       name: Get McAfee latest DAT Version
-      description: Check the latest DAT file in McAfee repository
+      description: Check the latest DAT file in the McAfee repository.
       script: epo|||epo-get-latest-dat
       type: regular
       iscommand: true
