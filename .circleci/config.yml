@@ -361,10 +361,14 @@ jobs:
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
+                echo 'im here1!!!!!!!'
+                echo $TIME_TO_LIVE
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TIME_TO_LIVE -outfile ./env_results.json
 
               else
                 . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                echo 'im here2######'
+                echo $TIME_TO_LIVE
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TIME_TO_LIVE -outfile ./env_results.json
             fi
       - run:
