@@ -6,9 +6,9 @@ description: "This playbook is triggered by fetching a Palo Alto Networks Cortex
   \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
   \ performs enrichment on the incident's indicators and hunting for related IOCs.\n\
   Based on the severity, it lets the analyst decide whether to continue to the remediation\
-  \ stage or close the investigation as false positive. \nAfter the remediation, if\
-  \ there are no new alerts, the playbook stops the alert sync, closes the XDR incident\
-  \ and the investigation."
+  \ stage or close the investigation as a false positive. \nAfter the remediation, if\
+  \ there are no new alerts, the playbook stops the alert sync and closes the XDR incident\
+  \ and investigation."
 starttaskid: "0"
 tasks:
   "0":
@@ -147,12 +147,12 @@ tasks:
       id: a2a6f137-d2dd-4cd4-80e1-4f6511fb5a4c
       version: -1
       name: Cortex XDR - Sync Alerts
-      description: Syncs a single incident between Demisto and XDR. This script always
+      description: Syncs a single incident between Cortex XSOAR and Cortex XDR. This script always
         uses the xdr-get-incident-extra-data command and outputs to the context the
-        entire incident JSON. When the incident is updated in XDR, the Demisto incident
-        will be updated accordingly and the default playbook will rerun. When an incident
-        is updated in Demisto, the script will execute the xdr-update-incident command
-        and update the incident in XDR.
+        entire incident JSON. When the incident is updated in Cortex XDR, the Cortex XSOAR incident
+        is updated accordingly and the default playbook reruns. When an incident
+        is updated in Cortex XSOAR, the script will execute the xdr-update-incident command
+        and update the incident in Cortex XDR.
       scriptName: XDRSyncScript
       type: regular
       iscommand: false
@@ -315,8 +315,8 @@ tasks:
       version: -1
       name: Cortex XDR - close incident
       description: Updates one or more fields of a specified incident. Missing fields
-        will be ignored. To remove the assignment for an incident, pass a null value
-        in assignee email argument.
+        are ignored. To remove the assignment for an incident, pass a null value
+        in the assignee email argument.
       script: Cortex XDR - IR|||xdr-update-incident
       type: regular
       iscommand: true
@@ -357,7 +357,7 @@ tasks:
       id: fceb6635-8178-413b-8dac-ec383f9cfeb9
       version: -1
       name: Close investigation
-      description: commands.local.cmd.close.inv
+      description: Closes the incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -645,7 +645,7 @@ tasks:
       version: -1
       name: Block Indicators - Generic v2
       description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
 
         - Block URL - Generic
         - Block Account - Generic
@@ -1135,7 +1135,7 @@ tasks:
       name: Close XDR incident as false positive
       description: Updates one or more fields of a specified incident. Missing fields
         will be ignored. To remove the assignment for an incident, pass a null value
-        in assignee email argument.
+        in the assignee email argument.
       script: '|||xdr-update-incident'
       type: regular
       iscommand: true
@@ -1209,7 +1209,7 @@ tasks:
       description: |-
         Finds similar incidents by common incident keys, labels, custom fields or context keys.
         It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
-        For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
+        For best performance, it's recommended to avoid using context keys whenever possible (for example, if the value also appears in a label key, use label).
       scriptName: FindSimilarIncidents
       type: regular
       iscommand: false
@@ -1408,7 +1408,7 @@ tasks:
       name: Resolve XDR incident as duplicate
       description: Updates one or more fields of a specified incident. Missing fields
         will be ignored. To remove the assignment for an incident, pass a null value
-        in assignee email argument.
+        in the assignee email argument.
       script: '|||xdr-update-incident'
       type: regular
       iscommand: true
@@ -1538,7 +1538,7 @@ tasks:
       id: 8afdc355-e45a-4f50-881d-ea659099fc7c
       version: -1
       name: Close investigation - false positive
-      description: commands.local.cmd.close.inv
+      description: Closes the incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1578,7 +1578,7 @@ tasks:
       id: d5c17989-770e-4ef2-8df4-174fc0731616
       version: -1
       name: Close investigation- duplicate
-      description: commands.local.cmd.close.inv
+      description: Closes the incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1617,7 +1617,7 @@ tasks:
     task:
       id: ea8cab41-5994-4c0f-8cd2-89a16880c8e1
       version: -1
-      name: Manually block ports used for exploitation on the scanned host
+      name: Manually block ports used for exploitation on the scanned host.
       type: regular
       iscommand: false
       brand: ""
