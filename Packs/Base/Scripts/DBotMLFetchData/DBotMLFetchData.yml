@@ -1,4 +1,4 @@
-comment: Collect machine learning data from the environment
+comment: Collect telemetry data from the environment
 commonfields:
   id: DBotMLFetchData
   version: -1
