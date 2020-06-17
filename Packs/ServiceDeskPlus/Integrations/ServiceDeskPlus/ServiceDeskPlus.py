@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict, List, Any
 from _collections import defaultdict
 import requests
 import hashlib
@@ -30,6 +30,7 @@ SERVER_URL = {
     'Australia': 'https://servicedeskplus.net.au',
 }
 
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
@@ -37,57 +38,61 @@ class Client(BaseClient):
     """
 
     def __init__(self, url: str, use_ssl: bool, use_proxy: bool, client_id: str, client_secret: str,
-                 refresh_token: str):
+                 refresh_token: str = None):
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
-        self.access_token = '1000.249597ce7f6c32fd110a9b5c1149a55d.c457853d237421b945a22e1deec95593'
-        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/v3+json',
-                                                                        'Authorization': 'Bearer ' + self.access_token})
-        # super().__init__(url, verify=use_ssl, proxy=use_proxy)  #, headers={'Accept': 'application/v3+json',
-                                                                       # 'Authorization': 'Bearer ' + self.access_token})
-        self.generate_access_token()  # will create a valid access token
+        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/v3+json'})
+        if self.refresh_token:
+            self.update_access_token()  # Add a valid access token to the headers
+            self.access_token_refreshed = False
 
-
-    def generate_access_token(self):
+    def update_access_token(self):
         """
         Generates an access token from the client id, client secret and refresh token
         """
+        # print("refreshing access token!")
+
         params = {
             'refresh_token': self.refresh_token,
             'grant_type': 'refresh_token',
             'client_id': self.client_id,
             'client_secret': self.client_secret
         }
-        res = self._http_request('POST', url_suffix='', full_url=OAUTH, params=params)
-        self.access_token = res.get('access_token', None)
+        res = self.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
+        if res.get('access_token'):
+            self._headers.update({'Authorization': 'Bearer ' + res.get('access_token')})
+            self.access_token_refreshed = True
 
-    def http_request(self, method, url_suffix, params=None):
+    def http_request(self, method, url_suffix, full_url=None, params=None):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
-            # print(url_suffix)
-            # print(params)
-            res = self._http_request(method, url_suffix, resp_type='response', ok_codes=ok_codes, params=params)
+            res = self._http_request(method, url_suffix, full_url=full_url, resp_type='response', ok_codes=ok_codes,
+                                     params=params)
             if res.status_code in [200, 201]:
+                self.access_token_refreshed = False
+
                 try:
                     return res.json()
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'
                                            .format(res.content), exception)
 
-            if res.status_code in [401]:  # todo: if got this error generate a new access token and run the command again
+            if res.status_code in [401]:
+                # if the access token hasn't been refreshed, refresh it and run the command again
+                if not self.access_token_refreshed:
+                    # print("refreshing access token!")
+                    self.update_access_token()
+                    return self.http_request(method, url_suffix, full_url=full_url, params=params)
                 try:
-                    err_msg = f'Check server URL and access token \n{str(res.json())}'
+                    err_msg = f'Unauthorized request - check domain location and the given credentials \n{str(res.json())}'
                 except ValueError:
-                    err_msg = 'Unauthorized request - check server URL and access token -\n' + str(res)
+                    err_msg = 'Unauthorized request - check domain location and the given credentials -\n' + str(res)
                 raise DemistoException(err_msg)
 
-        except Exception as e:  # todo: change the exception handling
-            if '<requests.exceptions.ConnectionError>' in e.args[0]:  # todo: check if this error happens
-                raise DemistoException('Connection error - Verify that the server URL parameter is correct and that '
-                                       'you have access to the server from your host.\n')
-            raise Exception('fails here ' + e.args[0])
+        except Exception as e:
+            raise DemistoException('FAILS HERE ' + e.args[0])
 
     def get_requests(self, request_id: str = None, params: dict = None):
         if request_id:
@@ -168,7 +173,6 @@ def list_requests_command(client: Client, args: dict):
     context: dict = defaultdict(list)
     for request in requests:
         output.append(create_output(request))
-    print(output)
     context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = output
     markdown = tableToMarkdown(f'Requests', t=output)
     return markdown, context, result
@@ -359,6 +363,77 @@ def create_list_info(start_index, row_count, search_fields, filter_by):
     return {'list_info': list_info}
 
 
+def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: str) -> list:
+    date_format = '%Y-%m-%dT%H:%M:%S'
+    last_run = demisto.getLastRun()
+    if not last_run:  # if first time running
+        new_last_run = {'time': date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])}
+    else:
+        new_last_run = last_run
+    demisto_incidents: List = list()
+    time_from = new_last_run.get('time')
+    time_to = date_to_timestamp(datetime.now(), date_format=date_format)
+    list_info = create_fetch_list_info(str(time_from), str(time_to), status)
+    params = {'input_data': f'{list_info}'}
+
+    # Get incidents from Service Desk Plus
+    demisto.debug(f'Fetching Service Desk Plus requests. From: '
+                  f'{timestamp_to_datestring(time_from, date_format=date_format)}. To: '
+                  f'{timestamp_to_datestring(time_to, date_format=date_format)}\n'
+                  f'last run id: {new_last_run.get("id", 0)}\n')
+    incidents = client.get_requests(params=params).get('requests', [])
+
+    if incidents:
+        count = 0
+        last_incident_id = last_run.get('id', '0')
+
+        # Prevent fetching twice the same incident (the last that was previously fetched and the current first)
+        first_incident = incidents[0]
+        if first_incident.get('id') == last_incident_id:
+            incidents = incidents[1:]
+
+        for incident in incidents:
+            if count < fetch_limit:
+                demisto_incidents.append({
+                    'name': f'{incident.get("subject")} - {incident.get("id")}',  # todo: check if id is necessary
+                    'occurred': timestamp_to_datestring(incident.get('created_time', {}).get('value')),
+                    'rawJSON': json.dumps(incident)
+                })
+                count += 1
+                last_incident_id = incident.get('id')
+
+        if demisto_incidents:
+            last_incident_time = date_to_timestamp(demisto_incidents[-1].get('occurred').split('.')[0])
+            new_last_run.update({'time': last_incident_time, 'id': last_incident_id})
+
+    if not demisto_incidents:
+        new_last_run.update({'time': time_to})
+    demisto.setLastRun(new_last_run)
+    return demisto_incidents
+
+
+def create_fetch_list_info(time_from: str, time_to: str, status: str) -> dict:
+    """
+    Returning the list_info dictionary that should be used to filter the requests that are being fetched
+    The requests that will be returned when using this list_info are all requests created between 'time_from' and
+    'time_to' (inclusive) and are with the given status, in ascending order of creation time.
+
+    Args:
+         time_from: the time from which requests should be fetched
+         time_to: the time until which requests should be fetched
+         status: the status of the requests that should be fetched
+
+     Returns:
+         A dictionary containing the list_info parameter that should be used for filtering the requests.
+
+    """
+    list_info = {'search_criteria': [
+        {'field': 'created_time', 'values': [f'{time_from}', f'{time_to}'], 'condition': 'between'},
+        {'field': 'status.name', 'values': status.split(','), 'condition': 'is', 'logical_operator': 'AND'}],
+        'sort_field': 'created_time', 'sort_order': 'asc'}
+    return {'list_info': list_info}
+
+
 def test_module(client=None):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -369,9 +444,9 @@ def test_module(client=None):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    params = {
-        "input_data": '{"list_info": {"row_count":1, "start_index":1, "search_fields":{"subject":"upgrade to catalina","display_id":1, "requester.email_id":"akrupnik@paloaltonetworks.com"}}}'}
     # todo: after adding fetch-incidents, test it here
+    if not client.refresh_token:
+        return_error('Please enter a refresh token (see detailed instruction (?) for more information)')
     try:
         client.http_request('GET', 'requests')
         return 'ok'
@@ -379,21 +454,48 @@ def test_module(client=None):
         raise e
 
 
+def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, any]:
+    """
+    Creates for the user the refresh token for the app, given the code the user got when defining the scopes of the app.
+
+    Args:
+        client: Service Desk Plus client
+        args: demisto.args() containing the code
+
+    Returns:
+        If the code is valid and the Refresh Token was generated successfully, the function displays the refresh token
+        for the user in the war room.
+    """
+    code = args.get('code')
+    params = {
+        'code': code,
+        'grant_type': 'authorization_code',
+        'client_id': client.client_id,
+        'client_secret': client.client_secret
+    }
+    res = client.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
+    if res.get('refresh_token'):
+        hr = f'### Refresh Token: {res.get("refresh_token")}\n Please paste the Refresh Token in the instance ' \
+             f'configuration and save it for future use.'
+    else:
+        hr = res
+    return hr, {}, None
+
+
 def main():
     params = demisto.params()
     server_url = SERVER_URL[params.get('server_url')]
-    server_url = 'https://sdpondemand.manageengine.com'
 
-    client = Client(url=server_url,
+    client = Client(url=server_url+API_VERSION,
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
-                    # access_token=params.get('access_token'))
                     client_id=params.get('client_id'),
                     client_secret=params.get('client_secret'),
                     refresh_token=params.get('refresh_token'))
 
     commands = {
-        # 'service-desk-plus-refresh-token': generate_refresh_token,
+        # 'test-module': test_module,
+        'service-desk-plus-generate-refresh-token': generate_refresh_token,
         'service-desk-plus-requests-list': list_requests_command,
         'service-desk-plus-request-delete': delete_request_command,
         'service-desk-plus-request-create': create_request_command,
@@ -409,15 +511,22 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
-        if command == 'test-module':
+        if command == 'test-module':  # todo: move to commands
             demisto.results(test_module(client))
+        if command == "fetch-incidents":
+            fetch_time = params.get('fetch_time', '1 day')
+            fetch_limit = params.get('fetch_limit', 10)
+            fetch_status = params.get('fetch_status', 'Open')
+            incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),
+                                        status=fetch_status)
+            demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
             return_error('Command not found.')
     except Exception as e:
-        # raise e
-        return_error(f'Failed to execute {command} command. Error: {e}')
+        raise e
+        # return_error(f'Failed to execute {command} command. Error: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

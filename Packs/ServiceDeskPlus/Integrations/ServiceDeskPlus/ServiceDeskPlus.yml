@@ -27,7 +27,7 @@ configuration:
 - display: Refresh Token
   hidden: false
   name: refresh_token
-  required: true
+  required: false
   type: 4
 - display: Fetch incidents
   name: isFetch
@@ -45,6 +45,24 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: Open
+  display: 'Status: the status of the requests that should be fetched'
+  hidden: false
+  name: fetch_status
+  required: false
+  type: 0
+- defaultvalue: 1 hour
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: The maximum number of incidents that should be fetched each time
+  hidden: false
+  name: fetch_limit
+  required: false
+  type: 0
 description: IT Service Management
 detaileddescription: |-
   ## Hello World
@@ -603,6 +621,18 @@ script:
     description: Gets the resolution to the given request
     execution: false
     name: service-desk-plus-request-resolutions-list
+  - arguments:
+    - default: false
+      description: The code received when creating the application
+      isArray: false
+      name: code
+      required: true
+      secret: false
+    deprecated: false
+    description: This function generates the refresh token that should be used in
+      the instance configurations
+    execution: false
+    name: service-desk-plus-generate-refresh-token
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
