@@ -276,16 +276,16 @@ script:
     description: Adds a user to the Departing Employee List.
   - name: code42-departingemployee-remove
     arguments:
-      - name: username
-        required: true
-        description: The username to remove from the Departing Employee List.
+    - name: username
+      required: true
+      description: The username to remove from the Departing Employee List.
     outputs:
-      - contextPath: Code42.DepartingEmployee.UserID
-        description: Internal Code42 User ID for the Departing Employee.
-        type: string
-      - contextPath: Code42.DepartingEmployee.Username
-        description: The username of the Departing Employee.
-        type: string
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Username
+      description: The username of the Departing Employee.
+      type: string
     description: Removes a user from the Departing Employee List.
   - name: code42-departingemployee-get-all
     outputs:
@@ -303,82 +303,82 @@ script:
     description: Get all employees on the Departing Employee List.
   - name: code42-highriskemployee-add
     arguments:
-      - name: username
-        required: true
-        description: The username to add to the High Risk Employee List.
-      - name: note
-        description: Note to attach to the High Risk Employee.
+    - name: username
+      required: true
+      description: The username to add to the High Risk Employee List.
+    - name: note
+      description: Note to attach to the High Risk Employee.
     outputs:
-      - contextPath: Code42.HighRiskEmployee.UserID
-        description: Internal Code42 User ID for the High Risk Employee.
-        type: string
-      - contextPath: Code42.HighRiskEmployee.Username
-        description: The username of the High Risk Employee.
-        type: string
-      - contextPath: Code42.HighRiskEmployee.Note
-        description: Note associated with the High Risk Employee.
-        type: string
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Note
+      description: Note associated with the High Risk Employee.
+      type: string
     description: Removes a user from the High Risk Employee List.
   - name: code42-highriskemployee-remove
     arguments:
-      - name: username
-        required: true
-        description: The username to remove from the High Risk Employee List.
+    - name: username
+      required: true
+      description: The username to remove from the High Risk Employee List.
     outputs:
-      - contextPath: Code42.HighRiskEmployee.UserID
-        description: Internal Code42 User ID for the High Risk Employee.
-      - contextPath: Code42.HighRiskEmployee.Username
-        description: The username of the High Risk Employee.
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
     description: Removes a user from the High Risk Employee List.
   - name: code42-highriskemployee-get-all
     arguments:
-      - name: risktags
-        description: To filter results by employees who have these risk tags.
+    - name: risktags
+      description: To filter results by employees who have these risk tags.
     outputs:
-      - contextPath: Code42.HighRiskEmployee.UserID
-        description: Internal Code42 User ID for the High Risk Employee.
-        type: string
-      - contextPath: Code42.HighRiskEmployee.Username
-        description: The username of the High Risk Employee.
-        type: string
-      - contextPath: Code42.HighRiskEmployee.Note
-        description: Note associated with the High Risk Employee.
-        type: string
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Note
+      description: Note associated with the High Risk Employee.
+      type: string
     description: Get all employees on the High Risk Employee List.
   - name: code42-highriskemployee-add-risk-tags
     arguments:
-      - name: username
-        required: true
-        description: The username of the High Risk Employee.
-      - name: risktags
-        required: true
-        description: Risk tags to associate with the High Risk Employee.
+    - name: username
+      required: true
+      description: The username of the High Risk Employee.
+    - name: risktags
+      required: true
+      description: Risk tags to associate with the High Risk Employee.
     outputs:
-      - contextPath: Code42.HighRiskEmployee.UserID
-        description: Internal Code42 User ID for the Departing Employee.
-        type: string
-      - contextPath: Code42.HighRiskEmployee.Username
-        description: The username of the High Risk Employee.
-        type: string
-      - contextPath: Code42.HighRiskEmployee.RiskTags
-        description: Risk tags to asspciate with the High Risk Employee.
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.RiskTags
+      description: Risk tags to asspciate with the High Risk Employee.
   - name: code42-highriskemployee-remove-risk-tags
     arguments:
-      - name: username
-        required: true
-        description: The username of the High Risk Employee.
-      - name: risktags
-        required: true
-        description: Risk tags to disassociate from the High Risk Employee.
+    - name: username
+      required: true
+      description: The username of the High Risk Employee.
+    - name: risktags
+      required: true
+      description: Risk tags to disassociate from the High Risk Employee.
     outputs:
-      - contextPath: Code42.HighRiskEmployee.UserID
-        description: Internal Code42 User ID for the Departing Employee.
-        type: string
-      - contextPath: Code42.HighRiskEmployee.Username
-        description: The username of the High Risk Employee.
-        type: string
-      - contextPath: Code42.HighRiskEmployee.RiskTags
-        description: Risk tags to disassociate from the High Risk Employee.
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.RiskTags
+      description: Risk tags to disassociate from the High Risk Employee.
   dockerimage: demisto/py42:1.0.0.9242
   isfetch: true
   runonce: false
