@@ -837,9 +837,6 @@ script:
     - name: rulename
       required: true
       description: Base name for added rules inside checkpoint db
-    - name: ipname
-      required: true
-      description: Base name for added ip/hosts inside checkpoint db
     outputs:
     - contextPath: CheckpointFWRule.Name
       description: Object name. Should be unique in domain
