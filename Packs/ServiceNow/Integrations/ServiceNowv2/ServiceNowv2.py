@@ -1831,7 +1831,7 @@ def main():
         sc_api = f'/api/sn_sc/{version}/'
     else:
         api = '/api/now/'
-        sc_api = f'/api/sn_sc/'
+        sc_api = '/api/sn_sc/'
     server_url = params.get('url')
     sc_server_url = f'{get_server_url(server_url)}{sc_api}'
     server_url = f'{get_server_url(server_url)}{api}'

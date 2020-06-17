@@ -95,10 +95,11 @@ def test_split_fields():
     (query_table_command, {'table_name': "alm_asset", 'fields': "asset_tag,sys_updated_by,display_name",
                            'query': "display_nameCONTAINSMacBook", 'limit': 3}, RESPONSE_QUERY_TABLE,
      EXPECTED_QUERY_TABLE, False),
-    (query_table_command, {'table_name': "sc_task", 'system_params':
-        "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001",
-                           'fields': "approval,state,escalation,number,description"},
-     RESPONSE_QUERY_TABLE_SYS_PARAMS, EXPECTED_QUERY_TABLE_SYS_PARAMS, False),
+    (query_table_command, {
+        'table_name': "sc_task", 'system_params':
+        'sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001',
+        'fields': "approval,state,escalation,number,description"
+    }, RESPONSE_QUERY_TABLE_SYS_PARAMS, EXPECTED_QUERY_TABLE_SYS_PARAMS, False),
     (list_table_fields_command, {'table_name': "alm_asset"}, RESPONSE_LIST_TABLE_FIELDS, EXPECTED_LIST_TABLE_FIELDS,
      False),
     (query_computers_command, {'computer_id': '1234'}, RESPONSE_QUERY_COMPUTERS, EXPECTED_QUERY_COMPUTERS, False),
