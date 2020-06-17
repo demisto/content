@@ -2146,7 +2146,7 @@ def sub_main():
             error_message += "\nFull debug log:\n" + debug_log
 
         if demisto.command() == 'fetch-incidents':
-            raise
+            raise Exception(str(e) + traceback.format_exc())
         if demisto.command() == 'ews-search-mailbox' and isinstance(e, ValueError):
             return_error(message="Selected invalid field, please specify valid field name.", error=e)
         if IS_TEST_MODULE:
