@@ -4,6 +4,8 @@ import dateparser
 import demistomock as demisto
 import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+import base64
+from requests.auth import HTTPBasicAuth
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
@@ -17,10 +19,9 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
-    def __init__(self,  base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None,
-                 token=None, email=None, api_key=None):
-        super().__init__(token, email, api_key)
-        self.token = token
+    def __init__(self,  base_url, verify=True, proxy=False, ok_codes=None, headers=None, auth=None,
+                 email=None, api_key=None):
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.email = email
         self.api_key = api_key
     """
@@ -28,8 +29,16 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def dehashed_search(self):
-        self._http_request('GET', full_url=self._base_url, auth=(self.email, self.api_key))
+    def dehashed_search(self, asset_type, contains_op=None, is_op=None, regex_op=None, results_page_number=None):
+        query_string = ''
+        if asset_type == 'all_fields':
+            query_string = ''
+        query_string = f'{asset_type}'
+
+
+        self._http_request('GET', 'search',
+                           params={'query': query_string}, auth=(self.email, self.api_key))
+
 
 
 
@@ -73,10 +82,8 @@ def dehashed_search_command(client, args):
     is_op = argToList(args.get('is'))
     regex_op = argToList(args.get('regex'))
     results_page_number = args.get('page')
+    result = client.dehashed_search(asset_type, contains_op, is_op, regex_op, results_page_number)
 
-    result = client.say_hello(name)
-
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
     readable_output = f'## {result}'
     outputs = {
         'hello': result
@@ -111,15 +118,16 @@ def main():
             email=email,
             api_key=api_key,
             proxy=proxy,
-            token='')
+            headers={'accept': 'application/json'}
+        )
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
 
-        elif demisto.command() == 'helloworld-say-hello':
-            return_outputs(*say_hello_command(client, demisto.args()))
+        elif demisto.command() == 'dehashed-search':
+            return_outputs(*dehashed_search_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:
