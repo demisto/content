@@ -1193,7 +1193,7 @@ def argToList(arg, separator=','):
         if arg[0] == '[' and arg[-1] == ']':
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
-    return arg
+    return [arg]
 
 
 def argToBoolean(value):
