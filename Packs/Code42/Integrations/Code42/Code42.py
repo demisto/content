@@ -555,7 +555,7 @@ def departingemployee_remove_command(client, args):
 @logger
 def departingemployee_get_all_command(client, args):
     employees = client.get_all_departing_employees()
-    if employees:
+    if employees is not None:
         employees_context = [
             {
                 "UserID": e["userId"],
@@ -606,7 +606,7 @@ def highriskemployee_remove_command(client, args):
 def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
     employees = client.get_all_high_risk_employees(tags)
-    if employees:
+    if employees is not None:
         employees_context = [
             {"UserID": e["userId"], "Username": e["userName"], "Note": e["notes"]}
             for e in employees

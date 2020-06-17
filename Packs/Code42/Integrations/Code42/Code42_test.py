@@ -893,6 +893,13 @@ def create_client(sdk):
     return Code42Client(sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
 
 
+def get_empty_detectionlist_response(mocker, base_text):
+    no_employees_response_text = json.loads(base_text)
+    no_employees_response_text["items"] = []
+    no_employees_response_text = json.dumps(no_employees_response_text)
+    return create_mock_code42_sdk_response_generator(mocker, [no_employees_response_text])
+
+
 """TESTS"""
 
 
@@ -1011,6 +1018,28 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
     assert res == expected
 
 
+def test_departingemployee_get_all_command_when_no_employees(
+    code42_sdk_mock, mocker
+):
+    no_employees_response = get_empty_detectionlist_response(mocker, MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)
+    code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = no_employees_response
+    client = create_client(code42_sdk_mock)
+    _, _, res = highriskemployee_get_all_command(
+        client,
+        {
+            "risktags": [
+                "PERFORMANCE_CONCERNS",
+                "SUSPICIOUS_SYSTEM_ACTIVITY",
+                "POOR_SECURITY_PRACTICES",
+            ]
+        },
+    )
+    # Only first employee has the given risk tags
+    expected = []
+    assert res == expected
+    assert code42_sdk_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+
+
 def test_highriskemployee_add_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
     _, _, res = highriskemployee_add_command(
@@ -1076,6 +1105,28 @@ def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employe
     )
     # Only first employee has the given risk tags
     expected = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
+    assert res == expected
+    assert code42_sdk_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+
+
+def test_highriskemployee_get_all_command_when_no_employees(
+    code42_sdk_mock, mocker
+):
+    no_employees_response = get_empty_detectionlist_response(mocker, MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)
+    code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = no_employees_response
+    client = create_client(code42_sdk_mock)
+    _, _, res = highriskemployee_get_all_command(
+        client,
+        {
+            "risktags": [
+                "PERFORMANCE_CONCERNS",
+                "SUSPICIOUS_SYSTEM_ACTIVITY",
+                "POOR_SECURITY_PRACTICES",
+            ]
+        },
+    )
+    # Only first employee has the given risk tags
+    expected = []
     assert res == expected
     assert code42_sdk_mock.detectionlists.high_risk_employee.get_all.call_count == 1
 
