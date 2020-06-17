@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 
-import time
-import sys
-import requests
+# import time
+# import sys
+# import requests
 import jwt
 import math
 
@@ -14,20 +13,13 @@ from typing import Any, Dict, List
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
+PAGE_SIZE = 10
+INSECURE = demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
 INSECURE = demisto.params().get('insecure')
 BASE_URL = demisto.params().get('url')
 ACCESS_KEY = demisto.params().get('access_key')
 PRIVATE_KEY = demisto.params().get('private_key')
-PAGE_SIZE = 10
-
-# if not demisto.params().get('proxy', False):
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
-
 
 '''HELPER FUNCTIONS'''
 
@@ -65,20 +57,16 @@ def add_to_results(current_results_array, request_result):
         print(f"Failed to add results!\nError message:\n{e}")
         sys.exit(1)
 
-# # Allows nested keys to be accesible
-# def makehash():
-#     return collections.defaultdict(makehash)
 
-
-def call_api(method, route, token, query):
+def call_api(method, route, client, query):
     """
     loop pagination in case the total items count is bigger that PAGE_SIZE
     """
     results: List[Dict[str, Any]] = []
-    res = http_request(method, token, route, content=query)
+    res = http_request(method, client, route, content=query)
     results = add_to_results(results, res)
     for i in range(1, math.ceil(res['itemsTotal'] / PAGE_SIZE)):
-        res = http_request(method, token, route, i, query)
+        res = http_request(method, client, route, i, query)
         results = add_to_results(results, res)
     return results
 
@@ -116,7 +104,8 @@ def test_module(token, json=None):
         return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
 
 
-def get_cve_command(token, cve_id):
+def get_cve_command(token, args):
+    cve_id = args.get('cve_id')
     method = "GET"
     route = f"/vulnerability/{cve_id}/details"
     res = http_request(method, token, route)
@@ -125,13 +114,15 @@ def get_cve_command(token, cve_id):
         command_results = CommandResults(
             outputs_prefix='Cve.Details',
             outputs_key_field='ReportID',
-            outputs=res
-        )
-        return_results(command_results)
+            outputs=res)
+        return command_results
         #   demisto.results(res)
 
 
-def get_assets_programs_command(token, name, publisher, version):
+def get_assets_programs_command(token, args):
+    name = args.get('name')
+    publisher = args.get('publisher')
+    version = args.get('version')
     method = "POST"
     route = "/assets/programs"
     rules = [{
@@ -180,16 +171,21 @@ def get_assets_programs_command(token, name, publisher, version):
         command_results = CommandResults(
             outputs_prefix='Assets.Programs',
             outputs_key_field='itemsTotal',
-            outputs=res
-        )
-        return_results(command_results)
+            outputs=res)
+        return command_results
         #   demisto.results(res)
 
 
-def get_devices_command(token, host, os_type, os_name, status, agent_version):
+def get_devices_command(token, args):
+    host = args.get('host')
+    os_type = args.get('osType')
+    os_name = args.get('osName')
+    status = args.get('status')
+    agent_version = args.get('agentVersion')
     method = "POST"
     route = "/devices/search"
     rules = []
+
     if host:
         host_node = {
             'field': 'host',
@@ -246,16 +242,18 @@ def get_devices_command(token, host, os_type, os_name, status, agent_version):
         command_results = CommandResults(
             outputs_prefix='Device.Search',
             outputs_key_field='itemsTotal',
-            outputs=res
-        )
-        return_results(command_results)
+            outputs=res)
+        return (command_results)
         #   demisto.results(res)
 
 
-def get_vulnerable_devices_command(token, device_os, device_risk):
+def get_vulnerable_devices_command(token, args):
+    device_os = args.get('device_os')
+    device_risk = args.get('device_risk')
     method = "POST"
     route = "/vulnerability/devices"
     rules = []
+
     if device_os:
         device_os_node = {
             'field': 'device_os',
@@ -287,52 +285,54 @@ def get_vulnerable_devices_command(token, device_os, device_risk):
         command_results = CommandResults(
             outputs_prefix='Vulnerability.Devices',
             outputs_key_field='$host',
-            outputs=res
-        )
-        return_results(command_results)
+            outputs=res)
+        return command_results
         #   demisto.results(res)
 
 
 ''' EXECUTION '''
-LOG('command is %s' % (demisto.command(), ))
-try:
-
-    token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
-    if demisto.command() == 'test-module':
-        test_module(token)
-        demisto.results('ok')
-
-    elif demisto.command() == 'infinipoint-get-cve':
-        cve_id = demisto.args().get('cve_id')
-        get_cve_command(token, cve_id)
-
-    elif demisto.command() == 'infinipoint-get-assets-programs':
-        name = demisto.args().get('name')
-        publisher = demisto.args().get('publisher')
-        version = demisto.args().get('version')
-        # type = demisto.args().get('type')
-
-        get_assets_programs_command(token, name, publisher, version)
-
-    elif demisto.command() == 'infinipoint-get-device':
-        host = demisto.args().get('host')
-        os_type = demisto.args().get('osType')
-        os_name = demisto.args().get('osName')
-        status = demisto.args().get('status')
-        agent_version = demisto.args().get('agentVersion')
-
-        get_devices_command(token, host, os_type, os_name, status, agent_version)
-
-    elif demisto.command() == 'infinipoint-get-vulnerable-devices':
-        device_os = demisto.args().get('device_os')
-        device_risk = demisto.args().get('device_risk')
-
-        get_vulnerable_devices_command(token, device_os, device_risk)
 
 
-except Exception as e:
-    print(e)
-    demisto.debug('The Senate? I am the Senate!')
-    LOG(e)
-    LOG.print_log()
-    return_error(e)
+def main():
+
+    # PROXY = demisto.params().get('proxy')
+    # INSECURE = demisto.params().get('insecure')
+    # BASE_URL = demisto.params().get('url')
+    # ACCESS_KEY = demisto.params().get('access_key')
+    # PRIVATE_KEY = demisto.params().get('private_key')
+    # verify_certificate = not demisto.params().get('insecure', False)
+    # proxy = demisto.params().get('proxy', False)
+
+    # if not demisto.params().get('proxy', False):
+    #     del os.environ['HTTP_PROXY']
+    #     del os.environ['HTTPS_PROXY']
+    #     del os.environ['http_proxy']
+    #     del os.environ['https_proxy']
+
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
+
+        if demisto.command() == 'test-module':
+            test_module(token)
+            demisto.results('ok')
+
+        elif demisto.command() == 'infinipoint-get-cve':
+            return_results(get_cve_command(token, demisto.args()))
+
+        elif demisto.command() == 'infinipoint-get-assets-programs':
+            return_results(get_assets_programs_command(token, demisto.args()))
+
+        elif demisto.command() == 'infinipoint-get-device':
+            return_results(get_devices_command(token, demisto.args()))
+
+        elif demisto.command() == 'infinipoint-get-vulnerable-devices':
+            return_results(get_vulnerable_devices_command(token, demisto.args()))
+
+    except Exception as e:
+        err_msg = f'Error - Infinipoint Integration [{e}]'
+        return_error(err_msg, error=e)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
