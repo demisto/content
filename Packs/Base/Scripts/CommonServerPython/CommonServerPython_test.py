@@ -460,11 +460,18 @@ def test_argToList():
     test2 = 'a,b,c'
     test3 = '["a","b","c"]'
     test4 = 'a;b;c'
+    test5 = 1
+    test6 = '1'
+    test7 = True
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
     for result in results:
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
+
+    assert argToList(test5) == [1]
+    assert argToList(test6) == ['1']
+    assert argToList(test7) == [True]
 
 
 def test_remove_nulls():
