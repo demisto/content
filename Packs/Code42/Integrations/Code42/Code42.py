@@ -134,6 +134,31 @@ def _create_alert_query(event_severity_filter, start_time):
     return alert_query
 
 
+def return_none_on_error(func):
+    @logger
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as ex:
+            LOG(str(ex))
+            return None
+    return wrapper
+
+
+def _get_all_high_risk_employees_from_page(page, risk_tags):
+    res = []
+    for employee in page["items"]:
+        if not risk_tags:
+            res.append(employee)
+            continue
+
+        employee_tags = employee.get("riskFactors")
+        # If the employee risk tags contain all the given risk tags
+        if employee_tags and set(risk_tags) <= set(employee_tags):
+            res.append(employee)
+    return res
+
+
 class Code42Client(BaseClient):
     """
     Client will implement the service API, should not contain Cortex XSOAR logic.
@@ -146,135 +171,94 @@ class Code42Client(BaseClient):
         self._sdk = sdk or py42.sdk.from_local_account(base_url, auth[0], auth[1])
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
 
+    @return_none_on_error
     def add_user_to_departing_employee(self, username, departure_date=None, note=None):
-        try:
-            user_id = self.get_user_id(username)
-            self._sdk.detectionlists.departing_employee.add(user_id, departure_date=departure_date)
-            if note:
-                self._sdk.detectionlists.update_user_notes(user_id, note)
-        except Exception:
-            return None
+        user_id = self.get_user_id(username)
+        self._sdk.detectionlists.departing_employee.add(user_id, departure_date=departure_date)
+        if note:
+            self._sdk.detectionlists.update_user_notes(user_id, note)
         return user_id
 
+    @return_none_on_error
     def remove_user_from_departing_employee(self, username):
-        try:
-            user_id = self.get_user_id(username)
-            self._sdk.detectionlists.departing_employee.remove(user_id)
-        except Exception:
-            return None
+        user_id = self.get_user_id(username)
+        self._sdk.detectionlists.departing_employee.remove(user_id)
         return user_id
 
+    @return_none_on_error
     def get_all_departing_employees(self):
-        try:
-            res = []
-            pages = self._sdk.detectionlists.departing_employee.get_all()
-            for page in pages:
-                employees = page["items"]
-                res.extend(employees)
-        except Exception:
-            return None
+        res = []
+        pages = self._sdk.detectionlists.departing_employee.get_all()
+        for page in pages:
+            employees = page["items"]
+            res.extend(employees)
         return res
 
+    @return_none_on_error
     def add_user_to_high_risk_employee(self, username, note=None):
-        try:
-            user_id = self.get_user_id(username)
-            self._sdk.detectionlists.high_risk_employee.add(user_id)
-            if note:
-                self._sdk.detectionlists.update_user_notes(user_id, note)
-        except Exception:
-            return None
+        user_id = self.get_user_id(username)
+        self._sdk.detectionlists.high_risk_employee.add(user_id)
+        if note:
+            self._sdk.detectionlists.update_user_notes(user_id, note)
         return user_id
 
+    @return_none_on_error
     def remove_user_from_high_risk_employee(self, username):
-        try:
-            user_id = self.get_user_id(username)
-            self._sdk.detectionlists.high_risk_employee.remove(user_id)
-        except Exception:
-            return None
+        user_id = self.get_user_id(username)
+        self._sdk.detectionlists.high_risk_employee.remove(user_id)
         return user_id
 
+    @return_none_on_error
     def add_user_risk_tags(self, username, risk_tags):
-        try:
-            user_id = self.get_user_id(username)
-            self._sdk.detectionlists.add_user_risk_tags(user_id, risk_tags)
-        except Exception:
-            return None
+        user_id = self.get_user_id(username)
+        self._sdk.detectionlists.add_user_risk_tags(user_id, risk_tags)
         return user_id
 
+    @return_none_on_error
     def remove_user_risk_tags(self, username, risk_tags):
-        try:
-            user_id = self.get_user_id(username)
-            self._sdk.detectionlists.remove_user_risk_tags(user_id, risk_tags)
-        except Exception:
-            return None
+        user_id = self.get_user_id(username)
+        self._sdk.detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
+    @return_none_on_error
     def get_all_high_risk_employees(self, risk_tags=None):
         if isinstance(risk_tags, str):
             risk_tags = [risk_tags]
-        try:
-            res = []
-            pages = self._sdk.detectionlists.high_risk_employee.get_all()
-            for page in pages:
-                res.extend(self._get_all_high_risk_employees_from_page(page, risk_tags))
-        except Exception:
-            return None
-        return res
-
-    def _get_all_high_risk_employees_from_page(self, page, risk_tags):
         res = []
-        for employee in page["items"]:
-            if not risk_tags:
-                res.append(employee)
-                continue
-
-            employee_tags = employee.get("riskFactors")
-            # If the employee risk tags contain all the given risk tags
-            if employee_tags and set(risk_tags) <= set(employee_tags):
-                res.append(employee)
+        pages = self._sdk.detectionlists.high_risk_employee.get_all()
+        for page in pages:
+            res.extend(_get_all_high_risk_employees_from_page(page, risk_tags))
         return res
 
+    @return_none_on_error
     def fetch_alerts(self, start_time, event_severity_filter):
-        try:
-            query = _create_alert_query(event_severity_filter, start_time)
-            res = self._sdk.alerts.search(query)
-        except Exception:
-            return None
+        query = _create_alert_query(event_severity_filter, start_time)
+        res = self._sdk.alerts.search(query)
         return res["alerts"]
 
+    @return_none_on_error
     def get_alert_details(self, alert_id):
-        try:
-            res = self._sdk.alerts.get_details(alert_id)
-        except Exception:
-            return None
+        res = self._sdk.alerts.get_details(alert_id)
         return res["alerts"][0]
 
+    @return_none_on_error
     def resolve_alert(self, id):
-        try:
-            self._sdk.alerts.resolve(id)
-        except Exception:
-            return None
+        self._sdk.alerts.resolve(id)
         return id
 
+    @return_none_on_error
     def get_current_user(self):
-        try:
-            res = self._sdk.users.get_current()
-        except Exception:
-            return None
+        res = self._sdk.users.get_current()
         return res
 
+    @return_none_on_error
     def get_user_id(self, username):
-        try:
-            res = self._sdk.users.get_by_username(username)
-        except Exception:
-            return None
+        res = self._sdk.users.get_by_username(username)
         return res["users"][0]["userUid"]
 
+    @return_none_on_error
     def search_file_events(self, payload):
-        try:
-            res = self._sdk.securitydata.search_file_events(payload)
-        except Exception:
-            return None
+        res = self._sdk.securitydata.search_file_events(payload)
         return res["fileEvents"]
 
 

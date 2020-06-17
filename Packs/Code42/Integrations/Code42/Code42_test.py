@@ -896,6 +896,15 @@ def create_client(sdk):
 """TESTS"""
 
 
+def test_code42client_when_error_occurs_during_method_returns_none(code42_sdk_mock):
+    def error_effect():
+        raise Exception("Test Error")
+    code42_sdk_mock.detectionlists.departing_employee.add.side_effect = error_effect
+    client = create_client(code42_sdk_mock)
+    res = client.add_user_to_departing_employee("test")
+    assert res is None
+
+
 def test_build_query_payload():
     query = build_query_payload(MOCK_SECURITY_DATA_SEARCH_QUERY)
     assert query.sort_key == MOCK_FILE_EVENT_QUERY_PAYLOAD["srtKey"]
