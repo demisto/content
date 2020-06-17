@@ -460,6 +460,4 @@ function Main {
 # Execute Main when not in Tests
 if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
     Main
-} else {
-    Import-Module -Name InfocyteHUNTAPI | Out-Null
 }
