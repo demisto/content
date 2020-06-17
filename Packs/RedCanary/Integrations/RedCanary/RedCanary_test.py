@@ -105,5 +105,4 @@ def test_get_endpoint_context():
         'IsIsolated': False,
         'MACAddress': ['g9:gg:c2:0f:3d:5f'],
         'OS': 'OS X',
-        'OSVersion': 'Mac OSX 10.14.6'
-     }]
+        'OSVersion': 'Mac OSX 10.14.6'}]
