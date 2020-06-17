@@ -1,14 +1,14 @@
 id: Cortex XDR incident handling v2
 version: -1
 name: Cortex XDR incident handling v2
-description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR
-  incident.\nThe playbook syncs and updates new XDR alerts that construct the incident
-  and triggers a sub-playbook to handle each alert by type.\nThen, the playbook performs
-  enrichment on the incident's indicators and hunting for related IOCs.\nBased on
-  the severity, it lets the analyst decide whether to continue to the remediation
-  stage or close the investigation as false positive. \nAfter the remediation, if
-  there are no new alerts, the playbook stops the alert sync, closes the XDR incident
-  and the investigation."
+description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
+  \ incident.\nThe playbook syncs and updates new XDR alerts that construct the incident\
+  \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
+  \ performs enrichment on the incident's indicators and hunting for related IOCs.\n\
+  Based on the severity, it lets the analyst decide whether to continue to the remediation\
+  \ stage or close the investigation as false positive. \nAfter the remediation, if\
+  \ there are no new alerts, the playbook stops the alert sync, closes the XDR incident\
+  \ and the investigation."
 starttaskid: "0"
 tasks:
   "0":
@@ -21,6 +21,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -48,6 +49,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -75,6 +77,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -246,6 +249,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -288,6 +292,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -395,6 +400,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -849,14 +855,14 @@ tasks:
       id: 6c63da52-3e6e-426e-8c10-b361829c26bd
       version: -1
       name: PANW - Hunting and threat detection by indicator type V2
-      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is
-        a multipurpose playbook used for hunting and threat detection. The playbook
-        receives inputs based on hashes, IP addresses, or domain names provided manually
-        or from outputs by other playbooks. \nWith the received indicators, the playbook
-        leverages Palo Alto Cortex data received by products such as Traps, Analytics
-        and Pan-OS to search for IP addresses and hosts related to that specific hash.
-        \nThe output provided by the playbook facilitates pivoting searches for possibly
-        affected hosts, IP addresses, or users."
+      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is\
+        \ a multipurpose playbook used for hunting and threat detection. The playbook\
+        \ receives inputs based on hashes, IP addresses, or domain names provided\
+        \ manually or from outputs by other playbooks. \nWith the received indicators,\
+        \ the playbook leverages Palo Alto Cortex data received by products such as\
+        \ Traps, Analytics and Pan-OS to search for IP addresses and hosts related\
+        \ to that specific hash. \nThe output provided by the playbook facilitates\
+        \ pivoting searches for possibly affected hosts, IP addresses, or users."
       playbookName: PANW - Hunting and threat detection by indicator type V2
       type: playbook
       iscommand: false
@@ -1446,6 +1452,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
@@ -1506,6 +1513,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -1738,25 +1746,25 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: similarIncidentFields
   value: {}
   required: false
   description: A comma-separated list of similar incident fields keys.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: LinkSimilarIncidents
   value:
     simple: "Yes"
   required: false
   description: This input indicates whether the playbook will link similar incidents.
     Specify Yes/No.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hunting
   value:
     simple: "Yes"
   required: false
   description: Yes/No
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
@@ -1765,26 +1773,27 @@ inputs:
     of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
     If a list is not provided, will use default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CriticalUsernames
   value:
     simple: admin,administrator
   required: false
   description: A list of comma-separated names of critical users in the organization.
     This will affect the calculated severity of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CriticalHostnames
   value: {}
   required: false
   description: A list of comma-separated names of critical endpoints in the organization.
     This will affect the calculated severity of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CriticalADGroups
   value: {}
   required: false
   description: CSV of DN names of critical Active Directory groups. This will affect
     the severity calculated for this incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
-  - No test.
+- No test.
+fromversion: 5.0.0

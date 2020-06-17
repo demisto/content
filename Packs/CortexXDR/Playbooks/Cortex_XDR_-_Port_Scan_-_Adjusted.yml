@@ -20,6 +20,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "37"
@@ -873,6 +874,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "64"
@@ -900,6 +902,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -978,6 +981,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1002,6 +1006,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "91"
@@ -1083,19 +1088,19 @@ inputs:
   required: false
   description: A list of comma-separated ports that should not be blocked even if
     used in an attack.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: BlockAttackerIP
   value:
     simple: "False"
   required: false
   description: Whether attacking IPs should be automatically blocked using firewalls.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailAddressesToNotify
   value: {}
   required: false
   description: A list of comma-separated values of email addresses that should receive
     a notification about compromised hosts.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: InternalIPRanges
   value: {}
   required: false
@@ -1104,25 +1109,25 @@ inputs:
     "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
     will use default list provided in the IsIPInRanges script (the known IPv4 private
     address ranges).'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RoleForEscalation
   value: {}
   required: false
   description: The name of the Demisto role of the users that the incident can be
     escalated to in case of developments like lateral movement. If this input will
     be empty, no escalation will take place.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: OnCall
   value:
     simple: "false"
   required: false
   description: Set to true to assign only the users that are currently on shift.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: xdr_alert_id
   value: {}
   required: false
   description: Unique ID for the XDR alert.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: PortScan.BlockPorts
   description: Indicates whether there's a need to block the ports used for exploitation
@@ -1147,4 +1152,5 @@ outputs:
   description: Port Scan First Date time
   type: unknown
 tests:
-  - No test.
+- No test.
+fromversion: 5.0.0
