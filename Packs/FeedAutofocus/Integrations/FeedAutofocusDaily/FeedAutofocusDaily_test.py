@@ -43,12 +43,12 @@ def test_type_finder():
 def test_feed_tags_param(mocker):
     """Unit test
     Given
-    - fetch incidents command
+    - fetch indicators command
     - command args
     - command raw response
     When
     - mock the feed tags param.
-    - mock the Client's get_indicators.
+    - mock the Client's daily_http_request.
     Then
     - run the fetch incidents command using the Client
     Validate The value of the tags field.

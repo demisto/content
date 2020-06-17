@@ -106,7 +106,7 @@ script:
     deprecated: false
     description: Gets the indicators from AutoFocus.
     execution: false
-    name: autofocus-get-indicators
+    name: autofocus-daily-get-indicators
   dockerimage: demisto/python3:3.8.3.8715
   feed: true
   isfetch: false

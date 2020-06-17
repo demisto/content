@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    """Client for AutoFocus Feed - gets indicator lists from the Custom and Daily threat feeds
+    """Client for AutoFocus Feed - gets indicator lists from Daily threat feeds
 
     Attributes:
         api_key(str): The API key for AutoFocus.
@@ -22,8 +22,7 @@ class Client(BaseClient):
     def __init__(self, api_key, insecure, proxy):
         self.api_key = api_key
         self.verify = not insecure
-        if proxy:
-            handle_proxy()
+        handle_proxy()
 
     def daily_http_request(self) -> list:
         """The HTTP request for daily feeds.
@@ -102,12 +101,12 @@ class Client(BaseClient):
         else:
             return FeedIndicatorType.Domain
 
-    def create_indicators_from_response(self, response, feedTags):
+    def create_indicators_from_response(self, response, feed_tags):
         """
         Creates a list of indicators from a given response
         Args:
             response: List of dict that represent the response from the api
-            feedTags: The indicator tags
+            feed_tags: The indicator tags
         Returns:
             List of indicators with the correct indicator type.
         """
@@ -130,18 +129,18 @@ class Client(BaseClient):
                         'type': indicator_type,
                         'service': 'Daily Threat Feed'
                     },
-                    'fields': {'service': 'Daily Threat Feed', 'tags': feedTags}
+                    'fields': {'service': 'Daily Threat Feed', 'tags': feed_tags}
                 })
 
         return parsed_indicators
 
-    def build_iterator(self, feedTags: List, limit=None, offset=None):
+    def build_iterator(self, feed_tags: List, limit=None, offset=None):
         """Builds a list of indicators.
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
         """
         response = self.daily_http_request()
-        parsed_indicators = self.create_indicators_from_response(response, feedTags)  # list of dict of indicators
+        parsed_indicators = self.create_indicators_from_response(response, feed_tags)  # list of dict of indicators
 
         # for get_indicator_command only
         if limit:
@@ -149,14 +148,14 @@ class Client(BaseClient):
         return parsed_indicators
 
 
-def module_test_command(client: Client, args: dict, feedTags: list):
+def module_test_command(client: Client, args: dict, feed_tags: list):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
         client(Client): Autofocus Feed client
         args(Dict): The instance parameters
-        feedTags: The indicator tags
+        feed_tags: The indicator tags
 
     Returns:
         'ok' if test passed, anything else will fail the test.
@@ -169,7 +168,7 @@ def module_test_command(client: Client, args: dict, feedTags: list):
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, args: dict, feedTags):
+def get_indicators_command(client: Client, args: dict, feed_tags):
     """Initiate a single fetch-indicators
 
     Args:
@@ -182,7 +181,7 @@ def get_indicators_command(client: Client, args: dict, feedTags):
     offset = int(args.get('offset', 0))
     limit = int(args.get('limit', 100))
 
-    indicators = fetch_indicators_command(client, feedTags, limit, offset)
+    indicators = fetch_indicators_command(client, feed_tags, limit, offset)
 
     hr_indicators = []
     for indicator in indicators:
@@ -197,33 +196,33 @@ def get_indicators_command(client: Client, args: dict, feedTags):
                                      headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
 
     if args.get('limit'):
-        human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!autofocus-get-indicators " \
+        human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!autofocus-daily-get-indicators " \
                                           f"limit={args.get('limit')} " \
                                           f"offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
 
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: Client, feedTags: List, limit=None, offset=None):
+def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset=None):
     """Fetch-indicators command from AutoFocus Feeds
 
     Args:
         client(Client): AutoFocus Feed client.
-        feedTags: The indicator tags
+        feed_tags: The indicator tags
         limit: limit the amount of incidators fetched.
         offset: the index of the first index to fetch.
 
     Returns:
         list. List of indicators.
     """
-    indicators = client.build_iterator(feedTags, limit, offset)
+    indicators = client.build_iterator(feed_tags, limit, offset)
 
     return indicators
 
 
 def main():
     params = demisto.params()
-    feedTags = argToList(params.get('feedTags'))
+    feed_tags = argToList(params.get('feedTags'))
     client = Client(api_key=params.get('api_key'),
                     insecure=params.get('insecure'),
                     proxy=params.get('proxy'))
@@ -233,16 +232,16 @@ def main():
     # Switch case
     commands = {
         'test-module': module_test_command,
-        'autofocus-get-indicators': get_indicators_command
+        'autofocus-daily-get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, feedTags)
+            indicators = fetch_indicators_command(client, feed_tags)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args(), feedTags)  # type: ignore
+            readable_output, outputs, raw_response = commands[command](client, demisto.args(), feed_tags)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f'Error in AutoFocusFeed Daily Integration [{e}]')
