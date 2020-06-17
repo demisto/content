@@ -2839,6 +2839,7 @@
 
     ],
     "skipped_tests": {
+        "Cisco ASA - Test Playbook": "Issue 25741",
         "CuckooTest": "Issue 25601",
         "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
@@ -3008,6 +3009,7 @@
 
 
          "_comment5": "~~~ OTHER ~~~",
+        "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
