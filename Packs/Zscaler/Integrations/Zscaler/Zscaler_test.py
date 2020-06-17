@@ -18,7 +18,10 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
     with open(response_path, 'r') as response_f:
         response = ResponseMock(json.load(response_f))
     mocker.patch('Zscaler.http_request', return_value=response)
-    res = command_func(**args)
+    if command_func.__name__ == 'url_lookup':
+        res = command_func(args)
+    else:
+        res = command_func(**args)
     with open(expected_result_path, 'r') as ex_f:
         expected_result = json.load(ex_f)
         assert expected_result == res
@@ -27,7 +30,7 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
 @pytest.fixture(autouse=True)
 def init_tests(mocker):
     params = {
-        'cloud': 'cloud',
+        'cloud': 'http://cloud',
         'credentials': {
             'identifier': 'security',
             'password': 'ninja'
@@ -132,7 +135,7 @@ test_data = [
 ]
 # disable-secrets-detection-end
 @pytest.mark.parametrize('url,multiple,expected_data', test_data)
-def test_url_multiple_arg(mocker, url, multiple, expected_data):
+def test_url_multiple_arg(url, multiple, expected_data):
     '''Scenario: Submit a URL with commas in it
 
     Given
@@ -145,15 +148,10 @@ def test_url_multiple_arg(mocker, url, multiple, expected_data):
     - case B: Ensure the URL is interpreted as a single value to be sent in the subsequent API call
 
     Args:
-        mocker (Mocker): Mocker module.
         url (str): The URL to submit.
         multiple (str): "true" or "false" - whether to interpret the 'url' argument as multiple comma separated values.
         expected_data (list): The data expected to be sent in the API call.
     '''
-    params = demisto.params()
-    params['cloud'] = 'http://cloud'
-    mocker.patch.object(demisto, 'params', return_value=params)
-
     import Zscaler
     with requests_mock.mock() as m:
         # 'fake_resp_content' doesn't really matter here since we are checking the data being sent in the call,
