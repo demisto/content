@@ -1,6 +1,6 @@
-id: Cortex XDR Alerts
+id: Cortex XDR Alerts Handling
 version: -1
-name: Cortex XDR Alerts
+name: Cortex XDR Alerts Handling
 description: "This playbook is used to loop over every alert in a Cortex XDR incident.
   \nSupported alert categories:\n- Malware\n- Port Scan"
 starttaskid: "0"

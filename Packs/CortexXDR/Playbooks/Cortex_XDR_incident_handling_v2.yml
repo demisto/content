@@ -241,8 +241,8 @@ tasks:
     task:
       id: e495004a-cc3e-4fd8-8a5c-041e8e5a2f7a
       version: -1
-      name: Cortex XDR Alerts
-      playbookName: Cortex XDR Alerts
+      name: Cortex XDR Alerts Handling
+      playbookName: Cortex XDR Alerts Handling
       type: playbook
       iscommand: false
       brand: ""
