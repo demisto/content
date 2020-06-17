@@ -19,7 +19,7 @@ class Client(BaseClient):
         proxy(str): Use system proxy.
     """
 
-    def __init__(self, api_key, insecure, proxy):
+    def __init__(self, api_key, insecure):
         self.api_key = api_key
         self.verify = not insecure
         handle_proxy()
@@ -224,8 +224,7 @@ def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
     client = Client(api_key=params.get('api_key'),
-                    insecure=params.get('insecure'),
-                    proxy=params.get('proxy'))
+                    insecure=params.get('insecure'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
