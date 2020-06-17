@@ -2837,6 +2837,12 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "TruSTAR_V2",
+            "playbookID": "TruSTAR_V2-Test",
+            "timeout": 500,
+            "nightly": true
         }
 
     ],

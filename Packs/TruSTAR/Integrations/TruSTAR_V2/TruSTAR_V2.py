@@ -10,15 +10,10 @@ import trustar
 from trustar.models.report import Report
 from trustar.models.indicator import Indicator
 
-# IMPORTS
-
-
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings(list)
+requests.packages.urllib3.disable_warnings()
 
-# CONSTANTS
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
+handle_proxy()
 
 class Utils(object):
     """
@@ -43,10 +38,9 @@ class Utils(object):
         return int(d.strftime("%s")) * 1000
 
 
-
 class ContextManager(object):
     """
-    Manages where to put the data depending if the data to output is an indicator or not. 
+    Manages where to put the data depending if the data to output is an indicator or not.
 
     If data is an indicator, the data is returned on 3 contexts:
     - DBotScore context: Contains the value of the IOC, the vendor (TruSTAR) and a score of 0.
@@ -65,9 +59,9 @@ class ContextManager(object):
 
     DBOTSCORE_TYPES = {
         'URL': DBotScoreType.URL,
-        'IP' : DBotScoreType.IP,
+        'IP': DBotScoreType.IP,
         'DOMAIN': DBotScoreType.DOMAIN,
-        # 'CVE': DBotScoreType.CVE,
+        'CVE': DBotScoreType.CVE,
         'SOFTWARE': DBotScoreType.FILE,
         'SHA256': DBotScoreType.FILE,
         'SHA1': DBotScoreType.FILE,
@@ -107,7 +101,7 @@ class ContextManager(object):
 
     def _get_xsoar_indicator(self, ts_indicator):
         """
-        Returns a XSoar Indicator with DBotScore embedded. Indicartors can be:
+        Returns a XSoar Indicator with DBotScore embedded. Indicators can be:
         - Common.File
         - Common.IP
         - Common.URL
@@ -131,7 +125,7 @@ class ContextManager(object):
 
 
     def _remove_priority_level(self, indicator_dict):
-        """  Removes priority leel from indicator. It is a deprecated field """
+        """  Removes priority level from indicator. It is a deprecated field """
         if indicator_dict.get('priorityLevel'):
             indicator_dict.pop('priorityLevel')
         
@@ -148,7 +142,7 @@ class ContextManager(object):
         xsoar_indicators = [
             self._get_xsoar_indicator(d) 
             for d in indicators
-            if d.get('indicatorType') not in {'EMAIL_ADDRESS', 'REGISTRY_KEY', 'MALWARE', 'CIDR_BLOCK', 'CVE'}
+            if d.get('indicatorType') not in {'EMAIL_ADDRESS', 'REGISTRY_KEY', 'MALWARE', 'CIDR_BLOCK'}
         ]
 
         standard_context = self.get_non_xsoar_standard_context(indicators)
@@ -228,10 +222,21 @@ class ContextManager(object):
         ec = {'TruSTAR.PhishingSubmission(val.submissionId == obj.submissionId)': submission_dicts}
         return submission_dicts, ec
 
+
+    def get_enclaves_ec(self, enclaves):
+
+        context = [enclave.to_dict(remove_nones=True) for enclave in enclaves]
+        ec = {
+            'TruSTAR.Enclave(val.id && val.id === obj.id)': context
+        }
+        return context, ec
+
+
     def _get_report_context_fields(self, report):
         context_fields = ["id", "title", "reportBody"]
         fields = {k: v for k, v in report.items() if k in context_fields}
         return fields
+
 
     def get_reports_ec(self, reports):
         """ Returns entry context for Reports """
@@ -264,13 +269,15 @@ class TrustarClient:
         "exclueded_tags"
     ]
 
-    def __init__(self, config):
+    def __init__(self, config, station=''):
         self.client = trustar.TruStar(config=config)
         self.command_dict = self._build_command_dict()
         self.context_manager = ContextManager()
+        self.station = station
 
     def _build_command_dict(self):
         command_dict = {
+            'test-module': self.test_module,
             'trustar-get-reports' : self.get_reports,
             'trustar-get-enclaves' : self.get_enclaves,
             'trustar-related-indicators': self.get_related_indicators,
@@ -326,17 +333,21 @@ class TrustarClient:
         return d
 
     def get_report_deep_link(self, report_id):
-        """ Returns report link on TruSTAR station. """
-        return f'{STATION}/constellation/reports/{report_id}'
+        """ Returns report link on TruSTAR self.station. """
+        return f'{self.station}/constellation/reports/{report_id}'
 
 
-    def search_indicators(self, search_term=None, enclave_ids=None, max_entries=None):
+    def test_module(self):
+        response = self.client.ping()
+        return "ok"
+
+    def search_indicators(self, search_term=None, enclave_ids=None, limit=None):
         """
         Searches for all indicators that contain the given search term.
 
         :param search_term: Term to be searched.
         :param enclave_ids: list of enclaves to restrict the search to. 
-        "param max_entries: Max number of entries to be returned.
+        "param limit: Max number of entries to be returned.
 
         :return: Entry context with found indicators.
         """
@@ -344,7 +355,7 @@ class TrustarClient:
             search_term=search_term, 
             enclave_ids=enclave_ids, 
             page_number=0,
-            page_size=max_entries, 
+            page_size=limit, 
         )
 
         if not response:
@@ -368,7 +379,7 @@ class TrustarClient:
         :param to_time: End of polling window.
         :param enclave_ids: List of user enclaves to restrict the query.
         :param distribution_type: Whether to search for reports in the community, or only 
-        in enclaves
+        in enclaves.
         :param tags: a list of names of tags to filter by.
         :param excluded_tags: reports containing ANY of these tags will be excluded from the
         results.
@@ -413,14 +424,14 @@ class TrustarClient:
                     distribution_type="ENCLAVE"):
 
         """
-        Submits a new report to TruSTAR Station.
+        Submits a new report to TruSTAR self.station.
 
         :param title: Title of the report.
         :param report_body: Body of the report.
         :param enclave_ids: Enclave IDs where to submit the report.
         :param external_url: External URL of the report.
         :param time_began: Incident time. Defaults to current time if not given.
-        :param distrinution_type: Whether the report will be in the community, or only 
+        :param distribution_type: Whether the report will be in the community, or only 
         in enclaves
 
         :return: Entry context with the submitted report.
@@ -464,7 +475,7 @@ class TrustarClient:
                             indicators=None, 
                             enclave_ids=None, 
                             distribution_type=None, 
-                            max_entries=None):
+                            limit=None):
         """
         Returns a list of all reports that contain any of the provided
         indicator values.
@@ -472,7 +483,7 @@ class TrustarClient:
         :param indicators: indicators list to perform the query.
         :param enclave_ids: enclaves list to restrict the query.
         :param distribution_type: Distribution type of the report.
-        :param max_entries: Maximum value of report to be returned. 
+        :param limit: Maximum value of report to be returned. 
 
         :return: Entry context with found reports.
         """
@@ -480,7 +491,7 @@ class TrustarClient:
             indicators, 
             enclave_ids, 
             page_number=0, 
-            page_size=max_entries
+            page_size=limit
         )
         
         if not response: 
@@ -518,7 +529,7 @@ class TrustarClient:
 
         ec = self.context_manager.get_reports_ec([current_report_dict])
         
-        title = f'TruSTAR report ID {report_id} detailes'
+        title = f'TruSTAR report ID {report_id} details'
         entry = self.get_entry(title, current_report_dict, ec)
         return entry
 
@@ -569,27 +580,31 @@ class TrustarClient:
         :return: Entry context with list of enclaves
         """
         response = self.client.get_user_enclaves()
-        enclave_ids = [enclave.to_dict(remove_nones=True) for enclave in response]
+        enclaves, ec = self.context_manager.get_enclaves_ec(response)
+
+        if not response:
+            return "No enclaves were found."
+
         title = 'TruSTAR Enclaves'
-        entry = self.get_entry(title, enclave_ids)
+        entry = self.get_entry(title, enclaves, ec)
         return entry
 
 
-    def get_related_indicators(self, indicators=None, enclave_ids=None, max_entries=None):
+    def get_related_indicators(self, indicators=None, enclave_ids=None, limit=None):
         """ 
         Finds all reports that contain any of the given indicators 
         and returns correlated indicators from those reports.
         
         :param indicators: list of indicator values.
         :param enclave_ids: list of enclaves to filter found reports.
-        :param max_entries: Max num of related indicators to return. 
+        :param limit: Max num of related indicators to return. 
 
         :return: Entry Context with related indicators.
         """
         related_indicator_response = self.client.get_related_indicators_page(
             indicators=indicators, 
             enclave_ids=enclave_ids, 
-            page_size=max_entries, 
+            page_size=limit, 
             page_number=0
         )
 
@@ -701,14 +716,14 @@ class TrustarClient:
         return results
 
 
-    def get_indicator_summaries(self, values=None, enclave_ids=None, max_entries=None):
+    def get_indicator_summaries(self, values=None, enclave_ids=None, limit=None):
         """
         Provides structured summaries about indicators, which are derived from 
         intelligence sources on the TruSTAR Marketplace.
         
         :param values: list of indicator values to search on TruSTAR.
         :param enclave_ids: list of enclave_ids to restrict the query.
-        :param max_entries: Maximum value of entries to return.
+        :param limit: Maximum value of entries to return.
         
         :return: Entry Context with indicator summaries.
         """
@@ -716,7 +731,7 @@ class TrustarClient:
             values, 
             enclave_ids=enclave_ids, 
             page_number=0, 
-            page_size=max_entries
+            page_size=limit
         )
 
         if not response:
@@ -754,15 +769,15 @@ class TrustarClient:
         return f"{report_id} has been copied to enclave id: {dest_enclave_id} with id: {response}"
 
 
-    def get_whitelist(self, max_entries=None):
+    def get_whitelist(self, limit=None):
         """
         Gets a list of indicators that the user’s company has whitelisted.
         
-        :param max_entries: Maximum number of whitelisted indicators to return.
+        :param limit: Maximum number of whitelisted indicators to return.
         :return: Entry context with whitelisted indicators.
         """
 
-        response = self.client.get_whitelist_page(page_number=0, page_size=max_entries)
+        response = self.client.get_whitelist_page(page_number=0, page_size=limit)
         if not response:
             return 'No Whitelist was found.'
         
@@ -770,12 +785,12 @@ class TrustarClient:
         return results
 
 
-    def get_indicators_for_report(self, report_id=None, max_entries=None):
+    def get_indicators_for_report(self, report_id=None, limit=None):
         """
         Return a list of indicators extracted from a report.
 
         :param report_id: Report ID to extract indicators from.
-        :param max_entries: Max number of indicators to return.
+        :param limit: Max number of indicators to return.
 
         :return: Entry context with extracted indicators.
         """
@@ -783,7 +798,7 @@ class TrustarClient:
         response = self.client.get_indicators_for_report_page(
             report_id=report_id, 
             page_number=0, 
-            page_size=max_entries
+            page_size=limit
         )
 
         if not response:
@@ -882,36 +897,36 @@ class TrustarClient:
         """
         func = self.command_dict.get(command)
         args = { k.replace("-","_") : v for k, v in kwargs.items() }
-        listArgs = {k: argToList(v) for k,v in args.items() if k in self.LIST_ARGS}
-        args.update(listArgs)
+        list_args = {k: argToList(v) for k,v in args.items() if k in self.LIST_ARGS}
+        args.update(list_args)
         result = func(**args)
         return return_results(result)
 
-
-SERVER = demisto.params().get('server')
-STATION = demisto.params().get('station')
-API_KEY = str(demisto.params().get('key'))
-API_SECRET = str(demisto.params().get('secret'))
-BASE_URL = SERVER + '/api/1.3' if SERVER else None
-INSECURE = demisto.params().get('insecure')
 
 
 def main():
     """ PARSE AND VALIDATE INTEGRATION PARAMS """
 
-    LOG('command is %s' % (demisto.command()))
+    server = demisto.params().get('server')
+    station = demisto.params().get('station')
+    api_key = str(demisto.params().get('key'))
+    api_secret = str(demisto.params().get('secret'))
+    base_url = server + '/api/1.3' if server else None
+    insecure = not demisto.params().get('insecure', False)
+
+    LOG(f'command is {demisto.command()}')
 
     config = {
-        'user_api_key': API_KEY,
-        'user_api_secret': API_SECRET,
-        'api_endpoint': BASE_URL,
-        'verify': INSECURE,
+        'user_api_key': api_key,
+        'user_api_secret': api_secret,
+        'api_endpoint': base_url,
+        'verify': insecure,
         'client_type': "Python_SDK",
         'client_metatag': "demisto-xsoar"
     }
 
     try:
-        client = TrustarClient(config)
+        client = TrustarClient(config, station)
         client.process(demisto.command(), **demisto.args())
 
     except Exception as e:

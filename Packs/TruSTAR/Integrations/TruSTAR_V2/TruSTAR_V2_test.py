@@ -115,6 +115,32 @@ def indicator_summaries(mocker):
                     ),
                 ],
                 score=IndicatorScore(name="Positives/Total Scans", value="64/75")
+            ),
+            IndicatorSummary(
+                value="185.220.100.141",
+                indicator_type="IP",
+                source=IntelligenceSource(key="OTRO", name="VirusTotal"),
+                severity_level=3,
+                updated=1589782796000,
+                enclave_id='011ad71b-fd7d-44c2-834a-0d751299fb1f',
+                report_id='67c60023-83ea-4376-960e-2ff8fc9fbd33',
+                attributes=[
+                    IndicatorAttribute(
+                        description='Number of associated URLs detected as bad',
+                        name='Detected URLs',
+                        value=1,
+                    ),
+                    IndicatorAttribute(
+                        description='Number of hostnames this IP resolved to',
+                        name='Hostname Resolutions',
+                        value=2,
+                    ),
+                    IndicatorAttribute(
+                        name='ASN',
+                        value='200052',
+                    ),
+                ],
+                score=IndicatorScore(name="Positives/Total Scans", value="64/75")
             )
         ]
     )
