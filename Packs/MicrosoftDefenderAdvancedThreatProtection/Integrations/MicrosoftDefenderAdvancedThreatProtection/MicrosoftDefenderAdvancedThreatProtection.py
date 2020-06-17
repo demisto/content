@@ -1779,7 +1779,7 @@ def test_module(client: MsClient):
         client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
     except Exception:
         raise DemistoException(
-            f"API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
+            "API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
     demisto.results('ok')
 
 
