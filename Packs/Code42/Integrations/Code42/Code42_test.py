@@ -840,43 +840,65 @@ MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 
 @pytest.fixture
 def code42_sdk_mock(mocker):
-    c42_sdk_mock = mocker.MagicMock(spec=SDKClient)
+    code42_mock = mocker.MagicMock(spec=SDKClient)
+    get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
+    code42_mock.users.get_by_username.return_value = get_user_response
+    return code42_mock
 
-    # Setup mock alert details
+
+@pytest.fixture
+def code42_alerts_mock(code42_sdk_mock, mocker):
+    return create_alerts_mock(code42_sdk_mock, mocker)
+
+
+@pytest.fixture
+def code42_file_events_mock(code42_sdk_mock, mocker):
+    return create_file_events_mock(code42_sdk_mock, mocker)
+
+
+@pytest.fixture
+def code42_fetch_incidents_mock(code42_sdk_mock, mocker):
+    code42_mock = create_alerts_mock(code42_sdk_mock, mocker)
+    code42_mock = create_file_events_mock(code42_mock, mocker)
+    return code42_mock
+
+
+def create_alerts_mock(c42_sdk_mock, mocker):
     alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
     c42_sdk_mock.alerts.get_details.return_value = alert_details_response
-
-    # Setup alerts for querying
     alerts_response = create_mock_code42_sdk_response(mocker, MOCK_ALERTS_RESPONSE)
     c42_sdk_mock.alerts.search.return_value = alerts_response
+    return c42_sdk_mock
 
-    # Setup mock user
-    get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
-    c42_sdk_mock.users.get_by_username.return_value = get_user_response
 
-    # Setup file events
+def create_file_events_mock(c42_sdk_mock, mocker):
     search_file_events_response = create_mock_code42_sdk_response(
         mocker, MOCK_SECURITY_EVENT_RESPONSE
     )
     c42_sdk_mock.securitydata.search_file_events.return_value = search_file_events_response
+    return c42_sdk_mock
 
-    # Setup get all departing employees
+
+@pytest.fixture
+def code42_departing_employee_mock(code42_sdk_mock, mocker):
     all_departing_employees_response = create_mock_code42_sdk_response_generator(
         mocker, [MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE]
     )
-    c42_sdk_mock.detectionlists.departing_employee.get_all.return_value = (
+    code42_sdk_mock.detectionlists.departing_employee.get_all.return_value = (
         all_departing_employees_response
     )
+    return code42_sdk_mock
 
-    # Setup get all high risk employees
+
+@pytest.fixture
+def code42_high_risk_employee_mock(code42_sdk_mock, mocker):
     all_high_risk_employees_response = create_mock_code42_sdk_response_generator(
         mocker, [MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE]
     )
-    c42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = (
+    code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = (
         all_high_risk_employees_response
     )
-
-    return c42_sdk_mock
+    return code42_sdk_mock
 
 
 def create_mock_code42_sdk_response(mocker, response_text):
@@ -955,14 +977,14 @@ def test_map_to_file_context():
         assert context == MOCK_FILE_CONTEXT[i]
 
 
-def test_alert_get_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_alert_get_command(code42_alerts_mock):
+    client = create_client(code42_alerts_mock)
     _, _, res = alert_get_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
     assert res["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
 
 
-def test_alert_resolve_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_alert_resolve_command(code42_alerts_mock):
+    client = create_client(code42_alerts_mock)
     _, _, res = alert_resolve_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
     assert res["id"] == "36fb8ca5-0533-4d25-9763-e09d35d60610"
 
@@ -990,16 +1012,16 @@ def test_departingemployee_remove_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(expected)
 
 
-def test_departingemployee_get_all_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_departingemployee_get_all_command(code42_departing_employee_mock):
+    client = create_client(code42_departing_employee_mock)
     _, _, res = departingemployee_get_all_command(client, {"username": "user1@example.com"})
     expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     assert res == expected
-    assert code42_sdk_mock.detectionlists.departing_employee.get_all.call_count == 1
+    assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
 
 
 def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
-    code42_sdk_mock, mocker
+    code42_departing_employee_mock, mocker
 ):
     # Setup get all departing employees
     page = MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE
@@ -1007,8 +1029,8 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
     employee_page_generator = (
         create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
     )
-    code42_sdk_mock.detectionlists.departing_employee.get_all.return_value = employee_page_generator
-    client = create_client(code42_sdk_mock)
+    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = employee_page_generator
+    client = create_client(code42_departing_employee_mock)
 
     _, _, res = departingemployee_get_all_command(client, {"username": "user1@example.com"})
 
@@ -1019,12 +1041,12 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
 
 
 def test_departingemployee_get_all_command_when_no_employees(
-    code42_sdk_mock, mocker
+    code42_departing_employee_mock, mocker
 ):
     no_employees_response = get_empty_detectionlist_response(mocker, MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)
-    code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = no_employees_response
-    client = create_client(code42_sdk_mock)
-    _, _, res = highriskemployee_get_all_command(
+    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = no_employees_response
+    client = create_client(code42_departing_employee_mock)
+    _, _, res = departingemployee_get_all_command(
         client,
         {
             "risktags": [
@@ -1037,18 +1059,18 @@ def test_departingemployee_get_all_command_when_no_employees(
     # Only first employee has the given risk tags
     expected = []
     assert res == expected
-    assert code42_sdk_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+    assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
 
 
-def test_highriskemployee_add_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_highriskemployee_add_command(code42_high_risk_employee_mock):
+    client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_add_command(
         client, {"username": "user1@example.com", "note": "Dummy note"}
     )
     expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected_user_id
-    code42_sdk_mock.detectionlists.high_risk_employee.add.assert_called_once_with(expected_user_id)
-    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(expected_user_id)
+    code42_high_risk_employee_mock.detectionlists.update_user_notes.assert_called_once_with(
         expected_user_id, "Dummy note"
     )
 
@@ -1061,16 +1083,16 @@ def test_highriskemployee_remove_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(expected)
 
 
-def test_highriskemployee_get_all_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
+    client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_get_all_command(client, {})
     expected = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
     assert res == expected
-    assert code42_sdk_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+    assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
 
 
 def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
-    code42_sdk_mock, mocker
+    code42_high_risk_employee_mock, mocker
 ):
     # Setup get all high risk employees
     page = MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
@@ -1078,8 +1100,8 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
     employee_page_generator = (
         create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
     )
-    code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = employee_page_generator
-    client = create_client(code42_sdk_mock)
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = employee_page_generator
+    client = create_client(code42_high_risk_employee_mock)
 
     _, _, res = highriskemployee_get_all_command(client, {"username": "user1@example.com"})
 
@@ -1090,9 +1112,9 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
 
 
 def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employees_with_tags(
-    code42_sdk_mock
+    code42_high_risk_employee_mock
 ):
-    client = create_client(code42_sdk_mock)
+    client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_get_all_command(
         client,
         {
@@ -1106,15 +1128,15 @@ def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employe
     # Only first employee has the given risk tags
     expected = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
     assert res == expected
-    assert code42_sdk_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+    assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
 
 
 def test_highriskemployee_get_all_command_when_no_employees(
-    code42_sdk_mock, mocker
+    code42_high_risk_employee_mock, mocker
 ):
     no_employees_response = get_empty_detectionlist_response(mocker, MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)
-    code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = no_employees_response
-    client = create_client(code42_sdk_mock)
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = no_employees_response
+    client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_get_all_command(
         client,
         {
@@ -1128,7 +1150,7 @@ def test_highriskemployee_get_all_command_when_no_employees(
     # Only first employee has the given risk tags
     expected = []
     assert res == expected
-    assert code42_sdk_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+    assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
 
 
 def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
@@ -1155,11 +1177,11 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     )
 
 
-def test_security_data_search_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_security_data_search_command(code42_file_events_mock):
+    client = create_client(code42_file_events_mock)
     _, _, res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
     assert len(res) == 3
-    actual_query = code42_sdk_mock.securitydata.search_file_events.call_args[0][0]
+    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
     filter_groups = json.loads(str(actual_query))["groups"]
     assert filter_groups[0]["filters"][0]["term"] == "md5Checksum"
     assert filter_groups[0]["filters"][0]["value"] == "d41d8cd98f00b204e9800998ecf8427e"
@@ -1185,8 +1207,8 @@ def test_fetch_incidents_handles_single_severity(code42_sdk_mock):
     assert "HIGH" in str(code42_sdk_mock.alerts.search.call_args[0][0])
 
 
-def test_fetch_incidents_handles_multi_severity(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
     fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
@@ -1196,12 +1218,12 @@ def test_fetch_incidents_handles_multi_severity(code42_sdk_mock):
         include_files=True,
         integration_context=None,
     )
-    assert "HIGH" in str(code42_sdk_mock.alerts.search.call_args[0][0])
-    assert "LOW" in str(code42_sdk_mock.alerts.search.call_args[0][0])
+    assert "HIGH" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
+    assert "LOW" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
 
 
-def test_fetch_incidents_first_run(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+def test_fetch_incidents_first_run(code42_fetch_incidents_mock):
+    client = create_client(code42_fetch_incidents_mock)
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
@@ -1215,10 +1237,10 @@ def test_fetch_incidents_first_run(code42_sdk_mock):
     assert next_run["last_fetch"]
 
 
-def test_fetch_incidents_next_run(code42_sdk_mock):
+def test_fetch_incidents_next_run(code42_fetch_incidents_mock):
     mock_date = "2020-01-01T00:00:00.000Z"
     mock_timestamp = int(time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z")))
-    client = create_client(code42_sdk_mock)
+    client = create_client(code42_fetch_incidents_mock)
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_timestamp},
@@ -1232,10 +1254,10 @@ def test_fetch_incidents_next_run(code42_sdk_mock):
     assert next_run["last_fetch"]
 
 
-def test_fetch_incidents_fetch_limit(code42_sdk_mock):
+def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
     mock_date = "2020-01-01T00:00:00.000Z"
     mock_timestamp = int(time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z")))
-    client = create_client(code42_sdk_mock)
+    client = create_client(code42_fetch_incidents_mock)
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_timestamp},
