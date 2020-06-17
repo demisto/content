@@ -835,8 +835,9 @@ script:
       description: Whether to block traffic "to" or "from" the IPs, or "both". Default     is
         "both".
     - name: rulename
-      required: true
+      required: false
       description: Base name for added rules inside checkpoint db
+      deprecated: true
     - name: ipname
       required: true
       description: Base name for added ip/hosts inside checkpoint db
