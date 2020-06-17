@@ -3,7 +3,7 @@ version: -1
 name: Enrich McAfee DXL using 3rd party sandbox v2
 description: |-
   Example of bridging DXL to a third party sandbox.
-  Detonate a file in Wildfire and if malicious - push its MD5, SHA1 and SHA256 hashes to McAfee DXL.
+  Detonate a file in Wildfire and if malicious, push its MD5, SHA1 and SHA256 hashes to McAfee DXL.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +43,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Conditional task to verify if any malicuos file deteced.
+      description: Conditional task to verify if any malicious files were detected.
     nexttasks:
       '#default#':
       - "4"
@@ -73,7 +73,7 @@ tasks:
       id: add5699f-7748-449f-8461-dacbd6722e63
       version: -1
       name: Close incident
-      description: commands.local.cmd.close.inv
+      description: Closes the incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -105,7 +105,7 @@ tasks:
       id: 37bc441a-8053-49ea-8abf-2ffae14fe359
       version: -1
       name: DXL - Push file hashes as malicious
-      description: Deliver the specified event to the DXL fabric
+      description: Deliver the specified event to the DXL fabric.
       script: McAfee DXL|||dxl-send-event
       type: regular
       iscommand: true
