@@ -4,7 +4,8 @@ if [[ "$#" -lt 2 ]]; then
   echo "Usage: $0 <content branch name: such as master> <circle ci token> [contributor branch name] [minutes to live]"
   echo "You can get a circle ci token from: CircleCI -> User -> Personal API Tokens"
   echo "Time to live is in minutes, for example 360 equals 6 hours for the instance to live"
-  echo "Defualt time to live is 360 minutes"
+  echo "Minmum time to live is 180 minutes, maximum time is 540 minutes"
+  echo "If time to live not entered the defualt will be 180 minutes"
   exit 1
 fi
 
@@ -12,9 +13,16 @@ _branch=$1
 _circle_token=$2
 _time_to_live=$3
 
-if [ -z "$_time_to_live" ]
+if [ -z $_time_to_live ] || [ $_time_to_live -lt 180 ]
 then
-      _time_to_live="360"
+      echo "Minumum time is 180 minutes. The script will use defualt time to live"
+      _time_to_live=180
+fi
+
+if [ $_time_to_live -gt 540 ]
+then
+    echo "Maximum time is 540 minutes, please change the time_to_live argument"
+    exit 1
 fi
 
 
