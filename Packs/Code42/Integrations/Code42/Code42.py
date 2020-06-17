@@ -109,6 +109,7 @@ SECURITY_EVENT_HEADERS = [
     "FileCategory",
     "DeviceUsername",
 ]
+
 SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description", "State", "ID"]
 
 
@@ -168,7 +169,8 @@ class Code42Client(BaseClient):
             res = []
             pages = self._sdk.detectionlists.departing_employee.get_all()
             for page in pages:
-                res.extend(page["items"])
+                employees = page["items"]
+                res.extend(employees)
         except Exception:
             return None
         return res
@@ -226,11 +228,9 @@ class Code42Client(BaseClient):
                 res.append(employee)
                 continue
 
-            username = employee["userName"]
-            employee_tags = self._sdk.detectionlists.get_user(username)["riskFactors"]
-
+            employee_tags = employee.get("riskFactors")
             # If the employee risk tags contain all the given risk tags
-            if set(risk_tags) <= set(employee_tags):
+            if employee_tags and set(risk_tags) <= set(employee_tags):
                 res.append(employee)
         return res
 
@@ -499,7 +499,7 @@ def alert_get_command(client, args):
         code42_context = map_to_code42_alert_context(alert)
         code42_securityalert_context.append(code42_context)
         readable_outputs = tableToMarkdown(
-            f"Code42 Security Alert Results",
+            "Code42 Security Alert Results",
             code42_securityalert_context,
             headers=SECURITY_ALERT_HEADERS,
         )
@@ -524,7 +524,7 @@ def alert_resolve_command(client, args):
     code42_context = map_to_code42_alert_context(alert_details)
     code42_security_alert_context.append(code42_context)
     readable_outputs = tableToMarkdown(
-        f"Code42 Security Alert Resolved",
+        "Code42 Security Alert Resolved",
         code42_security_alert_context,
         headers=SECURITY_ALERT_HEADERS,
     )
@@ -550,7 +550,7 @@ def departingemployee_add_command(client, args):
         "DepartureDate": departing_date,
         "Note": note,
     }
-    readable_outputs = tableToMarkdown(f"Code42 Departing Employee List User Added", de_context)
+    readable_outputs = tableToMarkdown("Code42 Departing Employee List User Added", de_context)
     return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
 
 
@@ -561,7 +561,7 @@ def departingemployee_remove_command(client, args):
     if user_id:
         de_context = {"UserID": user_id, "Username": username}
         readable_outputs = tableToMarkdown(
-            f"Code42 Departing Employee List User Removed", de_context
+            "Code42 Departing Employee List User Removed", de_context
         )
         return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
     else:
@@ -581,9 +581,7 @@ def departingemployee_get_all_command(client, args):
             }
             for e in employees
         ]
-        readable_outputs = tableToMarkdown(
-            f"All Departing Employees", employees_context, headers=DEPARTING_EMPLOYEE_HEADERS
-        )
+        readable_outputs = tableToMarkdown("All Departing Employees", employees_context)
         return (
             readable_outputs,
             {"Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)": employees_context},
@@ -602,7 +600,7 @@ def highriskemployee_add_command(client, args):
         return_error(message="Could not add user to the High Risk Employee List")
 
     hr_context = {"UserID": user_id, "Username": username}
-    readable_outputs = tableToMarkdown(f"Code42 High Risk Employee List User Added", hr_context)
+    readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Added", hr_context)
     return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
 
 
@@ -613,7 +611,7 @@ def highriskemployee_remove_command(client, args):
     if user_id:
         hr_context = {"UserID": user_id, "Username": username}
         readable_outputs = tableToMarkdown(
-            f"Code42 High Risk Employee List User Removed", hr_context
+            "Code42 High Risk Employee List User Removed", hr_context
         )
         return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
     else:
@@ -629,7 +627,7 @@ def highriskemployee_get_all_command(client, args):
             {"UserID": e["userId"], "Username": e["userName"], "Note": e["notes"]}
             for e in employees
         ]
-        readable_outputs = tableToMarkdown(f"Retrieved All High Risk Employees", employees_context)
+        readable_outputs = tableToMarkdown("Retrieved All High Risk Employees", employees_context)
         return (
             readable_outputs,
             {"Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)": employees_context},
@@ -646,7 +644,7 @@ def highriskemployee_add_risk_tags_command(client, args):
     user_id = client.add_user_risk_tags(username, tags)
     if user_id:
         rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-        readable_outputs = tableToMarkdown(f"Code42 Risk Tags Added", rt_context)
+        readable_outputs = tableToMarkdown("Code42 Risk Tags Added", rt_context)
         return readable_outputs, {"Code42.HighRiskEmployee": rt_context}, user_id
     else:
         return_error(message="Could not add user risk tags")
@@ -659,7 +657,7 @@ def highriskemployee_remove_risk_tags_command(client, args):
     user_id = client.remove_user_risk_tags(username, tags)
     if user_id:
         rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-        readable_outputs = tableToMarkdown(f"Code42 Risk Tags Removed", rt_context)
+        readable_outputs = tableToMarkdown("Code42 Risk Tags Removed", rt_context)
         return readable_outputs, {"Code42.HighRiskEmployee": rt_context}, user_id
     else:
         return_error(message="Could not remove user risk tags")
@@ -714,7 +712,7 @@ class Code42SecurityIncidentFetcher(object):
         incidents = [self._create_incident_from_alert(a) for a in alerts]
         save_time = datetime.utcnow().timestamp()
         next_run = {"last_fetch": save_time}
-        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit :]
+        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
     def _fetch_remaining_incidents_from_last_run(self):
         if self._integration_context:
@@ -724,7 +722,7 @@ class Code42SecurityIncidentFetcher(object):
                 return (
                     self._last_run,
                     remaining_incidents[: self._fetch_limit],
-                    remaining_incidents[self._fetch_limit :],
+                    remaining_incidents[self._fetch_limit:],
                 )
 
     def _get_start_query_time(self):
@@ -802,7 +800,7 @@ def securitydata_search_command(client, args):
             file_context_event = map_to_file_context(file_event)
             file_context.append(file_context_event)
         readable_outputs = tableToMarkdown(
-            f"Code42 Security Data Results",
+            "Code42 Security Data Results",
             code42_security_data_context,
             headers=SECURITY_EVENT_HEADERS,
         )
