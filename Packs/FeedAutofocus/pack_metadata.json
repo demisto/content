@@ -1,6 +1,6 @@
 {
     "name": "Autofocus Feed",
-    "description": "Indicators feed from Autofocus",
+    "description": "Use the AutoFocus feed to export threat intelligence data produced by AutoFocus and connected services to provide actionable data for the Palo Alto Networks firewall as well as third party TIP and SIEM solutions.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
