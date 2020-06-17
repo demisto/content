@@ -144,8 +144,8 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
         channel="WHCL130LE",
         username="Instances nightly report",
         as_user="False",
-        attachments='{}-60525392-gh.circle-artifacts.com/0/artifacts/failed_instances.txt'.format(build_number),
-        text="Detailed list of failing instances could be found in the following link"
+        text="Detailed list of failing instances could be found in the following link:\n"
+             "{}-60525392-gh.circle-artifacts.com/0/artifacts/failed_instances.txt".format(build_number)
     )
 
 
