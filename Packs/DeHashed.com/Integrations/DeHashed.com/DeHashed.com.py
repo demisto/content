@@ -51,7 +51,7 @@ def test_module(client):
         return 'Test failed because ......'
 
 
-def say_hello_command(client, args):
+def dehashed_search_command(client, args):
     """
     Returns Hello {somename}
 
@@ -68,7 +68,11 @@ def say_hello_command(client, args):
         raw_response (dict): Used for debugging/troubleshooting purposes -
                             will be shown only if the command executed with raw-response=true
     """
-    name = args.get('name')
+    asset_type = args.get('asset_type')
+    contains_op = argToList(args.get('contains'))
+    is_op = argToList(args.get('is'))
+    regex_op = argToList(args.get('regex'))
+    results_page_number = args.get('page')
 
     result = client.say_hello(name)
 
