@@ -1,6 +1,6 @@
 # CVSS
 
-This packs contains tools associated with CVSS scoring or the calculations of CVSS score. The tools included are:
+This pack contains tools associated with CVSS scoring or the calculations of CVSS scoring. The pack includes the following tools:
 
 - CVSSCalculator
 
