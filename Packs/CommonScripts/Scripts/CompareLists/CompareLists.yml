@@ -1,0 +1,31 @@
+commonfields:
+  id: CompareLists
+  version: -1
+name: CompareLists
+comment: Compare  two lists and put the differences in context.
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: left
+  required: true
+  description: Left list
+  isArray: true
+- name: right
+  required: true
+  description: Right list
+  isArray: true
+outputs:
+- contextPath: ListCompare.LeftOnly
+  description: Items only found within the list in the left argument
+- contextPath: ListCompare.RightOnly
+  description: Items only found within the list in the right argument
+- contextPath: ListCompare.Both
+  description: Common items that were found in both lists
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.3.8715
+runas: DBotWeakRole
+fromversion: 5.0.0

@@ -45,6 +45,7 @@ configuration:
 description: Carbon Black Enterprise Protection is a next-generation endpoint threat
   prevention solution to deliver a portfolio of protection policies, real-time visibility
   across environments, and comprehensive compliance rule sets in a single platform.
+  This integration only supports Carbon Black on-premise APIs.
 display: Carbon Black Enterprise Protection v2
 name: CarbonBlackProtectionV2
 script:
@@ -2520,7 +2521,7 @@ script:
     - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule "reporting only" or is it also "enforcing".
       type: String
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.8.3.8715
   subtype: python3
   isfetch: true
   runonce: false
