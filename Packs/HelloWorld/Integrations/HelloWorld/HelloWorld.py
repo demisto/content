@@ -786,6 +786,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         incident_created_time = int(alert.get('created', '0'))
         incident_created_time_ms = incident_created_time * 1000
 
+        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
+        if last_fetch:
+            if incident_created_time <= last_fetch:
+                continue
+
         # If no name is present it will throw an exception
         incident_name = alert['name']
 
