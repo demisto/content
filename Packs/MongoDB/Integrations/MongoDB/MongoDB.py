@@ -170,13 +170,13 @@ def convert_id_to_object_id(
 
 
 def convert_str_to_datetime(entries: Any) -> Any:
-    """ Converts list or dict with date values of type str to Datetime.
+    """ Recursively searches for a string that fit a date format and converts it to string.
 
     Args:
-        entries: The object contains list or dict with possible dates value.
+        entries: An object that may contain a timestamp string with possible dates value.
 
     Returns:
-        All Dates converted to Datetime.
+        Same object with converted string date formats to datetime object.
     """
     # regex for finding timestamp in string
     regex_for_timestamp = re.compile(r'\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?')

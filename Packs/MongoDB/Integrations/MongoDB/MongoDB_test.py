@@ -61,7 +61,18 @@ class TestConvertStrToDatetime:
         res = convert_str_to_datetime(inputs)
         assert isinstance(res[1], int)
 
-    def test_dict_inside_dict(self):
+    def test_nested_dict(self):
+        """
+        Given:
+        A nested dict with a timestamp
+
+        When:
+        Running a query or insert
+
+        Then:
+        Validating all keys in the dict are there and the timestamp is valid
+
+        """
         func_input = {"k": {"$gte": "ISODate('2020-06-12T08:23:07.000Z')"}}
         res = convert_str_to_datetime(func_input)
         assert isinstance(res["k"]["$gte"], datetime)
