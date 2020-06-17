@@ -5,7 +5,7 @@ description: "USA Health Insurance Portability and Accountability Act of 1996 (H
   \ covers organizations that use, store, or process Private Health Information (PHI).\
   \ \nThe HIPAA Breach Notification Rule requires companies that deal with health\
   \ information to disclose cybersecurity breaches; the disclosure will include notification\
-  \ to individuals, to the media, and the Secretary.\nThis playbook is triggered by\
+  \ to individuals, to the media, and the Secretary of Health and Human Services.\nThis playbook is triggered by\
   \ a HIPAA breach notification incident and follows through with the notification\
   \ procedures.\n\nDISCLAIMER: Please consult with your legal team before implementing\
   \ this playbook.\n\n** Source: https://www.hhs.gov/hipaa/for-professionals/breach-notification/index.html"
@@ -117,7 +117,7 @@ tasks:
       id: 10852851-ae2f-4fe9-8238-1cba6482c757
       version: -1
       name: Analyst review
-      description: Checks with the analyst if the key was not compromised
+      description: Checks with the analyst if the key was compromised.
       type: collection
       iscommand: false
       brand: ""
@@ -147,7 +147,7 @@ tasks:
           A HIPPA breach incident has been opened.
           The breached data is encrypted, and the encryption key was not compromised.
 
-          Please review the information and the incident details to make sure there is no breach.
+          Please review the information and the incident details to make sure there was no breach.
       methods:
       - email
       format: ""
@@ -179,7 +179,7 @@ tasks:
         A HIPPA breach incident has been opened.
         The breached data is encrypted, and the encryption key was not compromised.
 
-        Please review the information and the incident details to make sure there is no breach.
+        Please review the information and the incident details to make sure there was no breach.
       sender: ""
       expired: false
       totalanswers: 0
@@ -246,7 +246,7 @@ tasks:
       id: 8f2014ba-f60c-49d2-814c-2908cee2cd58
       version: -1
       name: Close Investigation
-      description: commands.local.cmd.close.inv
+      description: Closes the incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -320,7 +320,7 @@ tasks:
           Data encryption status: ${incident.dataencryptionstatus}
           Where data is hosted: ${incident.whereisdatahosted}
           The suspected cause of the breach: ${incident.possiblecauseofthebreach}
-          If the cause is malicious, the specific cause might have been: ${incident.maliciouscauseifthecauseisamaliciousattack}
+          If the cause is malicious, what the specific cause might have been: ${incident.maliciouscauseifthecauseisamaliciousattack}
           Refer to the 'California legislative information' site for more details about the notification process: https://www.hhs.gov/hipaa/for-professionals/breach-notification/index.html
           Please complete the following form to continue the data breach investigation.
       methods:
@@ -477,7 +477,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Suspected PHI data breach
-      description: Suspected PHI data breach was found in your organization
+      description: A suspected PHI data breach was found in your organization
       sender: ""
       expired: false
       totalanswers: 0
@@ -489,7 +489,7 @@ tasks:
       id: 8e50889a-8329-4e55-8a24-9b3388db982d
       version: -1
       name: Update incident with DPO answers
-      description: commands.local.cmd.set.incident
+      description: Updates the DPO answers to the relevant context keys.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1021,7 +1021,7 @@ tasks:
     task:
       id: 94ed0fb7-1466-40ca-81de-508cb826ee26
       version: -1
-      name: PHI Breach Notification required
+      name: PHI breach notification required
       type: title
       iscommand: false
       brand: ""
@@ -1104,7 +1104,7 @@ tasks:
       version: -1
       name: Generate breach report
       description: |-
-        A script to generate investigation summary report in an automated way
+        A script to generate an investigation summary report in an automated way.
         Can be used in post-processing flow as well.
       scriptName: GenerateInvestigationSummaryReport
       type: regular
@@ -1218,8 +1218,8 @@ tasks:
       body:
         simple: |-
           Hello,
-          Please specify if you approve sending the PHI data breach report to the Secretary.
-           To approve sending the data breach report generated from Cortex XSOAR, click Yes.
+          Please specify if you approve sending the PHI data breach report to the Secretary of HHS.
+          To approve sending the data breach report generated from Cortex XSOAR, click Yes.
           To decline to send the data breach report generated from Cortex XSOAR, click No.
           If you decline to send the report, please generate a new report and forward it to your SOC team.
       methods:
@@ -1268,7 +1268,7 @@ tasks:
       id: 56adfc2f-c6f1-4f18-8282-7c8ef49c792d
       version: -1
       name: Get new report from DPO
-      description: Manual task - ask the user to upload the new report
+      description: Manual task - ask the user to upload the new report.
       type: regular
       iscommand: false
       brand: ""
@@ -1465,7 +1465,7 @@ tasks:
     task:
       id: d9856833-3617-4cb0-8ebb-7fcd093bf7c7
       version: -1
-      name: Assemble a list of all the affected individuals
+      name: Assemble a list of all of the affected individuals
       description: |-
         Assemble a list of all residents whose data has been breached.
         File upload - Upload a file with the list of the affected individuals to the incident
@@ -1576,7 +1576,7 @@ tasks:
       id: a6b11ef7-0e48-4ca6-8d21-e29c86bcdf9c
       version: -1
       name: Wait for the file to upload
-      description: Sleep for X seconds
+      description: Sleep for a pre-determined number of seconds.
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -1679,7 +1679,7 @@ tasks:
     task:
       id: 61fd08f1-8e40-495a-886d-c49a60ff970d
       version: -1
-      name: Add individuals emails to grid
+      name: Add individuals' emails to grid
       description: Creates a Grid table from items or key-value pairs.
       scriptName: SetGridField
       type: regular
@@ -1862,7 +1862,7 @@ tasks:
     task:
       id: 6b85a5bf-be8d-44cb-88b6-500027bb051e
       version: -1
-      name: Notice to the Secretary
+      name: Notice to the Secretary of HHS
       type: title
       iscommand: false
       brand: ""
@@ -1985,7 +1985,7 @@ tasks:
     task:
       id: fcae1eb7-ef03-495d-8526-074850ec0ec6
       version: -1
-      name: Upload and submit the Secretary
+      name: Upload and submit to the Secretary of HHS
       description: |-
         Covered entities must notify the secretary of HHS/OCR o the breach. If more than 500 individuals affected, Covered entities should maintain an annual breach log and submit to the secretary within 60 days of the end of the calendar year. If it affected more than 500, you must notify the secretary during the same timeframe as you notify the affected individuals.
         For more information about the Secretary notification: https://www.hhs.gov/hipaa/for-professionals/breach-notification/breach-reporting/index.html
@@ -5540,17 +5540,17 @@ inputs:
 - key: ContactName
   value: {}
   required: false
-  description: In case of a breach, the contact details to send to the Secretary and
+  description: In case of a breach, the contact details to send to the Secretary of HHS and
     the affected individuals.
 - key: ContactEmailAddress
   value: {}
   required: false
-  description: In case of a breach, the contact details to send to the Secretary and
+  description: In case of a breach, the contact details to send to the Secretary of HHS and
     the affected individuals.
 - key: ContactTelNumber
   value: {}
   required: false
-  description: In case of a breach, the contact details to send to the Secretary and
+  description: In case of a breach, the contact details to send to the Secretary of HHS and
     the affected individuals.
 - key: CompanyName
   value: {}
@@ -5574,14 +5574,14 @@ inputs:
   required: false
   description: |-
     This input determines if the resident notification should be done automatically or manually.
-    Ture - Automatically
+    True - Automatically
     False - Manually.
 - key: ResidentNotification_WhatCanTheyDo
   value:
     simple: "First, change your online login information, passwords, and security\
       \ questions-and-answers. \nSecond, if you used similar login information and\
       \ passwords for different sites - change the login information, passwords, and\
-      \ security Q&A to them too.\nThird, pay attention if you start receiving notices\
+      \ security Q&A to them, too.\nThird, pay attention if you start receiving notices\
       \ of password changes to your current accounts or find yourself locked out of\
       \ your accounts.\nFourth, Consider implementing two-factor-authentication to\
       \ your account to reduce the risk of unauthorized access in your account."
