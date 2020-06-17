@@ -882,7 +882,7 @@
                         "y": 6
                     },
                     {
-                        "description": "Headers extracted from the original email attachment.",
+                        "description": "Headers extracted from the original email.",
                         "displayType": "ROW",
                         "h": 5,
                         "hideItemTitleOnlyOne": true,
