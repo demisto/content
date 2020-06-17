@@ -449,7 +449,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
             raise
         break
 
-    return response  # type: ignore[return-value]
+    return response  # type: ignore
 
 
 async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
