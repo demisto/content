@@ -322,8 +322,11 @@ def set_integration_context(integration_context):
 def set_integration_context_versioned(integration_context, version=-1, sync=False):
     global INTEGRATION_CONTEXT_VERSIONED
 
-    if not INTEGRATION_CONTEXT_VERSIONED:
-        INTEGRATION_CONTEXT_VERSIONED = {'context': {}, 'version': 0}
+    try:
+        if not INTEGRATION_CONTEXT_VERSIONED:
+            INTEGRATION_CONTEXT_VERSIONED = {'context': '{}', 'version': 0}
+    except NameError:
+        INTEGRATION_CONTEXT_VERSIONED = {'context': '{}', 'version': 0}
 
     current_version = INTEGRATION_CONTEXT_VERSIONED['version']
     if version != -1 and version <= current_version:
@@ -346,8 +349,13 @@ def setup(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '5.0.0'})
-    mocker.patch.object(demisto, 'getIntegrationContextVersioned', side_effecet=get_integration_context_versioned)
-    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    set_integration_context_versioned({
+        'mirrors': MIRRORS,
+        'users': USERS,
+        'conversations': CONVERSATIONS,
+        'bot_id': 'W12345678'
+    })
+
     set_integration_context({
         'mirrors': MIRRORS,
         'users': USERS,
@@ -355,6 +363,8 @@ def setup(mocker):
         'bot_id': 'W12345678'
     })
 
+    mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
+    mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
     init_globals()
 
 
@@ -386,10 +396,112 @@ def test_is_versioned_context_available(mocker, version, expected):
     assert expected == result
 
 
-def test_update_context(mocker):
+def test_update_context_merge(mocker):
     import Slack
 
+    # Set
     mocker.patch.object(Slack, 'is_versioned_context_available', return_value=True)
+
+    new_mirror = {
+        'channel_id': 'new_group',
+        'channel_name': 'incident-999',
+        'channel_topic': 'incident-999',
+        'investigation_id': '999',
+        'mirror_type': 'all',
+        'mirror_direction': 'both',
+        'mirror_to': 'group',
+        'auto_close': True,
+        'mirrored': False
+    }
+
+    mirrors = json.loads(MIRRORS)
+    mirrors.extend([new_mirror])
+
+    # Arrange
+    context, version = Slack.update_context({'mirrors': [new_mirror]}, Slack.OBJECTS_TO_KEYS, True)
+    new_mirrors = json.loads(context['mirrors'])
+
+    # Assert
+    assert mirrors == new_mirrors
+    assert version == get_integration_context_versioned()['version']
+
+
+def test_update_context_no_merge(mocker):
+    import Slack
+
+    # Set
+    mocker.patch.object(Slack, 'is_versioned_context_available', return_value=True)
+
+    new_conversation = {
+        'id': 'A0123456',
+        'name': 'general'
+    }
+
+    conversations = json.loads(CONVERSATIONS)
+    conversations.extend([new_conversation])
+
+    # Arrange
+    context, version = Slack.update_context({'conversations': conversations}, Slack.OBJECTS_TO_KEYS, True)
+    new_conversations = json.loads(context['conversations'])
+
+    # Assert
+    assert conversations == new_conversations
+    assert version == get_integration_context_versioned()['version']
+
+
+@pytest.mark.parametrize('versioned_available', [True, False])
+def test_get_latest_integration_context(mocker, versioned_available):
+    import Slack
+
+    # Set
+    mocker.patch.object(Slack, 'is_versioned_context_available', return_value=versioned_available)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+
+    # Arrange
+    context, ver = Slack.get_latest_integration_context(True)
+
+    # Assert
+    assert context == get_integration_context_versioned()['context']
+    assert ver == get_integration_context_versioned()['version'] if versioned_available else -1
+
+
+def test_set_latest_integration_context(mocker):
+    import Slack
+
+    # Set
+    int_context = get_integration_context_versioned()
+    mocker.patch.object(Slack, 'update_context', side_effect=[(int_context['context'], int_context['version']),
+                                                              (int_context['context'], int_context['version'] + 1)])
+    mocker.patch.object(Slack, 'set_integration_context', side_effect=[ValueError, int_context['context']])
+
+    # Arrange
+    Slack.set_to_latest_integration_context({}, Slack.OBJECTS_TO_KEYS)
+    int_context_calls = Slack.set_integration_context.call_count
+    int_context_args_1 = Slack.set_integration_context.call_args_list[0][0]
+    int_context_args_2 = Slack.set_integration_context.call_args_list[1][0]
+
+    # Assert
+    assert int_context_calls == 2
+    assert int_context_args_1 == (int_context['context'], False, int_context['version'])
+    assert int_context_args_2 == (int_context['context'], False, int_context['version'] + 1)
+
+
+def test_set_latest_integration_context_fail(mocker):
+    import Slack
+
+    # Set
+    int_context = get_integration_context_versioned()
+    mocker.patch.object(Slack, 'update_context', return_value=(int_context['context'], int_context['version']))
+    mocker.patch.object(Slack, 'set_integration_context', side_effect=ValueError)
+
+    # Arrange
+    with pytest.raises(Exception):
+        Slack.set_to_latest_integration_context({}, Slack.OBJECTS_TO_KEYS)
+
+    int_context_calls = Slack.set_integration_context.call_count
+
+    # Assert
+    assert int_context_calls == Slack.CONTEXT_UPDATE_RETRY_TIMES
 
 
 @pytest.mark.asyncio
