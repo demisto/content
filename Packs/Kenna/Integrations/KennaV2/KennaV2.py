@@ -120,10 +120,10 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     human_readable = []
     context: Dict[str, Any] = {}
     params = {
-        f'id[]': argToList(args.get('id')),
-        f'top_priority[]': argToList(args.get('top-priority')),
-        f'min_risk_meter_score': args.get('min-score'),
-        f'status[]': argToList(args.get('status')),
+        'id[]': argToList(args.get('id')),
+        'top_priority[]': argToList(args.get('top-priority')),
+        'min_risk_meter_score': args.get('min-score'),
+        'status[]': argToList(args.get('status')),
     }
     response = client.http_request(message='GET', suffix=url_suffix,
                                    params=params).get('vulnerabilities')
@@ -230,10 +230,10 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     to_context = args.get('to_context')
     context: Dict[str, Any] = {}
     params = {
-        f'id[]': argToList(args.get('id')),
-        f'top_priority[]': argToList(args.get('top-priority')),
-        f'min_risk_meter_score': args.get('min-score'),
-        f'status[]': argToList(args.get('status')),
+        'id[]': argToList(args.get('id')),
+        'top_priority[]': argToList(args.get('top-priority')),
+        'min_risk_meter_score': args.get('min-score'),
+        'status[]': argToList(args.get('status')),
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
     if response:
@@ -339,10 +339,10 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     else:
         tags = args.get('tags')
     params = {
-        f'id[]': argToList(args.get('id')),
-        f'hostname[]': argToList(args.get('hostname')),
-        f'min_risk_meter_score': args.get('min-score'),
-        f'tags[]': tags
+        'id[]': argToList(args.get('id')),
+        'hostname[]': argToList(args.get('hostname')),
+        'min_risk_meter_score': args.get('min-score'),
+        'tags[]': tags
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get(
         'assets')
