@@ -1885,7 +1885,7 @@ class Common(object):
             pass
 
         @abstractmethod
-        def extract_timeline(self, message=None, category=None):
+        def extract_timeline(self, category=None):
             pass
 
     class DBotScore(object):
@@ -2065,10 +2065,10 @@ class Common(object):
 
             return ret_value
 
-        def extract_timeline(self, message=None, category=None):
+        def extract_timeline(self, category=None):
             return {
                 'Value': self.ip,
-                'Message': message if message else self.timeline_message,
+                'Message': self.timeline_message,
                 'Category': 'Integration Update' if not category else category
             }
 
@@ -2264,7 +2264,7 @@ class Common(object):
 
             return ret_value
 
-        def extract_timeline(self, message=None, category=None):
+        def extract_timeline(self, category=None):
             value = None
             for val in [self.md5, self.sha1, self.sha256, self.sha512]:
                 if val:
@@ -2273,7 +2273,7 @@ class Common(object):
 
             return {
                 'Value': value,
-                'Message': message if message else self.timeline_message,
+                'Message': self.timeline_message,
                 'Category': 'Integration Update' if not category else category
             }
 
@@ -2347,10 +2347,10 @@ class Common(object):
 
             return ret_value
 
-        def extract_timeline(self, message=None, category=None):
+        def extract_timeline(self, category=None):
             return {
                 'Value': self.cvss,
-                'Message': message if message else self.timeline_message,
+                'Message': self.timeline_message,
                 'Category': 'Integration Update' if not category else category
             }
 
@@ -2411,10 +2411,10 @@ class Common(object):
 
             return ret_value
 
-        def extract_timeline(self, message=None, category=None):
+        def extract_timeline(self, category=None):
             return {
                 'Value': self.url,
-                'Message': message if message else self.timeline_message,
+                'Message': self.timeline_message,
                 'Category': 'Integration Update' if not category else category
             }
 
@@ -2547,10 +2547,10 @@ class Common(object):
 
             return ret_value
 
-        def extract_timeline(self, message=None, category=None):
+        def extract_timeline(self, category=None):
             return {
                 'Value': self.domain,
-                'Message': message if message else self.timeline_message,
+                'Message': self.timeline_message,
                 'Category': 'Integration Update' if not category else category
             }
 
@@ -2626,10 +2626,10 @@ class Common(object):
 
             return ret_value
 
-        def extract_timeline(self, message=None, category=None):
+        def extract_timeline(self, category=None):
             return {
                 'Value': self.id,
-                'Message': message if message else self.timeline_message,
+                'Message': self.timeline_message,
                 'Category': 'Integration Update' if not category else category
             }
 
