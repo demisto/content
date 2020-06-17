@@ -8,7 +8,6 @@ function Invoke-InfocyteScan {
     $Target = $demisto.Args()['target']
     $Demisto.Debug("Scanning Host: $Target")
     $Task = Invoke-ICScanTarget -Target $Target
-    $prefix = "Infocyte.Task"
     $Output = [PSCustomObject]@{
         'Infocyte.Task' = [PSCustomObject]@{
             userTaskId = $Task.userTaskId
@@ -16,7 +15,7 @@ function Invoke-InfocyteScan {
             host       = $Target
         }
     }
-    $MDOutput = [PSCustomObject]$Output."$prefix" | ConvertTo-Markdown
+    $MDOutput = $Output."Infocyte.Task" | ConvertTo-Markdown
     ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output
 }
 
