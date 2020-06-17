@@ -972,9 +972,9 @@ tasks:
     task:
       id: edf8888d-4ac0-464a-8a70-64069a895cb2
       version: -1
-      name: Entity Enrichment - Generic v2_copy
-      description: Enrich entities using one or more integrations
-      playbookName: Entity Enrichment - Generic v2_copy
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
       type: playbook
       iscommand: false
       brand: ""
