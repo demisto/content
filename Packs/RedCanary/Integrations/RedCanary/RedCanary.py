@@ -128,16 +128,17 @@ def get_endpoint_context(res=None, endpoint_id=None):
         mac_addresses = []
         for address in endpoint_attributes.get('endpoint_network_addresses', []):
             address_attributes = address.get('attributes', {})
-            ip_address_object = address_attributes.get('ip_address', {})
-            if ip_address_object:
-                ip_address_attributes = ip_address_object.get('attributes', {})
-                if ip_address_attributes:
-                    ip_addresses.append(ip_address_attributes.get('ip_address'))
-            mac_address_object = address_attributes.get('mac_address', {})
-            if mac_address_object:
-                mac_address_attributes = mac_address_object.get('attributes', {})
-                if mac_address_attributes:
-                    mac_addresses.append(mac_address_attributes.get('address'))
+            if address_attributes:
+                ip_address_object = address_attributes.get('ip_address', {})
+                if ip_address_object:
+                    ip_address_attributes = ip_address_object.get('attributes', {})
+                    if ip_address_attributes:
+                        ip_addresses.append(ip_address_attributes.get('ip_address'))
+                mac_address_object = address_attributes.get('mac_address', {})
+                if mac_address_object:
+                    mac_address_attributes = mac_address_object.get('attributes', {})
+                    if mac_address_attributes:
+                        mac_addresses.append(mac_address_attributes.get('address'))
         if ip_addresses:
             current_endpoint_context['IPAddress'] = ip_addresses
         if mac_addresses:
