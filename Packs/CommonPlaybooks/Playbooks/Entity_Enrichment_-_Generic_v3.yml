@@ -529,7 +529,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The Username to enrich
+  description: The username to enrich
   playbookInputQuery:
 - key: Domain
   value:
@@ -546,8 +546,9 @@ inputs:
     simple: "False"
   required: false
   description: Determines whether the IP Enrichment - Generic playbook should convert
-    IP addresses to hostnames using a DNS query. You can set this to either True or
-    False.
+    IP addresses to hostnames using a DNS query. 
+    True - Resolves the IP addresses to hostnames.
+    False - Does not resolve the IP addresses to hostnames.
   playbookInputQuery:
 - key: InternalDomains
   value: {}
