@@ -54,6 +54,8 @@ trustar-indicator-summaries</a></li>
 <li><a href="#h_trustar_phishing_indicators">Get phishing indicators: trustar-get-phishing-indicators</a></li>
 <li><a href="#h_trustar_phishing_submissions">Get phishing submissions: trustar-get-phishing-submissions</a></li>
 
+<strong>All commands returning indicators, outputs their data on 3 contexts: The standard context, the DBot Context and the Indicators TruSTAR context were the result is output as returned. </strong>
+
 </ol>
 <h3 id="h_3942468361528291405689">1. Return a list of related indicators</h3>
 <hr>
@@ -874,7 +876,7 @@ trustar-indicator-summaries</a></li>
 <hr>
 <p>Provide metadata associated with a list of indicators, including value, indicatorType, noteCount, enclaves the user making the request has READ access to.</p>
 <h5>Command Example</h5>
-<p><code>!trustar-indicators-metadata indicators=185.220.101.141</code></p>
+<p><code>!trustar-indicators-metadata indicators=[SOME_INDICATOR]/code></p>
 <h5>Inputs</h5>
 <table style="height: 141px; width: 653px;">
 <thead>
@@ -948,27 +950,6 @@ trustar-indicator-summaries</a></li>
 </tbody>
 </table>
 <p> </p>
-<h5>Raw Output</h5>
-<pre> [
-    {
-        "correlationCount": 0,
-        "enclaveIds": [
-            "71f337a0-9696-4331-988a-5679271656a0",
-            "011ad71b-fd7d-44c2-834a-0d751299fb1f",
-            "080234eb-d818-4507-a676-dae5c5927d94",
-            "d915e45a-d0c8-4a75-987a-775649020c96",
-            "ed35f85a-d6bf-4e74-a0f8-61651abf705e"
-        ],
-        "firstSeen": "2020-05-07 20:49:36",
-        "indicatorType": "IP",
-        "lastSeen": "2020-06-13 02:06:01",
-        "notes": [],
-        "tags": [],
-        "value": "185.220.101.141"
-    }
-]
-</pre>
-<p> </p>
 
 
 
