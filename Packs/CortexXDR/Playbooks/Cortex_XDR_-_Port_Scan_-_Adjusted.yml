@@ -4,7 +4,7 @@ name: Cortex XDR - Port Scan - Adjusted
 description: |-
   Investigates a Cortex XDR incident containing internal port scan alerts. The playbook:
   - Syncs data with Cortex XDR.
-  - Notifies management about host compromise.
+  - Notifies management about a compromised host.
   - Escalates the incident in case of lateral movement alert detection.
 
   The playbook is used as a sub- playbook in 'Cortex XDR Incident Handling - v2'
@@ -88,8 +88,8 @@ tasks:
       id: 7a7a6ec8-c9fa-415a-87bc-bc507762e35e
       version: -1
       name: Save email addresses to notify
-      description: Saves the email addresses to notify about the compromised host,
-        if any were configured in the playbook inputs.
+      description: Saves the email addresses to notify about the compromised host
+        if any emails were configured in the playbook inputs.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1093,7 +1093,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether attacking IPs should be automatically blocked using firewalls.
+  description: Determines whether attacking IPs should be automatically blocked using firewalls.
   playbookInputQuery:
 - key: EmailAddressesToNotify
   value: {}
@@ -1113,9 +1113,8 @@ inputs:
 - key: RoleForEscalation
   value: {}
   required: false
-  description: The name of the Demisto role of the users that the incident can be
-    escalated to in case of developments like lateral movement. If this input will
-    be empty, no escalation will take place.
+  description: The name of the Cortex XSOAR role of the users that the incident can be
+    escalated to in case of developments like lateral movement. If this input is left empty, no escalation will take place.
   playbookInputQuery:
 - key: OnCall
   value:
