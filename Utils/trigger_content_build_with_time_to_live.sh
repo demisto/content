@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 if [[ "$#" -lt 2 ]]; then
-  echo "Usage: $0 <content branch name: such as master> <circle ci token> [contributor branch name] [minutes to live]"
+  echo "Usage: $0 <content branch name: such as master> <circle ci token> <time to live>"
   echo "You can get a circle ci token from: CircleCI -> User -> Personal API Tokens"
-  echo "Time to live is in minutes, for example 360 equals 6 hours for the instance to live"
-  echo "Minmum time to live is 180 minutes, maximum time is 540 minutes"
+  echo "Time to live is in minutes, for example 360 equals 6 hours"
+  echo "Minimum time to live is 180 minutes, maximum time is 540 minutes"
   echo "If time to live not entered the defualt will be 180 minutes"
   exit 1
 fi

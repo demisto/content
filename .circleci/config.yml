@@ -569,6 +569,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n $TIME_TO_LIVE ]
+            then
+                echo "Skipping - Time to live was set"
+                exit 0
+            fi
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo 'Skipping - running only in container number 0.'
