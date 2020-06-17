@@ -122,15 +122,15 @@ tasks:
         \ suspicious file with Palo Alto Networks Minemeld and AutoFocus, and automatically\
         \ performs file detonation for the extracted file. It then performs IOC enrichment\
         \ with Minemeld for all related IOCs, and calculates the incident severity\
-        \ based on all the findings. In addition we detonate the file for the full\
+        \ based on all the findings. In addition, it detonates the file for the full\
         \ analysis report. \nThe analyst can perform a manual memory dump for the\
         \ suspected endpoint based on the incident’s severity, and choose to isolate\
         \ the source endpoint with Traps.\nHunting tasks to find more endpoints that\
-        \ are infected is performed automatically based on a playbook input, and after\
+        \ are infected are performed automatically based on a playbook input, and after\
         \ all infected endpoints are found, remediation for all malicious IOCs is\
         \ performed, including file quarantine, and IP and URLs blocking with Palo\
         \ Alto Networks FireWall components such as Dynamic Address Groups and Custom\
-        \ URL Categories.\nAfter the investigation review the incident is automatically\
+        \ URL Categories.\nAfter the investigation review, the incident is automatically\
         \ closed."
       playbookName: Cortex XDR - Malware Investigation
       type: playbook
