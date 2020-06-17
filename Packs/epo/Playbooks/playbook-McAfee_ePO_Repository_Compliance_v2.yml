@@ -44,7 +44,7 @@ tasks:
       type: regular
       iscommand: true
       brand: epo
-      description: Check the latest DAT file in local ePO repository
+      description: Check the latest DAT file in local ePO repository.
     nexttasks:
       '#none#':
       - "12"
@@ -71,7 +71,7 @@ tasks:
       type: regular
       iscommand: true
       brand: epo
-      description: Update local ePO repository
+      description: Update local ePO repository.
     nexttasks:
       '#none#':
       - "13"
@@ -152,7 +152,7 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: ePO Update Error. Please review status of Demisto incident ${incident.id}
+        simple: ePO Update Error. Please review status of Cortex XSOAR incident ${incident.id}
           - ${incident.name}
       cc: {}
       htmlBody: {}
@@ -180,7 +180,7 @@ tasks:
       id: df033737-b882-4409-8ff2-ed4f90b8d942
       version: -1
       name: Close the investigation
-      description: commands.local.cmd.close.inv
+      description: Closes the incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -212,7 +212,7 @@ tasks:
       id: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
       version: -1
       name: epo-get-current-dat
-      description: check the existing DAT file version in ePO
+      description: check the existing DAT file version in ePO.
       script: epo|||epo-get-current-dat
       type: regular
       iscommand: true
@@ -275,7 +275,7 @@ tasks:
       id: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
       version: -1
       name: Wait for 5 minutes
-      description: Sleep for X seconds
+      description: Sleep for X seconds. Default is 300 seconds (5 minutes).
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -305,7 +305,7 @@ tasks:
       id: b766e4a2-8988-46e1-84ab-d91d118d48a7
       version: -1
       name: Get ePO current DAT version
-      description: check the existing DAT file version in ePO
+      description: Check the existing DAT file version in ePO.
       script: epo|||epo-get-current-dat
       type: regular
       iscommand: true
@@ -371,7 +371,7 @@ tasks:
       id: 20175a15-e592-48ae-832b-b77b59f33e41
       version: -1
       name: Set incident to High severity
-      description: commands.local.cmd.set.incident
+      description: Sets the incident severity to High.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
