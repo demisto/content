@@ -26,7 +26,7 @@ TYPES = [
 
 
 def test_fetch_indicators_command(mocker):
-    client = Client(api_key="a", insecure=False, proxy=None)
+    client = Client(api_key="a", insecure=False)
     mocker.patch.object(client, 'daily_http_request', return_value=INDICATORS)
     indicators = fetch_indicators_command(client, 9, 0)
     for i in range(0, 9):
@@ -34,7 +34,7 @@ def test_fetch_indicators_command(mocker):
 
 
 def test_type_finder():
-    client = Client(api_key="a", insecure=False, proxy=None)
+    client = Client(api_key="a", insecure=False)
     for i in range(0, 9):
         indicator_type = client.find_indicator_type(INDICATORS[i])
         assert indicator_type == TYPES[i]
@@ -53,7 +53,7 @@ def test_feed_tags_param(mocker):
     - run the fetch incidents command using the Client
     Validate The value of the tags field.
     """
-    client = Client(api_key="a", insecure=False, proxy=None)
+    client = Client(api_key="a", insecure=False)
     mocker.patch.object(client, 'daily_http_request', return_value=INDICATORS)
     indicators = fetch_indicators_command(client, ['test_tag'])
     assert indicators[0].get('fields').get('tags') == ['test_tag']
