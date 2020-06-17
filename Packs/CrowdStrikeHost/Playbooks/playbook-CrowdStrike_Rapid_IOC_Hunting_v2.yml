@@ -1,7 +1,7 @@
 id: CrowdStrike Rapid IOC Hunting v2
 version: -1
 name: CrowdStrike Rapid IOC Hunting v2
-description: Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike
+description: Hunt for endpoint activity involving hash and domain IOCs using Crowdstrike
   Falcon Host.\nAlso use AnalystEmail label to determine where to send an email alert
   if something is found.
 starttaskid: "0"
@@ -175,7 +175,7 @@ tasks:
       id: 892f37be-8fb0-493f-8c86-b64fedf6b049
       version: -1
       name: Hunt for devices accessing bad domains
-      description: Returns a list of device IDs on which an indicator ran
+      description: Returns a list of device IDs on which an indicator ran.
       script: FalconHost|||cs-device-ran-on
       type: regular
       iscommand: true
@@ -209,7 +209,7 @@ tasks:
       version: -1
       name: Hunt for devices running MD5
       description: |
-        Returns a list of device IDs on which an indicator ran
+        Returns a list of device IDs on which an indicator ran.
       script: FalconHost|||cs-device-ran-on
       type: regular
       iscommand: true
@@ -242,7 +242,7 @@ tasks:
       id: f42da4b9-e44a-47f7-8bd3-58ebc367fd29
       version: -1
       name: Hunt for devices accessing SHA1
-      description: Returns a list of device IDs on which an indicator ran
+      description: Returns a list of device IDs on which an indicator ran.
       script: FalconHost|||cs-device-ran-on
       type: regular
       iscommand: true
@@ -275,7 +275,7 @@ tasks:
       id: 85fdaa12-b5f9-44c3-81e9-029353b53de2
       version: -1
       name: Hunt for devices accessing SHA256
-      description: Returns a list of device IDs on which an indicator ran
+      description: Returns a list of device IDs on which an indicator ran.
       script: FalconHost|||cs-device-ran-on
       type: regular
       iscommand: true
@@ -338,7 +338,7 @@ tasks:
       type: regular
       iscommand: true
       brand: FalconHost
-      description: Enrcich device information
+      description: Enrcich device information.
     nexttasks:
       '#none#':
       - "12"
@@ -383,13 +383,13 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: 'Hello,\nPlease review Demisto incident "${incident.name} # ${incident.id}
+        simple: 'Hello,\nPlease review Cortex XSOAR incident "${incident.name} # ${incident.id}
           " - results are waiting for you.'
       cc: {}
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: 'Demisto incident ${incident.name} # ${incident.id}'
+        simple: 'Cortex XSOAR incident ${incident.name} # ${incident.id}'
       to:
         simple: ${incident.labels.AnalystEmail}
     separatecontext: false
