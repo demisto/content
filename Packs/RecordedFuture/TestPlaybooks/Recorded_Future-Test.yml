@@ -69,7 +69,7 @@ tasks:
       id: 222b90f2-381c-47ed-862b-5d1ac450bd8c
       version: -1
       name: domain
-      script: '|||domain'
+      script: 'Recorded Future v2|||domain'
       type: regular
       iscommand: true
       brand: ""
@@ -215,7 +215,7 @@ tasks:
       id: f45803d1-98a4-4380-877e-e6450a6aadf2
       version: -1
       name: ip
-      script: '|||ip'
+      script: 'Recorded Future v2|||ip'
       type: regular
       iscommand: true
       brand: ""
@@ -361,7 +361,7 @@ tasks:
       id: 6953142d-6cbf-4dba-8171-451ac8be9c8c
       version: -1
       name: file
-      script: '|||file'
+      script: 'Recorded Future v2|||file'
       type: regular
       iscommand: true
       brand: ""
@@ -507,7 +507,7 @@ tasks:
       id: e15df64a-2cfc-440f-8129-9bd2db87315c
       version: -1
       name: cve
-      script: '|||cve'
+      script: 'Recorded Future v2|||cve'
       type: regular
       iscommand: true
       brand: ""
@@ -623,7 +623,7 @@ tasks:
       id: 2a0eda4f-5517-41c1-85a1-f646a0b21460
       version: -1
       name: url
-      script: '|||url'
+      script: 'Recorded Future v2|||url'
       type: regular
       iscommand: true
       brand: ""

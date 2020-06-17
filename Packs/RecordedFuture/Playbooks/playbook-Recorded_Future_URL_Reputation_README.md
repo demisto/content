@@ -27,24 +27,24 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotScore.Indicator | The indicator that was tested | unknown |
-| DBotScore.Type | Indicator type | unknown |
-| DBotScore.Vendor | Vendor used to calculate the score | unknown |
-| DBotScore.Score | The actual score | unknown |
-| URL.Malicious.Vendor | For malicious URLs, the vendor that made the decision | unknown |
-| URL.Malicious.Description | For malicious URLs, the reason that the vendor made the decision | unknown |
-| URL.Data | URL name | unknown |
-| RecordedFuture.URL.riskScore | Recorded Future URL Risk Score | unknown |
-| RecordedFuture.URL.riskLevel | Recorded Future URL Risk Level | unknown |
-| RecordedFuture.URL.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.URL.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.URL.Evidence.description | Recorded Risk Rule description | unknown |
-| RecordedFuture.URL.Evidence.timestamp | Recorded Risk Rule timestamp | unknown |
-| RecordedFuture.URL.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.URL.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.URL.name | URL | unknown |
-| RecordedFuture.URL.maxRules | Maximum count of Recorded Future URL Risk Rules | unknown |
-| RecordedFuture.URL.ruleCount | Number of triggered Recorded Future URL Risk Rules | unknown |
+| DBotScore.Indicator | The indicator that was tested | string |
+| DBotScore.Type | Indicator type | string |
+| DBotScore.Vendor | Vendor used to calculate the score | string |
+| DBotScore.Score | The actual score | number |
+| URL.Malicious.Vendor | For malicious URLs, the vendor that made the decision | string |
+| URL.Malicious.Description | For malicious URLs, the reason that the vendor made the decision | string |
+| URL.Data | URL name | string |
+| RecordedFuture.URL.riskScore | Recorded Future URL Risk Score | number |
+| RecordedFuture.URL.riskLevel | Recorded Future URL Risk Level | string |
+| RecordedFuture.URL.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.URL.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.URL.Evidence.description | Recorded Risk Rule description | string |
+| RecordedFuture.URL.Evidence.timestamp | Recorded Risk Rule timestamp | date |
+| RecordedFuture.URL.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.URL.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.URL.name | URL | string |
+| RecordedFuture.URL.maxRules | Maximum count of Recorded Future URL Risk Rules | number |
+| RecordedFuture.URL.ruleCount | Number of triggered Recorded Future URL Risk Rules | number |
 
 ## Playbook Image
 ---

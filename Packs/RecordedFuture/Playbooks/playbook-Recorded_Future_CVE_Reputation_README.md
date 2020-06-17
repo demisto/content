@@ -27,22 +27,22 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotScore.Indicator | The indicator that was tested | unknown |
-| DBotScore.Type | Indicator type | unknown |
-| DBotScore.Vendor | Vendor used to calculate the score | unknown |
-| DBotScore.Score | The actual score | unknown |
-| CVE.ID | Vulnerability name | unknown |
-| RecordedFuture.CVE.riskLevel | Recorded Future Vulnerability Risk Level | unknown |
-| RecordedFuture.CVE.riskScore | Risk Score | unknown |
-| RecordedFuture.CVE.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.CVE.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.CVE.Evidence.description | Recorded Risk Rule description | unknown |
-| RecordedFuture.CVE.Evidence.timestamp | Recorded Risk Rule timestamp | unknown |
-| RecordedFuture.CVE.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.CVE.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.CVE.name | Vulnerability name | unknown |
-| RecordedFuture.CVE.maxRules | Maximum count of Recorded Future Vulnerability Risk Rules | unknown |
-| RecordedFuture.CVE.ruleCount | Number of triggered Recorded Future Vulnerability Risk Rules | unknown |
+| DBotScore.Indicator | The indicator that was tested | string |
+| DBotScore.Type | Indicator type | string |
+| DBotScore.Vendor | Vendor used to calculate the score | string |
+| DBotScore.Score | The actual score | number |
+| CVE.ID | Vulnerability name | string |
+| RecordedFuture.CVE.riskLevel | Recorded Future Vulnerability Risk Level | string |
+| RecordedFuture.CVE.riskScore | Risk Score | number |
+| RecordedFuture.CVE.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.CVE.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.CVE.Evidence.description | Recorded Risk Rule description | string |
+| RecordedFuture.CVE.Evidence.timestamp | Recorded Risk Rule timestamp | date |
+| RecordedFuture.CVE.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.CVE.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.CVE.name | Vulnerability name | string |
+| RecordedFuture.CVE.maxRules | Maximum count of Recorded Future Vulnerability Risk Rules | number |
+| RecordedFuture.CVE.ruleCount | Number of triggered Recorded Future Vulnerability Risk Rules | number |
 
 ## Playbook Image
 ---

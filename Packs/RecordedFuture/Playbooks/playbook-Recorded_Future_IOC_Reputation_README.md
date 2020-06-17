@@ -4,11 +4,11 @@ Entity Reputation using sub-playbooks
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Recorded Future Domain Reputation
+* Recorded Future URL Reputation
 * Recorded Future CVE Reputation
 * Recorded Future IP Reputation
 * Recorded Future File Reputation
-* Recorded Future URL Reputation
-* Recorded Future Domain Reputation
 
 ### Integrations
 This playbook does not use any integrations.
@@ -36,75 +36,83 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotScore.Indicator | The indicator that was tested | unknown |
-| DBotScore.Type | Indicator type | unknown |
-| DBotScore.Vendor | Vendor used to calculate the score | unknown |
-| DBotScore.Score | The actual score | unknown |
-| Domain.Name | Domain name | unknown |
-| IP.Address | IP address | unknown |
-| URL.Data | URL name | unknown |
-| CVE.ID | CVE ID | unknown |
-| File.SHA256 | File SHA\-256 | unknown |
-| File.SHA512 | File SHA\-512 | unknown |
-| File.SHA1 | File SHA\-1 | unknown |
-| File.MD5 | File MD5 | unknown |
-| File.CRC32 | File CRC32 | unknown |
-| File.CTPH | File CTPH | unknown |
-| RecordedFuture.File.riskScore | Recorded Future Hash Risk Score | unknown |
-| RecordedFuture.File.riskLevel | Recorded Future Hash Risk Level | unknown |
-| RecordedFuture.File.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.File.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.File.Evidence.description | Recorded Risk Rule description | unknown |
-| RecordedFuture.File.Evidence.timestamp | Recorded Risk Rule timestamp | unknown |
-| RecordedFuture.File.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.File.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.File.name | Hash | unknown |
-| RecordedFuture.File.maxRules | Maximum count of Recorded Future Hash Risk Rules | unknown |
-| RecordedFuture.File.ruleCount | Number of triggered Recorded Future Hash Risk Rules | unknown |
-| RecordedFuture.IP.riskScore | Recorded Future IP Risk Score | unknown |
-| RecordedFuture.IP.riskLevel | Recorded Future IP Risk Level | unknown |
-| RecordedFuture.IP.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.IP.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.IP.Evidence.description | Recorded Risk Rule Description | unknown |
-| RecordedFuture.IP.Evidence.timestamp | Recorded Risk Rule Timestamp | unknown |
-| RecordedFuture.IP.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.IP.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.IP.name | IP Address | unknown |
-| RecordedFuture.IP.maxRules | Maximum count of Recorded Future IP Risk Rules | unknown |
-| RecordedFuture.IP.ruleCount | Number of triggered Recorded Future IP Risk Rules | unknown |
-| RecordedFuture.CVE.riskLevel | Recorded Future Vulnerability Risk Level | unknown |
-| RecordedFuture.CVE.riskScore | Risk Score | unknown |
-| RecordedFuture.CVE.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.CVE.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.CVE.Evidence.description | Recorded Risk Rule description | unknown |
-| RecordedFuture.CVE.Evidence.timestamp | Recorded Risk Rule timestamp | unknown |
-| RecordedFuture.CVE.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.CVE.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.CVE.name | Vulnerability name | unknown |
-| RecordedFuture.CVE.maxRules | Maximum count of Recorded Future Vulnerability Risk Rules | unknown |
-| RecordedFuture.CVE.ruleCount | Number of triggered Recorded Future Vulnerability Risk Rules | unknown |
-| RecordedFuture.Domain.riskScore | Recorded Future Domain Risk Score | unknown |
-| RecordedFuture.Domain.riskLevel | Recorded Future Domain Risk Level | unknown |
-| RecordedFuture.Domain.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.Domain.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.Domain.Evidence.description | Recorded Risk Rule description | unknown |
-| RecordedFuture.Domain.Evidence.timestamp | Recorded Risk Rule timestamp | unknown |
-| RecordedFuture.Domain.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.Domain.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.Domain.name | Domain name | unknown |
-| RecordedFuture.Domain.maxRules | Maximum count of Recorded Future Domain Risk Rules | unknown |
-| RecordedFuture.Domain.ruleCount | Number of triggered Recorded Future Domain Risk Rules | unknown |
-| RecordedFuture.URL.riskScore | Recorded Future URL Risk Score | unknown |
-| RecordedFuture.URL.riskLevel | Recorded Future URL Risk Level | unknown |
-| RecordedFuture.URL.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.URL.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.URL.Evidence.description | Recorded Risk Rule description | unknown |
-| RecordedFuture.URL.Evidence.timestamp | Recorded Risk Rule timestamp | unknown |
-| RecordedFuture.URL.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.URL.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.URL.name | URL | unknown |
-| RecordedFuture.URL.maxRules | Maximum count of Recorded Future URL Risk Rules | unknown |
-| RecordedFuture.URL.ruleCount | Number of triggered Recorded Future URL Risk Rules | unknown |
+| DBotScore.Indicator | The indicator that was tested | string |
+| DBotScore.Type | Indicator type | string |
+| DBotScore.Vendor | Vendor used to calculate the score | string |
+| DBotScore.Score | The actual score | number |
+| CVE.ID | Vulnerability name | string |
+| Domain.Name | Domain name | string |
+| Domain.Malicious.Vendor | For malicious Domains, the vendor that made the decision | string |
+| Domain.Malicious.Description | For malicious Domains, the reason that the vendor made the decision | string |
+| IP.Address | IP address | string |
+| IP.Malicious.Vendor | For malicious IP addresses, the vendor that made the decision | string |
+| IP.Malicious.Description | For malicious IP addresses, the reason that the vendor made the decision | string |
+| URL.Data | URL name | string |
+| URL.Malicious.Vendor | For malicious URLs, the vendor that made the decision | string |
+| URL.Malicious.Description | For malicious URLs, the reason that the vendor made the decision | string |
+| File.SHA256 | File SHA\-256 | string |
+| File.SHA512 | File SHA\-512 | string |
+| File.SHA1 | File SHA\-1 | string |
+| File.MD5 | File MD5 | string |
+| File.CRC32 | File CRC32 | string |
+| File.CTPH | File CTPH | string |
+| File.Malicious.Vendor | For malicious files, the vendor that made the decision | string |
+| File.Malicious.Description | For malicious files, the reason that the vendor made the decision | string |
+| RecordedFuture.File.riskScore | Recorded Future Hash Risk Score | number |
+| RecordedFuture.File.riskLevel | Recorded Future Hash Risk Level | string |
+| RecordedFuture.File.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.File.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.File.Evidence.description | Recorded Risk Rule description | string |
+| RecordedFuture.File.Evidence.timestamp | Recorded Risk Rule timestamp | date |
+| RecordedFuture.File.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.File.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.File.name | Hash | string |
+| RecordedFuture.File.maxRules | Maximum count of Recorded Future Hash Risk Rules | number |
+| RecordedFuture.File.ruleCount | Number of triggered Recorded Future Hash Risk Rules | number |
+| RecordedFuture.IP.riskScore | Recorded Future IP Risk Score | number |
+| RecordedFuture.IP.riskLevel | Recorded Future IP Risk Level | string |
+| RecordedFuture.IP.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.IP.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.IP.Evidence.description | Recorded Risk Rule Description | string |
+| RecordedFuture.IP.Evidence.timestamp | Recorded Risk Rule Timestamp | date |
+| RecordedFuture.IP.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.IP.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.IP.name | IP Address | string |
+| RecordedFuture.IP.maxRules | Maximum count of Recorded Future IP Risk Rules | number |
+| RecordedFuture.IP.ruleCount | Number of triggered Recorded Future IP Risk Rules | number |
+| RecordedFuture.CVE.riskLevel | Recorded Future Vulnerability Risk Level | string |
+| RecordedFuture.CVE.riskScore | Risk Score | number |
+| RecordedFuture.CVE.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.CVE.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.CVE.Evidence.description | Recorded Risk Rule description | string |
+| RecordedFuture.CVE.Evidence.timestamp | Recorded Risk Rule timestamp | date |
+| RecordedFuture.CVE.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.CVE.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.CVE.name | Vulnerability name | string |
+| RecordedFuture.CVE.maxRules | Maximum count of Recorded Future Vulnerability Risk Rules | number |
+| RecordedFuture.CVE.ruleCount | Number of triggered Recorded Future Vulnerability Risk Rules | number |
+| RecordedFuture.Domain.riskScore | Recorded Future Domain Risk Score | number |
+| RecordedFuture.Domain.riskLevel | Recorded Future Domain Risk Level | string |
+| RecordedFuture.Domain.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.Domain.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.Domain.Evidence.description | Recorded Risk Rule description | string |
+| RecordedFuture.Domain.Evidence.timestamp | Recorded Risk Rule timestamp | date |
+| RecordedFuture.Domain.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.Domain.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.Domain.name | Domain name | string |
+| RecordedFuture.Domain.maxRules | Maximum count of Recorded Future Domain Risk Rules | number |
+| RecordedFuture.Domain.ruleCount | Number of triggered Recorded Future Domain Risk Rules | number |
+| RecordedFuture.URL.riskScore | Recorded Future URL Risk Score | number |
+| RecordedFuture.URL.riskLevel | Recorded Future URL Risk Level | string |
+| RecordedFuture.URL.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.URL.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.URL.Evidence.description | Recorded Risk Rule description | string |
+| RecordedFuture.URL.Evidence.timestamp | Recorded Risk Rule timestamp | date |
+| RecordedFuture.URL.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.URL.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.URL.name | URL | string |
+| RecordedFuture.URL.maxRules | Maximum count of Recorded Future URL Risk Rules | number |
+| RecordedFuture.URL.ruleCount | Number of triggered Recorded Future URL Risk Rules | number |
 
 ## Playbook Image
 ---

@@ -27,24 +27,24 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotScore.Indicator | The indicator that was tested | unknown |
-| DBotScore.Type | Indicator type | unknown |
-| DBotScore.Vendor | Vendor used to calculate the score | unknown |
-| DBotScore.Score | The actual score | unknown |
-| Domain.Malicious.Vendor | For malicious Domains, the vendor that made the decision | unknown |
-| Domain.Malicious.Description | For malicious Domains, the reason that the vendor made the decision | unknown |
-| Domain.name | Domain name | unknown |
-| RecordedFuture.Domain.riskScore | Recorded Future Domain Risk Score | unknown |
-| RecordedFuture.Domain.riskLevel | Recorded Future Domain Risk Level | unknown |
-| RecordedFuture.Domain.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.Domain.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.Domain.Evidence.description | Recorded Risk Rule description | unknown |
-| RecordedFuture.Domain.Evidence.timestamp | Recorded Risk Rule timestamp | unknown |
-| RecordedFuture.Domain.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.Domain.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.Domain.name | Domain name | unknown |
-| RecordedFuture.Domain.maxRules | Maximum count of Recorded Future Domain Risk Rules | unknown |
-| RecordedFuture.Domain.ruleCount | Number of triggered Recorded Future Domain Risk Rules | unknown |
+| DBotScore.Indicator | The indicator that was tested | string |
+| DBotScore.Type | Indicator type | string |
+| DBotScore.Vendor | Vendor used to calculate the score | string |
+| DBotScore.Score | The actual score | number |
+| Domain.Malicious.Vendor | For malicious Domains, the vendor that made the decision | string |
+| Domain.Malicious.Description | For malicious Domains, the reason that the vendor made the decision | string |
+| Domain.Name | Domain name | string |
+| RecordedFuture.Domain.riskScore | Recorded Future Domain Risk Score | number |
+| RecordedFuture.Domain.riskLevel | Recorded Future Domain Risk Level | string |
+| RecordedFuture.Domain.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.Domain.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.Domain.Evidence.description | Recorded Risk Rule description | string |
+| RecordedFuture.Domain.Evidence.timestamp | Recorded Risk Rule timestamp | date |
+| RecordedFuture.Domain.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.Domain.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.Domain.name | Domain name | string |
+| RecordedFuture.Domain.maxRules | Maximum count of Recorded Future Domain Risk Rules | number |
+| RecordedFuture.Domain.ruleCount | Number of triggered Recorded Future Domain Risk Rules | number |
 
 ## Playbook Image
 ---

@@ -280,7 +280,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: CVE
+  description: CVE ID to check if it is related to the C2 context.
   playbookInputQuery:
 - key: IP
   value:
@@ -290,7 +290,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: IP Address
+  description: IP Address to check if it is related to the C2 context.
   playbookInputQuery:
 - key: URL
   value:
@@ -300,7 +300,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: URL
+  description: URL to check if it is related to the C2 context.
   playbookInputQuery:
 - key: MD5
   value:
@@ -310,7 +310,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: MD5
+  description: MD5 to check if it is related to the C2 context.
   playbookInputQuery:
 - key: SHA1
   value:
@@ -320,7 +320,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: SHA-1
+  description: SHA-1 to check if it is related to the C2 context.
   playbookInputQuery:
 - key: SHA256
   value:
@@ -330,7 +330,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: SHA-256
+  description: SHA-256 to check if it is related to the C2 context.
   playbookInputQuery:
 - key: Domain
   value:
@@ -340,43 +340,96 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Domain
+  description: Domain to check if it is related to the C2 context.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested
+  type: string
 - contextPath: DBotScore.Type
   description: Indicator type
+  type: string
 - contextPath: DBotScore.Vendor
   description: Vendor used to calculate the score
+  type: string
 - contextPath: DBotScore.Score
   description: The actual score
+  type: number
+- contextPath: File.SHA256
+  description: File SHA-256
+  type: string
+- contextPath: File.SHA512
+  description: File SHA-512
+  type: string
+- contextPath: File.SHA1
+  description: File SHA-1
+  type: string
+- contextPath: File.MD5
+  description: File MD5
+  type: string
+- contextPath: File.CRC32
+  description: File CRC32
+  type: string
+- contextPath: File.CTPH
+  description: File CTPH
+  type: string
+- contextPath: IP.Address
+  description: IP address
+  type: string
+- contextPath: IP.ASN
+  description: ASN
+  type: string
+- contextPath: IP.Geo.Country
+  description: IP Geolocation Country
+  type: string
+- contextPath: Domain.Name
+  description: Domain name
+  type: string
+- contextPath: URL.Data
+  description: URL name
+  type: string
+- contextPath: CVE.ID
+  description: Vulnerability name
+  type: string
 - contextPath: RecordedFuture.verdict
   description: Recorded Future verdict
+  type: boolean
 - contextPath: RecordedFuture.context
   description: Threat Assessment Context
+  type: string
 - contextPath: RecordedFuture.riskScore
   description: Recorded Future Max Score
+  type: number
 - contextPath: RecordedFuture.Entities.id
   description: Entity ID
+  type: string
 - contextPath: RecordedFuture.Entities.name
   description: Entity Name
+  type: string
 - contextPath: RecordedFuture.Entities.type
   description: Entity Type
+  type: string
 - contextPath: RecordedFuture.Entities.score
   description: Entity Score
+  type: string
 - contextPath: RecordedFuture.Entities.Evidence.ruleid
   description: Recorded Future Risk Rule ID
+  type: string
 - contextPath: RecordedFuture.Entities.Evidence.timestamp
   description: Recorded Future Evidence Timestamp
+  type: date
 - contextPath: RecordedFuture.Entities.Evidence.mitigation
   description: Recorded Future Evidence Mitigation
+  type: string
 - contextPath: RecordedFuture.Entities.Evidence.description
   description: Recorded Future Evidence Description
+  type: string
 - contextPath: RecordedFuture.Entities.Evidence.rule
   description: Recorded Future Risk Rule
+  type: string
 - contextPath: RecordedFuture.Entities.Evidence.level
   description: Recorded Future Risk Rule Level
+  type: number
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

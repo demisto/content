@@ -24,7 +24,7 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-Several of the outputs below have been been reduced in size to improve readability.
+Several of the outputs below have been reduced in size to improve readability.
 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -496,17 +496,31 @@ The verdict output is determined by algorithms inside the API.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | context | Context to use for verdict | Required | 
-| ip | IPs | Optional | 
-| domain | Domains | Optional | 
-| file | File Hashes | Optional | 
-| url | URLs | Optional | 
-| cve | CVEs | Optional | 
+| ip | IPs to check if they are related to the selected context. | Optional |
+| domain | Domains to check if they are related to the selected context. | Optional |
+| file | File hashes to check if they are related to the selected context. | Optional |
+| url | URLs to check if they are related to the selected context. | Optional |
+| cve | CVEs to check if they are related to the selected context. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| DBotScore.Indicator | string | The indicator that was tested |
+| DBotScore.Type | string | Indicator type |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
+| File.SHA256 | string | File SHA\-256 |
+| File.SHA512 | string | File SHA\-512 |
+| File.SHA1 | string | File SHA\-1 |
+| File.MD5 | string | File MD5 |
+| File.CRC32 | string | File CRC32 |
+| File.CTPH | string | File CTPH |
+| IP.Address | string | IP address |
+| Domain.Name | string | Domain name |
+| URL.Data | string | URL name |
+| CVE.ID | string | Vulnerability name |
 | RecordedFuture.verdict | boolean | Recorded Future verdict | 
 | RecordedFuture.context | string | Threat Assessment Context | 
 | RecordedFuture.riskScore | number | Recorded Future Max Score | 

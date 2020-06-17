@@ -27,24 +27,24 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotScore.Indicator | The indicator that was tested | unknown |
-| DBotScore.Type | Indicator type | unknown |
-| DBotScore.Vendor | Vendor used to calculate the score | unknown |
-| DBotScore.Score | The actual score | unknown |
-| IP.Malicious.Vendor | For malicious IP addresses, the vendor that made the decision | unknown |
-| IP.Malicious.Description | For malicious IP addresses, the reason that the vendor made the decision | unknown |
-| IP.Address | IP address | unknown |
-| RecordedFuture.IP.riskScore | Recorded Future IP Risk Score | unknown |
-| RecordedFuture.IP.riskLevel | Recorded Future IP Risk Level | unknown |
-| RecordedFuture.IP.Evidence.rule | Recorded Risk Rule Name | unknown |
-| RecordedFuture.IP.Evidence.mitigation | Recorded Risk Rule Mitigation | unknown |
-| RecordedFuture.IP.Evidence.description | Recorded Risk Rule Description | unknown |
-| RecordedFuture.IP.Evidence.timestamp | Recorded Risk Rule Timestamp | unknown |
-| RecordedFuture.IP.Evidence.level | Recorded Risk Rule Level | unknown |
-| RecordedFuture.IP.Evidence.ruleid | Recorded Risk Rule ID | unknown |
-| RecordedFuture.IP.name | IP Address | unknown |
-| RecordedFuture.IP.maxRules | Maximum count of Recorded Future IP Risk Rules | unknown |
-| RecordedFuture.IP.ruleCount | Number of triggered Recorded Future IP Risk Rules | unknown |
+| DBotScore.Indicator | The indicator that was tested | string |
+| DBotScore.Type | Indicator type | string |
+| DBotScore.Vendor | Vendor used to calculate the score | string |
+| DBotScore.Score | The actual score | number |
+| IP.Malicious.Vendor | For malicious IP addresses, the vendor that made the decision | string |
+| IP.Malicious.Description | For malicious IP addresses, the reason that the vendor made the decision | string |
+| IP.Address | IP address | string |
+| RecordedFuture.IP.riskScore | Recorded Future IP Risk Score | number |
+| RecordedFuture.IP.riskLevel | Recorded Future IP Risk Level | string |
+| RecordedFuture.IP.Evidence.rule | Recorded Risk Rule Name | string |
+| RecordedFuture.IP.Evidence.mitigation | Recorded Risk Rule Mitigation | string |
+| RecordedFuture.IP.Evidence.description | Recorded Risk Rule Description | string |
+| RecordedFuture.IP.Evidence.timestamp | Recorded Risk Rule Timestamp | date |
+| RecordedFuture.IP.Evidence.level | Recorded Risk Rule Level | number |
+| RecordedFuture.IP.Evidence.ruleid | Recorded Risk Rule ID | string |
+| RecordedFuture.IP.name | IP Address | string |
+| RecordedFuture.IP.maxRules | Maximum count of Recorded Future IP Risk Rules | number |
+| RecordedFuture.IP.ruleCount | Number of triggered Recorded Future IP Risk Rules | number |
 
 ## Playbook Image
 ---

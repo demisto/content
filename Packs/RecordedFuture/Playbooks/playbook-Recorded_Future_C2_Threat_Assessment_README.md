@@ -20,36 +20,48 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| CVE | CVE | CVE.ID | Optional |
-| IP | IP Address | IP.Address | Optional |
-| URL | URL | URL.Data | Optional |
-| MD5 | MD5 | File.MD5 | Optional |
-| SHA1 | SHA\-1 | File.SHA1 | Optional |
-| SHA256 | SHA\-256 | File.SHA256 | Optional |
-| Domain | Domain | Domain.Name | Optional |
+| CVE | CVE ID to check if it is related to the C2 context. | CVE.ID | Optional |
+| IP | IP Address to check if it is related to the C2 context. | IP.Address | Optional |
+| URL | URL to check if it is related to the C2 context. | URL.Data | Optional |
+| MD5 | MD5 to check if it is related to the C2 context. | File.MD5 | Optional |
+| SHA1 | SHA\-1 to check if it is related to the C2 context. | File.SHA1 | Optional |
+| SHA256 | SHA\-256 to check if it is related to the C2 context. | File.SHA256 | Optional |
+| Domain | Domain to check if it is related to the C2 context. | Domain.Name | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotScore.Indicator | The indicator that was tested | unknown |
-| DBotScore.Type | Indicator type | unknown |
-| DBotScore.Vendor | Vendor used to calculate the score | unknown |
-| DBotScore.Score | The actual score | unknown |
-| RecordedFuture.verdict | Recorded Future verdict | unknown |
-| RecordedFuture.context | Threat Assessment Context | unknown |
-| RecordedFuture.riskScore | Recorded Future Max Score | unknown |
-| RecordedFuture.Entities.id | Entity ID | unknown |
-| RecordedFuture.Entities.name | Entity Name | unknown |
-| RecordedFuture.Entities.type | Entity Type | unknown |
-| RecordedFuture.Entities.score | Entity Score | unknown |
-| RecordedFuture.Entities.Evidence.ruleid | Recorded Future Risk Rule ID | unknown |
-| RecordedFuture.Entities.Evidence.timestamp | Recorded Future Evidence Timestamp | unknown |
-| RecordedFuture.Entities.Evidence.mitigation | Recorded Future Evidence Mitigation | unknown |
-| RecordedFuture.Entities.Evidence.description | Recorded Future Evidence Description | unknown |
-| RecordedFuture.Entities.Evidence.rule | Recorded Future Risk Rule | unknown |
-| RecordedFuture.Entities.Evidence.level | Recorded Future Risk Rule Level | unknown |
+| DBotScore.Indicator | The indicator that was tested | string |
+| DBotScore.Type | Indicator type | string |
+| DBotScore.Vendor | Vendor used to calculate the score | string |
+| DBotScore.Score | The actual score | number |
+| File.SHA256 | File SHA\-256 | string |
+| File.SHA512 | File SHA\-512 | string |
+| File.SHA1 | File SHA\-1 | string |
+| File.MD5 | File MD5 | string |
+| File.CRC32 | File CRC32 | string |
+| File.CTPH | File CTPH | string |
+| IP.Address | IP address | string |
+| IP.ASN | ASN | string |
+| IP.Geo.Country | IP Geolocation Country | string |
+| Domain.Name | Domain name | string |
+| URL.Data | URL name | string |
+| CVE.ID | Vulnerability name | string |
+| RecordedFuture.verdict | Recorded Future verdict | boolean |
+| RecordedFuture.context | Threat Assessment Context | string |
+| RecordedFuture.riskScore | Recorded Future Max Score | number |
+| RecordedFuture.Entities.id | Entity ID | string |
+| RecordedFuture.Entities.name | Entity Name | string |
+| RecordedFuture.Entities.type | Entity Type | string |
+| RecordedFuture.Entities.score | Entity Score | string |
+| RecordedFuture.Entities.Evidence.ruleid | Recorded Future Risk Rule ID | string |
+| RecordedFuture.Entities.Evidence.timestamp | Recorded Future Evidence Timestamp | date |
+| RecordedFuture.Entities.Evidence.mitigation | Recorded Future Evidence Mitigation | string |
+| RecordedFuture.Entities.Evidence.description | Recorded Future Evidence Description | string |
+| RecordedFuture.Entities.Evidence.rule | Recorded Future Risk Rule | string |
+| RecordedFuture.Entities.Evidence.level | Recorded Future Risk Rule Level | number |
 
 ## Playbook Image
 ---

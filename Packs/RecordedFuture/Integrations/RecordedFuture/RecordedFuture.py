@@ -1,16 +1,10 @@
 """Recorded Future Integration for Demisto."""
-import demistomock as demisto
-import requests
-from datetime import datetime
 from typing import Dict, Any, List, Tuple
 from urllib import parse
-
-try:
-    from CommonServerPython import Common, CommandResults, DemistoException, \
-        formats, BaseClient, return_results, tableToMarkdown, entryTypes, \
-        createContext, return_error, parse_date_range, DBotScoreType
-except ModuleNotFoundError:
-    pass
+import requests
+# flake8: noqa: F402,F405 lgtm
+import demistomock as demisto
+from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
@@ -52,7 +46,7 @@ class Client(BaseClient):
             entity_type = 'hash'
         elif entity_type == 'cve':
             entity_type = 'vulnerability'
-        cmd_url = '%s/%s' % (entity_type, entity.strip())
+        cmd_url = f'{entity_type}/{entity.strip()}'
         req_fields = ','.join(intel_map[entity_type]) if not fields else fields
         params = {'fields': req_fields}
         return self._http_request(method='get', url_suffix=cmd_url,
@@ -78,8 +72,8 @@ class Client(BaseClient):
                    context: str) -> Dict[str, Any]:
         """SOAR triage lookup."""
         return self._http_request(method='post',
-                                  url_suffix='soar/triage/contexts/%s'
-                                             '?format=phantom' % context,
+                                  url_suffix=f'soar/triage/contexts/{context}'
+                                             '?format=phantom',
                                   json_data=entities, timeout=30)
 
 
@@ -134,8 +128,8 @@ def rf_type_to_xsoar_type(entity_type: str) -> str:
         return 'cve'
     elif entity_type == 'InternetDomainName':
         return 'domain'
-    raise DemistoException('Unknown Recorded Future '
-                           'entity type: %s' % entity_type)
+    raise DemistoException(f'Unknown Recorded Future '
+                           f'entity type: {entity_type}')
 
 
 def prettify_time(time_string: str) -> str:
@@ -151,18 +145,20 @@ def create_indicator(entity: str, entity_type: str,
                      score: int, description: str,
                      location: Dict[str, Any] = {}) -> Common.Indicator:
     """Create an Indicator object."""
-    thresholds = {'file': int(demisto.params().get('file_threshold', 65)),
-                  'ip': int(demisto.params().get('ip_threshold', 65)),
-                  'domain': int(demisto.params().get('domain_threshold', 65)),
-                  'url': int(demisto.params().get('url_threshold', 65)),
-                  'cve': int(demisto.params().get('cve_threshold', 65))}
+    demisto_params = demisto.params()
+    thresholds = {'file': int(demisto_params.get('file_threshold', 65)),
+                  'ip': int(demisto_params.get('ip_threshold', 65)),
+                  'domain': int(demisto_params.get('domain_threshold', 65)),
+                  'url': int(demisto_params.get('url_threshold', 65)),
+                  'cve': int(demisto_params.get('cve_threshold', 65))}
     dbot_score = translate_score(score, thresholds[entity_type])
-    dbot_description = 'Score above %s' % thresholds[entity_type] \
+    dbot_description = f'Score above {thresholds[entity_type]}' \
         if dbot_score == Common.DBotScore.BAD else None
+    dbot_vendor = 'Recorded Future v2'
     if entity_type == 'ip':
         return Common.IP(entity,
                          Common.DBotScore(entity, DBotScoreType.IP,
-                                          'Recorded Future', dbot_score,
+                                          dbot_vendor, dbot_score,
                                           dbot_description),
                          asn=location.get('asn', None),
                          geo_country=location.get('location',
@@ -170,12 +166,12 @@ def create_indicator(entity: str, entity_type: str,
     elif entity_type == 'domain':
         return Common.Domain(entity,
                              Common.DBotScore(entity, DBotScoreType.DOMAIN,
-                                              'Recorded Future', dbot_score,
+                                              dbot_vendor, dbot_score,
                                               dbot_description))
     elif entity_type == 'file':
         entity = entity
         dbot_obj = Common.DBotScore(entity, DBotScoreType.FILE,
-                                    'Recorded Future', dbot_score,
+                                    dbot_vendor, dbot_score,
                                     dbot_description)
         hash_type = determine_hash(entity)
         if hash_type == 'MD5':
@@ -193,11 +189,11 @@ def create_indicator(entity: str, entity_type: str,
     elif entity_type == 'url':
         return Common.URL(entity,
                           Common.DBotScore(entity, DBotScoreType.URL,
-                                           'Recorded Future', dbot_score,
+                                           dbot_vendor, dbot_score,
                                            dbot_description))
     else:
         raise Exception('Could not create indicator for this '
-                        'type of entity: %s' % entity_type)
+                        f'type of entity: {entity_type}')
 
 
 def get_output_prefix(entity_type: str) -> str:
@@ -212,7 +208,7 @@ def get_output_prefix(entity_type: str) -> str:
     elif entity_type in ['file', 'vulnerability']:
         return 'RecordedFuture.File'
     else:
-        raise Exception('Unknown entity type: %s' % entity_type)
+        raise Exception(f'Unknown entity type: {entity_type}')
 
 #####################
 #    Actions        #
@@ -243,22 +239,21 @@ def build_rep_markdown(entity_data: Dict[str, Any], entity_type: str) -> str:
             except KeyError:
                 evidence = {}
             markdown.append('\n'.join(
-                ['### Recorded Future %s reputation for %s'
-                 % (entity_title, ent['entity']['name']),
-                 'Risk score: %s' % int(ent['risk']['score']),
-                 'Risk Summary: %s out of %s Risk Rules currently observed'
-                 % (ent['risk']['rule']['count'],
-                    ent['risk']['rule']['maxCount']),
-                 'Criticality: %s\n'
-                 % level_to_criticality(ent['risk']['level'])]))
+                [f'### Recorded Future {entity_title} reputation '
+                 f'for {ent["entity"]["name"]}',
+                 f'Risk score: {int(ent["risk"]["score"])}',
+                 f'Risk Summary: {ent["risk"]["rule"]["count"]} out of '
+                 f'{ent["risk"]["rule"]["maxCount"]} '
+                 f'Risk Rules currently observed',
+                 f'Criticality: {level_to_criticality(ent["risk"]["level"])}'
+                 f'\n']))
             if ent['entity'].get('description', None):
-                markdown.append('NVD Vulnerability Description: %s\n'
-                                % ent['entity']['description'])
+                markdown.append(f'NVD Vulnerability Description: '
+                                f'{ent["entity"]["description"]}\n')
             if ent['entity'].get('id', None):
                 markdown.append('[Intelligence Card]'
                                 '(https://app.recordedfuture.com'
-                                '/live/sc/entity/%s)\n' % ent['entity']['id'])
-
+                                f'/live/sc/entity/{ent["entity"]["id"]})\n')
             if evidence:
                 evid_table = [{'Rule': detail['rule'],
                                'Criticality':
@@ -286,7 +281,7 @@ def build_rep_context(entity_data: Dict[str, Any],
     elif entity_type == 'vulnerability':
         entity_type = 'cve'
     indicators: List[Common.Indicator] = []
-    context = []
+    context: List[Dict[str, Any]] = []
     if entity_data and ('error' not in entity_data):
         for ent in entity_data['data']['results']:
             try:
@@ -343,17 +338,17 @@ def build_triage_markdown(context_data: Dict[str, Any], context: str) -> str:
     """Build Auto Triage output."""
     verdict = 'Suspected Malicious' if context_data['verdict'] \
         else 'Non-malicious'
-    md = '\n'.join(['### Recorded Future Threat Assessment with regards to %s'
-                    % context, 'Verdict: %s' % verdict, 'Max/Min Score: %s/%s'
-                    % (int(context_data['scores']['max']),
-                       int(context_data['scores']['min'])), '\n'])
+    md = '\n'.join(['### Recorded Future Threat Assessment with regards '
+                    f'to {context}',
+                    f'Verdict: {verdict}',
+                    f'Max/Min Score: {context_data["scores"]["max"]}/'
+                    f'{context_data["scores"]["min"]}\n'])
     tables = [md, '### Entities']
     for entity in context_data.get('entities', []):
-        header = '\n'.join(['Entity: %s' % entity['name'],
-                            'Score: %s' % int(entity['score']),
-                            'Rule count: %s out of %s'
-                            % (int(entity['rule']['count']),
-                               int(entity['rule']['maxCount']))])
+        header = '\n'.join([f'Entity: {entity["name"]}',
+                            f'Score: {entity["score"]}',
+                            f'Rule count: {entity["rule"]["count"]} out '
+                            f'of {entity["rule"]["maxCount"]}'])
         table = [{'Rule Name': x['rule'],
                   'Rule Criticality': level_to_criticality(x['level']),
                   'Rule Timestamp': prettify_time(x['timestamp']),
@@ -396,12 +391,15 @@ def enrich_command(client: Client, entity: str,
         indicators, context = build_intel_context(entity, entity_data,
                                                   entity_type)
         return CommandResults(outputs_prefix=get_output_prefix(entity_type),
-                              outputs=context, raw_response=entity_data,
+                              outputs=context,
+                              raw_response=entity_data,
                               readable_output=markdown,
-                              outputs_key_field='name', indicators=indicators)
+                              outputs_key_field='name',
+                              indicators=indicators)
     except DemistoException as err:
         if "404" in str(err):
-            return CommandResults(outputs_prefix='', outputs={},
+            return CommandResults(outputs_prefix='',
+                                  outputs={},
                                   raw_response={},
                                   readable_output='No results found.',
                                   outputs_key_field='')
@@ -426,93 +424,83 @@ def build_intel_markdown(entity_data: Dict[str, Any], entity_type: str) -> str:
                 break
         else:
             total_hits = 0
-        markdown = ['### Recorded Future %s Intelligence for %s'
-                    % (entity_title, data['entity']['name']),
-                    'Risk Score: %s' % risk.get('score', 'N/A'),
-                    'Summary: %s' % risk.get('riskSummary', 'N/A'),
-                    'Criticality label: %s'
-                    % risk.get('criticalityLabel', 'N/A'),
-                    'Total references to this entity: %s' % total_hits]
+        markdown = [f'### Recorded Future {entity_title} Intelligence for '
+                    f'{data["entity"]["name"]}',
+                    f'Risk Score: {risk.get("score", "N/A")}',
+                    f'Summary: {risk.get("riskSummary", "N/A")}',
+                    f'Criticality label: '
+                    f'{risk.get("criticalityLabel", "N/A")}',
+                    f'Total references to this entity: {total_hits}']
         if entity_type == 'ip':
+            loc = data.get('location', {})
+            locloc = loc.get('location', {})
             markdown.extend(['ASN and Geolocation',
-                             'AS Number: %s'
-                             % data['location'].get('asn', 'N/A'),
-                             'AS Name: %s'
-                             % data['location'].get('organization', 'N/A'),
-                             'CIDR: %s'
-                             % data['location'].get('cidr',
-                                                    {}).get('name', 'N/A'),
-                             'Geolocation (city): %s'
-                             % data['location'].get('location',
-                                                    {}).get('city', 'N/A'),
-                             'Geolocation (country): %s'
-                             % data['location'].get('location',
-                                                    {}).get('country', 'N/A')])
-        markdown.extend(['First reference collected on: %s'
-                         % prettify_time(data['timestamps'].get('firstSeen')),
-                         'Latest reference collected on: %s'
-                         % prettify_time(data['timestamps'].get('lastSeen'))])
+                             f'AS Number: {loc.get("asn", "N/A")}',
+                             f'AS Name: {loc.get("organization", "N/A")}',
+                             f'CIDR: {loc.get("cidr", {}).get("name", "N/A")}',
+                             'Geolocation (city): '
+                             f'{locloc.get("city", "N/A")}',
+                             'Geolocation (country): '
+                             f'{locloc.get("country", "N/A")}'])
+        tstamps = data.get('timestamps', {})
+        markdown.extend(['First reference collected on: '
+                         f'{prettify_time(tstamps.get("firstSeen"))}',
+                         'Latest reference collected on: '
+                         f'{prettify_time(tstamps.get("lastSeen"))}'])
         if data.get('intelCard', None):
-            markdown.append('[Intelligence Card](%s)\n' % data['intelCard'])
+            markdown.append(f'[Intelligence Card]({data["intelCard"]})\n')
         else:
             markdown.append('[Intelligence Card]'
                             '(https://app.recordedfuture.com/'
-                            'live/sc/entity/%s)\n' % (data['entity']['id']))
+                            f'live/sc/entity/{data["entity"]["id"]})\n')
         if entity_type == 'cve':
-            markdown.append('NVD Summary: %s'
-                            % data.get('nvdDescription', 'N/A'))
+            markdown.append('NVD Summary: '
+                            f'{data.get("nvdDescription", "N/A")}')
             if data.get('cvssv3', None):
+                cdata = data['cvssv3']
                 cvss = ['CVSSv3 Information',
-                        'Attack Vector: %s'
-                        % data['cvssv3'].get('attackVector', 'N/A').title(),
-                        'Attack Complexity: %s'
-                        % data['cvssv3'].get('attackComplexity',
-                                             'N/A').title(),
-                        'CVSSv3 Score: %s'
-                        % data['cvssv3'].get('baseScore', 'N/A'),
-                        'Impact Score: %s'
-                        % data['cvssv3'].get('impactScore', 'N/A'),
-                        'Exploitability Score: %s'
-                        % data['cvssv3'].get('exploitabilityScore', 'N/A'),
-                        'Availability: %s'
-                        % data['cvssv3'].get('availabilityImpact',
-                                             'N/A').title(),
-                        'Availability Impact: %s'
-                        % data['cvssv3'].get('availabilityImpact',
-                                             'N/A').title(),
-                        'User Interaction: %s'
-                        % data['cvssv3'].get('userInteraction', 'N/A').title(),
-                        'Privileges Required: %s'
-                        % data['cvssv3'].get('privilegesRequired',
-                                             'N/A').title(),
-                        'Integrity Impact: %s'
-                        % data['cvssv3'].get('integrityImpact', 'N/A').title(),
-                        'Confidentiality Impact: %s'
-                        % data['cvssv3'].get('confidentialityImpact',
-                                             'N/A').title(),
-                        'Published: %s'
-                        % prettify_time(data['cvssv3'].get('created')),
-                        'Last Modified: %s'
-                        % prettify_time(data['cvssv3'].get('modified'))]
+                        'Attack Vector: '
+                        f'{cdata.get("attackVector", "N/A").title()}',
+                        'Attack Complexity: '
+                        f'{cdata.get("attackComplexity", "N/A").title()}',
+                        f'CVSSv3 Score: {cdata.get("baseScore", "N/A")}',
+                        f'Impact Score: {cdata.get("impactScore", "N/A")},'
+                        'Exploitability Score: '
+                        f'{cdata.get("exploitabilityScore", "N/A")}',
+                        'Availability: '
+                        f'{cdata.get("availabilityImpact", "N/A").title()}',
+                        'Availability Impact: '
+                        f'{cdata.get("availabilityImpact", "N/A").title()}',
+                        'User Interaction: '
+                        f'{cdata.get("userInteraction", "N/A").title()}',
+                        'Privileges Required: '
+                        f'{cdata.get("privilegesRequired", "N/A").title()}',
+                        'Integrity Impact: '
+                        f'{cdata.get("integrityImpact", "N/A").title()}',
+                        'Confidentiality Impact: '
+                        f'{cdata.get("confidentialityImpact", "N/A").title()}',
+                        f'Published: {prettify_time(cdata.get("created"))}',
+                        'Last Modified: '
+                        f'{prettify_time(cdata.get("modified"))}']
             else:
+                cdata = data.get('cvss', {})
                 cvss = ['CVSS Information',
-                        'Access Vector: %s'
-                        % data['cvss'].get('accessVector', 'N/A').title(),
-                        'Availability: %s'
-                        % data['cvss'].get('availability', 'N/A').title(),
-                        'CVSS Score: %s' % data['cvss'].get('score', 'N/A'),
-                        'Access Complexity: %s'
-                        % data['cvss'].get('accessComplexity', 'N/A').title(),
-                        'Authentication: %s'
-                        % data['cvss'].get('authentication', 'N/A').title(),
-                        'Confidentiality: %s'
-                        % data['cvss'].get('confidentiality', 'N/A').title(),
-                        'Confidentiality: %s'
-                        % data['cvss'].get('integrity', 'N/A').title(),
-                        'Published: %s'
-                        % prettify_time(data['cvss'].get('published')),
-                        'Last Modified: %s'
-                        % prettify_time(data['cvss'].get('lastModified'))]
+                        'Access Vector: '
+                        f'{cdata.get("accessVector", "N/A").title()}',
+                        'Availability: '
+                        f'{cdata.get("availability", "N/A").title()}',
+                        f'CVSS Score: {cdata.get("score", "N/A")}',
+                        'Access Complexity: '
+                        f'{cdata.get("accessComplexity", "N/A").title()}',
+                        'Authentication: '
+                        f'{cdata.get("authentication", "N/A").title()}',
+                        'Confidentiality: '
+                        f'{cdata.get("confidentiality", "N/A").title()}',
+                        'Confidentiality: '
+                        f'{cdata.get("integrity", "N/A").title()}',
+                        f'Published: {prettify_time(cdata.get("published"))}',
+                        'Last Modified: '
+                        f'{prettify_time(cdata.get("lastModified"))}']
             markdown.extend(cvss)
         evidence_table = [{'Rule Criticality': detail.get('criticalityLabel'),
                            'Evidence Summary': detail.get('evidenceString'),
@@ -555,7 +543,7 @@ def build_intel_context(entity: str, entity_data: Dict[str, Any],
                              location=data.get('location', None)))
         indicators.extend([
             create_indicator(x['ip']['name'], 'ip', x['score'],
-                             'IP in the same CIDR as %s' % entity)
+                             f'IP in the same CIDR as {entity}')
             for x in data.get('riskyCIDRIPs', [])])
         data.update(data.pop('entity'))
         data.update(data.pop('risk'))
@@ -584,21 +572,21 @@ def get_alert_rules_command(client: Client, rule_name: str,
                             limit: int) -> Dict[str, Any]:
     """Get Alert Rules Command."""
     response = client.get_alert_rules(rule_name, limit)
-    if not response or 'data' not in response:
-        demisto.results('No results found')
-        return {}
+
     mapped_rules = [{'name': r.get('title', 'N/A'), 'id': r.get('id', '')}
-                    for r in response['data'].get('results', [])]
+                    for r in response.get('data', {}).get('results', [])]
     if not mapped_rules:
         return {
             'Type': entryTypes['note'],
-            'Contents': {}, 'ContentsFormat': formats['json'],
+            'Contents': {},
+            'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'No results found',
             'EntryContext': {}
         }
     return {
-        'Type': entryTypes['note'], 'Contents': response,
+        'Type': entryTypes['note'],
+        'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Recorded Future Alerting Rules',
@@ -614,29 +602,25 @@ def get_alerts_command(client: Client, params: Dict[str, str]) \
         -> Dict[str, Any]:
     """Get Alerts Command."""
     resp = client.get_alerts(params)
-    if not resp or 'data' not in resp:
-        demisto.results('No results found')
-        return {}
-
     headers = ['Rule', 'Alert Title', 'Triggered',
                'Email', 'Status', 'Assignee']
 
     mapped_alerts = [{
-        'id': a['id'],
-        'Alert Title': a.get('title', 'N/A'),
+        'id': a['id'], 'Alert Title': a.get('title', 'N/A'),
         'name': a.get('title', 'N/A'),
         'triggered': prettify_time(a.get('triggered')),
         'status': a.get('review', {}).get('status'),
         'assignee': a.get('review', {}).get('assignee'),
         'rule': a.get('rule', {}).get('name'),
         'email': a.get('entities', {}).get('EmailAddress'),
-        "type": a.get('type')
-    } for a in resp['data'].get('results', [])]
+        "type": a.get('type')}
+        for a in resp.get('data', {}).get('results', [])]
 
     if not mapped_alerts:
         return {
             'Type': entryTypes['note'],
-            'Contents': {}, 'ContentsFormat': formats['json'],
+            'Contents': {},
+            'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'No results found',
             'EntryContext': {}
@@ -644,7 +628,8 @@ def get_alerts_command(client: Client, params: Dict[str, str]) \
 
     return {
         'Type': entryTypes['note'],
-        'Contents': resp, 'ContentsFormat': formats['json'],
+        'Contents': resp,
+        'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable':
             tableToMarkdown('Recorded Future Alerts', mapped_alerts,
@@ -659,15 +644,15 @@ def get_alerts_command(client: Client, params: Dict[str, str]) \
 def main() -> None:
     """Main method used to run actions."""
     try:
-        base_url = demisto.params()['server'][:-1] \
-            if demisto.params()['server'].endswith('/') \
-            else demisto.params()['server']
-        verify_ssl = not demisto.params().get('unsecure', False)
-        proxy = demisto.params().get('proxy', False)
+        demisto_params = demisto.params()
+        demisto_args = demisto.args()
+        base_url = demisto_params.get('server', '').rstrip('/')
+        verify_ssl = not demisto_params.get('unsecure', False)
+        proxy = demisto_params.get('proxy', False)
         headers = {
-            'X-RFToken': demisto.params()['token'],
-            'X-RF-User-Agent': 'Cortex_XSOAR/2.0 Cortex_XSOAR_%s'
-                               % demisto.demistoVersion()['version']
+            'X-RFToken': demisto_params['token'],
+            'X-RF-User-Agent': 'Cortex_XSOAR/2.0 Cortex_XSOAR_'
+                               f'{demisto.demistoVersion()["version"]}'
         }
         client = Client(base_url=base_url, verify=verify_ssl,
                         headers=headers, proxy=proxy)
@@ -675,36 +660,26 @@ def main() -> None:
         if command == 'test-module':
             try:
                 client.entity_lookup(['8.8.8.8'], 'ip')
+                return_results('ok')
             except Exception as err:
-                return_results('Failed to get response: %s.' % str(err))
-            return_results('ok')
+                return_results(f'Failed to get response: {str(err)}.')
         elif command in ['url', 'ip', 'domain', 'file', 'cve']:
-            entities = demisto.args().get(command)
-            if not type(entities) is list:
-                entities = entities.split(',')
-            return_results(
-                lookup_command(client, entities, command))
+            entities = argToList(demisto_args.get(command))
+            return_results(lookup_command(client, entities, command))
         elif command == 'recordedfuture-threat-assessment':
-            context = demisto.args().get('context')
-            entities = {'ip': [x.strip() for x in
-                               demisto.args().get('ip', '').split(',')],
-                        'domain': [x.strip() for x
-                                   in demisto.args().get('domain',
-                                                         '').split(',')],
-                        'hash': [x.strip() for x
-                                 in demisto.args().get('file', '').split(',')],
-                        'url': [x.strip() for x
-                                in demisto.args().get('url', '').split(',')],
-                        'vulnerability':
-                            [x.strip() for x
-                             in demisto.args().get('cve', '').split(',')]}
+            context = demisto_args.get('context')
+            entities = {'ip': argToList(demisto_args.get('ip')),
+                        'domain': argToList(demisto_args.get('domain')),
+                        'hash': argToList(demisto_args.get('file')),
+                        'url': argToList(demisto_args.get('url')),
+                        'vulnerability': argToList(demisto_args.get('cve'))}
             return_results(triage_command(client, entities, context))
         elif command == 'recordedfuture-alert-rules':
-            rule_name = demisto.args().get('rule_name', '')
-            limit = demisto.args().get('limit', 10)
+            rule_name = demisto_args.get('rule_name', '')
+            limit = demisto_args.get('limit', 10)
             return_results(get_alert_rules_command(client, rule_name, limit))
         elif command == 'recordedfuture-alerts':
-            params = {x: demisto.args().get(x) for x in demisto.args()
+            params = {x: demisto_args.get(x) for x in demisto_args
                       if not x == 'detailed'}
             if params.get('rule_id', None):
                 params['alertRule'] = params.pop('rule_id')
@@ -718,11 +693,11 @@ def main() -> None:
             return_results(get_alerts_command(client, params))
         elif command == 'recordedfuture-intelligence':
             return_results(enrich_command(client,
-                                          demisto.args().get('entity'),
-                                          demisto.args().get('entity_type')))
+                                          demisto_args.get('entity'),
+                                          demisto_args.get('entity_type')))
     except Exception as e:
-        return_error('Failed to execute %s command. Error: %s'
-                     % (demisto.command(), str(e)))
+        return_error(f'Failed to execute {demisto.command()} command. '
+                     f'Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
