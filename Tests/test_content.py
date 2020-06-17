@@ -496,10 +496,29 @@ def create_result_files(tests_data_keeper):
         skipped_integrations_file.write('\n'.join(skipped_integration))
 
 
+def change_placeholders_to_values(placeholders_map, config_item):
+    """Replaces placeholders in the object to their real values
+
+    Args:
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
+        config_item: (json object)
+            Integration configuration object.
+
+    Returns:
+        dict. json object with the real configuration.
+    """
+    item_as_string = json.dumps(config_item)
+    for key, value in placeholders_map.items():
+        item_as_string = item_as_string.replace(key, value)
+    return json.loads(item_as_string)
+
+
 def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id,
-                           prints_manager, thread_index=0):
+                           prints_manager, placeholders_map, thread_index=0):
     for integration in integrations:
-        integration_params = [item for item in secret_params if item['name'] == integration['name']]
+        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+                              in secret_params if item['name'] == integration['name']]
 
         if integration_params:
             matched_integration_params = integration_params[0]
@@ -649,8 +668,9 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
                                      include_timestamp=True)
         return
 
+    placeholders_map = {'%%SERVER_HOST%%': server}
     are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
-                                            playbook_id, prints_manager, thread_index=thread_index)
+                                            playbook_id, prints_manager, placeholders_map, thread_index=thread_index)
     if not are_params_set:
         failed_playbooks.append(playbook_id)
         return
