@@ -33,7 +33,18 @@ class TestFetchIncidents:
 
 
 def test_get_endpoint_context():
-    res = [
+    """
+    Given:
+     - Endpoint data with missing MAC address details (None)
+
+    When:
+     - Listing endpoints and generating endpoint standard context
+
+    Then:
+     - Ensure get_endpoint_context runs successfully
+     - Verify expected endpoint standard context is returned
+    """
+    endpoint = [
         {
             'id': '1234',
             'attributes': {
@@ -85,4 +96,14 @@ def test_get_endpoint_context():
         }
     ]
 
-    RedCanary.get_endpoint_context(res)
+    endpoint_context = RedCanary.get_endpoint_context(endpoint)
+    assert endpoint_context == [{
+        'Hostname': 'hostname1',
+        'ID': '1234',
+        'IPAddress': ['192.169.1.16', '100.144.153.501'],
+        'IsDecommissioned': False,
+        'IsIsolated': False,
+        'MACAddress': ['g9:gg:c2:0f:3d:5f'],
+        'OS': 'OS X',
+        'OSVersion': 'Mac OSX 10.14.6'
+     }]
