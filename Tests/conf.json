@@ -584,7 +584,8 @@
         {
             "integrations": "QRadar",
             "playbookID" :  "test playbook - QRadarCorreltaions",
-            "timeout": 600
+            "timeout": 600,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Awake Security",
@@ -1599,7 +1600,8 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID": "test_Qradar"
+            "playbookID": "test_Qradar",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "VMware",
@@ -2886,7 +2888,6 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "dedup_-_generic_-_test": "Issue 25681",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
