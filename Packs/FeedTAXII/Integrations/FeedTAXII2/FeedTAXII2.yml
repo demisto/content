@@ -1,3 +1,4 @@
+fromversion: 5.0.0
 category: Authentication
 commonfields:
   id: FeedTAXII2
@@ -76,6 +77,21 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
+    unit> of type minute/hour/day. For example, 1 minute, 12 hour
+  display: First Fetch Time
+  hidden: false
+  name: initial_interval
+  required: false
+  type: 0
+- additionalinfo: Limit the number of indicators that can be fetched for every fetch.
+    If this field is left empty, there will be no limit on the number of indicators
+    fetched.
+  display: Max Indicators Per Fetch
+  hidden: false
+  name: limit
+  required: false
+  type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
 display: FeedTAXII2
 name: FeedTAXII2
@@ -101,9 +117,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fetch only indicators that were added to the server after the
-        given  time. Please provide a <number> and <time unit> of type minute/hour/day.
-        For example, 1 minute, 12 hour, 24 days.
+      description: Fetch only indicators that were added to the server after the given  time.
+        Please provide a <number> and <time unit> of type minute/hour/day. For example,
+        1 minute, 12 hour, 24 days.
       isArray: false
       name: added_after
       required: false
@@ -114,13 +130,30 @@ script:
     execution: false
     name: taxii2-get-indicators
     outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
+      - contextPath: TAXII2.Indicators.type
+        description: Indicator type.
+        type: String
+      - contextPath: TAXII2.Indicators.value
+        description: Indicator value.
+        type: String
+      - contextPath: TAXII2.Indicators.rawJSON
+        description: Indicator rawJSON.
+        type: String
   - deprecated: false
     description: Get the list of collections from the discovery service.
     execution: false
     name: taxii2-get-collections
+    outputs:
+      - contextPath: TAXII2.Collections.ID
+        description: Collection ID.
+        type: String
+      - contextPath: TAXII2.Collections.Name
+        description: Collection Name.
+        type: String
+  - deprecated: false
+    description: Reset your fetch
+    execution: false
+    name: taxii2-reset-fetch
   dockerimage: demisto/taxii2:1.0.0.9219
   feed: true
   isfetch: false

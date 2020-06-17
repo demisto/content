@@ -14,7 +14,9 @@ INTEGRATION_CONTEXT_TIME_KEY = "last_run"
 """ HELPER FUNCTIONS """
 
 
-def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
+def try_parse_integer(
+    int_to_parse: Any, err_msg: str = "Please provide a valid limit (positive integer)"
+) -> int:
     """
     Tries to parse an integer, and if fails will throw DemistoException with given err_msg
     """
@@ -35,9 +37,10 @@ def test_module(client):
         return_error("Could not connect to server")
 
 
-def fetch_indicators_command(client):
-    # TODO: Add back fetch from
-    iterator = client.build_iterator()
+def fetch_indicators_command(client, last_run, initial_interval, limit):
+    if not last_run and initial_interval:
+        last_run, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
+    iterator = client.build_iterator(limit, last_run)
     indicators = []
     for item in iterator:
         indicator = item.get("indicator")
@@ -50,7 +53,7 @@ def fetch_indicators_command(client):
 
 
 def get_indicators_command(client, raw="false", limit=10, added_after=None):
-    limit = try_parse_integer(limit, "Please provide a valid limit (positive integer)")
+    limit = try_parse_integer(limit)
     if added_after:
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
     raw = raw == "true"
@@ -66,7 +69,7 @@ def get_indicators_command(client, raw="false", limit=10, added_after=None):
     )
     if indicators:
         return CommandResults(
-            outputs_prefix=CONTEXT_PREFIX,
+            outputs_prefix=CONTEXT_PREFIX + ".Indicators",
             outputs_key_field="value",
             outputs=indicators,
             readable_output=md,
@@ -92,6 +95,17 @@ def get_collections_command(client):
     )
 
 
+def reset_fetch_command(client):
+    """
+    Reset the last fetch from the integration context
+    """
+    demisto.setIntegrationContext({})
+    return (
+        "Fetch was reset successfully. Your next indicator fetch will collect indicators from "
+        'the configured "First Fetch Time"'
+    )
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -112,6 +126,7 @@ def main():
         )
         client.initialise()
         commands = {
+            "taxii2-reset-fetch": reset_fetch_command,
             "taxii2-get-indicators": get_indicators_command,
             "taxii2-get-collections": get_collections_command,
         }
@@ -121,9 +136,21 @@ def main():
             test_module(client)
 
         elif demisto.command() == "fetch-indicators":
-            indicators = fetch_indicators_command(client)
+            initial_interval = params.get("initial_interval")
+            limit = try_parse_integer(params.get("limit") or -1)
+            now = datetime.now()  # we might refetch some indicators the next time
+            integration_ctx = demisto.getIntegrationContext() or {}
+            last_run = integration_ctx.get(INTEGRATION_CONTEXT_TIME_KEY)
+            indicators = fetch_indicators_command(
+                client, last_run, initial_interval, limit
+            )
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
+
+            demisto.setIntegrationContext(
+                {INTEGRATION_CONTEXT_TIME_KEY: now.timestamp()}
+            )
+
         else:
             return_results(commands[command](client, **args))
 
@@ -132,6 +159,7 @@ def main():
         return_error(
             f"Failed to execute {command} command. Error: {str(e)}\n\ntraceback: {traceback.format_exc()}"
         )
+
 
 # from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *  # noqa: E402
 from TAXII2ApiModule import *  # noqa: E402

@@ -42,7 +42,7 @@ TAXII_TYPES_TO_CORTEX_TYPES = {
 
 TAXII_TYPES_TO_CORTEX_CIDR_TYPES = {
     "ipv4-addr": FeedIndicatorType.CIDR,
-    "ipv6-addr": FeedIndicatorType.IPv6CIDR
+    "ipv6-addr": FeedIndicatorType.IPv6CIDR,
 }
 
 
@@ -177,7 +177,9 @@ class Taxii2FeedClient:
         indicators = self.extract_indicators_from_envelope_and_parse(envelope, limit)
         return indicators
 
-    def extract_indicators_from_envelope_and_parse(self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int) -> List[Dict[str, str]]:
+    def extract_indicators_from_envelope_and_parse(
+        self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int
+    ) -> List[Dict[str, str]]:
         """
         Extract indicators from an 2.0 envelope generator, or 2.1 envelope (which then polls and repeats process)
         and parses them as cortex indicators
@@ -196,7 +198,9 @@ class Taxii2FeedClient:
                     break
                 obj_cnt += len(taxii_objects)
                 indicators.extend(
-                    self.parse_indicators_list(self.extract_indicators_from_taxii_objects(taxii_objects))
+                    self.parse_indicators_list(
+                        self.extract_indicators_from_taxii_objects(taxii_objects)
+                    )
                 )
                 if len(indicators) >= limit:
                     break
@@ -205,7 +209,9 @@ class Taxii2FeedClient:
             cur_limit = limit
             taxii_objects = envelope.get("objects")
             obj_cnt += len(taxii_objects)
-            indicators = self.parse_indicators_list(self.extract_indicators_from_taxii_objects(envelope.get("objects")))
+            indicators = self.parse_indicators_list(
+                self.extract_indicators_from_taxii_objects(envelope.get("objects"))
+            )
             while envelope.get("more", False) and cur_limit > 0:
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.poll_collection(page_size, envelope.get("next", ""))
@@ -213,14 +219,18 @@ class Taxii2FeedClient:
                 obj_cnt += len(taxii_objects)
                 cur_limit -= len(envelope)
                 indicators.extend(
-                    self.parse_indicators_list(self.extract_indicators_from_taxii_objects(taxii_objects))
+                    self.parse_indicators_list(
+                        self.extract_indicators_from_taxii_objects(taxii_objects)
+                    )
                 )
         demisto.debug(
             f"TAXII 2 Feed has extracted {len(indicators)} indicators / {obj_cnt} taxii objects"
         )
         return indicators[:limit]
 
-    def poll_collection(self, page_size: int, added_after: Optional[str] = None) -> Union[types.GeneratorType, Dict[str, str]]:
+    def poll_collection(
+        self, page_size: int, added_after: Optional[str] = None
+    ) -> Union[types.GeneratorType, Dict[str, str]]:
         """
         Polls a taxii collection
         :param page_size: size of the request page
@@ -250,7 +260,9 @@ class Taxii2FeedClient:
         )
 
     @staticmethod
-    def extract_indicators_from_taxii_objects(taxii_objs: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    def extract_indicators_from_taxii_objects(
+        taxii_objs: List[Dict[str, str]]
+    ) -> List[Dict[str, str]]:
         """
         Extracts indicators from taxii objects
         :param taxii_objs: taxii objects
@@ -262,7 +274,9 @@ class Taxii2FeedClient:
 
         return indicators_objs
 
-    def parse_indicators_list(self, indicators_objs: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    def parse_indicators_list(
+        self, indicators_objs: List[Dict[str, str]]
+    ) -> List[Dict[str, str]]:
         """
         Parses a list of indicator objects
         :param indicators_objs: indicator objects
@@ -274,7 +288,9 @@ class Taxii2FeedClient:
                 indicators.extend(self.parse_single_indicator(indicator_obj))
         return indicators
 
-    def parse_single_indicator(self, indicator_obj: Dict[str, str]) -> List[Dict[str, str]]:
+    def parse_single_indicator(
+        self, indicator_obj: Dict[str, str]
+    ) -> List[Dict[str, str]]:
         """
         Parses a single indicator object
         :param indicator_obj: indicator object
@@ -288,16 +304,38 @@ class Taxii2FeedClient:
             # supported indicators have no spaces, so this action shouldn't affect extracted values
             trimmed_pattern = pattern.replace(" ", "")
 
-            indicator_groups = self.extract_indicator_groups_from_pattern(trimmed_pattern, self.indicator_regexes)
-            indicators.extend(self.get_indicators_from_indicator_groups(indicator_groups, indicator_obj, TAXII_TYPES_TO_CORTEX_TYPES, field_map))
+            indicator_groups = self.extract_indicator_groups_from_pattern(
+                trimmed_pattern, self.indicator_regexes
+            )
+            indicators.extend(
+                self.get_indicators_from_indicator_groups(
+                    indicator_groups,
+                    indicator_obj,
+                    TAXII_TYPES_TO_CORTEX_TYPES,
+                    field_map,
+                )
+            )
 
-            cidr_groups = self.extract_indicator_groups_from_pattern(trimmed_pattern, self.cidr_regexes)
-            indicators.extend(self.get_indicators_from_indicator_groups(cidr_groups, indicator_obj, TAXII_TYPES_TO_CORTEX_CIDR_TYPES, field_map))
+            cidr_groups = self.extract_indicator_groups_from_pattern(
+                trimmed_pattern, self.cidr_regexes
+            )
+            indicators.extend(
+                self.get_indicators_from_indicator_groups(
+                    cidr_groups,
+                    indicator_obj,
+                    TAXII_TYPES_TO_CORTEX_CIDR_TYPES,
+                    field_map,
+                )
+            )
 
         return indicators
 
     def get_indicators_from_indicator_groups(
-        self, indicator_groups: List[Tuple[str, str]], indicator_obj: Dict[str, str], indicator_types: Dict[str, str], field_map: Dict[str, str]
+        self,
+        indicator_groups: List[Tuple[str, str]],
+        indicator_obj: Dict[str, str],
+        indicator_types: Dict[str, str],
+        field_map: Dict[str, str],
     ) -> List[Dict[str, str]]:
         """
         Get indicators from indicator regex groups
@@ -322,7 +360,9 @@ class Taxii2FeedClient:
                         break
         return indicators
 
-    def extract_indicator_groups_from_pattern(self, pattern: str, regexes: List) -> List[Tuple[str, str]]:
+    def extract_indicator_groups_from_pattern(
+        self, pattern: str, regexes: List
+    ) -> List[Tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern
         :param pattern: stix pattern
@@ -339,7 +379,7 @@ class Taxii2FeedClient:
     @staticmethod
     def create_indicator(indicator_obj, type_, value, field_map):
         """
-        Create a cortex indicator
+        Create a cortex indicator from a stix indicator
         :param indicator_obj: rawJSON value of the indicator
         :param type_: cortex type of the indicator
         :param value: indicator value
