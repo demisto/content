@@ -597,7 +597,7 @@ inputs:
   value:
     simple: partner.demisto@example.com
   required: false
-  description: Username for add/remove to Departing Employee Lens
+  description: Username for add/remove to Departing Employee List
 - key: search-payload
   value:
     simple: |-

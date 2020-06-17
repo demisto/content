@@ -20,7 +20,7 @@ This integration was integrated and tested with the fully-hosted SaaS implementa
 * Management of Departing Employees within Code42
 * General file event and metadata search
 
-## Configure Code42 on Demisto
+## Configure Code42 on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -30,7 +30,7 @@ This integration was integrated and tested with the fully-hosted SaaS implementa
     * __credentials__
     * __Code42 Console URL for the pod your Code42 instance is running in__: This defaults to console.us.code42.com for U.S. SaaS Pod customers; replace with the domain that you use to log into your Code42 console if located in a different SaaS pod.
     * __Fetch incidents__: Check this box to enable fetching of incidents
-    * __Incident type__: Select which Demisto incident type to map ingested Code42 alerts to
+    * __Incident type__: Select which Cortex XSOAR incident type to map ingested Code42 alerts to
     * __Alert severities to fetch when fetching incidents__: If desired, select which Alert severities to ingest.
     * __First fetch time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes)__: When first run, how long to go back to retrieve alerts.
     * __Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once__: Alerts to fetch and process per run. Setting this value too high may have a negative impact on performance.
@@ -64,6 +64,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ---
 Search for a file in Security Data by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one parameter must be passed to the command. If a JSON parameter is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
 ##### Required Permissions
+
 This command requires one of the following roles:
 
 * Security Center User 
@@ -282,7 +283,7 @@ This command requires one of the following roles:
 
 ### 3. code42-departingemployee-add
 ---
-Add a user to the Departing Employee Lens
+Add a user to the Departing Employee List
 ##### Required Permissions
 
 This command requires one of the following roles:
@@ -297,8 +298,8 @@ This command requires one of the following roles:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to add to the Departing Employee Lens | Required | 
-| departuredate | Departure date for the employee in YYYY-MM-DD format | Optional | 
+| username | Username to add to the Departing Employee List | Required | 
+| departuredate | Departure date for the employee in yyyy-MM-dd format | Optional | 
 | note | Note to attach to Departing Employee | Optional | 
 
 
@@ -306,7 +307,7 @@ This command requires one of the following roles:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for Departing Employee | 
+| Code42.DepartingEmployee.UserID | string | Internal Code42 Case ID for Departing Employee | 
 | Code42.DepartingEmployee.Username | string | Username for Departing Employee | 
 | Code42.DepartingEmployee.Note | string | Note associated with Departing Employee | 
 | Code42.DepartingEmployee.DepartureDate | unknown | Departure date for Departing Employee | 
@@ -321,7 +322,7 @@ This command requires one of the following roles:
 ```
 {
     "DepartingEmployee": {
-        "CaseID": "892",
+        "UserID": "892",
         "DepartureDate": "2020-02-28",
         "Note": "Leaving for competitor",
         "Username": "john.user@123.org"
@@ -331,14 +332,14 @@ This command requires one of the following roles:
 
 ##### Human Readable Output
 
-| **CaseID** | **DepartureDate** | **Note** | **Username** |
+| **UserID** | **DepartureDate** | **Note** | **Username** |
 | --- | --- | --- | --- |
 | 123 | 2020-02-28 | Leaving for competitor | john.user@123.org |
 
 
 ### 4. code42-departingemployee-remove
 ---
-Remove a user from the Departing Employee Lens
+Remove a user from the Departing Employee List
 ##### Required Permissions
 
 This command requires one of the following roles:
@@ -353,14 +354,14 @@ This command requires one of the following roles:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to remove from the Departing Employee Lens | Optional | 
+| username | Username to remove from the Departing Employee List | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | unknown | Internal Code42 Case ID for Departing Employee | 
+| Code42.DepartingEmployee.UserID | unknown | Internal Code42 User ID for Departing Employee | 
 | Code42.DepartingEmployee.Username | unknown | Username for Departing Employee | 
 
 
@@ -373,7 +374,7 @@ This command requires one of the following roles:
 ```
 {
     "DepartingEmployee": {
-        "CaseID": "892",
+        "UserID": "892",
         "Username": "john.user@123.org"
     }
 }
@@ -381,7 +382,7 @@ This command requires one of the following roles:
 
 ##### Human Readable Output
 
-| **CaseID** | **Username** |
+| **UserID** | **Username** |
 | --- | --- | 
 | 123 | john.user@123.org |
 
@@ -434,7 +435,7 @@ This command requires one of the following roles:
 
 ## Additional Information
 ---
-For additional infromation on Code42 features and functionality please visit [https://support.code42.com/Administrator/Cloud/Monitoring\_and\_managing](https://support.code42.com/Administrator/Cloud/Monitoring_and_managing)
+For additional information on Code42 features and functionality please visit [https://support.code42.com/Administrator/Cloud/Monitoring\_and\_managing](https://support.code42.com/Administrator/Cloud/Monitoring_and_managing)
 
 ## Known Limitations
 ---
