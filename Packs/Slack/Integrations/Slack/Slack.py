@@ -271,10 +271,10 @@ def set_integration_context(context, sync: bool = False, version: int = -1) -> d
     Returns:
         The new integration context
     """
+    demisto.debug(f'Slack - setting integration context: {str(context)}')
     if is_versioned_context_available():
         context['version'] = str(version + 1)
         demisto.debug(f'Slack - updating integration context to version {version + 1}. Sync: {sync}')
-        demisto.debug(f'Slack - setting integration context: {str(context)}')
         return demisto.setIntegrationContextVersioned(context, version, sync)
     else:
         return demisto.setIntegrationContext(context)
@@ -439,7 +439,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
                 response = client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
             response = api_error.response
-            headers = response.headers  # type: ignore[union-attr]
+            headers = response.headers
             if 'Retry-After' in headers:
                 retry_after = int(headers['Retry-After'])
                 total_try_time += retry_after
@@ -449,7 +449,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
             raise
         break
 
-    return response  # type: ignore
+    return response
 
 
 async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
@@ -473,14 +473,14 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
         try:
             if http_verb == 'POST':
                 if file_:
-                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore[misc]
+                    response = await client.api_call(method, files={"file": file_}, data=body)
                 else:
-                    response = await client.api_call(method, json=body)  # type: ignore[misc]
+                    response = await client.api_call(method, json=body)
             else:
-                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore[misc]
+                response = await client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
             response = api_error.response
-            headers = response.headers  # type: ignore[union-attr]
+            headers = response.headers
             if 'Retry-After' in headers:
                 retry_after = int(headers['Retry-After'])
                 total_try_time += retry_after
@@ -2149,7 +2149,7 @@ def main():
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')  # type: ignore[arg-type]
+        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')
         if is_debug_mode():
             print_thread_dump()
 
