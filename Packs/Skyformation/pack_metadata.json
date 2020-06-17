@@ -1,10 +1,10 @@
 {
   "name": "Skyformation",
   "description": "SkyFormation provides cloud application security for business organizations. SkyFormation Universal connector forwards security events to the organization security tools and enables them to cover their cloud activity.",
-  "support": "xsoar",
+  "support": "partner",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
+  "author": "Skyformation",
+  "url": "https://support.skyformation.com/hc/en-us",
   "email": "",
   "created": "2020-04-14T00:00:00Z",
   "categories": [
