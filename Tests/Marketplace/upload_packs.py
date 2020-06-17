@@ -414,7 +414,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         return private_packs
 
 
-def _build_summary_table(packs_input_list):
+def _build_summary_table(packs_input_list, include_pack_status=False):
     """Build summary table from pack list
 
     Args:
@@ -424,13 +424,15 @@ def _build_summary_table(packs_input_list):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack Name", "Version", "Status"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.latest_version, pack_status_message]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version]
         table.add_row(row)
 
     return table
@@ -464,20 +466,24 @@ def print_packs_summary(packs_list):
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
     print("\n")
-    print("--------------------------------------- Packs Upload Summary ---------------------------------------")
+    print("------------------------------------------ Packs Upload Summary ------------------------------------------")
     print(f"Total number of packs: {len(packs_list)}")
+    print("----------------------------------------------------------------------------------------------------------")
 
     if successful_packs:
         print_color(f"Number of successful uploaded packs: {len(successful_packs)}", LOG_COLORS.GREEN)
+        print_color("Uploaded packs:\n", LOG_COLORS.GREEN)
         successful_packs_table = _build_summary_table(successful_packs)
         print_color(successful_packs_table, LOG_COLORS.GREEN)
     if skipped_packs:
         print_warning(f"Number of skipped packs: {len(skipped_packs)}")
+        print_warning("Skipped packs:\n")
         skipped_packs_table = _build_summary_table(skipped_packs)
         print_warning(skipped_packs_table)
     if failed_packs:
         print_error(f"Number of failed packs: {len(failed_packs)}")
-        failed_packs_table = _build_summary_table(failed_packs)
+        print_error("Failed packs:\n")
+        failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         print_error(failed_packs_table)
         sys.exit(1)
 

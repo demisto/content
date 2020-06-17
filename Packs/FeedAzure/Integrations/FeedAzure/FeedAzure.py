@@ -201,7 +201,7 @@ class Client(BaseClient):
 
         except RuntimeError as err:
             demisto.debug(str(err))
-            raise RuntimeError(F'Could not fetch download link from Azure')
+            raise RuntimeError('Could not fetch download link from Azure')
 
         except ValueError as err:
             demisto.debug(str(err))
