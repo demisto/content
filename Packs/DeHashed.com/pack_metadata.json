@@ -1,0 +1,16 @@
+{
+    "name": "DeHashed.com",
+    "description": "This integration allows you to check if your personal information such as your email, username, or password is being compromised.",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "",
+    "url": "",
+    "email": "",
+    "created": "2020-06-14T09:55:44Z",
+    "categories": [
+        "Deception"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
