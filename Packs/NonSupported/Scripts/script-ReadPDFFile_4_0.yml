@@ -143,4 +143,4 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/pdfx
 tests:
-  - ReadPDFFile-Test
+  - No tests

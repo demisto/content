@@ -238,4 +238,4 @@ outputs:
   description: The account's manager.
   type: string
 tests:
-  - Account Enrichment - Generic v2 - Test
+  - No tests

@@ -142,4 +142,4 @@ script:
     description: Returns all services that have been found on the given host IP.
   runonce: false
 tests:
-  - ShodanTest
+  - No tests

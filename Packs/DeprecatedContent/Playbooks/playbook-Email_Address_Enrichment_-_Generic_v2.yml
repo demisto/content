@@ -622,4 +622,4 @@ outputs:
   description: The DBot score.
   type: number
 tests:
-  - Email Address Enrichment - Generic v2 - Test
+  - No tests

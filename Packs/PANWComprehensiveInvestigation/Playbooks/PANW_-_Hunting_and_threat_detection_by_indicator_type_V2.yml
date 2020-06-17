@@ -3435,4 +3435,4 @@ outputs:
   description: External host names detected based on fields and inputs in your search.
   type: string
 tests:
-- PANW - Hunting and threat detection by indicator type Test
+- No tests

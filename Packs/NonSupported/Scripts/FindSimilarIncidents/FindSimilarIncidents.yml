@@ -146,5 +146,5 @@ type: python
 subtype: python2
 runonce: false
 tests:
-- dedup_-_generic_-_test
+- No tests
 toversion: 4.1.0

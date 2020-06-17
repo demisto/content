@@ -381,4 +381,4 @@ outputs:
   description: The similar incident.
   type: unknown
 tests:
-  - dedup_-_generic_-_test
+  - No tests
