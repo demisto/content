@@ -945,8 +945,6 @@ class TestCommandResults:
             indicators=[ip]
         )
         context = results.to_context()
-        del context['IndicatorTimeline']
-        del context['IgnoreAutoExtract']
 
         assert context == {
             'Type': EntryType.NOTE,
@@ -970,7 +968,9 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_multiple_indicators(self):
@@ -1020,8 +1020,6 @@ class TestCommandResults:
             indicators=[ip1, ip2]
         )
         context = results.to_context()
-        del context['IgnoreAutoExtract']
-        del context['IndicatorTimeline']
 
         assert context == {
             'Type': EntryType.NOTE,
@@ -1056,7 +1054,9 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items(self):
@@ -1077,8 +1077,6 @@ class TestCommandResults:
             outputs=tickets
         )
         context = results.to_context()
-        del context['IgnoreAutoExtract']
-        del context['IndicatorTimeline']
 
         assert context == {
             'Type': EntryType.NOTE,
@@ -1087,7 +1085,9 @@ class TestCommandResults:
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1111,8 +1111,6 @@ class TestCommandResults:
             raw_response=tickets
         )
         context = results.to_context()
-        del context['IgnoreAutoExtract']
-        del context['IndicatorTimeline']
 
         assert context == {
             'Type': EntryType.NOTE,
@@ -1121,7 +1119,9 @@ class TestCommandResults:
             'HumanReadable': None,
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1185,8 +1185,6 @@ class TestCommandResults:
             indicators=[domain]
         )
         context = results.to_context()
-        del context['IndicatorTimeline']
-        del context['IgnoreAutoExtract']
 
         assert context == {
             'Type': EntryType.NOTE,
@@ -1267,7 +1265,9 @@ class TestCommandResults:
                         'Type': 'domain'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
 

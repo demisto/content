@@ -2004,7 +2004,7 @@ class Common(object):
 
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
                      geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
-                     timeline_message=''):
+                     timeline_message=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -2066,6 +2066,9 @@ class Common(object):
             return ret_value
 
         def extract_timeline(self, category=None):
+            if not self.timeline_message:
+                return None
+
             return {
                 'Value': self.ip,
                 'Message': self.timeline_message,
@@ -2183,7 +2186,7 @@ class Common(object):
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
                      product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
-                     timeline_message=''):
+                     timeline_message=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2265,6 +2268,9 @@ class Common(object):
             return ret_value
 
         def extract_timeline(self, category=None):
+            if not self.timeline_message:
+                return None
+
             value = None
             for val in [self.md5, self.sha1, self.sha256, self.sha512]:
                 if val:
@@ -2304,7 +2310,7 @@ class Common(object):
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description, timeline_message=''):
+        def __init__(self, id, cvss, published, modified, description, timeline_message=None):
             # type (str, str, str, str, str) -> None
 
             self.id = id
@@ -2348,6 +2354,9 @@ class Common(object):
             return ret_value
 
         def extract_timeline(self, category=None):
+            if not self.timeline_message:
+                return None
+
             return {
                 'Value': self.cvss,
                 'Message': self.timeline_message,
@@ -2377,7 +2386,7 @@ class Common(object):
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, timeline_message=''):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, timeline_message=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
@@ -2412,6 +2421,9 @@ class Common(object):
             return ret_value
 
         def extract_timeline(self, category=None):
+            if not self.timeline_message:
+                return None
+
             return {
                 'Value': self.url,
                 'Message': self.timeline_message,
@@ -2430,7 +2442,7 @@ class Common(object):
                      domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, timeline_message=''):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, timeline_message=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2548,6 +2560,9 @@ class Common(object):
             return ret_value
 
         def extract_timeline(self, category=None):
+            if not self.timeline_message:
+                return None
+
             return {
                 'Value': self.domain,
                 'Message': self.timeline_message,
@@ -2562,7 +2577,7 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None, timeline_message=''):
+                     memory=None, processors=None, processor=None, timeline_message=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -2577,7 +2592,7 @@ class Common(object):
             self.processors = processors
             self.processor = processor
 
-            self.timeline_message = ''
+            self.timeline_message = timeline_message
 
         def to_context(self):
             endpoint_context = {
@@ -2627,6 +2642,9 @@ class Common(object):
             return ret_value
 
         def extract_timeline(self, category=None):
+            if not self.timeline_message:
+                return None
+
             return {
                 'Value': self.id,
                 'Message': self.timeline_message,
@@ -2705,7 +2723,7 @@ class CommandResults:
                     outputs[key].append(value)
 
                 timeline_item = indicator.extract_timeline(category=timeline_category)
-                if timeline_item['Message'] != '':
+                if timeline_item:
                     timeline_items.append(timeline_item)
 
         if self.raw_response:
