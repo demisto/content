@@ -1,11 +1,12 @@
 def setup_context():
-    val = demisto.callingContext.get('args').get('value', 'return_results("Python arg not found")')
+    val = demisto.callingContext.get('args').get('value')
 
     return val
 
 
 def py_dt(val):
-    code = compile(val, '<string>', 'exec')
+    source = demisto.args().get('Python', 'return_results("Python arg not found")')
+    code = compile(source, '<string>', 'exec')
     exec(code)
 
 
