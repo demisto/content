@@ -127,8 +127,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
     # Failing instances list
     sc.api_call(
         "chat.postMessage",
-        # channel="dmst-content-lab",
-        channel="WHCL130LE",
+        channel="dmst-content-lab",
         username="Instances nightly report",
         as_user="False",
         attachments=attachments,
@@ -138,8 +137,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
     # Failing instances file
     sc.api_call(
         "chat.postMessage",
-        # channel="dmst-content-lab",
-        channel="WHCL130LE",
+        channel="dmst-content-lab",
         username="Instances nightly report",
         as_user="False",
         text="Detailed list of failing instances could be found in the following link:\n"
@@ -149,15 +147,15 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 
 if __name__ == "__main__":
     options = options_handler()
-    # if options.instance_tests:
-    with open('./env_results.json', 'r') as json_file:
-        env_results = json.load(json_file)
-        server = SERVER_URL.format(env_results[0]["InstanceDNS"])
+    if options.instance_tests:
+        with open('./env_results.json', 'r') as json_file:
+            env_results = json.load(json_file)
+            server = SERVER_URL.format(env_results[0]["InstanceDNS"])
 
-    slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl,
-                   options.buildNumber)
-    # create this file for destroy_instances script
-    with open("./Tests/is_build_passed_{}.txt".format(env_results[0]["Role"].replace(' ', '')), 'a'):
-        pass
-    # else:
-    #     print_error("Not instance tests build, stopping Slack Notifications about instances")
+        slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl,
+                       options.buildNumber)
+        # create this file for destroy_instances script
+        with open("./Tests/is_build_passed_{}.txt".format(env_results[0]["Role"].replace(' ', '')), 'a'):
+            pass
+    else:
+        print_error("Not instance tests build, stopping Slack Notifications about instances")
