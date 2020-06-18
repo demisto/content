@@ -18,7 +18,9 @@
     "File",
     "Extract"
   ],
-  "useCases": [],
+  "useCases": [
+    "Hunting"
+  ],
   "keywords": [
     "Hunting",
     "IOC",
