@@ -230,19 +230,19 @@ script:
           required: true
           description: Analysis ID in TDS
       outputs:
-        - contextPath: InfoFile.Name
+        - contextPath: File.Name
           description: The report file name
           type: string
-        - contextPath: InfoFile.EntryID
+        - contextPath: File.EntryID
           description: Report file ID in Demisto
           type: string
-        - contextPath: InfoFile.Size
+        - contextPath: File.Size
           description: The report size
           type: number
-        - contextPath: InfoFile.Type
+        - contextPath: File.Type
           description: The report file type
           type: string
-        - contextPath: InfoFile.Info
+        - contextPath: File.Info
           description: The report file info
           type: string
       description: Export an archive with TDS Polygon report to War Room
@@ -252,19 +252,19 @@ script:
           required: true
           description: Analysis ID in TDS
       outputs:
-        - contextPath: InfoFile.Name
+        - contextPath: File.Name
           description: The dump file name
           type: string
-        - contextPath: InfoFile.EntryID
+        - contextPath: File.EntryID
           description: The dump file ID in Demisto
           type: string
-        - contextPath: InfoFile.Size
+        - contextPath: File.Size
           description: The dump file size
           type: number
-        - contextPath: InfoFile.Type
+        - contextPath: File.Type
           description: The dump file type
           type: string
-        - contextPath: InfoFile.Info
+        - contextPath: File.Info
           description: The dump file info
       description: The command allows you to download a network activity dump in case the file/link is malicious.
     - name: polygon-export-video
@@ -273,19 +273,19 @@ script:
           required: true
           description: Analysis ID in TDS
       outputs:
-        - contextPath: InfoFile.Name
+        - contextPath: File.Name
           description: The video file name
           type: string
-        - contextPath: InfoFile.EntryID
+        - contextPath: File.EntryID
           description: The video file ID in Demisto
           type: string
-        - contextPath: InfoFile.Size
+        - contextPath: File.Size
           description: The video file size
           type: number
-        - contextPath: InfoFile.Type
+        - contextPath: File.Type
           description: The video file type
           type: string
-        - contextPath: InfoFile.Info
+        - contextPath: File.Info
           description: The video file info
           type: string
       description: The command allows you to download a screen activity video in case the file/link is malicious.

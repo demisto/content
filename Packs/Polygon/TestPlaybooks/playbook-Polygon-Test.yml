@@ -344,27 +344,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Name
+              simple: File.Name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.EntryID
+              simple: File.EntryID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Size
+              simple: File.Size
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Type
+              simple: File.Type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Info
+              simple: File.Info
             iscontext: true
     view: |-
       {
@@ -428,27 +428,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Name
+              simple: File.Name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.EntryID
+              simple: File.EntryID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Size
+              simple: File.Size
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Type
+              simple: File.Type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Info
+              simple: File.Info
             iscontext: true
     view: |-
       {
@@ -512,27 +512,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Name
+              simple: File.Name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.EntryID
+              simple: File.EntryID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Size
+              simple: File.Size
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Type
+              simple: File.Type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: InfoFile.Info
+              simple: File.Info
             iscontext: true
     view: |-
       {
@@ -872,7 +872,7 @@ tasks:
         simple: "no"
       index: {}
       key:
-        simple: InfoFile
+        simple: File
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -907,7 +907,7 @@ tasks:
         simple: "no"
       index: {}
       key:
-        simple: InfoFile
+        simple: File
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
