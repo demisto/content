@@ -672,7 +672,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         testing_status = False
         failure_category = '\nIntegration instances that had ("Test" Button) failures' \
                            ' only after content was updated. This indicates that your' \
-                           'updates introduced breaking changes to the integration.'
+                           ' updates introduced breaking changes to the integration.'
         prints_manager.add_print_job(failure_category, print_error, 0)
         for instance_name, integration_of_instance in failed_only_after_update:
             prints_manager.add_print_job(
