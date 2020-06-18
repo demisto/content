@@ -700,7 +700,7 @@ def fetch_incidents_command():
     cache = demisto.getIntegrationContext()
     stored_incidents = cache.get("incidents")
 
-    if stored_incidents is not None:
+    if stored_incidents is None:
         while more_events:
             event_incidents, page_token = fetch_events_incidents_command(start_date, end_date, token, page_token)
             for incident in event_incidents:
@@ -723,17 +723,24 @@ def fetch_incidents_command():
                     more_behavior = False
 
         # Send PAGE_LIMIT number of incidents to demisto
-        incidents_to_send = incidents[:PAGE_LIMIT]
-        del incidents[:PAGE_LIMIT]
-        demisto.incidents(incidents_to_send)
+        if len(incidents) > PAGE_LIMIT:
+            incidents_to_send = incidents[:PAGE_LIMIT]
+            del incidents[:PAGE_LIMIT]
+            demisto.incidents(incidents_to_send)
+        else:
+            demisto.incidents(incidents)
 
         # Add remaining incidents to cache
-        cache["incidents"] = incident
+        cache["incidents"] = incidents
         demisto.setIntegrationContext(cache)
     else:
         # Send next PAGE_LIMIT number of incidents to demisto
-        incidents_to_send = stored_incidents[:PAGE_LIMIT]
-        del stored_incidents[:PAGE_LIMIT]
+        if len(stored_incidents) > PAGE_LIMIT:
+            incidents_to_send = stored_incidents[:PAGE_LIMIT]
+            del stored_incidents[:PAGE_LIMIT]
+        else:
+            incidents_to_send = list(stored_incidents)
+            stored_incidents = None
         demisto.incidents(incidents_to_send)
 
         # Update Cache
