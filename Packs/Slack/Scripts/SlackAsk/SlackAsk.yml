@@ -64,7 +64,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: buttons
-  description: How the user should response to the question.
+  description: How the user should respond to the question.
   isArray: false
   name: responseType
   predefined:
@@ -112,6 +112,7 @@ commonfields:
 enabled: true
 name: SlackAsk
 script: '-'
+subtype: python3
 system: false
 tags:
 - slack
@@ -124,5 +125,4 @@ tests:
 dependson:
   must:
   - send-notification
-subtype: python3
 fromversion: 5.0.0
