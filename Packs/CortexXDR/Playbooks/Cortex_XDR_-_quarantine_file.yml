@@ -97,8 +97,8 @@ tasks:
     task:
       id: b8e66e18-fc70-48ce-8cb4-859bd1ce7de6
       version: -1
-      name: quarantine file
-      description: Quarantine file on selected endpoints. You can select up to 1000
+      name: Quarantine file
+      description: Quarantine a file on selected endpoints. You can select up to 1000
         endpoints.
       script: '|||xdr-quarantine-files'
       type: regular
@@ -159,7 +159,7 @@ tasks:
     task:
       id: 932eceea-f7db-4839-845b-bba37414536d
       version: -1
-      name: get quarantine status
+      name: Get quarantine status
       description: Retrieve the quarantine status for a selected file.
       script: '|||xdr-get-quarantine-status'
       type: regular
@@ -204,18 +204,17 @@ inputs:
 - key: file_hash
   value: {}
   required: true
-  description: The file’s hash. Hash must be a valid SHA256.
+  description: The file’s hash. Must be a valid SHA256 hash.
   playbookInputQuery:
 - key: file_path
   value: {}
   required: true
-  description: the path for the selected file.
+  description: The path for the selected file.
   playbookInputQuery:
 - key: endpoint_id
   value: {}
   required: true
-  description: Here you provide the endpoint id which is the file's location in the
-    system.
+  description: The file's location in the system.
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
