@@ -2256,9 +2256,9 @@ def panorama_get_url_category_command(url_cmd: str):
 
     title = 'URL Filtering'
     if url_cmd == 'url-info-cloud':
-        title += f' from cloud'
+        title += ' from cloud'
     elif url_cmd == 'url-info-host':
-        title += f' from host'
+        title += ' from host'
     human_readable = tableToMarkdown(f'{title}:', url_category_output_hr, ['URL', 'Category'], removeNull=True)
 
     demisto.results({
