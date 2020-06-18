@@ -32,103 +32,103 @@ b) Copy the automation and change the `default timeout` parameter to match your 
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PcapResults.Bytes | The number of bytes transmitted in the PCAP file. | Number |
-| PcapResults.Packets | The number of packets transmitted in the PCAP file. | Number |
-| PcapResults.EntryID | The entryID of the PCAP file. | String |
-| PcapResults.StreamCount | The number of streams in the PCAP file. | String |
-| PcapResults.StartTime | The date and time of the first packet in the PCAP file. | Date |
-| PcapResults.EndTime | The date and time of the last packet in the PCAP file. | String |
-| PcapResults.UniqueSourceIP | The number of unique IPs from which packets were transmitted. | Number |
-| PcapResults.UniqueDestIP | The number of unique IPs from to packets were transmitted. | Number |
-| PcapResultsFlow.Bytes | The number of bytes transmitted in the flow. | String |
-| PcapResultsFlow.DestIP | The destination IP of the flow. | String |
-| PcapResultsFlow.SourceIP | The source IP of the flow. | String |
-| PcapResultsFlow.Transport | The transport protocol of the flow. | String|
-| PcapResultsFlow.SourcePort | The source port of the flow. | String |
-| PcapResultsFlow.DestPort | The destination port of the flow. | String |
-| PcapResultsFlow.Duration | The duration of the flow \(in seconds\). | String |
-| PcapResultsFlow.EndTime | The date/time the flow ended. | Date |
-| PcapResultsFlow.StartTime | The date/time the flow started. | Date |
-| PcapResults.URL | The URLs extracted from the file. | String |
-| PcapResults.IP | The IPs extracted from the file. | String |
-| PcapResults.Email | The emails extracted from the file. | String |
-| PcapResults.Regex | The regular expressions specified in \`extract\_regex\` extracted from the file. | String |
-| PcapResultsHTTP.ResponseStatusCode | The response code. | String |
-| PcapResultsHTTP.RequestVersion | The request version. | String |
-| PcapResultsHTTP.RequestCacheControl | The cache control of the request. | String |
-| PcapResultsHTTP.ResponseDate | The date/time of the response. | Date |
-| PcapResultsHTTP.RequestMethod | The request method. | String |
-| PcapResultsHTTP.RequestSourceIP | The source IP of the request. | String |
-| PcapResultsHTTP.ResponseContentType | The response content type. | String |
-| PcapResultsHTTP.RequestAgent | The request agent. | String |
-| PcapResultsHTTP.RequestHost | The request host. | String |
-| PcapResultsHTTP.ResponseVersion | The response version. | String |
-| PcapResultsHTTP.ID | The ID of the HTTP interaction. | String |
-| PcapResultsHTTP.EntryID | The PCAP entry ID. | String |
-| PcapResultsHTTP.RequestURI | The request URI. | String |
-| PcapResultsHTTP.ResponseContentLength | The length of the response content. | String |
-| PcapResultsHTTP.ResponseCodeDesc | The code description of the response. | String |
-| PcapResultsDNS.ID | The ID of the DNS request. | String |
-| PcapResultsDNS.Request | The DNS request. | String |
-| PcapResultsDNS.Response | The DNS response. | String |
-| PcapResultsDNS.Type | The type of the DNS request. | String |
-| PcapResultsDNS.ID | The DNS packet ID. | String |
-| PcapResultsDNS.EntryID | The PCAP entry ID. | String |
-| PcapResults.Protocols | List of protocols found in the PCAP. | String |
-| PcapResultsSMTP.From | The mail sender. | String |
-| PcapResultsSMTP.To | The mail recipients. | String |
-| PcapResultsSMTP.Subject | The mail subject. | String |
-| PcapResultsSMTP.MimeVersion | The mime version. | String |
-| PcapResultsSMTP.ID | The SMTP packet's ID. | String |
-| PcapResultsSMTP.EntryID | The PCAP entry ID. | String |
-| PcapResultsKERBEROS.EntryID | The PCAP entry ID. | String |
-| PcapResultsKERBEROS.Realm | The KERBEROS realm. | String |
-| PcapResultsKERBEROS.SName | The KERBEROS SName. | String |
-| PcapResultsKERBEROS.CName | The KERBEROS CName. | String |
-| PcapResultsTelnet.Data | The telnet data. | String |
-| PcapResultsTelnet.Commands | The telnet commands. | String |
-| PcapResultsTelnet.EntryID | The PCAP entry ID. | String |
-| PcapResultsLLMNR.EntryID | The PCAP entry ID. | String |
-| PcapResultsLLMNR.QueryClass | The LLMNR query class. | String |
-| PcapResultsLLMNR.QueryName | The LLMNR query name. | String |
-| PcapResultsLLMNR.Questions | The LLMNR questions. | String |
-| PcapResultsLLMNR.ID | The LLMNR packet ID. | String |
-| PcapResultsLLMNR.QueryType | The LLMNR query type. | String |
-| PcapResultsSYSLOG.EntryID | The PCAP entry ID. | String |
-| PcapResultsSYSLOG.ID | The SYSLOGS packet ID. | String |
-| PcapResultsSYSLOG.Message | The SYSLOGS message. | String |
-| PcapResultsSYSLOG.Hostname | The SYSLOGS host name. | String |
-| PcapResultsSYSLOG.Timestamp | The SYSLOGS time stamp. | String |
-| PcapResultsSMB2.EntryID | The PCAP entry ID. | String |
-| PcapResultsSMB2.ID | The SMB2 packet ID. | String |
-| PcapResultsSMB2.UserName | The SMB2 user name. | String |
-| PcapResultsSMB2.Domain | The SMB2 domain. | String |
-| PcapResultsSMB2.HostName | The SMB2 host name. | String |
-| PcapResultsSMB2.Command | The SMB2 command. | String |
-| PcapResultsSMB2.FileName | The SMB2 file name. | String |
-| PcapResultsSMB2.Tree | The SMB2 tree. | String |
-| PcapResultsNETBIOS.EntryID | The PCAP entry ID. | String |
-| PcapResultsNETBIOS.ID | The NETIOS packet ID. | String |
-| PcapResultsNETBIOS.Name | The NETIOS name. | String |
-| PcapResultsNETBIOS.Type | The NETIOS type. | String |
-| PcapResultsNETBIOS.Class | The NETIOS class. | String |
-| PcapResultsIRC.EntryID | The PCAP entry ID. | String |
-| PcapResultsIRC.ID | The IRC packet ID. | String |
-| PcapResultsIRC.RequestCommand | The IRC request command. | String |
-| PcapResultsIRC.RequestTrailer | The IRC request trailer. | String |
-| PcapResultsIRC.RequestPrefix | The IRC request prefix. | String |
-| PcapResultsIRC.RequestParameters | The IRC request parameters. | String |
-| PcapResultsIRC.ResponseCommand | The IRC response command. | String |
-| PcapResultsIRC.ResponseTrailer | The IRC response trailers. | String |
-| PcapResultsIRC.ResponsePrefix | The IRC response prefix. | String |
-| PcapResultsIRC.ResponseParameters | The IRC response parameters. | String |
-| PcapResultsFTP.EntryID | The PCAP entry ID. | String |
-| PcapResultsFTP.ID | The FTP packet ID. | String |
-| PcapResultsFTP.RequestCommand | The FTP request command. | String |
-| PcapResultsFTP.ResponseArgs | The FTP response arguments. | String |
-| PcapResultsFTP.ResponseCode | The FTP response code. | String |
-| PcapResultsICMP | ICMP data. | String |
-| PcapResultsSSH.EntryID | The PCAP's entry ID. | String |
-| PcapResultsSSH.ClientProtocols | The SSH client protocols in the PCAP. | String |
-| PcapResultsSSH.ServerProtocols | The SSH server protocols in the PCAP. | String |
-| PcapResultsSSH.KeyExchangeMessageCode | The SSH key exchange message codes. | String |
+| PCAPResults.Bytes | The number of bytes transmitted in the PCAP file. | Number |
+| PCAPResults.Packets | The number of packets transmitted in the PCAP file. | Number |
+| PCAPResults.EntryID | The entryID of the PCAP file. | String |
+| PCAPResults.StreamCount | The number of streams in the PCAP file. | String |
+| PCAPResults.StartTime | The date and time of the first packet in the PCAP file. | Date |
+| PCAPResults.EndTime | The date and time of the last packet in the PCAP file. | String |
+| PCAPResults.UniqueSourceIP | The number of unique IPs from which packets were transmitted. | Number |
+| PCAPResults.UniqueDestIP | The number of unique IPs from to packets were transmitted. | Number |
+| PCAPResultsFlow.Bytes | The number of bytes transmitted in the flow. | String |
+| PCAPResultsFlow.DestIP | The destination IP of the flow. | String |
+| PCAPResultsFlow.SourceIP | The source IP of the flow. | String |
+| PCAPResultsFlow.Transport | The transport protocol of the flow. | String|
+| PCAPResultsFlow.SourcePort | The source port of the flow. | String |
+| PCAPResultsFlow.DestPort | The destination port of the flow. | String |
+| PCAPResultsFlow.Duration | The duration of the flow \(in seconds\). | String |
+| PCAPResultsFlow.EndTime | The date/time the flow ended. | Date |
+| PCAPResultsFlow.StartTime | The date/time the flow started. | Date |
+| PCAPResults.URL | The URLs extracted from the file. | String |
+| PCAPResults.IP | The IPs extracted from the file. | String |
+| PCAPResults.Email | The emails extracted from the file. | String |
+| PCAPResults.Regex | The regular expressions specified in \`extract\_regex\` extracted from the file. | String |
+| PCAPResultsHTTP.ResponseStatusCode | The response code. | String |
+| PCAPResultsHTTP.RequestVersion | The request version. | String |
+| PCAPResultsHTTP.RequestCacheControl | The cache control of the request. | String |
+| PCAPResultsHTTP.ResponseDate | The date/time of the response. | Date |
+| PCAPResultsHTTP.RequestMethod | The request method. | String |
+| PCAPResultsHTTP.RequestSourceIP | The source IP of the request. | String |
+| PCAPResultsHTTP.ResponseContentType | The response content type. | String |
+| PCAPResultsHTTP.RequestAgent | The request agent. | String |
+| PCAPResultsHTTP.RequestHost | The request host. | String |
+| PCAPResultsHTTP.ResponseVersion | The response version. | String |
+| PCAPResultsHTTP.ID | The ID of the HTTP interaction. | String |
+| PCAPResultsHTTP.EntryID | The PCAP entry ID. | String |
+| PCAPResultsHTTP.RequestURI | The request URI. | String |
+| PCAPResultsHTTP.ResponseContentLength | The length of the response content. | String |
+| PCAPResultsHTTP.ResponseCodeDesc | The code description of the response. | String |
+| PCAPResultsDNS.ID | The ID of the DNS request. | String |
+| PCAPResultsDNS.Request | The DNS request. | String |
+| PCAPResultsDNS.Response | The DNS response. | String |
+| PCAPResultsDNS.Type | The type of the DNS request. | String |
+| PCAPResultsDNS.ID | The DNS packet ID. | String |
+| PCAPResultsDNS.EntryID | The PCAP entry ID. | String |
+| PCAPResults.Protocols | List of protocols found in the PCAP. | String |
+| PCAPResultsSMTP.From | The mail sender. | String |
+| PCAPResultsSMTP.To | The mail recipients. | String |
+| PCAPResultsSMTP.Subject | The mail subject. | String |
+| PCAPResultsSMTP.MimeVersion | The mime version. | String |
+| PCAPResultsSMTP.ID | The SMTP packet's ID. | String |
+| PCAPResultsSMTP.EntryID | The PCAP entry ID. | String |
+| PCAPResultsKERBEROS.EntryID | The PCAP entry ID. | String |
+| PCAPResultsKERBEROS.Realm | The KERBEROS realm. | String |
+| PCAPResultsKERBEROS.SName | The KERBEROS SName. | String |
+| PCAPResultsKERBEROS.CName | The KERBEROS CName. | String |
+| PCAPResultsTelnet.Data | The telnet data. | String |
+| PCAPResultsTelnet.Commands | The telnet commands. | String |
+| PCAPResultsTelnet.EntryID | The PCAP entry ID. | String |
+| PCAPResultsLLMNR.EntryID | The PCAP entry ID. | String |
+| PCAPResultsLLMNR.QueryClass | The LLMNR query class. | String |
+| PCAPResultsLLMNR.QueryName | The LLMNR query name. | String |
+| PCAPResultsLLMNR.Questions | The LLMNR questions. | String |
+| PCAPResultsLLMNR.ID | The LLMNR packet ID. | String |
+| PCAPResultsLLMNR.QueryType | The LLMNR query type. | String |
+| PCAPResultsSYSLOG.EntryID | The PCAP entry ID. | String |
+| PCAPResultsSYSLOG.ID | The SYSLOGS packet ID. | String |
+| PCAPResultsSYSLOG.Message | The SYSLOGS message. | String |
+| PCAPResultsSYSLOG.Hostname | The SYSLOGS host name. | String |
+| PCAPResultsSYSLOG.Timestamp | The SYSLOGS time stamp. | String |
+| PCAPResultsSMB2.EntryID | The PCAP entry ID. | String |
+| PCAPResultsSMB2.ID | The SMB2 packet ID. | String |
+| PCAPResultsSMB2.UserName | The SMB2 user name. | String |
+| PCAPResultsSMB2.Domain | The SMB2 domain. | String |
+| PCAPResultsSMB2.HostName | The SMB2 host name. | String |
+| PCAPResultsSMB2.Command | The SMB2 command. | String |
+| PCAPResultsSMB2.FileName | The SMB2 file name. | String |
+| PCAPResultsSMB2.Tree | The SMB2 tree. | String |
+| PCAPResultsNETBIOS.EntryID | The PCAP entry ID. | String |
+| PCAPResultsNETBIOS.ID | The NETIOS packet ID. | String |
+| PCAPResultsNETBIOS.Name | The NETIOS name. | String |
+| PCAPResultsNETBIOS.Type | The NETIOS type. | String |
+| PCAPResultsNETBIOS.Class | The NETIOS class. | String |
+| PCAPResultsIRC.EntryID | The PCAP entry ID. | String |
+| PCAPResultsIRC.ID | The IRC packet ID. | String |
+| PCAPResultsIRC.RequestCommand | The IRC request command. | String |
+| PCAPResultsIRC.RequestTrailer | The IRC request trailer. | String |
+| PCAPResultsIRC.RequestPrefix | The IRC request prefix. | String |
+| PCAPResultsIRC.RequestParameters | The IRC request parameters. | String |
+| PCAPResultsIRC.ResponseCommand | The IRC response command. | String |
+| PCAPResultsIRC.ResponseTrailer | The IRC response trailers. | String |
+| PCAPResultsIRC.ResponsePrefix | The IRC response prefix. | String |
+| PCAPResultsIRC.ResponseParameters | The IRC response parameters. | String |
+| PCAPResultsFTP.EntryID | The PCAP entry ID. | String |
+| PCAPResultsFTP.ID | The FTP packet ID. | String |
+| PCAPResultsFTP.RequestCommand | The FTP request command. | String |
+| PCAPResultsFTP.ResponseArgs | The FTP response arguments. | String |
+| PCAPResultsFTP.ResponseCode | The FTP response code. | String |
+| PCAPResultsICMP | ICMP data. | String |
+| PCAPResultsSSH.EntryID | The PCAP's entry ID. | String |
+| PCAPResultsSSH.ClientProtocols | The SSH client protocols in the PCAP. | String |
+| PCAPResultsSSH.ServerProtocols | The SSH server protocols in the PCAP. | String |
+| PCAPResultsSSH.KeyExchangeMessageCode | The SSH key exchange message codes. | String |

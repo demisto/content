@@ -425,8 +425,8 @@ class PCAP():
         return md, ec, general_context
 
     @logger
-    def mine(self, file_path: str, wpa_password: str, is_flows: bool, is_reg_extract: bool, pcap_filter: str,
-             pcap_filter_new_file_path: str) -> None:
+    def mine(self, file_path: str, wpa_password: str, rsa_key_file_path: str, is_flows: bool, is_reg_extract: bool,
+             pcap_filter: str, pcap_filter_new_file_path: str) -> None:
         """
         The main function of the script. Mines the PCAP.
 
@@ -441,8 +441,12 @@ class PCAP():
         """
         cap = None
         try:
+            custom_parameters = None
+            if rsa_key_file_path:
+                custom_parameters = {'-o': f'uat:rsa_keys:"{rsa_key_file_path}",""'}
             cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
-                                      decryption_key=wpa_password, encryption_type='WPA-PWD', keep_packets=False)
+                                      decryption_key=wpa_password, encryption_type='WPA-PWD', keep_packets=False,
+                                      custom_parameters=custom_parameters)
             for packet in cap:
                 self.last_packet = int(packet.number)
                 self.last_layer.add(packet.layers[-1].layer_name.upper())
@@ -720,7 +724,10 @@ def main():
     file_path = demisto.getFilePath(entry_id).get('path')
 
     wpa_password = args.get('wpa_password', '')
-
+    rsa_decrypt_key_entry_id = args.get('rsa_decrypt_key_entry_id', '')
+    rsa_key_file_path = None
+    if rsa_decrypt_key_entry_id:
+        rsa_key_file_path = demisto.getFilePath(rsa_decrypt_key_entry_id).get('path')
     conversation_number_to_display = int(args.get('convs_to_display', '15'))
     extracted_protocols = argToList(args.get('protocol_output', ''))
     if 'All' in extracted_protocols:
@@ -739,7 +746,7 @@ def main():
 
     try:
         pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips, entry_id)
-        pcap.mine(file_path, wpa_password, is_flows, is_reg_extract, pcap_filter,
+        pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
                   pcap_filter_new_file_path)
         hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
         return_outputs(hr, ec, raw)

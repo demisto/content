@@ -408,7 +408,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-http-extractor:1.0.0.4873
+dockerimage: demisto/pcap-miner:1.0.0.9360
 runas: DBotWeakRole
 runonce: true
 tests:
