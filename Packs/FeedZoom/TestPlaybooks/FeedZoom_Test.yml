@@ -2,6 +2,7 @@ id: FeedZoom_Test
 name: FeedZoom_Test
 version: -1
 fromversion: 5.5.0
+description: Test playbook for Zoom Feed
 starttaskid: '0'
 tasks:
   '0':
