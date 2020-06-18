@@ -304,6 +304,7 @@ tasks:
       id: 59a690c4-90d6-4d66-83a8-bceb5202d781
       version: -1
       name: Expanse Incident Playbook
+      description: Expanse Incident Playbook
       playbookName: Expanse Incident Playbook
       type: playbook
       iscommand: false
