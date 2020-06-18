@@ -688,7 +688,7 @@ script:
     description: Deletes an assessment.
     execution: false
     name: attackiq-delete-assessment
-  dockerimage: demisto/python3:3.7.4.1502
+  dockerimage: demisto/python3:3.8.3.8715
   isfetch: false
   runonce: false
   script: '-'

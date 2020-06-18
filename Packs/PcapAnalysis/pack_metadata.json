@@ -1,0 +1,23 @@
+{
+    "name": "PCAP Analysis",
+    "description": "Analyse your PCAP file.",
+    "support": "demisto",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "pcap",
+        "mine"
+    ],
+    "created": "2020-05-14T06:21:02Z",
+    "updated": "2020-05-14T06:21:02Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
+}

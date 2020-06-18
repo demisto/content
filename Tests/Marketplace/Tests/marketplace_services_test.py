@@ -143,6 +143,30 @@ class TestParsingInternalFunctions:
 
         assert result_author == expected
 
+    @pytest.mark.parametrize("support_type, certification", [("xsoar", None), ("xsoar", ""), ("xsoar", "verified")])
+    def test_get_certification_xsoar_support(self, support_type, certification):
+        """ Tests case when support is set to xsoar. Expected result should be certified certification.
+        """
+        result_certification = Pack._get_certification(support_type=support_type, certification=certification)
+
+        assert result_certification == Metadata.CERTIFIED
+
+    @pytest.mark.parametrize("support_type, certification", [("partner", None), ("developer", "")])
+    def test_get_certification_non_xsoar_support_empty(self, support_type, certification):
+        """ Tests case when support is set to non xsoar. Expected result should empty certification string.
+        """
+        result_certification = Pack._get_certification(support_type=support_type, certification=certification)
+
+        assert result_certification == ""
+
+    def test_get_certification_non_xsoar_support(self):
+        """ Tests case when support is set to partner with certified value.
+            Expected result should be certified certification.
+        """
+        result_certification = Pack._get_certification(support_type="partner", certification="certified")
+
+        assert result_certification == Metadata.CERTIFIED
+
 
 class TestHelperFunctions:
     """ Class for testing helper functions that are used in marketplace_services and upload_packs modules.
