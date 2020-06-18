@@ -1,6 +1,8 @@
 id: bf7518dc-8ece-4be3-8dcd-cf02e08e9ead
-version: 1
+version: 2
 name: CVSS Calculator Test
+description: This playbook simply tests that the calculator works and does not error.
+  It makes use of all the input cariables possible.
 starttaskid: "0"
 tasks:
   "0":
@@ -31,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d8e92d57-2fcb-41bf-8e36-5a22e3ee6401
+    taskid: d7a5abaa-f15e-43be-8783-c897b2ca956c
     type: regular
     task:
-      id: d8e92d57-2fcb-41bf-8e36-5a22e3ee6401
+      id: d7a5abaa-f15e-43be-8783-c897b2ca956c
       version: -1
       name: cvssCalculator
       description: This script calculates the CVSS Base Score, Temporal Score and
@@ -52,28 +54,42 @@ tasks:
         simple: H
       AC:
         simple: L
-      AR: {}
+      AR:
+        simple: H
       AV:
         simple: A
       C:
         simple: H
-      CR: {}
-      E: {}
+      CR:
+        simple: H
+      E:
+        simple: H
       I:
         simple: H
-      IR: {}
-      MA: {}
-      MAC: {}
-      MAV: {}
-      MC: {}
-      MI: {}
-      MPR: {}
-      MS: {}
-      MUI: {}
+      IR:
+        simple: H
+      MA:
+        simple: "N"
+      MAC:
+        simple: L
+      MAV:
+        simple: A
+      MC:
+        simple: L
+      MI:
+        simple: "N"
+      MPR:
+        simple: "N"
+      MS:
+        simple: U
+      MUI:
+        simple: "N"
       PR:
         simple: L
-      RC: {}
-      RL: {}
+      RC:
+        simple: C
+      RL:
+        simple: W
       S:
         simple: U
       UI:
@@ -122,7 +138,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 445,
+        "height": 415,
         "width": 380,
         "x": 450,
         "y": 50
