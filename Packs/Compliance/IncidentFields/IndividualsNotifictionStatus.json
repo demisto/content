@@ -28,7 +28,8 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "HIPAA Breach Notification"
+        "HIPAA Breach Notification",
+        "US Breach Notification"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,
