@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Python alternative to DT
+- Python alternative to the DT transformer
