@@ -2842,7 +2842,6 @@
         "CuckooTest": "Issue 25601",
         "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
-        "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
         "SignalSciences-Test": "Issue 24934",
