@@ -677,7 +677,5 @@ class TestCommands:
         mocker.patch.object(demisto, 'createIndicators', return_value={'ts': 1591142400000})
         xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
-        outputs = mocker.patch('XDR_iocs.return_outputs')
         get_changes(client)
-        ioc_time_line = xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501
-        assert ioc_time_line == outputs.call_args.kwargs['timeline'], f'time line\n\treturns: {outputs}\n\tinstead: {ioc_time_line}'    # noqa: E501
+        xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501

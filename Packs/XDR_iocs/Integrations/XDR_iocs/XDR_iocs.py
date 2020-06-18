@@ -236,7 +236,7 @@ def iocs_to_keep(client: Client):
 
 
 def create_last_iocs_query(from_date, to_date):
-    return f'modified:>={from_date} and modified:<{to_date} and ({Client.query})'
+    return f'modified:>={from_date} and modified:<{to_date} and ({Client.query}) -xdrstatus:disabled'
 
 
 def get_last_iocs(batch_size=200) -> List:
@@ -338,7 +338,6 @@ def get_changes(client: Client):
     if iocs:
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
         demisto.setIntegrationContext(from_time)
-        return_outputs('', timeline=xdr_ioc_to_timeline(list(map(lambda x: str(x.get('RULE_INDICATOR')), iocs))))
         demisto.createIndicators(list(map(xdr_ioc_to_demisto, iocs)))
 
 
