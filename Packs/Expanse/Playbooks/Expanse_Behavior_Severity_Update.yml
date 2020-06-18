@@ -14,7 +14,7 @@ tasks:
       id: 900122e1-9dcc-417e-8707-cd52b993382a
       version: -1
       name: ""
-      description: ""
+      description: "start"
       iscommand: false
       brand: ""
     nexttasks:
