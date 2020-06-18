@@ -1,5 +1,6 @@
 import shutil
 import sys
+import argparse
 import os
 import click
 import yaml
@@ -34,13 +35,13 @@ def get_json(file_path):
     return get_file(json.load, file_path, 'json')
 
 
-def handle_yml_file(file_path, yml_old_version):
+def handle_yml_file(file_path, new_to_version):
     yml_content = get_yaml(file_path)
-    if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(yml_old_version) or \
-            parse_version(yml_content.get('fromversion', '0.0.0')) > parse_version(yml_old_version):
+    if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(new_to_version) or \
+            parse_version(yml_content.get('fromversion', '0.0.0')) > parse_version(new_to_version):
         return False
 
-    yml_content['toversion'] = yml_old_version
+    yml_content['toversion'] = new_to_version
     with open(file_path, 'w') as f:
         yaml.dump(yml_content, f)
         print(f" - Updating {file_path}")
@@ -48,13 +49,13 @@ def handle_yml_file(file_path, yml_old_version):
     return True
 
 
-def handle_json_file(file_path, old_version):
+def handle_json_file(file_path, new_to_version):
     json_content = get_json(file_path)
-    if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(old_version) or \
-            parse_version(json_content.get('fromVersion', '0.0.0')) > parse_version(old_version):
+    if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(new_to_version) or \
+            parse_version(json_content.get('fromVersion', '0.0.0')) > parse_version(new_to_version):
         return False
 
-    json_content['toVersion'] = old_version
+    json_content['toVersion'] = new_to_version
     with open(file_path, 'w') as f:
         json.dump(json_content, f, indent=4)
         print(f" - Updating {file_path}")
@@ -96,11 +97,14 @@ def delete_json(file_path):
         os.remove(changelog_file)
 
 
+parser = argparse.ArgumentParser("Alter the branch to assign a new toVersion to all relevant files.")
+parser.add_argument('new_to_version', help='The new to version to assign.', required=True)
+
+
 def main():
-    arguments = sys.argv
-    old_version = arguments[1]
-    if old_version.count('.') == 1:
-        old_version = old_version + ".9"
+    new_to_version = parser.parse_args()['new_to_version']
+    if new_to_version.count('.') == 1:
+        new_to_version = new_to_version + ".9"
 
     click.secho("Starting Branch Editing")
     for pack_name in os.listdir('Packs'):
@@ -116,15 +120,17 @@ def main():
 
                     if os.path.isfile(file_path):
                         if file_path.endswith('.yml'):
-                            if not handle_yml_file(file_path, old_version):
+                            if not handle_yml_file(file_path, new_to_version):
                                 delete_playbook(file_path)
 
                     else:
+                        # in some cases test-playbooks are located in a directory within the TestPlaybooks directory.
+                        # this part handles these files.
                         inner_dir_path = file_path
                         for inner_file_name in os.listdir(inner_dir_path):
                             file_path = os.path.join(inner_dir_path, inner_file_name)
                             if file_path.endswith('.yml'):
-                                if not handle_yml_file(file_path, old_version):
+                                if not handle_yml_file(file_path, new_to_version):
                                     delete_playbook(file_path)
 
             if content_dir in ['Scripts', 'Integrations']:
@@ -138,7 +144,7 @@ def main():
 
                     else:
                         yml_file_path = os.path.join(path, script_name + '.yml')
-                    if not handle_yml_file(yml_file_path, old_version):
+                    if not handle_yml_file(yml_file_path, new_to_version):
                         delete_script_or_integration(path)
 
             elif content_dir in ['IncidentFields', 'IncidentTypes', 'IndicatorFields', 'Layouts', 'Classifiers',
@@ -146,7 +152,7 @@ def main():
                 for file_name in os.listdir(dir_path):
                     file_path = os.path.join(dir_path, file_name)
                     if os.path.isfile(file_path) and file_name.endswith('.json'):
-                        if not handle_json_file(file_path, old_version):
+                        if not handle_json_file(file_path, new_to_version):
                             delete_json(file_path)
 
         click.secho(f"Finished process for {pack_path}\n")
