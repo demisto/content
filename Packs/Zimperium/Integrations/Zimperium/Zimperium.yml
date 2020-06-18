@@ -87,7 +87,7 @@ script:
         description: 'Application name.'
         type: String
       - contextPath: Zimperium.Events.bssid
-        description: 'BSS ID.'
+        description: 'Network BSSID.'
         type: String
       - contextPath: Zimperium.Events.bundleId
         description: 'Bundle ID.'
@@ -135,7 +135,7 @@ script:
         description: 'Event status code'
         type: Number
       - contextPath: Zimperium.Events.eventVector
-        description: 'Event vector.'
+        description: 'Device or network attack vector.'
         type: String
       - contextPath: Zimperium.Events.firstName
         description: 'First name of the phone owner.'
@@ -183,7 +183,7 @@ script:
         description: 'Severity of the event.'
         type: String
       - contextPath: Zimperium.Events.ssid
-        description: 'SS ID'
+        description: 'Network SSID.'
         type: String
       - contextPath: Zimperium.Events.tag1
         description: 'TODO'
@@ -201,10 +201,10 @@ script:
         description: 'Phone number of the user.'
         type: String
       - contextPath: Zimperium.Events.zdid
-        description: 'ZD ID.'
+        description: 'Zimperium device ID.'
         type: String
       - contextPath: Zimperium.Events.zipsVersion
-        description: 'TODO'
+        description: 'zIPS version where the event occurred.'
         type: String
   - arguments:
     - default: false
@@ -234,11 +234,11 @@ script:
     name: zimperium-users-search
     outputs:
       - contextPath: Zimperium.Users.activationTokenUrl
-        description: 'TODO'
+        description: 'Activation token that is used to activate zIPS.'
         type: String
       - contextPath: Zimperium.Users.agreedToTerms
-        description: 'TODO'
-        type: Number
+        description: 'Whether the user finished enrollment.'
+        type: bool
       - contextPath: Zimperium.Users.alias
         description: 'User alias.'
         type: String
@@ -261,10 +261,10 @@ script:
         description: 'User last name.'
         type: String
       - contextPath: Zimperium.Users.lastSyncFromMdm
-        description: 'TODO'
-        type: Unknown
+        description: 'Last time the user synced from MDM e.g AirWatch, Mobile Iron, etc.'
+        type: Date
       - contextPath: Zimperium.Users.lastZconsoleLogin
-        description: 'User last zimperium console login.'
+        description: 'User last Zimperium console login.'
         type: Date
       - contextPath: Zimperium.Users.middleName
         description: 'User middle name.'
@@ -282,7 +282,7 @@ script:
         description: 'User phone number.'
         type: String
       - contextPath: Zimperium.Users.phoneNumberVerified
-        description: 'Whethe the user phone number is verified.'
+        description: 'Whether the user phone number is verified.'
         type: bool
       - contextPath: Zimperium.Users.pwdRecoveryRequest
         description: 'Whether the user requested password recovery.'
@@ -306,7 +306,7 @@ script:
         description: 'Whether the user is a superuser.'
         type: bool
       - contextPath: Zimperium.Users.syncedFromMdm
-        description: 'TODO'
+        description: 'Whether the user is synced from MDM e.g AirWatch, Mobile Iron, etc.'
         type: bool
       - contextPath: Zimperium.Users.termsVersion
         description: 'TODO'
@@ -324,10 +324,10 @@ script:
     name: zimperium-user-get-by-id
     outputs:
       - contextPath: Zimperium.Users.activationTokenUrl
-        description: 'TODO'
+        description: 'Activation token that is used to activate zIPS.'
         type: String
       - contextPath: Zimperium.Users.agreedToTerms
-        description: 'TODO'
+        description: 'Whether the user finished enrollment.'
         type: Number
       - contextPath: Zimperium.Users.alias
         description: 'User alias.'
@@ -351,7 +351,7 @@ script:
         description: 'User last name.'
         type: String
       - contextPath: Zimperium.Users.lastSyncFromMdm
-        description: 'TODO'
+        description: 'Last time the user synced from MDM e.g AirWatch, Mobile Iron, etc.'
         type: Unknown
       - contextPath: Zimperium.Users.lastZconsoleLogin
         description: 'User last zimperium console login.'
@@ -372,7 +372,7 @@ script:
         description: 'User phone number.'
         type: String
       - contextPath: Zimperium.Users.phoneNumberVerified
-        description: 'Whethe the user phone number is verified.'
+        description: 'Whether the user phone number is verified.'
         type: bool
       - contextPath: Zimperium.Users.pwdRecoveryRequest
         description: 'Whether the user requested password recovery.'
@@ -396,7 +396,7 @@ script:
         description: 'Whether the user is a superuser.'
         type: bool
       - contextPath: Zimperium.Users.syncedFromMdm
-        description: 'TODO'
+        description: 'Whether the user is synced from MDM e.g AirWatch, Mobile Iron, etc.'
         type: bool
       - contextPath: Zimperium.Users.termsVersion
         description: 'TODO'
@@ -471,7 +471,7 @@ script:
         description: 'Device last seen.'
         type: Date
       - contextPath: Zimperium.Devices.mdmId
-        description: 'TODO'
+        description: 'MDM ID. e.g: AirWatch, Mobile Iron.'
         type: Unknown
       - contextPath: Zimperium.Devices.middleName
         description: 'Device owner middle name.'
@@ -606,8 +606,8 @@ script:
         description: 'Device last seen.'
         type: Date
       - contextPath: Zimperium.Devices.mdmId
-        description: 'TODO'
-        type: Unknown
+        description: 'MDM ID. e.g: AirWatch, Iron Mobile.'
+        type: String
       - contextPath: Zimperium.Devices.middleName
         description: 'Device owner middle name.'
         type: String
@@ -887,7 +887,7 @@ script:
         description: 'Application process state.'
         type: String
       - contextPath: Zimperium.Application.score
-        description: 'Application score.'
+        description: 'Application score. Between 0 to 100. The higher it is, the worst it is.'
         type: Number
       - contextPath: Zimperium.Application.securityEnum
         description: 'Application security enum.'
@@ -991,7 +991,7 @@ script:
         description: 'Privacy risk.'
         type: Number
       - contextPath: Zimperium.Reports.risk_profile.security.Category
-        description: 'Securoty category.'
+        description: 'Security category.'
         type: String
       - contextPath: Zimperium.Reports.risk_profile.security.Risk Level
         description: 'Security risk level.'
