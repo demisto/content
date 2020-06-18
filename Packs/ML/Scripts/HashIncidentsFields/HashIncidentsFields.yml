@@ -6,7 +6,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separatetd list of incident types by which to filter.
+  description: A comma-separated list of incident types by which to filter.
   isArray: false
   name: incidentTypes
   required: false
@@ -84,22 +84,20 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: A comma-separatetd list of fields to hash
+  description: A comma-separated list of fields to hash.
   isArray: false
   name: fieldsToHash
-  predefined:
-  - comma separated optional values
   required: false
   secret: false
 - default: false
-  description: A comma-separatetd list of context to keep
+  description: A comma-separated list of context keys to keep.
   isArray: false
   name: contextKeys
   required: false
   secret: false
 comment: |-
-  Hash fields from incident list
-  Search for incidents by arguments with an option to hash some of its fields
+  Hash fields from the incident list.
+  Search for incidents by arguments with an option to hash some of its fields.
 commonfields:
   id: HashIncidentsFields
   version: -1
