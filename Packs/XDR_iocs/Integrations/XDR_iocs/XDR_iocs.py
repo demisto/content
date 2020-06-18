@@ -201,6 +201,8 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory', False)
         if threat_type:
             xdr_ioc['class'] = threat_type
+        if ioc.get('CustomFields', {}).get('xdrstatus') == 'disabled':
+            xdr_ioc['status'] = 'DISABLED'
         return xdr_ioc
     except KeyError as error:
         demisto.debug(f'unexpected IOC format in key: {str(error)}, {str(ioc)}')
@@ -236,7 +238,7 @@ def iocs_to_keep(client: Client):
 
 
 def create_last_iocs_query(from_date, to_date):
-    return f'modified:>={from_date} and modified:<{to_date} and ({Client.query}) -xdrstatus:disabled'
+    return f'modified:>={from_date} and modified:<{to_date} and ({Client.query})'
 
 
 def get_last_iocs(batch_size=200) -> List:
@@ -313,14 +315,15 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
 
 
 def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
-    score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
+    indicator = ioc.get('RULE_INDICATOR', '')
+    xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
+    score = get_indicator_xdr_score(indicator, xdr_server_score)
     entry: Dict = {
-        "value": ioc.get('RULE_INDICATOR'),
+        "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
         "fields": {
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
-            "score": score,
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME'))
         },
         "rawJSON": ioc
@@ -379,6 +382,26 @@ def create_iocs_to_keep_time():
     hour, minute, = divmod(offset, 60)
     hour += 1
     return hour, minute
+
+
+def is_xdr_data(ioc):
+    return ioc.get('sourceBrand') == 'Cortex XDR - IOC'
+
+
+def get_indicator_xdr_score(indicator: str, xdr_server: int):
+    xdr_local: int = 0
+    score = 0
+    if indicator:
+        ioc = demisto.searchIndicators(value=indicator).get('iocs')
+        if ioc:
+            ioc = ioc[0]
+            score = ioc.get('score', 0)
+            temp: Dict = next(filter(is_xdr_data, ioc.get('moduleToFeedMap', {}).values()), {})
+            xdr_local = temp.get('score', 0)
+    if xdr_server != score:
+        return xdr_server
+    else:
+        return xdr_local
 
 
 def main():
