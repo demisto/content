@@ -1,0 +1,133 @@
+id: bf7518dc-8ece-4be3-8dcd-cf02e08e9ead
+version: 1
+name: CVSS Calculator Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2eb70546-f609-449e-8cc1-9f201052a607
+    type: start
+    task:
+      id: 2eb70546-f609-449e-8cc1-9f201052a607
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d8e92d57-2fcb-41bf-8e36-5a22e3ee6401
+    type: regular
+    task:
+      id: d8e92d57-2fcb-41bf-8e36-5a22e3ee6401
+      version: -1
+      name: cvssCalculator
+      description: This script calculates the CVSS Base Score, Temporal Score and
+        Environmental Score using either the CVSS 3.0 or 3.1 calculator according
+        to https://www.first.org/cvss/ calculation documentation.
+      scriptName: cvssCalculator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      A:
+        simple: H
+      AC:
+        simple: L
+      AR: {}
+      AV:
+        simple: A
+      C:
+        simple: H
+      CR: {}
+      E: {}
+      I:
+        simple: H
+      IR: {}
+      MA: {}
+      MAC: {}
+      MAV: {}
+      MC: {}
+      MI: {}
+      MPR: {}
+      MS: {}
+      MUI: {}
+      PR:
+        simple: L
+      RC: {}
+      RL: {}
+      S:
+        simple: U
+      UI:
+        simple: "N"
+      version:
+        simple: "3.1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b6e89089-cd88-40c2-8931-d6438a8280b2
+    type: title
+    task:
+      id: b6e89089-cd88-40c2-8931-d6438a8280b2
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 445,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
