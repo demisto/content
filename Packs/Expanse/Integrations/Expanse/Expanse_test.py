@@ -5,6 +5,7 @@ import json
 TEST_IP = "12.4.49.74"
 TEST_API_KEY = "123456789123456789"
 TEST_DOMAIN = "base2.pets.com"
+TEST_PAGE_LIMIT = 10
 
 
 def http_request_mock(method, endpoint, params=None, token=False):
@@ -43,7 +44,8 @@ def http_request_mock_missing(method, endpoint, params=None, token=False):
 def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'api_key': TEST_API_KEY,
-        'first_run': '7'
+        'first_run': '7',
+        'page_limit': TEST_PAGE_LIMIT
     })
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
@@ -59,7 +61,8 @@ def test_fetch_incidents_with_behavior(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'api_key': TEST_API_KEY,
         'first_run': '7',
-        'behavior': True
+        'behavior': True,
+        'page_limit': TEST_PAGE_LIMIT
     })
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
