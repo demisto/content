@@ -44,7 +44,8 @@ def hash_incident():
                 if field in incident:
                     incident[field] = hash_multiple(incident.get(field))
             new_ctx = {}
-            ctx = get_context(incident['id'])
+            if demisto.args().get('contextKeys', '').split(","):
+                ctx = get_context(incident['id'])
             for key in demisto.args().get('contextKeys', '').split(","):
                 if key in ctx:
                     new_ctx[key] = demisto.dt(ctx, key)
