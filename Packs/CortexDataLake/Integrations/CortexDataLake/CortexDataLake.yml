@@ -1506,7 +1506,7 @@ script:
     - contextPath: CDL.Logging.Threat.SourcePort
       description: Source port utilized by the session.
       type: Number
-  dockerimage: demisto/python_pancloud_v2:1.0.0.7727
+  dockerimage: demisto/python_pancloud_v2:1.0.0.8888
   feed: false
   isfetch: true
   longRunning: false
