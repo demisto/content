@@ -50,7 +50,7 @@ reflect the answer back to Demisto.</p>
     <tr>
       <td>task</td>
       <td>The task number to close with the reply. If empty, then no playbook tasks will be closed.</td>
-      <td>Required</td>
+      <td>Optional</td>
     </tr>
     <tr>
       <td>replyEntriesTag</td>
@@ -59,7 +59,7 @@ reflect the answer back to Demisto.</p>
     </tr>
     <tr>
       <td>responseType</td>
-      <td>How the user should response to the question. Default is "buttons".</td>
+      <td>How the user should respond to the question. Default is "buttons".</td>
       <td>Optional</td>
     </tr>
     <tr>
