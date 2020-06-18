@@ -62,7 +62,7 @@ script:
       secret: false
     - default: false
       name: exclude_passed_checks
-      description: Whether to exclude passed checks or not.
+      description: Whether to exclude passed checks. Can be "true" or "false". Default is "false".
       auto: PREDEFINED
       predefined:
         - "true"
