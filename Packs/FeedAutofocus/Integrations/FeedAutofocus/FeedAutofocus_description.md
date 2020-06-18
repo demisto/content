@@ -1,6 +1,6 @@
 ## AutoFocus Feed
 Gets Custom feeds from AutoFocus.
-The Daily Feed is deprecated and can be set using AutoFocus Daily Feed. 
+The Daily Feed is deprecated. Use the AutoFocus Daily Feed instead. 
 
 For more information see the [AutoFocus documentation](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 
