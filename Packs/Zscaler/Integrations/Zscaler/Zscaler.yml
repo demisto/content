@@ -57,10 +57,10 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether submitting multiple URLs. When set to "true", the value
+      description: Whether multiple URLs are being submitted. If "true", the value
         entered for the "url" command argument is interpreted as a CSV list of URLs.
-        If you wish to submit a URL that has commas in it, then you may set this value
-        to "false" and enter that singular URL for the value of the "url" command
+        If you want to submit a URL that has commas in it, you can set this value
+        to "false" and enter the singular URL for the value of the "url" command
         argument.
       defaultValue: "true"
     outputs:
