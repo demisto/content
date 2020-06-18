@@ -1,5 +1,6 @@
 import math
 
+
 def round_up(n):
     if n is None:
         return None
@@ -9,12 +10,13 @@ def round_up(n):
     else:
         return math.floor((int_input / 10000) + 1) / 10.0
 
+
 def main():
     args = demisto.args()
     version = args.get('version', '3.1')
-    vectorString = f"CVSS:{version}/"
+    vector_string = f"CVSS:{version}/"
 
-    valuesMapOptions = {
+    values_map_options = {
         "3.0": {
             "AV": {
                 "X": None,
@@ -143,73 +145,53 @@ def main():
         }
     }
     version = args.get('version')
-    valuesMap = valuesMapOptions.get(version)
+    values_map = values_map_options.get(version)
 
-    valueList = list()
+    value_list = list()
     for k, v in args.items():
         if v != "X" and k != "version":
-            valueList.append(f"{k}:{v}")
-    vectorString += "/".join(valueList)
-
+            value_list.append(f"{k}:{v}")
+    vector_string += "/".join(value_list)
 
     ###########################################
     # Get all required values for calculations
     ###########################################
-    C = valuesMap["CIA"].get(args.get('C'))
-    MC = args.get('MC', "X")
-    if MC == "X":
-        MC = C
+    confidentiality = values_map["CIA"].get(args.get('C'))
+    modified_confidentiality = args.get('MC', "X")
+    modified_confidentiality = confidentiality if modified_confidentiality == "X" else values_map['CIA'].get(modified_confidentiality)
+    integrity = values_map['CIA'].get(args.get('I'))
+    modified_integrity = args.get('MI', "X")
+    modified_integrity = integrity if modified_integrity == "X" else values_map['CIA'].get(modified_integrity)
+    availability = values_map["CIA"].get(args.get('A'))
+    modified_availability = args.get('MA', "X")
+    modified_availability = availability if modified_availability == "X" else values_map['CIA'].get(modified_availability)
+    exploit_code_maturity = values_map["E"].get(args.get('E'), "X")
+    scope_changed = True if args.get('S') == "C" else False
+    modified_scope_changed = True if args.get('MS') == "C" else False
+    atack_vector = values_map['AV'].get(args.get('AV'))
+    modified_attack_vector = args.get('MAV', "X")
+    modified_attack_vector = atack_vector if modified_attack_vector == "X" else values_map['AV'].get(modified_attack_vector)
+    attack_complexity = values_map['AC'].get(args.get('AC'))
+    modified_attack_complexity = args.get('MAC', "X")
+    modified_attack_complexity = attack_complexity if modified_attack_complexity == "X" else values_map['AC'].get(modified_attack_complexity)
+    privileges_required = values_map['PR'].get(args.get('PR'))
+    if type(privileges_required) == dict:
+        privileges_required = privileges_required.get("C") if scope_changed or modified_scope_changed else privileges_required.get("U")
+    modified_privileges_required = args.get('MPR', "X")
+    if modified_privileges_required == "X":
+        modified_privileges_required = privileges_required
+    elif type(modified_privileges_required) == dict:
+        modified_privileges_required = modified_privileges_required.get("C") if scope_changed or modified_scope_changed else modified_privileges_required.get("U")
     else:
-        MC = valuesMap['CIA'].get(MC)
-    I = valuesMap['CIA'].get(args.get('I'))
-    MI = args.get('MI', "X")
-    if MI == "X":
-        MI = I
-    else:
-        MI = valuesMap['CIA'].get(MI)
-    A = valuesMap["CIA"].get(args.get('A'))
-    MA = args.get('MA', "X")
-    if MA == "X":
-        MA = A
-    else:
-        MA = valuesMap['CIA'].get(MA)
-    E = valuesMap["E"].get(args.get('E'), "X")
-    scopeChanged = True if args.get('S') == "C" else False
-    modifiedScopeChanged = True if args.get('MS') == "C" else False
-    AV = valuesMap['AV'].get(args.get('AV'))
-    MAV = args.get('MAV', "X")
-    if MAV == "X":
-        MAV = AV
-    else:
-        MAV = valuesMap['AV'].get(MAV)
-    AC = valuesMap['AC'].get(args.get('AC'))
-    MAC = args.get('MAC', "X")
-    if MAC == "X":
-        MAC = AC
-    else:
-        MAC = valuesMap['AC'].get(MAC)
-    PR = valuesMap['PR'].get(args.get('PR'))
-    if type(PR) == dict:
-        PR = PR.get("C") if scopeChanged or modifiedScopeChanged else PR.get("U")
-    MPR = args.get('MPR', "X")
-    if MPR == "X":
-        MPR = PR
-    elif type(MPR) == dict:
-        MPR = MPR.get("C") if scopeChanged or modifiedScopeChanged else MPR.get("U")
-    else:
-        MPR = valuesMap['PR'].get(MPR)
-    UI = valuesMap['UI'].get(args.get('UI'))
-    MUI = args.get('MUI', "X")
-    if MUI == "X":
-        MUI = UI
-    else:
-        MUI = valuesMap['UI'].get(MUI)
-    RL = valuesMap['RL'].get(args.get('RL', "X"))
-    RC = valuesMap['RC'].get(args.get('RC', "X"))
-    CR = valuesMap['CIAR'].get(args.get('CR', "X"))
-    IR = valuesMap['CIAR'].get(args.get('IR', "X"))
-    AR = valuesMap['CIAR'].get(args.get('AR', "X"))
-
+        modified_privileges_required = values_map['PR'].get(modified_privileges_required)
+    user_interaction = values_map['UI'].get(args.get('UI'))
+    modified_user_interaction = args.get('MUI', "X")
+    modified_user_interaction = user_interaction if modified_user_interaction == "X" else values_map['UI'].get(modified_user_interaction)
+    remediation_level = values_map['RL'].get(args.get('RL', "X"))
+    report_confidence = values_map['RC'].get(args.get('RC', "X"))
+    confidentiality_requirement = values_map['CIAR'].get(args.get('CR', "X"))
+    integrity_requirement = values_map['CIAR'].get(args.get('IR', "X"))
+    availability_requirement = values_map['CIAR'].get(args.get('AR', "X"))
 
     ###########################################
     # Base Metric Equation calculations
@@ -218,102 +200,96 @@ def main():
     # Impact Sub-Score
     iss = None
     if version in ['3.0', '3.1']:
-        iss = 1 - ((1 - C) * (1 - I) * (1 - A))
-
+        iss = 1 - ((1 - confidentiality) * (1 - integrity) * (1 - availability))
 
     # Impact
     impact = None
     if version in ['3.0', '3.1']:
-        if not scopeChanged:
+        if not scope_changed:
             impact = 6.42 * iss
         else:
             impact = 7.52 * (iss -0.029) - 3.25 * (iss - 0.02) ** 15
 
-
     # Exploitability
     exploitability = None
     if version in ['3.0', '3.1']:
-        exploitability = 8.22 * AV * AC * PR * UI
-
+        exploitability = 8.22 * atack_vector * attack_complexity * privileges_required * user_interaction
 
     # Base Score
-    baseScore = None
+    base_score = None
     if version in ['3.0', '3.1']:
-        baseScore = 0
+        base_score = 0
         if impact > 0:
             multiplier = 1
-            if scopeChanged:
+            if scope_changed:
                 multiplier = 1.08
-            calculatedValue = multiplier * (impact + exploitability)
-            baseScore =  calculatedValue if calculatedValue < 10 else 10
-            baseScore = round_up(baseScore)
+            calculated_value = multiplier * (impact + exploitability)
+            base_score =  calculated_value if calculated_value < 10 else 10
+            base_score = round_up(base_score)
 
 
     ###########################################
     # Temporal Metric calculations
     ###########################################
-    temporalScoreRoundup = None
+    temporal_score_roundup = None
     if version in ['3.0', '3.1']:
-        temporalScoreRoundup = baseScore * E * RL * RC
-
+        temporal_score_roundup = base_score * exploit_code_maturity * remediation_level * report_confidence
 
     # Environmental Metrics
-    MISS = None
-    modifiedImpact = None
-    modifiedExploitability = None
+    modified_impact_sub_score = None
+    modified_impact = None
+    modified_exploitability = None
     if version in ['3.0', '3.1']:
-        calculatedMISS = (1 - (( 1 - CR * MC) * (1 - IR * MI) * (1 - AR * MA)))
-        MISS = calculatedMISS if calculatedMISS < 0.915 else 0.915
+        calculatedmodified_impact_sub_score = (1 - (( 1 - confidentiality_requirement * modified_confidentiality) * (1 - integrity_requirement * modified_integrity) * (1 - availability_requirement * modified_availability)))
+        modified_impact_sub_score = calculatedmodified_impact_sub_score if calculatedmodified_impact_sub_score < 0.915 else 0.915
 
     if version in ['3.0', '3.1']:
-        if modifiedScopeChanged:
+        if modified_scope_changed:
             if version == '3.0':
-                modifiedImpact = 7.52 * (MISS - 0.029) - 3.25 * (MISS * 0.9731 - 0.02) ** 15
+                modified_impact = 7.52 * (modified_impact_sub_score - 0.029) - 3.25 * (modified_impact_sub_score * 0.9731 - 0.02) ** 15
             elif version == '3.1':
-                modifiedImpact = 7.52 * (MISS - 0.029) - 3.25 * (MISS * 0.9731 - 0.02) ** 13
+                modified_impact = 7.52 * (modified_impact_sub_score - 0.029) - 3.25 * (modified_impact_sub_score * 0.9731 - 0.02) ** 13
         else:
-            modifiedImpact = 6.42 * MISS
-        modifiedExploitability = 8.22 * MAV * MAC * MPR * MUI
-
+            modified_impact = 6.42 * modified_impact_sub_score
+        modified_exploitability = 8.22 * modified_attack_vector * modified_attack_complexity * modified_privileges_required * modified_user_interaction
 
     # Environmental Score
-    environmentalScore = None
+    environmental_score = None
     if version in ['3.0', '3.1']:
-        environmentalScore = 0
-        if modifiedImpact > 0:
+        environmental_score = 0
+        if modified_impact > 0:
             exponential = 1
-            if modifiedScopeChanged:
+            if modified_scope_changed:
                 exponential = 1.08
-            calculatedValue = exponential * (modifiedImpact + modifiedExploitability)
-            calculatedValue = calculatedValue if calculatedValue < 10 else 10
-            calculatedValue = round_up(calculatedValue)
-            environmentalScore = calculatedValue * E * RL * RC
-            environmentalScore = round_up(environmentalScore)
-
+            calculated_value = exponential * (modified_impact + modified_exploitability)
+            calculated_value = calculated_value if calculated_value < 10 else 10
+            calculated_value = round_up(calculated_value)
+            environmental_score = calculated_value * exploit_code_maturity * remediation_level * report_confidence
+            environmental_score = round_up(environmental_score)
 
     # Round values
     iss = round_up(iss)
     impact = round_up(impact)
     exploitability = round_up(exploitability)
-    baseScore = round_up(baseScore)
-    temporalScoreRoundup = round_up(temporalScoreRoundup)
-    MISS = round_up(MISS)
-    modifiedImpact = round_up(modifiedImpact)
-    modifiedExploitability = round_up(modifiedExploitability)
-    environmentalScore = round_up(environmentalScore)
+    base_score = round_up(base_score)
+    temporal_score_roundup = round_up(temporal_score_roundup)
+    modified_impact_sub_score = round_up(modified_impact_sub_score)
+    modified_impact = round_up(modified_impact)
+    modified_exploitability = round_up(modified_exploitability)
+    environmental_score = round_up(environmental_score)
 
     entry = {
-        "VectorString": vectorString,
+        "VectorString": vector_string,
         "Version": version,
         "ImpactSubScore": iss,
         "Impact": impact,
         "Exploitability": exploitability,
-        "BaseScore": baseScore,
-        "TemporalScore": temporalScoreRoundup,
-        "ModifiedImpactSubScore": MISS,
-        "ModifiedImpact": modifiedImpact,
-        "ModifiedExploitability": modifiedExploitability,
-        "EnvironmentalScore": environmentalScore
+        "BaseScore": base_score,
+        "TemporalScore": temporal_score_roundup,
+        "ModifiedImpactSubScore": modified_impact_sub_score,
+        "ModifiedImpact": modified_impact,
+        "ModifiedExploitability": modified_exploitability,
+        "EnvironmentalScore": environmental_score
     }
 
     hrentry = {k: v for k,v in entry.items() if v}
