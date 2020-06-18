@@ -5,7 +5,7 @@
         "TypeName": "",
         "id": "HIPAA Breach Notification",
         "kind": "details",
-        "modified": "2020-06-03T08:32:24.141548995Z",
+        "modified": "2020-06-18T11:33:21.029048828Z",
         "name": "",
         "system": false,
         "tabs": [
@@ -49,21 +49,11 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "possiblecauseofthebreach",
-                                "height": 24,
-                                "id": "765232b0-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 3,
-                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "isthedatasubjecttodpia",
                                 "height": 24,
                                 "id": "91d8b4f0-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 4,
+                                "index": 3,
                                 "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "startCol": 0
                             },
@@ -73,6 +63,16 @@
                                 "fieldId": "measurestomitigate",
                                 "height": 24,
                                 "id": "9c0c8dc0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 4,
+                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "possiblecauseofthebreach",
+                                "height": 24,
+                                "id": "765232b0-d881-11e9-b030-ad5c55d12ecb",
                                 "index": 5,
                                 "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "startCol": 0
@@ -95,18 +95,10 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "likelyimpact",
-                                "height": 24,
-                                "id": "8362ecb0-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 2,
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
                                 "fieldId": "dataencryptionstatus",
                                 "height": 24,
                                 "id": "8c74dac0-d881-11e9-b030-ad5c55d12ecb",
-                                "index": 3,
+                                "index": 2,
                                 "startCol": 2
                             }
                         ],
@@ -140,14 +132,6 @@
                                 "fieldId": "companyaddress",
                                 "height": 24,
                                 "id": "39369fa0-d882-11e9-b030-ad5c55d12ecb",
-                                "index": 1,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "companycity",
-                                "height": 24,
-                                "id": "3de581b0-d882-11e9-b030-ad5c55d12ecb",
                                 "index": 2,
                                 "startCol": 0
                             },
@@ -157,6 +141,14 @@
                                 "height": 24,
                                 "id": "3fce3ee0-d882-11e9-b030-ad5c55d12ecb",
                                 "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "companycity",
+                                "height": 24,
+                                "id": "3de581b0-d882-11e9-b030-ad5c55d12ecb",
+                                "index": 4,
                                 "startCol": 0
                             }
                         ],
@@ -168,7 +160,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 3
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -181,14 +173,6 @@
                                 "fieldId": "contactname",
                                 "height": 24,
                                 "id": "610383c0-905d-11ea-8355-67a9bcbc519c",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "contactemailaddress",
-                                "height": 24,
-                                "id": "6284f3a0-905d-11ea-8355-67a9bcbc519c",
                                 "index": 1,
                                 "startCol": 0
                             },
@@ -207,6 +191,14 @@
                                 "id": "64af74c0-905d-11ea-8355-67a9bcbc519c",
                                 "index": 3,
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "contactemailaddress",
+                                "height": 24,
+                                "id": "6284f3a0-905d-11ea-8355-67a9bcbc519c",
+                                "index": 4,
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -217,39 +209,11 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 3
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 1,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "sfmcsjvzpo-088e1080-943f-11ea-8a99-d7b88973db45",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "incident_attachment",
-                                "height": 55,
-                                "id": "0880f121-943f-11ea-8a99-d7b88973db45",
-                                "index": 1,
-                                "isVisible": true,
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Attachments",
-                        "static": false,
-                        "type": "",
-                        "w": 1,
-                        "x": 2,
-                        "y": 2
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 6,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "sfmcsjvzpo-4cae4bf0-947f-11ea-b67b-e1b3c6a3210f",
@@ -273,7 +237,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 3
+                        "y": 1
                     },
                     {
                         "displayType": "ROW",
@@ -333,8 +297,52 @@
                         "name": "Notification Status",
                         "static": false,
                         "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-00f12eb0-aef8-11ea-a169-995a487457b1",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Breach Confirmation ",
+                        "query": "732935e9-448a-457f-86e3-325f3fd9f51d",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
                         "x": 2,
                         "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-ef810340-b149-11ea-a1d8-23f656e53e19",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "hipaanotification",
+                                "height": 24,
+                                "id": "013f3fc0-b14a-11ea-a1d8-23f656e53e19",
+                                "index": 0,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Time left to notify",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
                     }
                 ],
                 "type": "custom"
@@ -488,14 +496,6 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "dbotcreated",
-                                "height": 24,
-                                "id": "incident-created-field",
-                                "index": 0,
-                                "startCol": 1
-                            },
-                            {
                                 "endCol": 1,
                                 "fieldId": "dbotmodified",
                                 "height": 24,
@@ -505,19 +505,27 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "dbotclosed",
-                                "height": 24,
-                                "id": "incident-closed-field",
-                                "index": 1,
-                                "startCol": 1
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "dbotduedate",
                                 "height": 24,
                                 "id": "incident-dueDate-field",
                                 "index": 2,
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 24,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "startCol": 1
                             }
                         ],
                         "moved": false,
