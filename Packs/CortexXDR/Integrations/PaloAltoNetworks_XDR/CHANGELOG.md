@@ -1,11 +1,11 @@
 ## [Unreleased]
-- Added new commands.
-    - ***xdr-blacklist-files***
-    - ***xdr-whitelist-files***
-    - ***xdr-quarantine-files***
-    - ***xdr-get-quarantine-status***
-    - ***xdr-restore-file***
-    - ***xdr-endpoint-scan***
+- Added 6 commands.
+  - ***xdr-blacklist-files***
+  - ***xdr-whitelist-files***
+  - ***xdr-quarantine-files***
+  - ***xdr-get-quarantine-status***
+  - ***xdr-restore-file***
+  - ***xdr-endpoint-scan***
 - Added get-quarantine-file-status playbook.
 - Fixed a bug in the ***xdr-get-endpoint*** command where only the last endpoint was displayed in context.
 
