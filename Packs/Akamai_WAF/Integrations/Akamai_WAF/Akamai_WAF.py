@@ -98,7 +98,7 @@ class Client(BaseClient):
             "list": elements if elements else []
         }
         return self._http_request(method='POST',
-                                  url_suffix=f'/network-list/v2/network-lists',
+                                  url_suffix='/network-list/v2/network-lists',
                                   json_data=body)
 
     def delete_network_list(self, network_list_id: str) -> dict:

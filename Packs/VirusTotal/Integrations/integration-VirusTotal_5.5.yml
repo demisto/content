@@ -1165,6 +1165,7 @@ script:
     arguments:
     - name: url
       required: true
+      default: true
       description: The URL to check.
       isArray: true
     - name: sampleSize

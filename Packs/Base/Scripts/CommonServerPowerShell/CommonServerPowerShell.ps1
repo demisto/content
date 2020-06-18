@@ -367,7 +367,7 @@ raw response from the 3rd party service (optional)
 .OUTPUTS
 The entry object returned to the server
 #>
-function ReturnOutputs([string]$ReadableOutput, [hashtable]$Outputs, [hashtable]$RawResponse) {
+function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawResponse) {
     $entry = @{
         Type           = [EntryTypes]::note;
         ContentsFormat = [EntryFormats]::json.ToString();
