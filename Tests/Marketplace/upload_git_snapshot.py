@@ -13,9 +13,9 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, Pa
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
-def upload_git_snapshot(git_snapshot_path, pack_name, branch_name, pack_version, storage_bucket, repo_name):
+def upload_git_snapshot(git_snapshot_path, pack_name, branch_name, pack_version, storage_bucket, repo_name, git_org):
     try:
-        git_snapshot_name = f'repo-{repo_name}_branch-{branch_name}_version-{pack_version}.zip'
+        git_snapshot_name = f'org-{git_org}_repo-{repo_name}_branch-{branch_name}_version-{pack_version}.zip'
         git_snapshot_storage_path = os.path.join('backup', pack_name, git_snapshot_name)
         print_error(f'git_snapshot_storage_path is: {git_snapshot_storage_path}')
         print_error(f'git_snapshot_path is: {git_snapshot_path}')
@@ -43,6 +43,7 @@ def option_handler():
     parser.add_argument('-br', '--branch_name', help="The name of the branch in the git snapshot.", required=True)
     parser.add_argument('-v', '--pack_version', help="The version of the pack in the snapshot.", required=True)
     parser.add_argument('-r', '--git_repo', help="The git repo in the snapshot.", required=True)
+    parser.add_argument('-o', '--git_org', help="The git org in the snapshot.", required=True)
     parser.add_argument('-s', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
                               "For local development use your personal account and "
@@ -65,12 +66,13 @@ def main():
     pack_version = option.pack_version
     snapshot_path = option.snapshot_path
     git_repo = option.git_repo
+    git_org = option.git_org
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    upload_git_snapshot(snapshot_path, pack_name, branch_name, pack_version, storage_bucket, git_repo)
+    upload_git_snapshot(snapshot_path, pack_name, branch_name, pack_version, storage_bucket, git_repo, git_org)
 
 
 if __name__ == '__main__':
