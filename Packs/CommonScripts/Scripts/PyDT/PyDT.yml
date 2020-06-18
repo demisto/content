@@ -11,8 +11,8 @@ comment: Python alternative to DT. Input can be accessed with variable 'val', th
 enabled: true
 args:
 - name: Python
-  description: Python code, context can be referenced like a Python dict named "ec"
-    . e.g. return_results(ec['incident']['id'])
+  description: Python code, context can be referenced like a Python dict named "val"
+    . e.g. return_results(val['incident']['id'])
 scripttarget: 0
 subtype: python3
 pswd: ""
