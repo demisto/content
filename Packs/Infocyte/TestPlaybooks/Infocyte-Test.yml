@@ -12,6 +12,7 @@ tasks:
       id: 59aa5ed1-6e7e-4b4e-8cc2-4bc6cf0edeb0
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -38,6 +39,7 @@ tasks:
       id: be2d6ce8-7600-477b-877c-27eea59affae
       version: -1
       name: DeleteContext
+      description: ""
       script: DeleteContext
       type: regular
       iscommand: true
@@ -101,6 +103,7 @@ tasks:
       id: d5f9251f-7f99-407a-8efa-a95864e84f0f
       version: -1
       name: Verify Outputs
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -182,6 +185,7 @@ tasks:
       id: b7ae3936-3be8-4302-81c8-db4649f2b131
       version: -1
       name: Verify Outputs
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -262,6 +266,7 @@ tasks:
       id: 8232b464-4462-40f5-8a65-8c223cad2484
       version: -1
       name: infocyte-get-alerts
+      description: "Retrieves alerts if any are produced from the scan"
       script: '|||infocyte-get-alerts'
       type: regular
       iscommand: true
@@ -290,6 +295,7 @@ tasks:
       id: 471eee8a-e438-47d9-85d5-636339b3c34b
       version: -1
       name: Verify Outputs
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -410,6 +416,7 @@ tasks:
       id: 2530687f-728b-4014-8b44-992f2a7b0d6f
       version: -1
       name: Test Done
+      description: Done.
       type: title
       iscommand: false
       brand: ""
