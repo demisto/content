@@ -119,7 +119,5 @@ The command output is as follows:
 }
 ```
 
-You can now upload that JSON file to the mapping wizard and continue as usual, or filling in manually the field to map.
-
-In order to map **SeverityName** field to Cortex XSOAR field, the following should be set:
+You can now upload that JSON file to the mapping wizard and continue as usual.
 
