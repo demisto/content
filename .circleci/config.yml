@@ -74,7 +74,7 @@ jobs:
               echo 'Copy the changes from the contributor branch'
               git remote add $USER git@github.com:$USER/content.git
               git fetch $USER $BRANCH
-              git switch -t $USER/$BRANCH
+              git checkout -t $USER/$BRANCH
               exit 0
             fi
 
