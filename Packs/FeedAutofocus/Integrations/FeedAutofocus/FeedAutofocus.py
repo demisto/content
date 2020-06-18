@@ -437,8 +437,8 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
     indicator_feeds = client.indicator_feeds
     exception_list = []  # type:List
     if 'Daily Threat Feed' in indicator_feeds:
-        return_error("Daily Feed is no longer supported by this feed,"
-                     " please configure the AutoFocus Daily Feed for this action")
+        raise Exception("Daily Feed is no longer supported by this feed,"
+                        " please configure the AutoFocus Daily Feed for this action")
     if 'Custom Feed' in indicator_feeds:
         client.indicator_feeds = ['Custom Feed']
         url_list = client.custom_feed_url_list
@@ -543,7 +543,8 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args(), feed_tags)  # type: ignore
+            readable_output, outputs, raw_response = commands[command](client, demisto.args(),
+                                                                       feed_tags)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')

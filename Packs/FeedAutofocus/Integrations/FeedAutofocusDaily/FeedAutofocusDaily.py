@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 # IMPORTS
 import requests
-from typing import List
+from typing import List, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -101,7 +101,7 @@ class Client(BaseClient):
         else:
             return FeedIndicatorType.Domain
 
-    def create_indicators_from_response(self, response, feed_tags):
+    def create_indicators_from_response(self, response: list, feed_tags: list) -> list:
         """
         Creates a list of indicators from a given response
         Args:
@@ -168,13 +168,13 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, args: dict, feed_tags):
+def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple[str, dict, list]:
     """Initiate a single fetch-indicators
 
     Args:
         client(Client): The AutoFocus Client.
         args(dict): Command arguments.
-
+        feed_tags: The indicator tags
     Returns:
         str, dict, list. the markdown table, context JSON and list of indicators
     """
@@ -196,14 +196,15 @@ def get_indicators_command(client: Client, args: dict, feed_tags):
                                      headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
 
     if args.get('limit'):
-        human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!autofocus-daily-get-indicators " \
+        human_readable = human_readable + f"\nTo bring the next batch of indicators " \
+                                          f"run:\n!autofocus-daily-get-indicators " \ 
                                           f"limit={args.get('limit')} " \
                                           f"offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
 
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset=None):
+def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset=None) -> list:
     """Fetch-indicators command from AutoFocus Feeds
 
     Args:
