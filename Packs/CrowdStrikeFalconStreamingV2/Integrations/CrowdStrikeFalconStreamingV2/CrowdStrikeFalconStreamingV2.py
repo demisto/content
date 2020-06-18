@@ -8,6 +8,7 @@ from asyncio import Event, create_task, sleep, run
 from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector
 from typing import Dict, AsyncGenerator, AsyncIterator
+from collections import deque
 
 requests.packages.urllib3.disable_warnings()
 
@@ -315,7 +316,8 @@ async def long_running_loop(
         event_type: str,
         verify_ssl: bool,
         proxy: bool,
-        incident_type: str
+        incident_type: str,
+        store_samples: bool = False
 ) -> None:
     """Connects to a CrowdStrike Falcon stream and fetches events from it in a loop.
 
@@ -326,13 +328,16 @@ async def long_running_loop(
         stream (EventStream): CrowdStrike Falcon stream to fetch events from.
         offset (int): Stream offset to start the fetch from.
         event_type (str): Stream event type to fetch.
-        verify_ssl (bool): Whether the request should verify the SSL certificate.
-        proxy (bool): Whether to run the integration using the system proxy.
+        verify_ssl (bool): Whether the request should verify the SSL certificate or not.
+        proxy (bool): Whether to run the integration using the system proxy or not.
         incident_type (str): Type of incident to create.
+        store_samples (bool): Whether to store sample events in the integration context or not.
 
     Returns:
         None: No data returned.
     """
+    sample_events_to_store = deque(maxlen=20)
+    last_sample_events_storage = datetime.utcnow()
     async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
         stream.set_refresh_token(refresh_token)
         async for event in stream.fetch_event(initial_offset=offset, event_type=event_type):
@@ -349,13 +354,42 @@ async def long_running_loop(
                 'type': incident_type
             }]
             demisto.createIncidents(incident)
-            demisto.setIntegrationContext({'offset': int(event_offset) + 1})
+            integration_context_to_set = {'offset': int(event_offset) + 1}
+            if store_samples:
+                try:
+                    sample_events_to_store.append(event)
+                    if last_sample_events_storage + timedelta(minutes=5) <= datetime.utcnow():
+                        demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
+                        integration_context = demisto.getIntegrationContext()
+                        sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+                        sample_events += sample_events_to_store
+                        integration_context_to_set['sample_events'] = json.dumps(list(sample_events))
+                except Exception as e:
+                    demisto.error(f'Failed storing sample events - {e}')
+            demisto.setIntegrationContext(integration_context_to_set)
 
 
 async def test_module(base_url: str, client_id: str, client_secret: str, verify_ssl: bool, proxy: bool) -> None:
     async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
         await refresh_token.get_access_token()
         demisto.results('ok')
+
+
+def get_sample_events() -> None:
+    """Extracts sample events stored in the integration context and returns them
+
+    Returns:
+        None: No data returned.
+    """
+    integration_context = demisto.getIntegrationContext()
+    sample_events = integration_context.get('sample_events')
+    if sample_events:
+        try:
+            demisto.results(json.loads(sample_events))
+        except json.decoder.JSONDecodeError as e:
+            raise ValueError(f'Failed deserializing sample events - {e}')
+    else:
+        demisto.results('No sample events found.')
 
 
 def main():
@@ -372,6 +406,7 @@ def main():
     except ValueError:
         offset = 0
     incident_type = params.get('incidentType', '')
+    store_samples = params.get('store_samples', False)
 
     stream = EventStream(base_url=base_url, app_id='Demisto', verify_ssl=verify_ssl, proxy=proxy)
 
@@ -381,8 +416,11 @@ def main():
             run(test_module(base_url, client_id, client_secret, verify_ssl, proxy))
         elif demisto.command() == 'long-running-execution':
             run(long_running_loop(
-                base_url, client_id, client_secret, stream, offset, event_type, verify_ssl, proxy, incident_type
+                base_url, client_id, client_secret, stream, offset, event_type, verify_ssl, proxy, incident_type,
+                store_samples
             ))
+        elif demisto.command() == 'crowdstrike-falcon-streaming-get-sample-events':
+            get_sample_events()
     except Exception as e:
         error_msg = f'Error in CrowdStrike Falcon Streaming v2: {str(e)}'
         demisto.error(error_msg)
