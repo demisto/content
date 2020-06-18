@@ -91,7 +91,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of indicators to return.
+      description: The maximum number of indicators to return. Default is 10.
       isArray: false
       name: limit
       required: false
@@ -104,7 +104,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the indicators from AutoFocus.
+    description: Gets indicators from AutoFocus.
     execution: false
     name: autofocus-daily-get-indicators
   dockerimage: demisto/python3:3.8.3.8715
