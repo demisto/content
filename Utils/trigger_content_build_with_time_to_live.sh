@@ -43,8 +43,8 @@ else
   post_data=$(cat <<-EOF
   {
     "build_parameters": {
-      "TIME_TO_LIVE": ${_time_to_live}
-      "CONTRIB_BRANCH": ${_contrib_branch}
+      "TIME_TO_LIVE": ${_time_to_live},
+      "CONTRIB_BRANCH": "${_contrib_branch}"
     }
   }
 EOF
