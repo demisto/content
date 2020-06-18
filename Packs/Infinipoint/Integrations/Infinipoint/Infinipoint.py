@@ -1,20 +1,18 @@
 
-# import time
-# import sys
-# import requests
 import jwt
 import math
 
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+# from CommonServerUserPython import *
 from typing import Any, Dict, List
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+''' GLOBALS/PARAMS '''
+
 PAGE_SIZE = 10
-INSECURE = demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
 INSECURE = demisto.params().get('insecure')
 BASE_URL = demisto.params().get('url')
@@ -25,6 +23,8 @@ PRIVATE_KEY = demisto.params().get('private_key')
 
 
 def http_request(method, token, route, page_index=0, content=None):
+    """
+    """
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
@@ -72,6 +72,11 @@ def call_api(method, route, client, query):
 
 
 def create_jwt_token(secret, access_key):
+    """
+    function to sign a jwt token with a jwt secret.
+    input: jwt secret, jwt access-key
+    output: a signed token.
+    """
     try:
         jwt_payload = {
             "iat": int(time.time()),
@@ -87,6 +92,10 @@ def create_jwt_token(secret, access_key):
 
 
 def test_module(token, json=None):
+    """Tests API connectivity and authentication'
+    Returning '200' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    """
     route = "/health"
     method = "GET"
     headers = {
@@ -290,6 +299,41 @@ def get_vulnerable_devices_command(token, args):
         #   demisto.results(res)
 
 
+def get_tag_command(token, args):
+    name = args.get('name')
+    method = "POST"
+    route = "/tags"
+    rules = []
+
+    if name:
+        name_node = {
+            'field': 'name',
+            'operator': '>=',
+            'value': f'{name}'
+        }
+        rules.append(name_node)
+
+    query = {
+        'pageSize': PAGE_SIZE,
+        'page': 0,
+        'ruleSet': {
+            'condition': 'AND',
+            'rules': rules
+        }
+    }
+
+    res = call_api(method, route, token, query)
+    LOG('res %s' % (res,))
+    if res:
+        demisto.results(res)
+        print("=====")
+        command_results = CommandResults(
+            outputs_prefix='Vulnerability.Devices',
+            outputs_key_field='$host',
+            outputs=res)
+        return command_results
+
+
 ''' EXECUTION '''
 
 
@@ -309,7 +353,8 @@ def main():
     #     del os.environ['http_proxy']
     #     del os.environ['https_proxy']
 
-    LOG('command is %s' % (demisto.command(), ))
+    demisto.info('command is %s' % (demisto.command(), ))
+
     try:
         token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
 
@@ -328,6 +373,9 @@ def main():
 
         elif demisto.command() == 'infinipoint-get-vulnerable-devices':
             return_results(get_vulnerable_devices_command(token, demisto.args()))
+
+        elif demisto.command() == "infinipoint-get-tag":
+            return_results(get_tag_command(token, demisto.args()))
 
     except Exception as e:
         err_msg = f'Error - Infinipoint Integration [{e}]'
