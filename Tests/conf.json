@@ -2798,7 +2798,10 @@
         "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
-        "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook"
+        "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
+
+        "_comment": "~~~ DEPRECATED ~~~",
+        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
