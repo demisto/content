@@ -18,7 +18,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 API_KEY = demisto.params().get('api_key')
-PAGE_LIMIT = demisto.params().get('page_limit')
+PAGE_LIMIT = int(demisto.params().get('page_limit', '10'))
 FIRST_RUN = int(demisto.params().get('first_run', '7'))
 SERVER = 'https://expander.expanse.co'
 VERIFY_CERTIFICATES = not demisto.params().get('insecure')
