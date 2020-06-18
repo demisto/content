@@ -7,7 +7,7 @@ import traceback
 from asyncio import Event, create_task, sleep, run
 from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector
-from typing import Dict, AsyncGenerator, AsyncIterator
+from typing import Dict, AsyncGenerator, AsyncIterator, Union
 from collections import deque
 
 requests.packages.urllib3.disable_warnings()
@@ -336,7 +336,7 @@ async def long_running_loop(
     Returns:
         None: No data returned.
     """
-    sample_events_to_store = deque(maxlen=20)
+    sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
     last_sample_events_storage = datetime.utcnow()
     async with init_refresh_token(base_url, client_id, client_secret, verify_ssl, proxy) as refresh_token:
         stream.set_refresh_token(refresh_token)
@@ -354,7 +354,7 @@ async def long_running_loop(
                 'type': incident_type
             }]
             demisto.createIncidents(incident)
-            integration_context_to_set = {'offset': int(event_offset) + 1}
+            integration_context_to_set: Dict[str, Union[int, str]] = {'offset': int(event_offset) + 1}
             if store_samples:
                 try:
                     sample_events_to_store.append(event)
