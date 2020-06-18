@@ -2,10 +2,6 @@ import json
 import demistomock as demisto
 from SafeBreach_v2 import *
 
-# from CommonServerPython import *
-from SafeBreach_v2 import get_safebreach_simulation_command, get_indicators_command, \
-    rerun_simulation_command
-
 MOCK_URL = "https://safebreach-fake-api.com"
 MOCK_ACCOUNT_ID = '1234567'
 MOCK_API_KEY = 'a1b2c3d4e5'
@@ -29,7 +25,6 @@ def load_test_data(json_path):
 REMEDATION_DATA_LIST = load_test_data('./test_data/remediation_data.json')
 GET_INSIGHTS_LIST = load_test_data('./test_data/insights.json')
 SIMULATION = load_test_data('./test_data/simulation.json')
-
 
 def test_get_insights(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={'insightIds': [9]})

@@ -17,24 +17,23 @@ CATEGORY_MAPPER: Dict[str, List[int]] = {
 }
 
 SAFEBREACH_TO_DEMISTO_MAPPER = {
-    'SHA256s': 'SHA256',
     'SHA256': 'SHA256',
-    'Ports': 'Port',
     'Port': 'Port',
-    'Protocols': 'Protocol',
-    'FQDNs/IPs': 'Data',
+    'Protocol': 'Protocol',
     'FQDN/IP': 'Data',
-    'Commands': 'Command',
-    'URIs': 'URI',
+    'Command': 'Command',
     'URI': 'URI'
 }
 
 INDICATOR_TYPE_MAPPER = {
-    'FQDNs/IPs': FeedIndicatorType.Domain,
     'FQDN/IP': FeedIndicatorType.Domain,
     'SHA256': FeedIndicatorType.File,
-    'SHA256s': FeedIndicatorType.File,
     'Domain': FeedIndicatorType.Domain,
+    'Port': 'SafeBreach Port',
+    'Protocol': 'SafeBreach Protocol',
+    'Process': 'SafeBreach Process',
+    'Registry': 'SafeBreach Registry',
+    'Command': 'SafeBreach Command',
     'URI': FeedIndicatorType.URL,
     'IP': FeedIndicatorType.IP,
 }
@@ -42,33 +41,46 @@ INDICATOR_TYPE_MAPPER = {
 # mapper from SB data type to demisto data type that given when the integration was configured.
 INDICATOR_TYPE_SB_TO_DEMISTO_MAPPER = {
     'SHA256': 'Hash',
-    'SHA256s': 'Hash',
-    'Ports': 'Port',
-    'Protocols': 'Protocol',
-    'FQDNs/IPs': 'Domain',
+    'Port': 'Port',
     'FQDN/IP': 'Domain',
-    'Commands': 'Command',
-    'URIs': 'URI',
+    'Command': 'Command',
+    'Protocol': 'Protocol',
     'URI': 'URI'
 }
 
 INSIGHT_DATA_TYPE_MAPPER = {
-    14: 'Command',
+    1: 'Port',
+    2: 'Protocol',
+    3: 'Port',
+    4: 'Port',
     5: 'Domain',
-    # 17: 'CVE', # Not Supported Yet.
-    # 18: 'CVE', # Not Supported Yet.
-    24: 'Hash',
-    15: 'Hash',
     6: 'URI',
     7: 'Hash',
-    9: 'Hash'
+    9: 'Hash',
+    10: 'Protocol',
+    14: 'Command',
+    15: 'Hash',
+    17: 'CVE',  # Not Supported Yet.
+    18: 'CVE',  # Not Supported Yet.
+    19: 'Port',
+    20: 'Protocol',
+    21: 'Port',
+    22: 'Port',
+    24: 'Hash',
 }
-SAFEBREACH_TYPES = ['Ports', 'Protocols', 'FQDNs/IPs',
-                    'FQDN/IP',
-                    'URI', 'SHA256', 'SHA256s', 'Attacks', 'Proxies',
-                    'Impersonated Users', 'Commands', 'Drop Paths',
-                    'Outbound', 'Inbound', 'Server Headers', 'Client Headers']
+SAFEBREACH_TYPES = [
+    'Protocol', 'FQDN/IP', 'Port',
+    'URI', 'SHA256', 'Attack', 'Proxies',
+    'Impersonated User', 'Commands', 'Drop Path', 'Registry Path',
+    'Outbound', 'Inbound', 'Server Header', 'Client Header'
+]
 
+DEMISTO_INDICATOR_REPUTATION = {
+    'None': 0,
+    'Good': 1,
+    'Suspicious': 2,
+    'Bad': 3
+}
 IP_REGEX = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
 
 
@@ -100,6 +112,10 @@ class Client:
 
     def get_insights(self):
         return self.http_request(method='GET', endpoint_url='/api/data', url_suffix='/insights?type=actionBased')
+
+    def get_nodes(self):
+        return self.http_request('GET', endpoint_url='api/config',
+                                 url_suffix='/nodes?details=true&deleted=true&assets=true')
 
     def get_simulation(self, simulation_id):
         return self.http_request(method='GET', endpoint_url='api/data', url_suffix=f"/executions/{simulation_id}")
@@ -145,7 +161,7 @@ def unescape_string(string):
 
 def extract_data(data):
     parent_key = list(data.keys())[0]
-    output = {}
+    output = {"RemediationData": {}}
     first_level_data = list(data[parent_key].keys())
     output[parent_key] = first_level_data
     for indicator in data[parent_key]:
@@ -265,6 +281,25 @@ def get_node_ids_from_insight(insight):
     return list(set(node_ids))
 
 
+def extract_affected_targets(client, insight):
+    all_nodes = {item['id']: item for item in client.get_nodes().json()['data']}
+    output = []
+    for t in insight['targets']:
+        name = all_nodes[t['targetNodeId']]['name']
+        ip = all_nodes[t['targetNodeId']]['externalIp']
+        output.append({
+            'name': name,
+            'ip': ip,
+            'count': t['breakdown']['count']
+        })
+    return output
+
+
+def get_splunk_remedation_query(response):
+    return [vendor['searchQuery'] for vendor in response.json()['mitigationVendors'] if
+            vendor['id'] == 'splunk']
+
+
 ''' Commands '''
 
 
@@ -285,19 +320,6 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
     insights_ids: Any = []
     indicators: List[Dict] = []
     count: int = 0
-    safebreach_to_demisto_type_mapper = {
-        'SHA256': 'SHA256',
-        'SHA256s': 'SHA256',
-        'Ports': 'Port',
-        'Protocols': 'Protocol',
-        'FQDNs/IPs': 'Domain',
-        'FQDN/IP': 'Domain',
-        'Domain': 'Domain',
-        'Commands': 'Command',
-        'URIs': 'URI',
-        'URI': 'URI'
-    }
-
     # These variable be filled directly from the integration configuration or as arguments.
     insight_category, insight_data_type = get_category_and_data_type_filters(args, insight_category, insight_data_type)
     # Convert category into insight id
@@ -313,28 +335,41 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
             # if the data type is not in the filter data types continue,
             if INDICATOR_TYPE_SB_TO_DEMISTO_MAPPER.get(data_type) not in insight_data_type:
                 continue
-            demisto_indicator_type: Any = safebreach_to_demisto_type_mapper.get(data_type)
+            # demisto_indicator_type: Any = safebreach_to_demisto_type_mapper.get(data_type)
             for value in processed_data[data_type]:
-                if not INDICATOR_TYPE_MAPPER.get(str(demisto_indicator_type)):
+                if not INDICATOR_TYPE_MAPPER.get(str(data_type)) or value == 'N/A':
                     continue
-                raw_json = {'value': value,
+                if isinstance(data_type, int):
+                    print('data type is int', data_type, insight['ruleId'])
+                is_behaveioral = data_type in ['Port', 'Protocol', 'Command', 'Registry', 'Process']
+                raw_json = {'value': str(value),
                             'dataType': data_type,
                             'insightId': insight.get('ruleId'),
-                            'insightTime': insight.get('maxExecutionTime')}
+                            'insightTime': insight.get('maxExecutionTime'),
+                            }
                 mapping = {
                     'description': 'SafeBreach Insight - {0}'.format(insight['actionBasedTitle']),
-                    demisto_indicator_type.lower(): value,
+                    data_type.lower(): value,
+                    "safebreachinsightids": str(insight.get('ruleId')),
+                    "safebreachseverity": insight.get('severity'),
+                    "safebreachisbehavioral": is_behaveioral,
+                    "safebreachattackids": list(map(str, insight.get('attacks'))),
                     'tags': [
-                        f"SafeBreachInsightId: {insight.get('ruleId')}"
+                        f"SafeBreachInsightId: {insight.get('ruleId')}",
                     ]
                 }
 
+                score_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
+                    demisto.params().get('behavioralReputation'))
+                score_non_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(
+                    demisto.params().get('nonBehavioralReputation'))
+
                 indicator = {
-                    'value': value,
-                    'type': INDICATOR_TYPE_MAPPER.get(str(demisto_indicator_type)),
+                    'value': str(value),
+                    'type': INDICATOR_TYPE_MAPPER.get(str(data_type)),
                     'rawJSON': raw_json,
                     'fields': mapping,
-                    'score': 3
+                    'score': score_behavioral_reputation if is_behaveioral else score_non_behavioral_reputation
                 }
 
                 if is_ip(value):
@@ -373,6 +408,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
 
     remediation_data = response.json().get('remediationData')
     processed_data = extract_data(remediation_data)
+    processed_data["RemediationData"]['Splunk'] = get_splunk_remedation_query(response)
     # Demisto Context:
     dbot_score_list = []
     standard_context_dict = {}
@@ -384,6 +420,8 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
 
     # SafeBreach Context:
     safebreach_context_list = []
+    affected_targets_list = []
+    affected_targets_dict = {}
     safebreach_context = {}
 
     for data_type in processed_data:
@@ -400,21 +438,21 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
 
         safebreach_context = {
             "Id": insight_id,
-            data_type: processed_data[data_type]
+            data_type: processed_data[data_type],
         }
         safebreach_context_list.append(safebreach_context)
 
         demisto_standard_path = get_demisto_context_path(data_type)  # e.g URL(val.Data == obj.Data)
         demisto_data_type = SAFEBREACH_TO_DEMISTO_MAPPER.get(data_type)  # SHA256,Port,Protocol,Data,Command,URI
         for value in processed_data[data_type]:
-            if data_type in ['DropPaths', 'URIs', 'URI']:
+            if data_type in ['DropPaths', 'URIs', 'URI', 'Command']:
                 value = value.encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
             if demisto_data_type:
                 dbot_score = {
                     "Indicator": value,
                     "Type": get_dbot_type(data_type, value),
                     "Vendor": "SafeBreach",
-                    "Score": 3
+                    "Score": 3  # TODO: Change to is behaviroal set to defaults
                 }
                 primary_standard_context = {
                     demisto_data_type: value,  # e.g Data : <URL>, SHA256:<SHA256>
@@ -454,7 +492,7 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
 
     output_context = {
         "DBotScore(val.Indicator == obj.Indicator)": dbot_score_list,
-        "SafeBreach.Insight(val.Id == obj.Id)": safebreach_context_list
+        "SafeBreach.Insight(val.Id == obj.Id)": safebreach_context_list,
     }
     merged_context = {**output_context, **standard_context_dict}
     readable_output = tableToMarkdown(name="Remediation Data", t=readable_output_list, removeNull=True)
@@ -570,6 +608,7 @@ def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> Li
     headers = []
 
     for insight in insights:
+        affected_targets = extract_affected_targets(client, insight)
         context_insight = {
             'Name': insight['actionBasedTitle'],
             'Id': insight['ruleId'],
@@ -587,6 +626,9 @@ def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> Li
             'ThreatGroups': insight.get('threatActors'),
             'NetworkDirection': insight.get('direction'),
             'AttacksCount': len(insight.get('attacks')),
+            'AffectedTargets': affected_targets,
+            'RemediationAction': insight.get('action'),
+            'ResultLink': f"{fix_url(demisto.params().get('url'))}/#/executions?query={insight.get('criteria')}"
         }
         t = {
             'Id': context_insight['Id'],
