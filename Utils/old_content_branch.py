@@ -1,5 +1,4 @@
-import shutil
-import sys
+
 import argparse
 import os
 import click
@@ -98,11 +97,11 @@ def delete_json(file_path):
 
 
 parser = argparse.ArgumentParser("Alter the branch to assign a new toVersion to all relevant files.")
-parser.add_argument('new_to_version', help='The new to version to assign.', required=True)
+parser.add_argument('new_to_version', help='The new to version to assign.')
 
 
 def main():
-    new_to_version = parser.parse_args()['new_to_version']
+    new_to_version = parser.parse_args().new_to_version
     if new_to_version.count('.') == 1:
         new_to_version = new_to_version + ".9"
 
