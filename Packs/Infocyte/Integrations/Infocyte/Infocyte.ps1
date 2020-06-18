@@ -12,11 +12,11 @@ function Invoke-InfocyteScan {
         'Infocyte.Task' = [PSCustomObject]@{
             userTaskId = $Task.userTaskId
             type       = "SCAN"
-            host       = $Target
+            target       = $Target
         }
     }
     $MDOutput = $Output."Infocyte.Task" | ConvertTo-Markdown
-    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output
 }
 
 function Get-InfocyteTaskStatus {
@@ -41,7 +41,7 @@ function Get-InfocyteTaskStatus {
         }
     }
     $MDOutput = $Output.'Infocyte.Task(val.userTaskId == obj.userTaskId)' | ConvertTo-Markdown
-    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $task
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $task
 }
 
 function Get-InfocyteAlerts {
@@ -67,7 +67,7 @@ function Get-InfocyteAlerts {
         } else {
             $max = $demisto.Args()['max']
         }
-        $Demisto.Log("Retreiving $max alerts following lastAlertId: $($demisto.Args()['lastAlertId'])")
+        $Demisto.Debug("Retreiving $max alerts following lastAlertId: $($demisto.Args()['lastAlertId'])")
         $Alerts = Get-ICAlert -where $where | Select-Object -First $max
         if (-NOT $Alerts) {
             $Demisto.Log("No alerts found following lastAlertId $($demisto.Args()['lastAlertId']).")
@@ -78,10 +78,10 @@ function Get-InfocyteAlerts {
         $LastAlert = $Demisto.GetLastRun()
         $Demisto.Debug("LastAlert: $($LastAlert|Convertto-Json -compress)")
         if ($LastAlert.Values) {
-            $Demisto.Log("Found lastAlertId: $($LastAlert | Convertto-Json -compress)")
+            $Demisto.Debug("Found lastAlertId: $($LastAlert | Convertto-Json -compress)")
             $where = @{ id = @{ gt = $LastAlert } }
         } else {
-            $Demisto.Log("First run: Retrieving all alerts for past $first_fetch days")
+            $Demisto.Debug("First run: Retrieving all alerts for past $first_fetch days")
             $where = @{ createdOn = @{ gt = (Get-Date).AddDays(-[int]$first_fetch) }}
         }
         $Alerts = Get-ICAlert -where $where | Select-Object -First $max_fetch
@@ -120,7 +120,7 @@ function Get-InfocyteAlerts {
         Select-Object id, name, type, sha1, size, threatName, flagName,
          @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
         ConvertTo-Markdown
-    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Alerts
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Alerts
 }
 
 function Get-InfocyteScanResult {
@@ -170,7 +170,7 @@ function Get-InfocyteScanResult {
     $MDOutput += $Output.'Infocyte.Scan'.alerts |
          Select-Object id, name, type, sha1, size, threatName, flagName, @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
          ConvertTo-Markdown
-    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output
 }
 
 function Get-InfocyteHostScanResult {
@@ -209,7 +209,7 @@ function Get-InfocyteHostScanResult {
     $MDOutput += $Output.'Infocyte.Scan'.alerts |
          Select-Object id, name, type, sha1, size, threatName, flagName, @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
          ConvertTo-Markdown
-    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
 }
 
 function Get-InfocyteResponseResult {
@@ -238,7 +238,7 @@ function Get-InfocyteResponseResult {
          ConvertTo-Markdown
     $MDOutput += "`n#### Messages`n`n"
     $MDOutput += $Output.'Infocyte.Response'.messages
-    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
 }
 
 function Invoke-InfocyteResponse {
@@ -259,7 +259,7 @@ function Invoke-InfocyteResponse {
         }
     }
     $MDOutput = $Output.'Infocyte.Task' | ConvertTo-Markdown
-    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Task
+    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Task
 }
 
 Function ConvertTo-Markdown {
@@ -327,28 +327,6 @@ Function ConvertTo-Markdown {
     }
 }
 
-# Override ReturnOutputs (use [PSCustomOject] inputs instead of [hashtables]inputs)
-function ReturnOutputs2 ([string]$ReadableOutput, [Object]$Outputs, [Object]$RawResponse) {
-    $entry = @{
-        Type           = [EntryTypes]::note;
-        ContentsFormat = [EntryFormats]::json.ToString();
-        HumanReadable  = $ReadableOutput;
-        Contents       = $RawResponse;
-        EntryContext   = $Outputs
-    }
-    # Return 'readable_output' only if needed
-    if ($ReadableOutput -and -not $outputs -and -not $RawResponse) {
-        $entry.Contents = $ReadableOutput
-        $entry.ContentsFormat = [EntryFormats]::text.ToString();
-    }
-    elseif ($Outputs -and -not $RawResponse) {
-        # if RawResponse was not provided but outputs were provided then set Contents as outputs
-        $entry.Contents = $Outputs
-    }
-    $demisto.Results($entry) | Out-Null
-    return $entry
-}
-
 function Main {
 
     # Parse Params
@@ -405,7 +383,7 @@ function Main {
         Switch ($Demisto.GetCommand()) {
             "test-module" {
                 $Demisto.Debug("Running test-module")
-                ReturnOutputs2 "ok" | Out-Null
+                ReturnOutputs "ok" | Out-Null
             }
             "fetch-incidents" {
                 Get-InfocyteAlerts | Out-Null
