@@ -251,7 +251,7 @@ script:
       description: Operating system of host.
       type: string
     - contextPath: Infocyte.Scan.Alert.id
-      description: Infocyte alertId
+      description: Infocyte alert ID.
       type: string
     - contextPath: Infocyte.Scan.Alert.name
       description: Name of the alerted file or alert.
