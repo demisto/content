@@ -31,14 +31,15 @@ LAYOUT_TYPE_TO_NAME = {
 
 
 def get_new_packs(git_sha1):
-    """ Gets all the existing modified/added file paths in the format */ReleaseNotes/*.md.
+    """
+    Gets all the existing modified/added file paths in the format */ReleaseNotes/*.md.
 
-        Args:
-            git_sha1 (str): The branch to make the diff with.
+    Args:
+        git_sha1 (str): The branch to make the diff with.
 
-        Returns:
-            (list) A list of the new/modified release notes file paths.
-        """
+    Returns:
+        (list) A list of the new/modified release notes file paths.
+    """
     diff_cmd = f'git diff --diff-filter=A --name-only {git_sha1} */{PACK_METADATA}'
     try:
         diff_result = run_command(diff_cmd, exit_on_error=False)
@@ -80,6 +81,37 @@ def get_new_entity_record(entity_path: str) -> (str, str):
     return name, description
 
 
+def construct_entities_block(entities_data: dict):
+    """
+    convert entities information to a pack release note block
+
+    Args:
+        entities_data: dictionary of the form:
+            {
+                Integrations: {
+                    Integration1: <description>,
+                    Integration2:<description>,
+                },
+                Scripts: {
+                    Script1:<description>,
+                    Script2:<description>,
+                },
+                ...
+            }
+
+    Returns:
+        release note block string
+
+    """
+    release_notes = ''
+    for entity_type, entities_description in sorted(entities_data.items()):
+        release_notes += f'\n#### {entity_type}\n'
+        for name, description in entities_description.items():
+            release_notes += f'##### {name}\n - {description}\n'
+
+    return release_notes
+
+
 def get_pack_entities(pack_path):
     print(f'Processing "{pack_path}" files:')
     pack_entities = sum([
@@ -105,18 +137,15 @@ def get_pack_entities(pack_path):
         name, description = get_new_entity_record(entity_path)
         entities_data.setdefault(entity_type, {})[name] = description
 
-    release_notes = ''
-    for entity_type, entities_description in sorted(entities_data.items()):
-        release_notes += f'\n#### {entity_type}\n'
-        for name, description in entities_description.items():
-            release_notes += f'##### {name}\n - {description}\n'
+    release_notes = construct_entities_block(entities_data)
 
     print('Finished processing pack')
     return release_notes
 
 
 def get_all_modified_release_note_files(git_sha1):
-    """ Gets all the existing modified/added file paths in the format */ReleaseNotes/*.md.
+    """
+    Gets all the existing modified/added file paths in the format */ReleaseNotes/*.md.
 
     Args:
         git_sha1 (str): The branch to make the diff with.
@@ -199,6 +228,18 @@ def get_release_notes_dict(release_notes_files):
     return release_notes_dict
 
 
+def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
+    latest_version = '1.0.0'
+    entities_data = {}
+    for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
+                                                   key=lambda pack_item: LooseVersion(pack_item[0])):
+        latest_version = pack_version
+
+    construct_entities_block(entities_data)
+    return (f'### {pack_name} Pack v{latest_version}\n'
+            f'{pack_release_notes}')
+
+
 def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, version, asset_id,
                                    release_notes_file):
     """ Creates a release notes summary markdown file.
@@ -223,6 +264,7 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
                               f'{pack_summary}')
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
+        # pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict))
         for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
                                                        key=lambda pack_item: LooseVersion(pack_item[0])):
             pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
