@@ -1,8 +1,7 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Expanse Appearance",
-		"Expanse Behavior"
+		"Expanse Appearance"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

@@ -1,0 +1,360 @@
+id: ExpanseBehaviorSeverityUpdatePlaybook
+version: -1
+name: Expanse Behavior Severity Update
+description: 'This playbook will update the severity of an Expanse Behavior incident
+  based on the presence of other active Exposures for the IP address. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 900122e1-9dcc-417e-8707-cd52b993382a
+    type: start
+    task:
+      id: 900122e1-9dcc-417e-8707-cd52b993382a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: efc2c8e9-a8e6-47ef-830f-6389d099f700
+    type: regular
+    task:
+      id: efc2c8e9-a8e6-47ef-830f-6389d099f700
+      version: -1
+      name: Expanse IP Enrichment
+      description: Submits an IP address to check.
+      script: Expanse|||ip
+      type: regular
+      iscommand: true
+      brand: Expanse
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ip:
+        complex:
+          root: ${expanse_raw_json_event
+          accessor: internalAddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 64446bee-e010-4271-86b1-64940ce683d6
+    type: condition
+    task:
+      id: 64446bee-e010-4271-86b1-64940ce683d6
+      version: -1
+      name: Does IP have Critical Exposures?
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "3"
+    scriptarguments:
+      first:
+        complex:
+          root: Expanse
+          accessor: IP.SeverityCounts.CRITICAL
+      second:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3d234210-d959-4775-818b-9bb2a2ae987e
+    type: regular
+    task:
+      id: 3d234210-d959-4775-818b-9bb2a2ae987e
+      version: -1
+      name: Set Severity for Critical
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append: {}
+      key:
+        simple: severity
+      stringify: {}
+      value:
+        simple: ${inputs.Critical Severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: severity
+      output:
+        simple: High
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 22cbc129-d8e6-4bfc-87a2-caddb077dd57
+    type: condition
+    task:
+      id: 22cbc129-d8e6-4bfc-87a2-caddb077dd57
+      version: -1
+      name: Does IP have Warning Exposures?
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "5"
+    scriptarguments:
+      first:
+        complex:
+          root: Expanse
+          accessor: IP.SeverityCounts.CRITICAL
+      second:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e47aad02-9072-4982-8319-e4dd76cd57ff
+    type: regular
+    task:
+      id: e47aad02-9072-4982-8319-e4dd76cd57ff
+      version: -1
+      name: Set Severity for Warning
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append: {}
+      key:
+        simple: severity
+      stringify: {}
+      value:
+        simple: ${inputs.Warning Severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: severity
+      output:
+        simple: High
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 69666dca-661b-4eaf-8352-1a374bbc0fb1
+    type: regular
+    task:
+      id: 69666dca-661b-4eaf-8352-1a374bbc0fb1
+      version: -1
+      name: Set Severity for Routine
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append: {}
+      key:
+        simple: severity
+      stringify: {}
+      value:
+        simple: ${inputs.Routine Severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: severity
+      output:
+        simple: High
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9468da68-074d-490f-8ba1-d3bb0f4805b8
+    type: condition
+    task:
+      id: 9468da68-074d-490f-8ba1-d3bb0f4805b8
+      version: -1
+      name: Was IP Present?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    scriptarguments:
+      value:
+        complex:
+          root: Expanse
+          accessor: IP.SeverityCounts
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 59a690c4-90d6-4d66-83a8-bceb5202d781
+    type: playbook
+    task:
+      id: 59a690c4-90d6-4d66-83a8-bceb5202d781
+      version: -1
+      name: Expanse Incident Playbook
+      playbookName: Expanse Incident Playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1485,
+        "width": 760,
+        "x": 450,
+        "y": -180
+      }
+    }
+  }
+inputs:
+- key: Critical Severity
+  value:
+    simple: High
+  required: false
+  description: Set's incident to this severity if there are any critical exposures
+    on the asset.
+  playbookInputQuery: null
+- key: Warning Severity
+  value:
+    simple: Medium
+  required: false
+  description: Set's incident to this severity if there are any critical exposures
+    on the asset.
+  playbookInputQuery: null
+- key: Routine Severity
+  value:
+    simple: Low
+  required: false
+  description: Set's incident to this severity if there are any critical exposures
+    on the asset.
+  playbookInputQuery: null
+outputs: []

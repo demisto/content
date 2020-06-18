@@ -70,7 +70,7 @@ def make_headers(endpoint, token):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'User-Agent': 'Expanse_Demisto/1.1.1'
+        'User-Agent': 'Expanse_Demisto/1.2.0'
     }
     if endpoint == "IdToken":
         headers['Authorization'] = 'Bearer ' + token
@@ -624,8 +624,7 @@ def fetch_events_incidents_command(start_date, end_date, token, next_=None):
     params = {
         'startDateUtc': start_date,
         'endDateUtc': end_date,
-        'eventType': EXPOSURE_EVENT_TYPES,
-        'limit': PAGE_LIMIT
+        'eventType': EXPOSURE_EVENT_TYPES
     }
 
     if next_:
@@ -652,7 +651,6 @@ def fetch_behavior_incidents_command(start_date, token, offset=0):
     """
     params = {
         'filter[created-after]': start_date + 'T00:00:00.000Z',
-        'page[limit]': PAGE_LIMIT,
         'page[offset]': offset if offset is not None else 0
     }
 
@@ -698,29 +696,49 @@ def fetch_incidents_command():
     page_token = None
     incidents = []
 
-    while more_events:
-        event_incidents, page_token = fetch_events_incidents_command(start_date, end_date, token, page_token)
-        for incident in event_incidents:
-            demisto.debug("Adding event incident name={name}, type={type}, severity={severity}".format(**incident))
-        incidents += event_incidents
-        if page_token is None:
-            more_events = False
+    # Check if we've stored any events in the integration cache
+    cache = demisto.getIntegrationContext()
+    stored_incidents = cache.get("incidents")
 
-    # Fetch Behavior
-    if BEHAVIOR_ENABLED:
-        more_behavior = True
-        next_offset = None
+    if stored_incidents is not None:
+        while more_events:
+            event_incidents, page_token = fetch_events_incidents_command(start_date, end_date, token, page_token)
+            for incident in event_incidents:
+                demisto.debug("Adding event incident name={name}, type={type}, severity={severity}".format(**incident))
+            incidents += event_incidents
+            if page_token is None:
+                more_events = False
 
-        while more_behavior:
-            behavior_incidents, next_offset = fetch_behavior_incidents_command(start_date, token, next_offset)
-            for incident in behavior_incidents:
-                demisto.debug("Adding behavior incident name={name}, type={type}, severity={severity}".format(**incident))
-            incidents += behavior_incidents
-            if next_offset is None:
-                more_behavior = False
+        # Fetch Behavior
+        if BEHAVIOR_ENABLED:
+            more_behavior = True
+            next_offset = None
 
-    # Send all Incidents
-    demisto.incidents(incidents)
+            while more_behavior:
+                behavior_incidents, next_offset = fetch_behavior_incidents_command(start_date, token, next_offset)
+                for incident in behavior_incidents:
+                    demisto.debug("Adding behavior incident name={name}, type={type}, severity={severity}".format(**incident))
+                incidents += behavior_incidents
+                if next_offset is None:
+                    more_behavior = False
+
+        # Send PAGE_LIMIT number of incidents to demisto
+        incidents_to_send = incidents[:PAGE_LIMIT]
+        del incidents[:PAGE_LIMIT]
+        demisto.incidents(incidents_to_send)
+
+        # Add remaining incidents to cache
+        cache["incidents"] = incident
+        demisto.setIntegrationContext(cache)
+    else:
+        # Send next PAGE_LIMIT number of incidents to demisto
+        incidents_to_send = stored_incidents[:PAGE_LIMIT]
+        del stored_incidents[:PAGE_LIMIT]
+        demisto.incidents(incidents_to_send)
+
+        # Update Cache
+        cache["incidents"] = stored_incidents
+        demisto.setIntegrationContext(cache)
 
     # Save last_run
     demisto.setLastRun({
