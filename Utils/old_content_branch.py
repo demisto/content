@@ -97,7 +97,7 @@ def delete_json(file_path):
 
 
 parser = argparse.ArgumentParser("Alter the branch to assign a new toVersion to all relevant files.")
-parser.add_argument('new_to_version', help='The new to version to assign.')
+parser.add_argument('-v', '--new-to-version', help='The new to version to assign.', required=True)
 
 
 def main():
