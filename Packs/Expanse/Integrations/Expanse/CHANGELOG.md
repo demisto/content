@@ -1,9 +1,5 @@
 ## [Unreleased]
 - Respect configured page limit when fetching new incidents
-- Added new IncidentFields, Expanse_Behavior_Rule, Expanse_Business_Unit
-- Added new Classifier
-- Added new Layout for Expanse Behavior Incidents
-- Added new Expanse Behavior Severity Playbook
 
 ## [20.5.2] - 2020-05-26
 - Added support for filtering incident creation by Expanse Exposure severity level.
