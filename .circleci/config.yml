@@ -49,7 +49,7 @@ jobs:
             git config diff.renameLimit 6000
 
             echo "========== Build Parameters =========="
-            echo "Parameters: NIGHTLY: $NIGHTLY, INSTANCE_TESTS: $INSTANCE_TESTS, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, ARTIFACT_BUILD_NUM: $ARTIFACT_BUILD_NUM, TIME_TO_LIVE: $TIME_TO_LIVE"
+            echo "Parameters: NIGHTLY: $NIGHTLY, INSTANCE_TESTS: $INSTANCE_TESTS, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, ARTIFACT_BUILD_NUM: $ARTIFACT_BUILD_NUM, TIME_TO_LIVE: $TIME_TO_LIVE, CONTRIB_BRANCH: $CONTRIB_BRANCH"
             python --version
             python3 --version
             demisto-sdk --version
@@ -62,6 +62,22 @@ jobs:
           fingerprints:
             - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
             - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+      - run:
+          name: Check if Contributor branch
+          when: always
+          command: |
+            if [ -n $CONTRIB_BRANCH ]
+            then
+              USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+              BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+
+              echo 'Copy the changes from the contributor branch'
+              git remote add $USER git@github.com:$USER/content.git
+              git fetch $USER
+              git checkout $USER/$BRANCH Packs/
+              exit 0
+            fi
+
       - run:
           name: Check if CircleCI's config file is up to date
           when: always
@@ -354,14 +370,10 @@ jobs:
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
-                echo 'im here1!!!!!!!'
-                echo $TIME_TO_LIVE
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TIME_TO_LIVE -outfile ./env_results.json
 
               else
                 . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                echo 'im here2######'
-                echo $TIME_TO_LIVE
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TIME_TO_LIVE -outfile ./env_results.json
             fi
       - run:
@@ -571,7 +583,7 @@ jobs:
             fi
             if [ -n $TIME_TO_LIVE ]
             then
-                echo "Skipping - Time to live was set"
+                echo "Skipping - Time to live was set to $$TIME_TO_LIVE minutes"
                 exit 0
             fi
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
