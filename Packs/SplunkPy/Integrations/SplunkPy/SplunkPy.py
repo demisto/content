@@ -161,7 +161,7 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     args['output_mode'] = 'json'
 
     mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header,
-                                 verify=VERIFY_CERTIFICATE,proxies=PROXIES)
+                                 verify=VERIFY_CERTIFICATE, proxies=PROXIES)
 
     return mod_notables.json()
 
@@ -546,7 +546,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     }
 
     response = requests.post(baseurl + '/services/collector/event', data=json.dumps(args), headers=headers,
-                             verify=VERIFY_CERTIFICATE,proxies=PROXIES)
+                             verify=VERIFY_CERTIFICATE, proxies=PROXIES)
     return response
 
 
@@ -579,7 +579,7 @@ def splunk_edit_notable_event_command():
     password = demisto.params()['authentication']['password']
     auth_req = requests.post(baseurl + 'services/auth/login',
                              data={'username': username, 'password': password, 'output_mode': 'json'},
-                             verify=VERIFY_CERTIFICATE,proxies=PROXIES)
+                             verify=VERIFY_CERTIFICATE, proxies=PROXIES)
 
     sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
