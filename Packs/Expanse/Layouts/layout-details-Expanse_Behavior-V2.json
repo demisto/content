@@ -3,15 +3,9 @@
 	"kind": "details",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
 		"id": "Expanse Behavior",
 		"kind": "details",
-		"modified": "2020-06-15T20:56:16.580315721Z",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "Expanse Behavior",
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -346,8 +340,7 @@
 			}
 		],
 		"typeId": "Expanse Behavior",
-		"vcShouldIgnore": false,
-		"version": 1
+		"version": -1
 	},
 	"typeId": "Expanse Behavior",
 	"version": -1

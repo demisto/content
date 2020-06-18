@@ -655,7 +655,7 @@ script:
     - contextPath: Expanse.Exposures.Exposures.Provider
       description: Provider details of the Exposure
       type: Unknown
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false

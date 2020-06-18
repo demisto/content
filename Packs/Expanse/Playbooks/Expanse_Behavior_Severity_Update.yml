@@ -1,9 +1,10 @@
-id: ExpanseBehaviorSeverityUpdatePlaybook
+id: Expanse Behavior Severity Update
 version: -1
 name: Expanse Behavior Severity Update
 description: 'This playbook will update the severity of an Expanse Behavior incident
   based on the presence of other active Exposures for the IP address. '
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
@@ -358,3 +359,5 @@ inputs:
     on the asset.
   playbookInputQuery: null
 outputs: []
+tests:
+- No tests (auto formatted)
