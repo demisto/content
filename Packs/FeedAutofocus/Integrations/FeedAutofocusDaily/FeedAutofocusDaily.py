@@ -197,7 +197,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
 
     if args.get('limit'):
         human_readable = human_readable + f"\nTo bring the next batch of indicators " \
-                                          f"run:\n!autofocus-daily-get-indicators " \ 
+                                          f"run:\n!autofocus-daily-get-indicators " \
                                           f"limit={args.get('limit')} " \
                                           f"offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
 
@@ -241,7 +241,8 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args(), feed_tags)  # type: ignore
+            readable_output, outputs, raw_response = commands[command](client, demisto.args(),
+                                                                       feed_tags)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f'Error in AutoFocusFeed Daily Integration [{e}]')

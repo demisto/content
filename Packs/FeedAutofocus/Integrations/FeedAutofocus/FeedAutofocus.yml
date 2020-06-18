@@ -128,7 +128,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false
