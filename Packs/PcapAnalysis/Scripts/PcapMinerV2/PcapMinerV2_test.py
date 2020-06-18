@@ -58,7 +58,7 @@ def test_mine_pcap():
     is_reg_extract = True
     extracted_protocols = ['DNS', 'SMB2']
     pcap_filter = ''
-    homemade_regex = ''
+    homemade_regex = 'M-SEARCH * (.+)'
     pcap_filter_new_file_path = ''
     unique_ips = False
     rsa_key_file_path = ''
@@ -72,23 +72,4 @@ def test_mine_pcap():
     assert len(ec['PCAPResultsDNS']) == 80
     assert len(ec['PCAPResultsSMB2']) == 7
     assert raw['URL'][0] == 'http://239.255.255.250:1900*'
-
-
-def test_mine_pcap_homemade_regex():
-    file_path = './TestData/smb-on-windows-10.pcapng'
-    wpa_password = ""
-    conversation_number_to_display = 15
-    is_flows = True
-    is_reg_extract = True
-    extracted_protocols = ['DNS', 'SMB2']
-    pcap_filter = ''
-    homemade_regex = 'M-SEARCH * (.+)'
-    pcap_filter_new_file_path = ''
-    unique_ips = False
-    rsa_key_file_path = ''
-    from PcapMinerV2 import PCAP
-    pcap = PCAP(is_reg_extract, extracted_protocols, homemade_regex, unique_ips, 'entry_id')
-    pcap.mine(file_path, wpa_password, rsa_key_file_path, is_flows, is_reg_extract, pcap_filter,
-              pcap_filter_new_file_path)
-    hr, ec, raw = pcap.get_outputs(conversation_number_to_display, is_flows, is_reg_extract)
     assert raw['Regex'] != []
