@@ -116,9 +116,21 @@ function Get-InfocyteAlerts {
             @{ N='synapseScore'; E={ if ($_.synapse) { [math]::Round($_.synapse,2)}}},
             size
     }
+
     if ($Demisto.GetCommand() -eq "fetch-incidents") {
-        $Demisto.Incidents($Output.'Infocyte.Alert')
+        $Incidents = @()
+        $Output.'Infocyte.Alert' | Foreach-Object {
+            $NewAlert = @{
+                name = "$($_.type)-$($_.name)"
+                occurred = $_.createdOn
+                rawJSON = $_ | ConvertTo-JSON -Depth 2
+                severity = 1
+            }
+            $Incidents += $NewAlert
+        }
+        $Demisto.Incidents($Incidents)
     } else {
+
         $MDOutput = $Output.'Infocyte.Alert' |
             Select-Object id, name, type, sha1, size, threatName, flagName,
             @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
@@ -145,7 +157,7 @@ function Get-InfocyteScanResult {
 
     $Hosts = Get-ICObject -Type Host -ScanId $scanId | Select-Object hostname, ip, osVersion
     $Alerts = Get-ICAlert -where @{ scanId = $scanId } |
-        Select-Object id, name, type, hostname, @{N=’sha1’; E={ $_.fileRepId }}, size, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, @{ N='synapseScore'; E={ if ($_.synapse) { [math]::Round($_.synapse,2)}}}
+        Select-Object id, name, type, hostname, @{N='sha1'; E={ $_.fileRepId }}, size, flagName, flagWeight, threatScore, threatWeight, threatName, avPositives, avTotal, @{ N='synapseScore'; E={ if ($_.synapse) { [math]::Round($_.synapse,2)}}}
 
     # Handle counting for 1 item (powershell makes this hard)
     if ($HostResult.alerts) {
@@ -332,6 +344,8 @@ Function ConvertTo-Markdown {
 }
 
 # Override ReturnOutputs (use [PSCustomOject] inputs instead of [hashtables]inputs)
+# NOTE: This will be depreciated once these updates to ReturnOutputs in CommonServerPowershell.ps1
+# are in the new content release
 function ReturnOutputs2 ([string]$ReadableOutput, [Object]$Outputs, [Object]$RawResponse) {
     $entry = @{
         Type           = [EntryTypes]::note;
