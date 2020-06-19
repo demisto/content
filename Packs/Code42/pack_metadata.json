@@ -1,18 +1,18 @@
 {
-  "name": "Code42",
-  "description": "Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.",
-  "support": "partner",
-  "currentVersion": "1.0.0",
-  "author": "Code42",
-  "url": "https://support.code42.com/Administrator/Cloud/Monitoring_and_managing",
-  "email": "",
-  "created": "2020-03-11T13:16:53Z",
-  "categories": [
-    "Endpoint"
-  ],
-  "tags": [
-    "Recommended by Cortex XSOAR"
-  ],
-  "useCases": [],
-  "keywords": []
+    "name": "Code42",
+    "description": "Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Code42",
+    "url": "https://support.code42.com/Administrator/Cloud/Monitoring_and_managing",
+    "email": "",
+    "created": "2020-03-11T13:16:53Z",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [
+        "Recommended by Cortex XSOAR"
+    ],
+    "useCases": [],
+    "keywords": []
 }

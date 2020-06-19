@@ -1,22 +1,21 @@
 id: process_email_-_generic
 version: -1
 name: Process Email - Generic
-fromversion: '5.0.0'
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5bfb4aa2-96ee-40a9-8806-51f5317a9be3
+    taskid: 9af6c609-2579-4ae4-878b-77bfc5dde29d
     type: start
     task:
-      id: 5bfb4aa2-96ee-40a9-8806-51f5317a9b\e3
+      id: 9af6c609-2579-4ae4-878b-77bfc5dde29d
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,12 +30,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: f4ec5dda-65f9-465c-88f4-4319d0e57edf
+    taskid: 55f82687-423e-4f6c-8d33-efe882d82296
     type: condition
     task:
-      id: f4ec5dda-65f9-465c-88f4-4319d0e57edf
+      id: 55f82687-423e-4f6c-8d33-efe882d82296
       version: -1
       name: Do we have original emails attached?
       description: Identify whether the incident includes an email message attached
@@ -70,12 +71,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 586e1b42-4e1a-4c98-812c-f5e68a37abde
+    taskid: 74921e43-3b87-474c-8875-62192dc01e49
     type: regular
     task:
-      id: 586e1b42-4e1a-4c98-812c-f5e68a37abde
+      id: 74921e43-3b87-474c-8875-62192dc01e49
       version: -1
       name: Add original email details to context
       description: ""
@@ -106,12 +109,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 674d0e72-c104-41f9-806b-afbaf8444bea
+    taskid: 1a13fbe8-b3da-4f0e-828c-b73348c373c5
     type: regular
     task:
-      id: 674d0e72-c104-41f9-806b-afbaf8444bea
+      id: 1a13fbe8-b3da-4f0e-828c-b73348c373c5
       version: -1
       name: Add original email attachments to context
       description: Parses an email from an EML or MSG file and populates all relevant
@@ -143,15 +148,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 96f1a90d-aed3-4905-82bd-eb8b75204ffc
+    taskid: 8f3935d7-2637-41d0-82aa-0458d4607adf
     type: condition
     task:
-      id: 96f1a90d-aed3-4905-82bd-eb8b75204ffc
+      id: 8f3935d7-2637-41d0-82aa-0458d4607adf
       version: -1
-      name: Is there an HTML label in the email?
-      description: ""
+      name: Can an image of the email be rendered?
+      description: Checks whether the email is HTML-formatted, and whether the Rasterize
+        integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -176,6 +184,29 @@ tasks:
             value:
               simple: Email.HTML
             iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
     view: |-
       {
         "position": {
@@ -186,12 +217,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 79efc198-1523-4a55-89ad-668e64fba48c
+    taskid: aff18291-3cae-4efb-848e-53f356c76361
     type: regular
     task:
-      id: 79efc198-1523-4a55-89ad-668e64fba48c
+      id: aff18291-3cae-4efb-848e-53f356c76361
       version: -1
       name: Render HTML to an image
       description: Rasterize an email body into an image
@@ -226,18 +259,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 811ebf69-5fe0-4314-8cff-ca8e91774fe8
+    taskid: 7db302b1-a2bf-4277-8ef9-f5da76699839
     type: title
     task:
-      id: 811ebf69-5fe0-4314-8cff-ca8e91774fe8
+      id: 7db302b1-a2bf-4277-8ef9-f5da76699839
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -249,18 +284,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 599cbc26-9525-4dd7-8692-3b572ef01c53
+    taskid: e7cb8be0-4f69-4c4d-8e85-a29311e5d90c
     type: title
     task:
-      id: 599cbc26-9525-4dd7-8692-3b572ef01c53
+      id: e7cb8be0-4f69-4c4d-8e85-a29311e5d90c
       version: -1
       name: Advance features
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -275,12 +312,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 98601be8-c258-47c5-8666-0babb2f1789d
+    taskid: de571e55-c518-4cb8-86b8-5e854ebd5285
     type: regular
     task:
-      id: 98601be8-c258-47c5-8666-0babb2f1789d
+      id: de571e55-c518-4cb8-86b8-5e854ebd5285
       version: -1
       name: Set incident with the Email object data
       description: Updates Demisto incident fields using data from the email object.
@@ -619,12 +658,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 54eafd46-2cb7-4d4f-8cea-7bf65808e8a3
+    taskid: 3aa70465-c71b-491a-8a92-929c2f594b51
     type: condition
     task:
-      id: 54eafd46-2cb7-4d4f-8cea-7bf65808e8a3
+      id: 3aa70465-c71b-491a-8a92-929c2f594b51
       version: -1
       name: Should retrieve the original email?
       description: If True, retrieve the original email in the thread
@@ -659,12 +700,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: a73fbff7-92c7-4d83-86cf-2719189e8cae
+    taskid: 9a089a24-39d3-4306-8597-4fb83d9bcf32
     type: playbook
     task:
-      id: a73fbff7-92c7-4d83-86cf-2719189e8cae
+      id: 9a089a24-39d3-4306-8597-4fb83d9bcf32
       version: -1
       name: Get Original Email - Generic
       description: |-
@@ -692,12 +735,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: f20efab6-7ee1-46a1-8964-0f89ffa22415
+    taskid: e335658f-4613-46f0-8b4c-19be03907ab1
     type: condition
     task:
-      id: f20efab6-7ee1-46a1-8964-0f89ffa22415
+      id: e335658f-4613-46f0-8b4c-19be03907ab1
       version: -1
       name: Was the original email retrieved?
       description: Is there an email object in the context?
@@ -728,12 +773,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: c021141e-c505-472a-8139-9807ab7ba703
+    taskid: 24c8c1f3-1190-480c-8790-6e2de793066b
     type: regular
     task:
-      id: c021141e-c505-472a-8139-9807ab7ba703
+      id: 24c8c1f3-1190-480c-8790-6e2de793066b
       version: -1
       name: Set incident with the Email object data
       description: Updates Demisto incident fields using data from the email object.
@@ -1090,6 +1137,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1114,6 +1164,7 @@ inputs:
       root: File
   required: false
   description: An EML or MSG file with
+  playbookInputQuery:
 - key: Email
   value:
     complex:
@@ -1121,6 +1172,7 @@ inputs:
       accessor: labels.Email
   required: false
   description: The receiving email address
+  playbookInputQuery:
 - key: Email/cc
   value:
     complex:
@@ -1128,6 +1180,7 @@ inputs:
       accessor: labels.CC
   required: false
   description: CC addresses
+  playbookInputQuery:
 - key: Email/from
   value:
     complex:
@@ -1135,6 +1188,7 @@ inputs:
       accessor: labels.Email/from
   required: false
   description: The originator of the email
+  playbookInputQuery:
 - key: Email/subject
   value:
     complex:
@@ -1142,6 +1196,7 @@ inputs:
       accessor: labels.Email/subject
   required: false
   description: The email’s subject
+  playbookInputQuery:
 - key: Email/text
   value:
     complex:
@@ -1149,6 +1204,7 @@ inputs:
       accessor: labels.Email/text
   required: false
   description: The email’s text
+  playbookInputQuery:
 - key: Email/html
   value:
     complex:
@@ -1156,6 +1212,7 @@ inputs:
       accessor: labels.Email/html
   required: false
   description: The emai’sl html
+  playbookInputQuery:
 - key: Email/headers
   value:
     complex:
@@ -1163,6 +1220,7 @@ inputs:
       accessor: labels.Email/headers
   required: false
   description: The email’s headers
+  playbookInputQuery:
 - key: Email/format
   value:
     complex:
@@ -1170,6 +1228,7 @@ inputs:
       accessor: labels.Email/format
   required: false
   description: The email’s format
+  playbookInputQuery:
 - key: GetOriginalEmail
   value:
     simple: "False"
@@ -1181,6 +1240,7 @@ inputs:
 
     - EWS: eDiscovery
     - Gmail: Google Apps Domain-Wide Delegation of Authority
+  playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
   description: Email 'html' body if exists
@@ -1215,5 +1275,6 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
+fromversion: 5.0.0
 tests:
-  - process_email_-_generic_-_test
+- process_email_-_generic_-_test
