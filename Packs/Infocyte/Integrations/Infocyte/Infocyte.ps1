@@ -16,7 +16,7 @@ function Invoke-InfocyteScan {
         }
     }
     $MDOutput = $Output."Infocyte.Task" | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output
 }
 
 function Get-InfocyteTaskStatus {
@@ -41,7 +41,7 @@ function Get-InfocyteTaskStatus {
         }
     }
     $MDOutput = $Output.'Infocyte.Task(val.userTaskId == obj.userTaskId)' | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $task
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $task
 }
 
 function Get-InfocyteAlerts {
@@ -75,11 +75,11 @@ function Get-InfocyteAlerts {
         }
     }
     else {
-        $LastAlert = $Demisto.GetLastRun()
-        $Demisto.Debug("LastAlert: $($LastAlert|Convertto-Json -compress)")
-        if ($LastAlert.Values) {
-            $Demisto.Debug("Found lastAlertId: $($LastAlert | Convertto-Json -compress)")
-            $where = @{ id = @{ gt = $LastAlert } }
+        $LastRun = $Demisto.GetLastRun()
+        $Demisto.Debug("LastAlert: $($LastRun|Convertto-Json -compress)")
+        if ($LastRun.lastAlertId) {
+            $Demisto.Debug("Found lastAlertId: $($LastRun | Convertto-Json -compress)")
+            $where = @{ id = @{ gt = $LastRun.lastAlertId } }
         } else {
             $Demisto.Debug("First run: Retrieving all alerts for past $first_fetch days")
             $where = @{ createdOn = @{ gt = (Get-Date).AddDays(-[int]$first_fetch) }}
@@ -87,13 +87,13 @@ function Get-InfocyteAlerts {
         $Alerts = Get-ICAlert -where $where | Select-Object -First $max_fetch
         if (-NOT $Alerts) {
             $Demisto.Log("No new alerts found.")
-            if ($LastAlert) {
-                $Demisto.SetLastRun($LastAlert)
+            if ($LastRun.lastAlertId) {
+                $Demisto.SetLastRun(@{ lastAlertId = $LastRun.lastAlertId })
             }
             return
         }
-        $LastAlert = $Alerts | Select-Object -Last 1 -ExpandProperty id
-        $Demisto.SetLastRun($LastAlert)
+        $LastAlertId = $Alerts | Select-Object -Last 1 -ExpandProperty id
+        $Demisto.SetLastRun(@{ lastAlertId = $LastAlertId})
     }
     $Output = [PSCustomObject]@{
         'Infocyte.Alert' = $Alerts | Select-Object id,
@@ -116,11 +116,15 @@ function Get-InfocyteAlerts {
             @{ N='synapseScore'; E={ if ($_.synapse) { [math]::Round($_.synapse,2)}}},
             size
     }
-    $MDOutput = $Output.'Infocyte.Alert' |
-        Select-Object id, name, type, sha1, size, threatName, flagName,
-         @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
-        ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Alerts
+    if ($Demisto.GetCommand() -eq "fetch-incidents") {
+        $Demisto.Incidents($Output.'Infocyte.Alert')
+    } else {
+        $MDOutput = $Output.'Infocyte.Alert' |
+            Select-Object id, name, type, sha1, size, threatName, flagName,
+            @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
+            ConvertTo-Markdown
+        ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Alerts
+    }
 }
 
 function Get-InfocyteScanResult {
@@ -170,7 +174,7 @@ function Get-InfocyteScanResult {
     $MDOutput += $Output.'Infocyte.Scan'.alerts |
          Select-Object id, name, type, sha1, size, threatName, flagName, @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
          ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output
 }
 
 function Get-InfocyteHostScanResult {
@@ -209,7 +213,7 @@ function Get-InfocyteHostScanResult {
     $MDOutput += $Output.'Infocyte.Scan'.alerts |
          Select-Object id, name, type, sha1, size, threatName, flagName, @{N='av'; E={ "$($_.avPositives)/$($_.avTotal)" }}, synapseScore |
          ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
 }
 
 function Get-InfocyteResponseResult {
@@ -238,7 +242,7 @@ function Get-InfocyteResponseResult {
          ConvertTo-Markdown
     $MDOutput += "`n#### Messages`n`n"
     $MDOutput += $Output.'Infocyte.Response'.messages
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $HostResult
 }
 
 function Invoke-InfocyteResponse {
@@ -259,7 +263,7 @@ function Invoke-InfocyteResponse {
         }
     }
     $MDOutput = $Output.'Infocyte.Task' | ConvertTo-Markdown
-    ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Task
+    ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $Task
 }
 
 Function ConvertTo-Markdown {
@@ -327,6 +331,28 @@ Function ConvertTo-Markdown {
     }
 }
 
+# Override ReturnOutputs (use [PSCustomOject] inputs instead of [hashtables]inputs)
+function ReturnOutputs2 ([string]$ReadableOutput, [Object]$Outputs, [Object]$RawResponse) {
+    $entry = @{
+        Type           = [EntryTypes]::note;
+        ContentsFormat = [EntryFormats]::json.ToString();
+        HumanReadable  = $ReadableOutput;
+        Contents       = $RawResponse;
+        EntryContext   = $Outputs
+    }
+    # Return 'readable_output' only if needed
+    if ($ReadableOutput -and -not $outputs -and -not $RawResponse) {
+        $entry.Contents = $ReadableOutput
+        $entry.ContentsFormat = [EntryFormats]::text.ToString();
+    }
+    elseif ($Outputs -and -not $RawResponse) {
+        # if RawResponse was not provided but outputs were provided then set Contents as outputs
+        $entry.Contents = $Outputs
+    }
+    $demisto.Results($entry) | Out-Null
+    return $entry
+}
+
 function Main {
 
     # Parse Params
@@ -373,7 +399,7 @@ function Main {
             return
         }
     } catch {
-        ReturnError -Messagw "Could not connect to instance $Instance." $_ | Out-Null
+        ReturnError -Message "Could not connect to instance $Instance." -Err $_ | Out-Null
         return
     }
 
@@ -383,7 +409,7 @@ function Main {
         Switch ($Demisto.GetCommand()) {
             "test-module" {
                 $Demisto.Debug("Running test-module")
-                ReturnOutputs "ok" | Out-Null
+                ReturnOutputs2 "ok" | Out-Null
             }
             "fetch-incidents" {
                 Get-InfocyteAlerts | Out-Null
