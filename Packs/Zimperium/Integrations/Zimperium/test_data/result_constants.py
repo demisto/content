@@ -434,7 +434,7 @@ EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET = {
     ]
 }
 EXPECTED_GET_LAST_UPDATED_DEVICES = {
-    'Zimperium.LastUpdatedDevices(val.deviceId === obj.deviceId)':
+    'Zimperium.Devices(val.deviceId === obj.deviceId)':
         [
             {
                 'appName': 'zIPS', 'bundleId': 'com.zimperium.zIPS', 'country': '454', 'countryCode': '454',

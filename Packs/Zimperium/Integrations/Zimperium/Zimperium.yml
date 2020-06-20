@@ -1025,7 +1025,7 @@ script:
     description: Upload application file for analysis.
     execution: false
     name: zimperium-app-upload-for-analysis
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false
