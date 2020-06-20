@@ -33,6 +33,7 @@ configuration:
   display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
   options:
+  - Unclassified
   - Low
   - Medium
   - High
