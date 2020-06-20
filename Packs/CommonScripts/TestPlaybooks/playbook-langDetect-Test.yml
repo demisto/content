@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 448ca2cf-2467-4306-8418-13a95c98ae9c
+    taskid: e878dc76-2922-4edf-8632-5ec19d61d958
     type: start
     task:
-      id: 448ca2cf-2467-4306-8418-13a95c98ae9c
+      id: e878dc76-2922-4edf-8632-5ec19d61d958
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: e7f8493d-7ee9-4562-8f5d-5396fc52bac0
+    taskid: b1e5a6ec-5705-49c8-821d-4c0f70b97ff2
     type: regular
     task:
-      id: e7f8493d-7ee9-4562-8f5d-5396fc52bac0
+      id: b1e5a6ec-5705-49c8-821d-4c0f70b97ff2
       version: -1
       name: Detect english
       scriptName: LanguageDetect
@@ -64,10 +64,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: cb7d24b2-0f25-4d9e-87e3-89da25df5f1d
+    taskid: d1b82982-f1be-4a16-8bda-f0784412919f
     type: condition
     task:
-      id: cb7d24b2-0f25-4d9e-87e3-89da25df5f1d
+      id: d1b82982-f1be-4a16-8bda-f0784412919f
       version: -1
       name: Check if we found English
       scriptName: Exists
@@ -76,7 +76,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "3"
+      - "7"
     scriptarguments:
       value:
         simple: ${langDetect(val.lang=='en')}
@@ -93,40 +93,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: b734b4b5-931b-488c-860e-43d16bca90e0
-    type: regular
-    task:
-      id: b734b4b5-931b-488c-860e-43d16bca90e0
-      version: -1
-      name: Close
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes: {}
-      reason: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: 6998200f-0ec7-4560-8489-6aa94c879875
+    taskid: 44254d3c-7011-42cb-86af-3909f36bcb79
     type: regular
     task:
-      id: 6998200f-0ec7-4560-8489-6aa94c879875
+      id: 44254d3c-7011-42cb-86af-3909f36bcb79
       version: -1
       name: Sleep for 3 minutes
       scriptName: Sleep
@@ -154,10 +126,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 6af1144b-28a0-4e57-86f7-bed70791a315
+    taskid: 6a34c6b7-766f-4ba3-8f9e-2a822e1d058e
     type: regular
     task:
-      id: 6af1144b-28a0-4e57-86f7-bed70791a315
+      id: 6a34c6b7-766f-4ba3-8f9e-2a822e1d058e
       version: -1
       name: Detect english once again
       scriptName: LanguageDetect
@@ -185,10 +157,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0b20fdc4-5726-4ff6-8ccb-5d0d2844bfed
+    taskid: 2e87b599-df38-43f6-8399-b6f56b255d84
     type: regular
     task:
-      id: 0b20fdc4-5726-4ff6-8ccb-5d0d2844bfed
+      id: 2e87b599-df38-43f6-8399-b6f56b255d84
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -215,12 +187,36 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "7":
+    id: "7"
+    taskid: df91e379-e7f9-4b05-849f-ab16dd6de22f
+    type: title
+    task:
+      id: df91e379-e7f9-4b05-849f-ab16dd6de22f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 1085,
         "width": 380,
         "x": 50,
         "y": 50

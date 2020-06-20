@@ -202,8 +202,8 @@ def print_test_summary(tests_data_keeper, is_ami=True):
     if empty_mocks_count > 0:
         empty_mock_successes_msg = '\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':'
         print(empty_mock_successes_msg)
-        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n'\
-                            '\t Investigate the playbook and the integrations.\n'\
+        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+                            '\t Investigate the playbook and the integrations.\n' \
                             '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
         print(proxy_explanation)
         for playbook_id in empty_files:
@@ -398,6 +398,8 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         prints_manager.add_print_job(mock_recording_message, print, thread_index, include_timestamp=True)
 
     # Mock recording - no mock file or playback failure.
+    c = demisto_client.configure(base_url=c.api_client.configuration.host,
+                                 api_key=c.api_client.configuration.api_key, verify_ssl=False)
     succeed = run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                              test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                              prints_manager, thread_index=thread_index)
@@ -866,7 +868,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                 ami.upload_mock_files(build_name, build_number)
 
         if playbook_skipped_integration and build_name == 'master':
-            comment = 'The following integrations are skipped and critical for the test:\n {}'.\
+            comment = 'The following integrations are skipped and critical for the test:\n {}'. \
                 format('\n- '.join(playbook_skipped_integration))
             add_pr_comment(comment)
 
