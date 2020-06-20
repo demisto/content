@@ -58,7 +58,7 @@ As this is a push based streaming integration, it can not fetch sample events in
 
 In order to view sample events, enable events storage by checking the ticking the checkbox of the integration parameter **Store sample events for mapping** and run the `crowdstrike-falcon-streaming-get-sample-events` command.
 
-The last events (20 at max) fetched every 5 minutes, so allow the integration to run for at least 5 minutes before running the command.
+The last events (20 at max) fetched every 1 minute, so allow the integration to run for at least 5 minutes before running the command.
 Once you've completed mapping, it is recommended to turn off the **Store sample events for mapping** to reduce performance overhead.
 #### Usage example
 
