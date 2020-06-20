@@ -40,6 +40,7 @@ tasks:
       id: c20115aa-215b-4517-8389-0e053de10e3a
       version: -1
       name: DeleteContext
+      description: ""
       script: DeleteContext
       type: regular
       iscommand: true
@@ -71,6 +72,7 @@ tasks:
       id: 87953a9c-8abb-4cd3-857c-a37486ae4cda
       version: -1
       name: Verify Outputs
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -204,6 +206,7 @@ tasks:
       id: 114ccd9e-37f7-4a8d-8984-0897cbcb5119
       version: -1
       name: Verify Outputs
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -247,6 +250,7 @@ tasks:
       id: adb5acea-1ff7-4cef-83ad-63305559a04e
       version: -1
       name: Verify Outputs
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -307,6 +311,7 @@ tasks:
       id: b73b1097-630b-4f9a-808f-1b9752716836
       version: -1
       name: Test Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
