@@ -1,12 +1,10 @@
 {
   "GoogleChronicleBackstory.Events": [
     {
-      "metadata": {
-        "eventTimestamp": "2020-01-01T00:01:00Z",
-        "collectedTimestamp": "2020-01-01T00:01:00Z",
-        "eventType": "NETWORK_DNS",
-        "productName": "ExtraHop"
-      },
+      "eventTimestamp": "2020-01-01T00:01:00Z",
+      "collectedTimestamp": "2020-01-01T00:01:00Z",
+      "eventType": "NETWORK_DNS",
+      "productName": "ExtraHop",
       "principal": {
         "hostname": "dummy-host",
         "ip": [
@@ -39,12 +37,10 @@
       }
     },
     {
-      "metadata": {
-        "eventTimestamp": "2020-01-01T00:02:00Z",
-        "collectedTimestamp": "2020-01-01T00:02:00Z",
-        "eventType": "NETWORK_DNS",
-        "productName": "ExtraHop"
-      },
+      "eventTimestamp": "2020-01-01T00:02:00Z",
+      "collectedTimestamp": "2020-01-01T00:02:00Z",
+      "eventType": "NETWORK_DNS",
+      "productName": "ExtraHop",
       "principal": {
         "asset_id": 123
       },

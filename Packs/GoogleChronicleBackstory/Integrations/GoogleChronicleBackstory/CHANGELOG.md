@@ -1,6 +1,5 @@
 ## [Unreleased]
-- Added **gcb-list-events** command.
-- Added deep link in existing commands as well as the new command.
+-
 
 ## [20.5.0] - 2020-05-12
 -

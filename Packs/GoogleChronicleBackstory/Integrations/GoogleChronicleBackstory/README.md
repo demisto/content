@@ -562,7 +562,7 @@ List all the alerts tracked within your enterprise for the specified time range.
 
 ### 7. gcb-list-events
 ---
-List all of the events discovered within your enterprise on a particular asset within the specified time range.
+List all of the events discovered within your enterprise on a particular device within the specified time range. If you receive the maximum number of events you specified using the page_size parameter (or 100, the default), there might still be more events within your Chronicle account. You can narrow the time range and issue the call again to ensure you have visibility into all possible events. This command returns more than 60 different types of events. Any event would have only specific output context set. Refer the UDM documentation to figure out the output properties specific to the event types.
 
 ##### Base Command
 
@@ -576,23 +576,23 @@ List all of the events discovered within your enterprise on a particular asset w
 | preset_time_range | Get events that are discovered during the interval specified. If configured, overrides the start_time and end_time arguments. | Optional | 
 | start_time | The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied, the product considers UTC time corresponding to 2 hours earlier than current time. | Optional | 
 | end_time | The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied, the product considers current UTC time. | Optional | 
-| page_size | Specify the maximum number of events to fetch. You can specify between 1 and 10000. The default is 10000. | Optional | 
+| page_size | Specify the maximum number of events to fetch. You can specify between 1 and 1000. The default is 100. | Optional | 
 | reference_time | Specify the reference time for the asset you are investigating, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the product considers start time as reference time. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleChronicleBackstory.Events.metadata.eventType | String | Specifies the type of the event. | 
-| GoogleChronicleBackstory.Events.metadata.eventTimestamp | Date | The GMT timestamp when the event was generated. | 
-| GoogleChronicleBackstory.Events.metadata.collectedTimestamp | Date | The GMT timestamp when the event was collected by the vendor's local collection infrastructure. | 
-| GoogleChronicleBackstory.Events.metadata.description | String | Human-readable description of the event. | 
-| GoogleChronicleBackstory.Events.metadata.productEventType | String | Short, descriptive, human-readable, and product-specific event name or type. | 
-| GoogleChronicleBackstory.Events.metadata.productLogId | String | A vendor-specific event identifier to uniquely identify the event (a GUID). Users might use this identifier to search the vendor's proprietary console for the event in question. | 
-| GoogleChronicleBackstory.Events.metadata.productName | String | Specifies the name of the product. | 
-| GoogleChronicleBackstory.Events.metadata.productVersion | String | Specifies the version of the product. | 
-| GoogleChronicleBackstory.Events.metadata.urlBackToProduct | String | URL linking to a relevant website where you can view more information about this specific event or the general event category. | 
-| GoogleChronicleBackstory.Events.metadata.vendorName | String | Specifies the product vendor's name. | 
+| GoogleChronicleBackstory.Events.eventType | String | Specifies the type of the event. | 
+| GoogleChronicleBackstory.Events.eventTimestamp | Date | The GMT timestamp when the event was generated. | 
+| GoogleChronicleBackstory.Events.collectedTimestamp | Date | The GMT timestamp when the event was collected by the vendor's local collection infrastructure. | 
+| GoogleChronicleBackstory.Events.description | String | Human-readable description of the event. | 
+| GoogleChronicleBackstory.Events.productEventType | String | Short, descriptive, human-readable, and product-specific event name or type. | 
+| GoogleChronicleBackstory.Events.productLogId | String | A vendor-specific event identifier to uniquely identify the event (a GUID). Users might use this identifier to search the vendor's proprietary console for the event in question. | 
+| GoogleChronicleBackstory.Events.productName | String | Specifies the name of the product. | 
+| GoogleChronicleBackstory.Events.productVersion | String | Specifies the version of the product. | 
+| GoogleChronicleBackstory.Events.urlBackToProduct | String | URL linking to a relevant website where you can view more information about this specific event or the general event category. | 
+| GoogleChronicleBackstory.Events.vendorName | String | Specifies the product vendor's name. |
 | GoogleChronicleBackstory.Events.principal.assetId | String | Vendor-specific unique device identifier. | 
 | GoogleChronicleBackstory.Events.principal.email | String | Email address. | 
 | GoogleChronicleBackstory.Events.principal.hostname | String | Client hostname or domain name field. | 
@@ -988,12 +988,12 @@ List all of the events discovered within your enterprise on a particular asset w
                     "response": true
                 }
             }, 
-            "metadata": {
-                "collectedTimestamp": "2020-01-02T00:00:00Z", 
-                "productName": "ExtraHop", 
-                "eventTimestamp": "2020-01-01T23:59:38Z", 
-                "eventType": "NETWORK_DNS"
-            }
+            
+            "collectedTimestamp": "2020-01-02T00:00:00Z", 
+            "productName": "ExtraHop", 
+            "eventTimestamp": "2020-01-01T23:59:38Z", 
+            "eventType": "NETWORK_DNS"
+        
         }
     ]
 }
@@ -1006,3 +1006,5 @@ List all of the events discovered within your enterprise on a particular asset w
 | 2020-01-01T23:59:38Z | NETWORK_DNS | ray-xxx-laptop | 8.8.8.8 | ninthdecimal.com |
 
 [View events in Chronicle]([''])
+
+Maximum number of events specified in page_size has been returned. There might still be more events in your Chronicle account. To fetch the next set of events, execute the command with the start time as 2020-01-01T23:59:38Z

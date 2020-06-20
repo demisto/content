@@ -605,9 +605,9 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '10000'
+      defaultValue: '100'
       description: Specify the maximum number of events to fetch. You can specify
-        between 1 and 10000. The default is 10000.
+        between 1 and 1000. The default is 100.
       isArray: false
       name: page_size
       required: false
@@ -622,43 +622,49 @@ script:
       secret: false
     deprecated: false
     description: List all of the events discovered within your enterprise on a particular
-      asset within the specified time range.
+      device within the specified time range. If you receive the maximum number of
+      events you specified using the page_size parameter (or 100, the default), there
+      might still be more events within your Chronicle account. You can narrow the
+      time range and issue the call again to ensure you have visibility into all possible
+      events. This command returns more than 60 different types of events. Any event
+      would have only specific output context set. Refer the UDM documentation to
+      figure out the output properties specific to the event types.
     execution: false
     name: gcb-list-events
     outputs:
-    - contextPath: GoogleChronicleBackstory.Events.metadata.eventType
+    - contextPath: GoogleChronicleBackstory.Events.eventType
       description: Specifies the type of the event.
       type: String
-    - contextPath: GoogleChronicleBackstory.Events.metadata.eventTimestamp
+    - contextPath: GoogleChronicleBackstory.Events.eventTimestamp
       description: The GMT timestamp when the event was generated.
       type: Date
-    - contextPath: GoogleChronicleBackstory.Events.metadata.collectedTimestamp
+    - contextPath: GoogleChronicleBackstory.Events.collectedTimestamp
       description: The GMT timestamp when the event was collected by the vendor's
         local collection infrastructure.
       type: Date
-    - contextPath: GoogleChronicleBackstory.Events.metadata.description
+    - contextPath: GoogleChronicleBackstory.Events.description
       description: Human-readable description of the event.
       type: String
-    - contextPath: GoogleChronicleBackstory.Events.metadata.productEventType
+    - contextPath: GoogleChronicleBackstory.Events.productEventType
       description: Short, descriptive, human-readable, and product-specific event
         name or type.
       type: String
-    - contextPath: GoogleChronicleBackstory.Events.metadata.productLogId
+    - contextPath: GoogleChronicleBackstory.Events.productLogId
       description: A vendor-specific event identifier to uniquely identify the event
         (a GUID). Users might use this identifier to search the vendor's proprietary
         console for the event in question.
       type: String
-    - contextPath: GoogleChronicleBackstory.Events.metadata.productName
+    - contextPath: GoogleChronicleBackstory.Events.productName
       description: Specifies the name of the product.
       type: String
-    - contextPath: GoogleChronicleBackstory.Events.metadata.productVersion
+    - contextPath: GoogleChronicleBackstory.Events.productVersion
       description: Specifies the version of the product.
       type: String
-    - contextPath: GoogleChronicleBackstory.Events.metadata.urlBackToProduct
+    - contextPath: GoogleChronicleBackstory.Events.urlBackToProduct
       description: URL linking to a relevant website where you can view more information
         about this specific event or the general event category.
       type: String
-    - contextPath: GoogleChronicleBackstory.Events.metadata.vendorName
+    - contextPath: GoogleChronicleBackstory.Events.vendorName
       description: Specifies the product vendor's name.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.assetId
@@ -1759,7 +1765,7 @@ script:
       description: URL to direct you to the source product console for this security
         event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.9127
+  dockerimage: demisto/googleapi-python3:1.0.0.9486
   feed: false
   isfetch: true
   longRunning: false

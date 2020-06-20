@@ -171,7 +171,7 @@ def validate_response(client, url, method='GET'):
         except json.decoder.JSONDecodeError:
             raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
     else:
-        raise ValueError('API rate limit exceeded. Try after sometime.')
+        raise ValueError('API rate limit exceeded. Try again later.')
 
 
 def get_params_for_reputation_command():
@@ -1026,7 +1026,7 @@ def get_asset_identifier_details(asset_identifier):
         return '\n'.join(asset_identifier.get('ip', []))
     if asset_identifier.get('mac', []):
         return '\n'.join(asset_identifier.get('mac', []))
-    return '-'
+    return None
 
 
 def get_more_information(event):
@@ -1055,6 +1055,26 @@ def get_more_information(event):
         file_use_by_process += event.get('target', {}).get('process', {}).get('file', {}).get('fullPath', '')
 
     return queried_domain, process_command_line, file_use_by_process
+
+
+def get_context_for_events(events):
+    """
+    Convert response into Context data
+
+    :param events: List of events
+    :type events: list
+
+    :return: list of context data
+    """
+    events_ec = []
+    for event in events:
+        event_dict = {}
+        if 'metadata' in event.keys():
+            event_dict.update(event.pop('metadata'))
+        event_dict.update(event)
+        events_ec.append(event_dict)
+
+    return events_ec
 
 
 def get_list_events_hr(events):
@@ -1480,7 +1500,14 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     asset_identifier = urllib.parse.quote(args.get('asset_identifier', ''))
 
     # retrieve arguments and validate it
-    start_time, end_time, page_size = get_default_command_args_value(args, '2 hours')
+    start_time, end_time, _ = get_default_command_args_value(args, '2 hours')
+
+    page_size = args.get('page_size', '100')
+
+    # validate page size argument
+    if int(page_size) > 1000:
+        return_error('Page size should be in the range from 1 to 1000.')
+
     reference_time = args.get('reference_time', start_time)
 
     # Make a request URL
@@ -1501,8 +1528,16 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     hr = get_list_events_hr(events)
     hr += '[View events in Chronicle]({})'.format(json_data.get('uri', [''])[0])
 
+    if json_data.get('moreDataAvailable', False):
+        last_event_timestamp = datetime.strptime(events[-1].get('metadata', {}).get('eventTimestamp', ''), DATE_FORMAT)
+        hr += '\n\nMaximum number of events specified in page_size has been returned. There might still be more ' \
+              'events in your Chronicle account. To fetch the next set of events, execute the command with the start ' \
+              'time as {}'.format(last_event_timestamp.strftime(DATE_FORMAT))
+
+    parsed_ec = get_context_for_events(json_data.get('events', []))
+
     ec = {
-        CHRONICLE_OUTPUT_PATHS["Events"]: json_data.get('events', [])
+        CHRONICLE_OUTPUT_PATHS["Events"]: parsed_ec
     }
 
     return hr, ec, json_data
