@@ -358,7 +358,7 @@ async def long_running_loop(
             if store_samples:
                 try:
                     sample_events_to_store.append(event)
-                    if last_sample_events_storage + timedelta(minutes=5) <= datetime.utcnow():
+                    if last_sample_events_storage + timedelta(minutes=1) <= datetime.utcnow():
                         demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
                         integration_context = demisto.getIntegrationContext()
                         sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
