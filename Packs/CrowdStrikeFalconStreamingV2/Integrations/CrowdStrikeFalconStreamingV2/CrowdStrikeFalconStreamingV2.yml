@@ -47,7 +47,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: Because of system limitations, you can not fetch sample events in
+- additionalinfo: As this is a push based streaming integration, it can not fetch sample events in
     the mapping wizard. In order to view sample events, enable events storage and
     run the crowdstrike-falcon-streaming-get-sample-events command.
   display: Store sample events for mapping
