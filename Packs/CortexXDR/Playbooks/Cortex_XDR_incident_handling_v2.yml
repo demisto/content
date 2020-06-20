@@ -1066,7 +1066,7 @@ tasks:
       id: d9e48a5f-1ddd-4f3a-8fdd-9d339011a745
       version: -1
       name: Count XDR alerts
-      description: Sets a value into the context with the given context key
+      description: Sets a value in context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
