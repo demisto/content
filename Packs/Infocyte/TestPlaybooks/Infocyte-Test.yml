@@ -1,5 +1,6 @@
 id: Infocyte-Test
 version: 20
+fromversion: 5.5.0
 name: Infocyte-Test
 description: Test Playbook for Infocyte commands. Initiates a scan against a test
   target and verifies scan results.
