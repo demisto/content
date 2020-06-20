@@ -54,7 +54,7 @@ Event metadata will be fetched as the incident details, which contain the follow
 * Severity
 
 ## Mapping incoming events
-Because of system limitations, you can not fetch sample events in the mapping wizard. 
+As this is a push based streaming integration, it can not fetch sample events in the mapping wizard. 
 
 In order to view sample events, enable events storage by checking the ticking the checkbox of the integration parameter **Store sample events for mapping** and run the `crowdstrike-falcon-streaming-get-sample-events` command.
 
@@ -120,4 +120,3 @@ The command output is as follows:
 ```
 
 You can now upload that JSON file to the mapping wizard and continue as usual.
-
