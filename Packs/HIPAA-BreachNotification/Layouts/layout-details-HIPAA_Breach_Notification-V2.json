@@ -1,0 +1,628 @@
+{
+    "TypeName": "HIPAA Breach Notification",
+    "kind": "details",
+    "layout": {
+        "TypeName": "",
+        "id": "HIPAA Breach Notification",
+        "kind": "details",
+        "modified": "2020-06-18T11:33:21.029048828Z",
+        "name": "",
+        "system": false,
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "sfmcsjvzpo",
+                "name": "HIPAA Breach Information",
+                "sections": [
+                    {
+                        "description": "The HIPAA Breach Notification Rule, 45 CFR \u00a7\u00a7 164.400-414, requires HIPAA covered entities and their business associates to provide notification following a breach of unsecured protected health information. Similar breach notification provisions implemented and enforced by the Federal Trade Commission (FTC), apply to vendors of personal health records and their third-party service providers, pursuant to section 13407 of the HITECH Act.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "datetimeofthebreach",
+                                "height": 24,
+                                "id": "cb336910-d878-11e9-b030-ad5c55d12ecb",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 24,
+                                "id": "69fe3900-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "approximatenumberofaffecteddatasubjects",
+                                "height": 24,
+                                "id": "6e9f5f70-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 2,
+                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "isthedatasubjecttodpia",
+                                "height": 24,
+                                "id": "91d8b4f0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 3,
+                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "measurestomitigate",
+                                "height": 24,
+                                "id": "9c0c8dc0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 4,
+                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "possiblecauseofthebreach",
+                                "height": 24,
+                                "id": "765232b0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 5,
+                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "whereisdatahosted",
+                                "height": 24,
+                                "id": "71feb710-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 0,
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "maliciouscauseifthecauseisamaliciousattack",
+                                "height": 24,
+                                "id": "7e0ef100-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 1,
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "dataencryptionstatus",
+                                "height": 24,
+                                "id": "8c74dac0-d881-11e9-b030-ad5c55d12ecb",
+                                "index": 2,
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "HIPAA Breach Information",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "Details of the breached company",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-a02fd1a0-d881-11e9-b030-ad5c55d12ecb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "companyname",
+                                "height": 24,
+                                "id": "373d1990-d882-11e9-b030-ad5c55d12ecb",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "companyaddress",
+                                "height": 24,
+                                "id": "39369fa0-d882-11e9-b030-ad5c55d12ecb",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "companycountry",
+                                "height": 24,
+                                "id": "3fce3ee0-d882-11e9-b030-ad5c55d12ecb",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "companycity",
+                                "height": 24,
+                                "id": "3de581b0-d882-11e9-b030-ad5c55d12ecb",
+                                "index": 4,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Details of Company",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-4d600c80-905d-11ea-8355-67a9bcbc519c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "contactname",
+                                "height": 24,
+                                "id": "610383c0-905d-11ea-8355-67a9bcbc519c",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "contacttelephonenumber",
+                                "height": 24,
+                                "id": "639f1630-905d-11ea-8355-67a9bcbc519c",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "contactaddress",
+                                "height": 24,
+                                "id": "64af74c0-905d-11ea-8355-67a9bcbc519c",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "contactemailaddress",
+                                "height": 24,
+                                "id": "6284f3a0-905d-11ea-8355-67a9bcbc519c",
+                                "index": 4,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Contact Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 6,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-4cae4bf0-947f-11ea-b67b-e1b3c6a3210f",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "residentsemailaddress",
+                                "height": 110,
+                                "id": "bcc0d0b0-951b-11ea-8eff-eb5773da5358",
+                                "index": 0,
+                                "listId": "sfmcsjvzpo-4cae4bf0-947f-11ea-b67b-e1b3c6a3210f",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Individual's Email Address",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-1bb8b070-a565-11ea-b9ab-9903f9c2c795",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dponotification",
+                                "height": 24,
+                                "id": "543e8760-a567-11ea-b9ab-9903f9c2c795",
+                                "index": 0,
+                                "listId": "sfmcsjvzpo-1bb8b070-a565-11ea-b9ab-9903f9c2c795",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "managementnotification",
+                                "height": 24,
+                                "id": "bdc56920-a566-11ea-b9ab-9903f9c2c795",
+                                "index": 1,
+                                "listId": "sfmcsjvzpo-1bb8b070-a565-11ea-b9ab-9903f9c2c795",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "individualsnotification",
+                                "height": 24,
+                                "id": "e2fb2050-a565-11ea-b9ab-9903f9c2c795",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "medianotification",
+                                "height": 24,
+                                "id": "e49c4d30-a565-11ea-b9ab-9903f9c2c795",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "secretarynotification",
+                                "height": 24,
+                                "id": "16db4ee0-a566-11ea-b9ab-9903f9c2c795",
+                                "index": 4,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notification Status",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-00f12eb0-aef8-11ea-a169-995a487457b1",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Breach Confirmation ",
+                        "query": "732935e9-448a-457f-86e3-325f3fd9f51d",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sfmcsjvzpo-ef810340-b149-11ea-a1d8-23f656e53e19",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "hipaanotification",
+                                "height": 24,
+                                "id": "013f3fc0-b14a-11ea-a1d8-23f656e53e19",
+                                "index": 0,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Time left to notify",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 24,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 24,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 24,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 24,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 24,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 24,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 24,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 24,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 24,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 24,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 24,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "startCol": 1
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 24,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 24,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-736cd260-dd29-11e9-b483-696feb5a142f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ],
+        "typeId": "HIPAA Breach Notification",
+        "version": -1
+    },
+    "typeId": "HIPAA Breach Notification",
+    "version": -1,
+    "fromVersion": "5.0.0"
+}
