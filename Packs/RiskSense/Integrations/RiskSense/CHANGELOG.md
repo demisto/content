@@ -1,9 +1,6 @@
 ## [Unreleased]
  - New Features
-    - 3 new playbooks
-        - Ransomware exposure
-        - BlueKeep CVE exposure
-        - DHS-CISA-FBI Top 10 CVE exposure
+    - 3 new playbooks related to CVE and ransomware exposure
     - Helper script for ransomware exposure
     - risksense-apply-tag command
  - Enhancement
