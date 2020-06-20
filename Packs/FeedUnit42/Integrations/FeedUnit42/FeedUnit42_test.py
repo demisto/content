@@ -61,4 +61,4 @@ def test_feed_tags_param(mocker):
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'get_indicators', return_value=RESPONSE_DATA)
     indicators = fetch_indicators(client, ['test_tag'])
-    assert indicators[0].get('fields').get('tags') == ['malicious-activity', 'test_tag']
+    assert set(indicators[0].get('fields').get('tags')) == set({'malicious-activity', 'test_tag'})
