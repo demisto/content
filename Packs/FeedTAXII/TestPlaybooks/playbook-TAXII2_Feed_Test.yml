@@ -3,6 +3,7 @@ version: -1
 name: TAXII 2 Feed Test
 fromversion: 5.0.0
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -105,6 +107,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "yes":
       - "2"
@@ -145,6 +148,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "yes":
       - "5"
@@ -190,6 +194,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

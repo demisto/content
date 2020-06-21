@@ -1,6 +1,8 @@
 from CommonServerPython import *
-from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import Taxii2FeedClient
+# from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import Taxii2FeedClient
+from TAXII2ApiModule import Taxii2FeedClient
 from taxii2client import v20, v21
+# import types
 
 
 class MockCollection:
@@ -162,3 +164,12 @@ class TestBuildIterator:
         mocker.patch.object(mock_client, "collection_to_fetch", spec=v21.Collection)
         iocs = mock_client.build_iterator(limit=0)
         assert iocs == []
+
+
+# class TestExtractIndicatorsAndParse:
+#     def test_20_empty(self, mocker):
+#         def envelope_generator():
+#             yield {}
+#             raise StopIteration
+#         mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False)
+#         res = mock_client.extract_indicators_from_envelope_and_parse(envelope_generator())

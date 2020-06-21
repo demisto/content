@@ -28,7 +28,7 @@ HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value=r
 
 TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
-TAXII_TYPES_TO_CORTEX_TYPES = {
+STIX_2_TYPES_TO_CORTEX_TYPES = {
     "ipv4-addr": FeedIndicatorType.IP,
     "ipv6-addr": FeedIndicatorType.IPv6,
     "domain": FeedIndicatorType.Domain,
@@ -40,7 +40,7 @@ TAXII_TYPES_TO_CORTEX_TYPES = {
     "file:hashes": FeedIndicatorType.File,
 }
 
-TAXII_TYPES_TO_CORTEX_CIDR_TYPES = {
+STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
     "ipv4-addr": FeedIndicatorType.CIDR,
     "ipv6-addr": FeedIndicatorType.IPv6CIDR,
 }
@@ -112,6 +112,8 @@ class Taxii2FeedClient:
         """
         Initializes the api roots (used to get taxii server objects)
         """
+        if not self.server:
+            raise ValueError("Please init server prior to calling init_roots. Cannot init roots without server.")
         try:
             # try TAXII 2.0
             self.api_root = self.server.api_roots[0]
@@ -124,7 +126,7 @@ class Taxii2FeedClient:
         """
         Collects available taxii collections
         """
-        self.collections = [x for x in self.api_root.collections]  # type: ignore[attr-defined]
+        self.collections = [x for x in self.api_root.collections]  # type: ignore[union-attr]
 
     def init_collection_to_fetch(self, collection_to_fetch=None):
         """
@@ -179,7 +181,7 @@ class Taxii2FeedClient:
         return indicators
 
     def extract_indicators_from_envelope_and_parse(
-        self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int
+        self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
     ) -> List[Dict[str, str]]:
         """
         Extract indicators from an 2.0 envelope generator, or 2.1 envelope (which then polls and repeats process)
@@ -193,37 +195,40 @@ class Taxii2FeedClient:
         # TAXII 2.0
         if isinstance(envelope, types.GeneratorType):
             for sub_envelope in envelope:
-                taxii_objects = sub_envelope.get("objects")
-                if not taxii_objects:
+                stix_objects = sub_envelope.get("objects")
+                if not stix_objects:
                     # no fetched objects
                     break
-                obj_cnt += len(taxii_objects)
+                obj_cnt += len(stix_objects)
                 indicators.extend(
                     self.parse_indicators_list(
-                        self.extract_indicators_from_taxii_objects(taxii_objects)
+                        self.extract_indicators_from_stix_objects(stix_objects)
                     )
                 )
                 if len(indicators) >= limit:
                     break
         # TAXII 2.1
-        else:
+        elif isinstance(envelope, Dict):
             cur_limit = limit
-            taxii_objects = envelope.get("objects")
-            obj_cnt += len(taxii_objects)
-            indicators = self.parse_indicators_list(
-                self.extract_indicators_from_taxii_objects(envelope.get("objects"))
-            )
+            stix_objects = envelope.get("objects")
+            obj_cnt += len(stix_objects)
+            indicators_list = self.extract_indicators_from_stix_objects(stix_objects)
+            indicators = self.parse_indicators_list(indicators_list)
             while envelope.get("more", False) and cur_limit > 0:
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.poll_collection(page_size, envelope.get("next", ""))
-                taxii_objects = envelope.get("objects")
-                obj_cnt += len(taxii_objects)
-                cur_limit -= len(envelope)
-                indicators.extend(
-                    self.parse_indicators_list(
-                        self.extract_indicators_from_taxii_objects(taxii_objects)
+                if isinstance(envelope, Dict):
+                    stix_objects = envelope.get("objects")
+                    obj_cnt += len(stix_objects)
+                    cur_limit -= len(envelope)  # type: ignore
+                    indicators.extend(
+                        self.parse_indicators_list(
+                            self.extract_indicators_from_stix_objects(stix_objects)
+                        )
                     )
-                )
+                else:
+                    raise DemistoException('Error: TAXII 2 client received the following response while requesting '
+                                           f'indicators: {str(envelope)}\n\nExpected output is json')
         demisto.debug(
             f"TAXII 2 Feed has extracted {len(indicators)} indicators / {obj_cnt} taxii objects"
         )
@@ -261,16 +266,16 @@ class Taxii2FeedClient:
         )
 
     @staticmethod
-    def extract_indicators_from_taxii_objects(
-        taxii_objs: List[Dict[str, str]]
+    def extract_indicators_from_stix_objects(
+        stix_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Extracts indicators from taxii objects
-        :param taxii_objs: taxii objects
+        :param stix_objs: taxii objects
         :return: indicators in json format
         """
         indicators_objs = [
-            item for item in taxii_objs if item.get("type") == "indicator"
+            item for item in stix_objs if item.get("type") == "indicator"
         ]  # retrieve only indicators
 
         return indicators_objs
@@ -312,7 +317,7 @@ class Taxii2FeedClient:
                 self.get_indicators_from_indicator_groups(
                     indicator_groups,
                     indicator_obj,
-                    TAXII_TYPES_TO_CORTEX_TYPES,
+                    STIX_2_TYPES_TO_CORTEX_TYPES,
                     field_map,
                 )
             )
@@ -324,7 +329,7 @@ class Taxii2FeedClient:
                 self.get_indicators_from_indicator_groups(
                     cidr_groups,
                     indicator_obj,
-                    TAXII_TYPES_TO_CORTEX_CIDR_TYPES,
+                    STIX_2_TYPES_TO_CORTEX_CIDR_TYPES,
                     field_map,
                 )
             )
@@ -370,7 +375,7 @@ class Taxii2FeedClient:
         :param regexes: regexes to run to pattern
         :return: extracted indicators list from pattern
         """
-        groups = []
+        groups: List[Tuple[str, str]] = []
         for regex in regexes:
             find_result = regex.findall(pattern)
             if find_result:

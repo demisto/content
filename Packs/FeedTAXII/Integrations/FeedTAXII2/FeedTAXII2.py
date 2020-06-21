@@ -47,7 +47,7 @@ def fetch_indicators_command(client, last_run, initial_interval, limit):
         if indicator:
             item["value"] = indicator
             indicators.append(
-                {"value": indicator, "type": item.get("type"), "rawJSON": item,}
+                {"value": indicator, "type": item.get("type"), "rawJSON": item}
             )
     return indicators
 
@@ -152,7 +152,7 @@ def main():
             )
 
         else:
-            return_results(commands[command](client, **args))
+            return_results(commands[command](client, **args))  # type: ignore[operator]
 
     # Log exceptions
     except Exception as e:
