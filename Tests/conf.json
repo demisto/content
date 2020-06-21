@@ -2795,7 +2795,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "CheckPoint",
+            "integrations": "CheckPoint_FW",
             "playbookID": "checkpoint-testplaybook",
             "timeout": 140,
             "nightly": true
