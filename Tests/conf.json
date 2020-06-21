@@ -584,7 +584,8 @@
         {
             "integrations": "QRadar",
             "playbookID" :  "test playbook - QRadarCorreltaions",
-            "timeout": 600
+            "timeout": 600,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Awake Security",
@@ -1176,7 +1177,8 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
-            "timeout": 240
+            "timeout": 240,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "EWS v2",
@@ -1599,7 +1601,8 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID": "test_Qradar"
+            "playbookID": "test_Qradar",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "VMware",
@@ -1737,6 +1740,11 @@
             "integrations": "Jask",
             "playbookID": "Jask_Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Infocyte",
+            "playbookID": "Infocyte-Test",
+            "timeout": 1200
         },
         {
             "integrations": "Qualys",
@@ -2052,7 +2060,7 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
-            "integrations": "TAXIIFeed",
+            "integrations": ["TAXII Server", "TAXIIFeed"],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
             "timeout": 600
@@ -2846,12 +2854,14 @@
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
-        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
+        "CreateIndicatorFromSTIXTest": "Issue 24345",
+        "SNDBOX_Test": "Issue 24349",
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
+        "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
+        "Test-Shodan_v2": "Issue 23370",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
-        "test_MsGraphFiles": "Issue 22853 ",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
@@ -2877,7 +2887,6 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
@@ -2886,13 +2895,13 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "dedup_-_generic_-_test": "Issue 25681",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
@@ -2903,7 +2912,7 @@
         "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
         "Skyformation": "No instance, old partner",
-        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
+        "Prisma Access": "Instance will be provided soon by Lior and Prasen",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
