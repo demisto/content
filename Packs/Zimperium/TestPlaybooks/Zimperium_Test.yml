@@ -169,7 +169,7 @@ tasks:
     scriptarguments:
       device_id: {}
       zdid:
-        simple: 0082956f-380c-4e91-baf6-6e36da54040a
+        simple: c728a9f1-dbcc-4b0f-84b2-5dc07e80b6e5
     separatecontext: false
     view: |-
       {
