@@ -650,6 +650,9 @@ def format_add_object(result: dict, endpoint: str):
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
+    if not result:
+        return 'No data to show.', {}, result
+
     common_output = {
         'name': result.get('name'),
         'uid': result.get('uid'),
@@ -713,6 +716,9 @@ def format_update_object(result: dict, endpoint: str):
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
+    if not result:
+        return 'No data to show.', {}, result
+
     outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
         'name': result.get('name'),
         'uid': result.get('uid'),
@@ -742,6 +748,9 @@ def format_delete_object(result: dict, endpoint: str):
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
+    if not result:
+        return 'No data to show.', {}, result
+
     outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
         'message': result.get('message'),
     }}
