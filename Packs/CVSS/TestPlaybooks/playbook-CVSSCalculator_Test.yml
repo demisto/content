@@ -1,9 +1,10 @@
-id: bf7518dc-8ece-4be3-8dcd-cf02e08e9ead
-version: 2
+id: CVSS Calculator Test
+version: -1
 name: CVSS Calculator Test
 description: This playbook simply tests that the calculator works and does not error.
   It makes use of all the input cariables possible.
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
