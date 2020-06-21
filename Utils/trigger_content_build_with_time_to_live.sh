@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ "$#" -lt 2 ]]; then
-  echo "Usage: $0 <content branch name: such as master> <circle ci token> [time to live] [contributor branch]"
+  echo "Usage: $0 <content branch name: such as master> <circle ci token> [time to live] [contributor branch: such as testUser:testBranch]"
   echo "You can get a circle ci token from: CircleCI -> User -> Personal API Tokens"
   echo "Time to live is in minutes, for example 360 equals 6 hours"
   echo "Minimum time to live is 180 minutes, maximum time is 540 minutes"

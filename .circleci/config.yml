@@ -583,7 +583,7 @@ jobs:
             fi
             if [ -n $TIME_TO_LIVE ]
             then
-                echo "Skipping - Time to live was set to $$TIME_TO_LIVE minutes"
+                echo "Skipping - Time to live was set to $TIME_TO_LIVE minutes"
                 exit 0
             fi
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
