@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CheckPoint Firewall - V2
+  id: CheckPoint_FW
   version: -1
 configuration:
 - display: Server URL (e.g. example.net or 8.8.8.8)
@@ -27,7 +27,7 @@ configuration:
   required: false
   type: 8
 description: Read information and to send commands to the Check Point Firewall server.
-display: CheckPoint Firewall - V2
+display: CheckPoint_FW
 name: CheckPoint
 script:
   commands:
