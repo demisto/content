@@ -8,7 +8,7 @@ configuration:
   defaultvalue: true
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
+- additionalinfo: Indicators from this integration instance will be marked with this1
     reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
