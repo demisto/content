@@ -138,12 +138,13 @@ class Taxii2FeedClient:
                 "No collection is available for this user, please make sure you entered the configuration correctly"
             )
         if collection_to_fetch:
-            try:
-                for collection in self.collections:
-                    if collection.title == collection_to_fetch:
-                        self.collection_to_fetch = collection
-                        break
-            except StopIteration:
+            collection_found = False
+            for collection in self.collections:
+                if collection.title == collection_to_fetch:
+                    self.collection_to_fetch = collection
+                    collection_found = True
+                    break
+            if not collection_found:
                 raise DemistoException(
                     "Could not find the provided Collection name in the available collections. "
                     "Please make sure you entered the name correctly."
