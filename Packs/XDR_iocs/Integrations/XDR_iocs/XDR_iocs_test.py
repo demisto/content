@@ -589,7 +589,7 @@ class TestXDRIOCToDemisto:
     ]
 
     @pytest.mark.parametrize('xdr_ioc, demisto_ioc', data_test_xdr_ioc_to_demisto)
-    def test_xdr_ioc_to_demisto(self, xdr_ioc, demisto_ioc):
+    def test_xdr_ioc_to_demisto(self, xdr_ioc, demisto_ioc, mocker):
         """
             Given:
                 - IOC in XDR format.
@@ -597,7 +597,7 @@ class TestXDRIOCToDemisto:
             Then:
                 - IOC in demisto format.
         """
-
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
         output = xdr_ioc_to_demisto(xdr_ioc)
         del output['rawJSON']
         assert output == demisto_ioc, f'xdr_ioc_to_demisto({xdr_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'    # noqa: E501
@@ -671,7 +671,8 @@ class TestCommands:
 
     def test_get_changes(self, mocker):
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
-        mocker.patch.object(demisto, 'createIndicators', return_value={'ts': 1591142400000})
+        mocker.patch.object(demisto, 'createIndicators')
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
         xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
