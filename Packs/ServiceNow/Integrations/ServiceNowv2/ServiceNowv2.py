@@ -432,41 +432,55 @@ class Client(BaseClient):
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-        if file:
-            # Not supported in v2
-            url = url.replace('v2', 'v1')
+
+        max_retries = 3
+        num_of_tries = 0
+        while num_of_tries < max_retries:
+            if file:
+                # Not supported in v2
+                url = url.replace('v2', 'v1')
+                try:
+                    file_entry = file['id']
+                    file_name = file['name']
+                    shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
+                    with open(file_name, 'rb') as f:
+                        res = requests.request(method, url, headers=headers, data=body, params=params,
+                                               files={'file': f}, auth=(self._username, self._password),
+                                               verify=self._verify, proxies=self._proxies)
+                    shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+                except Exception as err:
+                    raise Exception('Failed to upload file - ' + str(err))
+            else:
+                res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                       params=params,
+                                       auth=(self._username, self._password),
+                                       verify=self._verify, proxies=self._proxies)
+
             try:
-                file_entry = file['id']
-                file_name = file['name']
-                shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
-                with open(file_name, 'rb') as f:
-                    res = requests.request(method, url, headers=headers, data=body, params=params, files={'file': f},
-                                           auth=(self._username, self._password), verify=self._verify,
-                                           proxies=self._proxies)
-                shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+                json_res = res.json()
             except Exception as err:
-                raise Exception('Failed to upload file - ' + str(err))
-        else:
-            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
-                                   auth=(self._username, self._password), verify=self._verify, proxies=self._proxies)
+                if not res.content:
+                    return ''
+                raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
-        try:
-            json_res = res.json()
-        except Exception as err:
-            if not res.content:
-                return ''
-            raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
+            if 'error' in json_res:
+                message = json_res.get('error', {}).get('message')
+                details = json_res.get('error', {}).get('detail')
+                if message == 'No Record found':
+                    return {'result': []}  # Return an empty results array
+                if res.status_code == 401:
+                    demisto.debug(f'Got status code 401 - {json_res}. Retrying ...')
+                else:
+                    raise Exception(f'ServiceNow Error: {message}, details: {details}')
 
-        if 'error' in json_res:
-            message = json_res.get('error', {}).get('message')
-            details = json_res.get('error', {}).get('detail')
-            if message == 'No Record found':
-                return {'result': []}  # Return an empty results array
-            raise Exception(f'ServiceNow Error: {message}, details: {details}')
-
-        if res.status_code < 200 or res.status_code >= 300:
-            raise Exception(f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
-                            f' with headers {str(res.headers)}')
+            if res.status_code < 200 or res.status_code >= 300:
+                if res.status_code != 401 or num_of_tries == (max_retries - 1):
+                    raise Exception(
+                        f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
+                        f' with headers {str(res.headers)}')
+            else:
+                break
+            num_of_tries += 1
 
         return json_res
 

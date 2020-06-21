@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
-    resource_class: medium+
     parallelism: 2
     environment:
       CONTENT_VERSION: "20.6.0"
@@ -553,6 +552,9 @@ jobs:
             if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
                 ./Tests/scripts/instance_test.sh
+                export RETVAL=$?
+                cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
+                exit $RETVAL
               else
                 echo "Skipping instance tests"
                 exit 0
