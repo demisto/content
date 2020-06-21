@@ -24,22 +24,25 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
 class Client(BaseClient):
 
     def __init__(self, api_key, verify):
-        """
-        Implements class for Unit 42 feed.
-        :param api_key: unit42 API Key.
-        :param verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-        """
-        super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify, proxy=handle_proxy())
-        self._api_key = api_key
+        """Implements class for Unit 42 feed.
 
-    def get_indicators(self) -> list:
+        Args:
+            api_key: unit42 API Key.
+            verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
+        """
+        super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify)
+        self._api_key = api_key
+        self._proxies = handle_proxy()
+
+    def get_stix_objects(self) -> list:
         """Retrieves all entries from the feed.
 
         Returns:
-            A list of objects, containing the indicators.
+            A list of stix objects, containing the indicators.
         """
         data = []
-        server = Server(url=self._base_url, auth=TokenAuth(key=self._api_key), verify=self._verify)
+        server = Server(url=self._base_url, auth=TokenAuth(key=self._api_key), verify=self._verify,
+                        proxies=self._proxies)
 
         for api_root in server.api_roots:
             for collection in api_root.collections:
@@ -155,7 +158,7 @@ def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     Returns:
         Outputs.
     """
-    objects: list = client.get_indicators()
+    objects: list = client.get_stix_objects()
     _ = parse_indicators(objects)
     return 'ok', {}, {}
 
@@ -169,13 +172,13 @@ def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
     Returns:
         Indicators.
     """
-    objects: list = client.get_indicators()
+    objects: list = client.get_stix_objects()
     demisto.info(str(f'Fetched Unit42 Indicators. {str(len(objects))} Objects were received.'))
     indicators = parse_indicators(objects, feed_tags)
     relationships = get_relationships(objects)
     pivots = get_pivots(objects)
     indicators = parse_relationships(indicators, relationships, pivots)
-    demisto.info(str(f'{str(len(indicators))} Demisto Indicators were created.'))
+    demisto.debug(str(f'{str(len(indicators))} Demisto Indicators were created.'))
     return indicators
 
 
@@ -190,7 +193,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
-    objects: list = client.get_indicators()
+    objects: list = client.get_stix_objects()
     indicators = parse_indicators(objects, feed_tags)
     limited_indicators = indicators[:limit]
 
@@ -211,7 +214,7 @@ def main():
     feed_tags = argToList(params.get('feedTags'))
 
     command = demisto.command()
-    demisto.info(f'Command being called in Unit42 feed is: {command}')
+    demisto.debug(f'Command being called in Unit42 feed is: {command}')
 
     try:
         client = Client(api_key, verify)
