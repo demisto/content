@@ -75,6 +75,7 @@ tasks:
       id: 9d2e0a0d-0700-484b-89d9-97150cb5969d
       version: -1
       name: zoom-get-indicators
+      description: Get indicators from Zoom Feed
       script: '|||zoom-get-indicators'
       type: regular
       iscommand: true

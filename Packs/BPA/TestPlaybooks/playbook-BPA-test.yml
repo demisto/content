@@ -1,5 +1,5 @@
 id: Test-BPA
-version: 8
+version: -1
 name: Test-BPA
 starttaskid: "0"
 tasks:
