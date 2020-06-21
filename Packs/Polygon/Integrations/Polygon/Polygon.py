@@ -268,7 +268,7 @@ def get_main_indicator(report, analysis_type):
         malicious = "Verdict probability: {}%".format(
             report.get("info", {}).get("probability")
         )
-        signatures = []
+        signatures: list = []
         for signature in report.get("signatures", []):
             if signature.get("name") == "yara_rules":
                 signatures += [s.get('ioc') for s in signature.get('marks', [])]
