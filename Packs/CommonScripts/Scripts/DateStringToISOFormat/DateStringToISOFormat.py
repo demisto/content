@@ -1,5 +1,5 @@
 import demistomock as demisto
-from dateutil.parser import ParserError, parse
+from dateutil.parser import ParserError, parse  # type: ignore
 
 
 def parse_datestring_to_iso(date_value: str, day_first: bool, year_first: bool, fuzzy: bool) -> str:
