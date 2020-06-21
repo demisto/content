@@ -166,7 +166,7 @@ tasks:
       version: -1
       name: 'Set block ports to True '
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1033,7 +1033,7 @@ tasks:
       version: -1
       name: 'Set block ports to False '
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
