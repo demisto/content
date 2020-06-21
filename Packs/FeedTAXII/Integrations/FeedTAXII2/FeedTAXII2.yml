@@ -153,7 +153,7 @@ script:
   - deprecated: false
     description: Reset your fetch
     execution: false
-    name: taxii2-reset-fetch
+    name: taxii2-reset-fetch-indicators
   dockerimage: demisto/taxii2:1.0.0.9219
   feed: true
   isfetch: false

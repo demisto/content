@@ -126,7 +126,7 @@ def main():
         )
         client.initialise()
         commands = {
-            "taxii2-reset-fetch": reset_fetch_command,
+            "taxii2-reset-fetch-indicators": reset_fetch_command,
             "taxii2-get-indicators": get_indicators_command,
             "taxii2-get-collections": get_collections_command,
         }
