@@ -917,9 +917,8 @@ class TestBuildDBotEntry(object):
 class TestCommandResults:
     def test_readable_only_context(self):
         from CommonServerPython import CommandResults
-        context = CommandResults(readable_output='## Something').to_context()
+        context = CommandResults(outputs=None, outputs_prefix='', outputs_key_field='', readable_output='## Something').to_context()
         assert context.get('HumanReadable')
-
 
     def test_return_command_results(self):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
