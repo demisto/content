@@ -51,24 +51,15 @@ class Client(BaseClient):
         return data
 
 
-def get_relationships(objects: list) -> list:
-    """Get the relationships objects retrieved from the feed.
+def get_object_type(objects: list, types: list) -> list:
+    """Get the object specified.
     Args:
-      objects: a list of objects containing the indicators.
+      objects: a list of objects.
+      types: a list of the types.
     Returns:
-        A list of relationships, describing the connections between the indicators.
+        A list of a certain type.
     """
-    return [item for item in objects if item.get('type') == 'relationship']
-
-
-def get_pivots(objects: list) -> list:
-    """Get the attack-patterns, malware and campaigns objects retrieved from the feed.
-    Args:
-      objects: a list of objects containing the indicators.
-    Returns:
-        A list of attack-patterns, malware and campaigns
-    """
-    return [item for item in objects if item.get('type') in ['attack-pattern', 'malware', 'campaign']]
+    return [item for item in objects if item.get('type') in types]
 
 
 def parse_indicators(objects: list, feed_tags: list = []) -> list:
@@ -175,8 +166,8 @@ def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
     objects: list = client.get_stix_objects()
     demisto.info(str(f'Fetched Unit42 Indicators. {str(len(objects))} Objects were received.'))
     indicators = parse_indicators(objects, feed_tags)
-    relationships = get_relationships(objects)
-    pivots = get_pivots(objects)
+    relationships = get_object_type(objects, types=['relationship'])
+    pivots = get_object_type(objects, types=['attack-pattern', 'malware', 'campaign'])
     indicators = parse_relationships(indicators, relationships, pivots)
     demisto.debug(str(f'{str(len(indicators))} Demisto Indicators were created.'))
     return indicators
