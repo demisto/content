@@ -2112,6 +2112,7 @@ def panorama_custom_url_category_add_items(custom_url_category_name, items, type
     """
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
+        LOG(f'Found uncommitted item:\n{custom_url_category}')
         raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
@@ -2143,6 +2144,7 @@ def panorama_custom_url_category_remove_items(custom_url_category_name, items, t
     """
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
+        LOG(f'Found uncommitted item:\n{custom_url_category}')
         raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
@@ -2432,6 +2434,7 @@ def panorama_create_url_filter_command():
 def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element=None):
     url_filter_prev = panorama_get_url_filter(url_filter_name)
     if '@dirtyId' in url_filter_prev:
+        LOG(f'Found uncommitted item:\n{url_filter_prev}')
         raise Exception('Please commit the instance prior to editing the URL Filter.')
 
     url_filter_output = {'Name': url_filter_name}
@@ -2763,6 +2766,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
 
     result = response.get('response').get('result')
     if '@dirtyId' in result:
+        LOG(f'Found uncommitted item:\n{result}')
         raise Exception('Please commit the instance prior to editing the Security rule.')
     current_object = result.get(element_to_change)
     if 'list' in current_object:
@@ -3406,6 +3410,7 @@ def panorama_create_edl_command():
 def panorama_edit_edl(edl_name, element_to_change, element_value):
     edl_prev = panorama_get_edl(edl_name)
     if '@dirtyId' in edl_prev:
+        LOG(f'Found uncommitted item:\n{edl_prev}')
         raise Exception('Please commit the instance prior to editing the External Dynamic List')
     edl_type = ''.join(edl_prev['type'].keys())
     edl_output = {'Name': edl_name}
