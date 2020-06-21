@@ -615,6 +615,8 @@ def format_get_object(result: dict, endpoint: str):
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
+    if not result:
+        return 'No data to show.', {}, result
 
     outputs = {f'checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
         'name': result.get('name'),
