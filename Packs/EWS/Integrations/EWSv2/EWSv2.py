@@ -1983,11 +1983,12 @@ def test_module():
         global IS_TEST_MODULE
         IS_TEST_MODULE = True
         account = get_account(ACCOUNT_EMAIL)
-        if not account.root.effective_rights.read:  # pylint: disable=E1101
+        folder = get_folder_by_path(account, FOLDER_NAME, IS_PUBLIC_FOLDER)
+        if not folder.effective_rights.read:  # pylint: disable=E1101
             raise Exception("Success to authenticate, but user has no permissions to read from the mailbox. "
                             "Need to delegate the user permissions to the mailbox - "
                             "please read integration documentation and follow the instructions")
-        get_folder_by_path(account, FOLDER_NAME, IS_PUBLIC_FOLDER).test_access()
+        folder.test_access()
     except ErrorFolderNotFound as e:
         if "Top of Information Store" in e.message:
             raise Exception(
@@ -2145,7 +2146,7 @@ def sub_main():
             error_message += "\nFull debug log:\n" + debug_log
 
         if demisto.command() == 'fetch-incidents':
-            raise
+            raise Exception(str(e) + traceback.format_exc())
         if demisto.command() == 'ews-search-mailbox' and isinstance(e, ValueError):
             return_error(message="Selected invalid field, please specify valid field name.", error=e)
         if IS_TEST_MODULE:

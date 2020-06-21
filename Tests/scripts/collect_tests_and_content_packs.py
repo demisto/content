@@ -332,6 +332,32 @@ class TestConf(object):
 
         return all_integrations
 
+    def get_tested_integrations_for_collected_tests(self, collected_tests):
+        tested_integrations = []
+        conf_tests = self._conf['tests']
+
+        for t in conf_tests:
+            if t.get('playbookID') not in collected_tests:
+                continue
+
+            if 'integrations' in t:
+                if isinstance(t['integrations'], list):
+                    tested_integrations.extend(t['integrations'])
+                else:
+                    tested_integrations.append(t['integrations'])
+
+        return tested_integrations
+
+    def get_packs_of_tested_integrations(self, collected_tests, id_set):
+        packs = set([])
+        tested_integrations = self.get_tested_integrations_for_collected_tests(collected_tests)
+        for integration in tested_integrations:
+            int_path = id_set__get_integration_file_path(id_set, integration)
+            pack = get_pack_name(int_path)
+            if pack:
+                packs.add(pack)
+        return packs
+
     def get_test_playbooks_configured_with_integration(self, integration_id):
         test_playbooks = []
         conf_tests = self._conf['tests']
@@ -1118,7 +1144,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         test = collect_ids(file_path)
         if test not in tests:
             tests.add(test)
-        packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
+
+    packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
 
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
@@ -1134,8 +1161,10 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
             print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         else:
             print_warning("Running Sanity check only")
-            tests.add('DocumentationTest')  # test with integration configured
+
             tests.add('TestCommonPython')  # test with no integration configured
+            tests.add('HelloWorld-Test')  # test with integration configured
+            packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
@@ -1147,6 +1176,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
 
     if 'NonSupported' in packs_to_install:
         packs_to_install.remove("NonSupported")
+
+    packs_to_install.update(["DeveloperTools", "Base"])
+
+    packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
     return tests, packs_to_install
 
