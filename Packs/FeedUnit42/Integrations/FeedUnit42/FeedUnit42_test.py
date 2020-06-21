@@ -113,5 +113,5 @@ def test_fetch_indicators_with_malware_reference(mocker):
     for indicator in indicators:
         indicator_fields = indicator.get('fields')
         if indicator_fields.get('indicatoridentification') == 'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be':
-            assert indicator_fields.get('malwarefamily') == 'Muirim'
+            assert set(indicator_fields.get('malwarefamily')) == set({'Muirim', 'Muirim2'})
             break

@@ -132,7 +132,14 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
                 for pivot in pivots:
                     if pivot.get('id') == reference:
                         pivot_field = pivot.get(field)
-                        indicator['fields'][field_type] = pivot_field
+                        if isinstance(pivot_field, str):
+                            # multiple malware or campaign names can be associated to an indicator
+                            if field_type in indicator.get('fields'):
+                                indicator['fields'][field_type].extend([pivot_field])
+                            else:
+                                indicator['fields'][field_type] = [pivot_field]
+                        else:  # a MITRE external reference
+                            indicator['fields'][field_type] = pivot_field
 
     return indicators
 

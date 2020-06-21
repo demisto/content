@@ -108,5 +108,11 @@ RESPONSE_DATA = [
     {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
-     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a", "type": "relationship"}
+     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a", "type": "relationship"},
+    {"created": "2019-10-10T17:55:12.389Z", "id": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335b",
+     "labels": ["backdoor"], "modified": "2020-05-12T13:02:30.000000Z", "name": "Muirim2", "type": "malware"},
+    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
+     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
+     "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
+     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335b", "type": "relationship"}
 ]
