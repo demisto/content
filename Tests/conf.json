@@ -2837,7 +2837,6 @@
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
         }
-
     ],
     "skipped_tests": {
         "CuckooTest": "Issue 25601",
