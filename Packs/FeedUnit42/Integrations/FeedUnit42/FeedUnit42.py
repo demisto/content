@@ -173,8 +173,7 @@ def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = []) -> Tuple[
-    Any, Dict[Any, Any], Any]:
+def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = []) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -189,10 +188,17 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     indicators = parse_indicators(objects, feed_tags)
     limited_indicators = indicators[:limit]
 
-    human_readable = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
-    entry_context = {'Unit42(val.value && val.value == obj.value)': limited_indicators}
+    readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
 
-    return human_readable, entry_context, objects
+    command_results = CommandResults(
+        outputs_prefix='Unit42',
+        outputs_key_field='value',
+        outputs=limited_indicators,
+        readable_output=readable_output,
+        raw_response=indicators
+    )
+
+    return command_results
 
 
 def main():
@@ -221,8 +227,7 @@ def main():
                 demisto.createIndicators(iter_)
 
         elif command == 'unit42-get-indicators':
-            md_, ec_, raw = get_indicators_command(client, args, feed_tags)
-            return_outputs(md_, ec_, raw)
+            return_results(get_indicators_command(client, args, feed_tags))
 
     except Exception as err:
         return_error(err)
