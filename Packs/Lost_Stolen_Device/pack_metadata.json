@@ -12,8 +12,7 @@
     ],
     "tags": [],
     "useCases": [
-        "Stolen Device",
-        "Lost Device"
+        "Lost or Stolen Device"
     ],
     "keywords": [
         "Stolen Device",
