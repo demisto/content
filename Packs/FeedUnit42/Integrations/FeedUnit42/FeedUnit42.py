@@ -5,6 +5,9 @@ from taxii2client.v20 import Server, as_pages
 
 from CommonServerPython import *
 
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'ipv4-addr': FeedIndicatorType.IP,
     'ipv6-addr': FeedIndicatorType.IPv6,
