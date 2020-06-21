@@ -1,6 +1,8 @@
 The Google Kubernetes Engine integration is used for building and managing container based
 applications in Google Cloud Platform (GCP), powered by the open source Kubernetes technology.
 
+Command, argument, and output desctiptions were taken from the Google documentation.
+
 ## Use Cases
 * Mange existing GKE clusters.
 
