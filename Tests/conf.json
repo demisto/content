@@ -2144,13 +2144,13 @@
         {
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
@@ -2868,7 +2868,6 @@
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "PAN-OS Create Or Edit Rule Test": "Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -2882,7 +2881,6 @@
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
-        "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
