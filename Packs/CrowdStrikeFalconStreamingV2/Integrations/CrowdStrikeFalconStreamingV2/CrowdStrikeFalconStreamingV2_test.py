@@ -3,7 +3,19 @@ import demistomock as demisto
 from CrowdStrikeFalconStreamingV2 import get_sample_events
 
 
-def test_get_sample_events(mocker):
+def test_get_sample_events_with_results(mocker):
+    """
+    Given:
+     - Samples events stored in the integration context.
+     - Store events integration parameter is enabled.
+
+    When:
+     - Running get sample events command.
+
+    Then:
+     - Ensure the command runs successfully
+     - Verify expected results are returned.
+    """
     sample_events = [
         {
             'event': {
@@ -100,3 +112,25 @@ def test_get_sample_events(mocker):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert results == sample_events
+
+
+def test_get_sample_events_integration_param(mocker):
+    """
+    Given:
+     - Samples events not stored in the integration context.
+     - Store events integration parameter is disabled.
+
+    When:
+     - Running get sample events command.
+
+    Then:
+     - Ensure the command runs successfully
+     - Verify output message.
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+    mocker.patch.object(demisto, 'results')
+    get_sample_events(store_samples=False)
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0][0]
+    assert results == 'No sample events found. The "Store sample events for mapping" integration parameter need to ' \
+                      'be enabled for this command to return results.'
