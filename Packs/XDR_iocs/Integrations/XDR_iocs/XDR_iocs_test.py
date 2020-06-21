@@ -542,7 +542,6 @@ class TestXDRIOCToDemisto:
                 'score': 1,
                 'fields': {
                     'expirationdate': 'Never',
-                    'score': 1,
                     'xdrstatus': 'disabled'
                 }
             }
@@ -562,7 +561,6 @@ class TestXDRIOCToDemisto:
                 'score': 1,
                 'fields': {
                     'expirationdate': 'Never',
-                    'score': 1,
                     'xdrstatus': 'disabled'
                 }
             }
@@ -584,7 +582,6 @@ class TestXDRIOCToDemisto:
                 'score': 2,
                 'fields': {
                     'expirationdate': 'Never',
-                    'score': 2,
                     'xdrstatus': 'enabled'
                 }
             }
