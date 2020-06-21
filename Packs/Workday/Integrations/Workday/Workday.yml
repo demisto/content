@@ -43,27 +43,27 @@ script:
       secret: false
     - default: true
       defaultValue: "50"
-      description: The maximum number of results to return.
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: count
       required: false
       secret: false
     - default: true
       defaultValue: "1"
-      description: The page from which to get the employees data.
+      description: The page from which to get the employees' data.
       isArray: false
       name: page
       required: false
       secret: false
     - default: true
       defaultValue: "3"
-      description: Number of managers to show.
+      description: The number of managers to display.
       isArray: false
       name: managers
       required: false
       secret: false
     deprecated: false
-    description: List workers command - Returns information for specified workers.
+    description: Returns information for the specified workers.
     execution: false
     name: workday-list-workers
     outputs:
@@ -71,34 +71,34 @@ script:
       description: The ID for the employee or contingent worker.
       type: String
     - contextPath: Workday.Worker.User_ID
-      description: Text attribute identifying User Name.
+      description: Text attribute identifying the User Name.
       type: String
     - contextPath: Workday.Worker.Country
       description: The worker Country.
       type: String
     - contextPath: Workday.Worker.Legal_First_Name
-      description: The First Name (Given Name) for a worker.
+      description: The worker First Name (Given Name).
       type: String
     - contextPath: Workday.Worker.Legal_Last_Name
-      description: The Last Name (Family Name) for a worker.
+      description: The worker Last Name (Family Name).
       type: String
     - contextPath: Workday.Worker.Preferred_First_Name
-      description: The First Name (Preferred Name) for a worker.
+      description: The worker preferred First Name (Preferred Name).
       type: String
     - contextPath: Workday.Worker.Preferred_Last_Name
-      description: The Last Name (Preferred Name) for a worker.
+      description: The worker preferred Last Name (Preferred Name).
       type: String
     - contextPath: Workday.Worker.Position_ID
-      description: Text attribute identifying Position ID.
+      description: Text attribute identifying the Position ID.
       type: String
     - contextPath: Workday.Worker.Position_Title
-      description: Text attribute identifying Position Title.
+      description: Text attribute identifying the Position Title.
       type: String
     - contextPath: Workday.Worker.Business_Title
       description: Business title for the position.
       type: String
     - contextPath: Workday.Worker.Start_Date
-      description: Date the Worker first started work in this Position.
+      description: Date the worker first started work in this position.
       type: String
     - contextPath: Workday.Worker.End_Employment_Reason_Reference
       description: Termination/End Additional Job Reason.
@@ -107,16 +107,16 @@ script:
       description: The worker type for the position.
       type: String
     - contextPath: Workday.Worker.Position_Time_Type
-      description: Position time type.
+      description: The position time type.
       type: String
     - contextPath: Workday.Worker.Scheduled_Weekly_Hours
-      description: Scheduled Weekly Hours for Position.
+      description: Scheduled weekly hours for the position.
       type: String
     - contextPath: Workday.Worker.Default_Weekly_Hours
-      description: Standard Weekly Hours for Position.
+      description: Standard weekly hours for the position.
       type: String
     - contextPath: Workday.Worker.Full_Time_Equivalent_Percentage
-      description: Full Time Equivalent Percentage for Position.
+      description: Full-time equivalent percentage for the position.
       type: String
     - contextPath: Workday.Worker.Exclude_from_Headcount
       description: If Y, the position will be excluded from headcount reporting.
@@ -150,7 +150,7 @@ script:
       description: The formatted address in the format specified for the country.
       type: String
     - contextPath: Workday.Worker.Business_Site_Address.Country
-      description: Country for the address.
+      description: Country of the address.
       type: String
     - contextPath: Workday.Worker.Business_Site_Address.Postal_Code
       description: The postal code part of the address.
@@ -172,7 +172,7 @@ script:
       description: Reason for Hire from the most recent Hire event.
       type: String
     - contextPath: Workday.Worker.First_Day_of_Work
-      description: First Day of Work only applies to the Payroll web service.
+      description: First Day of Work (only applies to the Payroll web service).
       type: String
     - contextPath: Workday.Worker.Retired
       description: Boolean attribute identifying whether the Worker is currently retired.
@@ -219,13 +219,13 @@ script:
       description: Worker's address ID.
       type: String
     - contextPath: Workday.Worker.Addresses.Formatted_Address
-      description: the formatted address in the format specified for the country.
+      description: The formatted address in the format specified for the country.
       type: String
     - contextPath: Workday.Worker.Addresses.Country
-      description: Country for the Worker's address.
+      description: Country for the worker's address.
       type: String
     - contextPath: Workday.Worker.Addresses.Region
-      description: The ID of the region (ISO_3166-2_Code)
+      description: The ID of the region (ISO_3166-2_Code).
       type: String
     - contextPath: Workday.Worker.Addresses.Region_Descriptor
       description: The region part of the address. Typically this contains the state/province
@@ -238,7 +238,7 @@ script:
       description: Address type.
       type: String
     - contextPath: Workday.Worker.Emails.Email_Address
-      description: Email Address Information.
+      description: Email address information.
       type: String
     - contextPath: Workday.Worker.Emails.Type
       description: Usage type.
@@ -247,7 +247,7 @@ script:
       description: Indicates if the communication method is primary.
       type: String
     - contextPath: Workday.Worker.Emails.Public
-      description: Indicates if the Email is public.
+      description: Indicates if the email address is public.
       type: String
     - contextPath: Workday.Worker.Phones.ID
       description: Phone ID.
