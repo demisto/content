@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8bf06fd9-9465-4a79-82cc-f44ea90e58af
+    taskid: 338bb1e8-08eb-426e-8b33-51a7c3d6e8ac
     type: start
     task:
-      id: 8bf06fd9-9465-4a79-82cc-f44ea90e58af
+      id: 338bb1e8-08eb-426e-8b33-51a7c3d6e8ac
       version: -1
       name: ""
       iscommand: false
@@ -31,19 +31,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: da777ade-9576-497d-864a-11802267cf01
+    taskid: 69d36faa-c3ad-4d7c-806c-f9a38da0a01b
     type: condition
     task:
-      id: da777ade-9576-497d-864a-11802267cf01
+      id: 69d36faa-c3ad-4d7c-806c-f9a38da0a01b
       version: -1
       name: Any malicious files detected?
+      description: Conditional task to verify if any malicious files were detected.
       scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
-      description: Conditional task to verify if any malicious files were detected.
     nexttasks:
       '#default#':
       - "4"
@@ -65,12 +67,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: fb3fcb94-9215-482d-84be-e0b488a52bef
+    taskid: 6304fe2a-fedb-4cab-8c88-a5105646daa9
     type: regular
     task:
-      id: fb3fcb94-9215-482d-84be-e0b488a52bef
+      id: 6304fe2a-fedb-4cab-8c88-a5105646daa9
       version: -1
       name: Close incident
       description: Closes the incident.
@@ -97,23 +101,56 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: c50351fa-76f1-43ce-852a-de0c66d9535b
+    taskid: 60d40b87-9c3d-4315-8025-6363e9d8bb7b
     type: playbook
     task:
-      id: c50351fa-76f1-43ce-852a-de0c66d9535b
+      id: 60d40b87-9c3d-4315-8025-6363e9d8bb7b
       version: -1
-      name: "ATD - Detonate File"
+      name: ATD - Detonate File
+      description: |-
+        Detonates a File using the McAfee Advanced Threat Defense sandbox.
+        Advanced Threat Defense supports the following File Types:
+        32-bit Portable Executables (PE)files; 64-bit PE+files
+        exe, sys, dll, com, scr, cpl, ocx, cgi
+        Microsoft Office Suite documents
+        doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
+        Just Systems Ichitaro documents
+        jtd, jtdc
+        Adobe
+        pdf, swf
+        Compressed files
+        gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
+        Android application package
+        apk, Java, JAR, CLASS, Java Script, Java bin files
+        Image files
+        jpeg, png, gif
+        Other file types
+        cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
       playbookName: ATD - Detonate File
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
     separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -124,12 +161,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 9d489c78-8d21-4906-8121-e42a2bcfa69f
+    taskid: 27361272-04ea-420b-8313-a3d854712669
     type: regular
     task:
-      id: 9d489c78-8d21-4906-8121-e42a2bcfa69f
+      id: 27361272-04ea-420b-8313-a3d854712669
       version: -1
       name: DXL - Push file hashes as malicious
       description: Deliver the specified event to the DXL fabric
@@ -156,6 +195,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

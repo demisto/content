@@ -211,8 +211,8 @@ tasks:
     task:
       id: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
       version: -1
-      name: epo-get-current-dat
-      description: check the existing DAT file version in ePO.
+      name: Retrieve DAT version and date from ePO
+      description: Check the existing DAT file version in ePO.
       script: epo|||epo-get-current-dat
       type: regular
       iscommand: true

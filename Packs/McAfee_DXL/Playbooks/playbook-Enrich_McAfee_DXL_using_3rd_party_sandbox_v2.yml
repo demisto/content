@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f0825cf1-1ad4-4e7d-8153-da160deff742
+    taskid: e771bbb3-c7dc-411c-8a0e-4282c7e84131
     type: start
     task:
-      id: f0825cf1-1ad4-4e7d-8153-da160deff742
+      id: e771bbb3-c7dc-411c-8a0e-4282c7e84131
       version: -1
       name: ""
       iscommand: false
@@ -33,17 +33,17 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: a57644c8-775a-42ad-8800-3ac1a1d138cd
+    taskid: ef142950-0fc1-40df-8a9c-ae4fefff2ccc
     type: condition
     task:
-      id: a57644c8-775a-42ad-8800-3ac1a1d138cd
+      id: ef142950-0fc1-40df-8a9c-ae4fefff2ccc
       version: -1
       name: Any malicious files detected?
+      description: Conditional task to verify if any malicious files were detected.
       scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
-      description: Conditional task to verify if any malicious files were detected.
     nexttasks:
       '#default#':
       - "4"
@@ -67,10 +67,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: add5699f-7748-449f-8461-dacbd6722e63
+    taskid: 5615d7ce-41cf-45aa-87cb-2fdfce15cefa
     type: regular
     task:
-      id: add5699f-7748-449f-8461-dacbd6722e63
+      id: 5615d7ce-41cf-45aa-87cb-2fdfce15cefa
       version: -1
       name: Close incident
       description: Closes the incident.
@@ -99,10 +99,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 37bc441a-8053-49ea-8abf-2ffae14fe359
+    taskid: 8d61a5f5-6adf-4399-82cb-dc15484fa29d
     type: regular
     task:
-      id: 37bc441a-8053-49ea-8abf-2ffae14fe359
+      id: 8d61a5f5-6adf-4399-82cb-dc15484fa29d
       version: -1
       name: DXL - Push file hashes as malicious
       description: Deliver the specified event to the DXL fabric.
@@ -131,13 +131,13 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: bfffbaa1-a550-47bd-8e84-e6c941cde205
+    taskid: e7523794-e47b-4000-8f2d-1127d736e593
     type: playbook
     task:
-      id: bfffbaa1-a550-47bd-8e84-e6c941cde205
+      id: e7523794-e47b-4000-8f2d-1127d736e593
       version: -1
-      name: "WildFire - Detonate file"
-      playbookName: WildFire - Detonate file
+      name: Detonate File - Generic
+      playbookName: Detonate File - Generic
       type: playbook
       iscommand: false
       brand: ""
@@ -145,12 +145,12 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    separatecontext: false
+    separatecontext: true
     view: |-
       {
         "position": {
           "x": 281,
-          "y": 122
+          "y": 132
         }
       }
     note: false
