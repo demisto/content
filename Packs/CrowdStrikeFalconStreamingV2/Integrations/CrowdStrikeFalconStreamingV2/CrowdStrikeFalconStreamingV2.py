@@ -7,7 +7,7 @@ import traceback
 from asyncio import Event, create_task, sleep, run
 from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector
-from typing import Dict, AsyncGenerator, AsyncIterator, Union
+from typing import Dict, AsyncGenerator, AsyncIterator
 from collections import deque
 
 requests.packages.urllib3.disable_warnings()
