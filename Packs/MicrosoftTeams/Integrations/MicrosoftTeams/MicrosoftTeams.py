@@ -88,7 +88,7 @@ def translate_severity(severity: str) -> int:
     :return: Demisto integer severity
     """
     severity_dictionary = {
-        'Unclassified': 0,
+        'Unknown': 0,
         'Low': 1,
         'Medium': 2,
         'High': 3,
