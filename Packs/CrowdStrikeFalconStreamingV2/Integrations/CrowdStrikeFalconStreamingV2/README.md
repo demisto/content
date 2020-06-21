@@ -54,12 +54,12 @@ Event metadata will be fetched as the incident details, which contain the follow
 * Severity
 
 ## Mapping incoming events
-As this is a push based streaming integration, it can not fetch sample events in the mapping wizard. 
+Because this is a push-based streaming integration, it cannot fetch sample events in the mapping wizard.
 
-In order to view sample events, enable events storage by checking the ticking the checkbox of the integration parameter **Store sample events for mapping** and run the `crowdstrike-falcon-streaming-get-sample-events` command.
+In order to view sample events, enable events storage by selecting the checkbox of the integration parameter **Store sample events for mapping** and run the `crowdstrike-falcon-streaming-get-sample-events` command.
 
-The last events (20 at max) fetched every 1 minute, so allow the integration to run for at least 5 minutes before running the command.
-Once you've completed mapping, it is recommended to turn off the **Store sample events for mapping** to reduce performance overhead.
+The last events (maximum of 20) are fetched every 1 minute. Allow the integration to run for at least 5 minutes before running the command.
+After you finish mapping, it is recommended to turn off the **Store sample events for mapping** to reduce performance overhead.
 #### Usage example
 
 The command output is as follows:
