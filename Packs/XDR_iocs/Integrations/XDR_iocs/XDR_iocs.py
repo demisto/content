@@ -34,6 +34,7 @@ demisto_score_to_xdr: Dict[int, str] = {
 class Client:
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
+    tag = 'Cortex XDR'
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
@@ -323,6 +324,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
         "fields": {
+            "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME'))
         },
@@ -411,6 +413,7 @@ def main():
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
+    Client.tag = params.get('tag', Client.tag)
     client = Client(params)
     commands = {
         'test-module': module_test,

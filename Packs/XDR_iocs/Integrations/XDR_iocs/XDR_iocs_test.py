@@ -542,6 +542,7 @@ class TestXDRIOCToDemisto:
                 'score': 1,
                 'fields': {
                     'expirationdate': 'Never',
+                    'tags': 'Cortex XDR',
                     'xdrstatus': 'disabled'
                 }
             }
@@ -561,6 +562,7 @@ class TestXDRIOCToDemisto:
                 'score': 1,
                 'fields': {
                     'expirationdate': 'Never',
+                    'tags': 'Cortex XDR',
                     'xdrstatus': 'disabled'
                 }
             }
@@ -582,6 +584,7 @@ class TestXDRIOCToDemisto:
                 'score': 2,
                 'fields': {
                     'expirationdate': 'Never',
+                    'tags': 'Cortex XDR',
                     'xdrstatus': 'enabled'
                 }
             }
