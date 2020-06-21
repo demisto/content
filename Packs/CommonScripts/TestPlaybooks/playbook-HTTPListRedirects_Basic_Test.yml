@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f87beb81-eff3-48d3-87c0-dc05d6dd6bd3
+    taskid: c9a1c1c7-85c2-4270-8fc9-48e9235d1be1
     type: start
     task:
-      id: f87beb81-eff3-48d3-87c0-dc05d6dd6bd3
+      id: c9a1c1c7-85c2-4270-8fc9-48e9235d1be1
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d30a7f4b-0b4a-4f77-8d86-073fb318745b
+    taskid: 8423b0b5-829e-4ac1-88cc-c247fc291887
     type: regular
     task:
-      id: d30a7f4b-0b4a-4f77-8d86-073fb318745b
+      id: 8423b0b5-829e-4ac1-88cc-c247fc291887
       version: -1
       name: HTTPListRedirects
       description: List the redirects for a given URL
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 52f142e1-b319-4a2f-8b61-14712791a916
+    taskid: 0e0a70e6-71f5-49b6-885f-b1e992a35a7b
     type: condition
     task:
-      id: 52f142e1-b319-4a2f-8b61-14712791a916
+      id: 0e0a70e6-71f5-49b6-885f-b1e992a35a7b
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal.
@@ -102,21 +102,15 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: acac8a92-326b-4ac6-8bd7-a36f87407d69
-    type: regular
+    taskid: 6539bd08-2588-4d1f-8c02-52afe1e4b7c3
+    type: title
     task:
-      id: acac8a92-326b-4ac6-8bd7-a36f87407d69
+      id: 6539bd08-2588-4d1f-8c02-52afe1e4b7c3
       version: -1
-      name: Close incident
-      scriptName: CloseInvestigation
-      type: regular
+      name: Done
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      notes:
-        simple: Done
-      reason:
-        simple: All good
     separatecontext: false
     view: |-
       {
@@ -135,7 +129,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
+        "height": 560,
         "width": 380,
         "x": 50,
         "y": 50

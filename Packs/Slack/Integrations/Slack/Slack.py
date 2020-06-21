@@ -2139,7 +2139,6 @@ def main():
     }
 
     command_name = demisto.command()
-
     init_globals(command_name)
 
     try:
