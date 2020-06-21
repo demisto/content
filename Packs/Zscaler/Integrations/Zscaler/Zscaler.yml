@@ -51,6 +51,18 @@ script:
       required: false
       default: true
       description: URL to search for
+    - name: multiple
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether multiple URLs are being submitted. If "true", the value
+        entered for the "url" command argument is interpreted as a CSV list of URLs.
+        If you want to submit a URL that has commas in it, you can set this value
+        to "false" and enter the singular URL for the value of the "url" command
+        argument.
+      defaultValue: "true"
     outputs:
     - contextPath: URL.Data
       description: The URL that was searched
