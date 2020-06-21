@@ -28,7 +28,7 @@ configuration:
   type: 8
 description: Read information and to send commands to the Check Point Firewall server.
 display: CheckPoint_FW
-name: CheckPoint
+name: CheckPoint_FW
 script:
   commands:
   - arguments:
@@ -721,7 +721,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The indicators observable or the contents of a file containing the indicators observables.'
+      description: 'The indicators observable or the contents of a file containing
+        the indicators observables.'
       isArray: false
       name: observables
       required: true
@@ -960,7 +961,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: New position in the rulebase. value can be int to set specific position, ot str- 'top' or 'bottom'
+      description: New position in the rulebase. value can be int to set specific
+        position, ot str- 'top' or 'bottom'
       isArray: false
       name: new_position
       required: false
@@ -1269,3 +1271,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
