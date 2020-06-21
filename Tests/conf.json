@@ -333,7 +333,7 @@
             "integrations": "Cortex XDR - IOC",
             "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 600
+            "timeout": 1000
         },
         {
             "integrations": "Cloaken",
@@ -2857,7 +2857,6 @@
     ],
     "skipped_tests": {
         "CuckooTest": "Issue 25601",
-        "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
         "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
