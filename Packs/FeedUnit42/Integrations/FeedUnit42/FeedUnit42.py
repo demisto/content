@@ -173,7 +173,8 @@ def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = []) -> Tuple[Any, Dict[Any, Any], Any]:
+def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = []) -> Tuple[
+    Any, Dict[Any, Any], Any]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
