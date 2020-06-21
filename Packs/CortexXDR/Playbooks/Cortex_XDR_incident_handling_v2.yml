@@ -102,6 +102,7 @@ tasks:
       id: 6c507e81-addc-440c-81a4-1c57f97e676a
       version: -1
       name: Are there new un-handled alerts?
+      description: "Check if there are new un-handled alerts."
       type: condition
       iscommand: false
       brand: ""
@@ -494,6 +495,7 @@ tasks:
       id: 89e6afb5-1da9-4446-855e-d5d34ef0deba
       version: -1
       name: Manual malware analysis and forensics
+      description: "Manual malware analysis and forensics by the analyst."
       type: regular
       iscommand: false
       brand: ""
@@ -521,6 +523,7 @@ tasks:
       id: f8f7e19f-a7f8-4638-8466-30a21096ebca
       version: -1
       name: Auto remediation?
+      description: "Should the playbook perform auto-remediation or manual remediation?"
       type: condition
       iscommand: false
       brand: ""
@@ -561,6 +564,7 @@ tasks:
       id: bc6cf7eb-f224-4f3b-8ba4-7894a063beda
       version: -1
       name: Manual remediation
+      description: "Manual remediation by the analyst."
       type: regular
       iscommand: false
       brand: ""
@@ -588,6 +592,7 @@ tasks:
       id: c4f4ee4f-86d8-40ae-8512-62fedce1d77f
       version: -1
       name: Continue investigation?
+      description: "Continue investigation?"
       type: condition
       iscommand: false
       brand: ""
@@ -617,6 +622,7 @@ tasks:
       id: 8a3ed2d1-85c2-45dc-8fff-f6af952ab540
       version: -1
       name: Manual - continue investigation for new alerts
+      description: "Manual - continue investigation for new alerts."
       type: regular
       iscommand: false
       brand: ""
@@ -812,6 +818,7 @@ tasks:
       id: 26c62802-b143-4bbc-8283-5cb9240fe5d0
       version: -1
       name: Hunt for related IOCs?
+      description: "Run hunting playbook to find related IOCs?"
       type: condition
       iscommand: false
       brand: ""
@@ -1104,6 +1111,7 @@ tasks:
       id: 5cedbf5c-e00f-4ef0-88eb-292752ca5102
       version: -1
       name: Continue to Remediation or close as false positive?
+      description: "Continue to Remediation or close the investigation as false positive?"
       type: condition
       iscommand: false
       brand: ""
@@ -1252,6 +1260,7 @@ tasks:
       id: 825644a1-b3c7-41c1-8a87-1407188feca0
       version: -1
       name: Link similar incidents?
+      description: "Link similar incidents?"
       type: condition
       iscommand: false
       brand: ""
@@ -1334,6 +1343,7 @@ tasks:
       id: 07335e9a-0e8b-4d79-89fa-2121b6585b26
       version: -1
       name: Similar incidents found?
+      description: "Were any similar incidents found?"
       type: condition
       iscommand: false
       brand: ""
@@ -1377,6 +1387,7 @@ tasks:
       id: abc5dc8c-2591-4e4b-85f9-a48ad624ec76
       version: -1
       name: Close as duplicate?
+      description: "Close the incident as duplicate?"
       type: condition
       iscommand: false
       brand: ""
@@ -1618,6 +1629,7 @@ tasks:
       id: ea8cab41-5994-4c0f-8cd2-89a16880c8e1
       version: -1
       name: Manually block ports used for exploitation on the scanned host.
+      description: "Manually block ports used for exploitation on the scanned host."
       type: regular
       iscommand: false
       brand: ""
@@ -1645,6 +1657,7 @@ tasks:
       id: b1972e80-05b7-4890-859b-a0feaca1b35d
       version: -1
       name: Was there a port scan alert investigated?
+      description: "Was there a port scan alert investigated as a part of the incident?"
       type: condition
       iscommand: false
       brand: ""
@@ -1683,6 +1696,7 @@ tasks:
       id: 3002aab6-d3df-4e8b-8730-3330984beca4
       version: -1
       name: Block ports?
+      description: "Is port blocking required?"
       type: condition
       iscommand: false
       brand: ""

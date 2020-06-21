@@ -40,6 +40,7 @@ tasks:
       id: 0f3a6f6f-7078-49ee-8ddd-42591880d7d0
       version: -1
       name: Choose playbook by category
+      description: "Choose playbook to run by alert category."
       type: condition
       iscommand: false
       brand: ""
