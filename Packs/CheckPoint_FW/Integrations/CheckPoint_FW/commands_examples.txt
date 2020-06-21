@@ -34,3 +34,4 @@
 
 !checkpoint-publish
 !checkpoint-install-policy policy_package='standard' targets='LAN-TEST'
+!checkpoint-policy-verify policy_package='standard'
