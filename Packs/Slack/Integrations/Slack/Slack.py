@@ -6,16 +6,16 @@ from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
 from distutils.util import strtobool
-from distutils.version import LooseVersion
+from random import randint
+from typing import Tuple, Dict, List, Optional
 import asyncio
 import concurrent
+import os
 import requests
 import ssl
-from typing import Tuple, Dict, List, Optional
 import sys
 import traceback
 import threading
-import os
 
 # disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -138,8 +138,9 @@ def merge_lists(original_list: List[dict], updated_list: List[dict], key: str) -
         The merged list.
 
     Example:
-    >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}]
-    >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}]
+    >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
+    >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n',
+    >>>                                                                                                 'remove': True}]
     >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
 
     """
@@ -163,7 +164,7 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
 
     Args:
         user_to_search: The user name or email
-        add_to_context Whether to update the integration context
+        add_to_context: Whether to update the integration context
 
     Returns:
         A slack user object
@@ -260,7 +261,7 @@ def find_mirror_by_investigation() -> dict:
     return mirror
 
 
-def set_integration_context(context, sync: bool = False, version: int = -1) -> dict:
+def set_integration_context(context, sync: bool = True, version: int = -1) -> dict:
     """
     Sets the integration context.
     Args:
@@ -280,7 +281,7 @@ def set_integration_context(context, sync: bool = False, version: int = -1) -> d
         return demisto.setIntegrationContext(context)
 
 
-def get_integration_context(sync: bool = False, with_version: bool = False) -> dict:
+def get_integration_context(sync: bool = True, with_version: bool = False) -> dict:
     """
     Gets the integration context.
     Args:
@@ -308,44 +309,45 @@ def is_versioned_context_available() -> bool:
     Returns:
         Whether versioned integration context is available
     """
-    server_version = DEFAULT_SERVER_VERSION
-    if hasattr(demisto, 'demistoVersion'):
-        server_version = demisto.demistoVersion().get('version')
-    return LooseVersion(server_version) >= LooseVersion(MIN_VERSION_FOR_VERSIONED_CONTEXT)
+    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
 
 
-def set_to_latest_integration_context(context: dict, object_keys: dict = None, sync: bool = False, attempt: int = 0):
+def set_to_latest_integration_context(context: dict, object_keys: dict = None, sync: bool = True):
     """
-    Update the integration context with a dictionary of keys and values with recursive attempts.
+    Update the integration context with a dictionary of keys and values with multiple attempts.
     If the version is too old by the time the context is set, another attempt will be made until the limit.
 
     Args:
         context: A dictionary of keys and values to set.
         object_keys: A dictionary to map between context keys and their unique ID for merging them
         sync: Whether to make a versioned request.
-        attempt: The attempt number
     """
+    attempt = 0
 
-    if attempt == CONTEXT_UPDATE_RETRY_TIMES:
-        raise Exception('Slack - failed updating integration context. Max retry attempts exceeded.')
+    # do while...
+    while True:
+        if attempt == CONTEXT_UPDATE_RETRY_TIMES:
+            raise Exception('Slack - failed updating integration context. Max retry attempts exceeded.')
 
-    # Update the latest context and get the new version
-    integration_context, version = update_context(context, object_keys, sync)
+        # Update the latest context and get the new version
+        integration_context, version = update_context(context, object_keys, sync)
 
-    demisto.info(f'Slack - Attempting to update the integration context with version {version}.')
+        demisto.info(f'Slack - Attempting to update the integration context with version {version}.')
 
-    # Attempt to update integration context with a version. If we get a ValueError (DB Version), the version is too old.
-    # Then we need to try again.
-    attempt = attempt + 1
-    try:
-        set_integration_context(integration_context, sync, version)
-        demisto.info(f'Slack - successfully updated integration context.'
-                     f' New version is {version + 1 if version != -1 else version}')
-    except ValueError:
-        demisto.info(f'Slack - Failed updating integration context with version {version}.'
-                     f' Attempts left - {CONTEXT_UPDATE_RETRY_TIMES - attempt}')
-
-        set_to_latest_integration_context(context, object_keys, sync, attempt)
+        # Attempt to update integration context with a version.
+        # If we get a ValueError (DB Version), the version is too old. Then we need to try again.
+        attempt = attempt + 1
+        try:
+            set_integration_context(integration_context, sync, version)
+            demisto.info(f'Slack - successfully updated integration context.'
+                         f' New version is {version + 1 if version != -1 else version}')
+            break
+        except ValueError as ve:
+            demisto.info(f'Slack - Failed updating integration context with version {version}: {str(ve)}'
+                         f' Attempts left - {CONTEXT_UPDATE_RETRY_TIMES - attempt}')
+            # Sleep for a random time
+            time_to_sleep = randint(1, 100) / 1000
+            time.sleep(time_to_sleep)
 
 
 def get_latest_integration_context(sync):
@@ -369,7 +371,7 @@ def get_latest_integration_context(sync):
     return integration_context, version
 
 
-def update_context(context: dict, object_keys: dict = None, sync: bool = False) -> tuple:
+def update_context(context: dict, object_keys: dict = None, sync: bool = True) -> tuple:
     """
     Update the integration context with a given dictionary after merging it with the latest integration context.
     Args:

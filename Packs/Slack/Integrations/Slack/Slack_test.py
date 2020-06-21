@@ -391,6 +391,7 @@ def test_is_versioned_context_available(mocker, version, expected):
 
     # Arrange
     result = is_versioned_context_available()
+    get_demisto_version._version = None
 
     # Assert
     assert expected == result
@@ -482,8 +483,8 @@ def test_set_latest_integration_context(mocker):
 
     # Assert
     assert int_context_calls == 2
-    assert int_context_args_1 == (int_context['context'], False, int_context['version'])
-    assert int_context_args_2 == (int_context['context'], False, int_context['version'] + 1)
+    assert int_context_args_1 == (int_context['context'], True, int_context['version'])
+    assert int_context_args_2 == (int_context['context'], True, int_context['version'] + 1)
 
 
 def test_set_latest_integration_context_fail(mocker):
