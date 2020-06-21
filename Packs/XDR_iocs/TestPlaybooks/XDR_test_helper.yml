@@ -5,11 +5,7 @@ name: XDR_test_helper
 script: |+
   args = demisto.args()
   indicator =  args['indicator']
-  data = demisto.searchIndicators(value=indicator)['iocs'][0]['moduleToFeedMap']
-  for indicator_reputation in data.values():
-      if indicator_reputation.get('sourceBrand') == 'Cortex XDR - IOC':
-          return_outputs('', outputs={indicator.replace('.', '_'): indicator_reputation['fields']['xdr']})
-          break
+  return_outputs('', outputs={indicator.replace('.', '_'): demisto.searchIndicators(value=indicator)['iocs'][0]['CustomFields']['xdrstatus']})
 
 type: python
 tags: []
