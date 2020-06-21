@@ -1,0 +1,134 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FeedThreatConnect
+  version: -1
+configuration:
+- defaultvalue: https://api.threatconnect.com
+  display: Base URL
+  name: tc_api_path
+  required: true
+  type: 1
+- additionalinfo: API - Access ID
+  display: Access ID
+  name: api_access_id
+  required: true
+  type: 4
+- additionalinfo: API - Secret key
+  display: Secret key
+  name: api_secret_key
+  required: true
+  type: 4
+- additionalinfo: Comma seprated list of owners which to fetch indicators from. (If
+    not specified will retrieve only indicators owned by accout)
+  display: Owners
+  name: owners
+  required: false
+  type: 0
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  required: true
+  type: 1
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+description: This integration fetches indicators from ThreatConnect.
+display: Feed ThreatConnect
+name: FeedThreatConnect
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: |
+        Comma seprated list of owners which to fetch indicators from. (If
+        not specified will retrieve only indicators owned by accout, overwrite integration
+        parameter)
+      isArray: false
+      name: owners
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of indicators to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The index of the first indicator to fetch.
+      isArray: false
+      name: offset
+      predefined:
+      - '0'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get indicators from Threatconnect.
+    execution: false
+    name: tc-get-indicators
+  - deprecated: false
+    description: Get availble indicators owners.
+    execution: false
+    name: tc-get-owners
+  dockerimage: devdemisto/threatconnect-tcex:1.0.0.9570
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 5.5.0
