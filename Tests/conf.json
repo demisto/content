@@ -3150,7 +3150,7 @@
             "demisto/pytan": {
                 "pid_threshold": 11
             },
-            "demisto/google-k8s-engine:1.0.0.8803": {
+            "demisto/google-k8s-engine:1.0.0.9467": {
                 "pid_threshold": 11
             }
         }
