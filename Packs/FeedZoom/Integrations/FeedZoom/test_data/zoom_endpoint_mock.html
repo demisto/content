@@ -1,0 +1,557 @@
+
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <!-- v18017 -->
+
+  <title>Network Firewall or Proxy Server Settings for Zoom &ndash; Zoom Help Center</title>
+
+  <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="hc:meta:server:TZp7eOo2IEH1/njQNziQVdhpoXqKtPaDv8rExUb6v/p7O0P3W2qCQBI7C+7OP6zHK6b8ORmq/tizDBqroUQtAw==" />
+
+  <meta name="description" content="Network Firewall or Web Security Gateway If your app stays in a &quot;connecting&quot; mode or  timed out due to &quot;Network error,..." /><meta property="og:image" content="https://www.demisto.com.com/theme_assets/141844/54b03f5a6fcedbfa6621c751d9bed891e78c7d3c.png" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Zoom Help Center" />
+<meta property="og:title" content="Network Firewall or Proxy Server Settings for Zoom" />
+<meta property="og:description" content="Network Firewall or Web Security Gateway
+If your app stays in a &quot;connecting&quot; mode or  timed out due to &quot;Network error, please try again&quot; or &quot;Can't connect to our service, p..." />
+<meta property="og:url" content="https://www.demisto.com.us/hc/en-us/articles/201362683" />
+<link rel="canonical" href="https://www.demisto.com.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom" />
+<link rel="alternate" hreflang="de" href="https://www.demisto.com.us/hc/de/articles/201362683-Einstellungen-der-Netzwerkfirewall-oder-des-Proxy-Servers-f%C3%BCr-Zoom" />
+<link rel="alternate" hreflang="en" href="https://www.demisto.com.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom" />
+<link rel="alternate" hreflang="es" href="https://www.demisto.com.us/hc/es/articles/201362683-Configuraci%C3%B3n-de-firewall-de-red-o-servidor-proxy-para-Zoom" />
+<link rel="alternate" hreflang="fr" href="https://www.demisto.com.us/hc/fr/articles/201362683-Param%C3%A8tres-du-Pare-feu-r%C3%A9seau-ou-Serveur-Proxy-pour-Zoom" />
+<link rel="alternate" hreflang="ja" href="https://www.demisto.com.us/hc/ja/articles/201362683-Zoom%E3%81%AE%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%83%95%E3%82%A1%E3%82%A4%E3%82%A2%E3%82%A6%E3%82%A9%E3%83%BC%E3%83%AB%E3%81%BE%E3%81%9F%E3%81%AF%E3%83%97%E3%83%AD%E3%82%AD%E3%82%B7%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%AE%E8%A8%AD%E5%AE%9A" />
+<link rel="alternate" hreflang="zh-cn" href="https://www.demisto.com.us/hc/zh-cn/articles/201362683-Zoom%E7%BD%91%E7%BB%9C%E9%98%B2%E7%81%AB%E5%A2%99%E6%88%96%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%BE%E7%BD%AE" />
+<link rel="alternate" hreflang="zh" href="https://www.demisto.com.us/hc/zh-tw/articles/201362683-Zoom%E7%B6%B2%E8%B7%AF%E9%98%B2%E7%81%AB%E7%89%86%E6%88%96%E4%BB%A3%E7%90%86%E4%BC%BA%E6%9C%8D%E5%99%A8%E8%A8%AD%E7%BD%AE-" />
+
+  <link rel="stylesheet" media="all" href="//static.zdassets.com/hc/assets/application-ebbf4a70487f9466c9be47bf4b6055f6.css" id="stylesheet" />
+    <!-- Entypo pictograms by Daniel Bruce — www.entypo.com -->
+    <link rel="stylesheet" media="all" href="//static.zdassets.com/hc/assets/theming_v1_support-7eacdab8920220a42cfc91404f4ed182.css" />
+  <link rel="stylesheet" type="text/css" href="//p13.zdassets.com/hc/theming_assets/141844/1932776/style.css?digest=360469075211" />
+
+  <link rel="shortcut icon" type="image/x-icon" href="//theme.zdassets.com/theme_assets/141844/d779a6df05dbcc2d24ca5f49a2975c05563a4c20.ico" />
+
+    <script src="//static.zdassets.com/hc/assets/jquery-d5395f0b7ac5027403fc17855c46dbfc.js"></script>
+    
+
+  <!-- add code here that should appear in the document head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Image Overlay CSS-->
+
+<script>window.zESettings = {webWidget: {}};
+  window.zESettings.webWidget.chat = {suppress:true};</script>
+
+<script>
+  window.adaSettings = {
+      adaReadyCallback: function (props) {
+    	  if (props.isRolledOut === false) {
+  			document.getElementById('ada-embed').style.display = 'none';
+          window.zESettings = {
+            webWidget: {
+              contactOptions: {
+                enabled: false
+              },
+              chat: {
+                suppress: true,
+  							connectOnPageLoad: false
+              },
+              contactForm: {
+                suppress: true
+                }
+              }
+            };
+          }
+          else{
+              zE('webWidget', 'hide');
+	 	  	}
+      },
+  		authCallback: function (callback) { callback(undefined) },
+      hideMask: true,
+      crossWindowPersistence: {
+          enabled: true,
+          domain: ".zoom.us"
+      },
+      styles: "*{font-size: 14px !important;}",
+      language: "en-us",
+      metaFields: {
+          name: "Support Visitor"
+      }
+  }
+</script>
+
+<script async id="__ada" data-handle="zoom" src="https://www.demisto.com.support/embed.js"></script>
+<!-- Start of zoomus Zendesk Widget script -->
+<script id="ze-snippet" src="https://www.demisto.com.com/ekr/snippet.js?key=f022518e-a528-43eb-b7d9-6af79e1de3db"> </script>
+<!-- End of zoomus Zendesk Widget script -->
+<link rel="stylesheet" href="https://www.demisto.com.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
+<script src="https://www.demisto.com.com/jquery-3.5.1.min.js"></script>
+<link href="//p13.zdassets.com/hc/theme_assets/141844/200033078/jquery.fancybox.css?locale=en-us" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="//theme.zdassets.com/theme_assets/141844/53360764b429c212f424399384417ccc233bb3be.js"></script>
+<!--Code Styling JS-->
+<script src="https://www.demisto.com.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+<!--Slick CSS & JS -->
+
+<link rel="stylesheet" type="text/css" href="//p13.zdassets.com/hc/theme_assets/141844/200033078/slick-theme-new.css?locale=en-us"/>
+
+<link rel="stylesheet" type="text/css" href="//theme.zdassets.com/theme_assets/141844/dbf55e4e1826d6ad1323dc786c313cbfaa180c96.css"/>
+
+<script type="text/javascript" src="//theme.zdassets.com/theme_assets/141844/c13dca63609788582a45b9207942618f44217b8f.js"></script>
+
+
+
+<!--Embed Videos CSS/JS-->
+<link href="//theme.zdassets.com/theme_assets/141844/229598c7b3c591d2f677da255142f973e068dfc7.css" type="text/css" rel="stylesheet" />
+<meta name="google-site-verification" content="P8QjBIKLACkV04Wvat-4uHx-ZRmW7NdDKp6pTJ68Qb8" />
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://www.demisto.com.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="//theme.zdassets.com/theme_assets/141844/9fa835f90cf813344075df929cc84becccaff901.js"></script>
+
+
+<script>
+  var pathArray = window.location.pathname.split('/');
+  var language = pathArray[2];
+  zE(function() {
+    zE.setLocale(language);
+  });
+</script>
+
+
+<!-- Hotjar Tracking Code for https://www.demisto.com.us/hc/en-us -->
+
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:437270,hjsv:5};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+
+  <script type="text/javascript" src="//p13.zdassets.com/hc/theming_assets/141844/1932776/script.js?digest=360469075211"></script>
+</head>
+<body class="">
+  
+  
+
+  <div id="header_container">
+<div id="header_outer" class="container clearfix home">
+		<div id="header" class="navbar navbar-default navbar-fixed-top" role="navigation" style="min-width:970px;">
+			<div class="container">
+				<div class="navbar-header ">
+				
+					<div class="left">
+						<a class="imglink" href="/hc/en-us" style="text-decoration: none; position: relative; font-size: 15px;">
+							<img class="logo" src="https://www.demisto.com.net/static/90644/image/new/ZoomLogo.png" alt="Zoom Support Logo" style="margin-top:22px; height: 25px; width: 110px;">Help Center
+						</a>
+					</div>
+				</div>
+				<div class="navbar-collapse collapse" id="navbar">
+					
+					<ul class="nav navbar-nav" style="margin-left: 25px !important;">
+						
+						<div class="visible-xs divider" role="presentation"></div>
+						<li><a class="link" href="https://www.demisto.com/contactsales" >SALES</a></li>
+            <li><a class="link" href="https://www.demisto.com/pricing" >PLANS</a></li>
+					</ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a id="btnJoinMeeting" href="https://www.demisto.com/join" class="link">JOIN A MEETING</a></li>
+							
+							
+            <div class="visible-xs divider" role="presentation"></div><li>  <a class="login" data-auth-action="signin" role="button" rel="nofollow" title="Opens a dialog" href="/hc/en-us/signin?return_to=https%3A%2F%2Fsupport.zoom.us%2Fhc%2Fen-us%2Farticles%2F201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom&amp;locale=en-us">Sign in</a>
+</li></ul>
+				</div>
+			</div>
+       
+      </div>
+  <!-- end isHeaderBranding -->
+   
+</div>
+
+</div>
+<div style="width:100%; line-height:1.2em; margin: 55px auto 10px; background-color: #E4F7EB;"></br>
+        <div class="alert alert-warning" id="covid-19-alert">
+<strong>Important Notice</strong>: Please update all of your Zoom applications to version 5.0 or higher. After May 30, 2020, all Zoom applications on older versions will receive a forced upgrade when trying to join meetings as GCM Encryption will be fully enabled across the Zoom platform. <a target="_blank" href="https://www.demisto.com.us/hc/en-us/articles/360043555772">Learn more</a> on how to update your Zoom application or <a href="https://www.demisto.com/download">update now</a>.</br></br>
+<strong>Note</strong>: As our world comes together to slow the spread of COVID-19 pandemic, the Zoom Support Center has continued to operate 24x7 globally to support you. Please see the updated <a href="https://www.demisto.com.us/hc/articles/201362003">Support Guidelines</a> during these unprecedented times.
+  </div></br>
+  </div>
+</div>
+
+  <section class="clearfix" style="max-width:1000px; margin:40px auto 15px;">
+<div style="width: 100%; padding-top: 20px; margin-bottom: 20px; max-width:800px; margin: auto auto auto auto">
+       <div class="hero-inner" style="margin-top: -20px">
+    <form role="search" class="search search-full" data-search="" data-instant="true" autocomplete="off" action="/hc/en-us/search" accept-charset="UTF-8" method="get"><input name="utf8" type="hidden" value="&#x2713;" /><input type="search" name="query" id="query" placeholder="Search" autocomplete="off" aria-label="Search" /></form>
+  </div>
+    </div></br></br>
+
+  <main role="main">
+    <nav class="sub-nav clearfix" style="width: 92%;">
+  <ol class="breadcrumbs">
+  
+    <li title="Zoom Help Center">
+      
+        <a href="/hc/en-us">Zoom Help Center</a>
+      
+    </li>
+  
+    <li title="Account &amp; Admin">
+      
+        <a href="/hc/en-us/categories/201137176-Account-Admin">Account &amp; Admin</a>
+      
+    </li>
+  
+    <li title="Network and Firewall">
+      
+        <a href="/hc/en-us/sections/201740166-Network-and-Firewall">Network and Firewall</a>
+      
+    </li>
+  
+</ol>
+
+</nav>
+<div class="main-wrapper clearfix">
+  <div class="main-navbar">
+    <ul><strong>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/200101697">Getting Started</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/201137166">Audio, Video, Sharing</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/201146643">Meetings & Webinars</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/360001370051">Zoom Phone</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/201137176">Account & Admin</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/200108436">Zoom Rooms</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/200110033">H.323/SIP</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/201137186">Messaging</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/200108426">Integration</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/categories/201146653">On-Premise</a><li>
+      <li><a href="https://www.demisto.com.us/hc/en-us/sections/201740096">Training</a><li></strong>
+    </ul>
+    <div data-recent-articles></div>
+    
+  <section class="related-articles">
+    
+      <h3 class="related-articles-title">Related articles</h3>
+    
+    <ul>
+      
+        <li>
+          <a href="/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGkEdn4PDDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGkE%2B4wADDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJRL2hjL2VuLXVzL2FydGljbGVzLzIwMjM0MjAwNi1OZXR3b3JrLUZpcmV3YWxsLVNldHRpbmdzLWZvci1NZWV0aW5nLUNvbm5lY3RvcgY7CFQ6CXJhbmtpBg%3D%3D--7c143d8889e01b3a59a9b79f33dca08ef467754f" rel="nofollow">Network Firewall Settings for Meeting Connector</a>
+        </li>
+      
+        <li>
+          <a href="/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGkE9%2FUzDDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGkE%2B4wADDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJUL2hjL2VuLXVzL2FydGljbGVzLzIwNDczMTg5NS1FcnJvci1jb2Rlcy1hbmQtbWVzc2FnZXMtZm9yLW1lZXRpbmdzLWFuZC13ZWJpbmFycwY7CFQ6CXJhbmtpBw%3D%3D--41c0bc60dfe33378aac243b12bfcb2e63526ff16" rel="nofollow">Error codes and messages for meetings and webinars</a>
+        </li>
+      
+        <li>
+          <a href="/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGkEheojDDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGkE%2B4wADDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJHL2hjL2VuLXVzL2FydGljbGVzLzIwMzY4MDM4OS1GaXJld2FsbC1Db25maWd1cmF0aW9uLWZvci1ab29tLVJvb21zBjsIVDoJcmFua2kI--74c5ab42a6e55a77cb0338766c406c9aaf7078cb" rel="nofollow">Firewall Configuration for Zoom Rooms</a>
+        </li>
+      
+        <li>
+          <a href="/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCLyrRNRTADoYcmVmZXJyZXJfYXJ0aWNsZV9pZGkE%2B4wADDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJBL2hjL2VuLXVzL2FydGljbGVzLzM2MDA0MzU1NTc3Mi1VcGRhdGluZy10by1ab29tLXZlcnNpb24tNS0wBjsIVDoJcmFua2kJ--49395521aa15509a4e5c292becbadc377fc9df35" rel="nofollow">Updating to Zoom version 5.0</a>
+        </li>
+      
+        <li>
+          <a href="/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGkEjAICDDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGkE%2B4wADDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJDL2hjL2VuLXVzL2FydGljbGVzLzIwMTQ1ODMxNi1OZXR3b3JrLUZpcmV3YWxsLVNldHRpbmdzLWZvci1DUkMGOwhUOglyYW5raQo%3D--30bdfd6bc6b5c64b72ac3a9fa6dca3d282557d02" rel="nofollow">Network Firewall Settings for CRC</a>
+        </li>
+      
+    </ul>
+  </section>
+
+
+  </div>
+<div class="main-content">
+
+  <article class="main-column">
+    <header class="article-header clearfix">
+      <h1> Network Firewall or Proxy Server Settings for Zoom <a class="article-subscribe" title="Opens a sign-in dialog" rel="nofollow" role="button" data-auth-action="signin" aria-selected="false" href="/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom/subscription.html">Follow</a></h1>
+  
+    </header>
+
+    <div class="subtle-wrap">
+      <div class="article-body markdown">
+        <p><strong><span class="wysiwyg-font-size-large">Network Firewall&nbsp;or Web Security Gateway</span></strong></p>
+<p>If your app stays in a "connecting" mode or &nbsp;timed out due to "Network error, please try again" or "Can't connect to our service, please check your network connection and try again" &nbsp;- it could be related to your network connection, network firewall settings or web security gateway settings.</p>
+<p><strong>Note</strong>: Check your network connection by opening a browser and ensure that you can access&nbsp;<a href="https://www.demisto.com" target="_blank" rel="noopener noreferrer">https://www.demisto.com</a></p>
+<p>To configure your network firewall, please see the following table:&nbsp;</p>
+<table class="pure-table">
+<thead style="background-color: #fcfcfc;">
+<tr style="color: #000;">
+<th>Protocol</th>
+<th>Ports</th>
+<th>Source</th>
+<th style="width: 33%;">Destination</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>80,443</td>
+<td>All Zoom Clients</td>
+<td>*.zoom.us</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>443, 8801, 8802</td>
+<td>All Zoom Clients</td>
+<td>
+<p>IPv4:</p>
+<p>3.7.35.0/25<br />8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/25<br /><span class="s1">8.8.8.8/24<br /></span>8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/25<br />8.8.8.8/25<br /><span>8.8.8.8/32<br /></span>8.8.8.8/24<br /><span></span>8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/24<br />8.8.8.8/25<br /><span>8.8.8.8/25<br /></span>8.8.8.8/24<br /><span>8.8.8.8/32</span><br />8.8.8.8/26<br />8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br /> 8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/22<br />8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/22<br />8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/26<strong>&nbsp;&nbsp;</strong><br />8.8.8.8/26<br />8.8.8.8/26&nbsp;<br />8.8.8.8/26<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/19<br />8.8.8.8/17<br />8.8.8.8/24<br />8.8.8.8/24<br /> 8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/22<br />8.8.8.8/22<br />8.8.8.8/22<br /><span>8.8.8.8/23<br /></span>8.8.8.8/24<br /> 8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br /><span></span>8.8.8.8/20<br />8.8.8.8/22<br />8.8.8.8/22<br /> 8.8.8.8/19<br /> 8.8.8.8/22<br />8.8.8.8/19<br />8.8.8.8/17<br />8.8.8.8/27<br />8.8.8.8/27<br /><span>8.8.8.8/21</span><br />8.8.8.8/22<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/27<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/27<br /> <br /> IPv6:<br /> 2620:123:2000::/40</p>
+</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>
+<p>3478, 3479, 8801&nbsp;- 8810</p>
+</td>
+<td>All Zoom Clients</td>
+<td>
+<p>IPv4:</p>
+<p>8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/25<br />8.8.8.8/25<br /><span>8.8.8.8/32<br /></span>8.8.8.8/24<br /><span></span>8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/24<br />8.8.8.8/25<br /><span>8.8.8.8/25<br /></span>8.8.8.8/24<br /><span></span><span>8.8.8.8/32</span><br />8.8.8.8/26<br />8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br /> 8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/22<br />8.8.8.8/25<br />8.8.8.8/23<br />8.8.8.8/22<br />8.8.8.8/25<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/26<strong>&nbsp;&nbsp;</strong><br />8.8.8.8/26<br />8.8.8.8/26&nbsp;<br />8.8.8.8/26<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/19<br />8.8.8.8/17<br />8.8.8.8/24<br />8.8.8.8/24<br /> 8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/22<br />8.8.8.8/22<br />8.8.8.8/22<br /><span>8.8.8.8/23<br /></span>8.8.8.8/24<br /> 8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br /><span></span>8.8.8.8/20<br />8.8.8.8/22<br />8.8.8.8/22<br /> 8.8.8.8/19<br /> 8.8.8.8/22<br />8.8.8.8/19<br />8.8.8.8/17<br />8.8.8.8/27<br />8.8.8.8/27<br /><span>8.8.8.8/21</span><br />8.8.8.8/22<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/27<br />8.8.8.8/25<br />8.8.8.8/25<br />8.8.8.8/27<br /> <br /> IPv6:<br /> 2620:123:2000::/40</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p><strong>Connection Type: Zoom Phone</strong></p>
+<table class="pure-table">
+<thead style="background-color: #fcfcfc;">
+<tr style="color: #000;">
+<th>Protocol</th>
+<th>Ports</th>
+<th>Source</th>
+<th style="width: 33%;">Destination</th>
+</tr>
+</thead>
+<tbody>
+<tr style="height: 21px;">
+<td>TCP</td>
+<td>5090, 5091</td>
+<td>All Zoom Clients</td>
+<td>8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/23<br />8.8.8.8/22<br />8.8.8.8/24<br />8.8.8.8/19<br />8.8.8.8/22<br />8.8.8.8/24<br />8.8.8.8/24</td>
+</tr>
+<tr style="height: 21px;">
+<td>UDP</td>
+<td>5090</td>
+<td>All Zoom Clients</td>
+<td>8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/23<br />8.8.8.8/22<br />8.8.8.8/24<br />8.8.8.8/19<br />8.8.8.8/22<br />8.8.8.8/24<br />8.8.8.8/24</td>
+</tr>
+<tr style="height: 21px;">
+<td>UDP</td>
+<td>20000-64000</td>
+<td>All Zoom Clients</td>
+<td>8.8.8.8/24<br />8.8.8.8/23<br />8.8.8.8/19<br />8.8.8.8/22<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24<br />8.8.8.8/24</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p><strong>Connection Type: Zoom&nbsp;Website</strong></p>
+<table class="pure-table">
+<thead style="background-color: #fcfcfc;">
+<tr style="color: #000;">
+<th>Protocol</th>
+<th>Ports</th>
+<th>Source</th>
+<th style="width: 33%;">Destination</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>80, 443</td>
+<td>All Zoom Clients</td>
+<td>*.zoom.us<br />*.cloudfront.net</td>
+</tr>
+</tbody>
+</table>
+<p><strong><span class="wysiwyg-font-size-large"><br />Proxy Server&nbsp;</span></strong></p>
+<p>We support https/SSL proxy server via port 443.</p>
+<p>Zoom automatically detects your proxy settings. In some instances, you may be prompted to enter the proxy username/password.</p>
+<p><strong>Note</strong>: We recommend whitelisting&nbsp;<strong>zoom.us</strong>&nbsp;and&nbsp;<strong>*.zoom.us</strong>&nbsp;from&nbsp;proxy or SSL inspection.&nbsp;</p>
+<p><strong>Note:</strong> IP ranges to be whitelisted can also be found at the following:</p>
+<ul>
+<li><a href="https://www.demisto.com.us/docs/ipranges/Zoom.txt" target="_blank" rel="noopener">Zoom</a></li>
+<li><a href="https://www.demisto.com.us/docs/ipranges/ZoomMeetings.txt" target="_blank" rel="noopener">Zoom Meetings</a></li>
+<li><a href="https://www.demisto.com.us/docs/ipranges/ZoomCRC.txt" target="_blank" rel="noopener">Zoom Cloud Room Connector</a></li>
+<li><a href="https://www.demisto.com.us/docs/ipranges/ZoomPhone.txt" target="_blank" rel="noopener">Zoom Phone</a></li>
+</ul>
+<p><strong>For Meeting Connector&nbsp;and Others</strong></p>
+<ul>
+<li><a href="/hc/en-us/articles/202342006" target="_blank" rel="noopener noreferrer">Firewall settings&nbsp;for Meeting Connector</a></li>
+<li><a href="/hc/en-us/articles/201458316" target="_blank" rel="noopener noreferrer">Firewall settings&nbsp;for Cloud Room Connector</a></li>
+<li><a href="/hc/en-us/articles/203182415" target="_blank" rel="noopener noreferrer">Firewall settings&nbsp;for Virtual Room Connector</a></li>
+</ul>
+<p>Please submit a ticket if you have further questions.&nbsp;</p>
+<p>&nbsp;</p>
+      </div>
+
+      <div class="article-attachments">
+        <ul class="attachments">
+          
+        </ul>
+      </div>
+
+      <footer class="article-footer clearfix">
+        
+          <div class="article-vote">
+            <span class="article-vote-question">Was this article helpful?</span>
+            <div class="article-vote-controls">
+              <a class="article-vote-up" data-auth-action="signin" aria-selected="false" role="button" rel="nofollow" title="Yes" href="/hc/en-us/signin?return_to=https%3A%2F%2Fsupport.zoom.us%2Fhc%2Fen-us%2Farticles%2F201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom"></a>
+              <a class="article-vote-down" data-auth-action="signin" aria-selected="false" role="button" rel="nofollow" title="No" href="/hc/en-us/signin?return_to=https%3A%2F%2Fsupport.zoom.us%2Fhc%2Fen-us%2Farticles%2F201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom"></a>
+            </div>
+            
+          </div>
+        
+      </footer>
+    </div>
+  </article>
+    
+</div>
+</div>
+  </section>
+  </div>
+  </main>
+
+  <div id="footer_container" role="contentinfo">
+	<div class="container home">
+			<div id="footer-new">
+				<div class="footer-body">
+					<div class="ft-nav">
+						<div class="ft-about">
+            
+							<div class="h4 footerH4" role="heading" aria-level="3"><a href="https://www.demisto.com/about">About</a></div>
+							<ul>
+								<li><a href="https://www.demisto.com.us/">Zoom Blog</a></li>
+								<li><a href="https://www.demisto.com/customer/all">Customers</a></li>
+								<li><a href="https://www.demisto.com/team">Our Team</a></li>
+								<li><a href="https://www.demisto.com/zoomisbetter">Why Zoom</a></li>
+								<li><a href="https://www.demisto.com/feature">Features</a></li>
+								<li><a href="https://www.demisto.com/careers">Careers</a></li>
+								<li><a href="https://www.demisto.com/integrations">Integrations</a></li>
+								<li><a href="https://www.demisto.com/partners">Partners</a></li>
+								<li><a href="https://www.demisto.com/resources">Resources</a></li>
+								<li><a href="https://www.demisto.com/press">Press</a></li>
+							</ul>
+						</div>
+						<div class="ft-download" style="">
+							<div class="h4 footerH4" role="heading" aria-level="3"><a href="https://www.demisto.com/download">Download</a></div>
+							<ul>
+								<li><a href="https://www.demisto.com/download#client_4meeting">Meetings Client</a></li>
+									<li><a href="https://www.demisto.com/download#room_client">Zoom Rooms Client</a></li>
+									<li><a href="https://www.demisto.com/download#room_controller">Zoom Rooms Controller</a></li>
+									<li><a href="https://www.demisto.com/download#chrome_ext">Browser Extension</a></li>
+									<li><a href="https://www.demisto.com/download#outlook_plugin">Outlook Plug-in</a></li>
+									<li><a href="https://www.demisto.com/download#client_iphone">iPhone/iPad App</a></li>
+									<li><a href="https://www.demisto.com/download#mobile_app">Android App</a></li>
+							</ul>
+						</div>
+						<div class="ft-sales">
+							<div class="h4 footerH4" role="heading" aria-level="3"><a href="https://www.demisto.com/contactsales">Sales</a></div>
+							<ul>
+								<li><a href="tel:8.8.8.86" class="support-phone">8.8.8.86</a></li>
+								<li><a href="https://www.demisto.com/contactsales">Contact Sales</a></li>
+								<li><a href="https://www.demisto.com/pricing">Plans &amp; Pricing</a></li>
+								<li><a href="https://www.demisto.com/livedemo">Request a Demo</a></li>
+								<li><a href="https://www.demisto.com/events">Webinars and Events</a></li>
+							</ul>
+						</div>
+						<div class="ft-support">
+							<div class="h4 footerH4" role="heading" aria-level="3"><a href="https://www.demisto.com.us" target="_blank">Support</a></div>
+							<ul>
+                                <li><a href="https://www.demisto.com/test">Test Zoom</a></li>
+								<li><a href="https://www.demisto.com/account">Account</a></li>
+								<li><a href="https://www.demisto.com.us" target="_blank">Support Center</a></li>
+								<li><a href="https://www.demisto.com/livetraining">Live Training</a></li>
+								<li><a href="https://www.demisto.com/feed">Feedback</a></li>
+								<li><a href="https://www.demisto.com/contact">Contact Us</a></li>
+								<li><a href="https://www.demisto.com/accessibility">Accessibility</a></li>
+                                                                <li><a href="https://www.demisto.com/docs/en-us/privacy-and-security.html">Privacy and Security</a></li>
+                <li>
+                  <a href="https://www.demisto.com.us" target="_blank">
+                    <span class="color-dot"></span>
+                    <span class="color-description"></span>
+                  </a></li>
+							</ul>
+						</div>
+						<div class="cm-language">
+							<div class="h4 footerH4" role="heading" aria-level="3"><span style="color:#eaeaea;">Language</span></div>
+							<ul class="clearfix">
+								<li>
+									<div class="dropdown-language dropdown" role="presentation">
+										<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" aria-haspopup="true">
+											<span>English</span>
+										</a>
+										<ul class="dropdown-menu pull-right">
+													<li class="active"><a href="#" id="english" data-locale="en-US">English</a></li>
+													<li class=""><a href="#" id="spanish" data-locale="es-ES">Español</a></li>
+													<li class=""><a href="#" id="german" data-locale="de-DE">Deutsch</a></li>
+													<li class=""><a href="#" id="simplified_chinese" data-locale="zh-CN">简体中文</a></li>
+													<li class=""><a href="#" id="traditional_chinese" data-locale="zh-TW">繁体中文</a></li>
+													<li class=""><a href="#" id="french" data-locale="fr-FR">Français</a></li>
+													<li class=""><a href="#" id="portuguese" data-locale="pt-BR">Portuguese</a></li>
+													<li class=""><a href="#" id="japanese" data-locale="jp-JP">日本語</a></li>
+													<li class=""><a href="#" id="russian" data-locale="ru-RU">Русский</a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</div>
+					
+				</div>
+</div>
+<div class="footer-copyright">
+                        <div class="info-icons">
+                            <a href="https://www.demisto.com.us/" class="icon" target="_blank"><img src="https://www.demisto.com.net/static/90981/image/new/home/IconBlog.png" alt="Blog"></a>
+                            <a href="https://www.demisto.com.com/company/2532259" class="icon" target="_blank"><img src="https://www.demisto.com.net/static/90981/image/new/home/IconLinkedIn.png" alt="LinkedIn"></a>
+                            <a href="https://www.demisto.com.com/zoom_us" class="icon" target="_blank"><img src="https://www.demisto.com.net/static/90981/image/new/home/IconTwitter.png" alt="Twitter"></a>
+                            <a href="https://www.demisto.com.com/zoommeetings" class="icon" target="_blank"><img src="https://www.demisto.com.net/static/90981/image/new/home/IconYoutube.png" alt="Youtube"></a>
+                            <a href="https://www.demisto.com.com/zoomvideocommunications" class="icon" target="_blank"><img src="https://www.demisto.com.net/static/90981/image/new/home/IconFacebook.png" alt="Facebook"></a>
+                        </div>
+                        <div class="info">Copyright ©2020 Zoom Video Communications, Inc. All rights reserved. <a href="https://www.demisto.com/legal">Legal Policies</a> <a href="https://www.demisto.com/privacy">About Ads</a><a id="teconsent" style="display: none;"></a></div>
+                    </div>
+<script>
+(function(d,b,a,s,e){ var t = b.createElement(a),
+    fs = b.getElementsByTagName(a)[0]; t.async=1; t.id=e; t.src=s;
+    fs.parentNode.insertBefore(t, fs); })
+(window,document,'script','https://www.demisto.com.com/yctzT6hf.min.js','demandbase_js_lib');
+</script>
+
+    <div class="powered-by-zendesk">
+  <svg xmlns="https://www.demisto.com.org/2000/svg" width="26" height="26" focusable="false" viewBox="0 0 26 26">
+    <path d="M12 8.2v14.5H0zM12 3c0 3.3-2.7 6-6 6S0 6.3 0 3h12zm2 19.7c0-3.3 2.7-6 6-6s6 2.7 6 6H14zm0-5.2V3h12z"/>
+  </svg>
+
+  <a href="https://www.demisto.com.com/help-center/?utm_source=helpcenter&utm_medium=poweredbyzendesk&utm_campaign=text&utm_content=Zoom%20Video%20Communications" target="_blank" rel="nofollow">Powered by Zendesk</a>
+</div>
+
+
+  <!-- / -->
+
+  
+  <script src="//static.zdassets.com/hc/assets/en-us.0a2e4cdfe7c1dd312b4a.js"></script>
+  <script src="https://www.demisto.com.com/auth/v2/host.js" data-brand-id="1932776" data-return-to="https://www.demisto.com.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom" data-theme="hc" data-locale="en-us" data-auth-origin="1932776,true,true"></script>
+
+  <script type="text/javascript">
+  /*
+
+    Greetings sourcecode lurker!
+
+    This is for internal Zendesk and legacy usage,
+    we don't support or guarantee any of these values
+    so please don't build stuff on top of them.
+
+  */
+
+  HelpCenter = {};
+  HelpCenter.account = {"subdomain":"zoomus","environment":"production","name":"Zoom Video Communications"};
+  HelpCenter.user = {"identifier":"da39a3ee5e6b4b0d3255bfef95601890afd80709","email":null,"name":null,"role":"anonymous","avatar_url":"https://www.demisto.com.com/hc/assets/default_avatar.png","is_admin":false,"organizations":[],"groups":[]};
+  HelpCenter.internal = {"asset_url":"//static.zdassets.com/hc/assets/","web_widget_asset_composer_url":"https://www.demisto.com.com/ekr/snippet.js","current_session":{"locale":"en-us","csrf_token":"hc:hcobject:server:DOY0ZnqknJdsflh40lF3XjL5cDtvIrF176PJU+TND/E6Rwzpy/g+lou7K0YrVkvMwTYtePw8uS7jZRc9A3OdCA==","shared_csrf_token":null},"settings":{},"usage_tracking":{"event":"article_viewed","data":"BAh7CDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoPYXJ0aWNsZV9pZGkE+4wADDoKX21ldGF7CzoPYWNjb3VudF9pZGkDFCoCOhNoZWxwX2NlbnRlcl9pZGkENkPsCzoNYnJhbmRfaWRpA+h9HToMdXNlcl9pZDA6DnVzZXJfcm9sZUkiDmFub255bW91cwY7BlQ7AEkiCmVuLXVzBjsGVA==--975d970000ff5f8a6d9b4dc99e1641f1bea9cd3e","url":"https://www.demisto.com.us/hc/tracking/events?locale=en-us"},"current_record_id":"201362683","current_record_url":"/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom","current_record_title":"Network Firewall or Proxy Server Settings for Zoom","search_results_count":null,"current_text_direction":"ltr","current_brand_url":"https://www.demisto.com.com","current_host_mapping":"support.zoom.us","current_path":"/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom","authentication_domain":"https://www.demisto.com.com","show_autocomplete_breadcrumbs":true,"rollbar_config":{"enabled":true,"endpoint":"https://rollbar-us.zendesk.com/api/1/item/","accessToken":"731a5a953e9a4b7ab6cac9623f50c732","captureUncaught":true,"captureUnhandledRejections":true,"payload":{"environment":"production","client":{"javascript":{"source_map_enabled":true,"code_version":"1395b8a8e6ac1b50e81a9e437d93932d1c2b4be4","guess_uncaught_frames":true}}}},"user_info_changing_enabled":false,"has_user_profiles_enabled":false,"user_aliases_enabled":false,"has_anonymous_kb_voting":false,"has_multi_language_help_center":true,"mobile_device":false,"mobile_site_enabled":true,"show_at_mentions":false,"embeddables_config":{"embeddables_web_widget":true,"embeddables_connect_ipms":false},"base_domain":"zendesk.com","answer_bot_subdomain":"static","plans_url":"https://www.demisto.com.us/hc/admin/plan?locale=en-us","manage_content_url":"https://www.demisto.com.us/hc/en-us","arrange_content_url":"https://www.demisto.com.us/hc/admin/arrange_contents?locale=en-us","general_settings_url":"https://www.demisto.com.us/hc/admin/general_settings?locale=en-us","user_segments_url":"https://www.demisto.com.com/knowledge/user_segments?brand_id=1932776","has_community_enabled":false,"has_community_badges":null,"has_user_segments":true,"has_answer_bot_web_form_enabled":true,"billing_url":"/access/return_to?return_to=https://www.demisto.com.com/admin/billing/subscription","has_answer_bot":true,"has_block_answer_bot_embeddable":false,"answer_bot_management_url":"/access/return_to?return_to=https://www.demisto.com.com/agent/admin/answer_bot","is_account_owner":false,"theming_cookie_key":"hc-da39a3ee5e6b4b0d3255bfef95601890afd807091-preview","is_preview":false,"has_guide_user_segments_search":true,"has_alternate_templates":true,"arrange_articles_url":"https://www.demisto.com.com/knowledge/arrange?brand_id=1932776","article_verification_url":"https://www.demisto.com.com/knowledge/verification?brand_id=1932776","has_article_verification":true,"guide_language_settings_url":"https://www.demisto.com.us/hc/admin/language_settings?locale=en-us","docs_importer_url":"https://www.demisto.com.com/knowledge/import_articles?brand_id=1932776","community_badges_url":"https://www.demisto.com.com/knowledge/community_badges?brand_id=1932776","community_settings_url":"https://www.demisto.com.com/knowledge/community_settings?brand_id=1932776","gather_plan_state":"subscribed","search_settings_url":"https://www.demisto.com.com/knowledge/search_settings?brand_id=1932776","has_multibrand_search_in_plan":true,"theming_api_version":1,"has_merged_stats_endpoints":false,"has_pci_credit_card_custom_field":true,"current_brand_id":1932776,"help_center_restricted":false,"current_brand_active":true,"is_assuming_someone_else":false,"flash_messages":[]};
+</script>
+
+  <script src="//static.zdassets.com/hc/assets/moment-f6f8513da6ab17eadada59a1a4edb536.js"></script>
+  <script src="//static.zdassets.com/hc/assets/hc_enduser-c44efe94362e49afd3230b6c85c01ed5.js"></script>
+  
+</body>
+</html>
