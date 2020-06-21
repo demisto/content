@@ -2852,8 +2852,12 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Zoom Feed",
+            "playbookID": "FeedZoom_Test",
+            "fromversion": "5.5.0"
         }
-
     ],
     "skipped_tests": {
         "CuckooTest": "Issue 25601",
