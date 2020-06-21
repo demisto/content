@@ -69,7 +69,7 @@ jobs:
             echo $CONTRIB_BRANCH
             if [ -z $CONTRIB_BRANCH ]
             then
-              echo "Skipping, Should not run on contributor's branch."
+              echo "Skipping, contributor branch not given."
               exit 0
             else
               USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
