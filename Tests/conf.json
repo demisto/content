@@ -3,6 +3,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Group-IB TDS Polygon",
+            "playbookID": "Polygon-Test",
+            "timeout": 1000,
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
         },
