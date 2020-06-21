@@ -552,6 +552,9 @@ jobs:
             if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
                 ./Tests/scripts/instance_test.sh
+                export RETVAL=$?
+                cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
+                exit $RETVAL
               else
                 echo "Skipping instance tests"
                 exit 0
