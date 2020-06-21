@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 from typing import Union, Optional, List, Dict, Tuple
-
+from requests import HTTPError
 import re
 import types
 import urllib3
@@ -18,6 +18,7 @@ TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
 
 DFLT_LIMIT_PER_FETCH = 1000
+DFLT_API_USERNAME = 'cortex:api_token'
 
 # Pattern Regexes - used to extract indicator type and value
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
@@ -75,14 +76,13 @@ class Taxii2FeedClient:
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
-        # TODO: add proper ssl error handling
         self.auth = None
         if username and password:
-            self.auth = requests.auth.HTTPBasicAuth(username, password)
-        # if only username is provided, assume it's an api key
-        # TODO: add proper error in case not
-        elif username:
-            self.auth = TokenAuth(key=username)
+            if username == DFLT_API_USERNAME:
+                self.auth = TokenAuth(key=password)
+            else:
+                self.auth = requests.auth.HTTPBasicAuth(username, password)
+
         self.field_map = field_map if field_map else {}
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
@@ -117,7 +117,9 @@ class Taxii2FeedClient:
         try:
             # try TAXII 2.0
             self.api_root = self.server.api_roots[0]
-        except TAXIIServiceException:
+        except (TAXIIServiceException, HTTPError) as e:
+            if isinstance(e, HTTPError) and '406 Client Error' not in str(e):
+                raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
             self.api_root = self.server.api_roots[0]

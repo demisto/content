@@ -154,11 +154,13 @@ def main():
         else:
             return_results(commands[command](client, **args))  # type: ignore[operator]
 
-    # Log exceptions
     except Exception as e:
-        return_error(
-            f"Failed to execute {command} command. Error: {str(e)}\n\ntraceback: {traceback.format_exc()}"
-        )
+        err_msg = f"Failed to execute {command} command. Error: {str(e)}\n\ntraceback: {traceback.format_exc()}"
+        if isinstance(e, requests.exceptions.SSLError):
+            LOG(err_msg)
+            err_msg = "Encountered an HTTPS certificate error. This error can be ignored by enabling " \
+                      "\"Trust any certificate (not secure)\" in the instance configuration."
+        return_error(err_msg)
 
 
 # from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *  # noqa: E402
