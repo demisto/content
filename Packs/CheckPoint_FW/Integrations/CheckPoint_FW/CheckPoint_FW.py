@@ -22,6 +22,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify=use_ssl, proxy=use_proxy, **kwargs)
         self.headers = {'Content-Type': 'application/json',
                         'X-chkp-sid': sid}
+        self.verify = use_ssl
 
     def logout(self):
         """logout from current session """
@@ -45,7 +46,7 @@ class Client(BaseClient):
                                       headers=self.headers, json_data=body)
 
         response['objects'] = response.pop('objects-dictionary')
-        format_list_objects(response, 'access-rule')
+        return format_list_objects(response, 'access-rule')
 
     def checkpoint_add_rule_command(self, layer: str, position, name: str = None):
         """
@@ -62,8 +63,7 @@ class Client(BaseClient):
         body = {"layer": layer, "position": position, 'name': name}
         response = self._http_request(method='POST', url_suffix='add-access-rule',
                                       headers=self.headers, json_data=body)
-        print(response)
-        format_add_object(response, 'access-rule')
+        return format_add_object(response, 'access-rule')
 
     def checkpoint_update_rule_command(self, identifier: str, layer: str, ignore_warnings: bool,
                                        ignore_errors: bool, enabled: bool, action: str = None,
@@ -99,7 +99,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='set-access-rule',
                                       headers=self.headers, json_data=body)
-        format_update_object(response, 'access-rule')
+        return format_update_object(response, 'access-rule')
 
     def checkpoint_delete_rule_command(self, identifier: str):
         """
@@ -112,7 +112,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='delete-access-rule',
                                       headers=self.headers,
                                       json_data={'name': identifier})
-        format_delete_object(response, 'access-rule')
+        return format_delete_object(response, 'access-rule')
 
     def checkpoint_list_hosts_command(self, limit: int, offset: int):
         """
@@ -127,7 +127,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='show-hosts',
                                       headers=self.headers, resp_type='json',
                                       json_data={'limit': limit, 'offset': offset})
-        format_list_objects(response, 'host')
+        return format_list_objects(response, 'host')
 
     def checkpoint_get_host_command(self, identifier: str):
         """
@@ -139,8 +139,7 @@ class Client(BaseClient):
         body = {'name': identifier}
         response = self._http_request(method='POST', url_suffix='show-host', headers=self.headers,
                                       json_data=body)
-        print(response)
-        format_get_object(response, 'host')
+        return format_get_object(response, 'host')
 
     def checkpoint_add_host_command(self, name: str, ip_address: str):
         """
@@ -153,7 +152,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='add-host', headers=self.headers,
                                       json_data={"name": name, "ip-address": ip_address})
-        format_add_object(response, 'add')
+        return format_add_object(response, 'add')
 
     def checkpoint_update_host_command(self, identifier: str, ignore_warnings: bool,
                                        ignore_errors: bool, ip_address: str = None,
@@ -181,7 +180,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='set-host', headers=self.headers,
                                       json_data=body)
-        format_update_object(response, 'host')
+        return format_update_object(response, 'host')
 
     def checkpoint_delete_host_command(self, identifier: str):
         """
@@ -192,7 +191,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='delete-host', headers=self.headers,
                                       json_data={'name': identifier})
-        format_delete_object(response, 'host')
+        return format_delete_object(response, 'host')
 
     def checkpoint_list_groups_command(self, limit: int, offset: int):
         """
@@ -204,7 +203,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='show-groups', headers=self.headers,
                                       json_data={"limit": limit, "offset": offset})
-        format_list_objects(response, 'group')
+        return format_list_objects(response, 'group')
 
     def checkpoint_get_group_command(self, identifier: str):
         """
@@ -215,7 +214,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='show-group', headers=self.headers,
                                       json_data={'name': identifier})
-        format_get_object(response, 'group')
+        return format_get_object(response, 'group')
 
     def checkpoint_add_group_command(self, name: str):
         """
@@ -227,7 +226,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='add-group', headers=self.headers,
                                       json_data={"name": name})
-        format_add_object(response, 'group')
+        return format_add_object(response, 'group')
 
     def checkpoint_update_group_command(self, identifier: str, ignore_warnings: bool,
                                         ignore_errors: bool,
@@ -251,7 +250,7 @@ class Client(BaseClient):
                 'ignore-errors': ignore_errors}
         response = self._http_request(method='POST', url_suffix='set-group', headers=self.headers,
                                       json_data=body)
-        format_update_object(response, 'group')
+        return format_update_object(response, 'group')
 
     def checkpoint_delete_group_command(self, identifier: str):
         """
@@ -263,7 +262,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='delete-group',
                                       headers=self.headers,
                                       json_data={'name': identifier})
-        format_delete_object(response, 'group')
+        return format_delete_object(response, 'group')
 
     def checkpoint_list_address_ranges_command(self, limit: int, offset: int):
         """
@@ -276,7 +275,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='show-address-ranges',
                                       headers=self.headers,
                                       json_data={"limit": limit, "offset": offset})
-        format_list_objects(response, 'address-range')
+        return format_list_objects(response, 'address-range')
 
     def checkpoint_get_address_range_command(self, identifier: str):
         """
@@ -285,10 +284,9 @@ class Client(BaseClient):
         Args:
             identifier(str): uid or name of the address range object.
         """
-        # TODO: Fix output
         response = self._http_request(method='POST', url_suffix='show-address-range',
                                       headers=self.headers, json_data={'name': identifier})
-        format_get_object(response, 'address-range')
+        return format_get_object(response, 'address-range')
 
     def checkpoint_add_address_range_command(self, name: str, ip_address_first: str,
                                              ip_address_last: str, set_if_exists: bool,
@@ -315,7 +313,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='add-address-range',
                                       headers=self.headers, json_data=body)
-        format_add_object(response, 'address range')
+        return format_add_object(response, 'address range')
 
     def checkpoint_update_address_range_command(self, identifier: str, ignore_warnings: bool,
                                                 ignore_errors: bool, ip_address_first: str = None,
@@ -345,7 +343,7 @@ class Client(BaseClient):
 
         response = self._http_request(method='POST', url_suffix='set-address-range',
                                       headers=self.headers, json_data=body)
-        format_update_object(response, 'address-range')
+        return format_update_object(response, 'address-range')
 
     def checkpoint_delete_address_range_command(self, identifier: str):
         """
@@ -357,7 +355,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='delete-address-range',
                                       headers=self.headers,
                                       json_data={'name': identifier})
-        format_delete_object(response, 'address-range')
+        return format_delete_object(response, 'address-range')
 
     def checkpoint_list_threat_indicators_command(self, limit: int, offset: int):
         """
@@ -371,7 +369,7 @@ class Client(BaseClient):
                                       headers=self.headers,
                                       json_data={"limit": limit, "offset": offset})
         response['objects'] = response.pop('indicators')
-        format_list_objects(response, 'threat-indicator')
+        return format_list_objects(response, 'threat-indicator')
 
     def checkpoint_get_threat_indicator_command(self, identifier):
         """
@@ -385,7 +383,7 @@ class Client(BaseClient):
                                       headers=self.headers,
                                       json_data={'name': identifier})
 
-        format_get_object(response, 'threat-indicator')
+        return format_get_object(response, 'threat-indicator')
 
     def checkpoint_add_threat_indicator_command(self, name: str, observables: list):
         """
@@ -398,7 +396,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='add-threat-indicator',
                                       headers=self.headers,
                                       json_data={"name": name, "observables": observables})
-        format_add_object(response, 'threat-indicator')
+        return format_add_object(response, 'threat-indicator')
 
     def checkpoint_update_threat_indicator_command(self, identifier: str, action: str = None,
                                                    new_name: str = None, comments: str = None):
@@ -420,7 +418,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='set-threat-indicator',
                                       headers=self.headers, json_data=body)
-        format_update_object(response, 'threat-indicator')
+        return format_update_object(response, 'threat-indicator')
 
     def checkpoint_delete_threat_indicator_command(self, identifier: str):
         """
@@ -432,7 +430,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='delete-threat-indicator',
                                       headers=self.headers,
                                       json_data={'name': identifier})
-        format_delete_object(response, 'threat-indicator')
+        return format_delete_object(response, 'threat-indicator')
 
     def checkpoint_list_application_sites_command(self, limit: int, offset: int):
         """
@@ -447,7 +445,7 @@ class Client(BaseClient):
                 'offset': offset}
         response = self._http_request(method='POST', url_suffix='show-application-sites',
                                       headers=self.headers, json_data=body)
-        format_list_objects(response, 'application-site')
+        return format_list_objects(response, 'application-site')
 
     def checkpoint_add_application_site_command(self, name: str, primary_category: str, identifier):
         """
@@ -466,7 +464,7 @@ class Client(BaseClient):
         body = {"name": name, "primary-category": primary_category, 'url-list': identifier}
         response = self._http_request(method='POST', url_suffix='add-application-site',
                                       headers=self.headers, json_data=body)
-        format_add_object(response, 'application-site')
+        return format_add_object(response, 'application-site')
 
     def checkpoint_update_application_site_command(self, identifier: str,
                                                    urls_defined_as_regular_expression: bool,
@@ -497,7 +495,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='set-application-site',
                                       headers=self.headers, json_data=body)
-        format_update_object(response, 'application-site')
+        return format_update_object(response, 'application-site')
 
     def checkpoint_delete_application_site_command(self, identifier: str):
         """
@@ -508,7 +506,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='delete-application-site',
                                       headers=self.headers, json_data={'name': identifier})
-        format_delete_object(response, 'application-site')
+        return format_delete_object(response, 'application-site')
 
     def checkpoint_publish_command(self):
         """
@@ -538,6 +536,17 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='install-policy',
                                   headers=self.headers, json_data=body)
 
+    def verify_policy_command(self, policy_package: str):
+        """
+        Verifies the policy of the selected package.
+
+        Args:
+            policy_package(str): The name of the Policy Package to be installed.
+        """
+        body = {'policy-package': policy_package, }
+        return self._http_request(method='POST', url_suffix='verify-policy',
+                                  headers=self.headers, json_data=body)
+
 
 def login(base_url: str, username: str, password: str, verify_certificate: bool = False) -> str:
     """
@@ -548,33 +557,34 @@ def login(base_url: str, username: str, password: str, verify_certificate: bool 
                          json={'user': username, 'password': password}).json().get('sid')
 
 
-def test_module(base_url: str, sid: str) -> str:
+def test_module(base_url: str, sid: str, verify_certificate) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     """
     response = requests.post(base_url + 'show-api-versions',
                              headers={'Content-Type': 'application/json', 'X-chkp-sid': sid},
-                             verify=False, json={}).json()
-    return 'ok' if response else f'Connection failed.{response}'
+                             verify=verify_certificate, json={})
+    reason = ''
+    if response.json().get('message') == 'Missing header: [X-chkp-sid]':
+        reason = ' Wrong credentials.'
+    return 'ok' if response else f'Connection failed.{reason}\nFull response:\n{response.json()}'
 
 
-def format_list_objects(result: dict, endpoint: str, testing: bool = False):
+def format_list_objects(result: dict, endpoint: str):
     """
         Formats all objects info from CheckPoint into Demisto's outputs.
 
     Args:
         result (dict): the report from CheckPoint.
         endpoint (str): The endpoint that needs to be formatted.
-        testing(bool): is this function call is for testing purposes.
     Returns:
         str: the markdown to display inside Demisto.
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
     if not result.get('objects'):
-        return_outputs('No data to show.', {}, result)
-        return
+        return 'No data to show.', {}, result
 
     object_list = result.get('objects')
     printable_result = []
@@ -587,29 +597,26 @@ def format_list_objects(result: dict, endpoint: str, testing: bool = False):
 
         printable_result.append(current_object_data)
 
-    outputs = {f'Checkpoint.{endpoint}': printable_result}
+    outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
     readable_output = tableToMarkdown(f'CheckPoint data for listing {endpoint}s:', printable_result,
                                       ['name', 'uid', 'type'], removeNull=True)
-    if testing:
-        return readable_output, outputs, result
-    return_outputs(readable_output, outputs, result)
+    return readable_output, outputs, result
 
 
-def format_get_object(result: dict, endpoint: str, testing: bool = False):
+def format_get_object(result: dict, endpoint: str):
     """
         Formats object info from CheckPoint into Demisto's outputs.
 
     Args:
         result (dict): the report from CheckPoint.
         endpoint (str): The endpoint that needs to be formatted.
-        testing(bool): is this function call is for testing purposes.
     Returns:
         str: the markdown to display inside Demisto.
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
 
-    outputs = {f'checkpoint.{endpoint}': {
+    outputs = {f'checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
@@ -619,25 +626,23 @@ def format_get_object(result: dict, endpoint: str, testing: bool = False):
         'ipv4_address': result.get('ipv4-address'),
         'ipv6_address': result.get('ipv4-address'),
         'read_only': result.get('read-only'),
-        'meta_info:creator': result.get('meta-info').get('creator'),
-        'meta_info:last_modifier': result.get('meta-info').get('last-modifier')
+        'creator': result.get('meta-info').get('creator'),
+        'last_modifier': result.get('meta-info').get('last-modifier')
     }}
     table_data = outputs[f'checkpoint.{endpoint}']
     readable_output = tableToMarkdown(f'CheckPoint Data for Getting {endpoint}:', table_data,
                                       removeNull=True)
-    if testing:
-        return readable_output, outputs, result
-    return_outputs(readable_output, outputs, result)
+
+    return readable_output, outputs, result
 
 
-def format_add_object(result: dict, endpoint: str, testing: bool = False):
+def format_add_object(result: dict, endpoint: str):
     """
         Formats adding object result from CheckPoint into Demisto's outputs.
 
     Args:
         result (dict): the report from CheckPoint.
         endpoint (str): The endpoint that needs to be formatted.
-        testing(bool): is this function call is for testing purposes.
     Returns:
         str: the markdown to display inside Demisto.
         dict: the context to return into Demisto.
@@ -647,11 +652,11 @@ def format_add_object(result: dict, endpoint: str, testing: bool = False):
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
-        'domain_name': result.get('domain').get('name'),
-        'domain_uid': result.get('domain').get('uid'),
-        'domain_type': result.get('domain').get('type'),
-        'meta_info:creator': result.get('meta-info').get('creator'),
-        'meta_info:last_modifier': result.get('meta-info').get('last-modifier')
+        'domain-name': result.get('domain').get('name'),
+        'domain-uid': result.get('domain').get('uid'),
+        'domain-type': result.get('domain').get('type'),
+        'creator': result.get('meta-info').get('creator'),
+        'last-modifier': result.get('meta-info').get('last-modifier')
     }
     unique_outputs = {}
     if endpoint == 'application-site':
@@ -685,31 +690,28 @@ def format_add_object(result: dict, endpoint: str, testing: bool = False):
             'read-only': result.get('read-only')
         }
     common_output.update(unique_outputs)
-    outputs = {f'Checkpoint.{endpoint}': common_output}
+    outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': common_output}
 
     table_data = outputs[f'Checkpoint.{endpoint}']
     readable_output = tableToMarkdown(f'CheckPoint data for adding {endpoint}:', table_data,
                                       removeNull=True)
-    if testing:
-        return readable_output, outputs, result
-    return_outputs(readable_output, outputs, result)
+    return readable_output, outputs, result
 
 
-def format_update_object(result: dict, endpoint: str, testing: bool = False):
+def format_update_object(result: dict, endpoint: str):
     """
         Formats updated object result from CheckPoint into Demisto's outputs.
 
     Args:
         result (dict): the report from CheckPoint.
         endpoint (str): The endpoint that needs to be formatted.
-        testing(bool): is this function call is for testing purposes.
 
     Returns:
         str: the markdown to display inside Demisto.
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
-    outputs = {f'Checkpoint.{endpoint}': {
+    outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
@@ -723,48 +725,44 @@ def format_update_object(result: dict, endpoint: str, testing: bool = False):
     table_data = outputs[f'Checkpoint.{endpoint}']
     readable_output = tableToMarkdown(f'CheckPoint Data for updating {endpoint}:', table_data,
                                       removeNull=True)
-    if testing:
-        return readable_output, outputs, result
-    return_outputs(readable_output, outputs, result)
+    return readable_output, outputs, result
 
 
-def format_delete_object(result: dict, endpoint: str, testing: bool = False):
+def format_delete_object(result: dict, endpoint: str):
     """
         Formats deleted object result from CheckPoint into Demisto's outputs.
 
     Args:
         result (dict): the report from CheckPoint.
         endpoint (str): The endpoint that needs to be formatted.
-        testing(bool): is this function call is for testing purposes.
     Returns:
         str: the markdown to display inside Demisto.
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
-    outputs = {f'Checkpoint.{endpoint}': {
+    outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
         'message': result.get('message'),
     }}
     table_data = outputs[f'Checkpoint.{endpoint}']
     readable_output = tableToMarkdown(f'CheckPoint Data for deleting {endpoint}:', table_data,
                                       removeNull=True)
-    if testing:
-        return readable_output, outputs, result
-    return_outputs(readable_output, outputs, result)
+    return readable_output, outputs, result
 
 
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    username = demisto.params().get('username').get('identifier')
-    password = demisto.params().get('username').get('password')
+    params = demisto.params()
+    username = params.get('username', {}).get('identifier')
+    password = params.get('username', {}).get('password')
 
-    server = demisto.params()['server']
-    port = demisto.params()['port']
+    server = params['server']
+    port = params['port']
     base_url = f'https://{server}:{port}/web_api/'
 
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     sid = login(base_url, username, password, verify_certificate)
     demisto.info(f'Command being called is {demisto.command()}')
@@ -810,23 +808,33 @@ def main():
         'checkpoint-application-site-add': client.checkpoint_add_application_site_command,
         'checkpoint-application-site-update': client.checkpoint_update_application_site_command,
         'checkpoint-application-site-delete': client.checkpoint_delete_application_site_command,
-
-        'checkpoint-publish': client.checkpoint_publish_command,
-        'checkpoint-install-policy': client.install_policy_command
     }
 
+    is_test_module_command = False
     try:
         if demisto.command() == 'test-module':
-            demisto.results(test_module(base_url, sid))
+            is_test_module_command = True
+            demisto.results(test_module(base_url, sid, verify_certificate))
+
+        elif command == 'checkpoint-publish':
+            return_outputs(client.checkpoint_publish_command())
+
+        elif command == 'checkpoint-install-policy':
+            return_outputs(client.install_policy_command(**demisto.args()))
+
+        elif command == 'checkpoint-policy-verify':
+            return_outputs(client.verify_policy_command(**demisto.args()))
 
         elif command in commands:
-            demisto.results(commands[demisto.command()](**demisto.args()))
-
-        demisto.debug("logging out...", client.logout())
+            readable_output, outputs, result = (commands[demisto.command()](**demisto.args()))
+            return_outputs(readable_output, outputs, result)
 
     except Exception as e:
-        demisto.debug("logging out...", client.logout())
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+    finally:
+        if not is_test_module_command:
+            demisto.debug("logging out...", client.logout())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
