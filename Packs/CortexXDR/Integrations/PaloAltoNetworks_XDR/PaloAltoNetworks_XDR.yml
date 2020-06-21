@@ -1400,7 +1400,7 @@ script:
   - arguments:
     - default: false
       description: String that represents a list of hashed files you want to blacklist.
-        Hash must be a valid SH256.
+        Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -1412,14 +1412,14 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Blacklist requested files which have not already been blacklisted
+    description: Blacklists requested files which have not already been blacklisted
       or whitelisted.
     execution: false
     name: xdr-blacklist-files
   - arguments:
     - default: false
       description: String that represents a list of hashed files you want to whitelist.
-        Hash must be a valid SH256.
+        Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -1431,7 +1431,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Whitelist requested files which have not already been blacklisted
+    description: Whitelists requested files which have not already been blacklisted
       or whitelisted.
     execution: false
     name: xdr-whitelist-files
@@ -1449,13 +1449,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: String that represents the file’s hash. Hash must be a valid SHA256.
+      description: String that represents the file’s hash. Must be a valid SHA256 hash.
       isArray: false
       name: file_hash
       required: true
       secret: false
     deprecated: false
-    description: Quarantine file on selected endpoints. You can select up to 1000
+    description: Quarantines a file on selected endpoints. You can select up to 1000
       endpoints.
     execution: false
     name: xdr-quarantine-files
@@ -1467,7 +1467,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: String that represents the file hash. Must be a valid SHA256.
+      description: String that represents the file hash. Must be a valid SHA256 hash.
       isArray: false
       name: file_hash
       required: true
@@ -1479,12 +1479,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve the quarantine status for a selected file.
+    description: Retrieves the quarantine status for a selected file.
     execution: false
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
-      description: String that represents the file in hash. Hash must be a valid SHA256.
+      description: String that represents the file in hash. Must be a valid SHA256 hash.
       isArray: false
       name: file_hash
       required: true
@@ -1498,12 +1498,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Restore a quarantined file on a requested endpoints.
+    description: Restores a quarantined file on requested endpoints.
     execution: false
     name: xdr-restore-file
   - arguments:
     - default: false
-      description: List of endpoint IDs
+      description: List of endpoint IDs.
       isArray: false
       name: endpoint_id_list
       required: false
@@ -1545,7 +1545,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of endpoint group.
+      description: Name of the endpoint group.
       isArray: false
       name: group_name
       required: false
@@ -1570,7 +1570,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If an endpoint has been isolated.
+      description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
       isArray: false
       name: isolate
       predefined:
@@ -1579,13 +1579,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of host.
+      description: Name of the host.
       isArray: false
       name: hostname
       required: false
       secret: false
     deprecated: false
-    description: Run a scan on selected endpoints. in order to scan all endpoints,
+    description: Runs a scan on selected endpoints. To scan all endpoints,
       run this command with no filters.
     execution: true
     name: xdr-endpoint-scan
