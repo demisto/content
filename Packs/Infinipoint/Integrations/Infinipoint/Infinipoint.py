@@ -1,6 +1,7 @@
 
 import jwt
 import math
+import struct
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -22,17 +23,16 @@ PRIVATE_KEY = demisto.params().get('private_key')
 '''HELPER FUNCTIONS'''
 
 
-def http_request(method, token, route, page_index=0, content=None):
+def http_request(method, token, route, page_index=0, content=None, use_pagination=True):
     """
     """
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
     }
-    body = ""
-    if content:
+    if content and use_pagination:
         content['page'] = page_index
-        body = json.dumps(content)
+    body = json.dumps(content)
     r = requests.request(
         method,
         BASE_URL + route,
@@ -58,17 +58,30 @@ def add_to_results(current_results_array, request_result):
         sys.exit(1)
 
 
-def call_api(method, route, client, query):
+def call_api(method, route, client, rules, use_pagination=True):
     """
     loop pagination in case the total items count is bigger that PAGE_SIZE
     """
-    results: List[Dict[str, Any]] = []
-    res = http_request(method, client, route, content=query)
-    results = add_to_results(results, res)
-    for i in range(1, math.ceil(res['itemsTotal'] / PAGE_SIZE)):
-        res = http_request(method, client, route, i, query)
+    # results = []
+    if not use_pagination:
+        res = http_request(method, client, route, content=rules, use_pagination=False)
+        return res
+    else:
+        query = {
+            'pageSize': PAGE_SIZE,
+            'page': 0,
+            'ruleSet': {
+                'condition': 'AND',
+                'rules': rules
+            }
+        }
+        results: List[Dict[str, Any]] = []
+        res = http_request(method, client, route, content=query)
         results = add_to_results(results, res)
-    return results
+        for i in range(1, math.ceil(res['itemsTotal'] / PAGE_SIZE)):
+            res = http_request(method, client, route, i, query)
+            results = add_to_results(results, res)
+        return results
 
 
 def create_jwt_token(secret, access_key):
@@ -86,6 +99,14 @@ def create_jwt_token(secret, access_key):
     except Exception as e:
         print(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
         sys.exit(1)
+
+
+def convert_string_to_ip(ip):
+    """
+    """
+    convert_ip = struct.unpack("!I", socket.inet_aton(ip))[0]
+    convert_ip -= (1 << 32)
+    return convert_ip
 
 
 '''MAIN FUNCTIONS'''
@@ -164,16 +185,7 @@ def get_assets_programs_command(token, args):
         }
         rules.append(version_node)
 
-    query = {
-        "pageSize": PAGE_SIZE,
-        "page": 0,
-        "ruleSet": {
-            "condition": "AND",
-            "rules": rules
-        }
-    }
-
-    res = call_api(method, route, token, query)
+    res = call_api(method, route, token, rules)
     LOG('results %s' % (res,))
 
     if res:
@@ -182,7 +194,126 @@ def get_assets_programs_command(token, args):
             outputs_key_field='itemsTotal',
             outputs=res)
         return command_results
-        #   demisto.results(res)
+
+
+def get_assets_hardware_command(token, args):
+    host = args.get('host')
+    os_type = args.get('os_type')
+    method = "POST"
+    route = "/assets/hardware"
+    rules = [{
+        "field": "$type",
+        "operator": "=",
+        "value": "csv"
+    }]
+
+    if host:
+        host_node = {
+            "field": "$host",
+            "operator": "contains",
+            "value": f"{host}"
+        }
+        rules.append(host_node)
+
+    if os_type:
+        os_type_node = {
+            "field": "os_type",
+            "operator": "contains",
+            "value": f"{os_type}"
+        }
+        rules.append(os_type_node)
+
+    res = call_api(method, route, token, rules)
+    LOG('results %s' % (res,))
+    if res:
+        command_results = CommandResults(
+            outputs_prefix='Assets.Programs',
+            outputs_key_field='itemsTotal',
+            outputs=res)
+        return command_results
+
+
+def get_assets_cloud_command(token, args):
+    host = args.get('host')
+    os_type = args.get('os_type')
+    source = args.get('source')
+    method = "POST"
+    route = "/assets/cloud"
+    rules = [{
+        "field": "$type",
+        "operator": "=",
+        "value": "csv"
+    }]
+
+    if host:
+        host_node = {
+            "field": "$host",
+            "operator": "contains",
+            "value": f"{host}"
+        }
+        rules.append(host_node)
+
+    if os_type:
+        os_type_node = {
+            "field": "os_type",
+            "operator": "contains",
+            "value": f"{os_type}"
+        }
+        rules.append(os_type_node)
+
+    if source:
+        source_node = {
+            "field": "source",
+            "operator": "contains",
+            "value": f"{source}"
+        }
+        rules.append(source_node)
+
+    res = call_api(method, route, token, rules)
+    LOG('results %s' % (res,))
+    if res:
+        command_results = CommandResults(
+            outputs_prefix='Assets.Cloud',
+            outputs_key_field='$host',
+            outputs=res)
+        return command_results
+
+
+def get_assets_user_command(token, args):
+    host = args.get('host')
+    username = args.get('username')
+    method = "POST"
+    route = "/assets/users"
+    rules = [{
+        "field": "$type",
+        "operator": "=",
+        "value": "csv"
+    }]
+
+    if host:
+        host_node = {
+            "field": "$host",
+            "operator": "contains",
+            "value": f"{host}"
+        }
+        rules.append(host_node)
+
+    if username:
+        username_node = {
+            "field": "username",
+            "operator": "contains",
+            "value": f"{username}"
+        }
+        rules.append(username_node)
+
+    res = call_api(method, route, token, rules)
+    LOG('results %s' % (res,))
+    if res:
+        command_results = CommandResults(
+            outputs_prefix='Assets.Users',
+            outputs_key_field='$host',
+            outputs=res)
+        return command_results
 
 
 def get_devices_command(token, args):
@@ -235,16 +366,7 @@ def get_devices_command(token, args):
         }
         rules.append(agent_version_node)
 
-    query = {
-        'pageSize': PAGE_SIZE,
-        'page': 0,
-        'ruleSet': {
-            'condition': 'AND',
-            'rules': rules
-        }
-    }
-
-    res = call_api(method, route, token, query)
+    res = call_api(method, route, token, rules)
     LOG('res %s' % (res,))
 
     if res:
@@ -279,16 +401,7 @@ def get_vulnerable_devices_command(token, args):
         }
         rules.append(device_risk_node)
 
-    query = {
-        'pageSize': PAGE_SIZE,
-        'page': 0,
-        'ruleSet': {
-            'condition': 'AND',
-            'rules': rules
-        }
-    }
-
-    res = call_api(method, route, token, query)
+    res = call_api(method, route, token, rules)
     LOG('res %s' % (res,))
     if res:
         command_results = CommandResults(
@@ -308,27 +421,94 @@ def get_tag_command(token, args):
     if name:
         name_node = {
             'field': 'name',
-            'operator': '>=',
+            'operator': '=',
             'value': f'{name}'
         }
         rules.append(name_node)
 
-    query = {
-        'pageSize': PAGE_SIZE,
-        'page': 0,
-        'ruleSet': {
-            'condition': 'AND',
-            'rules': rules
-        }
-    }
-
-    res = call_api(method, route, token, query)
+    res = call_api(method, route, token, rules)
     LOG('res %s' % (res,))
     if res:
-        demisto.results(res)
-        print("=====")
+        # demisto.results(res)
         command_results = CommandResults(
-            outputs_prefix='Vulnerability.Devices',
+            outputs_prefix='Tags',
+            outputs_key_field='tagId',
+            outputs=res)
+        return command_results
+
+
+def get_networks_command(token, args):
+    alias = args.get('alias')
+    gateway_ip = args.get('gateway_ip')
+    cidr = args.get('cidr')
+    method = "POST"
+    route = "/networks"
+    rules = []
+
+    if alias:
+        alias_node = {
+            'field': 'alias',
+            'operator': '=',
+            'value': f'{alias}'
+        }
+        rules.append(alias_node)
+
+    if gateway_ip:
+        gateway_ip_node = {
+            'field': 'gatewayIp',
+            'operator': '=',
+            'value': f'{convert_string_to_ip(gateway_ip)}'
+        }
+        rules.append(gateway_ip_node)
+
+    if cidr:
+        cidr_node = {
+            'field': 'cidr',
+            'operator': '=',
+            'value': f'{cidr}'
+        }
+        rules.append(cidr_node)
+
+    res = call_api(method, route, token, rules)
+    LOG('res %s' % (res,))
+    if res:
+        command_results = CommandResults(
+            outputs_prefix='Networks.Info',
+            outputs_key_field='alias',
+            outputs=res)
+        return command_results
+
+
+def run_script_command(token, args):
+    script_id = args.get('script_id')
+    method = "POST"
+    route = "/scripts/execute"
+
+    script_id_node = {
+        "scriptId": f"{script_id}"
+    }
+
+    res = call_api(method, route, token, script_id_node, False)
+    LOG('res %s' % (res,))
+    if res:
+        command_results = CommandResults(
+            outputs_prefix='Scripts.Execute',
+            outputs_key_field='actionId',
+            outputs=res)
+        return command_results
+
+
+def get_action_command(token, args):
+    action_id = args.get('action_id')
+    method = "POST"
+    route = f"/responses/{action_id}"
+    # rules = []
+
+    res = call_api(method, route, token, [])
+    LOG('res %s' % (res,))
+    if res:
+        command_results = CommandResults(
+            outputs_prefix='Responses',
             outputs_key_field='$host',
             outputs=res)
         return command_results
@@ -368,6 +548,15 @@ def main():
         elif demisto.command() == 'infinipoint-get-assets-programs':
             return_results(get_assets_programs_command(token, demisto.args()))
 
+        elif demisto.command() == 'infinipoint-get-assets-hardware':
+            return_results(get_assets_hardware_command(token, demisto.args()))
+
+        elif demisto.command() == 'infinipoint-get-assets-cloud':
+            return_results(get_assets_cloud_command(token, demisto.args()))
+
+        elif demisto.command() == 'infinipoint-get-assets-user':
+            return_results(get_assets_user_command(token, demisto.args()))
+
         elif demisto.command() == 'infinipoint-get-device':
             return_results(get_devices_command(token, demisto.args()))
 
@@ -376,6 +565,15 @@ def main():
 
         elif demisto.command() == "infinipoint-get-tag":
             return_results(get_tag_command(token, demisto.args()))
+
+        elif demisto.command() == "infinipoint-get-networks":
+            return_results(get_networks_command(token, demisto.args()))
+
+        elif demisto.command() == "infinipoint-run-script":
+            return_results(run_script_command(token, demisto.args()))
+
+        elif demisto.command() == "infinipoint-get-action":
+            return_results(get_action_command(token, demisto.args()))
 
     except Exception as e:
         err_msg = f'Error - Infinipoint Integration [{e}]'

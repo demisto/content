@@ -4,7 +4,7 @@ commonfields:
 name: Infinipoint
 display: Infinipoint
 category: Network Security
-image: data:image/png;base64,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
+image: data:image/png;base64,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fZ1YWvulcBp7+94AJR3cKsxHTvfVmWCGd1EbeL3gG/0V0cc+RGBAIAAnNxM3/F1ljJGHDjJuL+BwCjk4sTWeoMZAZ9qiSZpTCsGXb9ZdFU9O/TR0JpQFHZzo/H48Clt5C6YkgutWd+dZCCmogt2IwMBEIMaL+SEsw0M4B07ucQ9HV9jBaXvhoGdA790eOos7uW51G1YtD9O6ixy9HRw+AAqdby+iy+wTz1Q9ErWbPOaJABHwRCCZ3+tSX4HDWZvD6ZR2cNo8ODkZKv8hh84iDu73kH+s1lXm6OHgHobOubK9p4w+9iUCRKACBJKIoUfNxkP6YzidF1McTzAHJ6eQzCt2qxOh81ro25qiM6+D2ww5/w46LuRKYxsHtwYR6cVlo8QKLidFEgEikIaAzFfBUXwID+9lOMoWlecazieogzP1J45EnFOPugg674S+dhHl02h3O9pfADom3hMvLlWQDAfXB5tE503QtwB0VEhHWoHpFEkEiEBeBJKh7IjkC555u5RuF49XY2WSHRHSW+BQDk+OUpav7NaUkj2EsqKJObGaVFINESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASJABIgAESACRIAIEAEiQASIABEgAkSACBABIkAEiAARIAJEgAgQASKQB4H/B08emnzJyKP9AAAAAElFTkSuQmCC
 description: Use the Infinipoint integration to retrieve security and policy incompliance
   events, vulnerabilities or incidents. Investigate and respond to events in real-time.
 detaileddescription: |-
@@ -155,41 +155,45 @@ configuration:
     list, the indicator might still be added to the system.
 script:
   script: |-
-    import collections
-    import time
-    import sys
-    import requests
     import jwt
+    import math
+    import struct
+
+
+
+    #
+    from typing import Any, Dict, List
 
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
+    ''' GLOBALS/PARAMS '''
 
+    PAGE_SIZE = 10
     PROXY = demisto.params().get('proxy')
     INSECURE = demisto.params().get('insecure')
     BASE_URL = demisto.params().get('url')
     ACCESS_KEY = demisto.params().get('access_key')
     PRIVATE_KEY = demisto.params().get('private_key')
 
-    # if not demisto.params().get('proxy', False):
-    #     del os.environ['HTTP_PROXY']
-    #     del os.environ['HTTPS_PROXY']
-    #     del os.environ['http_proxy']
-    #     del os.environ['https_proxy']
-
-
     '''HELPER FUNCTIONS'''
 
 
-    def http_request(method, token, route, json=None):
+    def http_request(method, token, route, page_index=0, content=None, use_pagination=True):
+        """
+        """
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}",
         }
+        # body = ""
+        if content and use_pagination:
+            content['page'] = page_index
+        body = json.dumps(content)
         r = requests.request(
             method,
             BASE_URL + route,
-            data=json,
+            data=body,
             headers=headers,
             verify=INSECURE
         )
@@ -198,12 +202,49 @@ script:
         return r.json()
 
 
-    # Allows nested keys to be accesible
-    def makehash():
-        return collections.defaultdict(makehash)
+    def add_to_results(current_results_array, request_result):
+        """
+        function to add the current API call results to the results array
+        input: original results array, request object as json
+        output: merged arrays
+        """
+        try:
+            return current_results_array + request_result['items']
+        except Exception as e:
+            print(f"Failed to add results!\nError message:\n{e}")
+            sys.exit(1)
+
+
+    def call_api(method, route, client, rules, use_pagination=True):
+        """
+        loop pagination in case the total items count is bigger that PAGE_SIZE
+        """
+        if not use_pagination:
+            results = http_request(method, client, route, content=rules, use_pagination=False)
+        else:
+            query = {
+                'pageSize': PAGE_SIZE,
+                'page': 0,
+                'ruleSet': {
+                    'condition': 'AND',
+                    'rules': rules
+                }
+            }
+            results: List[Dict[str, Any]] = []
+            res = http_request(method, client, route, content=query)
+            results = add_to_results(results, res)
+            for i in range(1, math.ceil(res['itemsTotal'] / PAGE_SIZE)):
+                res = http_request(method, client, route, i, query)
+                results = add_to_results(results, res)
+        return results
 
 
     def create_jwt_token(secret, access_key):
+        """
+        function to sign a jwt token with a jwt secret.
+        input: jwt secret, jwt access-key
+        output: a signed token.
+        """
         try:
             jwt_payload = {
                 "iat": int(time.time()),
@@ -215,10 +256,24 @@ script:
             sys.exit(1)
 
 
+    def convert_string_to_ip(ip):
+        """
+        """
+        convert_ip = struct.unpack("!I", socket.inet_aton(ip))[0]
+        convert_ip -= (1 << 32)
+        return convert_ip
+
+
     '''MAIN FUNCTIONS'''
 
 
-    def test_module(method, token, route, json=None):
+    def test_module(token, json=None):
+        """Tests API connectivity and authentication'
+        Returning '200' indicates that the integration works like it is supposed to.
+        Connection to the service is successful.
+        """
+        route = "/health"
+        method = "GET"
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}",
@@ -234,20 +289,27 @@ script:
             return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
 
 
-    def get_cve_command(method, token, route):
+    def get_cve_command(token, args):
+        cve_id = args.get('cve_id')
+        method = "GET"
+        route = f"/vulnerability/{cve_id}/details"
         res = http_request(method, token, route)
         LOG('res %s' % (res,))
         if "cve_id" in res:
             command_results = CommandResults(
                 outputs_prefix='Cve.Details',
                 outputs_key_field='ReportID',
-                outputs=res
-            )
-            return_results(command_results)
-            # demisto.results(res)
+                outputs=res)
+            return command_results
+            #   demisto.results(res)
 
 
-    def get_assets_programs_command(method, token, route, name, publisher, version):
+    def get_assets_programs_command(token, args):
+        name = args.get('name')
+        publisher = args.get('publisher')
+        version = args.get('version')
+        method = "POST"
+        route = "/assets/programs"
         rules = [{
             "field": "$type",
             "operator": "=",
@@ -278,33 +340,147 @@ script:
             }
             rules.append(version_node)
 
-        query = {
-            "pageSize": 10,
-            "page": 0,
-            "ruleSet": {
-                "condition": "AND",
-                "rules": [
-                    {
-                        rules
-                    }
-                ]
-            }
-        }
+        res = call_api(method, route, token, rules)
+        LOG('results %s' % (res,))
 
-        search = json.dumps(query)
-        res = http_request(method, token, route, search)
-        LOG('res %s' % (res,))
-        if "items" in res:
+        if res:
             command_results = CommandResults(
                 outputs_prefix='Assets.Programs',
                 outputs_key_field='itemsTotal',
-                outputs=res['items']
-            )
-            return_results(command_results)
+                outputs=res)
+            return command_results
 
 
-    def get_devices_command(method, token, route, host, os_type, os_name, status, agent_version):
+    def get_assets_hardware_command(token, args):
+        host = args.get('host')
+        os_type = args.get('os_type')
+        method = "POST"
+        route = "/assets/hardware"
+        rules = [{
+            "field": "$type",
+            "operator": "=",
+            "value": "csv"
+        }]
+
+        if host:
+            host_node = {
+                "field": "$host",
+                "operator": "contains",
+                "value": f"{host}"
+            }
+            rules.append(host_node)
+
+        if os_type:
+            os_type_node = {
+                "field": "os_type",
+                "operator": "contains",
+                "value": f"{os_type}"
+            }
+            rules.append(os_type_node)
+
+        res = call_api(method, route, token, rules)
+        LOG('results %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Assets.Programs',
+                outputs_key_field='itemsTotal',
+                outputs=res)
+            return command_results
+
+
+    def get_assets_cloud_command(token, args):
+        host = args.get('host')
+        os_type = args.get('os_type')
+        source = args.get('source')
+        method = "POST"
+        route = "/assets/cloud"
+        rules = [{
+            "field": "$type",
+            "operator": "=",
+            "value": "csv"
+        }]
+
+        if host:
+            host_node = {
+                "field": "$host",
+                "operator": "contains",
+                "value": f"{host}"
+            }
+            rules.append(host_node)
+
+        if os_type:
+            os_type_node = {
+                "field": "os_type",
+                "operator": "contains",
+                "value": f"{os_type}"
+            }
+            rules.append(os_type_node)
+
+        if source:
+            source_node = {
+                "field": "source",
+                "operator": "contains",
+                "value": f"{source}"
+            }
+            rules.append(source_node)
+
+        res = call_api(method, route, token, rules)
+        LOG('results %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Assets.Cloud',
+                outputs_key_field='$host',
+                outputs=res)
+            return command_results
+
+
+    def get_assets_user_command(token, args):
+        host = args.get('host')
+        username = args.get('username')
+        method = "POST"
+        route = "/assets/users"
+        rules = [{
+            "field": "$type",
+            "operator": "=",
+            "value": "csv"
+        }]
+
+        if host:
+            host_node = {
+                "field": "$host",
+                "operator": "contains",
+                "value": f"{host}"
+            }
+            rules.append(host_node)
+
+        if username:
+            username_node = {
+                "field": "username",
+                "operator": "contains",
+                "value": f"{username}"
+            }
+            rules.append(username_node)
+
+        res = call_api(method, route, token, rules)
+        LOG('results %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Assets.Users',
+                outputs_key_field='$host',
+                outputs=res)
+            return command_results
+
+
+    def get_devices_command(token, args):
+        host = args.get('host')
+        os_type = args.get('osType')
+        os_name = args.get('osName')
+        status = args.get('status')
+        agent_version = args.get('agentVersion')
+        method = "POST"
+        route = "/devices/search"
         rules = []
+
         if host:
             host_node = {
                 'field': 'host',
@@ -345,491 +521,730 @@ script:
             }
             rules.append(agent_version_node)
 
-        query = {
-            'pageSize': 10,
-            'page': 0,
-            'ruleSet': {
-                'condition': 'AND',
-                'rules': rules
-            }
-        }
-
-        search = json.dumps(query)
-        res = http_request(method, token, route, search)
+        res = call_api(method, route, token, rules)
         LOG('res %s' % (res,))
-        # demisto.results(res)
-        if "items" in res:
+
+        if res:
             command_results = CommandResults(
                 outputs_prefix='Device.Search',
                 outputs_key_field='itemsTotal',
-                outputs=res['items']
-            )
-            return_results(command_results)
+                outputs=res)
+            return (command_results)
+            #   demisto.results(res)
+
+
+    def get_vulnerable_devices_command(token, args):
+        device_os = args.get('device_os')
+        device_risk = args.get('device_risk')
+        method = "POST"
+        route = "/vulnerability/devices"
+        rules = []
+
+        if device_os:
+            device_os_node = {
+                'field': 'device_os',
+                'operator': '=',
+                'value': f'{device_os}'
+            }
+            rules.append(device_os_node)
+
+        if device_risk:
+            device_risk_node = {
+                'field': 'device_risk',
+                'operator': '>=',
+                'value': f'{device_risk}'
+            }
+            rules.append(device_risk_node)
+
+        res = call_api(method, route, token, rules)
+        LOG('res %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Vulnerability.Devices',
+                outputs_key_field='$host',
+                outputs=res)
+            return command_results
+            #   demisto.results(res)
+
+
+    def get_tag_command(token, args):
+        name = args.get('name')
+        method = "POST"
+        route = "/tags"
+        rules = []
+
+        if name:
+            name_node = {
+                'field': 'name',
+                'operator': '=',
+                'value': f'{name}'
+            }
+            rules.append(name_node)
+
+        res = call_api(method, route, token, rules)
+        LOG('res %s' % (res,))
+        if res:
+            # demisto.results(res)
+            command_results = CommandResults(
+                outputs_prefix='Tags',
+                outputs_key_field='tagId',
+                outputs=res)
+            return command_results
+
+
+    def get_networks_command(token, args):
+        alias = args.get('alias')
+        gateway_ip = args.get('gateway_ip')
+        cidr = args.get('cidr')
+        method = "POST"
+        route = "/networks"
+        rules = []
+
+        if alias:
+            alias_node = {
+                'field': 'alias',
+                'operator': '=',
+                'value': f'{alias}'
+            }
+            rules.append(alias_node)
+
+        if gateway_ip:
+            gateway_ip_node = {
+                'field': 'gatewayIp',
+                'operator': '=',
+                'value': f'{convert_string_to_ip(gateway_ip)}'
+            }
+            rules.append(gateway_ip_node)
+
+        if cidr:
+            cidr_node = {
+                'field': 'cidr',
+                'operator': '=',
+                'value': f'{cidr}'
+            }
+            rules.append(cidr_node)
+
+        res = call_api(method, route, token, rules)
+        LOG('res %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Networks.Info.',
+                outputs_key_field='alias',
+                outputs=res)
+            return command_results
+
+
+    def run_script_command(token, args):
+        script_id = args.get('script_id')
+        method = "POST"
+        route = "/scripts/execute"
+
+        script_id_node = {
+            "scriptId": f"{script_id}"
+        }
+
+        res = call_api(method, route, token, script_id_node, False)
+        LOG('res %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Networks.Info.',
+                outputs_key_field='alias',
+                outputs=res)
+            return command_results
 
 
     ''' EXECUTION '''
-    LOG('command is %s' % (demisto.command(), ))
-    try:
 
-        token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
-        if demisto.command() == 'test-module':
-            route = "/health"
-            method = "GET"
-            test_module(method, token, route)
-            demisto.results('ok')
 
-        elif demisto.command() == 'infinipoint-get-cve':
-            cve_id = demisto.args().get('cve_id')
-            method = "GET"
-            route = f"/vulnerability/{cve_id}/details"
-            get_cve_command(method, token, route)
+    def main():
 
-        elif demisto.command() == 'infinipoint-get-assets-programs':
-            name = demisto.args().get('name')
-            publisher = demisto.args().get('publisher')
-            version = demisto.args().get('version')
-            # type = demisto.args().get('type')
+        # PROXY = demisto.params().get('proxy')
+        # INSECURE = demisto.params().get('insecure')
+        # BASE_URL = demisto.params().get('url')
+        # ACCESS_KEY = demisto.params().get('access_key')
+        # PRIVATE_KEY = demisto.params().get('private_key')
+        # verify_certificate = not demisto.params().get('insecure', False)
+        # proxy = demisto.params().get('proxy', False)
 
-            method = "POST"
-            route = "/assets/programs"
-            get_assets_programs_command(method, token, route, name, publisher, version)
+        # if not demisto.params().get('proxy', False):
+        #     del os.environ['HTTP_PROXY']
+        #     del os.environ['HTTPS_PROXY']
+        #     del os.environ['http_proxy']
+        #     del os.environ['https_proxy']
 
-        elif demisto.command() == 'infinipoint-get-device':
-            host = demisto.args().get('host')
-            os_type = demisto.args().get('osType')
-            os_name = demisto.args().get('osName')
-            status = demisto.args().get('status')
-            agent_version = demisto.args().get('agentVersion')
+        demisto.info('command is %s' % (demisto.command(), ))
 
-            method = "POST"
-            route = "/devices/search"
-            get_devices_command(method, token, route, host, os_type, os_name, status, agent_version)
+        try:
+            token = create_jwt_token(PRIVATE_KEY, ACCESS_KEY)
 
-    except Exception as e:
-        print(e)
-        demisto.debug('The Senate? I am the Senate!')
-        LOG(e)
-        LOG.print_log()
-        return_error(e)
+            if demisto.command() == 'test-module':
+                test_module(token)
+                demisto.results('ok')
+
+            elif demisto.command() == 'infinipoint-get-cve':
+                return_results(get_cve_command(token, demisto.args()))
+
+            elif demisto.command() == 'infinipoint-get-assets-programs':
+                return_results(get_assets_programs_command(token, demisto.args()))
+
+            elif demisto.command() == 'infinipoint-get-assets-hardware':
+                return_results(get_assets_hardware_command(token, demisto.args()))
+
+            elif demisto.command() == 'infinipoint-get-assets-cloud':
+                return_results(get_assets_cloud_command(token, demisto.args()))
+
+            elif demisto.command() == 'infinipoint-get-assets-user':
+                return_results(get_assets_user_command(token, demisto.args()))
+
+            elif demisto.command() == 'infinipoint-get-device':
+                return_results(get_devices_command(token, demisto.args()))
+
+            elif demisto.command() == 'infinipoint-get-vulnerable-devices':
+                return_results(get_vulnerable_devices_command(token, demisto.args()))
+
+            elif demisto.command() == "infinipoint-get-tag":
+                return_results(get_tag_command(token, demisto.args()))
+
+            elif demisto.command() == "infinipoint-get-networks":
+                return_results(get_networks_command(token, demisto.args()))
+
+            elif demisto.command() == "infinipoint-run-script":
+                return_results(run_script_command(token, demisto.args()))
+
+
+        except Exception as e:
+            err_msg = f'Error - Infinipoint Integration [{e}]'
+            return_error(err_msg, error=e)
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
   type: python
   commands:
   - name: infinipoint-get-vulnerable-devices
-    description: ''
     arguments:
-      - name: device_os
-        description: ''
-      - name: device_risk
-        description: ''
+    - name: device_os
+    - name: device_risk
     outputs:
     - contextPath: Vulnerability.Devices.$device
-      description: ''
       type: String
     - contextPath: Vulnerability.Devices.$host
-      description: ''
       type: String
     - contextPath: Vulnerability.Devices.cve_id
-      description: ''
       type: Unknown
     - contextPath: Vulnerability.Devices.device_risk
-      description: ''
       type: Number
     - contextPath: Vulnerability.Devices.device_risk_type
-      description: ''
       type: Number
     - contextPath: Vulnerability.Devices.software_name
-      description: ''
       type: Unknown
     - contextPath: Vulnerability.Devices.vulnerability_count
-      description: ''
       type: Number
   - name: infinipoint-get-assets-programs
-    description: ''
     arguments:
     - name: name
       auto: PREDEFINED
       predefined:
       - Software name
-      description: ''
     - name: publisher
       auto: PREDEFINED
       predefined:
       - Software publisher name
-      description: ''
     - name: version
       auto: PREDEFINED
       predefined:
       - Software version
-      description: ''
     outputs:
     - contextPath: Assets.Programs.items.$device
-      description: ''
       type: String
     - contextPath: Assets.Programs.items.$host
-      description: ''
       type: String
     - contextPath: Assets.Programs.items.$time
-      description: ''
       type: Number
     - contextPath: Assets.Programs.items.$type
-      description: ''
       type: String
     - contextPath: Assets.Programs.items.name
-      description: ''
       type: String
     - contextPath: Assets.Programs.items.os_type
-      description: ''
       type: String
     - contextPath: Assets.Programs.items.program_exists
-      description: ''
       type: String
     - contextPath: Assets.Programs.items.publisher
-      description: ''
       type: String
     - contextPath: Assets.Programs.items.version
-      description: ''
       type: String
     - contextPath: Assets.Programs.items.install_update_date
-      description: ''
       type: Date
     - contextPath: Assets.Programs.itemsTotal
-      description: ''
       type: Number
   - name: infinipoint-get-cve
-    description: ''
     arguments:
     - name: cve_id
-      description: ''
       required: true
     outputs:
     - contextPath: Cve.Details.campaign_intelligence.apt
-      description: ''
       type: String
     - contextPath: Cve.Details.campaign_intelligence.description
-      description: ''
       type: String
     - contextPath: Cve.Details.campaign_intelligence.targeted_countries
-      description: ''
       type: String
     - contextPath: Cve.Details.campaign_intelligence.targeted_industries
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_description
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.ac_insuf_info
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.access_vector
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.attack_complexity
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.authentication
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.availability_impact
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.base_score
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.confidentiality_impact
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.exploitability_score
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.impact_score
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.integrity_impact
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_all_privilege
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_other_privilege
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_user_privilege
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.severity
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.user_interaction_required
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.vector_string
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.attack_complexity
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.attack_vector
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.availability_impact
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.base_score
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.base_severity
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.confidentiality_impact
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.exploitability_score
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.impact_score
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.integrity_impact
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.privileges_required
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.scope
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.user_interaction
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.vector_string
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.attack_complexity
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.campaigns
-      description: ''
       type: Number
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.device_count
-      description: ''
       type: Number
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploitability_risk
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploits
-      description: ''
       type: Number
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_label
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_level
-      description: ''
       type: Number
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_type
-      description: ''
       type: Number
     - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.trends_level
-      description: ''
       type: String
     - contextPath: Cve.Details.cve_id
-      description: ''
       type: String
     - contextPath: Cve.Details.cwe_description
-      description: ''
       type: String
     - contextPath: Cve.Details.cwe_id
-      description: ''
       type: String
     - contextPath: Cve.Details.devices.$device
-      description: ''
       type: String
     - contextPath: Cve.Details.devices.device_name_string
-      description: ''
       type: String
     - contextPath: Cve.Details.devices.device_os
-      description: ''
       type: String
     - contextPath: Cve.Details.devices.device_risk
-      description: ''
       type: Number
     - contextPath: Cve.Details.devices.map_id
-      description: ''
       type: String
     - contextPath: Cve.Details.devices.vulnerableProduct
-      description: ''
       type: String
     - contextPath: Cve.Details.devices.vulnerableVersion
-      description: ''
       type: String
     - contextPath: Cve.Details.scan_date
-      description: ''
       type: Unknown
     - contextPath: Cve.Details.software_list.cpe_name_string
-      description: ''
       type: String
     - contextPath: Cve.Details.software_list.cpe_type
-      description: ''
       type: String
     - contextPath: Cve.Details.top_devices.$device
-      description: ''
       type: String
     - contextPath: Cve.Details.top_devices.device_name_string
-      description: ''
       type: String
     - contextPath: Cve.Details.top_devices.device_os
-      description: ''
       type: String
     - contextPath: Cve.Details.top_devices.device_risk
-      description: ''
       type: Number
     - contextPath: Cve.Details.top_devices.map_id
-      description: ''
       type: String
     - contextPath: Cve.Details.top_devices.vulnerableProduct
-      description: ''
       type: String
     - contextPath: Cve.Details.top_devices.vulnerableVersion
-      description: ''
       type: String
   - name: infinipoint-get-device
-    description: ''
     arguments:
     - name: host
       auto: PREDEFINED
       predefined:
       - Devices hostname
-      description: ''
     - name: osType
       auto: PREDEFINED
       predefined:
-      - 'Device operating system type: 1 = Windows'
-      - 2 = Linux
-      - 4 = macOS
-      description: ''
+      - "1"
+      - "2"
+      - "4"
+      description: choose a OS type - 1 = Windows | 2 = Linux | 4 = macOS
     - name: osName
-      auto: PREDEFINED
-      predefined:
-      - Device operating system full name
-      - e.g. windows-10.0.18363.836
-      description: ''
+      description: Device operating system full name e.g. windows-10.0.18363.836
     - name: status
       auto: PREDEFINED
       predefined:
-      - 'Device current status: 0 = Offline'
-      - 1 = Online
-      description: ''
+      - "0"
+      - "1"
+      description: Device current status:- 0 = Offline | 1 = Online
     - name: agentVersion
       auto: PREDEFINED
       predefined:
       - Device Infinipoint’s agent version
-      description: ''
     outputs:
     - contextPath: Device.Search.items.agentVersion
-      description: ''
       type: String
     - contextPath: Device.Search.items.clientType
-      description: ''
       type: Number
     - contextPath: Device.Search.items.discoveryId
-      description: ''
       type: String
     - contextPath: Device.Search.items.domain
-      description: ''
       type: String
     - contextPath: Device.Search.items.edge
-      description: ''
       type: Number
     - contextPath: Device.Search.items.ftDidRespond
-      description: ''
       type: Number
     - contextPath: Device.Search.items.ftIsSuccessful
-      description: ''
       type: Number
     - contextPath: Device.Search.items.ftResult
-      description: ''
       type: String
     - contextPath: Device.Search.items.gatewayIp
-      description: ''
       type: Number
     - contextPath: Device.Search.items.gatewayMACAddress
-      description: ''
       type: Date
     - contextPath: Device.Search.items.host
-      description: ''
       type: String
     - contextPath: Device.Search.items.id
-      description: ''
       type: String
     - contextPath: Device.Search.items.ip
-      description: ''
       type: Number
     - contextPath: Device.Search.items.lastSeen
-      description: ''
       type: Date
     - contextPath: Device.Search.items.macAddress
-      description: ''
       type: Date
     - contextPath: Device.Search.items.networkId
-      description: ''
       type: Number
     - contextPath: Device.Search.items.networks.alias
-      description: ''
       type: String
     - contextPath: Device.Search.items.networks.cidr
-      description: ''
       type: String
     - contextPath: Device.Search.items.networks.gatewayIp
-      description: ''
       type: Number
     - contextPath: Device.Search.items.networks.gatewayMACAddress
-      description: ''
       type: Date
     - contextPath: Device.Search.items.osName
-      description: ''
       type: String
     - contextPath: Device.Search.items.osType
-      description: ''
       type: Number
     - contextPath: Device.Search.items.policyVersion
-      description: ''
       type: String
     - contextPath: Device.Search.items.productType
-      description: ''
       type: String
     - contextPath: Device.Search.items.regDate
-      description: ''
       type: Date
     - contextPath: Device.Search.items.status
-      description: ''
       type: Number
     - contextPath: Device.Search.items.statusCode
-      description: ''
       type: Unknown
     - contextPath: Device.Search.items.statusDescription
-      description: ''
       type: Unknown
     - contextPath: Device.Search.items.supportId
-      description: ''
       type: Unknown
     - contextPath: Device.Search.items.tags.color
-      description: ''
       type: String
     - contextPath: Device.Search.items.tags.name
-      description: ''
       type: String
     - contextPath: Device.Search.items.tags.tagId
-      description: ''
       type: String
     - contextPath: Device.Search.items.uniqueHostname
-      description: ''
       type: String
     - contextPath: Device.Search.itemsTotal
+      type: Number
+  - name: infinipoint-get-tag
+    arguments:
+    - name: name
+    outputs:
+    - contextPath: Tags.color
+      type: String
+    - contextPath: Tags.count
+      type: Number
+    - contextPath: Tags.description
+      type: String
+    - contextPath: Tags.name
+      type: String
+    - contextPath: Tags.tagId
+      type: String
+    - contextPath: Tags.type
+      type: Number
+  - name: infinipoint-get-networks
+    arguments:
+    - name: alias
+    - name: gateway_ip
+    - name: cidr
+    outputs:
+    - contextPath: Networks.Info.alias
+      type: String
+    - contextPath: Networks.Info.cidr
+      type: String
+    - contextPath: Networks.Info.city
+      type: Unknown
+    - contextPath: Networks.Info.country
+      type: Unknown
+    - contextPath: Networks.Info.cronExpression
+      type: String
+    - contextPath: Networks.Info.dnsName
+      type: String
+    - contextPath: Networks.Info.externalIp
+      type: Number
+    - contextPath: Networks.Info.firstSeen
+      type: Date
+    - contextPath: Networks.Info.floor
+      type: Unknown
+    - contextPath: Networks.Info.gatewayIp
+      type: Number
+    - contextPath: Networks.Info.gatewayMacAddress
+      type: String
+    - contextPath: Networks.Info.ip
+      type: Number
+    - contextPath: Networks.Info.ipSubnetMask
+      type: Number
+    - contextPath: Networks.Info.lastRun
+      type: Date
+    - contextPath: Networks.Info.lastSeen
+      type: Date
+    - contextPath: Networks.Info.latitude
+      type: Unknown
+    - contextPath: Networks.Info.longitude
+      type: Unknown
+    - contextPath: Networks.Info.managedCount
+      type: Number
+    - contextPath: Networks.Info.name
+      type: String
+    - contextPath: Networks.Info.networkId
+      type: Number
+    - contextPath: Networks.Info.nextRun
+      type: Date
+    - contextPath: Networks.Info.onPrem
+      type: Number
+    - contextPath: Networks.Info.room
+      type: Unknown
+    - contextPath: Networks.Info.scheduleStatus
+      type: Number
+    - contextPath: Networks.Info.state
+      type: Unknown
+    - contextPath: Networks.Info.street
+      type: Unknown
+    - contextPath: Networks.Info.type
+      type: Number
+    - contextPath: Networks.Info.unmanagedCount
+      type: Number
+  - name: infinipoint-get-assets-hardware
+    arguments:
+    - name: host
+    - name: os_type
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      - "4"
+      description: choose a OS type - 1 = Windows | 2 = Linux | 4 = macOS
+    outputs:
+    - contextPath: Assets.Hardware.$device
+      type: String
+    - contextPath: Assets.Hardware.$host
+      type: String
+    - contextPath: Assets.Hardware.$time
+      type: Number
+    - contextPath: Assets.Hardware.$type
+      type: String
+    - contextPath: Assets.Hardware.cpu_brand
+      type: String
+    - contextPath: Assets.Hardware.cpu_logical_cores
+      type: String
+    - contextPath: Assets.Hardware.cpu_physical_cores
+      type: String
+    - contextPath: Assets.Hardware.hardware_model
+      type: String
+    - contextPath: Assets.Hardware.hardware_serial
+      type: String
+    - contextPath: Assets.Hardware.hardware_vendor
+      type: String
+    - contextPath: Assets.Hardware.kernel_version
+      type: String
+    - contextPath: Assets.Hardware.os_build
+      type: String
+    - contextPath: Assets.Hardware.os_name
+      type: String
+    - contextPath: Assets.Hardware.os_patch_version
+      type: String
+    - contextPath: Assets.Hardware.os_type
+      type: String
+    - contextPath: Assets.Hardware.os_version
+      type: String
+    - contextPath: Assets.Hardware.physical_memory
+      type: String
+    - contextPath: Assets.Hardware.platform
+      type: String
+    - contextPath: Assets.Hardware.user
+      type: String
+  - name: infinipoint-get-assets-cloud
+    arguments:
+    - name: host
+    - name: os_type
+    - name: source
+      auto: PREDEFINED
+      predefined:
+      - AWS API
+      - GCP API
+      description: '"AWS API" | "GCP API"'
+    outputs:
+    - contextPath: Assets.Cloud.$device
+      type: String
+    - contextPath: Assets.Cloud.$host
+      type: String
+    - contextPath: Assets.Cloud.$time
+      type: Number
+    - contextPath: Assets.Cloud.$type
+      type: String
+    - contextPath: Assets.Cloud.cloud_scan_timestamp
+      type: Number
+    - contextPath: Assets.Cloud.cpu_brand
+      type: String
+    - contextPath: Assets.Cloud.cpu_logical_cores
+      type: String
+    - contextPath: Assets.Cloud.cpu_physical_cores
+      type: String
+    - contextPath: Assets.Cloud.creation_time
+      type: String
+    - contextPath: Assets.Cloud.hardware_model
+      type: String
+    - contextPath: Assets.Cloud.hardware_serial
+      type: String
+    - contextPath: Assets.Cloud.hardware_vendor
+      type: String
+    - contextPath: Assets.Cloud.instance_id
+      type: Date
+    - contextPath: Assets.Cloud.instance_state
+      type: String
+    - contextPath: Assets.Cloud.instance_type
+      type: String
+    - contextPath: Assets.Cloud.os_build
+      type: String
+    - contextPath: Assets.Cloud.os_name
+      type: String
+    - contextPath: Assets.Cloud.os_patch_version
+      type: String
+    - contextPath: Assets.Cloud.os_type
+      type: String
+    - contextPath: Assets.Cloud.physical_memory
+      type: String
+    - contextPath: Assets.Cloud.platform
+      type: String
+    - contextPath: Assets.Cloud.source
+      type: String
+    - contextPath: Assets.Cloud.user
+      type: String
+    - contextPath: Assets.Cloud.zone
+      type: String
+    - contextPath: Assets.Cloud.open_ports
+      type: Number
+  - name: infinipoint-get-assets-user
+    arguments:
+    - name: host
+    - name: username
+    outputs:
+    - contextPath: Assets.User.$device
+      type: String
+    - contextPath: Assets.User.$host
+      type: String
+    - contextPath: Assets.User.$time
+      type: Number
+    - contextPath: Assets.User.$type
+      type: String
+    - contextPath: Assets.User.description
+      type: String
+    - contextPath: Assets.User.directory
+      type: String
+    - contextPath: Assets.User.username
+      type: String
+  - name: infinipoint-run-script
+    arguments:
+    - name: script_id
+      required: true
+    outputs:
+    - contextPath: Scripts.Execute.actionId
+      type: String
+    - contextPath: Scripts.Execute.aggColumns
+      type: Unknown
+    - contextPath: Scripts.Execute.devicesCount
+      type: Number
+    - contextPath: Scripts.Execute.name
+      type: String
+  - name: infinipoint-get-action
+    arguments:
+    - name: action_id
+      required: true
+    outputs:
+    - contextPath: Responses.$data
+      description: ''
+      type: String
+    - contextPath: Responses.$device
+      description: ''
+      type: String
+    - contextPath: Responses.$host
+      description: ''
+      type: String
+    - contextPath: Responses.$time
       description: ''
       type: Number
+    - contextPath: Responses.$type
+      description: ''
+      type: String
+
   dockerimage: demisto/pyjwt3:1.0.0.8871
   isfetch: true
   feed: true
   runonce: true
   subtype: python3
-fromversion: 5.5.0
-#tests:
-#- No tests (auto formatted)

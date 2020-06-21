@@ -58,7 +58,7 @@ if [[ -n "$DIFF_RES" ]]; then
 fi
 
 # test if CommonServerPython has been modified
-DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Tests/demistomock/##demistomock.py)
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Tests/demistomock/###demistomock.py)
 if [[ -n "$DIFF_RES" ]]; then
     echo -e "demistomock.py has been modified"
     exit 0
