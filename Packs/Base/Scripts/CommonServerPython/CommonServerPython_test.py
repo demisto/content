@@ -1107,7 +1107,7 @@ class TestCommandResults:
             raw_response=tickets
         )
 
-        assert results.to_context() == {
+        assert sorted(results.to_context()) == sorted({
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': tickets,
@@ -1115,7 +1115,7 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             }
-        }
+        })
 
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
