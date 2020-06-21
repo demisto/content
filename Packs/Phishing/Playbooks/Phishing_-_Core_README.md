@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing_Core](https://raw.githubusercontent.com/demisto/content/8364684061626083ba39b7baaf282324809b41d1/Packs/Phishing/doc_files/Phishing_Core.png)
+![Phishing_Core](https://raw.githubusercontent.com/demisto/content/db1f80d334d03013923c6a9188b1a78fe87f55d4/Packs/Phishing/doc_files/Phishing_-_Core.png)

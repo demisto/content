@@ -1553,7 +1553,7 @@ script:
       description: The total number of file paths that have been observed, by this
         organization, for this file.
       type: Number
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: true
   longRunning: false
