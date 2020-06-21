@@ -50,4 +50,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Cortex XDR - Port Scan - Adjusted](Insert the link to your image here)
+![Cortex XDR - Port Scan - Adjusted](https://github.com/demisto/content/raw/3fadebe9e16eb7c9fc28ce3bb600319ec875e3b5/Packs/CortexXDR/doc_files/Cortex_XDR_-_Port_Scan_-_Adjusted.png)
