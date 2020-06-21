@@ -66,8 +66,12 @@ jobs:
           name: Check if Contributor branch
           when: always
           command: |
-            if [ -n $CONTRIB_BRANCH ]
+            echo $CONTRIB_BRANCH
+            if [ -z $CONTRIB_BRANCH ]
             then
+              echo "Skipping, Should not run on contributor's branch."
+              exit 0
+            else
               USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
               BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
 
