@@ -1177,7 +1177,8 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
-            "timeout": 240
+            "timeout": 240,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "EWS v2",
@@ -1739,6 +1740,11 @@
             "integrations": "Jask",
             "playbookID": "Jask_Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Infocyte",
+            "playbookID": "Infocyte-Test",
+            "timeout": 1200
         },
         {
             "integrations": "Qualys",
@@ -2856,7 +2862,6 @@
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
-        "test_MsGraphFiles": "Issue 22853 ",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
@@ -2896,6 +2901,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
