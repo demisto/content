@@ -248,6 +248,8 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
                                                       key=lambda pack_item: LooseVersion(pack_item[0])):
         latest_version = pack_version
         version_release_notes = version_release_notes.strip()
+        # extract release notes sections by content types (all playbooks, all scripts, etc...)
+        # assuming all entity titles start with level 4 header ("####") and then a list of all comments
         sections = ENTITY_TYPE_SECTION_REGEX.findall(version_release_notes)
         for section in sections:
             # one of scripts, playbooks, integrations, layouts, incident fields, etc...
@@ -256,6 +258,8 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
             entity_section = section[1] or section[3]
             entities_data.setdefault(entity_type, {})
 
+            # extract release notes comments by entity
+            # assuming all entity titles start with level 5 header ("#####") and then a list of all comments
             entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)
             for entity in entity_comments:
                 # name of the script, integration, playbook, etc...
@@ -270,6 +274,7 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
     pack_release_notes = construct_entities_block(entities_data)
     return (f'### {pack_name} Pack v{latest_version}\n'
             f'{pack_release_notes}')
+
 
 def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, version, asset_id,
                                    release_notes_file):
@@ -295,11 +300,11 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
                               f'{pack_summary}')
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
-        # pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict))
-        for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
-                                                       key=lambda pack_item: LooseVersion(pack_item[0])):
-            pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
-                                  f'{pack_release_notes.strip()}')
+        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict))
+        # for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
+        #                                                key=lambda pack_item: LooseVersion(pack_item[0])):
+        #     pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
+        #                           f'{pack_release_notes.strip()}')
 
     release_notes += '\n\n---\n\n'.join(pack_rn_blocks)
 

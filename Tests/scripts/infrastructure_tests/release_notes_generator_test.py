@@ -4,6 +4,7 @@ from release_notes_generator import (get_release_notes_dict,
                                      generate_release_notes_summary,
                                      get_pack_entities,
                                      read_and_format_release_note,
+                                     merge_version_blocks,
                                      EMPTY_LINES_REGEX)
 
 TEST_DATA_PATH = 'Tests/scripts/infrastructure_tests/tests_data/RN_tests_data'
@@ -119,7 +120,7 @@ class TestGenerateReleaseNotesSummary:
         release_notes_files = [
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md')
+            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
         ]
 
         rn_dict = get_release_notes_dict(release_notes_files)
@@ -131,12 +132,13 @@ class TestGenerateReleaseNotesSummary:
         rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
 
         assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
-        assert '## FakePack1 Pack v1.1.0' in rn_summary
-        assert '- __FakePack1_Integration1__' in rn_summary
-        assert 'This is a fake minor release note.' in rn_summary
-        assert '## FakePack1 Pack v2.0.0' in rn_summary
-        assert '- __FakePack2_Script1__' in rn_summary
-        assert 'This is a fake major release note.' in rn_summary
+        assert '### FakePack1 Pack v2.0.0' in rn_summary
+        assert '##### __FakePack1_Integration1__' in rn_summary
+        assert 'This is a fake1 minor release note.' in rn_summary
+        assert 'This is a fake1 major release note.' in rn_summary
+        assert '### FakePack2 Pack v1.1.0' in rn_summary
+        assert '##### __FakePack2_Script1__' in rn_summary
+        assert 'This is a fake2 major release note.' in rn_summary
 
     def test_release_notes_summary_with_empty_lines_in_rn(self):
         """
@@ -185,7 +187,7 @@ class TestGenerateReleaseNotesSummary:
         """
         release_notes_files = [
             os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md')
+            os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md'),
         ]
 
         rn_dict = get_release_notes_dict(release_notes_files)
@@ -195,5 +197,71 @@ class TestGenerateReleaseNotesSummary:
 
         rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
 
-        assert '## FakePack4 Pack v1.1.0' in rn_summary
-        assert '- __FakePack4_Script1__' in rn_summary
+        assert '### FakePack4 Pack v1.1.0' in rn_summary
+        assert '##### __FakePack4_Script1__' in rn_summary
+
+
+class TestMergeVersionBlocks:
+    def test_sanity(self):
+        """
+        Given
+            two changes in foreign content types
+
+        When
+            two pack versions that modified different items.
+
+        Then
+            type sections appears one after the other
+        """
+        release_notes_paths = [
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_1_0.md'),
+        ]
+
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file_:
+                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+
+        rn_block = merge_version_blocks('FakePack', pack_versions_dict)
+
+        assert 'FakePack1_Playbook1' in rn_block
+        assert 'FakePack1_Playbook2' in rn_block
+        assert 'FakePack1_Integration1' in rn_block
+        assert 'FakePack1_Integration2' in rn_block
+        assert 'v2_1_0' in rn_block
+        assert 'v1_1_0' not in rn_block
+
+    def test_similiar_entities(self):
+        """
+        Given
+            two changes in similar content entities
+
+        When
+            two pack versions that modified the same items.
+
+        Then
+            one integration section appears
+            one entity title for each one with two comments
+        """
+        release_notes_paths = [
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
+        ]
+
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file_:
+                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+
+        rn_block = merge_version_blocks('FakePack', pack_versions_dict)
+
+        assert rn_block.count('Integrations') == 1
+        assert rn_block.count('FakePack1_Integration1') == 1
+        assert rn_block.count('FakePack1_Integration2') == 1
+        assert 'v2_0_0' in rn_block
+        assert 'v1_1_0' not in rn_block
+        assert 'fake1 minor' in rn_block
+        assert 'fake2 minor' in rn_block
+        assert 'fake1 major' in rn_block
+        assert 'fake2 major' in rn_block
