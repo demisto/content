@@ -2639,7 +2639,7 @@ class CommandResults:
         return_entry = {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
-            'Contents': raw_response if raw_response else self.outputs,
+            'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs
         }
