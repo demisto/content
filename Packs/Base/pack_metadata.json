@@ -2,7 +2,7 @@
     "name": "Base",
     "description": "The base pack for Cortex XSOAR.",
     "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
