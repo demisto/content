@@ -353,7 +353,7 @@ jobs:
           name: Create Instance
           when: always
           command: |
-            [ -n "${TIME_TO_LIVE}" ] && TIME_TO_LIVE=${TIME_TO_LIVE} || TIME_TO_LIVE=180
+            [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
 
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
@@ -376,11 +376,11 @@ jobs:
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TIME_TO_LIVE -outfile ./env_results.json
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
 
               else
                 . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TIME_TO_LIVE -outfile ./env_results.json
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
             fi
       - run:
           name: Setup Instance
@@ -587,7 +587,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n $TIME_TO_LIVE ]
+            if [ -n "${TIME_TO_LIVE}" ]
             then
                 echo "Skipping - Time to live was set to $TIME_TO_LIVE minutes"
                 exit 0
