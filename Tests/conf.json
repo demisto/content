@@ -231,11 +231,6 @@
             "instance_names": "ms_azure_sc_prod"
         },
         {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
-        },
-        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
         },
@@ -1858,9 +1853,6 @@
             ]
         },
         {
-            "playbookID": "ReadPDFFile-Test"
-        },
-        {
             "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
@@ -2112,9 +2104,6 @@
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
-        },
-        {
-            "playbookID": "ExtractDomainFromEmailTest"
         },
         {
             "playbookID": "Account Enrichment - Generic v2 - Test",
@@ -3206,7 +3195,7 @@
         "Feodo Tracker IP Blocklist Feed",
         "AlienVault OTX TAXII Feed",
         "Prisma Access Egress IP feed",
-        "GCP Whitelist Feed",
+        "GCP Whitelist Feed"
     ],
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
