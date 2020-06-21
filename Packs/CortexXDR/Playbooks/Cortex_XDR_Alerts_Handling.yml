@@ -357,7 +357,7 @@ inputs:
       root: PaloAltoNetworksXDR
       accessor: Incident.incident_id
   required: false
-  description: ""
+  description: Incident ID.
   playbookInputQuery:
 - key: alert_id
   value:
@@ -365,7 +365,7 @@ inputs:
       root: PaloAltoNetworksXDR
       accessor: Incident.alerts.alert_id
   required: false
-  description: ""
+  description: Alert ID.
   playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.incident_id

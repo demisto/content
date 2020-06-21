@@ -1759,7 +1759,7 @@ inputs:
 - key: incident_id
   value: {}
   required: false
-  description: ""
+  description: Incident ID.
   playbookInputQuery:
 - key: similarIncidentFields
   value: {}
