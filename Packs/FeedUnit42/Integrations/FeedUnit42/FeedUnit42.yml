@@ -101,6 +101,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- Unit42 Feed - Test
 fromversion: 5.5.0

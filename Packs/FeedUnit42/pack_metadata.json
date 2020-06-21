@@ -2,6 +2,7 @@
     "name": "Unit42 Feed",
     "description": "Ingests indicator from Unit42 TAXII2 server.",
     "support": "xsoar",
+    "serverMinVersion": "5.5.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
