@@ -232,7 +232,12 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
         else:
             raise
 
-    return res.json()
+    try:
+        json_body = res.json()
+    except ValueError:
+        LOG('Got unexpected response from QRadar. Raw response: {}'.format(res.text))
+        raise DemistoException('Got unexpected response from QRadar')
+    return json_body
 
 
 def send_request_no_error_handling(headers, method, params, url, data):

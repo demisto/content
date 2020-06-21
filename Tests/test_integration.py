@@ -407,6 +407,87 @@ def __test_integration_instance(client, module_instance, prints_manager, thread_
     return success, failure_message
 
 
+def __set_server_keys(client, prints_manager, integration_params, integration_name):
+    """Adds server configuration keys using the demisto_client.
+
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object.
+        integration_params (dict): The values to use for an integration's parameters to configure an instance.
+        integration_name (str): The name of the integration which the server configurations keys are related to.
+
+    """
+    if 'server_keys' not in integration_params:
+        return
+
+    prints_manager.add_print_job(f'Setting server keys for integration: {integration_name}',
+                                 print_color, 0, LOG_COLORS.GREEN)
+
+    data = {
+        'data': {},
+        'version': -1
+    }
+
+    for key, value in integration_params.get('server_keys').items():
+        data['data'][key] = value
+
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                                        method='POST', body=data)
+
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error(
+            'failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return
+
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = "Failed to set server keys " + str(status_code) + '\n' + message
+        print_error(msg)
+
+
+def __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index=0):
+    """Deletes integration instance by it's name.
+
+    Args:
+        client (demisto_client): The configured client to use.
+        instance_name (str): The name of the instance to delete.
+        prints_manager (ParallelPrintsManager): Print manager object.
+        thread_index: The index of the thread running the execution.
+
+    Notes:
+        This function is needed when the name of the instance is pre-defined in the tests configuration, and the test
+        itself depends on the instance to be called as the `instance name`.
+        In case we need to configure another instance with the same name, the client will throw an error, so we
+        will call this function first, to delete the instance with this name.
+
+    """
+    try:
+        int_resp = demisto_client.generic_request_func(self=client, method='POST',
+                                                       path='/settings/integration/search',
+                                                       body={'size': 1000})
+        int_instances = ast.literal_eval(int_resp[0])
+    except requests.exceptions.RequestException as conn_err:
+        error_message = 'Failed to delete integrations instance, error trying to communicate with demisto server: ' \
+                        '{} '.format(conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
+        return
+    if int(int_resp[1]) != 200:
+        error_message = 'Get integration instance failed with status code: {}'.format(int_resp[1])
+        prints_manager.add_print_job(error_message, print_error, thread_index)
+        return
+    if 'instances' not in int_instances:
+        prints_manager.add_print_job("No integrations instances found to delete", print, thread_index)
+        return
+
+    for instance in int_instances['instances']:
+        if instance.get('name') == instance_name:
+            prints_manager.add_print_job(f'Deleting integration instance {instance_name} since it is defined by name',
+                                         print_color, thread_index, message_color=LOG_COLORS.GREEN)
+            __delete_integration_instance(client, instance.get('id'), prints_manager, thread_index)
+
+
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_instance_name,
                                   integration_params, is_byoi, prints_manager, validate_test=True, thread_index=0):
@@ -424,8 +505,12 @@ def __create_integration_instance(client, integration_name, integration_instance
     if not module_configuration:
         module_configuration = []
 
-    instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'),
-                                        str(uuid.uuid4()))
+    if 'integrationInstanceName' in integration_params:
+        instance_name = integration_params['integrationInstanceName']
+        __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index)
+    else:
+        instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
+
     # define module instance
     module_instance = {
         'brand': configuration['name'],
@@ -440,6 +525,9 @@ def __create_integration_instance(client, integration_name, integration_instance
         'passwordProtected': False,
         'version': 0
     }
+
+    # set server keys
+    __set_server_keys(client, prints_manager, integration_params, configuration['name'])
 
     # set module params
     for param_conf in module_configuration:
@@ -800,9 +888,14 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         # give playbook time to run
         time.sleep(1)
 
-        # fetch status
-        playbook_state = __get_investigation_playbook_state(client, investigation_id, prints_manager,
-                                                            thread_index=thread_index)
+        try:
+            # fetch status
+            playbook_state = __get_investigation_playbook_state(client, investigation_id, prints_manager,
+                                                                thread_index=thread_index)
+        except demisto_client.demisto_api.rest.ApiException:
+            playbook_state = 'Pending'
+            client = demisto_client.configure(base_url=client.api_client.configuration.host,
+                                              api_key=client.api_client.configuration.api_key, verify_ssl=False)
 
         if playbook_state in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION):
             break
