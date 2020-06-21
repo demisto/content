@@ -951,7 +951,7 @@ class TestCommandResults:
             indicators=[ip]
         )
 
-        assert sorted(results.to_context()) == sorted({
+        assert results.to_context() == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': None,
@@ -974,7 +974,7 @@ class TestCommandResults:
                     }
                 ]
             }
-        })
+        }
 
     def test_multiple_indicators(self):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
@@ -1023,7 +1023,7 @@ class TestCommandResults:
             indicators=[ip1, ip2]
         )
 
-        assert sorted(results.to_context()) == sorted({
+        assert results.to_context() == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': None,
@@ -1057,7 +1057,7 @@ class TestCommandResults:
                     }
                 ]
             }
-        })
+        }
 
     def test_return_list_of_items(self):
         from CommonServerPython import CommandResults, EntryFormat, EntryType
@@ -1108,7 +1108,7 @@ class TestCommandResults:
             raw_response=tickets
         )
 
-        assert sorted(results.to_context()) == sorted({
+        assert results.to_context() == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': tickets,
@@ -1116,7 +1116,7 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             }
-        })
+        }
 
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
@@ -1179,7 +1179,7 @@ class TestCommandResults:
             indicators=[domain]
         )
 
-        assert sorted(results.to_context()) == sorted({
+        assert results.to_context() == {
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': None,
@@ -1259,7 +1259,7 @@ class TestCommandResults:
                     }
                 ]
             }
-        })
+        }
 
 
 class TestBaseClient:
