@@ -312,7 +312,7 @@ def rasterize_image_command():
     h = args.get('height', DEFAULT_H).rstrip('px')
 
     file_path = demisto.getFilePath(entry_id).get('path')
-    filename = 'document.pdf'
+    filename = 'entry_id.pdf'
 
     with open(file_path, 'rb') as f, open('output_image', 'w') as image:
         data = base64.b64encode(f.read()).decode('utf-8')
