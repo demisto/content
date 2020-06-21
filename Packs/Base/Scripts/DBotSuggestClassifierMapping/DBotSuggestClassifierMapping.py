@@ -30,6 +30,9 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
                'Agent ID': {'aliases': ['agentid', 'agent id', 'sensor id', 'tenant id'],
                             'validators': []},
 
+               'Tenant Name': {'aliases': ['tenant name', 'tenant name'],
+                               'validators': ['validate_alphanumeric_with_common_punct']},
+
                'App': {'aliases': ['app', 'app'], 'validators': ['validate_alphanumeric_with_common_punct']},
 
                'Attachment Name': {'aliases': ['attachmentname', 'attachment name'],
@@ -62,19 +65,6 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
                                    'validators': ['validate_alphanumeric_with_common_punct']},
 
                'Description': {'aliases': ['description'], 'validators': ['validate_alphanumeric_with_common_punct']},
-
-
-               'Dest NT Domain': {'aliases': ['destntdomain',
-                                              'destination nt domain',
-                                              'dest nt domain',
-                                              'destination network',
-                                              'destination domain',
-                                              'target domain',
-                                              'dest dns',
-                                              'dest pci domain',
-                                              'dest host name',
-                                              'dest hostname'],
-                                  'validators': []},
 
                'Destination IP': {'aliases': ['destinationip',
                                               'destination ip',
@@ -142,7 +132,7 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
                                         'recipient'],
                             'validators': ['validate_email']},
 
-               'File Hash': {'aliases': ['filehash', 'file hash', 'event file hash'],
+               'File Hash': {'aliases': ['filehash', 'file hash', 'event file hash', 'md5', 'sha1', 'sha256'],
                              'validators': ['validate_hash']},
                'File Name': {'aliases': ['filename', 'file name'], 'validators': []},
                'File Path': {'aliases': ['filepath', 'file path', 'full path', 'full path'],
@@ -154,18 +144,30 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
 
                'First Seen': {'aliases': ['firstseen', 'first seen'], 'validators': ['validate_date']},
 
-               'Hostname': {
-                   'aliases': ['hostname', 'host name', 'devicename', 'device name', 'endpoint name', 'end point name'],
+               'Source Hostname': {
+                   'aliases': ['source hostname', 'source host name', 'src hostname', 'src host name'],
                    'validators': ['validate_hostname']},
 
-               'Infected Hosts': {'aliases': ['infectedhosts', 'infected hosts'],
-                                  'validators': ['validate_hostname']},
+               'Destination Hostname': {
+                   'aliases': ['destination hostname', 'destination host name',
+                               'dest hostname', 'dest host name', 'dst hostname', 'dst host name',
+                               'target hostname', 'target host name'],
+                   'validators': ['validate_hostname']},
+
+               'Source Network': {'aliases': ['source network', 'sourcenetwork', 'src network'],
+                                  'validators': ['validate_alphanumeric_with_common_punct']},
+               'Destination Network': {'aliases': ['destination network', 'destinationnetwork',
+                                                   'dest network', 'dst network', 'target netwrok'],
+                                       'validators': ['validate_alphanumeric_with_common_punct']},
+
+               'Device Name': {
+                   'aliases': ['devicename', 'device name', 'endpoint name', 'end point name'],
+                   'validators': ['validate_alphanumeric_with_common_punct']},
 
                'Last Seen': {'aliases': ['lastseen', 'last seen'], 'validators': ['validate_date']},
 
                'MAC Address': {'aliases': ['macaddress', 'mac address', 'mac', 'src mac', 'source mac'],
                                'validators': ['validate_mac']},
-               'MD5': {'aliases': ['md5', 'md5'], 'validators': ['validate_md5']},
 
                'PID': {'aliases': ['pid', 'process pid', 'parent process pid', 'target process pid'],
                        'validators': ['validate_number']},
@@ -174,7 +176,6 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
 
                'Region': {'aliases': ['region', 'region'], 'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'SHA256': {'aliases': ['sha256', 'sha256'], 'validators': ['validate_sha256']},
                'Signature': {'aliases': ['signature', 'signature'], 'validators': []},
 
                'Source IP': {
@@ -183,25 +184,14 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
                                'attacker address', 'attacker ip', 'sender ip', 'sender address', 'offense source',
                                'agent ip'],
                    'validators': ['validate_ip']},
+
                'Source Port': {'aliases': ['sourceport',
                                            'source port',
                                            'src port'],
                                'validators': ['validate_number']},
 
-               'Src NT Domain': {'aliases': ['srcntdomain',
-                                             'src nt domain',
-                                             'source nt domain',
-                                             'src pci domain',
-                                             'source pci domain',
-                                             'src nt host',
-                                             'src dns',
-                                             'source network',
-                                             'source nt host',
-                                             'device domain'],
-                                 'validators': ['']},
-
-               'Src OS': {'aliases': ['srcos', 'src os', 'os type', 'os version'],
-                          'validators': []},
+               'OS': {'aliases': ['operating system', 'os type', 'os version', 'os'],
+                      'validators': []},
 
                'Subtype': {'aliases': ['subtype', 'subtype'],
                            'validators': ['validate_alphanumeric_with_common_punct']},
@@ -211,13 +201,16 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
 
                'Traps ID': {'aliases': ['trapsid', 'traps id', 'trap id'], 'validators': []},
 
-               'Username': {'aliases': ['username', 'username', 'user name', 'src user name',
-                                        'src username', 'source username', 'source user name',
-                                        'target user name', 'target username'],
-                            'validators': ['validate_alphanumeric_with_common_punct']},
+               'Source Username': {'aliases': ['username', 'username', 'user name', 'src user name',
+                                               'src username', 'source username', 'source user name'],
+                                   'validators': ['validate_alphanumeric_with_common_punct']},
+               'Destination Username': {'aliases': ['destination username', 'destination user name',
+                                                    'dest username', 'dest user name', 'dst username', 'dst user name',
+                                                    'target user name', 'target username'],
+                                        'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'URL': {'aliases': ['url', 'detection url'],
-                       'validators': ['validate_url']},
+               'Detection URL': {'aliases': ['detection url'],
+                                 'validators': ['validate_url']},
 
                'Vendor ID': {'aliases': ['vendorid', 'vendor id'], 'validators': []},
                'Vendor Product': {'aliases': ['vendorproduct', 'vendor product'],
@@ -237,6 +230,11 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
 
                'severity': {'aliases': ['event severity', 'severity', 'event priority', 'priority', 'urgency'],
                             'validators': []},
+
+               'Log Source': {'aliases': ['log source', 'log sources', 'logsource'], 'validators': []},
+
+               'Protocol': {'aliases': ['protocol'], 'validators': []},
+
                }
 
 suffix_mapping = {
@@ -328,7 +326,7 @@ class Validator:
             r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
             r'(?::\d+)?'  # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-        self.COMMON_NAME_CHARECTERS = re.compile('^[a-zA-Z"\s_\-\']+$')
+        self.COMMON_NAME_CHARECTERS = re.compile('^[0-9a-zA-Z"\s_\-\'.]+$')
         self.HOSTNAME_PART_REGEX = re.compile('(?!-)[A-Z\d-]{1,63}(?<!-)$')
         self.FULL_FILE_PATH_REGEX = re.compile('^((?:/[^/\n]+)*|.*(\\\\.*))$')
         self.date_validator = DateValidator()
