@@ -17,10 +17,7 @@ SAMPLES_OUTGOING = 'outgoingSamples'
 
 COUNT_KEYWORD = "count"
 
-SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
-                       'validators': ['validate_alphanumeric_with_common_punct']},
-
-               'Account ID': {'aliases': ['accountid', 'account id'],
+SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                               'validators': []},
                'Account Name': {'aliases': ['accountname', 'account name'],
                                 'validators': ['validate_alphanumeric_with_common_punct']},
@@ -142,8 +139,6 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
                'File Type': {'aliases': ['filetype', 'file type'],
                              'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'First Seen': {'aliases': ['firstseen', 'first seen'], 'validators': ['validate_date']},
-
                'Source Hostname': {
                    'aliases': ['source hostname', 'source host name', 'src hostname', 'src host name'],
                    'validators': ['validate_hostname']},
@@ -164,7 +159,6 @@ SIEM_FIELDS = {"App": {'aliases': ['app', 'application'],
                    'aliases': ['devicename', 'device name', 'endpoint name', 'end point name'],
                    'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'Last Seen': {'aliases': ['lastseen', 'last seen'], 'validators': ['validate_date']},
 
                'MAC Address': {'aliases': ['macaddress', 'mac address', 'mac', 'src mac', 'source mac'],
                                'validators': ['validate_mac']},

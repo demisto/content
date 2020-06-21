@@ -126,7 +126,7 @@ def test_suggest_field():
     assert 'src ip' in DBotSuggestClassifierMapping.ALIASING_MAP
     assert 'source ip' in DBotSuggestClassifierMapping.ALIASING_MAP
     assert 'source address' in DBotSuggestClassifierMapping.ALIASING_MAP
-    assert get_candidates("src ip") == ['src ip', 'src']
+    assert get_candidates("src ip") == ['src ip']
     assert suggest_field_with_alias("src ip", "1.2.3.4") == ('Source IP', 'src ip')
 
 
@@ -244,6 +244,13 @@ def test_main_splunk_schemes(mocker, capfd):
     }
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
-    with capfd.disabled():
-        for k, v in mapper.items():
-            print k, get_complex_value_key(v)
+    assert 'protocol' == get_complex_value_key(mapper['Protocol']['complex'])
+    assert 'severity' == get_complex_value_key(mapper['severity']['complex'])
+    assert 'body' == get_complex_value_key(mapper['Email Body']['complex'])
+    assert 'subject' == get_complex_value_key(mapper['Email Subject']['complex'])
+    assert 'country' == get_complex_value_key(mapper['Country']['complex'])
+    assert 'vendor_product' == get_complex_value_key(mapper['Vendor Product']['complex'])
+    assert 'signature' == get_complex_value_key(mapper['Signature']['complex'])
+    assert 'os' == get_complex_value_key(mapper['OS']['complex'])
+    assert 'app' == get_complex_value_key(mapper['App']['complex'])
+    assert 'description' == get_complex_value_key(mapper['Description']['complex'])
