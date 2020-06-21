@@ -1,10 +1,9 @@
 from typing import List, Dict, Tuple, Any
 
-from taxii2client.v20 import Server, as_pages
 from taxii2client.common import TokenAuth
+from taxii2client.v20 import Server, as_pages
 
 from CommonServerPython import *
-
 
 UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'ipv4-addr': FeedIndicatorType.IP,
@@ -46,7 +45,27 @@ class Client(BaseClient):
         return data
 
 
-def parse_response(objects: list, feed_tags: list = []) -> list:
+def get_relationships(objects: list) -> list:
+    """Get the relationships objects retrieved from the feed.
+    Args:
+      objects: a list of objects containing the indicators.
+    Returns:
+        A list of relationships, describing the connections between the indicators.
+    """
+    return [item for item in objects if item.get('type') == 'relationship']
+
+
+def get_pivots(objects: list) -> list:
+    """Get the attack-patterns, malware and campaigns objects retrieved from the feed.
+    Args:
+      objects: a list of objects containing the indicators.
+    Returns:
+        A list of attack-patterns, malware and campaigns
+    """
+    return [item for item in objects if item.get('type') in ['attack-pattern', 'malware', 'campaign']]
+
+
+def parse_indicators(objects: list, feed_tags: list = []) -> list:
     """Parse the objects retrieved from the feed.
     Args:
       objects: a list of objects containing the indicators.
@@ -78,6 +97,46 @@ def parse_response(objects: list, feed_tags: list = []) -> list:
     return indicators
 
 
+def parse_relationships(indicators: list, relationships: list = [], pivots: list = []) -> list:
+    """Parse the relationships between indicators to attack-patterns, malware and campaigns.
+    Args:
+      indicators: a list of indicators.
+      relationships: a list of relationships.
+      pivots: a list of attack-patterns, malware and campaigns.
+    Returns:
+        A list of indicators, containing the indicators and the relationships between them.
+    """
+    for indicator in indicators:
+        indicator_id = indicator.get('fields', {}).get('indicatoridentification', '')
+        for relationship in relationships:
+            reference = ''
+            if indicator_id == relationship.get('source_ref'):
+                reference = relationship.get('target_ref', '')
+
+            elif indicator_id == relationship.get('target_ref'):
+                reference = relationship.get('source_ref', '')
+
+            field = ''
+            if reference:  # if there is a reference, get the relevant pivot
+                if reference.startswith('attack-pattern'):
+                    field = 'external_references'
+                    field_type = 'mitreexternalreferences'
+                elif reference.startswith('campaign'):
+                    field = 'name'
+                    field_type = 'campaign'
+                elif reference.startswith('malware'):
+                    field = 'name'
+                    field_type = 'malwarefamily'
+
+            if field:  # if there is a pivot, map the relevant data accordingly
+                for pivot in pivots:
+                    if pivot.get('id') == reference:
+                        pivot_field = pivot.get(field)
+                        indicator['fields'][field_type] = pivot_field
+
+    return indicators
+
+
 def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
@@ -87,7 +146,7 @@ def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
         Outputs.
     """
     objects: list = client.get_indicators()
-    _ = parse_response(objects)
+    _ = parse_indicators(objects)
     return 'ok', {}, {}
 
 
@@ -102,7 +161,10 @@ def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
     """
     objects: list = client.get_indicators()
     demisto.info(str(f'Fetched Unit42 Indicators. {str(len(objects))} Objects were received.'))
-    indicators = parse_response(objects, feed_tags)
+    indicators = parse_indicators(objects, feed_tags)
+    relationships = get_relationships(objects)
+    pivots = get_pivots(objects)
+    indicators = parse_relationships(indicators, relationships, pivots)
     demisto.info(str(f'{str(len(indicators))} Demisto Indicators were created.'))
     return indicators
 
@@ -119,7 +181,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     """
     limit = int(args.get('limit', '10'))
     objects: list = client.get_indicators()
-    indicators = parse_response(objects, feed_tags)
+    indicators = parse_indicators(objects, feed_tags)
     limited_indicators = indicators[:limit]
 
     human_readable = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])

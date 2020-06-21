@@ -39,5 +39,74 @@ RESPONSE_DATA = [
      "labels": ["malicious-activity"], "modified": "2020-05-12T13:02:30.000000Z",
      "name": "cmstp.exe /s /ns C:\\Users\\ADMINI~W\\AppData\\Local\\Temp\\XKNqbpzl.txt",
      "pattern": "[process:command_line = 'cmstp.exe",
-     "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"}
+     "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"},
+    {"created": "2018-08-03T19:54:02.821Z", "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+     "description": "Windows Management",
+     "external_references": [
+         {
+             "description": "Ballenthin",
+             "source_name": "FireEye WMI 2015",
+             "url": "example.com"
+         },
+         {
+             "external_id": "T1047", "source_name": "mitre-attack",
+             "url": "https://attack.mitre.org/techniques/T1047"
+         },
+         {
+             "description": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+             "source_name": "MSDN WMI",
+             "url": "https://msdn.microsoft.com/en-us/library/aa394582.aspx"
+         },
+         {
+             "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+             "source_name": "TechNet RPC",
+             "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx"
+         },
+         {
+             "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+             "source_name": "Wikipedia SMB",
+             "url": "https://en.wikipedia.org/wiki/Server_Message_Block"
+         }
+     ],
+     "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+     "kill_chain_phases": [{"kill_chain_name": "lockheed", "phase_name": "installation"},
+                           {"kill_chain_name": "mitre-attack", "phase_name": "execution"}],
+     "modified": "2020-05-12T13:02:30.000000Z", "name": "T1047: Windows Management Instrumentation",
+     "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"], "type": "attack-pattern",
+     "x_mitre_data_sources": ["Authentication logs", "Netflow/Enclave netflow", "Process command-line parameters",
+                              "Process monitoring"], "x_mitre_detection": [
+        "Monitor network traffic"],
+     "x_mitre_permissions_required": ["Administrator", "User"], "x_mitre_platforms": ["Windows"],
+     "x_mitre_remote_support": "true", "x_mitre_system_requirements": ["WMI service"],
+     "x_mitre_version": "1.0"},
+    {"created": "2019-10-11T16:13:15.086Z",
+     "description": " Xbash is an all-in-one Linux malware formed botnet and ransomware developed by Iron cybercrime"
+                    " group. Xbash was aiming to discover unprotected services, deleting the victim's MySQL, PostgreSQL"
+                    " and MongoDB databases and demands a ransom in BitCoins.",
+     "id": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9", "labels": ["ransomware"],
+     "modified": "2020-05-12T13:02:30.000000Z", "name": "XBash", "type": "malware"},
+    {"created": "2020-01-16T16:07:12.459Z",
+     "description": "CARROTBALL is a simple FTP-based downloader first found embedded in a targeted macro document"
+                    " associated with Konni activity as part of the Fractured Statue campaign. Its most common"
+                    " observed payload is the Syscon backdoor. ",
+     "id": "malware--f6b7cb46-766c-44df-9d4e-14a90d90957b", "labels": ["dropper"],
+     "modified": "2020-05-12T13:02:30.000000Z", "name": "CARROTBALL", "type": "malware"},
+    {"created": "2019-10-10T17:21:26.557Z",
+     "description": " NanocoreRAT is a Trojan that opens a back door and steals information from the compromised"
+                    " computer. It also allows a remote attacker to execute various commands on the infected system."
+                    " It may achieve persistence on the targeted system by modifying the Registry.",
+     "id": "malware--f8deccc7-5da9-4755-8c5a-7e4bea2547b0", "labels": ["remote-access-trojan"],
+     "modified": "2020-05-12T13:02:30.000000Z", "name": "NanoCoreRAT", "type": "malware"},
+    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a6",
+     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
+     "source_ref": "indicator--010bb9ad-5686-485d-97e5-93c2187e56ce",
+     "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055", "type": "relationship"},
+    {"created": "2019-05-21T18:21:23.550Z", "id": "intrusion-set--eeef6603-d891-476a-a600-0096b6fe072f",
+     "modified": "2020-05-12T13:02:30.000000Z", "name": "Emissary Panda", "type": "intrusion-set"},
+    {"created": "2019-10-10T17:55:12.389Z", "id": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a",
+     "labels": ["backdoor"], "modified": "2020-05-12T13:02:30.000000Z", "name": "Muirim", "type": "malware"},
+    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
+     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
+     "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
+     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a", "type": "relationship"}
 ]
