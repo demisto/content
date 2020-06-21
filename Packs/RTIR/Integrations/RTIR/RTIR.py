@@ -2,35 +2,25 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
-import os
 import json
 import re
 import urllib
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-BASE_URL = SERVER + '/REST/1.0/'
-USE_SSL = not demisto.params().get('unsecure', False)
-FETCH_PRIORITY = int(demisto.params()['fetch_priority']) - 1
-FETCH_STATUS = demisto.params()['fetch_status']
-FETCH_QUEUE = demisto.params()['fetch_queue']
+SERVER = None
+BASE_URL = None
+USERNAME = None
+PASSWORD = None
+USE_SSL = None
+FETCH_PRIORITY = 0
+FETCH_STATUS = None
+FETCH_QUEUE = None
 CURLY_BRACKETS_REGEX = r'\{(.*?)\}'  # Extracts string in curly brackets, e.g. '{string}' -> 'string'
 apostrophe = "'"
 SESSION = requests.session()
 SESSION.verify = USE_SSL
-REFERER = demisto.params().get('referer')
-HEADERS = {'Referer': REFERER} if REFERER else {}
+REFERER = None
+HEADERS = {'Referer': REFERER} if REFERER else {}  # type: dict
 
 ''' HELPER FUNCTIONS '''
 
@@ -123,15 +113,7 @@ def parse_ticket_data(raw_query):
         id_ticket = search_ticket[0].upper()
         search_ticket[0] = id_ticket
 
-        current_ticket_search = {}
-        for entity in search_ticket:
-            if ': ' in entity:
-                header, content = entity.split(': ', 1)
-                if 'ID' in header:
-                    content = ticket_string_to_id(content)
-                if header in {'ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner',
-                              'InitialPriority', 'FinalPriority'}:
-                    current_ticket_search[header] = content
+        current_ticket_search = build_ticket(search_ticket)
 
         for key in search_ticket:  # Adding ticket custom fields to outputs
             if key.startswith('CF.'):
@@ -334,6 +316,19 @@ def build_search_query():
     return raw_query
 
 
+def build_ticket(rtir_search_ticket):
+    current_ticket_search = {}
+    for entity in rtir_search_ticket:
+        if ': ' in entity:
+            header, content = entity.split(': ', 1)
+            if 'ID' == header:
+                content = ticket_string_to_id(content)
+            if header in {'ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner',
+                          'InitialPriority', 'FinalPriority'}:
+                current_ticket_search[header] = content
+    return current_ticket_search
+
+
 def search_ticket():
     raw_query = build_search_query()
 
@@ -358,15 +353,7 @@ def search_ticket():
         else:
             search_ticket = empty_line_response
 
-        current_ticket_search = {}
-        for entity in search_ticket:
-            if ': ' in entity:
-                header, content = entity.split(': ', 1)
-                if 'ID' in header:
-                    content = ticket_string_to_id(content)
-                if header in {'ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner',
-                              'InitialPriority', 'FinalPriority'}:
-                    current_ticket_search[header] = content
+        current_ticket_search = build_ticket(search_ticket)
 
         for key in search_ticket:  # Adding ticket custom fields to outputs
             if key.startswith('CF.'):
@@ -526,41 +513,80 @@ def edit_ticket():
 
 def get_ticket_attachments(ticket_id):
     suffix_url = 'ticket/{}/attachments'.format(ticket_id)
-    raw_attachments = http_request('GET', suffix_url).content
+    raw_attachments = http_request('GET', suffix_url).text
 
     attachments = []
     attachments_content = []
-    split_raw_attachment = raw_attachments.split('\n')
-    for i in xrange(len(split_raw_attachment)):
-        if 'Attachments' in split_raw_attachment[i]:
-            attachment_lines = split_raw_attachment[i:]
-            for line in attachment_lines:
-                if line and 'Unnamed' not in line:
-                    split_line = line.split(': ')
-                    if 'Attachments' in split_line:
-                        starting_index = 1
-                    else:
-                        starting_index = 0
-                    attachment_id = split_line[starting_index]
-                    attachment_id = attachment_id.strip()
-                    attachment_name = split_line[starting_index + 1]
-                    attachment_type = attachment_name.replace('(', '').replace(')', '')
-                    split_line_type = attachment_type.split(' ')
-                    attachment_name = split_line_type[0]
-                    attachment_type = split_line_type[1]
-                    attachment_size = split_line_type[3]
+    attachments_list = parse_attachments_list(raw_attachments)
+    for attachment_id, attachment_name, attachment_type, attachment_size in attachments_list:
+        attachments.append({
+            'ID': attachment_id,
+            'Name': attachment_name,
+            'Type': attachment_type,
+            'Size': attachment_size
+        })
 
-                    attachments.append({
-                        'ID': attachment_id,
-                        'Name': attachment_name,
-                        'Type': attachment_type,
-                        'Size': attachment_size
-                    })
-
-                    suffix_url = 'ticket/{}/attachments/{}'.format(ticket_id, attachment_id)
-                    attachment_content = http_request('GET', suffix_url).content
-                    attachments_content.append(fileResult(attachment_name, attachment_content))
+        suffix_url = 'ticket/{}/attachments/{}'.format(ticket_id, attachment_id)
+        raw_attachment_content = http_request('GET', suffix_url).content
+        attachment_content = parse_attachment_content(attachment_id, raw_attachment_content)
+        attachments_content.append(fileResult(attachment_name, attachment_content))
     return attachments, attachments_content
+
+
+def parse_attachments_list(raw_attachments):
+    """
+    Parses attachments details from raw attachments response.
+    Example input:
+        RT/4.4.2 200 Ok
+
+        id: ticket/6325/attachments
+        Attachments: 504: mimecast-get-remediation-incident.log (text/plain / 3.5k)
+        505: mimecast-get-remediation-incident2.log (text/plain / 3.6k)
+
+    Example output:
+        [('504', 'mimecast-get-remediation-incident.log', 'text/plain', '3.5k'),
+         ('505', 'mimecast-get-remediation-incident2.log', 'text/plain', '3.6k')]
+    Args:
+        raw_attachments: The raw attachments response
+    Returns:
+        A list of tuples containing the id, name, format and size of each attachment
+    """
+    attachments_regex = re.compile(r'(\d+): (.+) \((.+) \/ (.+)\)')
+    attachments_list = attachments_regex.findall(raw_attachments)
+    return attachments_list
+
+
+def parse_attachment_content(attachment_id, raw_attachment_content):
+    # type: (str, str) -> str
+    """
+    Parses raw attachment response into the attachment content
+    Example input:
+        From: root@localhost
+        Subject: <ticket subject>
+        X-RT-Interface: REST
+        Content-Type: text/plain
+        Content-Disposition: form-data;
+        name="attachment_1";
+        filename="mimecast-get-remediation-incident.log";
+        filename="mimecast-get-remediation-incident.log"
+        Content-Transfer-Encoding: binary
+        Content-Length: <length of the content>
+
+        Content: <the actual attachment content...>
+    Example output:
+        <the actual attachment content...>
+    Args:
+        attachment_id: The ID of the attachment
+        raw_attachment_content: The raw attachment content, should be like the example input
+
+    Returns:
+        The actual content
+    """
+    attachment_content_pattern = re.compile(r'Content: (.*)', flags=re.DOTALL)
+    attachment_content = attachment_content_pattern.findall(raw_attachment_content)
+    if not attachment_content:
+        return_error('Could not parse attachment content for attachment id {}'.format(attachment_id))
+    return attachment_content[0]
 
 
 def get_ticket_attachments_command():
@@ -592,32 +618,75 @@ def get_ticket_history_by_id(ticket_id, history_id):
 
     suffix_url = 'ticket/{}/history/id/{}'.format(ticket_id, history_id)
     raw_history = http_request('GET', suffix_url)
+    return parse_history_response(raw_history.content)
 
-    return raw_history
+
+def parse_history_response(raw_history):
+    # type: (str) -> dict
+    """
+    Parses raw history string into dict
+    Example input:
+        RT/4.4.2 200 Ok
+
+        # 24/24 (id/80/total)
+
+        id: 80
+        Ticket: 5
+        TimeTaken: 0
+        Type: Create
+        Field:
+        OldValue:
+        NewValue: some new value
+        Data:
+        Description: Ticket created by root
+        Content: Some
+        Multi line
+        Content
+        Creator: root
+        Created: 2018-07-09 11:25:59
+        Attachments:
+    Example output:
+        {'ID': '80',
+         'Ticket': '5',
+         'TimeTaken': '0',
+         'Type': 'Create',
+         'Field': '',
+         'OldValue': '',
+         'NewValue': 'some new value',
+         'Data': '',
+         'Description': 'Ticket created by root',
+         'Content': 'Some\nMulti line\nContent',
+         'Creator': 'root',
+         'Created': '2018-07-09 11:25:59',
+         'Attachments': ''}
+
+    Args:
+        raw_history: The raw ticket history string response
+
+    Returns:
+        A pasred dict with keys and values
+    """
+    keys = re.findall(r'^([a-z|A-Z]+):', raw_history, flags=re.MULTILINE)
+    values = re.split(r'\n[a-z|A-Z]+:', raw_history)[1:]
+    if len(keys) != len(values):
+        return {}
+    current_history_context = {key.upper() if key == 'id' else key: value.strip() for key, value in zip(keys, values)}
+    return current_history_context
 
 
 def get_ticket_history(ticket_id):
     suffix_url = 'ticket/{}/history'.format(ticket_id)
     raw_history = http_request('GET', suffix_url)
     history_context = []
-    headers = ['ID', 'Created', 'Creator', 'Description']
+    headers = ['ID', 'Created', 'Creator', 'Description', 'Content']
     data = raw_history.text.split('\n')
     data = data[4:]
     for line in data:
-        split_line = line.split(': ')
-        current_raw_ticket_history = get_ticket_history_by_id(ticket_id, split_line[0]).content
-        current_raw_ticket_history = current_raw_ticket_history.split('\n')
-        current_raw_ticket_history = current_raw_ticket_history[4:]
-        id_ticket = current_raw_ticket_history[0].upper()
-        current_raw_ticket_history[0] = id_ticket
-        current_history_context = {}
-        for entity in current_raw_ticket_history:
-            if ': ' in entity:
-                header, content = entity.split(': ', 1)
-                if header in {'ID', 'Content', 'Created', 'Creator', 'Description', 'NewValue'}:
-                    current_history_context[header] = content
-        if current_history_context:
-            history_context.append(current_history_context)
+        history_id = line.split(': ')[0]
+        if not history_id:
+            continue
+        history_response = get_ticket_history_by_id(ticket_id, history_id)
+        history_context.append(history_response)
     return history_context, headers
 
 
@@ -647,7 +716,7 @@ def get_ticket_history_command():
 def get_ticket():
     ticket_id = demisto.args().get('ticket-id')
     raw_ticket = get_ticket_request(ticket_id)
-    if not raw_ticket:
+    if not raw_ticket or 'Ticket {} does not exist'.format(ticket_id) in raw_ticket.text:
         return_error('Failed to get ticket, possibly does not exist.')
     ticket_context = []
     data = raw_ticket.content.split('\n')
@@ -657,46 +726,39 @@ def get_ticket():
         split_line = line.split(': ')
         if len(split_line) == 2:
             current_ticket[split_line[0]] = split_line[1]
-            ticket = {
-                'ID': ticket_string_to_id(current_ticket['id']),
-                'Subject': current_ticket.get('Subject'),
-                'State': current_ticket.get('Status'),
-                'Creator': current_ticket.get('Creator'),
-                'Created': current_ticket.get('Created'),
-                'Priority': current_ticket.get('Priority'),
-                'InitialPriority': current_ticket.get('InitialPriority'),
-                'FinalPriority': current_ticket.get('FinalPriority'),
-                'Queue': current_ticket.get('Queue'),
-                'Owner': current_ticket.get('Owner')
-            }
+    ticket = {
+        'ID': ticket_string_to_id(current_ticket['id']),
+        'Subject': current_ticket.get('Subject'),
+        'State': current_ticket.get('Status'),
+        'Creator': current_ticket.get('Creator'),
+        'Created': current_ticket.get('Created'),
+        'Priority': current_ticket.get('Priority'),
+        'InitialPriority': current_ticket.get('InitialPriority'),
+        'FinalPriority': current_ticket.get('FinalPriority'),
+        'Queue': current_ticket.get('Queue'),
+        'Owner': current_ticket.get('Owner')
+    }
 
-        for key in data:  # Adding ticket custom fields to outputs
-            if key.startswith('CF.'):
-                split_key = key.split(':')
-                if split_key[0]:
-                    custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ',
-                                                                                          '')  # Regex and removing white spaces
-                    ticket[custom_field_regex] = split_key[1]
-
-        if ticket:
-            ticket_context.append(ticket)
+    for key in data:  # Adding ticket custom fields to outputs
+        if key.startswith('CF.'):
+            split_key = key.split(':')
+            if split_key[0]:
+                custom_field_regex = re.findall(CURLY_BRACKETS_REGEX, key)[0].replace(' ',
+                                                                                      '')  # Regex and removing white spaces
+                ticket[custom_field_regex] = split_key[1]
 
     suffix_url = 'ticket/{}/links/show'.format(ticket_id)
     raw_links = http_request('GET', suffix_url)
-    if raw_links:
-        links = []
-        for raw_link in raw_links:
-            link_id = raw_link.rsplit('/', 3)[-2]
-            links.append({
-                'ID': link_id
-            })
-        ticket['LinkedTo'] = links
+    links = parse_ticket_links(raw_links.text)
+    ticket['LinkedTo'] = links
+
+    ticket_context.append(ticket)
     ec = {
         'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket
     }
     title = 'RTIR ticket {}'.format(ticket_id)
     headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority',
-               'FinalPriority']
+               'FinalPriority', 'LinkedTo']
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': ticket_context,
@@ -705,6 +767,30 @@ def get_ticket():
         'HumanReadable': tableToMarkdown(title, ticket, headers, removeNull=True),
         'EntryContext': ec
     })
+
+
+def parse_ticket_links(raw_links):
+    # type: (str) -> list
+    """
+    Parses the link IDs from the ticket link response
+    An example to an expected 'raw_links' is:
+    "RT/4.4.4 200 Ok
+
+    id: ticket/68315/links
+
+    Members: some-url.com/ticket/65461,
+             some-url.com/ticket/65462,
+             some-url.com/ticket/65463"
+
+    For 'raw_links' as descripbed above- the output will be [{'ID': '65461'}, {'ID': '65462'}, {'ID': '65463'}]
+    Args:
+        raw_links: The raw links string response
+
+    Returns:
+        A list of parsed IDs
+    """
+    links = [{'ID': link} for link in re.findall(r'/ticket/(\d+)', raw_links)] if raw_links else []
+    return links
 
 
 def add_comment_request(ticket_id, encoded):
@@ -776,7 +862,7 @@ def add_reply():
             demisto.results('Replied successfully to ticket {}.'.format(ticket_id))
         else:
             return_error('Failed to reply')
-    except Exception, e:
+    except Exception as e:
         demisto.error(str(e))
         return_error('Failed to reply')
 
@@ -816,44 +902,69 @@ def fetch_incidents():
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(),))
-try:
-    if demisto.command() == 'test-module':
-        login()
-        logout()
-        demisto.results('ok')
 
-    if demisto.command() in {'fetch-incidents'}:
-        fetch_incidents()
+def main():
+    handle_proxy()
 
-    elif demisto.command() == 'rtir-create-ticket':
-        create_ticket()
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
 
-    elif demisto.command() == 'rtir-search-ticket':
-        search_ticket()
+    ''' GLOBAL VARS '''
+    global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER
+    SERVER = demisto.params().get('server', '')[:-1] if demisto.params().get('server', '').endswith(
+        '/') else demisto.params().get('server', '')
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    BASE_URL = urljoin(SERVER, '/REST/1.0/')
+    USE_SSL = not demisto.params().get('unsecure', False)
+    FETCH_PRIORITY = int(demisto.params()['fetch_priority']) - 1
+    FETCH_STATUS = demisto.params()['fetch_status']
+    FETCH_QUEUE = demisto.params()['fetch_queue']
+    REFERER = demisto.params().get('referer')
+    HEADERS = {'Referer': REFERER} if REFERER else {}
 
-    elif demisto.command() == 'rtir-resolve-ticket':
-        close_ticket()
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        if demisto.command() == 'test-module':
+            login()
+            logout()
+            demisto.results('ok')
 
-    elif demisto.command() == 'rtir-edit-ticket':
-        edit_ticket()
+        if demisto.command() in {'fetch-incidents'}:
+            fetch_incidents()
 
-    elif demisto.command() == 'rtir-ticket-history':
-        get_ticket_history_command()
+        elif demisto.command() == 'rtir-create-ticket':
+            create_ticket()
 
-    elif demisto.command() == 'rtir-ticket-attachments':
-        get_ticket_attachments_command()
+        elif demisto.command() == 'rtir-search-ticket':
+            search_ticket()
 
-    elif demisto.command() == 'rtir-get-ticket':
-        get_ticket()
+        elif demisto.command() == 'rtir-resolve-ticket':
+            close_ticket()
 
-    elif demisto.command() == 'rtir-add-comment':
-        add_comment()
+        elif demisto.command() == 'rtir-edit-ticket':
+            edit_ticket()
 
-    elif demisto.command() == 'rtir-add-reply':
-        add_reply()
+        elif demisto.command() == 'rtir-ticket-history':
+            get_ticket_history_command()
 
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+        elif demisto.command() == 'rtir-ticket-attachments':
+            get_ticket_attachments_command()
+
+        elif demisto.command() == 'rtir-get-ticket':
+            get_ticket()
+
+        elif demisto.command() == 'rtir-add-comment':
+            add_comment()
+
+        elif demisto.command() == 'rtir-add-reply':
+            add_reply()
+
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()

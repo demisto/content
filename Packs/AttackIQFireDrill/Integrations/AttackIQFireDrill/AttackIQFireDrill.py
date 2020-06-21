@@ -211,7 +211,7 @@ def create_invalid_id_err_msg(orig_err, error_codes):
     """
     err_msg = API_ERR_MSG
     if any(err_code in orig_err for err_code in error_codes):
-        err_msg += f'This may be happen if you provided an invalid id.\n'
+        err_msg += 'This may be happen if you provided an invalid id.\n'
     err_msg += orig_err
     return err_msg
 
@@ -480,7 +480,7 @@ def build_tests_hr(tests_res, ass_id, page_num, tot_pages):
 
 
 def list_tests_by_assessment(params):
-    return http_request('GET', f'/v1/tests', params=params)
+    return http_request('GET', '/v1/tests', params=params)
 
 
 def list_tests_by_assessment_command():
@@ -635,7 +635,7 @@ def add_assets_to_assessment():
         data['asset_groups'] = asset_groups
 
     if data == {}:
-        raise ValueError(f"No asset or asset groups were specified.")
+        raise ValueError("No asset or asset groups were specified.")
     try:
         res = http_request('POST', f'/v1/assessments/{assessment_id}/update_defaults', data=json.dumps(data))
         demisto.results(res.get('message', ''))

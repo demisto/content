@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fixed a bug in the ***xdr-get-endpoint*** command where only the last endpoint was displayed in context.
 
 ## [20.4.1] - 2020-04-29
 - Fixed an issue where the ***xdr-get-endpoints*** command failed when returning all the endpoints if no filters were given. 

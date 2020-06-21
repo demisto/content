@@ -100,30 +100,12 @@ def auto_refresh_token():
             demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
-def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False):
+def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers=None):
     is_user_auth = True
     url = BASE_URL + api_endpoint
     # 2 types of auth, user and non user, mostly user is needed
     if user_auth:
-        # Generate request header values
-        request_id = str(uuid.uuid4())
-        hdr_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
-
-        # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
-        hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),  # type: ignore
-                             digestmod=hashlib.sha1).digest()
-
-        # Use the HMAC SHA1 value to sign the hdrDate + ":" requestId + ":" + URI + ":" + appkey
-        signature = base64.encodestring(hmac_sha1).rstrip()
-
-        # Create request headers
-        headers = {
-            'Authorization': 'MC ' + ACCESS_KEY + ':' + signature,
-            'x-mc-app-id': APP_ID,
-            'x-mc-date': hdr_date,
-            'x-mc-req-id': request_id,
-            'Content-Type': 'application/json'
-        }
+        headers = headers or generate_user_auth_headers(api_endpoint)
 
     else:
         # This type of auth is only supported for basic commands: login/discover/refresh-token
@@ -168,6 +150,36 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
     except Exception as e:
         LOG(e)
         raise
+
+
+def generate_user_auth_headers(api_endpoint):
+    # type: (str) -> dict
+    """
+        Generate headers for a request
+        Args:
+            api_endpoint: The request's endpoint
+
+        Returns:
+            A dict of headers for the request
+        """
+    # Generate request header values
+    request_id = str(uuid.uuid4())
+    hdr_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
+    # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
+    hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),
+                         # type: ignore
+                         digestmod=hashlib.sha1).digest()
+    # Use the HMAC SHA1 value to sign the hdrDate + ":" requestId + ":" + URI + ":" + appkey
+    signature = base64.encodestring(hmac_sha1).rstrip()
+    # Create request headers
+    headers = {
+        'Authorization': 'MC ' + ACCESS_KEY + ':' + signature,
+        'x-mc-app-id': APP_ID,
+        'x-mc-date': hdr_date,
+        'x-mc-req-id': request_id,
+        'Content-Type': 'application/json'
+    }
+    return headers
 
 
 def parse_query_args(args):
@@ -963,7 +975,6 @@ def get_url_logs():
     context = {}
     url_logs_context = []
     search_params = {}
-    result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
     from_date = demisto.args().get('fromDate', '').encode('utf-8')
     to_date = demisto.args().get('toDate', '').encode('utf-8')
     scan_result = demisto.args().get('resultType', '').encode('utf-8')
@@ -976,9 +987,7 @@ def get_url_logs():
     if scan_result:
         search_params['scanResult'] = scan_result
 
-    url_logs = get_url_logs_request(search_params, result_number)
-    if limit:
-        url_logs = url_logs[:limit]
+    url_logs = get_url_logs_request(search_params, limit=limit)
     for url_log in url_logs:
         contents.append({
             'Action': url_log.get('action'),
@@ -1019,23 +1028,48 @@ def get_url_logs():
     return results
 
 
-def get_url_logs_request(search_params, result_number=None):
+def get_url_logs_request(search_params, limit=None):
+    """
+    Getting logs using pagination as specified here
+    https://www.mimecast.com/tech-connect/documentation/endpoint-reference/logs-and-statistics/get-ttp-url-logs/
+    Args:
+        search_params: The search parameter
+        limit: The maximum number of logs to return
+
+    Returns:
+        A generator of logs
+    """
     # Setup required variables
+    page_size = 100
     api_endpoint = '/api/ttp/url/get-logs'
-    pagination = {}  # type: Dict[Any, Any]
-    if result_number:
-        pagination = {'page_size': result_number}
+    pagination = {'page_size': page_size}
     payload = {
         'meta': {
             'pagination': pagination
         },
         'data': [search_params]
-    }
-
-    response = http_request('POST', api_endpoint, str(payload))
-    if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
-    return response.get('data')[0].get('clickLogs')
+    }  # type: Dict[str, Any]
+    headers = generate_user_auth_headers(api_endpoint)
+    response = http_request('POST', api_endpoint, str(payload), headers=headers)
+    next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+    logs_counter = 0
+    while True:
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        logs = response.get('data')[0].get('clickLogs')
+        for log in logs:
+            # If returning this log will not exceed the specified limit
+            if not limit or logs_counter < limit:
+                logs_counter += 1
+                yield log
+        # If limit is reached or there are no more pages
+        if not next_page or (limit and logs_counter >= limit):
+            break
+        pagination = {'page_size': page_size,
+                      'pageToken': next_page}  # type: ignore
+        payload['meta']['pagination'] = pagination
+        response = http_request('POST', api_endpoint, str(payload), headers=headers)
+        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
 
 
 def get_attachment_logs():
@@ -2099,71 +2133,78 @@ def get_mimecast_incident_request():
 
 
 def mimecast_incident_api_response_to_markdown(api_response, action_type):
-    incident_code = api_response['data'][0]['code']
-    incident_type = api_response['data'][0]['type']
-    incident_reason = api_response['data'][0]['reason']
-    incident_identified_messages_amount = api_response['data'][0]['Identified']
-    incident_successful_messages_amount = api_response['data'][0]['Successful']
-    incident_failed_messages_amount = api_response['data'][0]['Failed']
-    incident_restored_messages_amount = api_response['data'][0]['Restored']
-    incident_id = api_response['data'][0]['id']
+    response_data = api_response.get('data', [{}])[0]
+    incident_code = response_data.get('code', '')
+    incident_type = response_data.get('type', '')
+    incident_reason = response_data.get('reason', '')
+    incident_identified_messages_amount = response_data.get('identified', 0)
+    incident_successful_messages_amount = response_data.get('successful', 0)
+    incident_failed_messages_amount = response_data.get('failed', 0)
+    incident_restored_messages_amount = response_data.get('restored', 0)
+    incident_id = response_data.get('id', '')
 
     if action_type == 'create':
-        md = 'Incident ' + incident_id + ' has been created\n'
+        md = 'Incident ' + incident_id + ' has been created'
     else:
-        md = 'Incident ' + incident_id + ' has been found\n'
+        md = 'Incident ' + incident_id + ' has been found'
+    md_metadata = """
+#### Code: {incident_code}
+#### Type: {incident_type}
+#### Reason: {incident_reason}
+#### The number of messages identified based on the search criteria: {incident_identified_messages_amount}
+#### The number successfully remediated messages: {incident_successful_messages_amount}
+#### The number of messages that failed to remediate: {incident_failed_messages_amount}
+#### The number of messages that were restored from the incident: {incident_restored_messages_amount}
+""".format(incident_code=incident_code,
+           incident_type=incident_type,
+           incident_reason=incident_reason,
+           incident_identified_messages_amount=incident_identified_messages_amount,
+           incident_successful_messages_amount=incident_successful_messages_amount,
+           incident_failed_messages_amount=incident_failed_messages_amount,
+           incident_restored_messages_amount=incident_restored_messages_amount)
 
-    md_metadata = '####Code: ' + incident_code
-    md_metadata += '\n####Type: ' + incident_type
-    md_metadata += '\n####Reason: ' + incident_reason
-    md_metadata += '\n####The number of messages identified based on the search criteria: ' + incident_identified_messages_amount
-    md_metadata += '\n####The number successfully remediated messages: ' + incident_successful_messages_amount
-    md_metadata += '\n####The number of messages that failed to remediate: ' + incident_failed_messages_amount
-    md_metadata += '\n####The number of messages that were restored from the incident: ' + incident_restored_messages_amount
+    message = response_data['searchCriteria']
+    message_entry = {
+        'From': message.get('from'),
+        'To': message.get('to'),
+        'Start date': message.get('start'),
+        'End date': message.get('end'),
+        'Message ID': message.get('messageId'),
+        'File hash': message.get('fileHash')
+    }
 
-    messages_table_list = list()
-    for message in api_response['data'][0]['searchCriteria']:
-        message_entry = {
-            'From': message['from'],
-            'To': message['to'],
-            'Start date': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
-            'End date': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ'),
-            'Message ID': message['messageId'],
-            'File hash': message['fileHash']
-        }
-
-        messages_table_list.append(message_entry)
-
-    md = tableToMarkdown(md, messages_table_list,
-                         ['From', 'To', 'Start', 'End date', 'Message ID', 'File hash'], metadata=md_metadata)
+    md = tableToMarkdown(md,
+                         message_entry,
+                         ['From', 'To', 'Start', 'End date', 'Message ID', 'File hash'],
+                         metadata=md_metadata,
+                         removeNull=True)
 
     return md
 
 
 def mimecast_incident_api_response_to_context(api_response):
-    messages_table_list = list()
-    for message in api_response['data'][0]['searchCriteria']:
-        message_entry = {
-            'From': message['from'],
-            'To': message['to'],
-            'MessageID': message['messageId'],
-            'FileHash': message['fileHash'],
-            'StartDate': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
-            'EndDate': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ')
-        }
-    messages_table_list.append(message_entry)
+    response_data = api_response['data'][0]
+    message = response_data['searchCriteria']
+    message_entry = {
+        'From': message.get('from'),
+        'To': message.get('to'),
+        'StartDate': message.get('start'),
+        'EndDate': message.get('end'),
+        'MessageID': message.get('messageId'),
+        'FileHash': message.get('fileHash')
+    }
 
     incident_created = {
-        'ID': api_response['data'][0]['id'],
-        'Code': api_response['data'][0]['code'],
-        'Type': api_response['data'][0]['type'],
-        'Reason': api_response['data'][0]['reason'],
-        'IdentifiedMessages': api_response['data'][0]['identified'],
-        'SuccessfullyRemediatedMessages': api_response['data'][0]['successful'],
-        'FailedRemediatedMessages': api_response['data'][0]['failed'],
-        'MessagesRestored': api_response['data'][0]['restored'],
-        'LastModified': datetime.strptime(api_response['data'][0]['modified'], '%Y-%m-%dT%H:%M:%SZ'),
-        'SearchCriteria': messages_table_list
+        'ID': response_data.get('id'),
+        'Code': response_data.get('code'),
+        'Type': response_data.get('type'),
+        'Reason': response_data.get('reason'),
+        'IdentifiedMessages': response_data.get('identified'),
+        'SuccessfullyRemediatedMessages': response_data.get('successful'),
+        'FailedRemediatedMessages': response_data.get('failed'),
+        'MessagesRestored': response_data.get('restored'),
+        'LastModified': response_data.get('modified'),
+        'SearchCriteria': message_entry
     }
 
     return {'Mimecast.Incident(val.ID && val.ID == obj.ID)': incident_created}
@@ -2309,5 +2350,5 @@ def main():
         return_error(e.message)
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
