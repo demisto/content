@@ -1742,6 +1742,11 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "Infocyte",
+            "playbookID": "Infocyte-Test",
+            "timeout": 1200
+        },
+        {
             "integrations": "Qualys",
             "playbookID": "Qualys-Test"
         },
