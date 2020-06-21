@@ -2586,6 +2586,8 @@ async def test_check_entitlement(mocker):
     message4 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22|43 goodbye'
     message5 = 'hi test@demisto.com 43434@e093ba05-3f3c-402e-81a7-149db969be5d goodbye'
     message6 = 'hi test@demisto.com name-of-someone@mail-of-someone goodbye'
+    message7 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_1|43 goodbye'
+    message8 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_2 goodbye'
 
     # Arrange
     result1 = await check_and_handle_entitlement(message1, user, '')
@@ -2594,11 +2596,15 @@ async def test_check_entitlement(mocker):
     result4 = await check_and_handle_entitlement(message4, user, '')
     result5 = await check_and_handle_entitlement(message5, user, '')
     result6 = await check_and_handle_entitlement(message6, user, '')
+    result7 = await check_and_handle_entitlement(message7, user, '')
+    result8 = await check_and_handle_entitlement(message8, user, '')
 
     result1_args = demisto.handleEntitlementForUser.call_args_list[0][0]
     result2_args = demisto.handleEntitlementForUser.call_args_list[1][0]
     result3_args = demisto.handleEntitlementForUser.call_args_list[2][0]
     result4_args = demisto.handleEntitlementForUser.call_args_list[3][0]
+    result7_args = demisto.handleEntitlementForUser.call_args_list[4][0]
+    result8_args = demisto.handleEntitlementForUser.call_args_list[5][0]
 
     assert result1 == 'Thank you for your response.'
     assert result2 == 'Thank you for your response.'
@@ -2606,8 +2612,10 @@ async def test_check_entitlement(mocker):
     assert result4 == 'Thank you for your response.'
     assert result5 == ''
     assert result6 == ''
+    assert result7 == 'Thank you for your response.'
+    assert result8 == 'Thank you for your response.'
 
-    assert demisto.handleEntitlementForUser.call_count == 4
+    assert demisto.handleEntitlementForUser.call_count == 6
 
     assert result1_args[0] == 'e093ba05-3f3c-402e-81a7-149db969be5d'  # incident ID
     assert result1_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'  # GUID
@@ -2632,6 +2640,18 @@ async def test_check_entitlement(mocker):
     assert result4_args[2] == 'test@demisto.com'
     assert result4_args[3] == 'hi test@demisto.com  goodbye'
     assert result4_args[4] == '43'
+
+    assert result7_args[0] == '22_1'
+    assert result7_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
+    assert result7_args[2] == 'test@demisto.com'
+    assert result7_args[3] == 'hi test@demisto.com  goodbye'
+    assert result7_args[4] == '43'
+
+    assert result8_args[0] == '22_2'
+    assert result8_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
+    assert result8_args[2] == 'test@demisto.com'
+    assert result8_args[3] == 'hi test@demisto.com  goodbye'
+    assert result8_args[4] == ''
 
 
 @pytest.mark.asyncio
