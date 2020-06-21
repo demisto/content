@@ -1,7 +1,7 @@
 fromversion: 5.0.0
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedTAXII2
+  id: TAXII 2 Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
