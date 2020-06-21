@@ -51,7 +51,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '10'
-  display: How many incidents to fetch each time
+  display: Maximum number of incidents to pull per fetch
   hidden: false
   name: fetch_limit
   required: false
@@ -83,134 +83,134 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Get application by ID (leave empty to get all applications)
+      description: The application ID for which to get details. Leave empty to get a list of all applications.
       isArray: false
       name: application-id
       required: false
       secret: false
     deprecated: false
-    description: Gets application details or list of all applications.
+    description: Gets application details or a list of all applications.
     execution: false
     name: archer-search-applications
     outputs:
     - contextPath: Archer.Application.Guid
-      description: The application Guid
+      description: The application GUID.
       type: String
     - contextPath: Archer.Application.Id
-      description: Unique Id of application
+      description: Unique ID of the application.
       type: Number
     - contextPath: Archer.Application.Status
-      description: The application Status
+      description: The application status.
       type: Number
     - contextPath: Archer.Application.Type
-      description: The application Type
+      description: The application type.
       type: Number
     - contextPath: Archer.Application.Name
-      description: The application name
+      description: The application name.
       type: String
   - arguments:
     - default: false
-      description: ID of the application to search fields in
+      description: The application ID for which to get the application fields.
       isArray: false
       name: application-id
       required: true
       secret: false
     deprecated: false
-    description: Gets all application fields by application ID
+    description: Gets all application fields by application ID.
     execution: false
     name: archer-get-application-fields
     outputs:
     - contextPath: Archer.ApplicationField.FieldId
-      description: Unique Id of field
+      description: Unique ID of the field.
       type: Number
     - contextPath: Archer.ApplicationField.FieldName
-      description: The field name
+      description: The field name.
       type: String
     - contextPath: Archer.ApplicationField.FieldType
-      description: The field type
+      description: The field type.
       type: String
     - contextPath: Archer.ApplicationField.LevelID
-      description: The field level Id
+      description: The field level ID.
       type: Number
   - arguments:
     - default: false
-      description: Id of the field
+      description: ID of the field.
       isArray: false
       name: field-id
       required: true
       secret: false
     deprecated: false
-    description: Returns mapping from list value name to list value id
+    description: Returns mapping from list value name to list value ID.
     execution: false
     name: archer-get-field
     outputs:
     - contextPath: Archer.ApplicationField.FieldId
-      description: Unique Id of field
+      description: Unique ID of the field.
       type: Number
     - contextPath: Archer.ApplicationField.FieldName
-      description: The field name
+      description: The field name.
       type: String
     - contextPath: Archer.ApplicationField.FieldType
-      description: The field type
+      description: The field type.
       type: String
     - contextPath: Archer.ApplicationField.LevelID
-      description: The field level Id
+      description: The field level ID.
       type: Number
   - arguments:
     - default: false
-      description: Id of the level
+      description: ID of the level.
       isArray: false
       name: level
       required: true
       secret: false
     deprecated: false
-    description: Return mapping of fields by level id
+    description: Returns mapping of fields by level ID.
     execution: false
     name: archer-get-mapping-by-level
     outputs:
     - contextPath: Archer.LevelMapping.Id
-      description: Unique Id of field
+      description: Unique ID of the field.
       type: Number
     - contextPath: Archer.LevelMapping.Name
-      description: The field name
+      description: The field name.
       type: String
     - contextPath: Archer.LevelMapping.Type
-      description: The field type
+      description: The field type.
       type: String
     - contextPath: Archer.LevelMapping.LevelId
-      description: The field level Id
+      description: The field level ID.
       type: Number
   - arguments:
     - default: false
-      description: The record id
+      description: The record ID.
       isArray: false
       name: record-id
       required: true
       secret: false
     - default: false
-      description: The application Id
+      description: The application ID.
       isArray: false
       name: application-id
       required: true
       secret: false
     deprecated: false
-    description: Gets information about a content record in the given application
+    description: Gets information about a content record in the given application.
     execution: false
     name: archer-get-record
     outputs:
     - contextPath: Archer.Record.Id
-      description: Unique Id of record
+      description: Unique ID of the record.
       type: Number
   - arguments:
     - default: false
-      description: The application Id
+      description: The application ID.
       isArray: false
       name: application-id
       required: true
       secret: false
     - default: false
       description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2
-        }. Field name is case sensitive'
+        }. Field names are case sensitive.'
       isArray: false
       name: fields-to-values
       required: true
@@ -221,84 +221,84 @@ script:
     name: archer-create-record
     outputs:
     - contextPath: Archer.Record.Id
-      description: Unique Id of record
+      description: Unique ID of the record.
       type: Number
   - arguments:
     - default: false
-      description: The record Id to delete
+      description: The ID of the record to delete.
       isArray: false
       name: record-id
       required: true
       secret: false
     deprecated: false
-    description: Delete existing content record in the given application
+    description: Deletes an existing content record in the given application.
     execution: false
     name: archer-delete-record
   - arguments:
     - default: false
-      description: The application Id
+      description: The application ID.
       isArray: false
       name: application-id
       required: true
       secret: false
     - default: false
       description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2
-        }. Field name is case sensitive'
+        }. Field names are case sensitive,'
       isArray: false
       name: fields-to-values
       required: true
       secret: false
     - default: false
-      description: The record Id to update
+      description: The ID of the record to update.
       isArray: false
       name: record-id
       required: true
       secret: false
     deprecated: false
-    description: Updates existing content record in the given application
+    description: Updates an existing content record in the given application.
     execution: false
     name: archer-update-record
   - arguments:
     - default: false
-      description: The report GUID
+      description: The report GUID.
       isArray: false
       name: report-guid
       required: true
       secret: false
     - default: false
       defaultValue: '100'
-      description: Maximum pages of the reports
+      description: Maximum number of pages for the reports.
       isArray: false
       name: max-results
       required: true
       secret: false
     deprecated: false
-    description: Performs statistic search by report Guid
+    description: Performs a statistic search by report GUID.
     execution: false
     name: archer-execute-statistic-search-by-report
   - deprecated: false
-    description: Gets all the reports from Archer
+    description: Gets all reports from Archer.
     execution: false
     name: archer-get-reports
   - arguments:
     - default: false
-      description: The report GUID
+      description: The report GUID.
       isArray: false
       name: report-guid
       required: true
       secret: false
     deprecated: false
-    description: Returns search criteria by report GUID
+    description: Returns search criteria by report GUID.
     execution: false
     name: archer-get-search-options-by-guid
   - deprecated: false
-    description: Reset Archer's integration cache. Run this command if you change
-      the fields of your Archer application
+    description: Resets Archer's integration cache. Run this command if you change
+      the fields of your Archer application.
     execution: false
     name: archer-reset-cache
   - arguments:
     - default: false
-      description: The field Id
+      description: The field ID.
       isArray: false
       name: field-id
       required: true
@@ -310,108 +310,108 @@ script:
     name: archer-get-valuelist
     outputs:
     - contextPath: Archer.ApplicationField.ValuesList.Id
-      description: The field value Id
+      description: The field value ID.
       type: Number
     - contextPath: Archer.ApplicationField.ValuesList.IsSelectable
-      description: Specifies whether the field value is selectable
+      description: Specifies whether you can select the field value.
       type: Boolean
     - contextPath: Archer.ApplicationField.ValuesList.Name
-      description: The field value name
+      description: The field value name.
       type: String
   - arguments:
     - default: false
-      description: The entry id of the file in Demisto's context
+      description: The entry ID of the file in Cortex XSOAR context.
       isArray: false
       name: entry-id
       required: true
       secret: false
     deprecated: false
-    description: Uploads a file to Archer
+    description: Uploads a file to Archer.
     execution: false
     name: archer-upload-file
   - arguments:
     - default: false
-      description: The attachment Id
+      description: The attachment ID.
       isArray: false
       name: attachment-id
       required: true
       secret: false
     deprecated: false
-    description: Downloads file from Archer to Demisto's war room context
+    description: Downloads a file from Archer to Cortex XSOAR context.
     execution: false
     name: archer-get-file
   - arguments:
     - default: false
-      description: Get user by ID (leave empty to get all users)
+      description: The ID of the user for which to get details. Leave empty to get a list of all users.
       isArray: false
       name: user-id
       required: false
       secret: false
     deprecated: false
-    description: Gets user details or list of all users.
+    description: Gets details for a user or a list of all users.
     execution: false
     name: archer-list-users
     outputs:
     - contextPath: Archer.User.AccountStatus
-      description: The status of the user
+      description: The status of the user.
       type: String
     - contextPath: Archer.User.DisplayName
-      description: Display name of the user
+      description: The display name of the user.
       type: String
     - contextPath: Archer.User.FirstName
-      description: The first name of the user
+      description: The first name of the user.
       type: String
     - contextPath: Archer.User.Id
-      description: Unique Id of user
+      description: Unique ID of the user.
       type: Number
     - contextPath: Archer.User.LastLoginDate
-      description: Last login date of user
+      description: Last login date of user.
       type: Date
     - contextPath: Archer.User.LastName
-      description: The last name of the user
+      description: The last name of the user.
       type: String
     - contextPath: Archer.User.MiddleName
-      description: The middle name of the user
+      description: The middle name of the user.
       type: String
     - contextPath: Archer.User.UserName
-      description: The username of the account
+      description: The username associated with the account.
       type: String
   - arguments:
     - default: false
-      description: Id of the application to search records in
+      description: ID of the application in which to search for records.
       isArray: false
       name: application-id
       required: true
       secret: false
     - default: false
-      description: Name of field to search on (leave empty to search for all)
+      description: Name of the field on which to search. Leave empty to search for all fields.
       isArray: false
       name: field-to-search-on
       required: false
       secret: false
     - default: false
-      description: Search value (leave empty to search for all)
+      description: Search value. Leave empty to search for all.
       isArray: false
       name: search-value
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: Maximum results to return from the search (default is 10)
+      description: Maximum number of results to return from the search. Default is 10.
       isArray: false
       name: max-results
       required: false
       secret: false
     - default: false
-      description: 'Fields to present in the search results in array format (for example:
-        "Title,Incident Summary")'
+      description: 'Fields to present in the search results (in array format). For example:
+        "Title,Incident Summary".'
       isArray: false
       name: fields-to-display
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Numeric search operator
+      description: Numeric search operator. Can be "Equals", "NotEqual", "GreaterThan", or "LessThan".
       isArray: false
       name: numeric-operator
       predefined:
@@ -423,7 +423,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Date search operator
+      description: Date search operator. Can be "Equals", "DoesNotEqual", "GreaterThan", or "LessThan".
       isArray: false
       name: date-operator
       predefined:
@@ -434,7 +434,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fields to fetch from the the application
+      description: Fields to fetch from the the application.
       isArray: false
       name: fields-to-get
       required: false
@@ -442,8 +442,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Get an extended responses with all of the data regarding this search.
-        For example, "fullData=true"
+      description: Whether to get extended responses with all of the data regarding this search.
+        For example, "fullData=true".
       isArray: false
       name: full-data
       predefined:
@@ -452,36 +452,36 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Search for records inside the given application
+    description: Searches for records in the given application.
     execution: false
     name: archer-search-records
     outputs:
     - contextPath: Archer.Record
-      description: The content object
+      description: The content object.
       type: Unknown
     - contextPath: Archer.Record.Id
-      description: The content Id
+      description: The content ID.
       type: Number
   - arguments:
     - default: false
-      description: The report GUID
+      description: The report GUID.
       isArray: false
       name: report-guid
       required: true
       secret: false
     deprecated: false
-    description: Search records by report Guid
+    description: Searches records by report GUID.
     execution: false
     name: archer-search-records-by-report
     outputs:
     - contextPath: Archer.SearchByReport.ReportGUID
-      description: The report GUID
+      description: The report GUID.
       type: String
     - contextPath: Archer.SearchByReport.RecordsAmount
-      description: Amount of records found by the search
+      description: Number of records found by the search.
       type: Number
     - contextPath: Archer.SearchByReport.Record
-      description: The records found by the search
+      description: The records found by the search.
       type: Unknown
   dockerimage: demisto/python3:3.8.3.8715
   feed: false
