@@ -85,4 +85,6 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Entity Enrichment - Generic v3](Insert the link to your image here)
+![Entity Enrichment - Generic v3](https://github.com/demisto/content/raw/3fadebe9e16eb7c9fc28ce3bb600319ec875e3b5/Packs/CommonPlaybooks/doc_files/Entity_Enrichment_-_Generic_v3.png)
+
+
