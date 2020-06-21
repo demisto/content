@@ -37,7 +37,15 @@ def test_module(client):
         return_error("Could not connect to server")
 
 
-def fetch_indicators_command(client, last_run, initial_interval, limit):
+def fetch_indicators_command(client, initial_interval, limit, last_run=None):
+    """
+    Fetch indicators from TAXII 2 server
+    :param client: Taxii2FeedClient
+    :param initial_interval: initial interval in parse_date_range format
+    :param limit: upper limit of indicators to fetch
+    :param (Optional) last_run: last run time string
+    :return: indicators in cortex TIM format
+    """
     if not last_run and initial_interval:
         last_run, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
     iterator = client.build_iterator(limit, last_run)
@@ -53,6 +61,14 @@ def fetch_indicators_command(client, last_run, initial_interval, limit):
 
 
 def get_indicators_command(client, raw="false", limit=10, added_after=None):
+    """
+    Fetch indicators from TAXII 2 server
+    :param client: Taxii2FeedClient
+    :param raw: When set to "true" will return only rawJSON
+    :param limit: upper limit of indicators to fetch
+    :param (Optional) added_after: added after time string in parse_date_range format
+    :return: indicators in cortex TIM format
+    """
     limit = try_parse_integer(limit)
     if added_after:
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
@@ -138,11 +154,11 @@ def main():
         elif demisto.command() == "fetch-indicators":
             initial_interval = params.get("initial_interval")
             limit = try_parse_integer(params.get("limit") or -1)
-            now = datetime.now()  # we might refetch some indicators the next time
+            now = datetime.now()  # might refetch some indicators the next fetch
             integration_ctx = demisto.getIntegrationContext() or {}
             last_run = integration_ctx.get(INTEGRATION_CONTEXT_TIME_KEY)
             indicators = fetch_indicators_command(
-                client, last_run, initial_interval, limit
+                client, initial_interval, limit, last_run
             )
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
@@ -158,8 +174,10 @@ def main():
         err_msg = f"Failed to execute {command} command. Error: {str(e)}\n\ntraceback: {traceback.format_exc()}"
         if isinstance(e, requests.exceptions.SSLError):
             LOG(err_msg)
-            err_msg = "Encountered an HTTPS certificate error. This error can be ignored by enabling " \
-                      "\"Trust any certificate (not secure)\" in the instance configuration."
+            err_msg = (
+                "Encountered an HTTPS certificate error. This error can be ignored by enabling "
+                '"Trust any certificate (not secure)" in the instance configuration.'
+            )
         return_error(err_msg)
 
 

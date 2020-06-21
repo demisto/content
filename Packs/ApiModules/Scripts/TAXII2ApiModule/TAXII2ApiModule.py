@@ -18,14 +18,22 @@ TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
 
 DFLT_LIMIT_PER_FETCH = 1000
-DFLT_API_USERNAME = 'cortex:api_token'
+DFLT_API_USERNAME = "cortex:api_token"
 
 # Pattern Regexes - used to extract indicator type and value
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
-INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="=")
-CIDR_ISSUBSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="ISSUBSET")
-CIDR_ISUPPERSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value="value", operator="ISUPPERSET")
-HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(value=r"hashes\..*?", operator="=")
+INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
+    value="value", operator="="
+)
+CIDR_ISSUBSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
+    value="value", operator="ISSUBSET"
+)
+CIDR_ISUPPERSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
+    value="value", operator="ISUPPERSET"
+)
+HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
+    value=r"hashes\..*?", operator="="
+)
 
 TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
@@ -113,12 +121,14 @@ class Taxii2FeedClient:
         Initializes the api roots (used to get taxii server objects)
         """
         if not self.server:
-            raise ValueError("Please init server prior to calling init_roots. Cannot init roots without server.")
+            raise ValueError(
+                "Please init server prior to calling init_roots. Cannot init roots without server."
+            )
         try:
             # try TAXII 2.0
             self.api_root = self.server.api_roots[0]
         except (TAXIIServiceException, HTTPError) as e:
-            if isinstance(e, HTTPError) and '406 Client Error' not in str(e):
+            if isinstance(e, HTTPError) and "406 Client Error" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
@@ -229,8 +239,10 @@ class Taxii2FeedClient:
                         )
                     )
                 else:
-                    raise DemistoException('Error: TAXII 2 client received the following response while requesting '
-                                           f'indicators: {str(envelope)}\n\nExpected output is json')
+                    raise DemistoException(
+                        "Error: TAXII 2 client received the following response while requesting "
+                        f"indicators: {str(envelope)}\n\nExpected output is json"
+                    )
         demisto.debug(
             f"TAXII 2 Feed has extracted {len(indicators)} indicators / {obj_cnt} taxii objects"
         )
