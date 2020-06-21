@@ -1,0 +1,490 @@
+id: Infocyte-Test
+version: 20
+fromversion: 5.5.0
+name: Infocyte-Test
+description: Test Playbook for Infocyte commands. Initiates a scan against a test
+  target and verifies scan results.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3eea3033-8a41-4a74-88e0-41ab91de6efe
+    type: start
+    task:
+      id: 3eea3033-8a41-4a74-88e0-41ab91de6efe
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c20115aa-215b-4517-8389-0e053de10e3a
+    type: regular
+    task:
+      id: c20115aa-215b-4517-8389-0e053de10e3a
+      version: -1
+      name: DeleteContext
+      description: ""
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 87953a9c-8abb-4cd3-857c-a37486ae4cda
+    type: condition
+    task:
+      id: 87953a9c-8abb-4cd3-857c-a37486ae4cda
+      version: -1
+      name: Verify Outputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.target
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 17566d05-0fb8-4b0d-8ab8-413d00c9810f
+    type: playbook
+    task:
+      id: 17566d05-0fb8-4b0d-8ab8-413d00c9810f
+      version: -1
+      name: infocyte-get-taskstatus GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Infocyte.Task.userTaskId}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: userTaskId
+      PollingCommandName:
+        simple: infocyte-get-taskstatus
+      Timeout:
+        simple: "20"
+      dt:
+        simple: Infocyte.Task(val.status=='Active').userTaskId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8d5874bc-ff53-4855-8a23-0bc00961dd71
+    type: regular
+    task:
+      id: 8d5874bc-ff53-4855-8a23-0bc00961dd71
+      version: -1
+      name: infocyte-get-taskstatus
+      description: Gets status of an Infocyte task (scan, response action, etc.)
+      script: Infocyte|||infocyte-get-taskstatus
+      type: regular
+      iscommand: true
+      brand: Infocyte
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      userTaskId:
+        simple: ${Infocyte.Task.userTaskId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 114ccd9e-37f7-4a8d-8984-0897cbcb5119
+    type: condition
+    task:
+      id: 114ccd9e-37f7-4a8d-8984-0897cbcb5119
+      version: -1
+      name: Verify Outputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Task.userTaskId
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Infocyte.Task.status
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: adb5acea-1ff7-4cef-83ad-63305559a04e
+    type: condition
+    task:
+      id: adb5acea-1ff7-4cef-83ad-63305559a04e
+      version: -1
+      name: Verify Outputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.scanId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.hostId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.ip
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Infocyte.Response.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infocyte.Response.threatStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b73b1097-630b-4f9a-808f-1b9752716836
+    type: title
+    task:
+      id: b73b1097-630b-4f9a-808f-1b9752716836
+      version: -1
+      name: Test Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 2cf2ffe6-94eb-43cf-8063-3f23ce05443f
+    type: regular
+    task:
+      id: 2cf2ffe6-94eb-43cf-8063-3f23ce05443f
+      version: -1
+      name: infocyte-run-response
+      description: Runs the named Infocyte extension on the target host.
+      script: Infocyte|||infocyte-run-response
+      type: regular
+      iscommand: true
+      brand: Infocyte
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extensionName:
+        simple: Yara Scanner
+      target:
+        simple: ${inputs.target}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 63dbdc11-150b-498d-8cb6-7a943ac77993
+    type: regular
+    task:
+      id: 63dbdc11-150b-498d-8cb6-7a943ac77993
+      version: -1
+      name: infocyte-get-responseresult
+      description: Gets the results of a response action.
+      script: Infocyte|||infocyte-get-responseresult
+      type: regular
+      iscommand: true
+      brand: Infocyte
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      scanId:
+        simple: ${Infocyte.Task.scanId}
+      target:
+        simple: ${inputs.target}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: aeaea974-d634-4cd8-8ad1-729e11cdcc6c
+    type: regular
+    task:
+      id: aeaea974-d634-4cd8-8ad1-729e11cdcc6c
+      version: -1
+      name: infocyte-get-alerts
+      description: Retrieves alerts triggered since the last alert was pulled.
+      script: Infocyte|||infocyte-get-alerts
+      type: regular
+      iscommand: true
+      brand: Infocyte
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alertId:
+        simple: 8277682f-3b0f-415d-8c7c-4b945c395f05
+      lastAlertId: {}
+      max: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: c443dac6-b7f7-4f62-80a9-6ec905106171
+    type: regular
+    task:
+      id: c443dac6-b7f7-4f62-80a9-6ec905106171
+      version: -1
+      name: infocyte-get-hostscanresult
+      description: Retrieves results for a scan that was run on a target host.
+      script: Infocyte|||infocyte-get-hostscanresult
+      type: regular
+      iscommand: true
+      brand: Infocyte
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      scanId:
+        simple: aeac5ff3-52e9-4073-b37f-a23cadd3c69e
+      target:
+        simple: pegasusactual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_12_yes": 0.58,
+      "8_10_yes": 0.41
+    },
+    "paper": {
+      "dimensions": {
+        "height": 895,
+        "width": 1300,
+        "x": -320,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: target
+  value:
+    simple: pegasusactual
+  required: true
+  description: Hostname or IP Address to run a scan against
+  playbookInputQuery: null
+outputs: []

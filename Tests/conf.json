@@ -8,6 +8,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Group-IB TDS Polygon",
+            "playbookID": "Polygon-Test",
+            "timeout": 1000,
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
         },
@@ -327,7 +333,7 @@
             "integrations": "Cortex XDR - IOC",
             "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 600
+            "timeout": 1000
         },
         {
             "integrations": "Cloaken",
@@ -1177,7 +1183,8 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
-            "timeout": 240
+            "timeout": 240,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "EWS v2",
@@ -1741,6 +1748,11 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "Infocyte",
+            "playbookID": "Infocyte-Test",
+            "timeout": 1200
+        },
+        {
             "integrations": "Qualys",
             "playbookID": "Qualys-Test"
         },
@@ -2054,7 +2066,7 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
-            "integrations": "TAXIIFeed",
+            "integrations": ["TAXII Server", "TAXIIFeed"],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
             "timeout": 600
@@ -2138,13 +2150,13 @@
         {
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
@@ -2677,6 +2689,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List Events - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
@@ -2835,12 +2852,15 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Zoom Feed",
+            "playbookID": "FeedZoom_Test",
+            "fromversion": "5.5.0"
         }
-
     ],
     "skipped_tests": {
         "CuckooTest": "Issue 25601",
-        "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
         "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
@@ -2848,19 +2868,20 @@
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
-        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
+        "CreateIndicatorFromSTIXTest": "Issue 24345",
+        "SNDBOX_Test": "Issue 24349",
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
+        "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
+        "Test-Shodan_v2": "Issue 23370",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
-        "test_MsGraphFiles": "Issue 22853 ",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "PAN-OS Create Or Edit Rule Test": "Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -2874,12 +2895,10 @@
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
-        "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
@@ -2888,13 +2907,13 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "dedup_-_generic_-_test": "Issue 25681",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
@@ -2905,7 +2924,7 @@
         "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
         "Skyformation": "No instance, old partner",
-        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
+        "Prisma Access": "Instance will be provided soon by Lior and Prasen",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
@@ -2914,6 +2933,7 @@
         "Moloch": "No instance",
         "Twilio": "No instance",
         "Zendesk": "No instance",
+        "google-vault": "Issue 25798",
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
