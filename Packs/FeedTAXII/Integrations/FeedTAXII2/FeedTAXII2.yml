@@ -1,5 +1,5 @@
 fromversion: 5.0.0
-category: Authentication
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: FeedTAXII2
   version: -1
