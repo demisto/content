@@ -1,6 +1,6 @@
 {
     "name": "Lost / Stolen Device",
-    "description": "This manaul playbook handles lost or stolen device. it will guide the analyst troght the various steps to validate the type and the content on the device and required stetps for the response and remidiation process",
+    "description": "This manaul playbook handles a lost or stolen device. It guides the analyst through the various steps to validate the type and content on the device, and required stetps for the response and remidiation process.",
     "support": "xsoar",
     "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
@@ -12,7 +12,8 @@
     ],
     "tags": [],
     "useCases": [
-        "Lost or Stolen Device"
+        "Stolen Device",
+        "Lost Device"
     ],
     "keywords": [
         "Stolen Device",
