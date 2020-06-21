@@ -353,6 +353,8 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            [ -n "${TIME_TO_LIVE}" ] && TIME_TO_LIVE=${TIME_TO_LIVE} || TIME_TO_LIVE=180
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
