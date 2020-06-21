@@ -94,7 +94,7 @@ configuration:
   type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
 display: FeedTAXII2
-name: FeedTAXII2
+name: TAXII 2 Feed
 script:
   commands:
   - arguments:
