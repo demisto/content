@@ -106,7 +106,7 @@ tasks:
       - "6"
     scriptarguments:
       object_id:
-        simple: 1B9182C7-8C12-4499-ADF0-A338DEFDFC33
+        simple: 3d588112-6467-4c2d-932a-b728f866163d
     separatecontext: false
     view: |-
       {
