@@ -19,6 +19,8 @@ PACKS_RN_FILES_FORMAT = '*/ReleaseNotes/*.md'
 
 EMPTY_LINES_REGEX = re.compile(r'\s*-\s*\n')
 IGNORED_LINES_REGEX = re.compile(r'<!-[\W\w]*?-->')
+ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### (\w+)$\n([\w\W]*?)(?=^#### )|^#### (\w+)$\n([\w\W]*)', re.M)
+ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)', re.M)
 
 LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
@@ -105,9 +107,9 @@ def construct_entities_block(entities_data: dict):
     """
     release_notes = ''
     for entity_type, entities_description in sorted(entities_data.items()):
-        release_notes += f'\n#### {entity_type}\n'
+        release_notes += f'#### {entity_type}\n'
         for name, description in entities_description.items():
-            release_notes += f'##### {name}\n - {description}\n'
+            release_notes += f'##### {name}\n{description}\n'
 
     return release_notes
 
@@ -229,16 +231,45 @@ def get_release_notes_dict(release_notes_files):
 
 
 def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
+    """
+    merge several pack release note versions into a single block.
+
+    Args:
+        pack_name: pack name
+        pack_versions_dict: a mapping from a pack version to a release notes file content.
+
+    Returns:
+        a single pack release note block
+
+    """
     latest_version = '1.0.0'
     entities_data = {}
-    for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
-                                                   key=lambda pack_item: LooseVersion(pack_item[0])):
+    for pack_version, version_release_notes in sorted(pack_versions_dict.items(),
+                                                      key=lambda pack_item: LooseVersion(pack_item[0])):
         latest_version = pack_version
+        version_release_notes = version_release_notes.strip()
+        sections = ENTITY_TYPE_SECTION_REGEX.findall(version_release_notes)
+        for section in sections:
+            # one of scripts, playbooks, integrations, layouts, incident fields, etc...
+            entity_type = section[0] or section[2]
+            # blocks of entity name and related release notes comments
+            entity_section = section[1] or section[3]
+            entities_data.setdefault(entity_type, {})
 
-    construct_entities_block(entities_data)
+            entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)
+            for entity in entity_comments:
+                # name of the script, integration, playbook, etc...
+                entity_name = entity[0] or entity[2]
+                # release notes of the entity
+                entity_comment = entity[1] or entity[3]
+                if entity_name in entities_data[entity_type]:
+                    entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
+                else:
+                    entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
+
+    pack_release_notes = construct_entities_block(entities_data)
     return (f'### {pack_name} Pack v{latest_version}\n'
             f'{pack_release_notes}')
-
 
 def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, version, asset_id,
                                    release_notes_file):
@@ -268,7 +299,7 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
         for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
                                                        key=lambda pack_item: LooseVersion(pack_item[0])):
             pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
-                                  f'{pack_release_notes}')
+                                  f'{pack_release_notes.strip()}')
 
     release_notes += '\n\n---\n\n'.join(pack_rn_blocks)
 
