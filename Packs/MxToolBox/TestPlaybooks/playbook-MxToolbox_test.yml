@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 136c4de9-adee-4273-8299-b8b4ab58cd52
+    taskid: c0877588-82bc-413c-8799-cdeeb1d69974
     type: start
     task:
-      id: 136c4de9-adee-4273-8299-b8b4ab58cd52
+      id: c0877588-82bc-413c-8799-cdeeb1d69974
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5582a4f7-c435-4ab3-8543-a8def2c9d13b
+    taskid: e3656ffe-6ea6-4744-8cd8-2851dd627d5c
     type: regular
     task:
-      id: 5582a4f7-c435-4ab3-8543-a8def2c9d13b
+      id: e3656ffe-6ea6-4744-8cd8-2851dd627d5c
       version: -1
       name: mxtoolbox
       description: Run any supported command on the mxtoolbox API
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: bef3476d-5e36-4a43-8314-173c6d248da1
+    taskid: 818a35f4-461e-4cfd-8bc3-34463ea80a9d
     type: regular
     task:
-      id: bef3476d-5e36-4a43-8314-173c6d248da1
+      id: 818a35f4-461e-4cfd-8bc3-34463ea80a9d
       version: -1
       name: mxtoolbox
       description: Run any supported command on the mxtoolbox API
@@ -101,10 +101,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: ab67ffc2-667b-4be6-8d60-373407b192cf
+    taskid: bbcfe90c-56ba-44be-813f-a41d4cf12116
     type: regular
     task:
-      id: ab67ffc2-667b-4be6-8d60-373407b192cf
+      id: bbcfe90c-56ba-44be-813f-a41d4cf12116
       version: -1
       name: mxtoolbox
       description: Run any supported command on the mxtoolbox API
@@ -136,10 +136,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: ccf16577-ac2a-449c-8e76-96ba1e8dcef0
+    taskid: b174436d-2fb4-4fe0-8689-63f7757f2058
     type: regular
     task:
-      id: ccf16577-ac2a-449c-8e76-96ba1e8dcef0
+      id: b174436d-2fb4-4fe0-8689-63f7757f2058
       version: -1
       name: mxtoolbox
       description: Run any supported command on the mxtoolbox API
@@ -171,10 +171,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 490fc374-756e-443b-8fb3-74293b8d1a80
+    taskid: e457361e-d247-4fcb-8592-d79d00241c81
     type: regular
     task:
-      id: 490fc374-756e-443b-8fb3-74293b8d1a80
+      id: e457361e-d247-4fcb-8592-d79d00241c81
       version: -1
       name: mxtoolbox
       description: Run any supported command on the mxtoolbox API
@@ -206,10 +206,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: b1d8ca06-a2dc-4c7a-82f9-44c24f0d96dd
+    taskid: 5e210e1d-c8fc-4242-87ed-9c28302c709e
     type: regular
     task:
-      id: b1d8ca06-a2dc-4c7a-82f9-44c24f0d96dd
+      id: 5e210e1d-c8fc-4242-87ed-9c28302c709e
       version: -1
       name: mxtoolbox
       description: Run any supported command on the mxtoolbox API
@@ -241,10 +241,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 7d23483f-ff42-467e-8fe5-8bbc7d867845
+    taskid: 351ec25e-bd50-4557-8026-703fa844f020
     type: regular
     task:
-      id: 7d23483f-ff42-467e-8fe5-8bbc7d867845
+      id: 351ec25e-bd50-4557-8026-703fa844f020
       version: -1
       name: mxtoolbox
       description: Run any supported command on the mxtoolbox API
@@ -276,18 +276,18 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 70e517c3-74ac-4fbd-892a-9944ec5115cb
+    taskid: 7c03d173-6235-48fb-839b-e99ecaf11b38
     type: condition
     task:
-      id: 70e517c3-74ac-4fbd-892a-9944ec5115cb
+      id: 7c03d173-6235-48fb-839b-e99ecaf11b38
       version: -1
       name: Exists errors?
-      script: Exists
+      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "12"
       "yes":
       - "11"
@@ -309,13 +309,13 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 14b04ad2-9d29-4a4e-8937-8aeb9d6d7893
+    taskid: 9c00dae7-f9e8-486e-828d-5c700623055b
     type: regular
     task:
-      id: 14b04ad2-9d29-4a4e-8937-8aeb9d6d7893
+      id: 9c00dae7-f9e8-486e-828d-5c700623055b
       version: -1
       name: Print failures
-      script: ToTable
+      scriptName: ToTable
       type: regular
       iscommand: false
       brand: ""
@@ -328,7 +328,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1595
         }
       }
@@ -339,27 +339,21 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: e99092da-b540-4f8c-8528-38942c383b12
-    type: regular
+    taskid: 2f4d8e5f-9569-4491-8068-882f7931dc17
+    type: title
     task:
-      id: e99092da-b540-4f8c-8528-38942c383b12
+      id: 2f4d8e5f-9569-4491-8068-882f7931dc17
       version: -1
-      name: Close
-      script: CloseInvestigation
-      type: regular
+      name: Done
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      notes:
-        simple: All good
-      reason:
-        simple: Sababa
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 480,
+          "y": 1610
         }
       }
     note: false
