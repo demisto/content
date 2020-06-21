@@ -1,9 +1,9 @@
 {
   "name": "Luminate",
   "description": "Enrich your report and Respond to incidents with Luminate",
-  "support": "xsoar",
+  "support": "partner",
   "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
+  "author": "Luminate",
   "url": "https://www.paloaltonetworks.com/cortex",
   "email": "",
   "created": "2020-04-14T00:00:00Z",

@@ -32,7 +32,8 @@ class MsClient:
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
+            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
+            scope='https://securitycenter.onmicrosoft.com/windowsatpservice/.default')
         self.alert_severities_to_fetch = alert_severities_to_fetch,
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
@@ -1779,7 +1780,7 @@ def test_module(client: MsClient):
         client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
     except Exception:
         raise DemistoException(
-            f"API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
+            "API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
     demisto.results('ok')
 
 

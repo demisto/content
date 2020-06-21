@@ -60,7 +60,10 @@ class GCPConfig(object):
                        "TIM_Processing",
                        "TIM_SIEM",
                        "HelloWorld",
-                       "DefaultPlaybook"
+                       "ExportIndicators",
+                       "Malware",
+                       "DefaultPlaybook",
+                       "CalculateTimeDifference"
                        ]  # cores packs list
 
 
@@ -73,6 +76,7 @@ class Metadata(object):
     XSOAR_AUTHOR = "Cortex XSOAR"
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
     CERTIFIED = "certified"
+    EULA_URL = "https://github.com/demisto/content/blob/master/LICENSE"  # disable-secrets-detection
 
 
 class PackFolders(enum.Enum):
@@ -170,10 +174,12 @@ class Pack(object):
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
         self._sever_min_version = "1.0.0"  # initialized min version
+        self._latest_version = None  # pack latest version found in changelog
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
+        self._display_name = None  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -191,7 +197,11 @@ class Pack(object):
     def latest_version(self):
         """ str: pack latest version from sorted keys of changelog.json file.
         """
-        return self._get_latest_version()
+        if not self._latest_version:
+            self._latest_version = self._get_latest_version()
+            return self._latest_version
+        else:
+            return self._latest_version
 
     @property
     def status(self):
@@ -264,6 +274,18 @@ class Pack(object):
         """ setter of description property of the pack.
         """
         self._description = description_value
+
+    @property
+    def display_name(self):
+        """ str: Display name of the pack (found in pack_metadata.json).
+        """
+        return self._display_name
+
+    @display_name.setter
+    def display_name(self, display_name_value):
+        """ setter of display name property of the pack.
+        """
+        self._display_name = display_name_value
 
     @property
     def server_min_version(self):
@@ -369,8 +391,8 @@ class Pack(object):
         doesn't match xsoar default url, warning is raised.
 
         Args:
-            support_type (str): support type of pack, optional values are: partner, developer, xsoar and nonsupported
-            support_url (str): support full url
+            support_type (str): support type of pack.
+            support_url (str): support full url.
             support_email (str): support email address.
 
         Returns:
@@ -392,6 +414,10 @@ class Pack(object):
     def _get_author(support_type, author=None):
         """ Returns pack author. In case support type is xsoar, more additional validation are applied.
 
+        Args:
+            support_type (str): support type of pack.
+            author (str): author of the pack.
+
         Returns:
             str: returns author from the input.
         """
@@ -402,6 +428,29 @@ class Pack(object):
             return author
         else:
             return author
+
+    @staticmethod
+    def _get_certification(support_type, certification=None):
+        """ Returns pack certification.
+
+        In case support type is xsoar, CERTIFIED is returned.
+        In case support is not xsoar but pack_metadata has certification field, certification value will be taken from
+        pack_metadata defined value.
+        Otherwise empty certification value (empty string) will be returned
+
+        Args:
+            support_type (str): support type of pack.
+            certification (str): certification value from pack_metadata, if exists.
+
+        Returns:
+            str: certification value
+        """
+        if support_type == Metadata.XSOAR_SUPPORT:
+            return Metadata.CERTIFIED
+        elif support_type != Metadata.XSOAR_SUPPORT and certification:
+            return certification
+        else:
+            return ""
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
@@ -422,8 +471,6 @@ class Pack(object):
             dict: parsed pack metadata.
 
         """
-
-        # part of old packs are initialized with empty list
         pack_metadata = {}
         pack_metadata['name'] = user_metadata.get('name') or pack_id
         pack_metadata['id'] = pack_id
@@ -435,10 +482,12 @@ class Pack(object):
         pack_metadata['supportDetails'] = Pack._create_support_section(support_type=pack_metadata['support'],
                                                                        support_url=user_metadata.get('url'),
                                                                        support_email=user_metadata.get('email'))
+        pack_metadata['eulaLink'] = Metadata.EULA_URL
         pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
                                                    author=user_metadata.get('author', ''))
         pack_metadata['authorImage'] = author_image
-        pack_metadata['certification'] = user_metadata.get('certification', Metadata.CERTIFIED)
+        pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
+                                                                 certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
@@ -914,6 +963,7 @@ class Pack(object):
             self.current_version = user_metadata.get('currentVersion', '')
             self.hidden = user_metadata.get('hidden', False)
             self.description = user_metadata.get('description', False)
+            self.display_name = user_metadata.get('name', '')
 
             print(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -1166,7 +1216,7 @@ class Pack(object):
         author_image_storage_path = ""
 
         try:
-            author_image_path = os.path.join(self._pack_name, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+            author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
                 image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
