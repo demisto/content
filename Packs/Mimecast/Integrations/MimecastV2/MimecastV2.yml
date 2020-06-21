@@ -759,7 +759,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The number of results to request. Default is all
+      description: This parameter is ignored, use the 'limit' parameter instead.
       isArray: false
       name: resultsNumber
       required: false

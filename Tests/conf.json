@@ -1178,7 +1178,8 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
-            "timeout": 240
+            "timeout": 240,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "EWS v2",
@@ -1740,6 +1741,11 @@
             "integrations": "Jask",
             "playbookID": "Jask_Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Infocyte",
+            "playbookID": "Infocyte-Test",
+            "timeout": 1200
         },
         {
             "integrations": "Qualys",
@@ -2849,12 +2855,14 @@
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
-        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
+        "CreateIndicatorFromSTIXTest": "Issue 24345",
+        "SNDBOX_Test": "Issue 24349",
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
+        "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
+        "Test-Shodan_v2": "Issue 23370",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
-        "test_MsGraphFiles": "Issue 22853 ",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
@@ -2894,6 +2902,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
@@ -2904,7 +2913,7 @@
         "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
         "Skyformation": "No instance, old partner",
-        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
+        "Prisma Access": "Instance will be provided soon by Lior and Prasen",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",

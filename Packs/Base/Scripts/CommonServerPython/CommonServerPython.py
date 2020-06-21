@@ -1193,7 +1193,7 @@ def argToList(arg, separator=','):
         if arg[0] == '[' and arg[-1] == ']':
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
-    return arg
+    return [arg]
 
 
 def argToBoolean(value):
@@ -3055,7 +3055,7 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
     return start_time, end_time
 
 
-def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
+def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z", is_utc=False):
     """
       Parses timestamp (milliseconds) to a date string in the provided date format (by default: ISO 8601 format)
       Examples: (1541494441222, 1541495441000, etc.)
@@ -3066,9 +3066,15 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
       :type date_format: ``str``
       :param date_format: The date format the timestamp should be parsed to. (optional)
 
+      :type is_utc: ``bool``
+      :param is_utc: Should the string representation of the timestamp use UTC time or the local machine time
+
       :return: The parsed timestamp in the date_format
       :rtype: ``str``
     """
+    use_utc_time = is_utc or date_format.endswith('Z')
+    if use_utc_time:
+        return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
     return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
