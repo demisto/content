@@ -1,9 +1,7 @@
 id: Google Kubernetes Engine Operations Generic Polling
 version: -1
 name: Google Kubernetes Engine Operations Generic Polling
-description: This playbook checks the operation status of the Google Kubernetes Engine. It runs until the operation completed and 
-facilitates the waiting between steps.
-  in Cluster configuration.
+description: This playbook checks the operation status of the Google Kubernetes Engine. It runs until the operation completed and facilitates the waiting between steps in Cluster configuration.
 starttaskid: '0'
 tasks:
   '0':
