@@ -199,7 +199,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
         if vendors:
             xdr_ioc['vendors'] = vendors
-        threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory', False)
+        threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory')
         if threat_type:
             xdr_ioc['class'] = threat_type
         if ioc.get('CustomFields', {}).get('xdrstatus') == 'disabled':
@@ -266,7 +266,7 @@ def get_indicators(indicators: str) -> List:
             else:
                 not_found.append(indicator)
         if not_found:
-            return_warning('The following indicators ware not found: {}'.format(', '.join(not_found)))
+            return_warning('The following indicators were not found: {}'.format(', '.join(not_found)))
         else:
             return iocs
     return []
@@ -391,6 +391,15 @@ def is_xdr_data(ioc):
 
 
 def get_indicator_xdr_score(indicator: str, xdr_server: int):
+    """
+    the goal is to avoid reliability changes.
+    for example if some feed with reliability 'C' give as the indicator 88.88.88.88 with score 1 (good)
+    we dont wont that xdr will also return with 1 and reliability 'A' so the score will be 0 (unknown).
+    and we will update only on a case that someone really changed th indicator in xdr.
+    :param indicator: the indicator (e.g. 88.88.88.88)
+    :param xdr_server: the score in xdr (e.g. GOOD, BAD ...)
+    :return: the current score (0 - 3)
+    """
     xdr_local: int = 0
     score = 0
     if indicator:
