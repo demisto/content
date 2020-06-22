@@ -19,6 +19,8 @@ EMAIL = demisto.getParam('credentials').get('identifier')
 PASSWORD = demisto.getParam('credentials').get('password')
 USE_SSL = not demisto.params().get('insecure', False)
 THRESHOLD = int(demisto.params().get('threshold', '0'))
+URL_EASY_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
+           r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
 
