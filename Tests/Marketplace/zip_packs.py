@@ -111,7 +111,7 @@ def remove_test_playbooks_from_signatures(path, filenames):
         print_warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
-def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name):
+def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name, packs_to_include):
     """
     Iterates over the Packs directory in the content repository and downloads each pack (if found) from a GCP bucket
     in parallel.
@@ -128,7 +128,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     zipped_packs = []
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-            if pack.name in IGNORED_FILES:
+            if pack.name in IGNORED_FILES or (packs_to_include and pack.name not in packs_to_include):
                 continue
 
             if gcp_path == BUILD_GCP_PATH:
@@ -220,7 +220,7 @@ def main():
     zipped_packs = []
     success = True
     try:
-        zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
+        zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name, packs_to_include)
     except Exception as e:
         print_error(f'Failed downloading packs: {e}')
         success = False
