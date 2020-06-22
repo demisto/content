@@ -5,7 +5,7 @@ import ast
 import json
 import demisto_client
 from threading import Thread, Lock
-from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list
+from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES
 
 PACK_METADATA_FILE = 'pack_metadata.json'
@@ -152,13 +152,14 @@ def search_pack(client, prints_manager, pack_display_name):
         raise Exception(err_msg)
 
 
-def install_packs(client, host, prints_manager, packs_to_install, request_timeout=9999999):
+def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=9999999):
     """ Make a packs installation request.
 
     Args:
         client (demisto_client): The configured client to use.
         host (str): The server URL.
         prints_manager (ParallelPrintsManager): Print manager object.
+        thread_index (int): the thread index.
         packs_to_install (list): A list of the packs to install.
         request_timeout (int): Timeout settings for the installation request.
     """
@@ -170,8 +171,8 @@ def install_packs(client, host, prints_manager, packs_to_install, request_timeou
 
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
     message = 'Installing the following packs in server {}:\n{}'.format(host, packs_to_install_str)
-    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
-    prints_manager.execute_thread_prints(0)
+    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
+    prints_manager.execute_thread_prints(thread_index)
 
     # make the pack installation request
     try:
@@ -184,16 +185,19 @@ def install_packs(client, host, prints_manager, packs_to_install, request_timeou
 
         if 200 <= status_code < 300:
             message = 'Packs were successfully installed!\n'
-            prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
-            prints_manager.execute_thread_prints(0)
+            prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
-            err_msg = 'Failed to install packs - with status code {}\n{}\n'.format(status_code, message)
+            err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
+            prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
             raise Exception(err_msg)
     except Exception as e:
-        err_msg = 'The request to install packs has failed. Reason:\n{}\n'.format(str(e))
+        err_msg = f'The request to install packs has failed. Reason:\n{str(e)}\n'
+        prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
         raise Exception(err_msg)
+    finally:
+        prints_manager.execute_thread_prints(thread_index)
 
 
 def search_pack_and_its_dependencies(client, prints_manager, pack_id, packs_to_install,
@@ -241,13 +245,13 @@ def add_pack_to_installation_request(pack_id, installation_request_body):
         })
 
 
-def install_all_content_packs(client, host, prints_manager):
+def install_all_content_packs(client, host, prints_manager, thread_index=0):
     all_packs = []
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES and pack_id != 'Silverfort':  # todo: remove silverfort when fixed
             add_pack_to_installation_request(pack_id, all_packs)
-    install_packs(client, host, prints_manager, all_packs)
+    install_packs(client, host, prints_manager, thread_index, all_packs)
 
 
 # todo: remove if not used
