@@ -6,7 +6,7 @@ from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
 from distutils.util import strtobool
-from typing import Tuple, Dict, List, Optional
+from typing import Tuple, Dict, List, Optional, Union
 import asyncio
 import concurrent
 import os
@@ -176,7 +176,7 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     return user
 
 
-def search_slack_users(users) -> list:
+def search_slack_users(users: Union[list, str]) -> list:
     """
     Search given users in Slack
 
