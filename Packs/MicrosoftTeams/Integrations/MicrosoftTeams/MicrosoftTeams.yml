@@ -33,6 +33,7 @@ configuration:
   display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
   options:
+  - Unknown
   - Low
   - Medium
   - High
@@ -285,7 +286,7 @@ script:
     description: Creates a new channel in a Microsoft Teams team.
     execution: false
     name: microsoft-teams-create-channel
-  dockerimage: demisto/teams:1.0.0.7727
+  dockerimage: demisto/teams:1.0.0.9271
   feed: false
   isfetch: false
   longRunning: true
