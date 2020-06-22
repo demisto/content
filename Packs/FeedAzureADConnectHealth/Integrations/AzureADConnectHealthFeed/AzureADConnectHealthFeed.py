@@ -163,7 +163,7 @@ def main():
     proxy = params.get('proxy', False)
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f'Command being called in {INTEGRATION_NAME} is {command}')
 
     try:
         client = Client(
