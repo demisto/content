@@ -62,8 +62,8 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
 
 
 def docker_min_layer(layers):
-    def layer_size(l):
-        return l['size']
+    def layer_size(layer):
+        return layer['size']
     return min(layers, key=layer_size)
 
 
