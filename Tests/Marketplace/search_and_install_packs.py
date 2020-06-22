@@ -295,12 +295,13 @@ def upload_zipped_packs(client, host, prints_manager):
         raise Exception(err_msg)
 
 
-def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, is_nightly=False):
+def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, thread_index=0, is_nightly=False):
     """ Searches for the packs from the specified list, searches their dependencies, and then installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
         prints_manager (ParallelPrintsManager): A prints manager object.
+        thread_index (int): the thread index.
         is_nightly (bool): Whether or not the build is a nightly build.
 
     Returns (list): A list of the installed packs' ids, or an empty list if is_nightly == True.
@@ -312,8 +313,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         return []
     else:
         msg = 'Starting to search and install packs in server: {}\n'.format(host)
-        prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
-        prints_manager.execute_thread_prints(0)
+        prints_manager.add_print_job(msg, print_color, thread_index, LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(thread_index)
 
         packs_to_install = []  # we save all the packs we want to install, to avoid duplications
         installation_request_body = []  # the packs to install, in the request format
@@ -332,6 +333,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
             threads_list.append(thread)
         run_threads_list(threads_list)
 
-        install_packs(client, host, prints_manager, installation_request_body)
+        install_packs(client, host, prints_manager, thread_index, installation_request_body)
 
         return packs_to_install
