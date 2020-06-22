@@ -10,7 +10,7 @@ import re
 # disable insecure warnings
 urllib3.disable_warnings()
 
-INTEGRATION_NAME = 'Microsoft Azure Additional Feed'
+INTEGRATION_NAME = 'Microsoft Azure AD Connect Health Feed'
 
 
 class Client(BaseClient):
