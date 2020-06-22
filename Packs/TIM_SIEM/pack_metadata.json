@@ -14,7 +14,9 @@
         "TIM",
         "SIEM"
     ],
-    "useCases": [],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
     "keywords": [],
     "dependencies": {
         "QRadar": {
