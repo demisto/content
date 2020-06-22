@@ -105,6 +105,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GoogleKubernetesEngine",
+            "playbookID": "GoogleKubernetesEngine_Test",
+            "timeout": 1200,
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -3133,7 +3139,8 @@
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
-        "MongoDB Key Value Store": "Our instance not using SSL"
+        "MongoDB Key Value Store": "Our instance not using SSL",
+        "GoogleKubernetesEngine": "SDK"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
@@ -3145,6 +3152,9 @@
                 "memory_threshold": 150
             },
             "demisto/pytan": {
+                "pid_threshold": 11
+            },
+            "demisto/google-k8s-engine:1.0.0.9467": {
                 "pid_threshold": 11
             }
         }
