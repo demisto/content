@@ -101,7 +101,7 @@ def get_tasks_fields():
 def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     unittests_fields = get_unittests_fields()
     color = 'good' if not unittests_fields else 'danger'
-    if not unittests_fields :
+    if not unittests_fields:
         title = 'Content Nightly Unit Tests - Success' if not is_sdk_build else 'Nightly SDK Unit Tests - Success'
     else:
         title = 'Content Nightly Unit Tests - Failure' if not is_sdk_build else 'Nightly SDK Unit Tests - Failure'

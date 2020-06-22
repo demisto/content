@@ -251,26 +251,26 @@ jobs:
               then
                 echo "Content Docs Site - stage faild" >> task_report.txt
             fi
-      - run:
-          name: Create Content Artifacts
-          when: always
-          command: |
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo "Skipping - running only in container number 0"
-                exit 0
-            fi
-            demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
-            # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
-            cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
-            unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
-            zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
-            rm -r test_content_dir
-
-            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
-              then
-                echo "Create Content Artifacts - stage faild" >> task_report.txt
-            fi
+#      - run:
+#          name: Create Content Artifacts
+#          when: always
+#          command: |
+#            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+#              then
+#                echo "Skipping - running only in container number 0"
+#                exit 0
+#            fi
+#            demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
+#            # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
+#            cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
+#            unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
+#            zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
+#            rm -r test_content_dir
+#
+#            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+#              then
+#                echo "Create Content Artifacts - stage faild" >> task_report.txt
+#            fi
       - run:
           name: Calculate Packs Dependencies
           when: always
