@@ -2,14 +2,12 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Any
+from typing import Any, Tuple
 
 """ CONSTANT VARIABLES """
 
 
 CONTEXT_PREFIX = "TAXII2"
-INTEGRATION_CONTEXT_TIME_KEY = "last_run"
-
 
 """ HELPER FUNCTIONS """
 
@@ -37,27 +35,37 @@ def test_module(client):
         return_error("Could not connect to server")
 
 
-def fetch_indicators_command(client, initial_interval, limit, last_run=None):
+def fetch_indicators_command(client, initial_interval, limit, last_run_ctx) -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
     :param initial_interval: initial interval in parse_date_range format
     :param limit: upper limit of indicators to fetch
-    :param (Optional) last_run: last run time string
+    :param last_run_ctx: last run dict with {collection_id: last_run_time string}
     :return: indicators in cortex TIM format
     """
-    if not last_run and initial_interval:
-        last_run, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
-    iterator = client.build_iterator(limit, last_run)
-    indicators = []
-    for item in iterator:
-        indicator = item.get("indicator")
-        if indicator:
-            item["value"] = indicator
-            indicators.append(
-                {"value": indicator, "type": item.get("type"), "rawJSON": item}
-            )
-    return indicators
+    initial_interval, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
+    if client.collection_to_fetch is None:
+        # fetch all collections
+        if client.collections is None:
+            raise DemistoException(ERR_NO_COLL)
+        indicators = []
+        for collection in client.collections:
+            client.collection_to_fetch = collection
+            added_after = last_run_ctx[collection.id] if collection.id in last_run_ctx else initial_interval
+            fetched_iocs = client.build_iterator(limit, added_after)
+            indicators.extend(fetched_iocs)
+            if limit >= 0:
+                limit -= len(fetched_iocs)
+                if limit <= 0:
+                    break
+            last_run_ctx[collection.id] = client.latest_fetched_indicator_created
+    else:
+        added_after = last_run_ctx[client.collection_to_fetch.id] if client.collection_to_fetch.id in last_run_ctx else initial_interval
+        indicators = client.build_iterator(limit, added_after)
+        # in case no indicator was fetched
+        last_run_ctx[client.collection_to_fetch.id] = client.latest_fetched_indicator_created if client.latest_fetched_indicator_created else added_after
+    return indicators, last_run_ctx
 
 
 def get_indicators_command(client, raw="false", limit=10, added_after=None):
@@ -74,7 +82,22 @@ def get_indicators_command(client, raw="false", limit=10, added_after=None):
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
     raw = raw == "true"
 
-    indicators = client.build_iterator(limit=limit, added_after=added_after)
+    if client.collection_to_fetch is None:
+        # fetch all collections
+        if client.collections is None:
+            raise DemistoException(ERR_NO_COLL)
+        indicators = []
+        for collection in client.collections:
+            client.collection_to_fetch = collection
+            fetched_iocs = client.build_iterator(limit, added_after)
+            indicators.extend(fetched_iocs)
+            if limit >= 0:
+                limit -= len(fetched_iocs)
+                if limit <= 0:
+                    break
+
+    else:
+        indicators = client.build_iterator(limit=limit, added_after=added_after)
 
     if raw:
         demisto.results({"indicators": [x.get("rawJSON") for x in indicators]})
@@ -154,19 +177,14 @@ def main():
         elif demisto.command() == "fetch-indicators":
             initial_interval = params.get("initial_interval")
             limit = try_parse_integer(params.get("limit") or -1)
-            now = datetime.now()  # might refetch some indicators the next fetch
             integration_ctx = demisto.getIntegrationContext() or {}
-            last_run = integration_ctx.get(INTEGRATION_CONTEXT_TIME_KEY)
-            indicators = fetch_indicators_command(
-                client, initial_interval, limit, last_run
+            (indicators, integration_ctx) = fetch_indicators_command(
+                client, initial_interval, limit, integration_ctx
             )
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
-            demisto.setIntegrationContext(
-                {INTEGRATION_CONTEXT_TIME_KEY: now.timestamp()}
-            )
-
+            demisto.setIntegrationContext(integration_ctx)
         else:
             return_results(commands[command](client, **args))  # type: ignore[operator]
 
@@ -181,8 +199,8 @@ def main():
         return_error(err_msg)
 
 
-# from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *  # noqa: E402
-from TAXII2ApiModule import *  # noqa: E402
+from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *  # noqa: E402
+# from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

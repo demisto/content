@@ -63,7 +63,8 @@ configuration:
   required: false
   type: 9
 - additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections"
-    command to get a valid value.
+    command to get a valid value. If left empty, the instance will try to fetch from
+    all indicators.
   display: Collection Name To Fetch Indicators From
   name: collection_to_fetch
   required: false

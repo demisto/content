@@ -14,11 +14,14 @@ from taxii2client.exceptions import TAXIIServiceException
 # disable insecure warnings
 urllib3.disable_warnings()
 
+# CONSTANTS
 TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
 
 DFLT_LIMIT_PER_FETCH = 1000
 DFLT_API_USERNAME = "_api_token_key"
+
+ERR_NO_COLL = "No collection is available for this user, please make sure you entered the configuration correctly"
 
 # Pattern Regexes - used to extract indicator type and value
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
@@ -79,6 +82,7 @@ class Taxii2FeedClient:
         self.server = None
         self.api_root = None
         self.collections = None
+        self.latest_fetched_indicator_created = None  # will store latest fetched indicator create time for caching
 
         self.collection_to_fetch = collection_to_fetch
         self.base_url = url
@@ -146,9 +150,7 @@ class Taxii2FeedClient:
             # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
             collection_to_fetch = self.collection_to_fetch
         if not self.collections:
-            raise DemistoException(
-                "No collection is available for this user, please make sure you entered the configuration correctly"
-            )
+            raise DemistoException(ERR_NO_COLL)
         if collection_to_fetch:
             collection_found = False
             for collection in self.collections:
@@ -244,7 +246,9 @@ class Taxii2FeedClient:
         demisto.debug(
             f"TAXII 2 Feed has extracted {len(indicators)} indicators / {obj_cnt} stix objects"
         )
-        return indicators[:limit]
+        if limit > -1:
+            return indicators[:limit]
+        return indicators
 
     def poll_collection(
         self, page_size: int, added_after: Optional[str] = None
@@ -296,7 +300,7 @@ class Taxii2FeedClient:
         self, indicators_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
-        Parses a list of indicator objects
+        Parses a list of indicator objects, and updates the client.latest_fetched_indicator_created
         :param indicators_objs: indicator objects
         :return: Parsed list of indicators
         """
@@ -304,6 +308,14 @@ class Taxii2FeedClient:
         if indicators_objs:
             for indicator_obj in indicators_objs:
                 indicators.extend(self.parse_single_indicator(indicator_obj))
+                indicator_created_str = indicator_obj.get('created')
+                if self.latest_fetched_indicator_created is None:
+                    self.latest_fetched_indicator_created = indicator_created_str
+                else:
+                    last_datetime = datetime.strptime(self.latest_fetched_indicator_created, TAXII_TIME_FORMAT)
+                    indicator_created_datetime = datetime.strptime(indicator_created_str, TAXII_TIME_FORMAT)
+                    if indicator_created_datetime > last_datetime:
+                        self.latest_fetched_indicator_created = indicator_created_str
         return indicators
 
     def parse_single_indicator(
