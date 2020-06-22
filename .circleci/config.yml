@@ -271,21 +271,21 @@ jobs:
 #              then
 #                echo "Create Content Artifacts - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
 #            fi
-      - run:
-          name: Calculate Packs Dependencies
-          when: always
-          command: |
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo "Skipping - running only in container number 0"
-                exit 0
-            fi
-            python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
-
-            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
-              then
-                echo "Calculate Packs Dependencies - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
-            fi
+#      - run:
+#          name: Calculate Packs Dependencies
+#          when: always
+#          command: |
+#            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+#              then
+#                echo "Skipping - running only in container number 0"
+#                exit 0
+#            fi
+#            python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+#
+#            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+#              then
+#                echo "Calculate Packs Dependencies - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+#            fi
       - run:
           name: Run Unit Testing and Lint
           when: always
@@ -365,25 +365,25 @@ jobs:
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
                 cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
-      - run:
-          name: Prepare Content Packs For Testing
-          when: always
-          command: |
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-            fi
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping, Should not run on contributor's branch."
-              exit 0
-            fi
-            ./Tests/scripts/prepare_content_packs_for_testing.sh
-
-            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
-              then
-                echo "Prepare Content Packs For Testing - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
-            fi
+#      - run:
+#          name: Prepare Content Packs For Testing
+#          when: always
+#          command: |
+#            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+#              then
+#                echo 'Skipping - running only in container number 0.'
+#                exit 0;
+#            fi
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping, Should not run on contributor's branch."
+#              exit 0
+#            fi
+#            ./Tests/scripts/prepare_content_packs_for_testing.sh
+#
+#            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+#              then
+#                echo "Prepare Content Packs For Testing - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+#            fi
 #
 #      - run:
 #          name: Create Instance
