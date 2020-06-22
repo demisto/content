@@ -113,6 +113,7 @@ tasks:
       id: ac58e6c6-4bbc-4913-8910-95b83c0bd4f1
       version: -1
       name: validate new ticket
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -225,6 +226,7 @@ tasks:
       id: e0004742-43cd-4b64-8e81-bb794a74e534
       version: -1
       name: validate deleted ticket
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -470,6 +472,7 @@ tasks:
       id: 863bdeea-2040-475f-81b4-ef78d62d55fb
       version: -1
       name: validate update ticket
+      description: ""
       type: condition
       iscommand: false
       brand: ""
