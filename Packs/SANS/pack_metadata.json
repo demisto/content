@@ -10,14 +10,11 @@
         "Case Management"
     ],
     "tags": [
-        "SANS"
+        "Incident Handling"
     ],
     "created": "2020-05-03T13:07:27Z",
-    "updated": "2020-05-03T13:07:27Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
-    "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+    "useCases": [
+        "SANS"
+    ],
+    "keywords": []
 }

@@ -1,6 +1,5 @@
 ## [Unreleased]
--
-
+- Removed transformers that were no longer needed.
 
 ## [19.12.1] - 2019-12-25
 Rule position is no longer mandatory, and the default position was changed to Top.
