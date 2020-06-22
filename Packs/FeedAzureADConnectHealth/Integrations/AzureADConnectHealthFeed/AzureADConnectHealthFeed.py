@@ -43,35 +43,19 @@ class Client(BaseClient):
                 A string.
             """
             patterns = (('comp', 'com p'), ('comm', 'com m'), ('comf', 'com f'), ('\n', ''))
-            for e in patterns:
-                text = re.sub(e[0], e[1], text)
+            for old, new in patterns:
+                text = text.replace(old, new)
             return text
 
-        try:
-            pattern = re.compile("(https?:\/\/|\*\.)(\w+\.|\w+-\w+\.){1,3}\w{2,3}")
-            scraped_urls: List = [subs(pattern.match(cell.text).group(0)) for cell in soup.select(  # type: ignore # noqa
-                "tbody tr td li") if pattern.match(cell.text)]
-            for url in scraped_urls:
-                result.append({
-                    'value': url,
-                    'type': FeedIndicatorType.DomainGlob if '*' in url else FeedIndicatorType.URL,
-                    'FeedURL': self._base_url
-                })
-
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        except requests.exceptions.HTTPError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
-        except ValueError as err:
-            demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
+        pattern = re.compile("(https?:\/\/|\*\.)(\w+\.|\w+-\w+\.){1,3}\w{2,3}")
+        scraped_urls: List = [subs(pattern.match(cell.text).group(0)) for cell in soup.select(  # type: ignore # noqa
+            "tbody tr td li") if pattern.match(cell.text)]
+        for url in scraped_urls:
+            result.append({
+                'value': url,
+                'type': FeedIndicatorType.DomainGlob if '*' in url else FeedIndicatorType.URL,
+                'FeedURL': self._base_url
+            })
 
         return result
 
