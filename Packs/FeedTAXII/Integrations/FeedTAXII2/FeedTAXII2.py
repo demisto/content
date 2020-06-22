@@ -134,7 +134,7 @@ def main():
     verify_certificate = not params.get("insecure", False)
 
     command = demisto.command()
-    demisto.info(f"Command being called is {command}")
+    demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
 
     try:
         client = Taxii2FeedClient(
