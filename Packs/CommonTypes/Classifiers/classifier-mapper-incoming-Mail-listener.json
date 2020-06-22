@@ -1,6 +1,6 @@
 {
 	"id": "mail-listener-mapper",
-    "name": "Mail Listener - Classifier",
+    "name": "Mail Listener - Incoming Mapper",
     "type": "mapping-incoming",
     "description": "Maps incoming phishing email messages fields.",
 	"version": -1,
