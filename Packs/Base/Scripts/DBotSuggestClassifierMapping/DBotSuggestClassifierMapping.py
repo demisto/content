@@ -40,8 +40,9 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
 
                'City': {'aliases': ['city'], 'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'Command Line': {'aliases': ['commandline', 'command line', 'process file name', 'process file path',
-                                            'process full path', 'process full path'],
+               'Command Line': {'aliases': ['commandline', 'command line', 'cmdline', 'cmd line', 'process file name',
+                                            'process file path',
+                                            'process full path', 'process full path', 'cmd'],
                                 'validators': ['validate_file_full_path']},
 
                'Event ID': {'aliases': ['eventid', 'event id', 'alert id', 'offense id'],
