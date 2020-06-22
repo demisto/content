@@ -27,6 +27,7 @@ Paste here any images that will help the reviewer
 ## Must have
 - [ ] Tests
 - [ ] Documentation 
+- [ ] Run as a non-root user
 
 ## Demisto Partner?
 - [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**
