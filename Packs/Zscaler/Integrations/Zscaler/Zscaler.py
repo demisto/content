@@ -334,8 +334,10 @@ def get_whitelist():
     return json.loads(result.content)
 
 
-def url_lookup(url):
-    response = lookup_request(url)
+def url_lookup(args):
+    url = args.get('url', '')
+    multiple = args.get('multiple', 'true').lower() == 'true'
+    response = lookup_request(url, multiple)
     hr = json.loads(response.content)
     if hr:
         data = hr[0]
@@ -444,9 +446,12 @@ def ip_lookup(ip):
     return entry
 
 
-def lookup_request(ioc):
+def lookup_request(ioc, multiple=True):
     cmd_url = '/urlLookup'
-    ioc_list = ioc.split(',')
+    if multiple:
+        ioc_list = ioc.split(',')
+    else:
+        ioc_list = [ioc]
     json_data = json.dumps(ioc_list)
     response = http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     return response
@@ -740,7 +745,7 @@ def main():
             http_request('GET', '/authenticatedSession', None, DEFAULT_HEADERS)
             demisto.results('ok')
         elif demisto.command() == 'url':
-            demisto.results(url_lookup(demisto.args()['url']))
+            demisto.results(url_lookup(demisto.args()))
         elif demisto.command() == 'ip':
             demisto.results(ip_lookup(demisto.args()['ip']))
         elif demisto.command() == 'zscaler-blacklist-url':

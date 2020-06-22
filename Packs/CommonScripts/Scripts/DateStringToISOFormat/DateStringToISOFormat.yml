@@ -1,0 +1,49 @@
+commonfields:
+  id: DateStringToISOFormat
+  version: -1
+name: DateStringToISOFormat
+script: '-'
+type: python
+tags:
+- transformer
+- date
+comment: This is a thin wrapper around the `dateutil.parser.parse` function. It will
+  parse a string containing a date/time stamp and return it in ISO 8601 format.
+enabled: true
+args:
+- name: value
+  required: true
+  description: Date value to convert.
+- name: dayfirst
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to interpret the first value in an ambiguous 3-integer date
+    (e.g. 01/05/09) as the day (``True``) or month (``False``). If ``yearfirst`` is
+    set to ``True``, this distinguishes between YDM and YMD.
+  defaultValue: "true"
+- name: yearfirst
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to interpret the first value in an ambiguous 3-integer date
+    (e.g. 01/05/09) as the year. If ``True``, the first number is taken to be the
+    year, otherwise the last number is taken to be the year.
+  defaultValue: "false"
+- name: fuzzy
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to allow fuzzy parsing, allowing for string like "Today is
+    January 1, 2047 at 8:21:00AM".
+  defaultValue: "true"
+system: false
+timeout: '0'
+subtype: python3
+dockerimage: demisto/python3:3.8.3.9324
