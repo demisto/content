@@ -398,5 +398,5 @@ def test_test_module(mocker):
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
-    result = test_module(client)
+    result = test_module(client, {})
     assert result[0] == 'ok'
