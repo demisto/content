@@ -338,10 +338,14 @@ def _create_category_filter(file_type):
 class ObservationToSecurityQueryMapper(object):
     """Class to simplify the process of mapping observation data to query objects."""
 
+    # Exfiltration consts
     _ENDPOINT_TYPE = "FedEndpointExfiltration"
     _CLOUD_TYPE = "FedCloudSharePermissions"
+
+    # Query consts
     _PUBLIC_SEARCHABLE = "PublicSearchableShare"
     _PUBLIC_LINK = "PublicLinkShare"
+    _OUTSIDE_TRUSTED_DOMAINS = "SharedOutsideTrustedDomain"
 
     def __init__(self, observation, actor):
         self._obs = observation
@@ -399,10 +403,12 @@ class ObservationToSecurityQueryMapper(object):
                 exp_types.append(ExposureType.IS_PUBLIC)
             if self._PUBLIC_LINK in exposure_types:
                 exp_types.append(ExposureType.SHARED_VIA_LINK)
+            if self._OUTSIDE_TRUSTED_DOMAINS in exposure_types:
+                exp_types.append("OutsideTrustedDomains")
             return [ExposureType.is_in(exp_types)]
         elif self._is_endpoint_exfiltration:
             return [
-                EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]),
+                EventType.is_in([EventType.CREATED, EventType.MODIFIED, EventType.READ_BY_APP]),
                 ExposureType.is_in(exposure_types),
             ]
         return []
