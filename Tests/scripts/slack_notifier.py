@@ -272,7 +272,7 @@ def sdk_slack_notifier(build_url, slack_token, container):
     slack_client = SlackClient(slack_token)
     slack_client.api_call(
         "chat.postMessage",
-        channel="dmst-dummy",
+        channel="dmst-reut",
         username="Content CircleCI",
         as_user="False",
         attachments=content_team_attachments
