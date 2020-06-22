@@ -28,6 +28,7 @@ def option_handler():
     parser.add_argument('-gp', '--gcp_path', help="Path of the content packs in the GCP bucket",
                         required=False)
     parser.add_argument('-z', '--zip_path', help="Full path of folder to zip packs in", required=True)
+    parser.add_argument('-i', '--packs_to_include', help="Comma separated list of packs to include", default='')
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-br', '--branch_name', help="Name of the branch", required=False)
     parser.add_argument('-n', '--circle_build', help="Number of the circle build", required=False)
@@ -45,7 +46,7 @@ def option_handler():
     return parser.parse_args()
 
 
-def zip_packs(packs, destination_path):
+def zip_packs(packs, destination_path, packs_to_include):
     """
     Zips packs to a provided path.
     Args:
@@ -56,6 +57,8 @@ def zip_packs(packs, destination_path):
     with ZipFile(os.path.join(destination_path, ARTIFACT_NAME), mode='w') as zf:
         for zip_pack in packs:
             for name, path in zip_pack.items():
+                if name not in packs_to_include:
+                    continue
                 print(f'Adding {name} to the zip file')
                 zf.write(path, f'{name}.zip')
 
@@ -200,6 +203,7 @@ def main():
     branch_name = option.branch_name
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
+    packs_to_include = option.packs_to_include
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -230,7 +234,7 @@ def main():
 
     if zipped_packs and success:
         try:
-            zip_packs(zipped_packs, zip_path)
+            zip_packs(zipped_packs, zip_path, packs_to_include)
         except Exception as e:
             print_error(f'Failed zipping packs: {e}')
             success = False
