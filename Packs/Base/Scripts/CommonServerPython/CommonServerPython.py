@@ -3815,202 +3815,204 @@ def dict_safe_get(dict_object, keys, default_return_value = None):
 
     return dict_object
 
-CONTEXT_UPDATE_RETRY_TIMES = 3
-MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
 
-def merge_lists(original_list, updated_list, key):
-    """
-    Replace values in a list with those in an updated list.
+if IS_PY3:  # merge_lists does not work in python 2
+    CONTEXT_UPDATE_RETRY_TIMES = 3
+    MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
 
-    :type original_list: ``list``
-    :param original_list: The original list.
+    def merge_lists(original_list, updated_list, key):
+        """
+        Replace values in a list with those in an updated list.
 
-    :type updated_list: ``list``
-    :param updated_list: The updated list.
+        :type original_list: ``list``
+        :param original_list: The original list.
 
-    :type key: ``str``
-    :param key: The key to replace elements by.
+        :type updated_list: ``list``
+        :param updated_list: The updated list.
 
-    :rtype: ``list``
-    :return:: The merged list.
+        :type key: ``str``
+        :param key: The key to replace elements by.
 
-    Example:
-    >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
-    >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n',
+        :rtype: ``list``
+        :return:: The merged list.
+
+        Example:
+        >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
+        >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n',
     >>>                                                                                                 'remove': True}]
-    >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
+        >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
 
-    """
+        """
 
-    original_dict = {element[key]: element for element in original_list}
-    updated_dict = {element[key]: element for element in updated_list}
-    original_dict.update(updated_dict)
+        original_dict = {element[key]: element for element in original_list}
+        updated_dict = {element[key]: element for element in updated_list}
+        original_dict.update(updated_dict)
 
-    removed = [obj for obj in original_dict.values() if obj.get('remove', False) is True]
-    for r in removed:
-        demisto.debug('Removing from integration context: {}'.format(str(r)))
+        removed = [obj for obj in original_dict.values() if obj.get('remove', False) is True]
+        for r in removed:
+            demisto.debug('Removing from integration context: {}'.format(str(r)))
 
-    merged_list = [obj for obj in original_dict.values() if obj.get('remove', False) is False]
+        merged_list = [obj for obj in original_dict.values() if obj.get('remove', False) is False]
 
-    return merged_list
-
-
-def set_integration_context(context, sync=True, version=-1):
-    """
-    Sets the integration context.
-
-    :type context: ``dict``
-    :param context: The context to set.
-
-    :type sync: ``bool``
-    :param sync: Whether to save the context directly to the DB.
-
-    :type version: ``int``
-    :param version: The version of the context to set.
-
-    :rtype: ``dict``
-    :return:: The new integration context
-    """
-    demisto.debug('Setting integration context {}:'.format(str(context)))
-    if is_versioned_context_available():
-        context['version'] = str(version + 1)
-        demisto.debug('Updating integration context to version {}. Sync: {}'.format(version + 1, sync))
-        return demisto.setIntegrationContextVersioned(context, version, sync)
-    else:
-        return demisto.setIntegrationContext(context)
+        return merged_list
 
 
-def get_integration_context(sync=True, with_version=False):
-    """
-    Gets the integration context.
+    def set_integration_context(context, sync=True, version=-1):
+        """
+        Sets the integration context.
 
-    :type sync: ``bool``
-    :param sync: Whether to get the integration context directly from the DB.
+        :type context: ``dict``
+        :param context: The context to set.
 
-    :type with_version: ``bool``
-    :param with_version: Whether to return the version.
+        :type sync: ``bool``
+        :param sync: Whether to save the context directly to the DB.
 
-    :rtype: ``dict``
-    :return:: The integration context.
-    """
-    if is_versioned_context_available():
-        integration_context = demisto.getIntegrationContextVersioned(sync)
+        :type version: ``int``
+        :param version: The version of the context to set.
 
-        if with_version:
-            return integration_context
+        :rtype: ``dict``
+        :return:: The new integration context
+        """
+        demisto.debug('Setting integration context {}:'.format(str(context)))
+        if is_versioned_context_available():
+            context['version'] = str(version + 1)
+            demisto.debug('Updating integration context to version {}. Sync: {}'.format(version + 1, sync))
+            return demisto.setIntegrationContextVersioned(context, version, sync)
         else:
-            return integration_context.get('context', {})
-    else:
-        return demisto.getIntegrationContext()
+            return demisto.setIntegrationContext(context)
 
 
-def is_versioned_context_available():
-    """
-    Determines whether versioned integration context is available according to the server version.
+    def get_integration_context(sync=True, with_version=False):
+        """
+        Gets the integration context.
 
-    :rtype: ``bool``
-    :return:: Whether versioned integration context is available
-    """
-    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
+        :type sync: ``bool``
+        :param sync: Whether to get the integration context directly from the DB.
 
+        :type with_version: ``bool``
+        :param with_version: Whether to return the version.
 
-def set_to_integration_context_with_retries(context, object_keys=None, sync=True):
-    """
-    Update the integration context with a dictionary of keys and values with multiple attempts.
-    The function supports merging the context keys using the provided object_keys parameter.
-    If the version is too old by the time the context is set, another attempt will be made until the limit.
+        :rtype: ``dict``
+        :return:: The integration context.
+        """
+        if is_versioned_context_available():
+            integration_context = demisto.getIntegrationContextVersioned(sync)
 
-    :type context: ``dict``
-    :param context: A dictionary of keys and values to set.
-
-    :type object_keys: ``dict``
-    :param object_keys: A dictionary to map between context keys and their unique ID for merging them.
-
-    :type sync: ``bool``
-    :param sync: Whether to make a versioned request.
-    """
-    attempt = 0
-
-    # do while...
-    while True:
-        if attempt == CONTEXT_UPDATE_RETRY_TIMES:
-            raise Exception('Failed updating integration context. Max retry attempts exceeded.')
-
-        # Update the latest context and get the new version
-        integration_context, version = update_context(context, object_keys, sync)
-
-        demisto.info('Attempting to update the integration context with version {}.'.format(version))
-
-        # Attempt to update integration context with a version.
-        # If we get a ValueError (DB Version), the version is too old. Then we need to try again.
-        attempt = attempt + 1
-        try:
-            set_integration_context(integration_context, sync, version)
-            demisto.info('Successfully updated integration context. New version is {}.'
-                         .format(version + 1 if version != -1 else version))
-            break
-        except ValueError as ve:
-            demisto.info('Failed updating integration context with version {}: {} Attempts left - {}'
-                         .format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
-            # Sleep for a random time
-            time_to_sleep = randint(1, 100) / 1000
-            time.sleep(time_to_sleep)
-
-
-def get_integration_context_with_version(sync):
-    """
-    Get the latest integration context with version, if available.
-
-    :type sync: ``bool``
-    :param sync: Whether to get the context directly from the DB.
-
-    :rtype: ``tuple``
-    :return:: The latest integration context with version.
-    """
-    latest_integration_context_versioned = get_integration_context(sync, with_version=True)
-    version = -1
-    if is_versioned_context_available():
-        integration_context = latest_integration_context_versioned.get('context', {})
-        if sync:
-            version = latest_integration_context_versioned.get('version', 0)
-    else:
-        integration_context = latest_integration_context_versioned
-
-    return integration_context, version
-
-
-def update_context(context, object_keys=None, sync=True):
-    """
-    Update the integration context with a given dictionary after merging it with the latest integration context.
-
-    :type context: ``dict``
-    :param context: The keys and values to update in the integration context.
-
-    :type object_keys: ``dict``
-    :param object_keys: A dictionary to map between context keys and their unique ID for merging them
-    with the latest context.
-
-    :type sync: ``bool``
-    :param sync: Whether to use the context directly from the DB.
-
-    :rtype ``tuple``
-    :return:: The updated integration context along with the current version.
-
-    """
-    integration_context, version = get_integration_context_with_version(sync)
-    if not object_keys:
-        object_keys = {}
-
-    for key, value in context.items():
-        latest_object = json.loads(integration_context.get(key, '[]'))
-        updated_object = context[key]
-        if key in object_keys:
-            merged_list = merge_lists(latest_object, updated_object, object_keys[key])
-            integration_context[key] = json.dumps(merged_list)
+            if with_version:
+                return integration_context
+            else:
+                return integration_context.get('context', {})
         else:
-            integration_context[key] = json.dumps(updated_object)
+            return demisto.getIntegrationContext()
 
-    return integration_context, version
+
+    def is_versioned_context_available():
+        """
+        Determines whether versioned integration context is available according to the server version.
+
+        :rtype: ``bool``
+        :return:: Whether versioned integration context is available
+        """
+        return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
+
+
+    def set_to_integration_context_with_retries(context, object_keys=None, sync=True):
+        """
+        Update the integration context with a dictionary of keys and values with multiple attempts.
+        The function supports merging the context keys using the provided object_keys parameter.
+        If the version is too old by the time the context is set, another attempt will be made until the limit.
+
+        :type context: ``dict``
+        :param context: A dictionary of keys and values to set.
+
+        :type object_keys: ``dict``
+        :param object_keys: A dictionary to map between context keys and their unique ID for merging them.
+
+        :type sync: ``bool``
+        :param sync: Whether to make a versioned request.
+        """
+        attempt = 0
+
+        # do while...
+        while True:
+            if attempt == CONTEXT_UPDATE_RETRY_TIMES:
+                raise Exception('Failed updating integration context. Max retry attempts exceeded.')
+
+            # Update the latest context and get the new version
+            integration_context, version = update_context(context, object_keys, sync)
+
+            demisto.info('Attempting to update the integration context with version {}.'.format(version))
+
+            # Attempt to update integration context with a version.
+            # If we get a ValueError (DB Version), the version is too old. Then we need to try again.
+            attempt = attempt + 1
+            try:
+                set_integration_context(integration_context, sync, version)
+                demisto.info('Successfully updated integration context. New version is {}.'
+                             .format(version + 1 if version != -1 else version))
+                break
+            except ValueError as ve:
+                demisto.info('Failed updating integration context with version {}: {} Attempts left - {}'
+                             .format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
+                # Sleep for a random time
+                time_to_sleep = randint(1, 100) / 1000
+                time.sleep(time_to_sleep)
+
+
+    def get_integration_context_with_version(sync):
+        """
+        Get the latest integration context with version, if available.
+
+        :type sync: ``bool``
+        :param sync: Whether to get the context directly from the DB.
+
+        :rtype: ``tuple``
+        :return:: The latest integration context with version.
+        """
+        latest_integration_context_versioned = get_integration_context(sync, with_version=True)
+        version = -1
+        if is_versioned_context_available():
+            integration_context = latest_integration_context_versioned.get('context', {})
+            if sync:
+                version = latest_integration_context_versioned.get('version', 0)
+        else:
+            integration_context = latest_integration_context_versioned
+
+        return integration_context, version
+
+
+    def update_context(context, object_keys=None, sync=True):
+        """
+        Update the integration context with a given dictionary after merging it with the latest integration context.
+
+        :type context: ``dict``
+        :param context: The keys and values to update in the integration context.
+
+        :type object_keys: ``dict``
+        :param object_keys: A dictionary to map between context keys and their unique ID for merging them
+        with the latest context.
+
+        :type sync: ``bool``
+        :param sync: Whether to use the context directly from the DB.
+
+        :rtype ``tuple``
+        :return:: The updated integration context along with the current version.
+
+        """
+        integration_context, version = get_integration_context_with_version(sync)
+        if not object_keys:
+            object_keys = {}
+
+        for key, value in context.items():
+            latest_object = json.loads(integration_context.get(key, '[]'))
+            updated_object = context[key]
+            if key in object_keys:
+                merged_list = merge_lists(latest_object, updated_object, object_keys[key])
+                integration_context[key] = json.dumps(merged_list)
+            else:
+                integration_context[key] = json.dumps(updated_object)
+
+        return integration_context, version
 
 
 class DemistoException(Exception):
