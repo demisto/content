@@ -937,7 +937,7 @@ def aws_table_to_markdown(response, table_header):
             else:
                 human_readable = tableToMarkdown(table_header, response)
         else:
-            human_readable = tableToMarkdown(table_header, response)
+            human_readable =  tableToMarkdown(table_header, response)
     else:
         human_readable = tableToMarkdown(table_header, response)
     return human_readable
