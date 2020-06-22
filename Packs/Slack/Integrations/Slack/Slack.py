@@ -1814,7 +1814,7 @@ def long_running_main():
     asyncio.run(start_listening())
 
 
-def init_globals():
+def init_globals(command_name: str = ''):
     """
     Initializes global variables according to the integration parameters
     """
@@ -1831,13 +1831,14 @@ def init_globals():
         # Use default SSL context
         SSL_CONTEXT = None
 
-    loop = asyncio.get_event_loop()
-    if not loop._default_executor:  # type: ignore[attr-defined]
-        demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
-        loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
+    if command_name != 'long-running-execution':
+        loop = asyncio.get_event_loop()
+        if not loop._default_executor:  # type: ignore[attr-defined]
+            demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
+            loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
-    BOT_TOKEN = demisto.params().get('bot_token')
-    ACCESS_TOKEN = demisto.params().get('access_token')
+    BOT_TOKEN = demisto.params().get('bot_token', '')
+    ACCESS_TOKEN = demisto.params().get('access_token', '')
     PROXIES = handle_proxy()
     proxy_url = demisto.params().get('proxy_url')
     PROXY_URL = proxy_url or PROXIES.get('http')  # aiohttp only supports http proxy
@@ -1878,7 +1879,6 @@ def main():
     """
     if is_debug_mode():
         os.environ['PYTHONASYNCIODEBUG'] = "1"
-    init_globals()
 
     commands = {
         'test-module': test_module,
@@ -1898,8 +1898,10 @@ def main():
         'slack-get-user-details': get_user,
     }
 
+    command_name = demisto.command()
+    init_globals(command_name)
+
     try:
-        command_name = demisto.command()
         command_func = commands[command_name]
         command_func()
     except Exception as e:

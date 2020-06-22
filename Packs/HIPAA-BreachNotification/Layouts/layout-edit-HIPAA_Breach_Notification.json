@@ -1,0 +1,207 @@
+{
+    "kind": "edit",
+    "layout": {
+        "id": "HIPAA Breach Notification",
+        "kind": "edit",
+        "modified": "2020-06-03T08:32:42.217486879Z",
+        "name": "",
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_reminder",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    }
+                ],
+                "id": "",
+                "isVisible": true,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "sortValues": null,
+                "type": "",
+                "version": 0
+            },
+            {
+                "description": "Please fill in mandatory information about the suspected breach. Later, you can fill in more incident fields in the summary page based on your knowledge.",
+                "fields": [
+                    {
+                        "fieldId": "incident_datetimeofthebreach",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_dpoemailaddress",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_approximatenumberofaffecteddatasubjects",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_affecteddata",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_dataencryptionstatus",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_whereisdatahosted",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_possiblecauseofthebreach",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_maliciouscauseifthecauseisamaliciousattack",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "sortValues": null,
+                        "version": 0
+                    }
+                ],
+                "id": "",
+                "isVisible": true,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Mandatory Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "sortValues": null,
+                "type": "",
+                "version": 0
+            }
+        ],
+        "system": false,
+        "typeId": "HIPAA Breach Notification",
+        "version": -1
+    },
+    "typeId": "HIPAA Breach Notification",
+    "version": -1,
+    "fromVersion": "5.0.0"
+}
