@@ -1,0 +1,27 @@
+commonfields:
+  id: IncOwnerToBonuslyUser
+  version: -1
+name: IncOwnerToBonuslyUser
+script: ''
+type: python
+tags:
+- Bonusly
+- Utilities
+comment: 'This script will get the owner of the incidents email address and then return
+  the Bonusly username '
+enabled: true
+args:
+- name: json
+  required: true
+  description: Enter JSON STRING like {'email@company':'@bonuslyuser'}
+outputs:
+- contextPath: IncOwnerEmail
+  description: Incident Owners Email Address
+- contextPath: BonuslyUser
+  description: Incident Owner Email Converted To Bonusly Username
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.3.9324
+runas: DBotWeakRole
+fromversion: 5.0.0

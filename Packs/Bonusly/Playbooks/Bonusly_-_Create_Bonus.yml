@@ -1,5 +1,5 @@
 id: Bonusly - Create Bonus
-version: 1
+version: -1
 name: Bonusly - Create Bonus
 description: 'This playbook allows you to create a bonusly bonus with an email address
   and a reason. It can be used in other playbooks. '

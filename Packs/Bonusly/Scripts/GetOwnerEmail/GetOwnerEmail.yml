@@ -1,0 +1,23 @@
+commonfields:
+  id: GetOwnerEmail
+  version: -1
+name: GetOwnerEmail
+script: ''
+type: python
+tags:
+- Bonusly
+- Utilities
+comment: 'This script will get the owner of the incidents email address and return
+  it to the context. '
+enabled: true
+outputs:
+- contextPath: IncOwnerEmail
+  description: Incident Owners Email Address
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.3.9324
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

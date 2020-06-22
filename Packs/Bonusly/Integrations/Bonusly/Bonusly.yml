@@ -56,7 +56,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+description: The Bonusly integration is used to interact with the Bonusly platform through the API. Bonusly is an employee recognition platform which enterprises use to for employee recognition.
 display: Bonusly
 name: Bonusly
 script:
@@ -70,13 +70,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Example: 2015-10-28T21:26:50Z'
+      description: 'The starting time from which to filter bonuses you would like to fetch. For Example: 2015-10-28T21:26:50Z'
       isArray: false
       name: start-time
       required: false
       secret: false
     - default: false
-      description: 'Example: 2015-10-28T21:26:50Z'
+      description: 'The ending time from which to filter bonuses you would like to fetch. For Example: 2015-10-28T21:26:50Z'
       isArray: false
       name: end-time
       required: false
@@ -101,7 +101,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter to get a list of bonusers by a hashtag Example: %23teamwork'
+      description: 'Filter to get a list of bonuses by a hashtag Example: %23teamwork'
       isArray: false
       name: hashtag
       required: false
@@ -648,7 +648,7 @@ script:
     - contextPath: Bonusly.Bonus.message
       description: Message of result if deleted successfully
       type: Unknown
-  dockerimage: demisto/python3:3.8.2.8159
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false
