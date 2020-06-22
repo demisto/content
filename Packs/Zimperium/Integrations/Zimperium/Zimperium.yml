@@ -192,7 +192,7 @@ script:
         description: 'TODO'
         type: String
       - contextPath: Zimperium.Events.typeDesc
-        description: 'TODO'
+        description: 'Event type description.'
         type: String
       - contextPath: Zimperium.Events.userEmail
         description: 'Email of the phone user.'
@@ -300,7 +300,7 @@ script:
         description: 'Whether the user is a staff member.'
         type: bool
       - contextPath: Zimperium.Users.status
-        description: 'TODO'
+        description: 'User status.'
         type: Number
       - contextPath: Zimperium.Users.superuser
         description: 'Whether the user is a superuser.'
@@ -309,7 +309,7 @@ script:
         description: 'Whether the user is synced from MDM e.g AirWatch, Mobile Iron, etc.'
         type: bool
       - contextPath: Zimperium.Users.termsVersion
-        description: 'TODO'
+        description: 'User terms version.'
         type: String
   - arguments:
     - default: false
@@ -390,7 +390,7 @@ script:
         description: 'Whether the user is a staff member.'
         type: bool
       - contextPath: Zimperium.Users.status
-        description: 'TODO'
+        description: 'User status.'
         type: Number
       - contextPath: Zimperium.Users.superuser
         description: 'Whether the user is a superuser.'
@@ -399,7 +399,7 @@ script:
         description: 'Whether the user is synced from MDM e.g AirWatch, Mobile Iron, etc.'
         type: bool
       - contextPath: Zimperium.Users.termsVersion
-        description: 'TODO'
+        description: 'User terms version.'
         type: String
   - arguments:
     - default: false
@@ -472,7 +472,7 @@ script:
         type: Date
       - contextPath: Zimperium.Devices.mdmId
         description: 'MDM ID. e.g: AirWatch, Mobile Iron.'
-        type: Unknown
+        type: String
       - contextPath: Zimperium.Devices.middleName
         description: 'Device owner middle name.'
         type: String
@@ -540,10 +540,10 @@ script:
         description: 'Device ZD ID.'
         type: String
       - contextPath: Zimperium.Devices.zipsDistributionVersion
-        description: 'TODO'
+        description: 'zIPS distribution version.'
         type: String
       - contextPath: Zimperium.Devices.zipsVersion
-        description: 'TODO'
+        description: 'zIPS version.'
         type: String
   - arguments:
     - default: false
@@ -675,10 +675,10 @@ script:
         description: 'Device ZD ID.'
         type: String
       - contextPath: Zimperium.Devices.zipsDistributionVersion
-        description: 'TODO'
+        description: 'zIPS distribution version.'
         type: String
       - contextPath: Zimperium.Devices.zipsVersion
-        description: 'TODO'
+        description: 'zIPS version.'
         type: String
   - arguments:
     - default: false
@@ -761,8 +761,8 @@ script:
         description: 'Device last seen.'
         type: Date
       - contextPath: Zimperium.Devices.mdmId
-        description: 'TODO'
-        type: Unknown
+        description: 'MDM ID. e.g: AirWatch, Mobile Iron.'
+        type: String
       - contextPath: Zimperium.Devices.middleName
         description: 'Device owner middle name.'
         type: String
@@ -830,10 +830,10 @@ script:
         description: 'Device ZD ID.'
         type: String
       - contextPath: Zimperium.Devices.zipsDistributionVersion
-        description: 'TODO'
+        description: 'zIPS distribution version.'
         type: String
       - contextPath: Zimperium.Devices.zipsVersion
-        description: 'TODO'
+        description: 'zIPS version.'
         type: String
   - arguments:
     - default: false
@@ -899,10 +899,10 @@ script:
         description: 'System token.'
         type: String
       - contextPath: Zimperium.Application.type
-        description: 'TODO'
+        description: 'Application type.'
         type: Number
       - contextPath: Zimperium.Application.version
-        description: 'Application version'
+        description: 'Application version.'
         type: String
   - arguments:
     - default: false

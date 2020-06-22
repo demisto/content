@@ -179,7 +179,7 @@ class Client(BaseClient):
             with open(file_path, 'rb') as file:
                 self._headers.update({'Content-Type': 'multipart/form-data'})
                 result = self._http_request(method='POST', url_suffix='/malware/public/upload/app',
-                                            headers=self._headers, files={'file1': file.read()})
+                                            headers=self._headers, files={'file1': file.read()}, timeout=240)
         except Exception as err:
             raise Exception(str(err))
         finally:
@@ -505,8 +505,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
                     'severity': event_severity_to_dbot_score(event_data.get('severity')),
                     'rawJSON': json.dumps(event_data)
                 }
-                incidents.append(incident)
-                last_event_ids.append(event_id)
+                incidents.extend(incident)
+                last_event_ids.extend(event_id)
 
                 next_run = {
                     'time': event_created_time.strftime(timestamp_format),
