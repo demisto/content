@@ -801,16 +801,16 @@ def main():
         prints_manager.execute_thread_prints(0)
         sleep(60)
 
-        if options.nightly:
+        if options.is_nightly:
             threads_list = []
-            threads_prints_manager = ParallelPrintsManager(len(servers))
+            threads_print_manager = ParallelPrintsManager(len(servers))
             # For each server url we install content
             for thread_index, server_url in enumerate(servers):
                 client = demisto_client.configure(base_url=server_url, username=username,
                                                   password=password, verify_ssl=False)
                 t = Thread(target=install_all_content_packs,
-                           kwargs={'client': client, 'server': server_url,
-                                   'prints_manager': threads_prints_manager,
+                           kwargs={'client': client, 'host': server_url,
+                                   'prints_manager': threads_print_manager,
                                    'thread_index': thread_index})
                 threads_list.append(t)
             run_threads_list(threads_list)
@@ -823,7 +823,7 @@ def main():
                     client = demisto_client.configure(base_url=server_url, username=username, password=password,
                                                       verify_ssl=False)
 
-                    search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, options.is_nightly)
+                    search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
                 except Exception as exc:
                     prints_manager.add_print_job(str(exc), print_error, 0)
                     prints_manager.execute_thread_prints(0)
