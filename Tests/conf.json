@@ -8,6 +8,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Group-IB TDS Polygon",
+            "playbookID": "Polygon-Test",
+            "timeout": 1000,
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Bastille Networks",
             "playbookID": "BastilleNetworks-Test"
         },
@@ -97,6 +103,12 @@
             "integrations": "Silverfort",
             "playbookID": "Silverfort-test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "GoogleKubernetesEngine",
+            "playbookID": "GoogleKubernetesEngine_Test",
+            "timeout": 1200,
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Fastly Feed",
@@ -327,7 +339,7 @@
             "integrations": "Cortex XDR - IOC",
             "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 600
+            "timeout": 1000
         },
         {
             "integrations": "Cloaken",
@@ -339,7 +351,8 @@
         },
         {
             "integrations": "ThreatX",
-            "playbookID": "ThreatX-test"
+            "playbookID": "ThreatX-test",
+            "timeout": 600
         },
         {
             "integrations": "Akamai WAF SIEM",
@@ -583,7 +596,8 @@
         {
             "integrations": "QRadar",
             "playbookID" :  "test playbook - QRadarCorreltaions",
-            "timeout": 600
+            "timeout": 600,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Awake Security",
@@ -1175,7 +1189,8 @@
         {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
-            "timeout": 240
+            "timeout": 240,
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "EWS v2",
@@ -1376,8 +1391,6 @@
         },
         {
             "playbookID": "Test-IsMaliciousIndicatorFound",
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
             "fromversion": "5.0.0"
         },
         {
@@ -1600,7 +1613,8 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID": "test_Qradar"
+            "playbookID": "test_Qradar",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "VMware",
@@ -1738,6 +1752,11 @@
             "integrations": "Jask",
             "playbookID": "Jask_Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Infocyte",
+            "playbookID": "Infocyte-Test",
+            "timeout": 1200
         },
         {
             "integrations": "Qualys",
@@ -2053,7 +2072,7 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
-            "integrations": "TAXIIFeed",
+            "integrations": ["TAXII Server", "TAXIIFeed"],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
             "timeout": 600
@@ -2137,13 +2156,13 @@
         {
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
@@ -2261,9 +2280,6 @@
         {
             "integrations": "Cisco Spark",
             "playbookID": "Cisco Spark Test New"
-        },
-        {
-            "playbookID": "get_file_sample_from_path_-_d2_-_test"
         },
         {
             "integrations": "Remedy On-Demand",
@@ -2515,6 +2531,11 @@
             "timeout": 1200
         },
         {
+            "integrations": "EWSO365",
+            "playbookID": "EWS_O365_test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 1200,
@@ -2671,6 +2692,11 @@
         {
             "integrations": "Google Chronicle Backstory",
             "playbookID": "Google Chronicle Backstory Reputation - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List Events - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -2832,33 +2858,36 @@
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Zoom Feed",
+            "playbookID": "FeedZoom_Test",
+            "fromversion": "5.5.0"
         }
-
     ],
     "skipped_tests": {
+        "CuckooTest": "Issue 25601",
+        "RedLockTest": "Issue 24600",
+        "Test - Cofense Intelligence": "Issue 25498",
+        "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
-        "DuoAdmin API test playbook": "Issue 24937",
-        "Wildfire Test": "Issue 24936",
         "SignalSciences-Test": "Issue 24934",
         "Maltiverse Test": "Issue 24335",
-        "Cisco Umbrella Test": "Issue 24338",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get PrismaAccess instance",
-        "Prisma_Access-Test": "unskip after we will get PrismaAccess instance",
+        "CreateIndicatorFromSTIXTest": "Issue 24345",
+        "SNDBOX_Test": "Issue 24349",
+        "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
+        "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
+        "Test-Shodan_v2": "Issue 23370",
         "PAN-OS EDL Setup V2 Test": "Issue 23854",
         "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
-        "Akamai_WAF_SIEM-Test": "Issue 22225",
-        "test_MsGraphFiles": "Issue 22853 ",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
-        "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "PAN-OS Create Or Edit Rule Test": "Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -2868,21 +2897,17 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
-        "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
         "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
-        "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
-        "VxStream Test": "Issue #23795",
         "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
         "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
@@ -2894,14 +2919,18 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "PerceptionPoint": "Issue 25795",
+        "Infoblox": "Issue 25651",
+        "Traps": "Issue 24122",
+        "McAfee Advanced Threat Defense": "Issue 16909",
+        "Cisco Umbrella Investigate": "Issue 24338",
         "Deep Instinct": "The partner didn't provide an instance",
         "Cofense Triage v2": "No instance - partner integration",
         "ArcSight Logger": "Issue 24303",
         "AttackIQFireDrill": "Issue 24281",
         "MxToolBox": "No instance",
-        "Traps": "Issue 24122",
         "Skyformation": "No instance, old partner",
-        "PrismaAccess": "Instance will be provided soon by Lior and Prasen",
+        "Prisma Access": "Instance will be provided soon by Lior and Prasen",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
@@ -2910,12 +2939,12 @@
         "Moloch": "No instance",
         "Twilio": "No instance",
         "Zendesk": "No instance",
+        "google-vault": "Issue 25798",
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
         "SentinelOne": "No instance",
         "Vectra v2": "No instance",
-        "Infoblox": "Issue 23770",
         "Trend Micro Apex": "Issue 23632",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",
@@ -2945,8 +2974,6 @@
         "Check Point": "Issue 18643",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
-        "Joe Security": "Issue 17996",
-        "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
         "Anomali ThreatStream v2": "Issue 19182",
@@ -2989,6 +3016,7 @@
         "VirusTotal - Private API": "Issue 22638",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
         "XFE_v2": "Issue 22715",
         "XFE": "We have the new integration XFE_v2, so n`o need to test the old one because they use the same quote",
@@ -3018,7 +3046,8 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
-        "Cymulate": "Partner didn't provided test playbook"
+        "Cymulate": "Partner didn't provided test playbook",
+        "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3028,7 +3057,7 @@
     ],
     "unmockable_integrations": {
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
-        "Test-IsMaliciousIndicatorFound": "Issue 24398",
+        "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
@@ -3110,7 +3139,8 @@
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
-        "MongoDB Key Value Store": "Our instance not using SSL"
+        "MongoDB Key Value Store": "Our instance not using SSL",
+        "GoogleKubernetesEngine": "SDK"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
@@ -3122,6 +3152,9 @@
                 "memory_threshold": 150
             },
             "demisto/pytan": {
+                "pid_threshold": 11
+            },
+            "demisto/google-k8s-engine:1.0.0.9467": {
                 "pid_threshold": 11
             }
         }

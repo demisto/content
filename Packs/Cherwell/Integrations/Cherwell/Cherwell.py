@@ -539,8 +539,8 @@ def validate_query_list(query_list, is_fetch):
 
 def validate_query_for_fetch_incidents(objects_names, query_string, real_fetch):
     if not objects_names:
-        no_objects_err_message = f'No business object name was given. \n In order to run advanced query, ' \
-            f'fill the integration parameter-`Objects to fetch` with exactly one business object name.'
+        no_objects_err_message = 'No business object name was given. \n In order to run advanced query, ' \
+            'fill the integration parameter-`Objects to fetch` with exactly one business object name.'
         raise_or_return_error(no_objects_err_message, real_fetch)
     if len(objects_names) > 1:
         multiple_objects_error_message = f'Advanced query operation is supported for a single business object. ' \
@@ -584,8 +584,8 @@ def parse_string_query_to_list(query_string, is_fetch=False):
     try:
         query_list = json.loads(query_string)
     except (ValueError, TypeError):
-        err_message = f'Cannot parse query, should be of the form: `[["FieldName","Operator","Value"],' \
-            f'["FieldName","Operator","Value"]]`.'
+        err_message = 'Cannot parse query, should be of the form: `[["FieldName","Operator","Value"],' \
+            '["FieldName","Operator","Value"]]`.'
         raise_or_return_error(err_message, is_fetch)
     validate_query_list(query_list, is_fetch)
     return query_list
@@ -596,7 +596,7 @@ def query_business_object_string(business_object_name, query_string, max_results
         try:
             int(max_results)
         except ValueError:
-            return return_error(f'`max_results` argument received is not a number')
+            return return_error('`max_results` argument received is not a number')
     business_object_id = resolve_business_object_id_by_name(business_object_name)
     query_filters_list = parse_string_query_to_list(query_string)
     return query_business_object(query_filters_list, business_object_id, max_results)
@@ -846,7 +846,7 @@ def get_attachments_info_command():
     }
     if attachments_info:
         entry['EntryContext'] = {
-            f'Cherwell.AttachmentsInfo': attachments_info}
+            'Cherwell.AttachmentsInfo': attachments_info}
     demisto.results(entry)
 
 
@@ -942,7 +942,7 @@ def cherwell_get_business_object_id_command():
     args = demisto.args()
     business_object_name = args.get('business_object_name')
     result = cherwell_get_business_object_id(business_object_name)
-    md = tableToMarkdown(f'Business Object Info:', result, headerTransform=pascalToSpace)
+    md = tableToMarkdown('Business Object Info:', result, headerTransform=pascalToSpace)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
