@@ -2,7 +2,7 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-	{
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
@@ -554,7 +554,7 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID" :  "test playbook - QRadarCorreltaions",
+            "playbookID": "test playbook - QRadarCorreltaions",
             "timeout": 600
         },
         {
@@ -710,7 +710,10 @@
         },
         {
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
-            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "integrations": [
+                "Panorama",
+                "palo_alto_networks_pan_os_edl_management"
+            ],
             "instance_names": "palo_alto_firewall_9.0",
             "fromversion": "4.0.0"
         },
@@ -2121,7 +2124,10 @@
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
-            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
+            "integrations": [
+                "Panorama",
+                "palo_alto_networks_pan_os_edl_management"
+            ],
             "instance_names": "palo_alto_firewall_9.0",
             "timeout": 1000
         },
@@ -2770,7 +2776,10 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": ["PrismaAccess", "Prisma Access Egress IP feed"],
+            "integrations": [
+                "PrismaAccess",
+                "Prisma Access Egress IP feed"
+            ],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2803,11 +2812,6 @@
             "integrations": "Endace",
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Azure AD Connect Health Feed",
-            "playbookID": "FeedAzureADConnectHealth_Test",
-            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -2863,7 +2867,6 @@
         "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
         "VxStream Test": "Issue #23795",
-
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
@@ -2955,12 +2958,10 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
-
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
-
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "XFE_v2": "Issue 22715",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
@@ -2970,16 +2971,13 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "reached out our monthly quota (08/03/2020)",
-
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-
-
-         "_comment5": "~~~ OTHER ~~~",
+        "_comment5": "~~~ OTHER ~~~",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
