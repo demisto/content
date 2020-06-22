@@ -18,7 +18,7 @@ TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
 
 DFLT_LIMIT_PER_FETCH = 1000
-DFLT_API_USERNAME = "cortex:api_token"
+DFLT_API_USERNAME = "_api_token_key"
 
 # Pattern Regexes - used to extract indicator type and value
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
@@ -74,7 +74,7 @@ class Taxii2FeedClient:
         :param verify: verify https
         :param username: username used for basic authentication OR api_key used for authentication
         :param password: password used for basic authentication
-        :param field_map:
+        :param field_map: map used to create fields entry ({field_name: field_value})
         """
         self.server = None
         self.api_root = None
@@ -121,9 +121,7 @@ class Taxii2FeedClient:
         Initializes the api roots (used to get taxii server objects)
         """
         if not self.server:
-            raise ValueError(
-                "Please init server prior to calling init_roots. Cannot init roots without server."
-            )
+            self.init_server()
         try:
             # try TAXII 2.0
             self.api_root = self.server.api_roots[0]
@@ -244,7 +242,7 @@ class Taxii2FeedClient:
                         f"indicators: {str(envelope)}\n\nExpected output is json"
                     )
         demisto.debug(
-            f"TAXII 2 Feed has extracted {len(indicators)} indicators / {obj_cnt} taxii objects"
+            f"TAXII 2 Feed has extracted {len(indicators)} indicators / {obj_cnt} stix objects"
         )
         return indicators[:limit]
 
@@ -362,7 +360,7 @@ class Taxii2FeedClient:
         :param indicator_groups: caught regex group in pattern of: [`type`, `indicator`]
         :param indicator_obj: taxii indicator object
         :param indicator_types: supported indicator types -> cortex types
-        :param field_map: map used to create fields entry
+        :param field_map: map used to create fields entry ({field_name: field_value})
         :return: Indicators list
         """
         indicators = []
@@ -403,7 +401,7 @@ class Taxii2FeedClient:
         :param indicator_obj: rawJSON value of the indicator
         :param type_: cortex type of the indicator
         :param value: indicator value
-        :param field_map: field map used for mapping fields
+        :param field_map: field map used for mapping fields ({field_name: field_value})
         :return: Cortex indicator
         """
         indicator = {
