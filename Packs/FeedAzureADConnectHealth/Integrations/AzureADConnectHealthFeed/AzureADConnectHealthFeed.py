@@ -48,14 +48,15 @@ class Client(BaseClient):
             return text
 
         pattern = re.compile("(https?:\/\/|\*\.)(\w+\.|\w+-\w+\.){1,3}\w{2,3}")
-        scraped_urls: List = [subs(pattern.match(cell.text).group(0)) for cell in soup.select(  # type: ignore # noqa
-            "tbody tr td li") if pattern.match(cell.text)]
-        for url in scraped_urls:
-            result.append({
-                'value': url,
-                'type': FeedIndicatorType.DomainGlob if '*' in url else FeedIndicatorType.URL,
-                'FeedURL': self._base_url
-            })
+        for cell in soup.select("tbody tr td li"):
+            if pattern.match(cell.text):
+                indicator = subs(pattern.match(cell.text).group(0))
+                result.append
+                ({
+                    'value': indicator,
+                    'type': FeedIndicatorType.DomainGlob if '*' in indicator else FeedIndicatorType.URL,
+                    'FeedURL': self._base_url
+                })
 
         return result
 
