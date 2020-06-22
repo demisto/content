@@ -51,8 +51,7 @@ class Client(BaseClient):
         for cell in soup.select("tbody tr td li"):
             if pattern.match(cell.text):
                 indicator = subs(pattern.match(cell.text).group(0))
-                result.append
-                ({
+                result.append({
                     'value': indicator,
                     'type': FeedIndicatorType.DomainGlob if '*' in indicator else FeedIndicatorType.URL,
                     'FeedURL': self._base_url
