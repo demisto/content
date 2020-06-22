@@ -2051,7 +2051,7 @@ def set_integration_context_versioned(integration_context, version=-1, sync=Fals
 
     current_version = INTEGRATION_CONTEXT_VERSIONED['version']
     if version != -1 and version <= current_version:
-        raise ValueError(f'DB Insert version {current_version} does not match version {version}')
+        raise ValueError('DB Insert version {} does not match version {}'.format(current_version, version))
 
     INTEGRATION_CONTEXT_VERSIONED = {'context': integration_context, 'version': current_version + 1}
 
