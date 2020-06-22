@@ -117,7 +117,7 @@ jobs:
 
             if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
-                echo "Create ID Set - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+                echo "Create ID Set" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
       - run:
@@ -139,7 +139,7 @@ jobs:
 
             if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
-                echo "Infrastructure testing - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+                echo "Infrastructure testing" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
       - run:
@@ -158,7 +158,7 @@ jobs:
 
             if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
-                echo "Validate - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+                echo "Validate" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
       - run:
@@ -177,7 +177,7 @@ jobs:
 
             if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
-                echo "Secrets - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+                echo "Secrets" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
       - run:
@@ -197,7 +197,7 @@ jobs:
 
             if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
-                echo "Collect Test List And Content Packs - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+                echo "Collect Test List And Content Packs" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
       - run:
@@ -230,7 +230,7 @@ jobs:
 
             if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
-                echo "Build Content Descriptor - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+                echo "Build Content Descriptor" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
 
@@ -249,7 +249,7 @@ jobs:
 
             if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
-                echo "Common Server Documentation - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+                echo "Common Server Documentation" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
       - run:
@@ -267,7 +267,7 @@ jobs:
 
             if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
-                echo "Content Docs Site - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+                echo "Content Docs Site" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
                 exit 1
             fi
@@ -289,7 +289,7 @@ jobs:
 #
 #            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
 #              then
-#                echo "Create Content Artifacts - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+#                echo "Create Content Artifacts" >> $CIRCLE_ARTIFACTS/task_report.txt
 #                exit 1
 #            fi
 #      - run:
@@ -305,7 +305,7 @@ jobs:
 #
 #            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
 #              then
-#                echo "Calculate Packs Dependencies - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+#                echo "Calculate Packs Dependencies" >> $CIRCLE_ARTIFACTS/task_report.txt
 #                exit 1
 #            fi
       - run:
@@ -404,7 +404,7 @@ jobs:
 #
 #            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
 #              then
-#                echo "Prepare Content Packs For Testing - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
+#                echo "Prepare Content Packs For Testing" >> $CIRCLE_ARTIFACTS/task_report.txt
 #                exit 1
 #            fi
 #

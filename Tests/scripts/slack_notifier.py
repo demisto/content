@@ -42,64 +42,36 @@ def options_handler():
     return options
 
 
-def get_failing_unit_tests_file_data():
+def get_failing_entities_file_data(report_file_name):
     try:
-        failing_ut_list = None
-        file_name = './artifacts/failed_lint_report.txt'
+        failing_entities_list = None
+        file_name = "./artifacts/{}.txt".format(report_file_name)
         if os.path.isfile(file_name):
-            print('Extracting lint_report')
-            with open(file_name, 'r') as failed_unittests_file:
-                failing_ut = failed_unittests_file.readlines()
-                failing_ut_list = [line.strip('\n') for line in failing_ut]
+            print("Extracting {}".format(report_file_name))
+            with open(file_name, 'r') as failed_entities_file:
+                failing_entity = failed_entities_file.readlines()
+                failing_entities_list = [line.strip('\n') for line in failing_entity]
         else:
-            print('Did not find failed_lint_report.txt file')
+            print("Did not find {}.txt file".format(report_file_name))
     except Exception as err:
-        print_error('Error getting failed_lint_report.txt file: \n {}'.format(err))
-    return failing_ut_list
+        print_error("Error getting {}.txt file: \n {}".format(report_file_name, err))
+    return failing_entities_list
 
 
-def get_failing_tasks_file_data():
-    try:
-        failing_task_list = None
-        file_name = './artifacts/task_report.txt'
-        if os.path.isfile(file_name):
-            print('Extracting tasks_report')
-            with open(file_name, 'r') as failed_tasks_file:
-                failing_tasks = failed_tasks_file.readlines()
-                failing_task_list = [line.strip('\n') for line in failing_tasks]
-        else:
-            print('Did not find tasks_report.txt file')
-    except Exception as err:
-        print_error('Error getting tasks_report.txt file: \n {}'.format(err))
-    return failing_task_list
-
-
-def get_unittests_fields():
-    failed_unittests = get_failing_unit_tests_file_data()
-    unittests_fields = []
-    if failed_unittests:
-        unittests_fields.append({
-            "title": "Failed unittests - ({})".format(len(failed_unittests)),
-            "value": '\n'.join(failed_unittests),
+def get_entities_fields(report_file_name, entity_title):
+    failed_entities = get_failing_entities_file_data(report_file_name)
+    entity_fields = []
+    if failed_entities:
+        entity_fields.append({
+            "title": "{} - ({})".format(entity_title, len(failed_entities)),
+            "value": '\n'.join(failed_entities),
             "short": False
         })
-    return unittests_fields
-
-
-def get_tasks_fields():
-    failed_tasks = get_failing_tasks_file_data()
-    task_fields = []
-    if failed_tasks:
-        task_fields.append({
-            "title": "Failed tasks - ({})".format(len(failed_tasks)),
-            "value": '\n'.join(failed_tasks),
-            "short": False
-        })
-    return task_fields
+    return entity_fields
 
 
 def get_attachments_for_unit_test(build_url, is_sdk_build=False):
-    unittests_fields = get_unittests_fields()
+    unittests_fields = get_entities_fields(report_file_name="failed_lint_report", entity_title="Failed Unittests")
     color = 'good' if not unittests_fields else 'danger'
     if not unittests_fields:
         title = 'Content Nightly Unit Tests - Success' if not is_sdk_build else 'Nightly SDK Unit Tests - Success'
@@ -116,10 +88,10 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     return content_team_attachment
 
 
-def get_attachments_for_all_tasks(build_url):
-    tasks_fields = get_tasks_fields()
-    color = 'good' if not tasks_fields else 'danger'
-    title = 'Nightly SDK Build - Success' if not tasks_fields else 'Nightly SDK Build - Failure'
+def get_attachments_for_all_steps(build_url):
+    steps_fields = get_entities_fields(report_file_name="task_report", entity_title="Failed Steps")
+    color = 'good' if not steps_fields else 'danger'
+    title = 'Nightly SDK Build - Success' if not steps_fields else 'Nightly SDK Build - Failure'
 
     container_build_url = build_url + '#queue-placeholder/containers/0'
     content_team_attachment = [{
@@ -127,7 +99,7 @@ def get_attachments_for_all_tasks(build_url):
         'color': color,
         'title': title,
         'title_link': container_build_url,
-        'fields': tasks_fields
+        'fields': steps_fields
     }]
     return content_team_attachment
 
@@ -263,10 +235,10 @@ def sdk_slack_notifier(build_url, slack_token, container):
         print_color("Starting Slack notifications about SDK nightly build - unit tests", LOG_COLORS.GREEN)
         content_team_attachments = get_attachments_for_unit_test(build_url)
 
-    # container 0: regular tasks
+    # container 0: regular steps
     else:
-        print_color("Starting Slack notifications about SDK nightly build - all tasks", LOG_COLORS.GREEN)
-        content_team_attachments = get_attachments_for_all_tasks(build_url)
+        print_color("Starting Slack notifications about SDK nightly build - all steps", LOG_COLORS.GREEN)
+        content_team_attachments = get_attachments_for_all_steps(build_url)
 
     print("Sending Slack messages to #content-team")
     slack_client = SlackClient(slack_token)
