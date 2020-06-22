@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "TIM"
+    ],
     "useCases": [],
     "keywords": [
         "AWS",
