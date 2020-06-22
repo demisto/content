@@ -38,6 +38,10 @@ class Client(BaseClient):
         soup = BeautifulSoup(r, 'html.parser')
 
         def subs(text):
+            """Cleans up the parsed entries.
+            Returns:
+                A string.     
+            """
             patterns = (('comp', 'com p'), ('comm', 'com m'), ('comf', 'com f'), ('\n', ''))
             for e in patterns:
                 text = re.sub(e[0], e[1], text)
