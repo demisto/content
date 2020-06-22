@@ -7,7 +7,7 @@ Added new commands:
         Optionally takes a list of risk tags and only gets employees who have those risk tags.
     - **code42-highriskemployee-add-risk-tags** that takes a username and risk tags and associates the risk tags with the user.
     - **code42-highriskemployee-remove-risk-tags** that takes a username and risk tags and disassociates the risk tags from the user.
-
+Improve error messages for all Commands to include exception detail.
 
 ## [20.3.3] - 2020-03-18
 #### New Integration

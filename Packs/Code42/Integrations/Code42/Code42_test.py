@@ -925,15 +925,6 @@ def get_empty_detectionlist_response(mocker, base_text):
 """TESTS"""
 
 
-def test_code42client_when_error_occurs_during_method_returns_none(code42_sdk_mock):
-    def error_effect():
-        raise Exception("Test Error")
-    code42_sdk_mock.detectionlists.departing_employee.add.side_effect = error_effect
-    client = create_client(code42_sdk_mock)
-    res = client.add_user_to_departing_employee("test")
-    assert res is None
-
-
 def test_build_query_payload():
     query = build_query_payload(MOCK_SECURITY_DATA_SEARCH_QUERY)
     assert query.sort_key == MOCK_FILE_EVENT_QUERY_PAYLOAD["srtKey"]
@@ -1029,7 +1020,9 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
     employee_page_generator = (
         create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
     )
-    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = employee_page_generator
+    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
+        employee_page_generator
+    )
     client = create_client(code42_departing_employee_mock)
 
     _, _, res = departingemployee_get_all_command(client, {"username": "user1@example.com"})
@@ -1043,8 +1036,12 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
 def test_departingemployee_get_all_command_when_no_employees(
     code42_departing_employee_mock, mocker
 ):
-    no_employees_response = get_empty_detectionlist_response(mocker, MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)
-    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = no_employees_response
+    no_employees_response = get_empty_detectionlist_response(
+        mocker, MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE
+    )
+    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
+        no_employees_response
+    )
     client = create_client(code42_departing_employee_mock)
     _, _, res = departingemployee_get_all_command(
         client,
@@ -1069,7 +1066,9 @@ def test_highriskemployee_add_command(code42_high_risk_employee_mock):
     )
     expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected_user_id
-    code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(expected_user_id)
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(
+        expected_user_id
+    )
     code42_high_risk_employee_mock.detectionlists.update_user_notes.assert_called_once_with(
         expected_user_id, "Dummy note"
     )
@@ -1100,7 +1099,9 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
     employee_page_generator = (
         create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
     )
-    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = employee_page_generator
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
+        employee_page_generator
+    )
     client = create_client(code42_high_risk_employee_mock)
 
     _, _, res = highriskemployee_get_all_command(client, {"username": "user1@example.com"})
@@ -1131,11 +1132,13 @@ def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employe
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
 
 
-def test_highriskemployee_get_all_command_when_no_employees(
-    code42_high_risk_employee_mock, mocker
-):
-    no_employees_response = get_empty_detectionlist_response(mocker, MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)
-    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = no_employees_response
+def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_employee_mock, mocker):
+    no_employees_response = get_empty_detectionlist_response(
+        mocker, MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
+    )
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
+        no_employees_response
+    )
     client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_get_all_command(
         client,
