@@ -290,7 +290,7 @@ jobs:
 #            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
 #              then
 #                echo "Create Content Artifacts - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
+#                exit 1
 #            fi
 #      - run:
 #          name: Calculate Packs Dependencies
@@ -306,7 +306,7 @@ jobs:
 #            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
 #              then
 #                echo "Calculate Packs Dependencies - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
+#                exit 1
 #            fi
       - run:
           name: Run Unit Testing and Lint
