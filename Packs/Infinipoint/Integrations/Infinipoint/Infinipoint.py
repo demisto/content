@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-PAGE_SIZE = 10
+PAGE_SIZE = 100
 PROXY = demisto.params().get('proxy')
 INSECURE = demisto.params().get('insecure')
 BASE_URL = demisto.params().get('url')
@@ -26,13 +26,18 @@ PRIVATE_KEY = demisto.params().get('private_key')
 def http_request(method, token, route, page_index=0, content=None, use_pagination=True):
     """
     """
+    body = None
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
     }
+
     if content and use_pagination:
         content['page'] = page_index
-    body = json.dumps(content)
+
+    if content is not None:
+        body = json.dumps(content)
+
     r = requests.request(
         method,
         BASE_URL + route,
@@ -58,11 +63,11 @@ def add_to_results(current_results_array, request_result):
         sys.exit(1)
 
 
-def call_api(method, route, client, rules, use_pagination=True):
+def call_api(method, route, client, rules, use_pagination=True, condition='AND'):
     """
     loop pagination in case the total items count is bigger that PAGE_SIZE
     """
-    # results = []
+
     if not use_pagination:
         res = http_request(method, client, route, content=rules, use_pagination=False)
         return res
@@ -71,7 +76,7 @@ def call_api(method, route, client, rules, use_pagination=True):
             'pageSize': PAGE_SIZE,
             'page': 0,
             'ruleSet': {
-                'condition': 'AND',
+                'condition': condition,
                 'rules': rules
             }
         }
@@ -138,11 +143,11 @@ def get_cve_command(token, args):
     cve_id = args.get('cve_id')
     method = "GET"
     route = f"/vulnerability/{cve_id}/details"
-    res = http_request(method, token, route)
+    res = http_request(method, token, route, use_pagination=False)
     LOG('res %s' % (res,))
     if "cve_id" in res:
         command_results = CommandResults(
-            outputs_prefix='Cve.Details',
+            outputs_prefix='Infinipoint.Cve.Details',
             outputs_key_field='ReportID',
             outputs=res)
         return command_results
@@ -190,7 +195,7 @@ def get_assets_programs_command(token, args):
 
     if res:
         command_results = CommandResults(
-            outputs_prefix='Assets.Programs',
+            outputs_prefix='Infinipoint.Assets.Programs',
             outputs_key_field='itemsTotal',
             outputs=res)
         return command_results
@@ -227,7 +232,7 @@ def get_assets_hardware_command(token, args):
     LOG('results %s' % (res,))
     if res:
         command_results = CommandResults(
-            outputs_prefix='Assets.Programs',
+            outputs_prefix='Infinipoint.Assets.Hardware',
             outputs_key_field='itemsTotal',
             outputs=res)
         return command_results
@@ -273,7 +278,7 @@ def get_assets_cloud_command(token, args):
     LOG('results %s' % (res,))
     if res:
         command_results = CommandResults(
-            outputs_prefix='Assets.Cloud',
+            outputs_prefix='Infinipoint.Assets.Cloud',
             outputs_key_field='$host',
             outputs=res)
         return command_results
@@ -310,7 +315,7 @@ def get_assets_user_command(token, args):
     LOG('results %s' % (res,))
     if res:
         command_results = CommandResults(
-            outputs_prefix='Assets.Users',
+            outputs_prefix='Infinipoint.Assets.User',
             outputs_key_field='$host',
             outputs=res)
         return command_results
@@ -323,7 +328,8 @@ def get_devices_command(token, args):
     status = args.get('status')
     agent_version = args.get('agentVersion')
     method = "POST"
-    route = "/devices/search"
+    # route = "/devices/search"
+    route = "/devices"
     rules = []
 
     if host:
@@ -371,7 +377,7 @@ def get_devices_command(token, args):
 
     if res:
         command_results = CommandResults(
-            outputs_prefix='Device.Search',
+            outputs_prefix='Infinipoint.Devices',
             outputs_key_field='itemsTotal',
             outputs=res)
         return (command_results)
@@ -405,7 +411,7 @@ def get_vulnerable_devices_command(token, args):
     LOG('res %s' % (res,))
     if res:
         command_results = CommandResults(
-            outputs_prefix='Vulnerability.Devices',
+            outputs_prefix='Infinipoint.Vulnerability.Devices',
             outputs_key_field='$host',
             outputs=res)
         return command_results
@@ -431,7 +437,7 @@ def get_tag_command(token, args):
     if res:
         # demisto.results(res)
         command_results = CommandResults(
-            outputs_prefix='Tags',
+            outputs_prefix='Infinipoint.Tags',
             outputs_key_field='tagId',
             outputs=res)
         return command_results
@@ -473,7 +479,7 @@ def get_networks_command(token, args):
     LOG('res %s' % (res,))
     if res:
         command_results = CommandResults(
-            outputs_prefix='Networks.Info',
+            outputs_prefix='Infinipoint.Networks.Info',
             outputs_key_field='alias',
             outputs=res)
         return command_results
@@ -492,7 +498,7 @@ def run_script_command(token, args):
     LOG('res %s' % (res,))
     if res:
         command_results = CommandResults(
-            outputs_prefix='Scripts.Execute',
+            outputs_prefix='Infinipoint.Scripts.Execute',
             outputs_key_field='actionId',
             outputs=res)
         return command_results
@@ -502,14 +508,68 @@ def get_action_command(token, args):
     action_id = args.get('action_id')
     method = "POST"
     route = f"/responses/{action_id}"
-    # rules = []
+    rules = [
+        {
+            "field": "$type",
+            "operator": "=",
+            "value": "csv"
+        },
+        {
+            "field": "$type",
+            "operator": "=",
+            "value": "raw"
+        }
+    ]
 
-    res = call_api(method, route, token, [])
+    res = call_api(method, route, token, rules, condition='OR')
     LOG('res %s' % (res,))
     if res:
         command_results = CommandResults(
-            outputs_prefix='Responses',
+            outputs_prefix='Infinipoint.Responses',
             outputs_key_field='$host',
+            outputs=res)
+        return command_results
+
+
+def get_osquery_command(token, args):
+    name = args.get('name')
+    method = "POST"
+    route = f"/osquery/search"
+    rules = []
+
+    if name:
+        name_node = {
+            'field': 'name',
+            'operator': 'contains',
+            'value': f'{name}'
+        }
+        rules.append(name_node)
+
+    res = call_api(method, route, token, rules)
+    LOG('res %s' % (res,))
+    if res:
+        command_results = CommandResults(
+            outputs_prefix='Infinipoint.Osquery.Search',
+            outputs_key_field='id',
+            outputs=res)
+        return command_results
+
+
+def run_osquery_command(token, args):
+    query_id = args.get('query_id')
+    method = "POST"
+    route = f"/osquery/execute"
+
+    query_id_node = {
+        'queryId': f'{query_id}'
+    }
+
+    res = call_api(method, route, token, query_id_node, False)
+    LOG('res %s' % (res,))
+    if res:
+        command_results = CommandResults(
+            outputs_prefix='Infinipoint.Osquery.Execute',
+            outputs_key_field='actionId',
             outputs=res)
         return command_results
 
@@ -569,6 +629,12 @@ def main():
         elif demisto.command() == "infinipoint-get-networks":
             return_results(get_networks_command(token, demisto.args()))
 
+        elif demisto.command() == "infinipoint-get-osquery":
+            return_results(get_osquery_command(token, demisto.args()))
+
+        elif demisto.command() == "infinipoint-run-osquery":
+            return_results(run_osquery_command(token, demisto.args()))
+        # todo : create get scripts as well
         elif demisto.command() == "infinipoint-run-script":
             return_results(run_script_command(token, demisto.args()))
 

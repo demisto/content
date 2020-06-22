@@ -186,7 +186,6 @@ script:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}",
         }
-        # body = ""
         if content and use_pagination:
             content['page'] = page_index
         body = json.dumps(content)
@@ -219,8 +218,10 @@ script:
         """
         loop pagination in case the total items count is bigger that PAGE_SIZE
         """
+        # results = []
         if not use_pagination:
-            results = http_request(method, client, route, content=rules, use_pagination=False)
+            res = http_request(method, client, route, content=rules, use_pagination=False)
+            return res
         else:
             query = {
                 'pageSize': PAGE_SIZE,
@@ -236,7 +237,7 @@ script:
             for i in range(1, math.ceil(res['itemsTotal'] / PAGE_SIZE)):
                 res = http_request(method, client, route, i, query)
                 results = add_to_results(results, res)
-        return results
+            return results
 
 
     def create_jwt_token(secret, access_key):
@@ -297,7 +298,7 @@ script:
         LOG('res %s' % (res,))
         if "cve_id" in res:
             command_results = CommandResults(
-                outputs_prefix='Cve.Details',
+                outputs_prefix='Infinipoint.Cve.Details',
                 outputs_key_field='ReportID',
                 outputs=res)
             return command_results
@@ -345,7 +346,7 @@ script:
 
         if res:
             command_results = CommandResults(
-                outputs_prefix='Assets.Programs',
+                outputs_prefix='Infinipoint.Assets.Programs',
                 outputs_key_field='itemsTotal',
                 outputs=res)
             return command_results
@@ -382,7 +383,7 @@ script:
         LOG('results %s' % (res,))
         if res:
             command_results = CommandResults(
-                outputs_prefix='Assets.Programs',
+                outputs_prefix='Infinipoint.Assets.Programs',
                 outputs_key_field='itemsTotal',
                 outputs=res)
             return command_results
@@ -428,7 +429,7 @@ script:
         LOG('results %s' % (res,))
         if res:
             command_results = CommandResults(
-                outputs_prefix='Assets.Cloud',
+                outputs_prefix='Infinipoint.Assets.Cloud',
                 outputs_key_field='$host',
                 outputs=res)
             return command_results
@@ -465,7 +466,7 @@ script:
         LOG('results %s' % (res,))
         if res:
             command_results = CommandResults(
-                outputs_prefix='Assets.Users',
+                outputs_prefix='Infinipoint.Assets.User',
                 outputs_key_field='$host',
                 outputs=res)
             return command_results
@@ -526,7 +527,7 @@ script:
 
         if res:
             command_results = CommandResults(
-                outputs_prefix='Device.Search',
+                outputs_prefix='Infinipoint.Device.Search',
                 outputs_key_field='itemsTotal',
                 outputs=res)
             return (command_results)
@@ -560,7 +561,7 @@ script:
         LOG('res %s' % (res,))
         if res:
             command_results = CommandResults(
-                outputs_prefix='Vulnerability.Devices',
+                outputs_prefix='Infinipoint.Vulnerability.Devices',
                 outputs_key_field='$host',
                 outputs=res)
             return command_results
@@ -570,7 +571,7 @@ script:
     def get_tag_command(token, args):
         name = args.get('name')
         method = "POST"
-        route = "/tags"
+        route = "/Infinipoint.Tags"
         rules = []
 
         if name:
@@ -586,7 +587,7 @@ script:
         if res:
             # demisto.results(res)
             command_results = CommandResults(
-                outputs_prefix='Tags',
+                outputs_prefix='Infinipoint.Tags',
                 outputs_key_field='tagId',
                 outputs=res)
             return command_results
@@ -628,7 +629,7 @@ script:
         LOG('res %s' % (res,))
         if res:
             command_results = CommandResults(
-                outputs_prefix='Networks.Info.',
+                outputs_prefix='Infinipoint.Networks.Info',
                 outputs_key_field='alias',
                 outputs=res)
             return command_results
@@ -647,8 +648,67 @@ script:
         LOG('res %s' % (res,))
         if res:
             command_results = CommandResults(
-                outputs_prefix='Networks.Info.',
-                outputs_key_field='alias',
+                outputs_prefix='Infinipoint.Scripts.Execute',
+                outputs_key_field='actionId',
+                outputs=res)
+            return command_results
+
+
+    def get_action_command(token, args):
+        action_id = args.get('action_id')
+        method = "POST"
+        route = f"/Infinipoint.Responses/{action_id}"
+        # rules = []
+
+        res = call_api(method, route, token, [])
+        LOG('res %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Infinipoint.Responses',
+                outputs_key_field='$host',
+                outputs=res)
+            return command_results
+
+
+    def get_osquery_command(token, args):
+        name = args.get('name')
+        method = "POST"
+        route = f"/osquery/search"
+        rules = []
+
+        if name:
+            name_node = {
+                'field': 'name',
+                'operator': 'contains',
+                'value': f'{name}'
+            }
+            rules.append(name_node)
+
+        res = call_api(method, route, token, rules)
+        LOG('res %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Infinipoint.Osquery.Search',
+                outputs_key_field='id',
+                outputs=res)
+            return command_results
+
+
+    def run_osquery_command(token, args):
+        query_id = args.get('query_id')
+        method = "POST"
+        route = f"/osquery/execute"
+
+        query_id_node = {
+            'queryId': f'{query_id}'
+        }
+
+        res = call_api(method, route, token, query_id_node, False)
+        LOG('res %s' % (res,))
+        if res:
+            command_results = CommandResults(
+                outputs_prefix='Infinipoint.Responses',
+                outputs_key_field='$host',
                 outputs=res)
             return command_results
 
@@ -708,9 +768,17 @@ script:
             elif demisto.command() == "infinipoint-get-networks":
                 return_results(get_networks_command(token, demisto.args()))
 
+            elif demisto.command() == "infinipoint-get-osquery":
+                return_results(get_osquery_command(token, demisto.args()))
+
+            elif demisto.command() == "infinipoint-run-osquery":
+                return_results(run_osquery_command(token, demisto.args()))
+
             elif demisto.command() == "infinipoint-run-script":
                 return_results(run_script_command(token, demisto.args()))
 
+            elif demisto.command() == "infinipoint-get-action":
+                return_results(get_action_command(token, demisto.args()))
 
         except Exception as e:
             err_msg = f'Error - Infinipoint Integration [{e}]'
@@ -726,19 +794,19 @@ script:
     - name: device_os
     - name: device_risk
     outputs:
-    - contextPath: Vulnerability.Devices.$device
+    - contextPath: Infinipoint.Vulnerability.Devices.$device
       type: String
-    - contextPath: Vulnerability.Devices.$host
+    - contextPath: Infinipoint.Vulnerability.Devices.$host
       type: String
-    - contextPath: Vulnerability.Devices.cve_id
+    - contextPath: Infinipoint.Vulnerability.Devices.cve_id
       type: Unknown
-    - contextPath: Vulnerability.Devices.device_risk
+    - contextPath: Infinipoint.Vulnerability.Devices.device_risk
       type: Number
-    - contextPath: Vulnerability.Devices.device_risk_type
+    - contextPath: Infinipoint.Vulnerability.Devices.device_risk_type
       type: Number
-    - contextPath: Vulnerability.Devices.software_name
+    - contextPath: Infinipoint.Vulnerability.Devices.software_name
       type: Unknown
-    - contextPath: Vulnerability.Devices.vulnerability_count
+    - contextPath: Infinipoint.Vulnerability.Devices.vulnerability_count
       type: Number
   - name: infinipoint-get-assets-programs
     arguments:
@@ -755,158 +823,158 @@ script:
       predefined:
       - Software version
     outputs:
-    - contextPath: Assets.Programs.items.$device
+    - contextPath: Infinipoint.Assets.Programs.items.$device
       type: String
-    - contextPath: Assets.Programs.items.$host
+    - contextPath: Infinipoint.Assets.Programs.items.$host
       type: String
-    - contextPath: Assets.Programs.items.$time
+    - contextPath: Infinipoint.Assets.Programs.items.$time
       type: Number
-    - contextPath: Assets.Programs.items.$type
+    - contextPath: Infinipoint.Assets.Programs.items.$type
       type: String
-    - contextPath: Assets.Programs.items.name
+    - contextPath: Infinipoint.Assets.Programs.items.name
       type: String
-    - contextPath: Assets.Programs.items.os_type
+    - contextPath: Infinipoint.Assets.Programs.items.os_type
       type: String
-    - contextPath: Assets.Programs.items.program_exists
+    - contextPath: Infinipoint.Assets.Programs.items.program_exists
       type: String
-    - contextPath: Assets.Programs.items.publisher
+    - contextPath: Infinipoint.Assets.Programs.items.publisher
       type: String
-    - contextPath: Assets.Programs.items.version
+    - contextPath: Infinipoint.Assets.Programs.items.version
       type: String
-    - contextPath: Assets.Programs.items.install_update_date
+    - contextPath: Infinipoint.Assets.Programs.items.install_update_date
       type: Date
-    - contextPath: Assets.Programs.itemsTotal
+    - contextPath: Infinipoint.Assets.Programs.itemsTotal
       type: Number
   - name: infinipoint-get-cve
     arguments:
     - name: cve_id
       required: true
     outputs:
-    - contextPath: Cve.Details.campaign_intelligence.apt
+    - contextPath: Infinipoint.Cve.Details.campaign_intelligence.apt
       type: String
-    - contextPath: Cve.Details.campaign_intelligence.description
+    - contextPath: Infinipoint.Cve.Details.campaign_intelligence.description
       type: String
-    - contextPath: Cve.Details.campaign_intelligence.targeted_countries
+    - contextPath: Infinipoint.Cve.Details.campaign_intelligence.targeted_countries
       type: String
-    - contextPath: Cve.Details.campaign_intelligence.targeted_industries
+    - contextPath: Infinipoint.Cve.Details.campaign_intelligence.targeted_industries
       type: String
-    - contextPath: Cve.Details.cve_description
+    - contextPath: Infinipoint.Cve.Details.cve_description
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.ac_insuf_info
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.ac_insuf_info
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.access_vector
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.access_vector
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.attack_complexity
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.attack_complexity
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.authentication
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.authentication
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.availability_impact
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.availability_impact
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.base_score
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.base_score
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.confidentiality_impact
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.confidentiality_impact
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.exploitability_score
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.exploitability_score
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.impact_score
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.impact_score
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.integrity_impact
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.integrity_impact
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_all_privilege
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.obtain_all_privilege
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_other_privilege
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.obtain_other_privilege
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.obtain_user_privilege
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.obtain_user_privilege
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.severity
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.severity
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.user_interaction_required
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.user_interaction_required
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v2.vector_string
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v2.vector_string
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.attack_complexity
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.attack_complexity
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.attack_vector
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.attack_vector
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.availability_impact
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.availability_impact
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.base_score
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.base_score
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.base_severity
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.base_severity
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.confidentiality_impact
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.confidentiality_impact
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.exploitability_score
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.exploitability_score
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.impact_score
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.impact_score
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.integrity_impact
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.integrity_impact
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.privileges_required
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.privileges_required
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.scope
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.scope
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.user_interaction
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.user_interaction
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.base_metric_v3.vector_string
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.base_metric_v3.vector_string
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.attack_complexity
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.attack_complexity
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.campaigns
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.campaigns
       type: Number
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.device_count
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.device_count
       type: Number
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploitability_risk
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploitability_risk
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploits
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.exploits
       type: Number
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_label
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_label
       type: String
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_level
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_level
       type: Number
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_type
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.risk_type
       type: Number
-    - contextPath: Cve.Details.cve_dynamic_data.infinipoint_base_metric.trends_level
+    - contextPath: Infinipoint.Cve.Details.cve_dynamic_data.infinipoint_base_metric.trends_level
       type: String
-    - contextPath: Cve.Details.cve_id
+    - contextPath: Infinipoint.Cve.Details.cve_id
       type: String
-    - contextPath: Cve.Details.cwe_description
+    - contextPath: Infinipoint.Cve.Details.cwe_description
       type: String
-    - contextPath: Cve.Details.cwe_id
+    - contextPath: Infinipoint.Cve.Details.cwe_id
       type: String
-    - contextPath: Cve.Details.devices.$device
+    - contextPath: Infinipoint.Cve.Details.devices.$device
       type: String
-    - contextPath: Cve.Details.devices.device_name_string
+    - contextPath: Infinipoint.Cve.Details.devices.device_name_string
       type: String
-    - contextPath: Cve.Details.devices.device_os
+    - contextPath: Infinipoint.Cve.Details.devices.device_os
       type: String
-    - contextPath: Cve.Details.devices.device_risk
+    - contextPath: Infinipoint.Cve.Details.devices.device_risk
       type: Number
-    - contextPath: Cve.Details.devices.map_id
+    - contextPath: Infinipoint.Cve.Details.devices.map_id
       type: String
-    - contextPath: Cve.Details.devices.vulnerableProduct
+    - contextPath: Infinipoint.Cve.Details.devices.vulnerableProduct
       type: String
-    - contextPath: Cve.Details.devices.vulnerableVersion
+    - contextPath: Infinipoint.Cve.Details.devices.vulnerableVersion
       type: String
-    - contextPath: Cve.Details.scan_date
+    - contextPath: Infinipoint.Cve.Details.scan_date
       type: Unknown
-    - contextPath: Cve.Details.software_list.cpe_name_string
+    - contextPath: Infinipoint.Cve.Details.software_list.cpe_name_string
       type: String
-    - contextPath: Cve.Details.software_list.cpe_type
+    - contextPath: Infinipoint.Cve.Details.software_list.cpe_type
       type: String
-    - contextPath: Cve.Details.top_devices.$device
+    - contextPath: Infinipoint.Cve.Details.top_devices.$device
       type: String
-    - contextPath: Cve.Details.top_devices.device_name_string
+    - contextPath: Infinipoint.Cve.Details.top_devices.device_name_string
       type: String
-    - contextPath: Cve.Details.top_devices.device_os
+    - contextPath: Infinipoint.Cve.Details.top_devices.device_os
       type: String
-    - contextPath: Cve.Details.top_devices.device_risk
+    - contextPath: Infinipoint.Cve.Details.top_devices.device_risk
       type: Number
-    - contextPath: Cve.Details.top_devices.map_id
+    - contextPath: Infinipoint.Cve.Details.top_devices.map_id
       type: String
-    - contextPath: Cve.Details.top_devices.vulnerableProduct
+    - contextPath: Infinipoint.Cve.Details.top_devices.vulnerableProduct
       type: String
-    - contextPath: Cve.Details.top_devices.vulnerableVersion
+    - contextPath: Infinipoint.Cve.Details.top_devices.vulnerableVersion
       type: String
   - name: infinipoint-get-device
     arguments:
@@ -934,89 +1002,120 @@ script:
       predefined:
       - Device Infinipoint’s agent version
     outputs:
-    - contextPath: Device.Search.items.agentVersion
+    - contextPath: Infinipoint.Devices.agentVersion
+      description: ''
       type: String
-    - contextPath: Device.Search.items.clientType
+    - contextPath: Infinipoint.Devices.clientType
+      description: ''
       type: Number
-    - contextPath: Device.Search.items.discoveryId
+    - contextPath: Infinipoint.Devices.discoveryId
+      description: ''
       type: String
-    - contextPath: Device.Search.items.domain
+    - contextPath: Infinipoint.Devices.domain
+      description: ''
       type: String
-    - contextPath: Device.Search.items.edge
+    - contextPath: Infinipoint.Devices.edge
+      description: ''
       type: Number
-    - contextPath: Device.Search.items.ftDidRespond
+    - contextPath: Infinipoint.Devices.ftDidRespond
+      description: ''
       type: Number
-    - contextPath: Device.Search.items.ftIsSuccessful
+    - contextPath: Infinipoint.Devices.ftIsSuccessful
+      description: ''
       type: Number
-    - contextPath: Device.Search.items.ftResult
+    - contextPath: Infinipoint.Devices.ftResult
+      description: ''
       type: String
-    - contextPath: Device.Search.items.gatewayIp
+    - contextPath: Infinipoint.Devices.gatewayIp
+      description: ''
       type: Number
-    - contextPath: Device.Search.items.gatewayMACAddress
+    - contextPath: Infinipoint.Devices.gatewayMACAddress
+      description: ''
       type: Date
-    - contextPath: Device.Search.items.host
+    - contextPath: Infinipoint.Devices.host
+      description: ''
       type: String
-    - contextPath: Device.Search.items.id
+    - contextPath: Infinipoint.Devices.id
+      description: ''
       type: String
-    - contextPath: Device.Search.items.ip
+    - contextPath: Infinipoint.Devices.ip
+      description: ''
       type: Number
-    - contextPath: Device.Search.items.lastSeen
+    - contextPath: Infinipoint.Devices.lastSeen
+      description: ''
       type: Date
-    - contextPath: Device.Search.items.macAddress
+    - contextPath: Infinipoint.Devices.macAddress
+      description: ''
+      type: String
+    - contextPath: Infinipoint.Devices.networkId
+      description: ''
+      type: Number
+    - contextPath: Infinipoint.Devices.networks.alias
+      description: ''
+      type: String
+    - contextPath: Infinipoint.Devices.networks.cidr
+      description: ''
+      type: String
+    - contextPath: Infinipoint.Devices.networks.gatewayIp
+      description: ''
+      type: Number
+    - contextPath: Infinipoint.Devices.networks.gatewayMACAddress
+      description: ''
       type: Date
-    - contextPath: Device.Search.items.networkId
-      type: Number
-    - contextPath: Device.Search.items.networks.alias
+    - contextPath: Infinipoint.Devices.osName
+      description: ''
       type: String
-    - contextPath: Device.Search.items.networks.cidr
-      type: String
-    - contextPath: Device.Search.items.networks.gatewayIp
+    - contextPath: Infinipoint.Devices.osType
+      description: ''
       type: Number
-    - contextPath: Device.Search.items.networks.gatewayMACAddress
+    - contextPath: Infinipoint.Devices.policyVersion
+      description: ''
+      type: String
+    - contextPath: Infinipoint.Devices.productType
+      description: ''
+      type: String
+    - contextPath: Infinipoint.Devices.regDate
+      description: ''
       type: Date
-    - contextPath: Device.Search.items.osName
-      type: String
-    - contextPath: Device.Search.items.osType
+    - contextPath: Infinipoint.Devices.status
+      description: ''
       type: Number
-    - contextPath: Device.Search.items.policyVersion
-      type: String
-    - contextPath: Device.Search.items.productType
-      type: String
-    - contextPath: Device.Search.items.regDate
-      type: Date
-    - contextPath: Device.Search.items.status
-      type: Number
-    - contextPath: Device.Search.items.statusCode
+    - contextPath: Infinipoint.Devices.statusCode
+      description: ''
       type: Unknown
-    - contextPath: Device.Search.items.statusDescription
+    - contextPath: Infinipoint.Devices.statusDescription
+      description: ''
       type: Unknown
-    - contextPath: Device.Search.items.supportId
+    - contextPath: Infinipoint.Devices.supportId
+      description: ''
       type: Unknown
-    - contextPath: Device.Search.items.tags.color
+    - contextPath: Infinipoint.Devices.tags.color
+      description: ''
       type: String
-    - contextPath: Device.Search.items.tags.name
+    - contextPath: Infinipoint.Devices.tags.name
+      description: ''
       type: String
-    - contextPath: Device.Search.items.tags.tagId
+    - contextPath: Infinipoint.Devices.tags.tagId
+      description: ''
       type: String
-    - contextPath: Device.Search.items.uniqueHostname
+    - contextPath: Infinipoint.Devices.uniqueHostname
+      description: ''
       type: String
-    - contextPath: Device.Search.itemsTotal
-      type: Number
   - name: infinipoint-get-tag
     arguments:
     - name: name
     outputs:
-    - contextPath: Tags.color
+    - contextPath: Infinipoint.Tags.color
       type: String
-    - contextPath: Tags.count
+    - contextPath: Infinipoint.Tags.count
       type: Number
-    - contextPath: Tags.description
+    - contextPath: Infinipoint.Tags.description
       type: String
-    - contextPath: Tags.name
+    - contextPath: Infinipoint.Tags.name
       type: String
-    - contextPath: Tags.tagId
+    - contextPath: Infinipoint.Tags.tagId
       type: String
-    - contextPath: Tags.type
+    - contextPath: Infinipoint.Tags.type
       type: Number
   - name: infinipoint-get-networks
     arguments:
@@ -1024,61 +1123,61 @@ script:
     - name: gateway_ip
     - name: cidr
     outputs:
-    - contextPath: Networks.Info.alias
+    - contextPath: Infinipoint.Networks.Info.alias
       type: String
-    - contextPath: Networks.Info.cidr
+    - contextPath: Infinipoint.Networks.Info.cidr
       type: String
-    - contextPath: Networks.Info.city
+    - contextPath: Infinipoint.Networks.Info.city
       type: Unknown
-    - contextPath: Networks.Info.country
+    - contextPath: Infinipoint.Networks.Info.country
       type: Unknown
-    - contextPath: Networks.Info.cronExpression
+    - contextPath: Infinipoint.Networks.Info.cronExpression
       type: String
-    - contextPath: Networks.Info.dnsName
+    - contextPath: Infinipoint.Networks.Info.dnsName
       type: String
-    - contextPath: Networks.Info.externalIp
+    - contextPath: Infinipoint.Networks.Info.externalIp
       type: Number
-    - contextPath: Networks.Info.firstSeen
+    - contextPath: Infinipoint.Networks.Info.firstSeen
       type: Date
-    - contextPath: Networks.Info.floor
+    - contextPath: Infinipoint.Networks.Info.floor
       type: Unknown
-    - contextPath: Networks.Info.gatewayIp
+    - contextPath: Infinipoint.Networks.Info.gatewayIp
       type: Number
-    - contextPath: Networks.Info.gatewayMacAddress
+    - contextPath: Infinipoint.Networks.Info.gatewayMacAddress
       type: String
-    - contextPath: Networks.Info.ip
+    - contextPath: Infinipoint.Networks.Info.ip
       type: Number
-    - contextPath: Networks.Info.ipSubnetMask
+    - contextPath: Infinipoint.Networks.Info.ipSubnetMask
       type: Number
-    - contextPath: Networks.Info.lastRun
+    - contextPath: Infinipoint.Networks.Info.lastRun
       type: Date
-    - contextPath: Networks.Info.lastSeen
+    - contextPath: Infinipoint.Networks.Info.lastSeen
       type: Date
-    - contextPath: Networks.Info.latitude
+    - contextPath: Infinipoint.Networks.Info.latitude
       type: Unknown
-    - contextPath: Networks.Info.longitude
+    - contextPath: Infinipoint.Networks.Info.longitude
       type: Unknown
-    - contextPath: Networks.Info.managedCount
+    - contextPath: Infinipoint.Networks.Info.managedCount
       type: Number
-    - contextPath: Networks.Info.name
+    - contextPath: Infinipoint.Networks.Info.name
       type: String
-    - contextPath: Networks.Info.networkId
+    - contextPath: Infinipoint.Networks.Info.networkId
       type: Number
-    - contextPath: Networks.Info.nextRun
+    - contextPath: Infinipoint.Networks.Info.nextRun
       type: Date
-    - contextPath: Networks.Info.onPrem
+    - contextPath: Infinipoint.Networks.Info.onPrem
       type: Number
-    - contextPath: Networks.Info.room
+    - contextPath: Infinipoint.Networks.Info.room
       type: Unknown
-    - contextPath: Networks.Info.scheduleStatus
+    - contextPath: Infinipoint.Networks.Info.scheduleStatus
       type: Number
-    - contextPath: Networks.Info.state
+    - contextPath: Infinipoint.Networks.Info.state
       type: Unknown
-    - contextPath: Networks.Info.street
+    - contextPath: Infinipoint.Networks.Info.street
       type: Unknown
-    - contextPath: Networks.Info.type
+    - contextPath: Infinipoint.Networks.Info.type
       type: Number
-    - contextPath: Networks.Info.unmanagedCount
+    - contextPath: Infinipoint.Networks.Info.unmanagedCount
       type: Number
   - name: infinipoint-get-assets-hardware
     arguments:
@@ -1091,43 +1190,43 @@ script:
       - "4"
       description: choose a OS type - 1 = Windows | 2 = Linux | 4 = macOS
     outputs:
-    - contextPath: Assets.Hardware.$device
+    - contextPath: Infinipoint.Assets.Hardware.$device
       type: String
-    - contextPath: Assets.Hardware.$host
+    - contextPath: Infinipoint.Assets.Hardware.$host
       type: String
-    - contextPath: Assets.Hardware.$time
+    - contextPath: Infinipoint.Assets.Hardware.$time
       type: Number
-    - contextPath: Assets.Hardware.$type
+    - contextPath: Infinipoint.Assets.Hardware.$type
       type: String
-    - contextPath: Assets.Hardware.cpu_brand
+    - contextPath: Infinipoint.Assets.Hardware.cpu_brand
       type: String
-    - contextPath: Assets.Hardware.cpu_logical_cores
+    - contextPath: Infinipoint.Assets.Hardware.cpu_logical_cores
       type: String
-    - contextPath: Assets.Hardware.cpu_physical_cores
+    - contextPath: Infinipoint.Assets.Hardware.cpu_physical_cores
       type: String
-    - contextPath: Assets.Hardware.hardware_model
+    - contextPath: Infinipoint.Assets.Hardware.hardware_model
       type: String
-    - contextPath: Assets.Hardware.hardware_serial
+    - contextPath: Infinipoint.Assets.Hardware.hardware_serial
       type: String
-    - contextPath: Assets.Hardware.hardware_vendor
+    - contextPath: Infinipoint.Assets.Hardware.hardware_vendor
       type: String
-    - contextPath: Assets.Hardware.kernel_version
+    - contextPath: Infinipoint.Assets.Hardware.kernel_version
       type: String
-    - contextPath: Assets.Hardware.os_build
+    - contextPath: Infinipoint.Assets.Hardware.os_build
       type: String
-    - contextPath: Assets.Hardware.os_name
+    - contextPath: Infinipoint.Assets.Hardware.os_name
       type: String
-    - contextPath: Assets.Hardware.os_patch_version
+    - contextPath: Infinipoint.Assets.Hardware.os_patch_version
       type: String
-    - contextPath: Assets.Hardware.os_type
+    - contextPath: Infinipoint.Assets.Hardware.os_type
       type: String
-    - contextPath: Assets.Hardware.os_version
+    - contextPath: Infinipoint.Assets.Hardware.os_version
       type: String
-    - contextPath: Assets.Hardware.physical_memory
+    - contextPath: Infinipoint.Assets.Hardware.physical_memory
       type: String
-    - contextPath: Assets.Hardware.platform
+    - contextPath: Infinipoint.Assets.Hardware.platform
       type: String
-    - contextPath: Assets.Hardware.user
+    - contextPath: Infinipoint.Assets.Hardware.user
       type: String
   - name: infinipoint-get-assets-cloud
     arguments:
@@ -1140,109 +1239,145 @@ script:
       - GCP API
       description: '"AWS API" | "GCP API"'
     outputs:
-    - contextPath: Assets.Cloud.$device
+    - contextPath: Infinipoint.Assets.Cloud.$device
       type: String
-    - contextPath: Assets.Cloud.$host
+    - contextPath: Infinipoint.Assets.Cloud.$host
       type: String
-    - contextPath: Assets.Cloud.$time
+    - contextPath: Infinipoint.Assets.Cloud.$time
       type: Number
-    - contextPath: Assets.Cloud.$type
+    - contextPath: Infinipoint.Assets.Cloud.$type
       type: String
-    - contextPath: Assets.Cloud.cloud_scan_timestamp
+    - contextPath: Infinipoint.Assets.Cloud.cloud_scan_timestamp
       type: Number
-    - contextPath: Assets.Cloud.cpu_brand
+    - contextPath: Infinipoint.Assets.Cloud.cpu_brand
       type: String
-    - contextPath: Assets.Cloud.cpu_logical_cores
+    - contextPath: Infinipoint.Assets.Cloud.cpu_logical_cores
       type: String
-    - contextPath: Assets.Cloud.cpu_physical_cores
+    - contextPath: Infinipoint.Assets.Cloud.cpu_physical_cores
       type: String
-    - contextPath: Assets.Cloud.creation_time
+    - contextPath: Infinipoint.Assets.Cloud.creation_time
       type: String
-    - contextPath: Assets.Cloud.hardware_model
+    - contextPath: Infinipoint.Assets.Cloud.hardware_model
       type: String
-    - contextPath: Assets.Cloud.hardware_serial
+    - contextPath: Infinipoint.Assets.Cloud.hardware_serial
       type: String
-    - contextPath: Assets.Cloud.hardware_vendor
+    - contextPath: Infinipoint.Assets.Cloud.hardware_vendor
       type: String
-    - contextPath: Assets.Cloud.instance_id
+    - contextPath: Infinipoint.Assets.Cloud.instance_id
       type: Date
-    - contextPath: Assets.Cloud.instance_state
+    - contextPath: Infinipoint.Assets.Cloud.instance_state
       type: String
-    - contextPath: Assets.Cloud.instance_type
+    - contextPath: Infinipoint.Assets.Cloud.instance_type
       type: String
-    - contextPath: Assets.Cloud.os_build
+    - contextPath: Infinipoint.Assets.Cloud.os_build
       type: String
-    - contextPath: Assets.Cloud.os_name
+    - contextPath: Infinipoint.Assets.Cloud.os_name
       type: String
-    - contextPath: Assets.Cloud.os_patch_version
+    - contextPath: Infinipoint.Assets.Cloud.os_patch_version
       type: String
-    - contextPath: Assets.Cloud.os_type
+    - contextPath: Infinipoint.Assets.Cloud.os_type
       type: String
-    - contextPath: Assets.Cloud.physical_memory
+    - contextPath: Infinipoint.Assets.Cloud.physical_memory
       type: String
-    - contextPath: Assets.Cloud.platform
+    - contextPath: Infinipoint.Assets.Cloud.platform
       type: String
-    - contextPath: Assets.Cloud.source
+    - contextPath: Infinipoint.Assets.Cloud.source
       type: String
-    - contextPath: Assets.Cloud.user
+    - contextPath: Infinipoint.Assets.Cloud.user
       type: String
-    - contextPath: Assets.Cloud.zone
+    - contextPath: Infinipoint.Assets.Cloud.zone
       type: String
-    - contextPath: Assets.Cloud.open_ports
+    - contextPath: Infinipoint.Assets.Cloud.open_ports
       type: Number
   - name: infinipoint-get-assets-user
     arguments:
     - name: host
     - name: username
     outputs:
-    - contextPath: Assets.User.$device
+    - contextPath: Infinipoint.Assets.User.$device
       type: String
-    - contextPath: Assets.User.$host
+    - contextPath: Infinipoint.Assets.User.$host
       type: String
-    - contextPath: Assets.User.$time
+    - contextPath: Infinipoint.Assets.User.$time
       type: Number
-    - contextPath: Assets.User.$type
+    - contextPath: Infinipoint.Assets.User.$type
       type: String
-    - contextPath: Assets.User.description
+    - contextPath: Infinipoint.Assets.User.description
       type: String
-    - contextPath: Assets.User.directory
+    - contextPath: Infinipoint.Assets.User.directory
       type: String
-    - contextPath: Assets.User.username
+    - contextPath: Infinipoint.Assets.User.username
       type: String
   - name: infinipoint-run-script
     arguments:
     - name: script_id
       required: true
     outputs:
-    - contextPath: Scripts.Execute.actionId
+    - contextPath: Infinipoint.Scripts.Execute.actionId
       type: String
-    - contextPath: Scripts.Execute.aggColumns
+    - contextPath: Infinipoint.Scripts.Execute.aggColumns
       type: Unknown
-    - contextPath: Scripts.Execute.devicesCount
+    - contextPath: Infinipoint.Scripts.Execute.devicesCount
       type: Number
-    - contextPath: Scripts.Execute.name
+    - contextPath: Infinipoint.Scripts.Execute.name
       type: String
   - name: infinipoint-get-action
     arguments:
     - name: action_id
       required: true
     outputs:
-    - contextPath: Responses.$data
+    - contextPath: Infinipoint.Responses.$data
+      type: String
+    - contextPath: Infinipoint.Responses.$device
+      type: String
+    - contextPath: Infinipoint.Responses.$host
+      type: String
+    - contextPath: Infinipoint.Responses.$time
+      type: Number
+    - contextPath: Infinipoint.Responses.$type
+      type: String
+  - name: infinipoint-get-osquery
+    arguments:
+    - name: name
+      required: true
+    outputs:
+    - contextPath: Infinipoint.Osquery.Search.aggregation
+      type: String
+    - contextPath: Infinipoint.Osquery.Search.catalog
+      type: Number
+    - contextPath: Infinipoint.Osquery.Search.categoryId
+      type: Number
+    - contextPath: Infinipoint.Osquery.Search.createdOn
+      type: Date
+    - contextPath: Infinipoint.Osquery.Search.description
+      type: String
+    - contextPath: Infinipoint.Osquery.Search.id
+      type: String
+    - contextPath: Infinipoint.Osquery.Search.moduleId
+      type: Number
+    - contextPath: Infinipoint.Osquery.Search.name
+      type: String
+    - contextPath: Infinipoint.Osquery.Search.osType
+      type: Number
+    - contextPath: Infinipoint.Osquery.Search.query
+      type: String
+  - name: infinipoint-run-osquery
+    arguments:
+    - name: query_id
+      required: true
+    outputs:
+    - contextPath: Infinipoint.Osquery.Execute.actionId
       description: ''
       type: String
-    - contextPath: Responses.$device
+    - contextPath: Infinipoint.Osquery.Execute.aggColumns
       description: ''
       type: String
-    - contextPath: Responses.$host
-      description: ''
-      type: String
-    - contextPath: Responses.$time
+    - contextPath: Infinipoint.Osquery.Execute.devicesCount
       description: ''
       type: Number
-    - contextPath: Responses.$type
+    - contextPath: Infinipoint.Osquery.Execute.name
       description: ''
       type: String
-
   dockerimage: demisto/pyjwt3:1.0.0.8871
   isfetch: true
   feed: true
