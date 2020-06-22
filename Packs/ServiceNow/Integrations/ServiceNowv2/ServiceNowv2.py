@@ -1794,7 +1794,7 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-def test_module(client: Client, *_) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def test_module(client: Client, *_) -> tuple:
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
