@@ -363,7 +363,7 @@ def main():
     if len(duplicate_incidents or []) > 0:
         duplicate_incidents_rows = map(lambda x: incident_to_record(x, TIME_FIELD), duplicate_incidents)
 
-        duplicate_incidents_rows = list(sorted(duplicate_incidents_rows, key=lambda x: x['time']))
+        duplicate_incidents_rows = list(sorted(duplicate_incidents_rows, key=lambda x: (x['time'], x['id'])))
 
         context = {
             'similarIncidentList': duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST],
