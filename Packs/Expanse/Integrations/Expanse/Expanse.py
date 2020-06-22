@@ -70,7 +70,7 @@ def make_headers(endpoint, token):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'User-Agent': 'Expanse_Demisto/1.2.0'
+        'User-Agent': 'Expanse_Demisto/1.1.0'
     }
     if endpoint == "IdToken":
         headers['Authorization'] = 'Bearer ' + token
