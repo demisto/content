@@ -1234,10 +1234,13 @@ def lock_integrations(integrations_details: list,
         build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
         if not lock_expired(lock_file, lock_timeout):
             # there is a locked integration for which the lock is not expired - test cannot be executed at the moment
-            prints_manager.add_print_job(f'Could not lock integration {integration}, delaying test execution',
-                                         print,
-                                         thread_index,
-                                         include_timestamp=True)
+            prints_manager.add_print_job(
+                f'Could not lock integration {integration}, another lock file was exist with '
+                f'build number: {build_number}, timeout: {lock_timeout}, last update at {lock_file.updated}.\n'
+                f'Delaying test execution',
+                print,
+                thread_index,
+                include_timestamp=True)
             return False
     integrations_generation_number = {}
     # Gathering generation number with which the new file will be created,
@@ -1303,8 +1306,8 @@ def create_lock_files(integrations_generation_number: dict,
             # before this build managed to do it.
             # we need to unlock all the integrations we have already locked and try again later
             prints_manager.add_print_job(
-                f'Could not lock integration {integration}, '
-                f'delaying test execution for test with details: {integrations_details}',
+                f'Could not lock integration {integration}, Create file with precondition failed.'
+                f'delaying test execution.',
                 print_warning,
                 thread_index,
                 include_timestamp=True)
@@ -1339,7 +1342,7 @@ def unlock_integrations(integrations_details: list,
                     thread_index,
                     include_timestamp=True)
         except PreconditionFailed:
-            prints_manager.add_print_job(f'Could not unlock integration {integration}',
+            prints_manager.add_print_job(f'Could not unlock integration {integration} precondition failure',
                                          print_warning,
                                          thread_index,
                                          include_timestamp=True)
