@@ -507,7 +507,7 @@ def category_add_ip(category_id, ip):
             found_category = True
             break
     if found_category:
-        ip_list = ip.split(',')
+        ip_list = argToList(ip)
         all_ips = ip_list[:]
         all_ips.extend(category_data['urls'])
         category_data['urls'] = all_ips
