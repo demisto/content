@@ -113,7 +113,7 @@ jobs:
             fi
             demisto-sdk create-id-sete -o ./Tests/id_set.json
 
-            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 echo "Create ID Set - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
@@ -132,7 +132,7 @@ jobs:
             python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
 
-            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 echo "Infrastructure testing - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
@@ -140,6 +140,7 @@ jobs:
           name: Validate Files and Yaml
           when: always
           command: |
+            set +e
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container or Nightly run"
@@ -165,7 +166,7 @@ jobs:
 
             demisto-sdk secrets --post-commit --ignore-entropy
 
-            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
                 echo "Secrets - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
@@ -182,7 +183,7 @@ jobs:
             [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
             python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
 
-            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 echo "Collect Test List And Content Packs - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
@@ -212,7 +213,7 @@ jobs:
                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION || echo "ignore errors"
             fi
 
-            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 echo "Build Content Descriptor - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
@@ -228,7 +229,7 @@ jobs:
             fi
             ./Documentation/commonServerDocs.sh
 
-            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 echo "Common Server Documentation - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
@@ -243,7 +244,7 @@ jobs:
             fi
             ./Documentation/docs_site_update.sh
 
-            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 echo "Content Docs Site - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
@@ -263,7 +264,7 @@ jobs:
 #            zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
 #            rm -r test_content_dir
 #
-#            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+#            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
 #              then
 #                echo "Create Content Artifacts - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
 #            fi
@@ -278,7 +279,7 @@ jobs:
 #            fi
 #            python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 #
-#            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+#            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
 #              then
 #                echo "Calculate Packs Dependencies - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
 #            fi
@@ -376,7 +377,7 @@ jobs:
 #            fi
 #            ./Tests/scripts/prepare_content_packs_for_testing.sh
 #
-#            if [ $? -ne 0 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+#            if [[ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
 #              then
 #                echo "Prepare Content Packs For Testing - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
 #            fi
