@@ -288,8 +288,10 @@ script:
             return res["alerts"]
 
         def get_alert_details(self, alert_id):
-            res = self._sdk.alerts.get_details(alert_id)
-            return res["alerts"][0]
+            res = self._sdk.alerts.get_details(alert_id)["alerts"]
+            if not res:
+                raise Exception("No alert found with ID {0}.".format(alert_id))
+            return res[0]
 
         def resolve_alert(self, id):
             self._sdk.alerts.resolve(id)
@@ -300,8 +302,10 @@ script:
             return res
 
         def get_user_id(self, username):
-            res = self._sdk.users.get_by_username(username)
-            return res["users"][0]["userUid"]
+            res = self._sdk.users.get_by_username(username)["users"]
+            if not res:
+                raise Exception("No user found with username {0}.".format(username))
+            return res[0]["userUid"]
 
         def search_file_events(self, payload):
             res = self._sdk.securitydata.search_file_events(payload)

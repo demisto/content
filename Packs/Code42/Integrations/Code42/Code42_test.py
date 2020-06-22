@@ -925,6 +925,20 @@ def get_empty_detectionlist_response(mocker, base_text):
 """TESTS"""
 
 
+def test_client_when_no_alert_found_raises_exception(code42_sdk_mock):
+    code42_sdk_mock.alerts.get_details.return_value = """{'type$': 'ALERT_DETAILS_RESPONSE', 'alerts': []}"""
+    client = create_client(code42_sdk_mock)
+    with pytest.raises(Exception):
+        client.get_alert_details("mock-id")
+
+
+def test_client_when_no_user_found_raises_exception(code42_sdk_mock):
+    code42_sdk_mock.users.get_by_username.return_value = """{'totalCount': 0, 'users': []}"""
+    client = create_client(code42_sdk_mock)
+    with pytest.raises(Exception):
+        client.get_user_id("test@example.com")
+
+
 def test_build_query_payload():
     query = build_query_payload(MOCK_SECURITY_DATA_SEARCH_QUERY)
     assert query.sort_key == MOCK_FILE_EVENT_QUERY_PAYLOAD["srtKey"]
