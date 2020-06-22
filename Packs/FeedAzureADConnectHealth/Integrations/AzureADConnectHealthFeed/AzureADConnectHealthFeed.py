@@ -40,7 +40,7 @@ class Client(BaseClient):
         def subs(text):
             """Cleans up the parsed entries.
             Returns:
-                A string.     
+                A string.
             """
             patterns = (('comp', 'com p'), ('comm', 'com m'), ('comf', 'com f'), ('\n', ''))
             for e in patterns:
