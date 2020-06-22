@@ -2004,7 +2004,7 @@
             ]
         },
         {
-            "integrations": "McAfee Active Response",
+            "integrations": ["epo", "McAfee Active Response"],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
@@ -2019,8 +2019,7 @@
             "fromversion": "4.5.0",
             "timeout": 1700
         },
-        {
-            "integrations": "McAfee Active Response",
+        {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
         },
@@ -2786,7 +2785,7 @@
             "nightly": true
         },
         {
-            "integrations": "PrismaAccess",
+            "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2815,7 +2814,7 @@
         },
         {
             "integrations": "Azure AD Connect Health Feed",
-            "playbookID": "<TestPlaybook ID>"
+            "playbookID": "FeedAzureADConnectHealth_Test"
         }
     ],
     "skipped_tests": {
