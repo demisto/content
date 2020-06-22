@@ -109,7 +109,7 @@ def construct_entities_block(entities_data: dict):
     for entity_type, entities_description in sorted(entities_data.items()):
         release_notes += f'#### {entity_type}\n'
         for name, description in entities_description.items():
-            release_notes += f'##### {name}\n{description}\n'
+            release_notes += f'##### {name}  \n{description}\n'
 
     return release_notes
 
@@ -264,6 +264,7 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
             for entity in entity_comments:
                 # name of the script, integration, playbook, etc...
                 entity_name = entity[0] or entity[2]
+                entity_name = entity_name.replace('__', '')
                 # release notes of the entity
                 entity_comment = entity[1] or entity[3]
                 if entity_name in entities_data[entity_type]:
@@ -273,7 +274,7 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
 
     pack_release_notes = construct_entities_block(entities_data)
     return (f'### {pack_name} Pack v{latest_version}\n'
-            f'{pack_release_notes}')
+            f'{pack_release_notes.strip()}')
 
 
 def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, version, asset_id,

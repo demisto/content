@@ -133,11 +133,11 @@ class TestGenerateReleaseNotesSummary:
 
         assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
         assert '### FakePack1 Pack v2.0.0' in rn_summary
-        assert '##### __FakePack1_Integration1__' in rn_summary
+        assert '##### FakePack1_Integration1' in rn_summary
         assert 'This is a fake1 minor release note.' in rn_summary
         assert 'This is a fake1 major release note.' in rn_summary
         assert '### FakePack2 Pack v1.1.0' in rn_summary
-        assert '##### __FakePack2_Script1__' in rn_summary
+        assert '##### FakePack2_Script1' in rn_summary
         assert 'This is a fake2 major release note.' in rn_summary
 
     def test_release_notes_summary_with_empty_lines_in_rn(self):
@@ -198,7 +198,7 @@ class TestGenerateReleaseNotesSummary:
         rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
 
         assert '### FakePack4 Pack v1.1.0' in rn_summary
-        assert '##### __FakePack4_Script1__' in rn_summary
+        assert '##### FakePack4_Script1' in rn_summary
 
 
 class TestMergeVersionBlocks:
