@@ -13,12 +13,11 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
-SERVER = (demisto.params()['url'][:-1]
-          if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
-BASE_URL = SERVER + '/api/'
-USE_SSL = not demisto.params().get('insecure', False)
+USERNAME: str
+PASSWORD: str
+SERVER: str
+BASE_URL: str
+USE_SSL: bool
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -26,6 +25,7 @@ HEADERS = {
 URL_LIST_TYPE = 'URL_LIST'
 IP_LIST_TYPE = 'IP_LIST'
 CATEGORY_LIST_TYPE = 'CATEGORY_LIST'
+LOCAL_CATEGORY_DB_TYPE = 'LOCAL_CATEGORY_DB'
 
 ''' HELPER FUNCTIONS '''
 
@@ -776,8 +776,13 @@ def add_policy_content_command():
     elif content_type == CATEGORY_LIST_TYPE:
         add_policy_content_request(uuid, content_type, change_description, schema_version,
                                    categories=categories)
+    elif content_type == LOCAL_CATEGORY_DB_TYPE:
+        add_policy_content_request(uuid, content_type, change_description, schema_version,
+                                   urls=urls, categories=categories, ips=ips, description=description)
 
-    return_outputs('Successfully added content to the policy', {}, {})
+    output = demisto.args()
+    human_readable = tableToMarkdown('Successfully added content to the policy', output)
+    return_outputs(human_readable, {}, output)
 
 
 def add_policy_content_request(uuid, content_type, change_description, schema_version,
@@ -809,7 +814,35 @@ def add_policy_content_request(uuid, content_type, change_description, schema_ve
     if not content or 'content' not in content:
         return_error('Could not update policy content - failed retrieving the current content')
 
-    if ips:
+    if content_type == LOCAL_CATEGORY_DB_TYPE:
+        if 'categories' not in content['content']:
+            content['content']['categories'] = []
+        for category in categories:
+            content_entities = []
+            if ips:
+                content_entities.extend(ips)
+            if urls:
+                content_entities.extend(urls)
+            entries = []
+            for entity in content_entities:
+                entries.append({
+                    'type': 'url',
+                    'url': entity,
+                    'comment': description
+                })
+            found_existing_category = False
+            for index, existing_category in enumerate(content['content']['categories']):
+                if existing_category.get('name') == category:
+                    content['content']['categories'][index]['entries'].extend(entries)
+                    found_existing_category = True
+                    break
+            if not found_existing_category:
+                content['content']['categories'].append({
+                    'type': 'inline',
+                    'name': category,
+                    'entries': entries
+                })
+    elif ips:
         if 'ipAddresses' not in content['content']:
             content['content']['ipAddresses'] = []
         content['content']['ipAddresses'] += [{
@@ -862,6 +895,9 @@ def delete_policy_content_command():
         delete_policy_content_request(uuid, content_type, change_description, schema_version, urls=urls)
     elif content_type == CATEGORY_LIST_TYPE:
         delete_policy_content_request(uuid, content_type, change_description, schema_version, categories=categories)
+    elif content_type == LOCAL_CATEGORY_DB_TYPE:
+        delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips,
+                                      urls=urls, categories=categories)
 
     return_outputs('Successfully deleted content from the policy', {}, {})
 
@@ -959,31 +995,43 @@ def list_tenants_request():
     return response
 
 
-''' COMMANDS '''
-LOG('Command being called is ' + demisto.command())
-handle_proxy()
+def main():
+    global USERNAME, PASSWORD, SERVER, BASE_URL, USE_SSL
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    SERVER = (demisto.params()['url'][:-1]
+              if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
+    BASE_URL = SERVER + '/api/'
+    USE_SSL = not demisto.params().get('insecure', False)
 
-COMMAND_DICTIONARY = {
-    'test-module': test_module,
-    'symantec-mc-list-devices': list_devices_command,
-    'symantec-mc-get-device': get_device_command,
-    'symantec-mc-get-device-health': get_device_health_command,
-    'symantec-mc-get-device-license': get_device_license_command,
-    'symantec-mc-get-device-status': get_device_status_command,
-    'symantec-mc-list-policies': list_policies_command,
-    'symantec-mc-get-policy': get_policy_command,
-    'symantec-mc-create-policy': create_policy_command,
-    'symantec-mc-update-policy': update_policy_command,
-    'symantec-mc-delete-policy': delete_policy_command,
-    'symantec-mc-add-policy-content': add_policy_content_command,
-    'symantec-mc-delete-policy-content': delete_policy_content_command,
-    'symantec-mc-list-tenants': list_tenants_command
-}
+    LOG('Command being called is ' + demisto.command())
+    handle_proxy()
 
-try:
-    command_func = COMMAND_DICTIONARY[demisto.command()]
-    command_func()
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    return_error(str(e))
+    command_dictionary = {
+        'test-module': test_module,
+        'symantec-mc-list-devices': list_devices_command,
+        'symantec-mc-get-device': get_device_command,
+        'symantec-mc-get-device-health': get_device_health_command,
+        'symantec-mc-get-device-license': get_device_license_command,
+        'symantec-mc-get-device-status': get_device_status_command,
+        'symantec-mc-list-policies': list_policies_command,
+        'symantec-mc-get-policy': get_policy_command,
+        'symantec-mc-create-policy': create_policy_command,
+        'symantec-mc-update-policy': update_policy_command,
+        'symantec-mc-delete-policy': delete_policy_command,
+        'symantec-mc-add-policy-content': add_policy_content_command,
+        'symantec-mc-delete-policy-content': delete_policy_content_command,
+        'symantec-mc-list-tenants': list_tenants_command
+    }
+
+    try:
+        command_func = command_dictionary[demisto.command()]
+        command_func()
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        return_error(str(e))
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
