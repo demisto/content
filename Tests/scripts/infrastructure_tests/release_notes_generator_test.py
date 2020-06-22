@@ -1,11 +1,11 @@
 import os
 import re
-from release_notes_generator import (get_release_notes_dict,
-                                     generate_release_notes_summary,
-                                     get_pack_entities,
-                                     read_and_format_release_note,
-                                     merge_version_blocks,
-                                     EMPTY_LINES_REGEX)
+from Utils.release_notes_generator import (get_release_notes_dict,
+                                           generate_release_notes_summary,
+                                           get_pack_entities,
+                                           read_and_format_release_note,
+                                           merge_version_blocks,
+                                           EMPTY_LINES_REGEX)
 
 TEST_DATA_PATH = 'Tests/scripts/infrastructure_tests/tests_data/RN_tests_data'
 
@@ -61,7 +61,7 @@ class TestReadAndFormatReleaseNote:
         - Formatting a release notes file.
 
         Then
-        - Ensure both integration appear in the formatted string
+        - Ensure formatted string is empty.
         """
         rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md')
         formatted_text = read_and_format_release_note(rn_file)

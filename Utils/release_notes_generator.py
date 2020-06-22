@@ -6,6 +6,7 @@ import json
 import glob
 import argparse
 from datetime import datetime
+from typing import Dict, Tuple
 
 from distutils.version import LooseVersion
 import requests
@@ -60,7 +61,7 @@ def get_new_packs(git_sha1):
     return pack_paths
 
 
-def get_new_entity_record(entity_path: str) -> (str, str):
+def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
     data, _ = get_dict_from_file(entity_path)
 
     if 'layouts' in entity_path.lower():
@@ -122,7 +123,7 @@ def get_pack_entities(pack_path):
         glob.glob(f'{pack_path}/*/*/*.yml')], [])
     pack_entities.sort()
 
-    entities_data = {}
+    entities_data: Dict = {}
     for entity_path in pack_entities:
         # ignore test files
         if 'test' in entity_path.lower():
@@ -377,7 +378,7 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
     if draft:
         content_descriptor['releaseNotes'] = draft
 
-    with open('content-descriptor.json', 'w') as outfile:
+    with open('../content-descriptor.json', 'w') as outfile:
         json.dump(content_descriptor, outfile)
 
 
