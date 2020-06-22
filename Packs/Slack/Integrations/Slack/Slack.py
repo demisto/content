@@ -49,9 +49,6 @@ POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
     (60, ): 5
 }
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
-CONTEXT_UPDATE_RETRY_TIMES = 3
-DEFAULT_SERVER_VERSION = '5.0.0'
-MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
 OBJECTS_TO_KEYS = {
     'mirrors': 'investigation_id',
     'questions': 'entitlement',
@@ -125,39 +122,6 @@ def get_current_utc_time() -> datetime:
     return datetime.utcnow()
 
 
-def merge_lists(original_list: List[dict], updated_list: List[dict], key: str) -> List[dict]:
-    """
-    Replace values in a list with those in an updated list.
-
-    Args:
-        original_list: The original list.
-        updated_list: The updated list.
-        key: The key to replace elements by.
-
-    Returns:
-        The merged list.
-
-    Example:
-    >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
-    >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n',
-    >>>                                                                                                 'remove': True}]
-    >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
-
-    """
-
-    original_dict = {element[key]: element for element in original_list}
-    updated_dict = {element[key]: element for element in updated_list}
-    original_dict.update(updated_dict)
-
-    removed = [obj for obj in original_dict.values() if obj.get('remove', False) is True]
-    for r in removed:
-        demisto.debug(f'Slack - removing from integration context: {str(r)}')
-
-    merged_list = [obj for obj in original_dict.values() if obj.get('remove', False) is False]
-
-    return merged_list
-
-
 def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     """
     Gets a slack user by a user name
@@ -205,7 +169,7 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
             user = users_filter[0]
             if add_to_context:
                 users.append(user)
-                set_to_latest_integration_context({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+                set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         else:
             return {}
 
@@ -259,145 +223,6 @@ def find_mirror_by_investigation() -> dict:
                 mirror = investigation_filter[0]
 
     return mirror
-
-
-def set_integration_context(context, sync: bool = True, version: int = -1) -> dict:
-    """
-    Sets the integration context.
-    Args:
-        context: The context to set.
-        sync: Whether to save the context directly to the DB.
-        version: The version of the context to set.
-
-    Returns:
-        The new integration context
-    """
-    demisto.debug(f'Slack - setting integration context: {str(context)}')
-    if is_versioned_context_available():
-        context['version'] = str(version + 1)
-        demisto.debug(f'Slack - updating integration context to version {version + 1}. Sync: {sync}')
-        return demisto.setIntegrationContextVersioned(context, version, sync)
-    else:
-        return demisto.setIntegrationContext(context)
-
-
-def get_integration_context(sync: bool = True, with_version: bool = False) -> dict:
-    """
-    Gets the integration context.
-    Args:
-        sync: Whether to get the integration context directly from the DB.
-        with_version: Whether to return the version.
-
-    Returns:
-        The integration context.
-    """
-    if is_versioned_context_available():
-        integration_context = demisto.getIntegrationContextVersioned(sync)
-
-        if with_version:
-            return integration_context
-        else:
-            return integration_context.get('context', {})
-    else:
-        return demisto.getIntegrationContext()
-
-
-def is_versioned_context_available() -> bool:
-    """
-    Determines whether versioned integration context is available according to the server version.
-
-    Returns:
-        Whether versioned integration context is available
-    """
-    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
-
-
-def set_to_latest_integration_context(context: dict, object_keys: dict = None, sync: bool = True):
-    """
-    Update the integration context with a dictionary of keys and values with multiple attempts.
-    If the version is too old by the time the context is set, another attempt will be made until the limit.
-
-    Args:
-        context: A dictionary of keys and values to set.
-        object_keys: A dictionary to map between context keys and their unique ID for merging them
-        sync: Whether to make a versioned request.
-    """
-    attempt = 0
-
-    # do while...
-    while True:
-        if attempt == CONTEXT_UPDATE_RETRY_TIMES:
-            raise Exception('Slack - failed updating integration context. Max retry attempts exceeded.')
-
-        # Update the latest context and get the new version
-        integration_context, version = update_context(context, object_keys, sync)
-
-        demisto.info(f'Slack - Attempting to update the integration context with version {version}.')
-
-        # Attempt to update integration context with a version.
-        # If we get a ValueError (DB Version), the version is too old. Then we need to try again.
-        attempt = attempt + 1
-        try:
-            set_integration_context(integration_context, sync, version)
-            demisto.info(f'Slack - successfully updated integration context.'
-                         f' New version is {version + 1 if version != -1 else version}')
-            break
-        except ValueError as ve:
-            demisto.info(f'Slack - Failed updating integration context with version {version}: {str(ve)}'
-                         f' Attempts left - {CONTEXT_UPDATE_RETRY_TIMES - attempt}')
-            # Sleep for a random time
-            time_to_sleep = randint(1, 100) / 1000
-            time.sleep(time_to_sleep)
-
-
-def get_latest_integration_context(sync):
-    """
-    Get the latest integration context with version, if available.
-    Args:
-        sync: Whether to get the context directly from the DB.
-
-    Returns:
-        The latest integration context with version.
-    """
-    latest_integration_context_versioned = get_integration_context(sync, with_version=True)
-    version = -1
-    if is_versioned_context_available():
-        integration_context = latest_integration_context_versioned.get('context', {})
-        if sync:
-            version = latest_integration_context_versioned.get('version', 0)
-    else:
-        integration_context = latest_integration_context_versioned
-
-    return integration_context, version
-
-
-def update_context(context: dict, object_keys: dict = None, sync: bool = True) -> tuple:
-    """
-    Update the integration context with a given dictionary after merging it with the latest integration context.
-    Args:
-        context: The keys and values to update in the integration context.
-        object_keys: A dictionary to map between context keys and their unique ID for merging them
-         with the latest context.
-        sync: Whether to use the context directly from the DB.
-
-    Returns: The updated integration context along with the current version.
-
-    """
-    integration_context, version = get_latest_integration_context(sync)
-    if not object_keys:
-        object_keys = {}
-
-    for key, value in context.items():
-        latest_object = json.loads(integration_context.get(key, '[]'))
-        updated_object = context[key]
-        if key in object_keys:
-            merged_list = merge_lists(latest_object, updated_object, object_keys[key])
-            integration_context[key] = json.dumps(merged_list)
-        else:
-            integration_context[key] = json.dumps(updated_object)
-
-    return integration_context, version
-
 
 def set_name_and_icon(body, method):
     """
@@ -673,7 +498,7 @@ def mirror_investigation():
                 bot_id = integration_context['bot_id']
             else:
                 bot_id = get_bot_id()
-                set_to_latest_integration_context({'bot_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+                set_to_integration_context_with_retries({'bot_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
             invite_users_to_conversation(conversation_id, [bot_id])
 
@@ -741,7 +566,7 @@ def mirror_investigation():
 
     mirrors.append(mirror)
 
-    set_to_latest_integration_context({'mirrors': mirrors, 'conversations': conversations}, OBJECTS_TO_KEYS,
+    set_to_integration_context_with_retries({'mirrors': mirrors, 'conversations': conversations}, OBJECTS_TO_KEYS,
                                       SYNC_CONTEXT)
 
     if kick_admin:
@@ -864,7 +689,7 @@ def check_for_answers():
             answer_question(actions[0].get('text', {}).get('text'), question, user.get('profile', {}).get('email'))
 
     if updated_questions:
-        set_to_latest_integration_context({'users': users, 'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        set_to_integration_context_with_retries({'users': users, 'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
@@ -961,7 +786,7 @@ def check_for_mirrors():
             if updated_users:
                 context['users'] = updated_users
 
-            set_to_latest_integration_context(context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            set_to_integration_context_with_retries(context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
@@ -1306,7 +1131,7 @@ async def listen(**payload):
                         demisto.mirrorInvestigation(investigation_id, f'{mirror_type}:{direction}', auto_close)
                         mirror['mirrored'] = True
                         mirrors.append(mirror)
-                        set_to_latest_integration_context({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+                        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
                 investigation_id = mirror['investigation_id']
                 await handle_text(client, investigation_id, text, user)
@@ -1340,7 +1165,7 @@ async def get_user_by_id_async(client, user_id):
         }
         user = (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
         users.append(user)
-        set_to_latest_integration_context({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
     return user
 
@@ -1399,7 +1224,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
                 demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                                  task_id)
                 question['remove'] = True
-                set_to_latest_integration_context({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+                set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
                 return reply
 
@@ -1563,7 +1388,7 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
         'default_response': default_response
     })
 
-    set_to_latest_integration_context({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def slack_send_file():
@@ -1807,7 +1632,7 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
                     if not conversation:
                         return_error(f'Could not find the Slack conversation {destination_name}')
                     conversations.append(conversation)
-                    set_to_latest_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+                    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
                     conversation_id = conversation.get('id')
 
             if conversation_id:
@@ -1846,7 +1671,7 @@ def set_channel_topic():
             mirror = mirrors.pop(mirrors.index(mirror))
             mirror['channel_topic'] = topic
             mirrors.append(mirror)
-            set_to_latest_integration_context({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
@@ -1883,7 +1708,7 @@ def rename_channel():
             mirror = mirrors.pop(mirrors.index(mirror))
             mirror['channel_name'] = new_name
             mirrors.append(mirror)
-            set_to_latest_integration_context({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
@@ -1922,7 +1747,7 @@ def close_channel():
                 demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
                                             mirror['auto_close'])
 
-            set_to_latest_integration_context({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     else:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
