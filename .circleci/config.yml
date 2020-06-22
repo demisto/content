@@ -106,6 +106,8 @@ jobs:
           name: Create ID Set
           when: always
           command: |
+            set +e
+
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - running only in container number 0"
@@ -121,6 +123,8 @@ jobs:
           name: Infrastructure testing
           when: always
           command: |
+            set +e
+
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
@@ -158,6 +162,8 @@ jobs:
           name: Secrets
           when: always
           command: |
+            set +e
+
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
@@ -174,6 +180,8 @@ jobs:
           name: Collect Test List And Content Packs
           when: always
           command: |
+            set +e
+
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
@@ -200,6 +208,8 @@ jobs:
           name: Build Content Descriptor
           when: always
           command: |
+            set +e
+
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - running only in container number 0"
@@ -222,6 +232,8 @@ jobs:
           name: Common Server Documentation
           when: always
           command: |
+            set +e
+
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - running only in container number 0"
@@ -237,6 +249,8 @@ jobs:
           name: Content Docs Site
           when: always
           command: |
+            set +e
+
             if [ $CIRCLE_NODE_INDEX -ne 0 ];
               then
                 echo "Skipping - running only in container number 0"
