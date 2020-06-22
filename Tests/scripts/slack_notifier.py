@@ -228,27 +228,27 @@ def sdk_slack_notifier(build_url, slack_token, container):
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    # if branch_name == 'master':
-    print("Extracting build status")
-    # container 1: unit tests
-    if int(container):
-        print_color("Starting Slack notifications about SDK nightly build - unit tests", LOG_COLORS.GREEN)
-        content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+    if branch_name == 'master':
+        print("Extracting build status")
+        # container 1: unit tests
+        if int(container):
+            print_color("Starting Slack notifications about SDK nightly build - unit tests", LOG_COLORS.GREEN)
+            content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
 
-    # container 0: regular steps
-    else:
-        print_color("Starting Slack notifications about SDK nightly build - all steps", LOG_COLORS.GREEN)
-        content_team_attachments = get_attachments_for_all_steps(build_url)
+        # container 0: regular steps
+        else:
+            print_color("Starting Slack notifications about SDK nightly build - all steps", LOG_COLORS.GREEN)
+            content_team_attachments = get_attachments_for_all_steps(build_url)
 
-    print("Sending Slack messages to #content-team")
-    slack_client = SlackClient(slack_token)
-    slack_client.api_call(
-        "chat.postMessage",
-        channel="dmst-reut",
-        username="Content CircleCI",
-        as_user="False",
-        attachments=content_team_attachments
-    )
+        print("Sending Slack messages to #content-team")
+        slack_client = SlackClient(slack_token)
+        slack_client.api_call(
+            "chat.postMessage",
+            channel="dmst-content-team",
+            username="Content CircleCI",
+            as_user="False",
+            attachments=content_team_attachments
+        )
 
 
 def main():
