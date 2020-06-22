@@ -78,7 +78,8 @@ def test_instances(secret_conf_path, server, username, password):
                     integration_name, product_description, devops_comments))
             else:
                 instance_ids.append(instance_id)
-                print('Create integration %s succeed' % (integration_name,))
+                prints_manager.add_print_job('Create integration {} succeed\n'.format(integration_name), print_color, 0,
+                                             message_color=LOG_COLORS.GREEN)
                 __delete_integrations_instances(c, instance_ids, prints_manager)
 
             prints_manager.execute_thread_prints(0)
