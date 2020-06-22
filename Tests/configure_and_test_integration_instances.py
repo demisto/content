@@ -13,10 +13,9 @@ from distutils.version import LooseVersion
 import demisto_client
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_last_release_version, checked_type, get_yaml, str2bool, server_version_compare
+    run_command, get_last_release_version, checked_type, get_yaml, str2bool, format_version
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
-
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager, \
@@ -86,10 +85,11 @@ def check_test_version_compatible_with_server(test, server_version, prints_manag
     Returns:
         (bool) True if test is compatible with server version or False otherwise.
     """
-    test_from_version = test.get('fromversion', '0.0.0')
-    test_to_version = test.get('toversion', '99.99.99')
-    if (server_version_compare(test_from_version, server_version) > 0
-            or server_version_compare(test_to_version, server_version) < 0):
+    test_from_version = format_version(test.get('fromversion', '0.0.0'))
+    test_to_version = format_version(test.get('toversion', '99.99.99'))
+    server_version = format_version(server_version)
+
+    if not (LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version)):
         warning_message = 'Test Playbook: {} was ignored in the content installation test due to version mismatch ' \
                           '(test versions: {}-{}, server version: {})'.format(test.get('playbookID'),
                                                                               test_from_version,
