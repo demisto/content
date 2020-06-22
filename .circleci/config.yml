@@ -150,6 +150,7 @@ jobs:
             ./Tests/scripts/pyflake.sh *.py
             find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
+            echo "Passed flake 8"
             [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
             ./Tests/scripts/validate.sh
 
