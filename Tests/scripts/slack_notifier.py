@@ -266,7 +266,7 @@ def sdk_slack_notifier(build_url, slack_token, container):
     # container 0: regular tasks
     else:
         print_color("Starting Slack notifications about SDK nightly build - all tasks", LOG_COLORS.GREEN)
-        content_team_attachments, _ = get_attachments_for_all_tasks(build_url)
+        content_team_attachments = get_attachments_for_all_tasks(build_url)
 
     print("Sending Slack messages to #content-team")
     slack_client = SlackClient(slack_token)

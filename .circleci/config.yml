@@ -115,7 +115,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Create ID Set - stage faild" >> task_report.txt
+                echo "Create ID Set - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
       - run:
           name: Infrastructure testing
@@ -134,7 +134,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Infrastructure testing - stage faild" >> task_report.txt
+                echo "Infrastructure testing - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
       - run:
           name: Validate Files and Yaml
@@ -155,7 +155,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Validate - stage faild" >> task_report.txt
+                echo "Validate - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
       - run:
           name: Secrets
@@ -171,7 +171,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Secrets - stage faild" >> task_report.txt
+                echo "Secrets - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
       - run:
           name: Collect Test List And Content Packs
@@ -188,7 +188,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Collect Test List And Content Packs - stage faild" >> task_report.txt
+                echo "Collect Test List And Content Packs - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
       - run:
           name: Spell Checks
@@ -218,7 +218,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Build Content Descriptor - stage faild" >> task_report.txt
+                echo "Build Content Descriptor - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
 
       - run:
@@ -234,7 +234,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Common Server Documentation - stage faild" >> task_report.txt
+                echo "Common Server Documentation - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
       - run:
           name: Content Docs Site
@@ -249,7 +249,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Content Docs Site - stage faild" >> task_report.txt
+                echo "Content Docs Site - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
 #      - run:
 #          name: Create Content Artifacts
@@ -269,7 +269,7 @@ jobs:
 #
 #            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
 #              then
-#                echo "Create Content Artifacts - stage faild" >> task_report.txt
+#                echo "Create Content Artifacts - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
 #            fi
       - run:
           name: Calculate Packs Dependencies
@@ -284,7 +284,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Calculate Packs Dependencies - stage faild" >> task_report.txt
+                echo "Calculate Packs Dependencies - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
       - run:
           name: Run Unit Testing and Lint
@@ -382,7 +382,7 @@ jobs:
 
             if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo "Prepare Content Packs For Testing - stage faild" >> task_report.txt
+                echo "Prepare Content Packs For Testing - stage faild" >> $CIRCLE_ARTIFACTS/task_report.txt
             fi
 #
 #      - run:
@@ -655,7 +655,7 @@ jobs:
       - run:
           name: Destroy Instances
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
