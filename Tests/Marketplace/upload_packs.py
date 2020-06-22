@@ -444,6 +444,12 @@ def load_json(file_path):
     return result
 
 
+def should_upload_core_packs(storage_bucket_name):
+    is_private_storage_bucket = (storage_bucket_name != GCPConfig.PRODUCTION_PRIVATE_BUCKET)
+    is_private_ci_bucket = (storage_bucket_name != GCPConfig.PRODUCTION_PRIVATE_CI_BUCKET)
+    return not (is_private_storage_bucket or is_private_ci_bucket)
+
+
 def print_packs_summary(packs_list):
     """Prints summary of packs uploaded to gcs.
 
@@ -665,7 +671,8 @@ def main():
         pack.status = PackStatus.SUCCESS.name
     print_error(f'packs_list length: {len(packs_list)}')
     # upload core packs json to bucket
-    if storage_bucket_name != GCPConfig.PRODUCTION_PRIVATE_BUCKET:
+
+    if should_upload_core_packs(storage_bucket_name):
         upload_core_packs_config(storage_bucket, build_number, index_folder_path)
     print_error(f'packs_list length: {len(packs_list)}')
     # finished iteration over content packs
