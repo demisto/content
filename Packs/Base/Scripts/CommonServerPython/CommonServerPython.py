@@ -3880,7 +3880,7 @@ def set_integration_context(context, sync=True, version=-1):
         return demisto.setIntegrationContext(context)
 
 
-def get_integration_context(syncTrue, with_version=False):
+def get_integration_context(sync=True, with_version=False):
     """
     Gets the integration context.
 
