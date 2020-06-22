@@ -263,7 +263,7 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             err += ['Please make sure that incidents of at least 2 labels exist in the environment.']
         else:
             err += ['The following labels were not mapped to any label in the labels mapping:']
-            err += [', '.join([label for label in missing_labels_counter])]
+            err += [', '.join(missing_labels_counter)]
             not_found_mapped_label = [label for label in labels_mapping if label not in exist_labels_counter
                                       or exist_labels_counter[label] == 0]
             if len(not_found_mapped_label) > 0:
