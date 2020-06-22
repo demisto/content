@@ -2581,7 +2581,7 @@ class CommandResults:
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, outputs_prefix='', outputs_key_field='', outputs=None, indicators=None, readable_output=None,
+    def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None):
         # type: (str, str, object, list, str, object) -> None
         if outputs is None:
@@ -2623,9 +2623,6 @@ class CommandResults:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
-            else:
-                human_readable = self.readable_output
-
             if self.outputs_prefix and self.outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
