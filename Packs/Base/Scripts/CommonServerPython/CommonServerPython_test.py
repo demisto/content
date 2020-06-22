@@ -2121,7 +2121,7 @@ if IS_PY3:
         mirrors.extend([new_mirror])
 
         # Arrange
-        context, version = CommonServerPython.update_context({'mirrors': [new_mirror]}, OBJECTS_TO_KEYS, True)
+        context, version = CommonServerPython.update_integration_context({'mirrors': [new_mirror]}, OBJECTS_TO_KEYS, True)
         new_mirrors = json.loads(context['mirrors'])
 
         # Assert
@@ -2151,7 +2151,7 @@ if IS_PY3:
         conversations.extend([new_conversation])
 
         # Arrange
-        context, version = CommonServerPython.update_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
+        context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
         new_conversations = json.loads(context['conversations'])
 
         # Assert
@@ -2195,7 +2195,7 @@ if IS_PY3:
         mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
         mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
         int_context = get_integration_context_versioned()
-        mocker.patch.object(CommonServerPython, 'update_context',
+        mocker.patch.object(CommonServerPython, 'update_integration_context',
                             side_effect=[(int_context['context'], int_context['version']),
                                          (int_context['context'], int_context['version'] + 1)])
         mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=[ValueError, int_context['context']])
@@ -2224,7 +2224,7 @@ if IS_PY3:
         mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
         mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
         int_context = get_integration_context_versioned()
-        mocker.patch.object(CommonServerPython, 'update_context', return_value=(int_context['context'],
+        mocker.patch.object(CommonServerPython, 'update_integration_context', return_value=(int_context['context'],
                                                                                 int_context['version']))
         mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=ValueError)
 

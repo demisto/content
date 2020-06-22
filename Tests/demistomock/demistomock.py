@@ -5,7 +5,6 @@ import logging
 import uuid
 
 integrationContext = {}
-integrationContextVersioned = {}
 is_debug = False  # type: bool
 
 exampleIncidents = [
@@ -505,8 +504,8 @@ def setIntegrationContextVersioned(context, version=-1, sync=False):
          the context will be saved at the end of the command.
 
     """
-    global integrationContextVersioned
-    integrationContextVersioned = context
+    global integrationContext
+    integrationContext = context
 
 
 def getIntegrationContextVersioned(refresh=False):
@@ -518,7 +517,7 @@ def getIntegrationContextVersioned(refresh=False):
     Returns:
         Dict with a key of context and a key of version.
     """
-    return integrationContextVersioned
+    return integrationContext
 
 def incidents(incidents=None):
     """

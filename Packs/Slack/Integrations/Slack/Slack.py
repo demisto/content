@@ -6,7 +6,6 @@ from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
 from distutils.util import strtobool
-from random import randint
 from typing import Tuple, Dict, List, Optional
 import asyncio
 import concurrent
@@ -54,6 +53,7 @@ OBJECTS_TO_KEYS = {
     'questions': 'entitlement',
     'users': 'id'
 }
+SYNC_CONTEXT = True
 
 ''' GLOBALS '''
 
@@ -224,7 +224,8 @@ def find_mirror_by_investigation() -> dict:
 
     return mirror
 
-def set_name_and_icon(body, method):
+
+def set_name_and_icon(body: dict, method: str):
     """
     If provided, sets a name and an icon for the bot if a message is sent.
     Args:
@@ -1060,7 +1061,7 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
 
 
 @slack.RTMClient.run_on(event='message')
-async def listen(**payload):
+async def listen(**payload: dict):
     """
     Listens to Slack RTM messages
 
@@ -1141,7 +1142,7 @@ async def listen(**payload):
         await handle_listen_error(f'Error occurred while listening to Slack: {str(e)}')
 
 
-async def get_user_by_id_async(client, user_id):
+async def get_user_by_id_async(client: slack.WebClient, user_id: str) -> dict:
     """
     Get the details of a slack user by id asynchronously.
     Args:
@@ -1886,7 +1887,7 @@ def init_globals(command_name: str = ''):
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
-    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, SYNC_CONTEXT
+    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -1919,7 +1920,6 @@ def init_globals(command_name: str = ''):
     BOT_ICON_URL = demisto.params().get('bot_icon')  # Bot default icon url defined by the slack plugin (3-rd party)
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
-    SYNC_CONTEXT = True
 
 
 def print_thread_dump():

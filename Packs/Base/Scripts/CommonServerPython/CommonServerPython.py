@@ -3823,6 +3823,11 @@ if IS_PY3:  # merge_lists does not work in python 2
     def merge_lists(original_list, updated_list, key):
         """
         Replace values in a list with those in an updated list.
+        Example:
+        >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
+        >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n',
+        >>>                                                                                             'remove': True}]
+        >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
 
         :type original_list: ``list``
         :param original_list: The original list.
@@ -3835,12 +3840,6 @@ if IS_PY3:  # merge_lists does not work in python 2
 
         :rtype: ``list``
         :return: The merged list.
-
-        Example:
-        >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
-        >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}, {'id': '11', 'updated': 'n',
-    >>>                                                                                                 'remove': True}]
-        >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
 
         """
 
@@ -3916,11 +3915,13 @@ if IS_PY3:  # merge_lists does not work in python 2
         return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
 
 
-    def set_to_integration_context_with_retries(context, object_keys=None, sync=True):
+    def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
+                                                max_retry_times = CONTEXT_UPDATE_RETRY_TIMES):
         """
         Update the integration context with a dictionary of keys and values with multiple attempts.
         The function supports merging the context keys using the provided object_keys parameter.
-        If the version is too old by the time the context is set, another attempt will be made until the limit.
+        If the version is too old by the time the context is set,
+        another attempt will be made until the limit after a random sleep.
 
         :type context: ``dict``
         :param context: A dictionary of keys and values to set.
@@ -3929,7 +3930,10 @@ if IS_PY3:  # merge_lists does not work in python 2
         :param object_keys: A dictionary to map between context keys and their unique ID for merging them.
 
         :type sync: ``bool``
-        :param sync: Whether to make a versioned request.
+        :param sync: Whether to save the context directly to the DB.
+
+        :type max_retry_times: ``int``
+        :param max_retry_times: The maximum number of attempts to try.
 
         :rtype: ``None``
         :return: None
@@ -3938,31 +3942,31 @@ if IS_PY3:  # merge_lists does not work in python 2
 
         # do while...
         while True:
-            if attempt == CONTEXT_UPDATE_RETRY_TIMES:
+            if attempt == max_retry_times:
                 raise Exception('Failed updating integration context. Max retry attempts exceeded.')
 
             # Update the latest context and get the new version
-            integration_context, version = update_context(context, object_keys, sync)
+            integration_context, version = update_integration_context(context, object_keys, sync)
 
-            demisto.info('Attempting to update the integration context with version {}.'.format(version))
+            demisto.debug('Attempting to update the integration context with version {}.'.format(version))
 
             # Attempt to update integration context with a version.
-            # If we get a ValueError (DB Version), the version is too old. Then we need to try again.
-            attempt = attempt + 1
+            # If we get a ValueError (DB Version), then the version was not updated and we need to try again.
+            attempt += 1
             try:
                 set_integration_context(integration_context, sync, version)
-                demisto.info('Successfully updated integration context. New version is {}.'
+                demisto.debug('Successfully updated integration context. New version is {}.'
                              .format(version + 1 if version != -1 else version))
                 break
             except ValueError as ve:
-                demisto.info('Failed updating integration context with version {}: {} Attempts left - {}'
+                demisto.debug('Failed updating integration context with version {}: {} Attempts left - {}'
                              .format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
                 # Sleep for a random time
                 time_to_sleep = randint(1, 100) / 1000
                 time.sleep(time_to_sleep)
 
 
-    def get_integration_context_with_version(sync):
+    def get_integration_context_with_version(sync=True):
         """
         Get the latest integration context with version, if available.
 
@@ -3984,7 +3988,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         return integration_context, version
 
 
-    def update_context(context, object_keys=None, sync=True):
+    def update_integration_context(context, object_keys=None, sync=True):
         """
         Update the integration context with a given dictionary after merging it with the latest integration context.
 
@@ -4006,7 +4010,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         if not object_keys:
             object_keys = {}
 
-        for key, value in context.items():
+        for key, _ in context.items():
             latest_object = json.loads(integration_context.get(key, '[]'))
             updated_object = context[key]
             if key in object_keys:
