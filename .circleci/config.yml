@@ -384,6 +384,8 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            echo "Skipping tests step for this build testings"
+            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -412,6 +414,8 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            echo "Skipping tests step for this build testings"
+            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -440,6 +444,8 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            echo "Skipping tests step for this build testings"
+            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -468,6 +474,8 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            echo "Skipping tests step for this build testings"
+            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -500,6 +508,8 @@ jobs:
           when: always
           no_output_timeout: 5h
           command: |
+            echo "Skipping tests step for this build testings"
+            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -549,16 +559,12 @@ jobs:
       - run:
           name: Instance Test
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
-              then
                 ./Tests/scripts/instance_test.sh
                 export RETVAL=$?
                 cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
                 exit $RETVAL
-              else
                 echo "Skipping instance tests"
                 exit 0
-            fi
           when: always
       - run:
           name: Destroy Instances

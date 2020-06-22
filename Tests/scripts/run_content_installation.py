@@ -14,13 +14,14 @@ def main():
         env_results = json.load(json_file)
 
     for env in env_results:
-        id_to_ip.update({env["InstanceID"]: env["InstanceDNS"]})
-        instance_ips.append(env["Role"] + ":" + env["InstanceDNS"])
-        instance_ids.append(env["Role"] + ":" + env["InstanceID"])
-        instance_ids_nonami.append(env["InstanceID"])
-        with open('./Tests/images_data.txt', 'a') as instance_file:
-            instance_file.write('{} Image info is: {} {} {}\n'.format(env["Role"], env["AmiId"], env["AmiName"],
-                                                                      env["AmiCreation"]))
+        if 'PreGA' in env["Role"]:
+            id_to_ip.update({env["InstanceID"]: env["InstanceDNS"]})
+            instance_ips.append(env["Role"] + ":" + env["InstanceDNS"])
+            instance_ids.append(env["Role"] + ":" + env["InstanceID"])
+            instance_ids_nonami.append(env["InstanceID"])
+            with open('./Tests/images_data.txt', 'a') as instance_file:
+                instance_file.write('{} Image info is: {} {} {}\n'.format(env["Role"], env["AmiId"], env["AmiName"],
+                                                                          env["AmiCreation"]))
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids))
