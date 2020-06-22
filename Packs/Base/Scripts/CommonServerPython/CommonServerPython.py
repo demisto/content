@@ -3848,7 +3848,7 @@ def merge_lists(original_list, updated_list, key):
 
     removed = [obj for obj in original_dict.values() if obj.get('remove', False) is True]
     for r in removed:
-        demisto.debug(f'Removing from integration context: {str(r)}')
+        demisto.debug('Removing from integration context: {}'.format(str(r)))
 
     merged_list = [obj for obj in original_dict.values() if obj.get('remove', False) is False]
 
@@ -3871,10 +3871,10 @@ def set_integration_context(context, sync: bool = True, version: int = -1) -> di
     :rtype: ``dict``
     :return:: The new integration context
     """
-    demisto.debug(f'Setting integration context: {str(context)}')
+    demisto.debug('Setting integration context {}:'.format(str(context)))
     if is_versioned_context_available():
         context['version'] = str(version + 1)
-        demisto.debug(f'Updating integration context to version {version + 1}. Sync: {sync}')
+        demisto.debug('Updating integration context to version {}. Sync: {}'.format(version + 1, sync))
         return demisto.setIntegrationContextVersioned(context, version, sync)
     else:
         return demisto.setIntegrationContext(context)
@@ -3939,19 +3939,19 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
         # Update the latest context and get the new version
         integration_context, version = update_context(context, object_keys, sync)
 
-        demisto.info(f'Attempting to update the integration context with version {version}.')
+        demisto.info('Attempting to update the integration context with version {}.'.format(version))
 
         # Attempt to update integration context with a version.
         # If we get a ValueError (DB Version), the version is too old. Then we need to try again.
         attempt = attempt + 1
         try:
             set_integration_context(integration_context, sync, version)
-            demisto.info(f'Successfully updated integration context.'
-                         f' New version is {version + 1 if version != -1 else version}')
+            demisto.info('Successfully updated integration context. New version is {}.'
+                         .format(version + 1 if version != -1 else version))
             break
         except ValueError as ve:
-            demisto.info(f'Failed updating integration context with version {version}: {str(ve)}'
-                         f' Attempts left - {CONTEXT_UPDATE_RETRY_TIMES - attempt}')
+            demisto.info('Failed updating integration context with version {}: {} Attempts left - {}'
+                         .format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
             # Sleep for a random time
             time_to_sleep = randint(1, 100) / 1000
             time.sleep(time_to_sleep)
