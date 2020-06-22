@@ -179,7 +179,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Lastline
+                        simple: Lastline v2
                 - - operator: isEqualString
                     left:
                       value:

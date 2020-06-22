@@ -1,0 +1,110 @@
+{
+  "Name": "xxxx",
+  "MasterAuth": {
+    "ClusterCaCertificate": "xxxx"
+  },
+  "LoggingService": "xxxx",
+  "MonitoringService": "xxxx",
+  "Network": "xxxx",
+  "ClusterIpv4Cidr": "xxxx",
+  "AddonsConfig": {
+    "HttpLoadBalancing": {
+      "Disbaled": {}
+    },
+    "HorizontalPodAutoscaling": {
+      "Disabled": {}
+    },
+    "KubernetesDashboard": {
+      "Disabled": null
+    },
+    "NetworkPolicyConfig": {
+      "Disabled": null
+    }
+  },
+  "SubNetwork": "xxxx",
+  "NodePools": [
+    {
+      "Name": "xxxx",
+      "Config": {
+        "MachineType": "xxxx",
+        "DiskSizeGb": 100,
+        "OauthScopes": [
+          "xxxx"
+        ],
+        "Metadata": {
+          "DisableLegacyEndpoints": "true"
+        },
+        "ImageType": "true",
+        "ServiceAccount": "true",
+        "DiskType": "true",
+        "ShieldedInstanceConfig": {
+          "EnableIntegrityMonitoring": true
+        }
+      },
+      "InitialNodeCount": 6,
+      "Autoscaling": {
+        "Enabled": true,
+        "MinNodeCount": 6,
+        "MaxNodeCount": 10
+      },
+      "Management": {
+        "AutoRepair": true
+      },
+      "MaxPodsConstraint": {
+        "MaxPodsPerNode": "110"
+      },
+      "PodIpv4CidrSize": 24,
+      "SelfLink": "true",
+      "Version": "true",
+      "InstanceGroupUrls": [
+        "true"
+      ],
+      "Status": "RUNNING"
+    }
+  ],
+  "Locations": [
+    "europe-west2-a"
+  ],
+  "LabelFingerprint": "true",
+  "LegacyAbac": {
+    "Enabled": null
+  },
+  "NetworkPolicy": {},
+  "IpAllocationPolicy": {
+    "UseIpAliases": true,
+    "ClusterIpv4Cidr": "true",
+    "ServicesIpv4Cidr": "true",
+    "ClusterSecondaryRangeName": "true",
+    "ServicesSecondaryRangeName": "true",
+    "ClusterIpv4CidrBlock": "true",
+    "ServicesIpv4CidrBlock": "true"
+  },
+  "MasterAuthorizedNetworksConfig": {
+    "CIDR": [
+      "true"
+    ],
+    "Enabled": true
+  },
+  "MaintenancePolicy": {
+    "ResourceVersion": "true"
+  },
+  "NetworkConfig": {
+    "Network": "true",
+    "Subnetwork": "true"
+  },
+  "DefaultMaxPodsConstraint": {
+    "MaxPodsPerNode": "110"
+  },
+  "AuthenticatorGroupsConfig": {},
+  "DatabaseEncryption": {
+    "State": "DECRYPTED"
+  },
+  "SelfLink": "true",
+  "Endpoint": "true",
+  "InitialClusterVersion": "true",
+  "CurrentMasterVersion": "true",
+  "CreateTime": "true",
+  "Status": "RUNNING",
+  "ServicesIpv4Cidr": "true",
+  "Location": "europe-west2-a"
+}
