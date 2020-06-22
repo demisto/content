@@ -1,10 +1,89 @@
-## Microsoft Azure AD Connect Health web scraper:
-https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-health-agent-install#outbound-connectivity-to-the-azure-service-endpoints
+Use the Microsoft Azure AD Connect Health Feed integration to get indicators from the feed.
+This integration was integrated and tested with version 1 of Azure AD Connect Health Feed
+## Configure Azure AD Connect Health Feed on Cortex XSOAR
 
-Most IT services are moving from on-premise solutions to cloud-based solutions. The public IP addresses, domains, and URLs that function as the endpoints for these solutions are very often not fixed, and the providers of the service publish their details on their websites in a less than ideal format (i.e.: HTML) rather than through a proper REST API (i.e.: JSON).
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Azure AD Connect Health Feed.
+3. Click **Add instance** to create and configure a new integration instance.
 
-This fact makes it very difficult for IT and Security teams to provide these services with an appropriate level of security and automation. Any changes in the HTML schema of the provider website, will break the automation and has the potential to cause serious disruption to the users and the business. The alternative is to compromise on the security posture of the organization.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| feed | Fetch indicators | False |
+| feedReputation | Indicator Reputation | False |
+| feedReliability | Source Reliability | True |
+| feedExpirationPolicy |  | False |
+| feedExpirationInterval |  | False |
+| feedFetchInterval | Feed Fetch Interval | False |
+| url | The Microsoft Azure endpoint URL | True |
+| feedTags | Tags | False |
+| feedBypassExclusionList | Bypass exclusion list | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-One example of these providers is Microsoft, and an example of their services is Microsoft Azure AD Connect Health.
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### azure-ad-health-get-indicators
+***
+Gets indicators from the feed.
 
-The goal of this pack is to address this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
+
+#### Base Command
+
+`azure-ad-health-get-indicators`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of results to return. The default value is 10. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!azure-ad-health-get-indicators```
+
+#### Context Example
+```
+{}
+```
+
+#### Human Readable Output
+
+>### Indicators from Microsoft Azure Feed:
+>|value|type|
+>|---|---|
+>| https://login.microsoftonline.com | URL |
+>| https://secure.aadcdn.microsoftonline-p.com | URL |
+>| https://login.windows.net | URL |
+>| https://aadcdn.msftauth.net | URL |
+>| *.blob.core.windows.net | DomainGlob |
+>| *.aadconnecthealth.azure.com | DomainGlob |
+>| *.servicebus.windows.net | DomainGlob |
+>| *.adhybridhealth.azure.com | DomainGlob |
+>| https://management.azure.com | URL |
+>| https://policykeyservice.dc.ad.msf | URL |
+>| https://login.windows.net | URL |
+>| https://login.microsoftonline.com | URL |
+>| https://secure.aadcdn.microsoftonline-p.com | URL |
+>| https://www.office.com | URL |
+>| *.blob.core.cloudapi.de | DomainGlob |
+>| *.servicebus.cloudapi.de | DomainGlob |
+>| *.aadconnecthealth.microsoftazure.de | DomainGlob |
+>| https://management.microsoftazure.de | URL |
+>| https://policykeyservice.aadcdi.microsoftazure.de | URL |
+>| https://login.microsoftonline.de | URL |
+>| https://secure.aadcdn.microsoftonline-p.de | URL |
+>| https://www.office.de | URL |
+>| *.blob.core.usgovcloudapi.net | DomainGlob |
+>| *.servicebus.usgovcloudapi.net | DomainGlob |
+>| *.aadconnecthealth.microsoftazure.us | DomainGlob |
+>| https://management.usgovcloudapi.net | URL |
+>| https://policykeyservice.aadcdi.azure.us | URL |
+>| https://login.microsoftonline.us | URL |
+>| https://secure.aadcdn.microsoftonline-p.com | URL |
+>| https://www.office.com | URL |
+
