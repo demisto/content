@@ -416,7 +416,10 @@ jobs:
                 echo "Prepare Content Packs For Testing" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
-
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
       - run:
           name: Create Instance
           when: always
