@@ -3855,7 +3855,7 @@ def merge_lists(original_list, updated_list, key):
     return merged_list
 
 
-def set_integration_context(context, sync: bool = True, version: int = -1) -> dict:
+def set_integration_context(context, sync=True, version=-1):
     """
     Sets the integration context.
 
@@ -3880,7 +3880,7 @@ def set_integration_context(context, sync: bool = True, version: int = -1) -> di
         return demisto.setIntegrationContext(context)
 
 
-def get_integration_context(sync: bool = True, with_version: bool = False) -> dict:
+def get_integration_context(syncTrue, with_version=False):
     """
     Gets the integration context.
 
