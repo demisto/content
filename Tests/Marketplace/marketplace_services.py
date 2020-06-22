@@ -660,6 +660,7 @@ class Pack(object):
 
             pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
             blob = storage_bucket.blob(pack_full_path)
+            blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
 
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)

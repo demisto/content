@@ -1,0 +1,1813 @@
+id: Cortex XDR incident handling v2
+version: -1
+name: Cortex XDR incident handling v2
+description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
+  \ incident.\nThe playbook syncs and updates new XDR alerts that construct the incident\
+  \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
+  \ performs enrichment on the incident's indicators and hunting for related IOCs.\n\
+  Based on the severity, it lets the analyst decide whether to continue to the remediation\
+  \ stage or close the investigation as a false positive. \nAfter the remediation, if\
+  \ there are no new alerts, the playbook stops the alert sync and closes the XDR incident\
+  \ and investigation."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7f77db97-6498-4943-88a9-4f77dccbc713
+    type: start
+    task:
+      id: 7f77db97-6498-4943-88a9-4f77dccbc713
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3b28f395-c899-4fac-8c9a-539269b991f0
+    type: title
+    task:
+      id: 3b28f395-c899-4fac-8c9a-539269b991f0
+      version: -1
+      name: Loop on alert id - Alert enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: dc1e28b9-1dc7-46a6-8c6e-67ef485cb555
+    type: title
+    task:
+      id: dc1e28b9-1dc7-46a6-8c6e-67ef485cb555
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6c507e81-addc-440c-81a4-1c57f97e676a
+    type: condition
+    task:
+      id: 6c507e81-addc-440c-81a4-1c57f97e676a
+      version: -1
+      name: Are there new un-handled alerts?
+      description: "Check if there are new un-handled alerts."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: xdralertcount
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: XDR
+                accessor: HandledAlerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a2a6f137-d2dd-4cd4-80e1-4f6511fb5a4c
+    type: regular
+    task:
+      id: a2a6f137-d2dd-4cd4-80e1-4f6511fb5a4c
+      version: -1
+      name: Cortex XDR - Sync Alerts
+      description: Syncs a single incident between Cortex XSOAR and Cortex XDR. This script always
+        uses the xdr-get-incident-extra-data command and outputs to the context the
+        entire incident JSON. When the incident is updated in Cortex XDR, the Cortex XSOAR incident
+        is updated accordingly and the default playbook reruns. When an incident
+        is updated in Cortex XSOAR, the script will execute the xdr-update-incident command
+        and update the incident in Cortex XDR.
+      scriptName: XDRSyncScript
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      alert_count: {}
+      assigned_user_mail: {}
+      assigned_user_pretty_name: {}
+      description: {}
+      first: {}
+      high_severity_alert_count: {}
+      host_count: {}
+      incident_id:
+        complex:
+          root: incident
+          accessor: xdrincidentid
+      interval:
+        simple: "2"
+      low_severity_alert_count: {}
+      med_severity_alert_count: {}
+      notes: {}
+      playbook_to_run: {}
+      resolve_comment: {}
+      severity: {}
+      status: {}
+      user_count: {}
+      verbose: {}
+      xdr_alerts: {}
+      xdr_file_artifacts: {}
+      xdr_incident_from_previous_run: {}
+      xdr_incident_markdown_field: {}
+      xdr_network_artifacts: {}
+      xdr_url: {}
+    results:
+    - XDRSyncScriptTaskID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: caec502d-3a9b-4783-8666-2e76cbbea300
+    type: regular
+    task:
+      id: caec502d-3a9b-4783-8666-2e76cbbea300
+      version: -1
+      name: Stop XDR alerts sync
+      description: This stops the scheduled task whose ID is given in the taskID argument.
+      scriptName: StopScheduledTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      taskID:
+        complex:
+          root: XDRSyncScriptTaskID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e495004a-cc3e-4fd8-8a5c-041e8e5a2f7a
+    type: playbook
+    task:
+      id: e495004a-cc3e-4fd8-8a5c-041e8e5a2f7a
+      version: -1
+      name: Cortex XDR Alerts Handling
+      playbookName: Cortex XDR Alerts Handling
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.alerts.alert_id
+      incident_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.incident_id
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 5
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 3b818f3a-93c4-41f5-8b76-85082a6e98fb
+    type: title
+    task:
+      id: 3b818f3a-93c4-41f5-8b76-85082a6e98fb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 8990b518-32e8-4596-84d5-9f7a46783165
+    type: regular
+    task:
+      id: 8990b518-32e8-4596-84d5-9f7a46783165
+      version: -1
+      name: Cortex XDR - close incident
+      description: Updates one or more fields of a specified incident. Missing fields
+        are ignored. To remove the assignment for an incident, pass a null value
+        in the assignee email argument.
+      script: Cortex XDR - IR|||xdr-update-incident
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      assigned_user_mail: {}
+      assigned_user_pretty_name: {}
+      incident_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.incident_id
+      manual_severity: {}
+      resolve_comment: {}
+      status:
+        simple: RESOLVED_THREAT_HANDLED
+      unassign_user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: fceb6635-8178-413b-8dac-ec383f9cfeb9
+    type: regular
+    task:
+      id: fceb6635-8178-413b-8dac-ec383f9cfeb9
+      version: -1
+      name: Close investigation
+      description: Closes the incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Closed after investigation and remediation.
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      mndadone: {}
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 72713a55-85da-4a6c-8a7b-1e1e5291ba23
+    type: title
+    task:
+      id: 72713a55-85da-4a6c-8a7b-1e1e5291ba23
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 5c987e33-d970-4f56-8a14-888fb6fb2e68
+    type: playbook
+    task:
+      id: 5c987e33-d970-4f56-8a14-888fb6fb2e68
+      version: -1
+      name: Calculate Severity - Generic v2
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+      playbookName: Calculate Severity - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+          transformers:
+          - operator: uniq
+      CriticalEndpoints:
+        complex:
+          root: inputs.CriticalHostnames
+      CriticalGroups:
+        complex:
+          root: inputs.CriticalADGroups
+      CriticalUsers:
+        complex:
+          root: inputs.CriticalUsernames
+      DBotScore:
+        complex:
+          root: DBotScore
+      EmailAuthenticityCheck:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+          transformers:
+          - operator: uniq
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 89e6afb5-1da9-4446-855e-d5d34ef0deba
+    type: regular
+    task:
+      id: 89e6afb5-1da9-4446-855e-d5d34ef0deba
+      version: -1
+      name: Manual malware analysis and forensics
+      description: "Manual malware analysis and forensics by the analyst."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: f8f7e19f-a7f8-4638-8466-30a21096ebca
+    type: condition
+    task:
+      id: f8f7e19f-a7f8-4638-8466-30a21096ebca
+      version: -1
+      name: Auto remediation?
+      description: "Should the playbook perform auto-remediation or manual remediation?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: aa
+            iscontext: true
+          right:
+            value:
+              simple: a
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: bc6cf7eb-f224-4f3b-8ba4-7894a063beda
+    type: regular
+    task:
+      id: bc6cf7eb-f224-4f3b-8ba4-7894a063beda
+      version: -1
+      name: Manual remediation
+      description: "Manual remediation by the analyst."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: c4f4ee4f-86d8-40ae-8512-62fedce1d77f
+    type: condition
+    task:
+      id: c4f4ee4f-86d8-40ae-8512-62fedce1d77f
+      version: -1
+      name: Continue investigation?
+      description: "Continue investigation?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 3320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 8a3ed2d1-85c2-45dc-8fff-f6af952ab540
+    type: regular
+    task:
+      id: 8a3ed2d1-85c2-45dc-8fff-f6af952ab540
+      version: -1
+      name: Manual - continue investigation for new alerts
+      description: "Manual - continue investigation for new alerts."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: cb145e1a-ef5b-411d-8af3-0745e06cb1d5
+    type: playbook
+    task:
+      id: cb145e1a-ef5b-411d-8af3-0745e06cb1d5
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PortScan.AttackerIPs
+                iscontext: true
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      MD5:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PortScan.AttackerUsername
+                iscontext: true
+          - operator: uniq
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 26c62802-b143-4bbc-8283-5cb9240fe5d0
+    type: condition
+    task:
+      id: 26c62802-b143-4bbc-8283-5cb9240fe5d0
+      version: -1
+      name: Hunt for related IOCs?
+      description: "Run hunting playbook to find related IOCs?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Hunting
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 6c63da52-3e6e-426e-8c10-b361829c26bd
+    type: playbook
+    task:
+      id: 6c63da52-3e6e-426e-8c10-b361829c26bd
+      version: -1
+      name: PANW - Hunting and threat detection by indicator type V2
+      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is\
+        \ a multipurpose playbook used for hunting and threat detection. The playbook\
+        \ receives inputs based on hashes, IP addresses, or domain names provided\
+        \ manually or from outputs by other playbooks. \nWith the received indicators,\
+        \ the playbook leverages Palo Alto Cortex data received by products such as\
+        \ Traps, Analytics and Pan-OS to search for IP addresses and hosts related\
+        \ to that specific hash. \nThe output provided by the playbook facilitates\
+        \ pivoting searches for possibly affected hosts, IP addresses, or users."
+      playbookName: PANW - Hunting and threat detection by indicator type V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: IP.Malicious
+                iscontext: true
+          accessor: Address
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+                iscontext: true
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      MD5:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
+                iscontext: true
+          - operator: uniq
+      URLDomain:
+        complex:
+          root: Domain
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Malicious
+                iscontext: true
+          accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+                iscontext: true
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: edf8888d-4ac0-464a-8a70-64069a895cb2
+    type: playbook
+    task:
+      id: edf8888d-4ac0-464a-8a70-64069a895cb2
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InternalDomains: {}
+      InternalRange: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: d9e48a5f-1ddd-4f3a-8fdd-9d339011a745
+    type: regular
+    task:
+      id: d9e48a5f-1ddd-4f3a-8fdd-9d339011a745
+      version: -1
+      name: Count XDR alerts
+      description: Sets a value in context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      append: {}
+      key:
+        simple: XDR.HandledAlerts
+      stringify: {}
+      value:
+        complex:
+          root: incident
+          accessor: xdralertcount
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 5cedbf5c-e00f-4ef0-88eb-292752ca5102
+    type: condition
+    task:
+      id: 5cedbf5c-e00f-4ef0-88eb-292752ca5102
+      version: -1
+      name: Continue to Remediation or close as false positive?
+      description: "Continue to Remediation or close the investigation as false positive?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      CONTINUE:
+      - "7"
+      False Positive:
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 69f1dcb2-0a11-4c10-80cb-c6ae786936e2
+    type: regular
+    task:
+      id: 69f1dcb2-0a11-4c10-80cb-c6ae786936e2
+      version: -1
+      name: Close XDR incident as false positive
+      description: Updates one or more fields of a specified incident. Missing fields
+        will be ignored. To remove the assignment for an incident, pass a null value
+        in the assignee email argument.
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      assigned_user_mail: {}
+      assigned_user_pretty_name: {}
+      incident_id: {}
+      manual_severity: {}
+      resolve_comment: {}
+      status:
+        simple: RESOLVED_FALSE_POSITIVE
+      unassign_user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 3850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: e76161f6-f29f-4919-8f73-05b9f8233a42
+    type: regular
+    task:
+      id: e76161f6-f29f-4919-8f73-05b9f8233a42
+      version: -1
+      name: Stop XDR alerts sync
+      description: This stops the scheduled task whose ID is given in the taskID argument.
+      scriptName: StopScheduledTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      taskID:
+        complex:
+          root: XDRSyncScriptTaskID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 5288d043-c7c7-4005-8817-bd91e3871227
+    type: regular
+    task:
+      id: 5288d043-c7c7-4005-8817-bd91e3871227
+      version: -1
+      name: Find similar incidents
+      description: |-
+        Finds similar incidents by common incident keys, labels, custom fields or context keys.
+        It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
+        For best performance, it's recommended to avoid using context keys whenever possible (for example, if the value also appears in a label key, use label).
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields: {}
+      similarIncidentKeys: {}
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 825644a1-b3c7-41c1-8a87-1407188feca0
+    type: condition
+    task:
+      id: 825644a1-b3c7-41c1-8a87-1407188feca0
+      version: -1
+      name: Link similar incidents?
+      description: "Link similar incidents?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.LinkSimilarIncidents
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 3a9bc5da-eaf3-478e-80a0-856444353986
+    type: regular
+    task:
+      id: 3a9bc5da-eaf3-478e-80a0-856444353986
+      version: -1
+      name: Link similar incidents
+      description: Link two or more incidents
+      scriptName: DemistoLinkIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      masterID:
+        complex:
+          root: incident
+          accessor: id
+      otherIDs:
+        complex:
+          root: similarIncident
+          accessor: rawId
+      unlink: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 07335e9a-0e8b-4d79-89fa-2121b6585b26
+    type: condition
+    task:
+      id: 07335e9a-0e8b-4d79-89fa-2121b6585b26
+      version: -1
+      name: Similar incidents found?
+      description: "Were any similar incidents found?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: isSimilarIncidentFound
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: abc5dc8c-2591-4e4b-85f9-a48ad624ec76
+    type: condition
+    task:
+      id: abc5dc8c-2591-4e4b-85f9-a48ad624ec76
+      version: -1
+      name: Close as duplicate?
+      description: "Close the incident as duplicate?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 4f7fe854-6657-4a6d-8b56-0db79af51624
+    type: regular
+    task:
+      id: 4f7fe854-6657-4a6d-8b56-0db79af51624
+      version: -1
+      name: Resolve XDR incident as duplicate
+      description: Updates one or more fields of a specified incident. Missing fields
+        will be ignored. To remove the assignment for an incident, pass a null value
+        in the assignee email argument.
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      assigned_user_mail: {}
+      assigned_user_pretty_name: {}
+      incident_id:
+        complex:
+          root: incident
+          accessor: xdrincidentid
+      manual_severity: {}
+      resolve_comment: {}
+      status:
+        simple: RESOLVED_DUPLICATE
+      unassign_user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 01cb812a-1551-4a14-8185-5b90fbe9bafe
+    type: title
+    task:
+      id: 01cb812a-1551-4a14-8185-5b90fbe9bafe
+      version: -1
+      name: Close as duplicate
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: fefe6618-8fda-48c8-8ee0-ffc2d4eaa1c3
+    type: regular
+    task:
+      id: fefe6618-8fda-48c8-8ee0-ffc2d4eaa1c3
+      version: -1
+      name: Stop XDR alerts sync
+      description: This stops the scheduled task whose ID is given in the taskID argument.
+      scriptName: StopScheduledTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      taskID:
+        complex:
+          root: XDRSyncScriptTaskID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 71cc758b-06a0-4984-8b63-17a51f178d97
+    type: title
+    task:
+      id: 71cc758b-06a0-4984-8b63-17a51f178d97
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 8afdc355-e45a-4f50-881d-ea659099fc7c
+    type: regular
+    task:
+      id: 8afdc355-e45a-4f50-881d-ea659099fc7c
+      version: -1
+      name: Close investigation - false positive
+      description: Closes the incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Closed as false positive.
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      mndadone: {}
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 4025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: d5c17989-770e-4ef2-8df4-174fc0731616
+    type: regular
+    task:
+      id: d5c17989-770e-4ef2-8df4-174fc0731616
+      version: -1
+      name: Close investigation- duplicate
+      description: Closes the incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Closed as duplicate.
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      mndadone: {}
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 4025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: ea8cab41-5994-4c0f-8cd2-89a16880c8e1
+    type: regular
+    task:
+      id: ea8cab41-5994-4c0f-8cd2-89a16880c8e1
+      version: -1
+      name: Manually block ports used for exploitation on the scanned host.
+      description: "Manually block ports used for exploitation on the scanned host."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: b1972e80-05b7-4890-859b-a0feaca1b35d
+    type: condition
+    task:
+      id: b1972e80-05b7-4890-859b-a0feaca1b35d
+      version: -1
+      name: Was there a port scan alert investigated?
+      description: "Was there a port scan alert investigated as a part of the incident?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PortScan
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 3002aab6-d3df-4e8b-8730-3330984beca4
+    type: condition
+    task:
+      id: 3002aab6-d3df-4e8b-8730-3330984beca4
+      version: -1
+      name: Block ports?
+      description: "Is port blocking required?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PortScan
+                accessor: BlockPorts
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_13_#default#": 0.55,
+      "30_13_no": 0.38,
+      "33_23_#default#": 0.53,
+      "33_34_yes": 0.44,
+      "37_7_CONTINUE": 0.77,
+      "43_2_#default#": 0.32,
+      "44_2_no": 0.31,
+      "44_46_yes": 0.35,
+      "52_11_#default#": 0.46,
+      "52_53_yes": 0.53,
+      "53_11_#default#": 0.29
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5080,
+        "width": 1650,
+        "x": -240,
+        "y": -815
+      }
+    }
+  }
+inputs:
+- key: incident_id
+  value: {}
+  required: false
+  description: Incident ID.
+  playbookInputQuery:
+- key: similarIncidentFields
+  value: {}
+  required: false
+  description: A comma-separated list of similar incident fields keys.
+  playbookInputQuery:
+- key: LinkSimilarIncidents
+  value:
+    simple: "Yes"
+  required: false
+  description: This input indicates whether the playbook will link similar incidents.
+    Specify Yes/No.
+  playbookInputQuery:
+- key: Hunting
+  value:
+    simple: "Yes"
+  required: false
+  description: Yes/No
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
+  playbookInputQuery:
+- key: CriticalUsernames
+  value:
+    simple: admin,administrator
+  required: false
+  description: A list of comma-separated names of critical users in the organization.
+    This will affect the calculated severity of the incident.
+  playbookInputQuery:
+- key: CriticalHostnames
+  value: {}
+  required: false
+  description: A list of comma-separated names of critical endpoints in the organization.
+    This will affect the calculated severity of the incident.
+  playbookInputQuery:
+- key: CriticalADGroups
+  value: {}
+  required: false
+  description: CSV of DN names of critical Active Directory groups. This will affect
+    the severity calculated for this incident.
+  playbookInputQuery:
+outputs: []
+tests:
+- No test.
+fromversion: 5.0.0

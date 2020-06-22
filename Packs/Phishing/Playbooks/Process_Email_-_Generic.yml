@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9af6c609-2579-4ae4-878b-77bfc5dde29d
+    taskid: 028c057d-2a33-4b5e-8501-ad0166f55e06
     type: start
     task:
-      id: 9af6c609-2579-4ae4-878b-77bfc5dde29d
+      id: 028c057d-2a33-4b5e-8501-ad0166f55e06
       version: -1
       name: ""
       iscommand: false
@@ -30,14 +30,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: 55f82687-423e-4f6c-8d33-efe882d82296
+    taskid: 161bad06-c10f-4c3b-8599-1743e279f703
     type: condition
     task:
-      id: 55f82687-423e-4f6c-8d33-efe882d82296
+      id: 161bad06-c10f-4c3b-8599-1743e279f703
       version: -1
       name: Do we have original emails attached?
       description: Identify whether the incident includes an email message attached
@@ -71,17 +69,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 74921e43-3b87-474c-8875-62192dc01e49
+    taskid: f1c1a160-c3ff-482b-88b9-d7036e969bc6
     type: regular
     task:
-      id: 74921e43-3b87-474c-8875-62192dc01e49
+      id: f1c1a160-c3ff-482b-88b9-d7036e969bc6
       version: -1
       name: Add original email details to context
-      description: ""
+      description: "Sets the details of the email that was forwarded under the Email context key."
       scriptName: Set
       type: regular
       iscommand: false
@@ -102,23 +98,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 820
+          "x": -470,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: 1a13fbe8-b3da-4f0e-828c-b73348c373c5
+    taskid: d0f5ab21-0c90-46fd-89e7-d1c2a7aa32d1
     type: regular
     task:
-      id: 1a13fbe8-b3da-4f0e-828c-b73348c373c5
+      id: d0f5ab21-0c90-46fd-89e7-d1c2a7aa32d1
       version: -1
-      name: Add original email attachments to context
+      name: Extract email artifacts and attachments
       description: Parses an email from an EML or MSG file and populates all relevant
         context data to investigate the email. Also extracts indicators from the email
         messages.
@@ -128,7 +122,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "22"
     scriptarguments:
       entryid:
         simple: ${reportedemailentryid}
@@ -141,21 +135,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 195
+          "x": 920,
+          "y": 150
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: 8f3935d7-2637-41d0-82aa-0458d4607adf
+    taskid: 6340d4ba-b3c6-403e-80de-10f3c5ccbe05
     type: condition
     task:
-      id: 8f3935d7-2637-41d0-82aa-0458d4607adf
+      id: 6340d4ba-b3c6-403e-80de-10f3c5ccbe05
       version: -1
       name: Can an image of the email be rendered?
       description: Checks whether the email is HTML-formatted, and whether the Rasterize
@@ -210,21 +202,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 1220
+          "x": 370,
+          "y": 1410
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: aff18291-3cae-4efb-848e-53f356c76361
+    taskid: c41951dc-221e-41e2-8c39-87bb5e20b74c
     type: regular
     task:
-      id: aff18291-3cae-4efb-848e-53f356c76361
+      id: c41951dc-221e-41e2-8c39-87bb5e20b74c
       version: -1
       name: Render HTML to an image
       description: Rasterize an email body into an image
@@ -252,21 +242,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1440
+          "x": 130,
+          "y": 1630
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: 7db302b1-a2bf-4277-8ef9-f5da76699839
+    taskid: b2be48ca-b624-4cd5-87d1-0124aa3e741d
     type: title
     task:
-      id: 7db302b1-a2bf-4277-8ef9-f5da76699839
+      id: b2be48ca-b624-4cd5-87d1-0124aa3e741d
       version: -1
       name: Done
       type: title
@@ -277,23 +265,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 1670
+          "x": 370,
+          "y": 1860
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: e7cb8be0-4f69-4c4d-8e85-a29311e5d90c
+    taskid: 9fe923a7-22d9-49ee-81e1-9e2c4fb762f7
     type: title
     task:
-      id: e7cb8be0-4f69-4c4d-8e85-a29311e5d90c
+      id: 9fe923a7-22d9-49ee-81e1-9e2c4fb762f7
       version: -1
-      name: Advance features
+      name: Email Screenshot
       type: title
       iscommand: false
       brand: ""
@@ -305,369 +291,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 1070
+          "x": 370,
+          "y": 1260
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: de571e55-c518-4cb8-86b8-5e854ebd5285
-    type: regular
-    task:
-      id: de571e55-c518-4cb8-86b8-5e854ebd5285
-      version: -1
-      name: Set incident with the Email object data
-      description: Updates Demisto incident fields using data from the email object.
-        Also extracts indicators from the email message.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      1longtexttest: {}
-      aaaa: {}
-      addLabels: {}
-      adgroupname: {}
-      alertlevel: {}
-      amarkdownsection: {}
-      anothernumberpleasejusttomakesure: {}
-      app: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attach: {}
-      attachamenthash: {}
-      attachmentcount:
-        complex:
-          root: Email
-          accessor: |
-            Attachment.Count
-      attachmentextension:
-        complex:
-          root: Email
-          accessor: Attachment.Extension
-      attachmenthash:
-        complex:
-          root: Email
-          accessor: Attachment.Hash
-      attachmentid:
-        complex:
-          root: Email
-          accessor: Attachment.ID
-      attachmentitem:
-        complex:
-          root: Email
-          accessor: Attachment.Item
-      attachmentname:
-        complex:
-          root: Email
-          accessor: Attachment.Name
-      attachmentsize:
-        complex:
-          root: Email
-          accessor: Attachment.Size
-      attachmenttype:
-        complex:
-          root: Email
-          accessor: Attachment.Type
-      awsinstancename: {}
-      backupowner: {}
-      bbb: {}
-      blah: {}
-      bool1: {}
-      bool2: {}
-      booleansummary: {}
-      booleantest: {}
-      boolfield: {}
-      booltest: {}
-      bugtraq: {}
-      casenumber: {}
-      ccc: {}
-      ccipaddress: {}
-      cleanname: {}
-      compliance: {}
-      constvalue: {}
-      customFields: {}
-      customfield: {}
-      cve: {}
-      cvss: {}
-      date2: {}
-      datepicker: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField:
-        simple: "True"
-      department: {}
-      departmentadmin: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      dstip: {}
-      duration: {}
-      emailbcc:
-        complex:
-          root: Email
-          accessor: BCC
-          transformers:
-          - operator: uniq
-          - operator: Stringify
-      emailbody:
-        complex:
-          root: Email
-          accessor: Text
-          transformers:
-          - operator: Stringify
-      emailbodyformat:
-        complex:
-          root: Email
-          accessor: BodyFormat
-      emailbodyhtml:
-        complex:
-          root: Email
-          accessor: HTML
-          transformers:
-          - operator: Stringify
-      emailcc:
-        complex:
-          root: Email
-          accessor: CC
-          transformers:
-          - operator: uniq
-          - operator: Stringify
-      emailclientname:
-        complex:
-          root: Email
-          accessor: ClientName
-      emailfrom:
-        complex:
-          root: Email
-          accessor: From
-          transformers:
-          - operator: uniq
-          - operator: Stringify
-      emailimage:
-        complex:
-          root: Email
-          accessor: Image
-      emailinreplyto:
-        complex:
-          root: Email
-          accessor: InReplyTo
-      emailkeywords:
-        complex:
-          root: Email
-          accessor: Keywords
-      emailmessageid:
-        complex:
-          root: Email
-          accessor: ID
-      emailreceived:
-        complex:
-          root: Email
-          accessor: Received
-      emailreplyto:
-        complex:
-          root: Email
-          accessor: ReplyTo
-      emailreturnpath:
-        complex:
-          root: Email
-          accessor: ReturnPath
-      emailsenderip:
-        complex:
-          root: Email
-          accessor: SenderIP
-      emailsize:
-        complex:
-          root: Email
-          accessor: Size
-      emailsource:
-        complex:
-          root: Email
-          accessor: Source
-      emailsubject:
-        complex:
-          root: Email
-          accessor: Subject
-          transformers:
-          - operator: uniq
-          - operator: Stringify
-      emailto:
-        complex:
-          root: Email
-          accessor: To
-          transformers:
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-      emailtocount:
-        complex:
-          root: Email
-          accessor: To
-          transformers:
-          - operator: uniq
-          - operator: count
-      emailurlclicked:
-        complex:
-          root: EmailUrlClicked
-      enisacategory: {}
-      escalationdate: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      field1: {}
-      field2: {}
-      field3: {}
-      field4: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      fwlogs: {}
-      gatenumber: {}
-      hash: {}
-      hjhj: {}
-      host: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      htmltypefield: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      infectedhost: {}
-      intelblockcomment: {}
-      intelblockurl: {}
-      internalemail: {}
-      internalusage: {}
-      itaytestfield: {}
-      jiraticketid: {}
-      killchain: {}
-      labels: {}
-      lob: {}
-      longtextone: {}
-      longtexttoo: {}
-      mailbody: {}
-      malwarefamily: {}
-      mdtest: {}
-      mitigated: {}
-      mttd: {}
-      multilinetext: {}
-      mydate: {}
-      myfield: {}
-      myname: {}
-      myseverity: {}
-      name: {}
-      newmarkdownfield: {}
-      newtextfield: {}
-      noatext: {}
-      numberplease: {}
-      objecttype: {}
-      occurred: {}
-      originalhtml: {}
-      oriwithspace: {}
-      owner: {}
-      phase: {}
-      phishingsender: {}
-      phishingsenderdomain: {}
-      priority: {}
-      qradaroffenceid: {}
-      queues: {}
-      relatedincidentssummary: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      riskmitigationactionrequirements: {}
-      riskscore: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      selector: {}
-      sender: {}
-      sensitive: {}
-      severity: {}
-      shift: {}
-      shiftnotes: {}
-      signature: {}
-      single: {}
-      single2: {}
-      sla: {}
-      source: {}
-      sourceip: {}
-      sourceip1: {}
-      src: {}
-      srcip: {}
-      srcntdomain: {}
-      srcuser: {}
-      subcat: {}
-      subcategory: {}
-      summary: {}
-      systems: {}
-      targethostname: {}
-      team: {}
-      telefield: {}
-      teleselect: {}
-      test: {}
-      test2: {}
-      test111: {}
-      testassociationdumpme: {}
-      testfield: {}
-      testguy: {}
-      testhtml: {}
-      thisismysuperlongfield: {}
-      tier2owner: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      timetomitigate: {}
-      timetotriage: {}
-      tldr: {}
-      tlp: {}
-      tttttt: {}
-      type: {}
-      uniquefiled: {}
-      user: {}
-      useremail: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      vvvv: {}
-      zattachmentsgeneric: {}
-      zmaltegoimage: {}
-      zvtfirstseen: {}
-      zvtother: {}
-      zvtvendorcount: {}
-    reputationcalc: 2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 350,
-          "y": 820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "16":
     id: "16"
-    taskid: 3aa70465-c71b-491a-8a92-929c2f594b51
+    taskid: 8b361d38-acc9-4af5-88f4-6fb07915df54
     type: condition
     task:
-      id: 3aa70465-c71b-491a-8a92-929c2f594b51
+      id: 8b361d38-acc9-4af5-88f4-6fb07915df54
       version: -1
-      name: Should retrieve the original email?
+      name: Should the original email be retrieved?
       description: If True, retrieve the original email in the thread
       type: condition
       iscommand: false
@@ -693,21 +331,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 195
+          "x": -260,
+          "y": 150
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "17":
     id: "17"
-    taskid: 9a089a24-39d3-4306-8597-4fb83d9bcf32
+    taskid: e7a60f4a-46be-4d03-8980-ff8a66b8cfca
     type: playbook
     task:
-      id: 9a089a24-39d3-4306-8597-4fb83d9bcf32
+      id: e7a60f4a-46be-4d03-8980-ff8a66b8cfca
       version: -1
       name: Get Original Email - Generic
       description: |-
@@ -728,21 +364,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 450
+          "x": -40,
+          "y": 360
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "18":
     id: "18"
-    taskid: e335658f-4613-46f0-8b4c-19be03907ab1
+    taskid: 31dcd39d-b40f-4291-8a17-635dac3e3099
     type: condition
     task:
-      id: e335658f-4613-46f0-8b4c-19be03907ab1
+      id: 31dcd39d-b40f-4291-8a17-635dac3e3099
       version: -1
       name: Was the original email retrieved?
       description: Is there an email object in the context?
@@ -753,7 +387,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "13"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -766,24 +400,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 620
+          "x": -40,
+          "y": 530
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
     id: "19"
-    taskid: 24c8c1f3-1190-480c-8790-6e2de793066b
+    taskid: d772520f-9b09-4a4b-8f8f-4f43e5402473
     type: regular
     task:
-      id: 24c8c1f3-1190-480c-8790-6e2de793066b
+      id: d772520f-9b09-4a4b-8f8f-4f43e5402473
       version: -1
-      name: Set incident with the Email object data
-      description: Updates Demisto incident fields using data from the email object.
+      name: Display email information in layout
+      description: Updates Cortex XSOAR incident fields using data from the email object.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -794,14 +426,27 @@ tasks:
     scriptarguments:
       1longtexttest: {}
       aaaa: {}
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
       addLabels: {}
       adgroupname: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
       alertlevel: {}
       amarkdownsection: {}
       anothernumberpleasejusttomakesure: {}
       app: {}
+      approximatenumberofaffecteddatasubjects: {}
       arcsightcaseid: {}
       assetid: {}
+      associatedmaliciousdomains: {}
       attach: {}
       attachamenthash: {}
       attachmentcount:
@@ -837,42 +482,127 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.Type
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attackerusername: {}
       awsinstancename: {}
       backupowner: {}
       bbb: {}
       blah: {}
+      blockedaction: {}
       bool1: {}
       bool2: {}
       booleansummary: {}
       booleantest: {}
       boolfield: {}
       booltest: {}
+      bpareport: {}
+      breachconfirmation: {}
       bugtraq: {}
       casenumber: {}
       ccc: {}
       ccipaddress: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
       cleanname: {}
       closeNotes: {}
       closeReason: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
       compliance: {}
       constvalue: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
       customFields: {}
       customfield: {}
       cve: {}
       cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
       date2: {}
       datepicker: {}
+      datetimeofthebreach: {}
       daysbetweenreportcreation: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
       deleteEmptyField:
         simple: "True"
       department: {}
       departmentadmin: {}
       dest: {}
+      desthostname: {}
       destinationip: {}
+      destinationports: {}
       destntdomain: {}
+      destos: {}
       details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dpoemailaddress: {}
+      dponotification: {}
       dstip: {}
+      duoaccountstatus: {}
       duration: {}
+      email: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
       emailbcc:
         complex:
           root: Email
@@ -904,6 +634,7 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
+      emailclassification: {}
       emailclientname:
         complex:
           root: Email
@@ -917,6 +648,7 @@ tasks:
           - operator: Stringify
       emailfromdisplayname: {}
       emailheaders: {}
+      emailheaders2: {}
       emailhtml:
         complex:
           root: Email
@@ -987,6 +719,11 @@ tasks:
           accessor: To
           transformers:
           - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
       emailtocount:
         complex:
           root: Email
@@ -997,9 +734,19 @@ tasks:
       emailurlclicked:
         complex:
           root: EmailUrlClicked
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
       enisacategory: {}
       escalationdate: {}
       eventid: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
       falses: {}
       fetchid: {}
       fetchtype: {}
@@ -1008,34 +755,94 @@ tasks:
       field3: {}
       field4: {}
       filehash: {}
+      filehashblocked: {}
       filename: {}
       filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstseen: {}
       fwlogs: {}
       gatenumber: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      grid: {}
       hash: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
       hjhj: {}
       host: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
       htmlimage: {}
       htmlrenderedimage: {}
       htmltypefield: {}
       id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
       important: {}
       importantfield: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
       infectedhost: {}
+      infectedhostnames: {}
+      infectedhosts: {}
       intelblockcomment: {}
       intelblockurl: {}
       internalemail: {}
       internalusage: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
       itaytestfield: {}
       jiraticketid: {}
       killchain: {}
       labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
       lob: {}
+      loginattemptcount: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
       longtextone: {}
       longtexttoo: {}
+      macaddress: {}
       mailbody: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
       malwarefamily: {}
+      managementnotification: {}
+      manageremail: {}
+      markdowntest: {}
       mdtest: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
       mitigated: {}
       mttd: {}
       multilinetext: {}
@@ -1046,28 +853,117 @@ tasks:
       name: {}
       newmarkdownfield: {}
       newtextfield: {}
+      niststage: {}
       noatext: {}
+      numberofports: {}
+      numberofuniqueports: {}
       numberplease: {}
       objecttype: {}
       occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
       originalhtml: {}
       oriwithspace: {}
+      otherpiidatabreached: {}
       owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      penteraoperationdetails: {}
       phase: {}
       phishingsender: {}
       phishingsenderdomain: {}
+      phishingsubtype: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      portscantimestamp: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
       priority: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
       qradaroffenceid: {}
+      quarantined: {}
       queues: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
       relatedincidentssummary: {}
       replacePlaybook: {}
       reporteduser: {}
+      reporteremailaddress: {}
       reportinguser: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
       riskmitigationactionrequirements: {}
+      riskrating: {}
       riskscore: {}
       roles: {}
+      rrn: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
       screenshot: {}
       screenshot2: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
       selector: {}
       sender: {}
       sensitive: {}
@@ -1075,25 +971,55 @@ tasks:
       shift: {}
       shiftnotes: {}
       signature: {}
+      signindatetime: {}
       single: {}
       single2: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
       sla: {}
       slaField: {}
       source: {}
+      sourcehostname: {}
       sourceip: {}
       sourceip1: {}
+      sourceusername: {}
       src: {}
+      srchostname: {}
       srcip: {}
       srcntdomain: {}
+      srcos: {}
       srcuser: {}
+      statewherethebreachtookplace: {}
       subcat: {}
       subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
       summary: {}
+      systemdefault: {}
       systems: {}
+      targetfirewallversion: {}
       targethostname: {}
       team: {}
       telefield: {}
+      telephoneno: {}
       teleselect: {}
+      terminatedaction: {}
       test: {}
       test2: {}
       test111: {}
@@ -1102,6 +1028,7 @@ tasks:
       testguy: {}
       testhtml: {}
       thisismysuperlongfield: {}
+      threatactor: {}
       tier2owner: {}
       timeassignedtolevel2: {}
       timefield1: {}
@@ -1110,16 +1037,55 @@ tasks:
       timetotriage: {}
       tldr: {}
       tlp: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
       tttttt: {}
       type: {}
+      uniquebiometricdatabreached: {}
       uniquefiled: {}
+      uniqueidentificationnumberbreached: {}
+      urlsslverification: {}
       user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
       useremail: {}
       username: {}
       vendorid: {}
       vendorproduct: {}
+      vpcid: {}
       vulnerabilitycategory: {}
       vvvv: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
       zattachmentsgeneric: {}
       zmaltegoimage: {}
       zvtfirstseen: {}
@@ -1130,29 +1096,139 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 610
+          "x": 100,
+          "y": 880
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+  "20":
+    id: "20"
+    taskid: d41e13e7-206e-4da0-8c01-e89a23e92046
+    type: regular
+    task:
+      id: d41e13e7-206e-4da0-8c01-e89a23e92046
+      version: -1
+      name: Display email headers in layout
+      description: Fills the "Email Headers" grid field in the incident layout with
+        the email attachment's headers.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      columns:
+        simple: headername,headervalue
+      context_path:
+        simple: Email.HeadersMap
+      grid_id:
+        simple: emailheaders
+      keys: {}
+      overwrite:
+        simple: "true"
+      sort_by:
+        simple: headername
+      unpack_nested_elements:
+        simple: "true"
+    reputationcalc: 3
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: a915bae7-16a6-41cb-81bc-3fe3917b3e46
+    type: condition
+    task:
+      id: a915bae7-16a6-41cb-81bc-3fe3917b3e46
+      version: -1
+      name: Were email headers extracted successfully?
+      description: Checks whether the email headers were extracted from the original
+        email that was either attached or retrieved using available email integrations.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: c6b99de4-efa1-4a02-88fb-b39e7a0804cc
+    type: title
+    task:
+      id: c6b99de4-efa1-4a02-88fb-b39e7a0804cc
+      version: -1
+      name: Incident Layout Display
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "16_2_#default#": 0.73,
-      "18_13_yes": 0.72,
-      "18_2_#default#": 0.47,
+      "16_2_#default#": 0.28,
+      "18_22_yes": 0.34,
+      "18_2_#default#": 0.49,
+      "21_11_#default#": 0.35,
+      "21_20_yes": 0.5,
       "4_5_yes": 0.57
     },
     "paper": {
       "dimensions": {
-        "height": 2015,
-        "width": 1310,
-        "x": -60,
+        "height": 2205,
+        "width": 1770,
+        "x": -470,
         "y": -280
       }
     }
@@ -1164,7 +1240,6 @@ inputs:
       root: File
   required: false
   description: An EML or MSG file with
-  playbookInputQuery:
 - key: Email
   value:
     complex:
@@ -1172,7 +1247,6 @@ inputs:
       accessor: labels.Email
   required: false
   description: The receiving email address
-  playbookInputQuery:
 - key: Email/cc
   value:
     complex:
@@ -1180,7 +1254,6 @@ inputs:
       accessor: labels.CC
   required: false
   description: CC addresses
-  playbookInputQuery:
 - key: Email/from
   value:
     complex:
@@ -1188,7 +1261,6 @@ inputs:
       accessor: labels.Email/from
   required: false
   description: The originator of the email
-  playbookInputQuery:
 - key: Email/subject
   value:
     complex:
@@ -1196,7 +1268,6 @@ inputs:
       accessor: labels.Email/subject
   required: false
   description: The email’s subject
-  playbookInputQuery:
 - key: Email/text
   value:
     complex:
@@ -1204,7 +1275,6 @@ inputs:
       accessor: labels.Email/text
   required: false
   description: The email’s text
-  playbookInputQuery:
 - key: Email/html
   value:
     complex:
@@ -1212,7 +1282,6 @@ inputs:
       accessor: labels.Email/html
   required: false
   description: The emai’sl html
-  playbookInputQuery:
 - key: Email/headers
   value:
     complex:
@@ -1220,7 +1289,6 @@ inputs:
       accessor: labels.Email/headers
   required: false
   description: The email’s headers
-  playbookInputQuery:
 - key: Email/format
   value:
     complex:
@@ -1228,7 +1296,6 @@ inputs:
       accessor: labels.Email/format
   required: false
   description: The email’s format
-  playbookInputQuery:
 - key: GetOriginalEmail
   value:
     simple: "False"
@@ -1240,7 +1307,6 @@ inputs:
 
     - EWS: eDiscovery
     - Gmail: Google Apps Domain-Wide Delegation of Authority
-  playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
   description: Email 'html' body if exists
