@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
       - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
-    resource_class: medium+
     parallelism: 2
     environment:
       CONTENT_VERSION: "20.6.0"
@@ -89,6 +88,17 @@ jobs:
                 echo ".circleci/config.yml is up to date!"
             fi
       - run:
+          name: Update Tests step
+          when: always
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - running only in container number 0"
+                exit 0
+            fi
+            python3 ./Tests/scripts/update_conf_json.py
+            cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
+      - run:
           name: Create ID Set
           when: always
           command: |
@@ -116,9 +126,9 @@ jobs:
           name: Validate Files and Yaml
           when: always
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container or Nightly run"
                 exit 0
             fi
 
@@ -314,24 +324,6 @@ jobs:
               exit 0
             fi
             ./Tests/scripts/prepare_content_packs_for_testing.sh
-      - run:
-          name: Zip Content Packs From GCS
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping, Should not run on contributor's branch."
-              exit 0
-            fi
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-            fi
-            GCS_PATH=$(mktemp)
-            ZIP_FOLDER=$(mktemp -d)
-            echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-ci-build' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -n $CIRCLE_BUILD_NUM -br $CIRCLE_BRANCH
-            rm $GCS_PATH
-          when: always
       - store_artifacts:
           path: artifacts
           destination: artifacts
@@ -560,6 +552,9 @@ jobs:
             if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
                 ./Tests/scripts/instance_test.sh
+                export RETVAL=$?
+                cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
+                exit $RETVAL
               else
                 echo "Skipping instance tests"
                 exit 0
@@ -603,9 +598,28 @@ jobs:
             ID_SET=$CIRCLE_ARTIFACTS/id_set.json
             GCS_PATH=$(mktemp)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -o
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
             rm $GCS_PATH
           when: on_success
+      - run:
+          name: Zip Content Packs From GCS
+          command: |
+            if [[ $CIRCLE_BRANCH != master ]]; then
+              echo "Skipping packs zipping on non master branch"
+              exit 0
+            fi
+
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
+            GCS_PATH=$(mktemp)
+            ZIP_FOLDER=$(mktemp -d)
+            echo $GCS_MARKET_KEY > $GCS_PATH
+            python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -gp content/packs -rt False
+            rm $GCS_PATH
+          when: always
       - store_artifacts:
           path: artifacts
           destination: artifacts
