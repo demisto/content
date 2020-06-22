@@ -112,11 +112,11 @@ jobs:
                 exit 0
             fi
             demisto-sdk create-id-set -o ./Tests/id_set.json
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Create ID Set - stage faild" >> task_report.txt
+            fi
       - run:
           name: Infrastructure testing
           when: always
@@ -131,11 +131,11 @@ jobs:
             python3 -m pytest ./Tests/Marketplace/Tests/marketplace_services_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Infrastructure testing - stage faild" >> task_report.txt
+            fi
       - run:
           name: Validate Files and Yaml
           when: always
@@ -152,11 +152,11 @@ jobs:
 
             [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
             ./Tests/scripts/validate.sh
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Validate - stage faild" >> task_report.txt
+            fi
       - run:
           name: Secrets
           when: always
@@ -168,6 +168,11 @@ jobs:
             fi
 
             demisto-sdk secrets --post-commit --ignore-entropy
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Secrets - stage faild" >> task_report.txt
+            fi
       - run:
           name: Collect Test List And Content Packs
           when: always
@@ -180,11 +185,11 @@ jobs:
 
             [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
             python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Collect Test List And Content Packs - stage faild" >> task_report.txt
+            fi
       - run:
           name: Spell Checks
           command: |
@@ -210,11 +215,12 @@ jobs:
               else
                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION || echo "ignore errors"
             fi
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Build Content Descriptor - stage faild" >> task_report.txt
+            fi
+
       - run:
           name: Common Server Documentation
           when: always
@@ -225,11 +231,11 @@ jobs:
                 exit 0
             fi
             ./Documentation/commonServerDocs.sh
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Common Server Documentation - stage faild" >> task_report.txt
+            fi
       - run:
           name: Content Docs Site
           when: always
@@ -240,11 +246,11 @@ jobs:
                 exit 0
             fi
             ./Documentation/docs_site_update.sh
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Content Docs Site - stage faild" >> task_report.txt
+            fi
       - run:
           name: Create Content Artifacts
           when: always
@@ -260,11 +266,11 @@ jobs:
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Create Content Artifacts - stage faild" >> task_report.txt
+            fi
       - run:
           name: Calculate Packs Dependencies
           when: always
@@ -275,11 +281,11 @@ jobs:
                 exit 0
             fi
             python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
+
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
+              then
+                echo "Calculate Packs Dependencies - stage faild" >> task_report.txt
+            fi
       - run:
           name: Run Unit Testing and Lint
           when: always
@@ -339,11 +345,6 @@ jobs:
               else
                 ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
             fi
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
       - run:
           name: Download Artifacts
           when: always
@@ -364,11 +365,6 @@ jobs:
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
                 cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
       - run:
           name: Prepare Content Packs For Testing
           when: always
@@ -383,243 +379,245 @@ jobs:
               exit 0
             fi
             ./Tests/scripts/prepare_content_packs_for_testing.sh
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
-          when: always
-      - run:
-          name: Create Instance
-          when: always
-          command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
 
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ $? -eq 1 ] && [-n "${DEMISTO_SDK_NIGHTLY}"] ;
               then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
+                echo "Prepare Content Packs For Testing - stage faild" >> task_report.txt
             fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                if [ -n "${NIGHTLY}" ] ;
-                  then
-                    export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
-                elif [ -n "${INSTANCE_TESTS}" ] ;
-                  then
-                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-
-                  else
-                    export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
-                fi
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
-
-              else
-                . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -outfile ./env_results.json
-            fi
-      - run:
-          name: Setup Instance
-          when: always
-          command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo 'Skipping - running only in container number 0.'
-                exit 0;
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                python3 ./Tests/scripts/run_content_installation.py
-              else
-                ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-            fi
-            python3 ./Tests/scripts/wait_until_server_ready.py
-      - run:
-          name: Run Tests - Server 4.1
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
-            echo "Demisto two before GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto two before GA"
-
-              else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - run:
-          name: Run Tests - Server 4.5
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
-            echo "Demisto one before GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto one before GA"
-
-              else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - run:
-          name: Run Tests - Server 5.0
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
-            echo "Demisto GA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto GA"
-
-            else
-                ./Tests/scripts/run_tests.sh "master"
-            fi
-      - run:
-          name: Run Tests - Server 5.5
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
-            echo "Demisto PreGA filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto PreGA"
-                export RETVAL=$?
-                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                exit $RETVAL
-
-            else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - run:
-          name: Run Tests - Demisto Marketplace
-          shell: /bin/bash
-          when: always
-          no_output_timeout: 5h
-          command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
-                exit 0
-            fi
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
-            echo "Demisto Marketplace filter=$TEMP"
-            if [[ "$TEMP" == "false" ]];
-              then
-                echo "Skipping - instance was not setup"
-                exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto Marketplace"
-                export RETVAL=$?
-                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                exit $RETVAL
-
-            else
-                echo "Not AMI run, can't run on this version"
-            fi
+#
+#      - run:
+#          name: Create Instance
+#          when: always
+#          command: |
+#            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+#              echo "Skipping instance tests for sdk nightly build"
+#              exit 0
+#            fi
+#
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+#              then
+#                echo 'Skipping - running only in container number 0.'
+#                exit 0;
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                if [ -n "${NIGHTLY}" ] ;
+#                  then
+#                    export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+#                elif [ -n "${INSTANCE_TESTS}" ] ;
+#                  then
+#                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+#
+#                  else
+#                    export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+#                fi
+#                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
+#
+#              else
+#                . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+#                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -outfile ./env_results.json
+#            fi
+#      - run:
+#          name: Setup Instance
+#          when: always
+#          command: |
+#            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+#              echo "Skipping instance tests for sdk nightly build"
+#              exit 0
+#            fi
+#
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+#              then
+#                echo 'Skipping - running only in container number 0.'
+#                exit 0;
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                python3 ./Tests/scripts/run_content_installation.py
+#              else
+#                ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
+#            fi
+#            python3 ./Tests/scripts/wait_until_server_ready.py
+#      - run:
+#          name: Run Tests - Server 4.1
+#          shell: /bin/bash
+#          when: always
+#          command: |
+#            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+#              echo "Skipping instance tests for sdk nightly build"
+#              exit 0
+#            fi
+#
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+#              then
+#                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+#                exit 0
+#            fi
+#            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
+#            echo "Demisto two before GA filter=$TEMP"
+#            if [[ "$TEMP" == "false" ]];
+#              then
+#                echo "Skipping - instance was not setup"
+#                exit 0
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                ./Tests/scripts/run_tests.sh "Demisto two before GA"
+#
+#              else
+#                echo "Not AMI run, can't run on this version"
+#            fi
+#      - run:
+#          name: Run Tests - Server 4.5
+#          shell: /bin/bash
+#          when: always
+#          command: |
+#            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+#              echo "Skipping instance tests for sdk nightly build"
+#              exit 0
+#            fi
+#
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+#              then
+#                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+#                exit 0
+#            fi
+#            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
+#            echo "Demisto one before GA filter=$TEMP"
+#            if [[ "$TEMP" == "false" ]];
+#              then
+#                echo "Skipping - instance was not setup"
+#                exit 0
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                ./Tests/scripts/run_tests.sh "Demisto one before GA"
+#
+#              else
+#                echo "Not AMI run, can't run on this version"
+#            fi
+#      - run:
+#          name: Run Tests - Server 5.0
+#          shell: /bin/bash
+#          when: always
+#          command: |
+#            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+#              echo "Skipping instance tests for sdk nightly build"
+#              exit 0
+#            fi
+#
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+#              then
+#                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+#                exit 0
+#            fi
+#            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
+#            echo "Demisto GA filter=$TEMP"
+#            if [[ "$TEMP" == "false" ]];
+#              then
+#                echo "Skipping - instance was not setup"
+#                exit 0
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                ./Tests/scripts/run_tests.sh "Demisto GA"
+#
+#            else
+#                ./Tests/scripts/run_tests.sh "master"
+#            fi
+#      - run:
+#          name: Run Tests - Server 5.5
+#          shell: /bin/bash
+#          when: always
+#          command: |
+#            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+#              echo "Skipping instance tests for sdk nightly build"
+#              exit 0
+#            fi
+#
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+#              then
+#                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+#                exit 0
+#            fi
+#            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
+#            echo "Demisto PreGA filter=$TEMP"
+#            if [[ "$TEMP" == "false" ]];
+#              then
+#                echo "Skipping - instance was not setup"
+#                exit 0
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                ./Tests/scripts/run_tests.sh "Demisto PreGA"
+#                export RETVAL=$?
+#                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+#                exit $RETVAL
+#
+#            else
+#                echo "Not AMI run, can't run on this version"
+#            fi
+#      - run:
+#          name: Run Tests - Demisto Marketplace
+#          shell: /bin/bash
+#          when: always
+#          no_output_timeout: 5h
+#          command: |
+#            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+#              echo "Skipping instance tests for sdk nightly build"
+#              exit 0
+#            fi
+#
+#            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+#              echo "Skipping instance tests for forked PRs"
+#              exit 0
+#            fi
+#            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+#              then
+#                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+#                exit 0
+#            fi
+#            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+#            echo "Demisto Marketplace filter=$TEMP"
+#            if [[ "$TEMP" == "false" ]];
+#              then
+#                echo "Skipping - instance was not setup"
+#                exit 0
+#            fi
+#            if ./Tests/scripts/is_ami.sh ;
+#              then
+#                ./Tests/scripts/run_tests.sh "Demisto Marketplace"
+#                export RETVAL=$?
+#                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+#                exit $RETVAL
+#
+#            else
+#                echo "Not AMI run, can't run on this version"
+#            fi
       - store_artifacts:
           path: artifacts
           destination: artifacts
@@ -657,6 +655,11 @@ jobs:
       - run:
           name: Destroy Instances
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -676,6 +679,10 @@ jobs:
       - run:
           name: Upload Packs To Marketplace Storage
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping for sdk nightly build"
+              exit 0
+            fi
             if [[ $CIRCLE_BRANCH != master ]]; then
               echo "Skipping packs uploading on non master branch"
               exit 0
@@ -698,6 +705,10 @@ jobs:
       - run:
           name: Zip Content Packs From GCS
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping for sdk nightly build"
+              exit 0
+            fi
             if [[ $CIRCLE_BRANCH != master ]]; then
               echo "Skipping packs zipping on non master branch"
               exit 0

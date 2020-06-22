@@ -34,7 +34,9 @@ def options_handler():
     parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
     parser.add_argument('-i', '--node_index', help='CircleCI node index (Container number)')
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address',
-                        required=True)
+                        required=True),
+    parser.add_argument('-k', '--sdk', type=str2bool, help='is sdk nightly build?', required=True)
+
     options = parser.parse_args()
 
     return options
@@ -56,6 +58,22 @@ def get_failing_unit_tests_file_data():
     return failing_ut_list
 
 
+def get_failing_tasks_file_data():
+    try:
+        failing_task_list = None
+        file_name = './artifacts/task_report.txt'
+        if os.path.isfile(file_name):
+            print('Extracting tasks_report')
+            with open(file_name, 'r') as failed_tasks_file:
+                failing_tasks = failed_tasks_file.readlines()
+                failing_task_list = [line.strip('\n') for line in failing_tasks]
+        else:
+            print('Did not find tasks_report.txt file')
+    except Exception as err:
+        print_error('Error getting tasks_report.txt file: \n {}'.format(err))
+    return failing_task_list
+
+
 def get_unittests_fields():
     failed_unittests = get_failing_unit_tests_file_data()
     unittests_fields = []
@@ -68,10 +86,25 @@ def get_unittests_fields():
     return unittests_fields
 
 
-def get_attachments_for_unit_test(build_url):
+def get_tasks_fields():
+    failed_tasks = get_failing_tasks_file_data()
+    task_fields = []
+    if failed_tasks:
+        task_fields.append({
+            "title": "Failed tasks - ({})".format(len(failed_tasks)),
+            "value": '\n'.join(failed_tasks),
+            "short": False
+        })
+    return task_fields
+
+
+def get_attachments_for_unit_test(build_url, is_sdk_build=False):
     unittests_fields = get_unittests_fields()
     color = 'good' if not unittests_fields else 'danger'
-    title = 'Content Nightly Unit Tests - Success' if not unittests_fields else 'Content Nightly Unit Tests - Failure'
+    if not unittests_fields :
+        title = 'Content Nightly Unit Tests - Success' if not is_sdk_build else 'Nightly SDK Unit Tests - Success'
+    else:
+        title = 'Content Nightly Unit Tests - Failure' if not is_sdk_build else 'Nightly SDK Unit Tests - Failure'
     container_one_build_url = build_url + '#queue-placeholder/containers/1'
     content_team_attachment = [{
         'fallback': title,
@@ -79,6 +112,22 @@ def get_attachments_for_unit_test(build_url):
         'title': title,
         'title_link': container_one_build_url,
         'fields': unittests_fields
+    }]
+    return content_team_attachment
+
+
+def get_attachments_for_all_tasks(build_url):
+    tasks_fields = get_tasks_fields()
+    color = 'good' if not tasks_fields else 'danger'
+    title = 'Nightly SDK Build - Success' if not tasks_fields else 'Nightly SDK Build - Failure'
+
+    container_build_url = build_url + '#queue-placeholder/containers/0'
+    content_team_attachment = [{
+        'fallback': title,
+        'color': color,
+        'title': title,
+        'title_link': container_build_url,
+        'fields': tasks_fields
     }]
     return content_team_attachment
 
@@ -202,10 +251,40 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
         )
 
 
+def sdk_slack_notifier(build_url, slack_token, container):
+    branches = run_command("git branch")
+    branch_name_reg = re.search(r'\* (.*)', branches)
+    branch_name = branch_name_reg.group(1)
+
+    # if branch_name == 'master':
+    print("Extracting build status")
+    # container 1: unit tests
+    if int(container):
+        print_color("Starting Slack notifications about SDK nightly build - unit tests", LOG_COLORS.GREEN)
+        content_team_attachments = get_attachments_for_unit_test(build_url)
+
+    # container 0: regular tasks
+    else:
+        print_color("Starting Slack notifications about SDK nightly build - all tasks", LOG_COLORS.GREEN)
+        content_team_attachments, _ = get_attachments_for_all_tasks(build_url)
+
+    print("Sending Slack messages to #content-team")
+    slack_client = SlackClient(slack_token)
+    slack_client.api_call(
+        "chat.postMessage",
+        channel="test-channel-reut",
+        username="Content CircleCI",
+        as_user="False",
+        attachments=content_team_attachments
+    )
+
+
 def main():
     options = options_handler()
     if options.nightly:
         slack_notifier(options.url, options.slack, options.env_results_file_name, options.node_index)
+    elif options.sdk:
+        sdk_slack_notifier(options.url, options.slack, options.node_index)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
