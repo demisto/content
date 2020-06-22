@@ -361,7 +361,7 @@ script:
       description: The username of the High Risk Employee.
       type: string
     - contextPath: Code42.HighRiskEmployee.RiskTags
-      description: Risk tags to asspciate with the High Risk Employee.
+      description: Risk tags to associate with the High Risk Employee.
   - name: code42-highriskemployee-remove-risk-tags
     arguments:
     - name: username

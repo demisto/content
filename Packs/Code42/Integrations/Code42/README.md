@@ -413,7 +413,7 @@ Get all employees on the High Risk Employee List.
 | --- | --- | --- |
 | Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
 | Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.RiskTags | unknown | Risk tags to asspciate with the High Risk Employee. | 
+| Code42.HighRiskEmployee.RiskTags | unknown | Risk tags to associate with the High Risk Employee. | 
 
 
 #### Command Example
