@@ -1,6 +1,6 @@
 {
     "name": "Microsoft Azure AD Connect Health Feed",
-    "description": "Indicator feed from Microsoft Azure AD Connect Health endpoints",
+    "description": "Indicator feed from Microsoft Azure AD Connect Health endpoints, fetching URLs and DomainGlobs used by Azure AD, with which you can create a list (allowlist, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -16,5 +16,4 @@
         "Azure",
         "Feed"
     ]
-    
 }
