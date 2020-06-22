@@ -233,7 +233,7 @@ def sdk_slack_notifier(build_url, slack_token, container):
     # container 1: unit tests
     if int(container):
         print_color("Starting Slack notifications about SDK nightly build - unit tests", LOG_COLORS.GREEN)
-        content_team_attachments = get_attachments_for_unit_test(build_url)
+        content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
 
     # container 0: regular steps
     else:
