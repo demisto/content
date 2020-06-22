@@ -3834,7 +3834,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         :param key: The key to replace elements by.
 
         :rtype: ``list``
-        :return:: The merged list.
+        :return: The merged list.
 
         Example:
         >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}, {'id': '11', 'updated': 'n'}]
@@ -3871,7 +3871,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         :param version: The version of the context to set.
 
         :rtype: ``dict``
-        :return:: The new integration context
+        :return: The new integration context
         """
         demisto.debug('Setting integration context {}:'.format(str(context)))
         if is_versioned_context_available():
@@ -3893,7 +3893,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         :param with_version: Whether to return the version.
 
         :rtype: ``dict``
-        :return:: The integration context.
+        :return: The integration context.
         """
         if is_versioned_context_available():
             integration_context = demisto.getIntegrationContextVersioned(sync)
@@ -3911,7 +3911,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         Determines whether versioned integration context is available according to the server version.
 
         :rtype: ``bool``
-        :return:: Whether versioned integration context is available
+        :return: Whether versioned integration context is available
         """
         return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
 
@@ -3930,6 +3930,9 @@ if IS_PY3:  # merge_lists does not work in python 2
 
         :type sync: ``bool``
         :param sync: Whether to make a versioned request.
+
+        :rtype: ``None``
+        :return: None
         """
         attempt = 0
 
@@ -3967,7 +3970,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         :param sync: Whether to get the context directly from the DB.
 
         :rtype: ``tuple``
-        :return:: The latest integration context with version.
+        :return: The latest integration context with version.
         """
         latest_integration_context_versioned = get_integration_context(sync, with_version=True)
         version = -1
@@ -3996,7 +3999,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         :param sync: Whether to use the context directly from the DB.
 
         :rtype ``tuple``
-        :return:: The updated integration context along with the current version.
+        :return: The updated integration context along with the current version.
 
         """
         integration_context, version = get_integration_context_with_version(sync)
