@@ -27,49 +27,49 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An Integration to Query ICS Data from Nozomi Guardian
+description: Use this integration to query run a query for ICS data, list all assets in Nozomi Guardian, and find an IP address by a MAC address.
 display: NozomiGuardian
 name: Nozomi_Guardian
 script:
   commands:
   - arguments:
     - default: false
-      description: The query to search with, example "assets | where vendor match
+      description: The search query. For example "assets | where vendor match
         Dell Inc."
       isArray: false
       name: query
       required: true
       secret: false
     deprecated: false
-    description: Nozomi Guardian Query
+    description: Runs the specified query in Nozomi Guardian.
     execution: false
     name: guardian-search
     outputs:
     - contextPath: NozomiGuardian.Queries
-      description: Query Results
+      description: Query results.
       type: String
   - deprecated: false
-    description: List all the assets discovered by Nozomi Guardian
+    description: Lists all assets discovered by Nozomi Guardian.
     execution: false
     name: guardian-list-all-assets
     outputs:
     - contextPath: NozomiGuardian.Assets
-      description: Nozomi Guardian Assets
+      description: Nozomi Guardian assets.
       type: Unknown
   - arguments:
     - default: false
-      description: The MAC address value
+      description: The MAC address value.
       isArray: false
       name: mac
       required: true
       secret: false
     deprecated: false
-    description: Find the IP of a MAC address
+    description: Finds an IP address according to the specified MAC address.
     execution: false
     name: guardian-find-ip-by-mac
     outputs:
     - contextPath: NozomiGuardian.Mappings
-      description: IP to MAC Address Mappings
+      description: IP to MAC address mappings.
       type: Unknown
   dockerimage: demisto/python3:3.8.3.8715
   feed: false
