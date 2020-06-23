@@ -6,13 +6,12 @@ from CommonServerUserPython import *
 from typing import Tuple, Dict, List, Any
 from _collections import defaultdict
 import requests
-import hashlib
+import ast
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-# SERVER_URL = 'https://sdpondemand.manageengine.com'
 API_VERSION = '/api/v3/'
 OAUTH = 'https://accounts.zoho.com/oauth/v2/token'
 
@@ -21,6 +20,7 @@ REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 
                   'item', 'email_ids_to_notify', 'is_fcr', 'resources', 'udf_fields']
 FIELDS_WITH_NAME = ['request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority', 'service_category',
                     'requester', 'site', 'group', 'technician', 'category', 'subcategory', 'item']
+FIELDS_TO_IGNORE = ['has_draft', 'cancel_flag_comments']
 
 SERVER_URL = {
     'United States': 'https://sdpondemand.manageengine.com',
@@ -45,14 +45,12 @@ class Client(BaseClient):
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/v3+json'})
         if self.refresh_token:
             self.update_access_token()  # Add a valid access token to the headers
-            self.access_token_refreshed = False
+            self.access_token_refreshed = False  # todo: remove
 
     def update_access_token(self):
         """
         Generates an access token from the client id, client secret and refresh token
         """
-        # print("refreshing access token!")
-
         params = {
             'refresh_token': self.refresh_token,
             'grant_type': 'refresh_token',
@@ -71,7 +69,7 @@ class Client(BaseClient):
             res = self._http_request(method, url_suffix, full_url=full_url, resp_type='response', ok_codes=ok_codes,
                                      params=params)
             if res.status_code in [200, 201]:
-                self.access_token_refreshed = False
+                self.access_token_refreshed = False  # todo: remove
 
                 try:
                     return res.json()
@@ -81,17 +79,16 @@ class Client(BaseClient):
 
             if res.status_code in [401]:
                 # if the access token hasn't been refreshed, refresh it and run the command again
-                if not self.access_token_refreshed:
-                    # print("refreshing access token!")
+                if not self.access_token_refreshed:  # todo: remove
                     self.update_access_token()
                     return self.http_request(method, url_suffix, full_url=full_url, params=params)
                 try:
                     err_msg = f'Unauthorized request - check domain location and the given credentials \n{str(res.json())}'
                 except ValueError:
-                    err_msg = 'Unauthorized request - check domain location and the given credentials -\n' + str(res)
+                    err_msg = f'Unauthorized request - check domain location and the given credentials -\n{str(res)}'
                 raise DemistoException(err_msg)
 
-        except Exception as e:
+        except Exception as e:  # todo: remove the text in the error
             raise DemistoException('FAILS HERE ' + e.args[0])
 
     def get_requests(self, request_id: str = None, params: dict = None):
@@ -100,30 +97,26 @@ class Client(BaseClient):
         else:
             return self.http_request(method='GET', url_suffix='requests', params=params)
 
-    def ip_report(self, ip: str) -> dict:
-        if not is_ip_valid(ip):
-            raise DemistoException('The given IP was invalid')
-        return self.http_request('GET', f'/ip/{ip}')
-
-    def domain_report(self, domain: str) -> dict:
-        return self.http_request('GET', f'/hostname/{domain}')
-
 
 def create_output(request: dict) -> dict:
     """
     Creates the output for the context and human readable from the response of an http_request
 
     Args:
-        request: The request dict returned from the http_request
+        request: A single request dict returned from the http_request
 
     Returns:
         A dictionary containing all valid fields in the request
     """
     output = {}
-    for field in REQUEST_FIELDS:
+    for field in request.keys():
         value = request.get(field, None)
-        if value:
+        if value not in [None, {}, []] and field not in FIELDS_TO_IGNORE:
             output[string_to_context_key(field)] = value
+    if output.get('Status'):
+        output['Status'] = request.get('status', {}).get('name')
+    if output.get('CreatedTime'):
+        output['CreatedTime'] = timestamp_to_datestring(request.get('created_time', {}).get('value'))
     return output
 
 
@@ -149,6 +142,31 @@ def args_to_query(args: dict) -> dict:
     return {'request': request_fields}
 
 
+def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> dict:
+    """
+    Returning the input_data dictionary that should be used to link/unlink the requests were passed.
+
+    Args:
+         linked_requests_id: the requests that should be linked/unlinked with/from the given base request
+         comment: the comment that should be added when linking requests (optional)
+
+     Returns:
+         A dictionary containing the input_data parameter that should be used for linking/un-linking the requests.
+    """
+    all_linked_requests = []
+    for request_id in linked_requests_id:
+        linked_request = {
+            'linked_request': {
+                'id': request_id
+            }
+        }
+        if comment:
+            linked_request['comments'] = comment
+        all_linked_requests.append(linked_request)
+    return {'link_requests': all_linked_requests}
+
+
+# Command functions:
 def list_requests_command(client: Client, args: dict):
     """
     Get the details of requests. The returned requests can be filtered by a single request id or by input_data param.
@@ -168,12 +186,17 @@ def list_requests_command(client: Client, args: dict):
     list_info = create_list_info(start_index, row_count, search_fields, filter_by)
     params = {'input_data': f'{list_info}'}
     result = client.get_requests(request_id, params)
-    requests = result.get('requests', [])
     output = []
     context: dict = defaultdict(list)
+
+    if request_id:
+        requests = [result.get('request', [])]
+    else:
+        requests = result.get('requests', [])
     for request in requests:
-        output.append(create_output(request))
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = output
+        request_output = create_output(request)
+        output.append(request_output)
+    context['ServiceDeskPlus(val.ID===obj.ID)'] = {'Request': output}
     markdown = tableToMarkdown(f'Requests', t=output)
     return markdown, context, result
 
@@ -216,7 +239,7 @@ def create_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         output = create_output(request)
 
     markdown = tableToMarkdown('Service Desk Plus request was successfully created', t=output)
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = output
+    context['ServiceDeskPlus(val.ID===obj.ID)'] = {'Request': output}
     return markdown, context, result
 
 
@@ -242,7 +265,7 @@ def update_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         output = create_output(request)
 
     markdown = tableToMarkdown('Service Desk Plus request was successfully updated', t=output)
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = output
+    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'Request': output}
     return markdown, context, result
 
 
@@ -297,11 +320,40 @@ def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     result = client.http_request('GET', url_suffix=f'requests/{request_id}/link_requests')
     linked_requests = result.get('link_requests', [])
     context: dict = defaultdict(list)
-    output = {'link_requests': linked_requests}
+    output = []
 
-    markdown = tableToMarkdown(f'Linked requests to request {request_id}', t=linked_requests)
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = output
+    for request in linked_requests:
+        request_output = create_output(request)
+        output.append(request_output)
+
+    markdown = tableToMarkdown(f'Linked requests to request {request_id}', t=output, removeNull=True)
+    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'LinkRequests': output}
     return markdown, context, result
+
+
+def modify_linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+    """
+    Links/Un-links the given request with all the other requests that where passed as arguments.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    request_id = args.get('request_id')
+    action = args.get('action')
+    linked_requests_id = args.get('linked_requests_id').split(',')
+    comment = args.get('comment')
+    input_data = create_modify_linked_input_data(linked_requests_id, comment)
+    params = {'input_data': f'{input_data}'}
+    if action == 'Link':
+        result = client.http_request('POST', url_suffix=f'requests/{request_id}/link_requests', params=params)
+    else:
+        result = client.http_request('DELETE', url_suffix=f'requests/{request_id}/link_requests', params=params)
+    markdown = f"## {result.get('response_status').get('messages')[0].get('message')}"
+    return markdown, {}, result
 
 
 def add_resolution_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
@@ -332,7 +384,7 @@ def add_resolution_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
 
 def get_resolutions_list_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     """
-    Gets the resolution to the given request
+    Gets the resolution of the given request
 
     Args:
         client: Client object with request.
@@ -346,7 +398,7 @@ def get_resolutions_list_command(client: Client, args: dict) -> Tuple[str, dict,
     context: dict = defaultdict(list)
     output = result.get('resolution', {})
     markdown = tableToMarkdown(f'Resolution of request {request_id}', t=output)
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = output
+    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'Resolution': output}
     return markdown, context, result
 
 
@@ -363,7 +415,7 @@ def create_list_info(start_index, row_count, search_fields, filter_by):
     return {'list_info': list_info}
 
 
-def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: str) -> list:
+def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: str, fetch_filter: str) -> list:
     date_format = '%Y-%m-%dT%H:%M:%S'
     last_run = demisto.getLastRun()
     if not last_run:  # if first time running
@@ -373,7 +425,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
     demisto_incidents: List = list()
     time_from = new_last_run.get('time')
     time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-    list_info = create_fetch_list_info(str(time_from), str(time_to), status)
+    list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter)
     params = {'input_data': f'{list_info}'}
 
     # Get incidents from Service Desk Plus
@@ -412,7 +464,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
     return demisto_incidents
 
 
-def create_fetch_list_info(time_from: str, time_to: str, status: str) -> dict:
+def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str) -> dict:
     """
     Returning the list_info dictionary that should be used to filter the requests that are being fetched
     The requests that will be returned when using this list_info are all requests created between 'time_from' and
@@ -422,21 +474,55 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str) -> dict:
          time_from: the time from which requests should be fetched
          time_to: the time until which requests should be fetched
          status: the status of the requests that should be fetched
+         fetch_filter: a string representing all the field according to which the results that are being fetched should
+                       be filtered. Multiple fields, separated with a comma, can be used to filter. Every field should
+                       be in the following format: 'field-name condition field-value' where condition is the condition
+                       that this field should satisfy, for example 'is', 'is not', 'greater than' etc.
 
      Returns:
          A dictionary containing the list_info parameter that should be used for filtering the requests.
 
     """
-    list_info = {'search_criteria': [
-        {'field': 'created_time', 'values': [f'{time_from}', f'{time_to}'], 'condition': 'between'},
-        {'field': 'status.name', 'values': status.split(','), 'condition': 'is', 'logical_operator': 'AND'}],
-        'sort_field': 'created_time', 'sort_order': 'asc'}
-    return {'list_info': list_info}
+    try:
+        search_criteria = [{'field': 'created_time', 'values': [f'{time_from}', f'{time_to}'], 'condition': 'between'}]
+        if fetch_filter:
+            filters = ast.literal_eval(fetch_filter)
+            if isinstance(filters, dict):
+                query = {
+                    'field': filters.get('field'),
+                    'condition': filters.get('condition'),
+                    'values': filters.get('values', '').split(','),
+                    'logical_operator': filters.get('logical_operator', 'AND')
+                }
+                search_criteria.append(query)
+            else:
+                for filter in filters:
+                    query = {
+                        'field': filter.get('field'),
+                        'condition': filter.get('condition'),
+                        'values': filter.get('values', '').split(','),
+                        'logical_operator': filter.get('logical_operator', 'AND')
+                    }
+                    search_criteria.append(query)
+        else:
+            query = {'field': 'status.name', 'values': status.split(','), 'condition': 'is', 'logical_operator': 'AND'}
+            search_criteria.append(query)
+
+        list_info = {
+            'search_criteria': search_criteria,
+            'sort_field': 'created_time',
+            'sort_order': 'asc'
+        }
+        return {'list_info': list_info}
+    except:
+        return_error('Invalid input format. Please follow instructions for correct filter format.')
 
 
-def test_module(client=None):
+def test_module(client: Client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+    If 'Fetches incidents' is checked in the instance configurations, this function checks that the entered parameters
+    are valid.
 
     Args:
         client: Service Desk Plus client
@@ -444,12 +530,32 @@ def test_module(client=None):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    # todo: after adding fetch-incidents, test it here
     if not client.refresh_token:
         return_error('Please enter a refresh token (see detailed instruction (?) for more information)')
     try:
         client.http_request('GET', 'requests')
+
+        params: dict = demisto.params()
+
+        if params.get('isFetch'):
+            fetch_time = params.get('fetch_time', '1 day')
+            fetch_status = params.get('fetch_status', 'Open')
+            fetch_filter = params.get('fetch_filter')
+
+            date_format = '%Y-%m-%dT%H:%M:%S'
+            time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
+            time_to = date_to_timestamp(datetime.now(), date_format=date_format)
+            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter)
+            params = {'input_data': f'{list_info}'}
+            try:
+                client.get_requests(params=params).get('requests', [])
+            except Exception as e:
+                if 'Error in API call' in e.args[0]:
+                    raise DemistoException(f'Invalid input format. Please see instructions for correct filter format.'
+                                           f'\n\n{e.args[0]}')
+                raise e
         return 'ok'
+
     except Exception as e:
         raise e
 
@@ -494,7 +600,6 @@ def main():
                     refresh_token=params.get('refresh_token'))
 
     commands = {
-        # 'test-module': test_module,
         'service-desk-plus-generate-refresh-token': generate_refresh_token,
         'service-desk-plus-requests-list': list_requests_command,
         'service-desk-plus-request-delete': delete_request_command,
@@ -503,30 +608,31 @@ def main():
         'service-desk-plus-request-assign': assign_request_command,
         'service-desk-plus-request-pickup': pickup_request_command,
         'service-desk-plus-linked-request-list': linked_request_command,
+        'service-desk-plus-link-request-modify': modify_linked_request_command,
         'service-desk-plus-request-resolution-add': add_resolution_command,
         'service-desk-plus-request-resolutions-list': get_resolutions_list_command
     }
-
     command = demisto.command()
     LOG(f'Command being called is {command}')
 
     try:
-        if command == 'test-module':  # todo: move to commands
+        if command == 'test-module':
             demisto.results(test_module(client))
-        if command == "fetch-incidents":
+        elif command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')
             fetch_limit = params.get('fetch_limit', 10)
             fetch_status = params.get('fetch_status', 'Open')
+            fetch_filter = params.get('fetch_filter')
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),
-                                        status=fetch_status)
+                                        status=fetch_status, fetch_filter=fetch_filter)
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
             return_error('Command not found.')
     except Exception as e:
-        raise e
-        # return_error(f'Failed to execute {command} command. Error: {e}')
+        # raise e
+        return_error(f'Failed to execute {command} command. Error: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
