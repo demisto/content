@@ -16,7 +16,7 @@
     },
     "id": "570ec235-7ee4-43ea-8fc7-eba94a0cca71",
     "isPredefined": false,
-    "name": "Departing Employees Alerts",
+    "name": "Departing Employee Alerts",
     "params": {
         "tableColumns": [
             {
@@ -31,7 +31,7 @@
             }
 		]
     },
-    "query": "Code42GetDepartingEmployees",
+    "query": "Code42GetDepartingEmployeeAlerts",
     "size": 0,
     "sort": null,
     "sortValues": null,

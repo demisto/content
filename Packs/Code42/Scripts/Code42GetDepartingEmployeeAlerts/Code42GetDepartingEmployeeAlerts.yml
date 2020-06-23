@@ -8,7 +8,7 @@ dependson:
   - Code42|||code42-alerts-search
 dockerimage: demisto/py42:1.0.0.9242
 enabled: true
-name: Code42GetDepartingEmployees
+name: Code42GetDepartingEmployeeAlerts
 pswd: ""
 runas: DBotWeakRole
 runonce: false
