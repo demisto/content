@@ -572,6 +572,11 @@ def test_get_msg_mail_format():
     })
     assert format == ''
 
+    format = get_msg_mail_format({
+        'Headers': None
+    })
+    assert format == ''
+
 
 def test_no_content_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
