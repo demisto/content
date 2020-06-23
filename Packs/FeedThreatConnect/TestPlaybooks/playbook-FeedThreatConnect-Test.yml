@@ -1,6 +1,7 @@
 id: FeedThreatConnect-Test
 version: -1
 name: FeedThreatConnect-Test
+description: ""
 starttaskid: "0"
 tasks:
   "0":
