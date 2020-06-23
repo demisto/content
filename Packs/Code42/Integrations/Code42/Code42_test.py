@@ -522,6 +522,57 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
             "outsideTrustedDomainsTotalDomainCount": 1,
             "outsideTrustedDomainsTotalDomainCountTruncated": false
           }
+        },
+        {
+          "type$": "OBSERVATION",
+          "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+          "observedAt": "2020-06-11T20:20:00.0000000Z",
+          "type": "FedCloudSharePermissions",
+          "data": {
+            "type$": "OBSERVED_CLOUD_SHARE_ACTIVITY",
+            "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+            "sources": [
+              "GoogleDrive"
+            ],
+            "exposureTypes": [
+              "UnknownExposureTypeThatWeDontSupportYet"
+            ],
+            "firstActivityAt": "2020-06-11T20:20:00.0000000Z",
+            "lastActivityAt": "2020-06-11T20:25:00.0000000Z",
+            "fileCount": 1,
+            "totalFileSize": 182554405,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 1,
+                "totalFileSize": 182554405,
+                "isSignificant": false
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "14FnN9-YOhVUO_Tv8Mu-hEgevc2K4l07l_5_9e633ffd-9329-4cf4-8645-27a23b83ebc0",
+                "name": "Code42CrashPlan_8.0.0_1525200006800_778_Mac.dmg",
+                "category": "Archive",
+                "size": 182554405
+              }
+            ],
+            "outsideTrustedDomainsEmails": [
+              "user1@example.com"
+            ],
+            "outsideTrustedDomainsEmailsCount": 1,
+            "outsideTrustedDomainsCounts": [
+              {
+                "type$": "OBSERVED_DOMAIN_INFO",
+                "domain": "gmail.com",
+                "count": 1
+              }
+            ],
+            "outsideTrustedDomainsTotalDomainCount": 1,
+            "outsideTrustedDomainsTotalDomainCountTruncated": false
+          }
         }
       ]
     }
@@ -688,7 +739,7 @@ MOCK_OBSERVATION_QUERIES = [
         "groups": [
             {
                 "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "actor", "value": "user2@example.com"}],
+                "filters": [{"operator": "IS", "term": "actor", "value": "user1@example.com"}],
             },
             {
                 "filterClause": "AND",
@@ -696,7 +747,7 @@ MOCK_OBSERVATION_QUERIES = [
                     {
                         "operator": "ON_OR_AFTER",
                         "term": "eventTimestamp",
-                        "value": "2019-10-02T16:50:00.000Z",
+                        "value": "2020-06-11T20:20:00.000Z",
                     }
                 ],
             },
@@ -706,17 +757,12 @@ MOCK_OBSERVATION_QUERIES = [
                     {
                         "operator": "ON_OR_BEFORE",
                         "term": "eventTimestamp",
-                        "value": "2019-10-02T16:55:00.000Z",
+                        "value": "2020-06-11T20:25:00.000Z",
                     }
                 ],
             },
-            {
-                "filterClause": "OR",
-                "filters": [
-                    {"operator": "IS", "term": "exposure", "value": "IsPublic"},
-                    {"operator": "IS", "term": "exposure", "value": "SharedViaLink"},
-                ],
-            },
+            {"filterClause": "AND", "filters": []},
+            {"filterClause": "AND", "filters": []},
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -1051,10 +1097,12 @@ def test_map_observation_to_security_query():
     alert = response["alerts"][0]
     actor = alert["actor"]
     observations = alert["observations"]
-    first_actual = json.loads(str(map_observation_to_security_query(observations[0], actor)))
-    second_actual = json.loads(str(map_observation_to_security_query(observations[1], actor)))
-    assert first_actual == MOCK_OBSERVATION_QUERIES[0]
-    assert second_actual == MOCK_OBSERVATION_QUERIES[1]
+    actual_queries = [
+        json.loads(str(map_observation_to_security_query(o, actor))) for o in observations
+    ]
+    assert actual_queries[0] == MOCK_OBSERVATION_QUERIES[0]
+    assert actual_queries[1] == MOCK_OBSERVATION_QUERIES[1]
+    assert actual_queries[2] == MOCK_OBSERVATION_QUERIES[2]
 
 
 def test_map_to_code42_event_context():
