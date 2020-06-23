@@ -206,7 +206,7 @@ def slack_notifier(build_url, slack_token, container, build_type, env_results_fi
         if int(container):
             print_color(f'Starting Slack notifications about {build_type} build - unit tests', LOG_COLORS.GREEN)
             if is_sdk_nightly:
-                content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+                content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=is_sdk_nightly)
             else:
                 content_team_attachments = get_attachments_for_unit_test(build_url)
 
