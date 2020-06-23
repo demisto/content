@@ -122,7 +122,7 @@ script:
     description: Get availble indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: devdemisto/threatconnect-tcex:1.0.0.9570
+  dockerimage: demisto/threatconnect-tcex:1.0.0.9577
   feed: true
   isfetch: false
   longRunning: false
@@ -132,5 +132,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- FeedThreatConnect-Test
 fromversion: 5.5.0
