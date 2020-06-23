@@ -1,11 +1,13 @@
 import pytest
-
+import requests
+import requests_mock
 import demistomock as demisto
 
 integration_params = {
-    'port': '22',
+    'port': '443',
     'vsys': 'vsys1',
-    'server': '1.1.1.1'
+    'server': 'https://1.1.1.1',
+    'key': 'thisisabogusAPIKEY!'
 }
 
 
@@ -13,6 +15,32 @@ integration_params = {
 def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
 
+
+@pytest.fixture
+def patched_requests_mocker(requests_mock):
+    """
+    This function mocks various PANOS API responses so we can accurately mock the responses.
+    """
+
+    base_url = "{}:{}/api/".format(integration_params['server'], integration_params['port'])
+    # Version information
+    mock_version_xml = """
+    <response status = "success">
+        <result>
+            <sw-version>9.0.6</sw-version>
+            <multi-vsys>off</multi-vsys>
+            <model>Panorama</model>
+            <serial>FAKESERIALNUMBER</serial>
+        </result>
+    </response>
+    """
+    version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_params['key']) 
+    requests_mock.get(version_path, text=mock_version_xml, status_code=200)
+    return requests_mock
+
+def test_panoram_get_os_version(patched_requests_mocker):
+    from Panorama import get_pan_os_major_version
+    get_pan_os_major_version()
 
 def test_add_argument_list():
     from Panorama import add_argument_list
