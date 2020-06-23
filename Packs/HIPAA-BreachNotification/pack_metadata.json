@@ -1,0 +1,14 @@
+{
+    "name": "HIPAA - Breach Notification",
+    "description": "HIPAA (Health Insurance Portability and Accountability Act) is a binding regulation for organizations operating in the USA. This pack follows through with the notification procedures in case of PHI breach according to HIPAA requirements. The pack contains a playbook, incident type, layouts and incident fields. HIPAA breach notification incident and follows through with the notification procedures.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-06-03T08:25:53Z",
+    "categories": [],
+    "tags": ["HIPPA"],
+    "useCases": ["HIPPA Breach Notification", "Compliance"],
+    "keywords": []
+}
