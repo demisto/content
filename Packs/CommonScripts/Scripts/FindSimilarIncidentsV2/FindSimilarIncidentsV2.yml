@@ -149,5 +149,5 @@ type: python
 dockerimage: demisto/python:2.7.17.6981
 runonce: false
 tests:
-- dedup_-_generic_-_test
+- Dedup - Generic v2 - Test
 fromversion: 4.5.0

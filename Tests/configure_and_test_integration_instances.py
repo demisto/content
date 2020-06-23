@@ -13,10 +13,9 @@ from distutils.version import LooseVersion
 import demisto_client
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_last_release_version, checked_type, get_yaml, str2bool, server_version_compare
+    run_command, get_last_release_version, checked_type, get_yaml, str2bool, format_version
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
-
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager, \
@@ -86,10 +85,11 @@ def check_test_version_compatible_with_server(test, server_version, prints_manag
     Returns:
         (bool) True if test is compatible with server version or False otherwise.
     """
-    test_from_version = test.get('fromversion', '0.0.0')
-    test_to_version = test.get('toversion', '99.99.99')
-    if (server_version_compare(test_from_version, server_version) > 0
-            or server_version_compare(test_to_version, server_version) < 0):
+    test_from_version = format_version(test.get('fromversion', '0.0.0'))
+    test_to_version = format_version(test.get('toversion', '99.99.99'))
+    server_version = format_version(server_version)
+
+    if not (LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version)):
         warning_message = 'Test Playbook: {} was ignored in the content installation test due to version mismatch ' \
                           '(test versions: {}-{}, server version: {})'.format(test.get('playbookID'),
                                                                               test_from_version,
@@ -121,7 +121,7 @@ def filter_tests_with_incompatible_version(tests, server_version, prints_manager
     return filtered_tests
 
 
-def configure_integration_instance(integration, client, prints_manager):
+def configure_integration_instance(integration, client, prints_manager, placeholders_map):
     """
     Configure an instance for an integration
 
@@ -132,6 +132,8 @@ def configure_integration_instance(integration, client, prints_manager):
             The client to connect to
         prints_manager: (ParallelPrintsManager)
             Print manager object
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
 
     Returns:
         (dict): Configured integration instance
@@ -141,7 +143,7 @@ def configure_integration_instance(integration, client, prints_manager):
                                  print_color, 0, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(0)
     integration_instance_name = integration.get('instance_name', '')
-    integration_params = integration.get('params')
+    integration_params = change_placeholders_to_values(placeholders_map, integration.get('params'))
     is_byoi = integration.get('byoi', True)
     validate_test = integration.get('validate_test', True)
 
@@ -158,7 +160,7 @@ def configure_integration_instance(integration, client, prints_manager):
         prints_manager.execute_thread_prints(0)
         return None
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
-                                                          integration_instance_name, is_byoi)
+                                                          integration_instance_name, is_byoi, client, prints_manager)
     return module_instance
 
 
@@ -273,7 +275,25 @@ def get_content_version_details(client, ami_name, prints_manager, thread_index):
     return result_object.get('release', ''), result_object.get('assetId', 0)
 
 
-def set_integration_params(integrations, secret_params, instance_names):
+def change_placeholders_to_values(placeholders_map, config_item):
+    """Replaces placeholders in the object to their real values
+
+    Args:
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
+        config_item: (json object)
+            Integration configuration object.
+
+    Returns:
+        dict. json object with the real configuration.
+    """
+    item_as_string = json.dumps(config_item)
+    for key, value in placeholders_map.items():
+        item_as_string = item_as_string.replace(key, value)
+    return json.loads(item_as_string)
+
+
+def set_integration_params(integrations, secret_params, instance_names, placeholders_map):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -294,12 +314,15 @@ def set_integration_params(integrations, secret_params, instance_names):
         instance_names: (list)
             The names of particular instances of an integration to use the secret_params of as the
             configuration values.
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
 
     Returns:
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
     for integration in integrations:
-        integration_params = [item for item in secret_params if item['name'] == integration['name']]
+        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+                              in secret_params if item['name'] == integration['name']]
 
         if integration_params:
             matched_integration_params = integration_params[0]
@@ -370,8 +393,48 @@ def set_module_params(param_conf, integration_params):
     return param_conf
 
 
+def __set_server_keys(client, prints_manager, integration_params, integration_name):
+    """Adds server configuration keys using the demisto_client.
+
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object.
+        integration_params (dict): The values to use for an integration's parameters to configure an instance.
+        integration_name (str): The name of the integration which the server configurations keys are related to.
+
+    """
+    if 'server_keys' not in integration_params:
+        return
+
+    prints_manager.add_print_job(f'Setting server keys for integration: {integration_name}',
+                                 print_color, 0, LOG_COLORS.GREEN)
+
+    data = {
+        'data': {},
+        'version': -1
+    }
+
+    for key, value in integration_params.get('server_keys').items():
+        data['data'][key] = value
+
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                                        method='POST', body=data)
+
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error(
+            'failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return
+
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = "Failed to set server keys " + str(status_code) + '\n' + message
+        print_error(msg)
+
+
 def set_integration_instance_parameters(integration_configuration, integration_params, integration_instance_name,
-                                        is_byoi):
+                                        is_byoi, client, prints_manager):
     """Set integration module values for integration instance creation
 
     The integration_configuration and integration_params should match, in that
@@ -390,6 +453,10 @@ def set_integration_instance_parameters(integration_configuration, integration_p
             provided in the conf.json
         is_byoi: (bool)
             If the integration is byoi or not
+        client: (demisto_client)
+            The client to connect to
+        prints_manager: (ParallelPrintsManager)
+            Print manager object
 
     Returns:
         (dict): The configured module instance to send to the Demisto server for
@@ -399,8 +466,11 @@ def set_integration_instance_parameters(integration_configuration, integration_p
     if not module_configuration:
         module_configuration = []
 
-    instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'),
-                                        str(uuid.uuid4()))
+    if 'integrationInstanceName' in integration_params:
+        instance_name = integration_params['integrationInstanceName']
+    else:
+        instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
+
     # define module instance
     module_instance = {
         'brand': integration_configuration['name'],
@@ -415,6 +485,9 @@ def set_integration_instance_parameters(integration_configuration, integration_p
         'passwordProtected': False,
         'version': 0
     }
+
+    # set server keys
+    __set_server_keys(client, prints_manager, integration_params, integration_configuration['name'])
 
     # set module params
     for param_conf in module_configuration:
@@ -599,7 +672,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         testing_status = False
         failure_category = '\nIntegration instances that had ("Test" Button) failures' \
                            ' only after content was updated. This indicates that your' \
-                           'updates introduced breaking changes to the integration.'
+                           ' updates introduced breaking changes to the integration.'
         prints_manager.add_print_job(failure_category, print_error, 0)
         for instance_name, integration_of_instance in failed_only_after_update:
             prints_manager.add_print_job(
@@ -784,9 +857,11 @@ def main():
 
         # set params for new integrations and [modified + unchanged] integrations, then add the new ones
         # to brand_new_integrations list for later use
-        new_ints_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf)
+        placeholders_map = {'%%SERVER_HOST%%': servers[0]}
+        new_ints_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf,
+                                                     placeholders_map)
         ints_to_configure_params_set = set_integration_params(integrations_to_configure, secret_params,
-                                                              instance_names_conf)
+                                                              instance_names_conf, placeholders_map)
         if not new_ints_params_set:
             prints_manager.add_print_job(
                 'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
@@ -802,7 +877,9 @@ def main():
 
         module_instances = []
         for integration in integrations_to_configure:
-            module_instance = configure_integration_instance(integration, testing_client, prints_manager)
+            placeholders_map = {'%%SERVER_HOST%%': servers[0]}
+            module_instance = configure_integration_instance(integration, testing_client, prints_manager,
+                                                             placeholders_map)
             if module_instance:
                 module_instances.append(module_instance)
 
@@ -833,7 +910,7 @@ def main():
         prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
         # If there is a failure, __test_integration_instance will print it
-        success = __test_integration_instance(testing_client, instance, prints_manager)
+        success, _ = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
@@ -858,7 +935,9 @@ def main():
     # configure instances for new integrations
     new_integration_module_instances = []
     for integration in brand_new_integrations:
-        new_integration_module_instance = configure_integration_instance(integration, testing_client, prints_manager)
+        placeholders_map = {'%%SERVER_HOST%%': servers[0]}
+        new_integration_module_instance = configure_integration_instance(integration, testing_client, prints_manager,
+                                                                         placeholders_map)
         if new_integration_module_instance:
             new_integration_module_instances.append(new_integration_module_instance)
 
@@ -883,7 +962,7 @@ def main():
         prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
         prints_manager.execute_thread_prints(0)
         # If there is a failure, __test_integration_instance will print it
-        success = __test_integration_instance(testing_client, instance, prints_manager)
+        success, _ = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
