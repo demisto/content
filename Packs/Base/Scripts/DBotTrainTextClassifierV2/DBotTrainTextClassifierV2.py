@@ -264,8 +264,8 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
         else:
             err += ['The following labels were not mapped to any label in the labels mapping:']
             err += [', '.join(missing_labels_counter)]
-            not_found_mapped_label = [label for label in labels_mapping if label not in exist_labels_counter
-                                      or exist_labels_counter[label] == 0]
+            not_found_mapped_label = [label_map for label_map in labels_mapping if label_map not in exist_labels_counter
+                                      or exist_labels_counter[label_map] == 0]
             if len(not_found_mapped_label) > 0:
                 miss = ', '.join(not_found_mapped_label)
                 err += ['Notice that the following mapped labels were not found among all incidents: {}.'.format(miss)]
