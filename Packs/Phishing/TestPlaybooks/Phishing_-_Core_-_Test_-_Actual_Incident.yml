@@ -1,0 +1,561 @@
+id: Phishing - Core - Test - Actual Incident
+version: -1
+fromversion: 6.0.0
+name: Phishing - Core - Test - Actual Incident
+description: This playbooks runs on an incident of type Phishing.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 407687de-eb47-4604-86d9-c8f1ba3d3beb
+    type: start
+    task:
+      id: 407687de-eb47-4604-86d9-c8f1ba3d3beb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9a9d96a6-5185-45cf-848d-7b6e60c5b82d
+    type: title
+    task:
+      id: 9a9d96a6-5185-45cf-848d-7b6e60c5b82d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: a2a3b569-ae78-4001-8577-126cadb36903
+    type: regular
+    task:
+      id: a2a3b569-ae78-4001-8577-126cadb36903
+      version: -1
+      name: Close manual review in the new incident
+      description: ""
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      command:
+        simple: '!CompleteManualTask id=${CreatedIncidentID}'
+      cron:
+        simple: '*/1 * * * *'
+      endDate: {}
+      times:
+        simple: "20"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: cda6af61-d5bb-4b19-8892-afb72ac3bf3e
+    type: regular
+    task:
+      id: cda6af61-d5bb-4b19-8892-afb72ac3bf3e
+      version: -1
+      name: Delete Context
+      description: ""
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c7098568-5222-46ae-8434-d614746c04c4
+    type: regular
+    task:
+      id: c7098568-5222-46ae-8434-d614746c04c4
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "24"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: attachment.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/attachment_malicious_url.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: c26250f1-6c0b-493a-8790-42e5daf1890f
+    type: regular
+    task:
+      id: c26250f1-6c0b-493a-8790-42e5daf1890f
+      version: -1
+      name: Create malicious URL indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mitreexternalreferences: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type:
+        simple: URL
+      updateddate: {}
+      username: {}
+      value:
+        simple: http://www.desktop-style.de
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: b10d0223-c3ed-4755-82a4-4788d5a0c2b5
+    type: regular
+    task:
+      id: b10d0223-c3ed-4755-82a4-4788d5a0c2b5
+      version: -1
+      name: Set phishing incident fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      country: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicename: {}
+      duration: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom:
+        simple: test@demistodev.com
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject:
+        simple: Hello! This is not the phishing one.
+      emailto:
+        simple: admin@demistodev.com
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      eventid: {}
+      eventtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      labels:
+        simple: '[{"Email/from":"test@demistodev.com"}, {"Email/to": "admin@demistodev.com"}]'
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      name: {}
+      occurred: {}
+      os: {}
+      owner: {}
+      parentprocessid: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      protocol: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subtype: {}
+      systems: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 5ef5eb15-c6bd-4864-8ffa-3dc052f35528
+    type: playbook
+    task:
+      id: 5ef5eb15-c6bd-4864-8ffa-3dc052f35528
+      version: -1
+      name: Phishing - Core
+      description: |-
+        Provides a basic response to phishing incidents. Playbook features:
+        - Calculates reputation for all indicators
+        - Extracts indicators from email attachments
+        - Calculates severity for the incident based on indicator reputation
+        - Updates reporting user about investigation status
+        - Allows manual remediation of the incident
+      playbookName: Phishing - Core
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      GetURLScreenshots:
+        simple: "True"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 475,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1060,
+        "width": 805,
+        "x": 50,
+        "y": -140
+      }
+    }
+  }
+inputs: []
+outputs: []

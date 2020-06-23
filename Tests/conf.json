@@ -1894,7 +1894,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Phishing v2 Test - Attachment - Incident Starter",
+            "playbookID": "Phishing v2 - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1200,
             "nightly": true,
@@ -1902,7 +1902,18 @@
                 "EWS Mail Sender",
                 "Have I Been Pwned? V2",
                 "Demisto REST API",
-                "Palo Alto Minemeld",
+                "Rasterize"
+            ]
+        },
+                {
+            "playbookID": "Phishing - Core - Test - Incident Starter",
+            "fromversion": "6.0.0",
+            "timeout": 1700,
+            "nightly": true,
+            "integrations": [
+                "EWS Mail Sender",
+                "Have I Been Pwned? V2",
+                "Demisto REST API",
                 "Rasterize"
             ]
         },
@@ -2045,17 +2056,6 @@
             "integrations": ["epo", "McAfee Active Response"],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
-        },
-        {
-            "playbookID": "Phishing - Core - Test",
-            "integrations": [
-                "EWS Mail Sender",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ],
-            "fromversion": "4.5.0",
-            "timeout": 1700
         },
         {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
