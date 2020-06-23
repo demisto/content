@@ -12,6 +12,7 @@ from Code42 import (
     map_to_file_context,
     alert_get_command,
     alert_resolve_command,
+    alert_search_command,
     departingemployee_add_command,
     departingemployee_remove_command,
     departingemployee_get_all_command,
@@ -992,6 +993,12 @@ def test_alert_resolve_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
     _, _, res = alert_resolve_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
     assert res["id"] == "36fb8ca5-0533-4d25-9763-e09d35d60610"
+
+
+def test_alert_search_command(code42_alerts_mock):
+    client = create_client(code42_alerts_mock)
+    _, _, res = alert_search_command(client, {"username": "user1@example.com"})
+    assert res == json.loads(MOCK_ALERTS_RESPONSE)["alerts"]
 
 
 def test_departingemployee_add_command(code42_sdk_mock):
