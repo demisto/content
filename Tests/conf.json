@@ -3172,6 +3172,9 @@
             },
             "demisto/google-k8s-engine:1.0.0.9467": {
                 "pid_threshold": 11
+            },
+            "devdemisto/threatconnect-tcex:1.0.0.9570": {
+                "pid_threshold": 11
             }
         }
     }
