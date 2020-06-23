@@ -1894,7 +1894,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Phishing v2 Test - Attachment",
+            "playbookID": "Phishing v2 Test - Attachment - Incident Starter",
             "timeout": 1200,
             "nightly": true,
             "integrations": [
@@ -1906,7 +1906,7 @@
             ]
         },
         {
-            "playbookID": "Phishing v2 Test - Inline",
+            "playbookID": "Phishing v2 Test - Attachment - Real",
             "timeout": 1200,
             "nightly": true,
             "integrations": [

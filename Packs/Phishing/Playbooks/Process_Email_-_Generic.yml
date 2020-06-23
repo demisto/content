@@ -1135,7 +1135,6 @@ tasks:
       unpack_nested_elements:
         simple: "true"
     reputationcalc: 3
-    continueonerror: true
     separatecontext: false
     view: |-
       {
