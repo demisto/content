@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2a61000b-48d7-443f-80ec-c403b1777347
+    taskid: c8f1b369-9ce7-46b3-895e-c0926762f118
     type: start
     task:
-      id: 2a61000b-48d7-443f-80ec-c403b1777347
+      id: c8f1b369-9ce7-46b3-895e-c0926762f118
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 15afee65-dc02-43f9-8a0a-2dd7cf4176cb
+    taskid: 3f22ab71-1b4b-4831-8f23-af5a0e9982e8
     type: regular
     task:
-      id: 15afee65-dc02-43f9-8a0a-2dd7cf4176cb
+      id: 3f22ab71-1b4b-4831-8f23-af5a0e9982e8
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -63,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: b29a8840-a5a1-40bc-82da-7661532956b2
+    taskid: eb4615d0-ed33-4683-8e4b-748b2fd13e69
     type: regular
     task:
-      id: b29a8840-a5a1-40bc-82da-7661532956b2
+      id: eb4615d0-ed33-4683-8e4b-748b2fd13e69
       version: -1
       name: Unregister IP from tag
       description: Unregisters IP addresses from a tag
@@ -76,7 +76,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "17"
     scriptarguments:
       IPs:
         simple: ${inputs.ip}
@@ -95,10 +95,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a32ae424-1938-4ef2-8ee6-d9b8f7b46b9a
+    taskid: 2e503cf3-d0da-480f-872c-4c103e883c74
     type: regular
     task:
-      id: a32ae424-1938-4ef2-8ee6-d9b8f7b46b9a
+      id: 2e503cf3-d0da-480f-872c-4c103e883c74
       version: -1
       name: Delete address group
       description: Deletes an address group
@@ -118,40 +118,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: f05c342b-1eca-4e82-84b6-180d071a276c
-    type: regular
-    task:
-      id: f05c342b-1eca-4e82-84b6-180d071a276c
-      version: -1
-      name: delete 'from' rule
-      description: Deletes a policy rule
-      script: '|||panorama-delete-rule'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      pre_post:
-        simple: pre-rulebase
-      rulename:
-        simple: ${inputs.rule_name}-from
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "y": 725
         }
       }
     note: false
@@ -159,10 +126,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: c55cde05-0208-4286-8221-6437cb861739
+    taskid: 18c1e60a-cf71-4825-8a61-dbd9ff7d8995
     type: regular
     task:
-      id: c55cde05-0208-4286-8221-6437cb861739
+      id: 18c1e60a-cf71-4825-8a61-dbd9ff7d8995
       version: -1
       name: Get address group
       description: Get details for the specified address group
@@ -182,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1230
         }
       }
     note: false
@@ -190,10 +157,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 0eaed7c0-d5eb-495c-86e2-7727be50b806
+    taskid: 4f308b30-e348-4796-87ea-4ceeda248c45
     type: condition
     task:
-      id: 0eaed7c0-d5eb-495c-86e2-7727be50b806
+      id: 4f308b30-e348-4796-87ea-4ceeda248c45
       version: -1
       name: check if address group does not exist
       type: condition
@@ -219,7 +186,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1405
         }
       }
     note: false
@@ -227,10 +194,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: a6b35b49-1dbc-4d69-8d56-efa0b363bdd6
+    taskid: 906d9486-da54-4e8f-888e-23432c66cad9
     type: title
     task:
-      id: a6b35b49-1dbc-4d69-8d56-efa0b363bdd6
+      id: 906d9486-da54-4e8f-888e-23432c66cad9
       version: -1
       name: Done
       type: title
@@ -241,7 +208,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3080
         }
       }
     note: false
@@ -249,10 +216,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: feae7714-eb8f-4072-807e-9136ae373793
+    taskid: 31adb11f-ccdb-4eae-8e8d-15a65cd6ab32
     type: regular
     task:
-      id: feae7714-eb8f-4072-807e-9136ae373793
+      id: 31adb11f-ccdb-4eae-8e8d-15a65cd6ab32
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -262,7 +229,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "23"
     scriptarguments:
       all:
         simple: "yes"
@@ -275,7 +242,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1970
         }
       }
     note: false
@@ -283,10 +250,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 68f5a128-4443-40d8-839c-68597c4996c6
+    taskid: eb3cbd72-c119-4c6e-8db0-58e1da1a8cb8
     type: regular
     task:
-      id: 68f5a128-4443-40d8-839c-68597c4996c6
+      id: eb3cbd72-c119-4c6e-8db0-58e1da1a8cb8
       version: -1
       name: Get address group
       description: Get details for the specified address group
@@ -305,7 +272,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2320
         }
       }
     note: false
@@ -313,10 +280,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: bdfd51c8-25b6-45ec-815c-46cf0de490f5
+    taskid: 7cd5849f-8c62-45ef-8257-807ad8499006
     type: condition
     task:
-      id: bdfd51c8-25b6-45ec-815c-46cf0de490f5
+      id: 7cd5849f-8c62-45ef-8257-807ad8499006
       version: -1
       name: Check if address group exist
       type: condition
@@ -351,7 +318,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2495
         }
       }
     note: false
@@ -359,10 +326,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: b80be511-9f8f-4316-82f0-c27e6f70b668
+    taskid: 57d3f381-da8c-46ba-87c3-c284e2f44d94
     type: regular
     task:
-      id: b80be511-9f8f-4316-82f0-c27e6f70b668
+      id: 57d3f381-da8c-46ba-87c3-c284e2f44d94
       version: -1
       name: Get Rules
       description: Returns a list of predefined Security Rules.
@@ -382,7 +349,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1600
         }
       }
     note: false
@@ -390,10 +357,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: df346ece-16d1-4d56-8b0e-b2de599c5254
+    taskid: e3e9df9d-1fcf-4f43-85d5-72c367ad4315
     type: condition
     task:
-      id: df346ece-16d1-4d56-8b0e-b2de599c5254
+      id: e3e9df9d-1fcf-4f43-85d5-72c367ad4315
       version: -1
       name: Check the rule does not exist
       type: condition
@@ -419,7 +386,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1775
         }
       }
     note: false
@@ -427,10 +394,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 196bb267-5b16-45e5-807e-f99430704363
+    taskid: 8cf5f7c3-b2ef-4914-8b91-4971a58d5eaf
     type: regular
     task:
-      id: 196bb267-5b16-45e5-807e-f99430704363
+      id: 8cf5f7c3-b2ef-4914-8b91-4971a58d5eaf
       version: -1
       name: Get Rules
       description: Returns a list of predefined Security Rules.
@@ -449,7 +416,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2810
+          "y": 2670
         }
       }
     note: false
@@ -457,10 +424,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 0d067504-341c-42ba-8e7c-827fad627391
+    taskid: 726770ec-bd4b-4db7-89c7-770f6378174c
     type: condition
     task:
-      id: 0d067504-341c-42ba-8e7c-827fad627391
+      id: 726770ec-bd4b-4db7-89c7-770f6378174c
       version: -1
       name: Check if the rule defined
       type: condition
@@ -486,7 +453,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2855
         }
       }
     note: false
@@ -494,12 +461,12 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: e5c1788e-151d-430f-86c8-f6cfa2d754b0
+    taskid: 2054b0e1-acf2-48af-8e4e-f5bb287d4991
     type: regular
     task:
-      id: e5c1788e-151d-430f-86c8-f6cfa2d754b0
+      id: 2054b0e1-acf2-48af-8e4e-f5bb287d4991
       version: -1
-      name: delete 'to' rule
+      name: delete rule
       description: Deletes a policy rule
       script: '|||panorama-delete-rule'
       type: regular
@@ -509,17 +476,18 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      device-group: {}
       pre_post:
         simple: pre-rulebase
       rulename:
-        simple: ${inputs.rule_name}-to
+        simple: ${inputs.rule_name}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 550
         }
       }
     note: false
@@ -527,13 +495,13 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 1fe6261b-b1d3-4590-8c0a-1410deb44cff
+    taskid: cd9e7821-44f9-481b-8871-d4d4c3c897e7
     type: playbook
     task:
-      id: 1fe6261b-b1d3-4590-8c0a-1410deb44cff
+      id: cd9e7821-44f9-481b-8871-d4d4c3c897e7
       version: -1
       name: PAN-OS Commit Configuration
-      playbookId: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
       brand: ""
@@ -545,7 +513,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 900
         }
       }
     note: false
@@ -553,10 +521,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 99878968-df56-4013-878a-44a7acc4eca1
+    taskid: 8e0e584d-eff0-4b41-88e6-f70febd2e0a0
     type: regular
     task:
-      id: 99878968-df56-4013-878a-44a7acc4eca1
+      id: 8e0e584d-eff0-4b41-88e6-f70febd2e0a0
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -579,21 +547,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1065
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: f699dfcc-56d0-4ab6-855d-b7b4ce9d6101
+  "23":
+    id: "23"
+    taskid: 3aff2f5d-840c-4afb-845b-2641a3472038
     type: playbook
     task:
-      id: f699dfcc-56d0-4ab6-855d-b7b4ce9d6101
+      id: 3aff2f5d-840c-4afb-845b-2641a3472038
       version: -1
       name: PAN-OS DAG Configuration
-      description: ""
       playbookName: PAN-OS DAG Configuration
       type: playbook
       iscommand: false
@@ -605,24 +572,28 @@ tasks:
       action-type:
         simple: drop
       address_group_name:
-        simple: DavidAG5
+        complex:
+          root: inputs.address_group
       auto_commit:
         simple: "Yes"
+      device-group: {}
       inbound-or-outbound-rule:
         simple: outbound
       ip_list:
-        simple: 192.168.1.12
+        complex:
+          root: inputs.ip
       log-forwarding-object-name: {}
       pre-post-rulebase:
         simple: pre-rulebase
-      relative-rule-name:
-        simple: pan-os-edl-test-edl-rule
+      relative-rule-name: {}
       rule-position:
-        simple: before
+        simple: bottom
       rule_name:
-        simple: meshi-rule
+        complex:
+          root: inputs.rule_name
       tag_name:
-        simple: DavidTag5
+        complex:
+          root: inputs.tag_name
     separatecontext: true
     loop:
       iscommand: false
@@ -632,7 +603,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2285
+          "y": 2140
         }
       }
     note: false
@@ -643,7 +614,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3185,
+        "height": 3095,
         "width": 380,
         "x": 50,
         "y": 50
@@ -653,22 +624,22 @@ view: |-
 inputs:
 - key: tag_name
   value:
-    simple: dag_test_tag
+    simple: dag_test_tag2
   required: false
   description: ""
 - key: rule_name
   value:
-    simple: dag_test_rule
+    simple: dag_test_rule2
   required: false
   description: ""
 - key: address_group
   value:
-    simple: dag_test_ag
+    simple: dag_test_ag2
   required: false
   description: ""
 - key: ip
   value:
-    simple: 9.9.9.9
+    simple: 7.7.7.7
   required: false
   description: ""
 outputs: []

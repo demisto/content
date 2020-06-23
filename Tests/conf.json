@@ -2,9 +2,15 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-        {
+	{
             "integrations": "Humio",
             "playbookID": "Humio-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Group-IB TDS Polygon",
+            "playbookID": "Polygon-Test",
+            "timeout": 1000,
             "fromversion": "5.0.0"
         },
         {
@@ -98,6 +104,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GoogleKubernetesEngine",
+            "playbookID": "GoogleKubernetesEngine_Test",
+            "timeout": 1200,
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -158,6 +170,11 @@
             "integrations": "AWS Feed",
             "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "QuestKace",
+            "playbookID": "QuestKace test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Digital Defense FrontlineVM",
@@ -326,7 +343,7 @@
             "integrations": "Cortex XDR - IOC",
             "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 600
+            "timeout": 1000
         },
         {
             "integrations": "Cloaken",
@@ -582,7 +599,7 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID": "test playbook - QRadarCorreltaions",
+            "playbookID" :  "test playbook - QRadarCorreltaions",
             "timeout": 600,
             "fromversion": "5.0.0"
         },
@@ -739,10 +756,7 @@
         },
         {
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
-            "integrations": [
-                "Panorama",
-                "palo_alto_networks_pan_os_edl_management"
-            ],
+            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
             "fromversion": "4.0.0"
         },
@@ -2038,10 +2052,7 @@
             ]
         },
         {
-            "integrations": [
-                "epo",
-                "McAfee Active Response"
-            ],
+            "integrations": ["epo", "McAfee Active Response"],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
         },
@@ -2056,11 +2067,7 @@
             "fromversion": "4.5.0",
             "timeout": 1700
         },
-        {
-            "integrations": [
-                "epo",
-                "McAfee Active Response"
-            ],
+        {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
         },
@@ -2153,21 +2160,18 @@
         {
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
+            "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1000
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
-            "integrations": [
-                "Panorama",
-                "palo_alto_networks_pan_os_edl_management"
-            ],
+            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
             "timeout": 1000
         },
@@ -2695,6 +2699,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List Events - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
@@ -2818,10 +2827,7 @@
             "playbookID": "IBM Resilient Systems Test"
         },
         {
-            "integrations": [
-                "Prisma Access",
-                "Prisma Access Egress IP feed"
-            ],
+            "integrations": ["Prisma Access", "Prisma Access Egress IP feed"],
             "playbookID": "Prisma_Access_Egress_IP_Feed-Test",
             "timeout": 60000,
             "fromversion": "5.5.0",
@@ -2861,13 +2867,17 @@
             "integrations": "Workday",
             "playbookID": "Workday - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Zoom Feed",
+            "playbookID": "FeedZoom_Test",
+            "fromversion": "5.5.0"
         }
+
     ],
     "skipped_tests": {
         "CuckooTest": "Issue 25601",
-        "Cortex XDR - IOC - Test": "Issue 25598",
         "RedLockTest": "Issue 24600",
-        "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
         "SignalSciences-Test": "Issue 24934",
@@ -2887,7 +2897,6 @@
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "PAN-OS Create Or Edit Rule Test": "Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -2901,7 +2910,6 @@
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
-        "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
@@ -2914,6 +2922,7 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
+
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
     },
@@ -2939,6 +2948,7 @@
         "Moloch": "No instance",
         "Twilio": "No instance",
         "Zendesk": "No instance",
+        "google-vault": "Issue 25798",
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
@@ -2966,6 +2976,7 @@
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "Silverfort": "contribution",
+        "Nozomi_Guardian": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
@@ -3008,10 +3019,12 @@
         "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "VxStream": "Issue #23795",
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "VirusTotal - Private API": "Issue 22638",
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "JsonWhoIs": "Issue 25371: Out of quota",
@@ -3023,13 +3036,16 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "reached out our monthly quota (08/03/2020)",
+
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-        "_comment5": "~~~ OTHER ~~~",
+
+
+         "_comment5": "~~~ OTHER ~~~",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
@@ -3133,7 +3149,8 @@
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
-        "MongoDB Key Value Store": "Our instance not using SSL"
+        "MongoDB Key Value Store": "Our instance not using SSL",
+        "GoogleKubernetesEngine": "SDK"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
@@ -3145,6 +3162,9 @@
                 "memory_threshold": 150
             },
             "demisto/pytan": {
+                "pid_threshold": 11
+            },
+            "demisto/google-k8s-engine:1.0.0.9467": {
                 "pid_threshold": 11
             }
         }
