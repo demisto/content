@@ -727,7 +727,6 @@ MOCK_OBSERVATION_QUERIES = [
                     {"operator": "IS", "term": "exposure", "value": "OutsideTrustedDomains"}
                 ],
             },
-            {"filterClause": "AND", "filters": []},
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -761,8 +760,6 @@ MOCK_OBSERVATION_QUERIES = [
                     }
                 ],
             },
-            {"filterClause": "AND", "filters": []},
-            {"filterClause": "AND", "filters": []},
         ],
         "pgNum": 1,
         "pgSize": 10000,

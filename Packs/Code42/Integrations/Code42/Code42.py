@@ -347,6 +347,12 @@ class ObservationToSecurityQueryMapper(object):
     _PUBLIC_LINK = "PublicLinkShare"
     _OUTSIDE_TRUSTED_DOMAINS = "SharedOutsideTrustedDomain"
 
+    exposure_type_map = {
+        "PublicSearchableShare": ExposureType.IS_PUBLIC,
+        "PublicLinkShare": ExposureType.SHARED_VIA_LINK,
+        "SharedOutsideTrustedDomain": "OutsideTrustedDomains"
+    }
+
     def __init__(self, observation, actor):
         self._obs = observation
         self._actor = actor
@@ -394,18 +400,19 @@ class ObservationToSecurityQueryMapper(object):
 
         return filters
 
+    @logger
     def _create_exposure_filters(self, exposure_types):
         """Determine exposure types based on alert type"""
-
+        exp_types = []
         if self._is_cloud_exfiltration:
-            exp_types = []
-            if self._PUBLIC_SEARCHABLE in exposure_types:
-                exp_types.append(ExposureType.IS_PUBLIC)
-            if self._PUBLIC_LINK in exposure_types:
-                exp_types.append(ExposureType.SHARED_VIA_LINK)
-            if self._OUTSIDE_TRUSTED_DOMAINS in exposure_types:
-                exp_types.append("OutsideTrustedDomains")
-            return [ExposureType.is_in(exp_types)]
+            for t in exposure_types:
+                exp_type = self.exposure_type_map.get(t)
+                if exp_type:
+                    exp_types.append(exp_type)
+                else:
+                    LOG("Received unsupported exposure type {0}.".format(t))
+            if exp_types:
+                return [ExposureType.is_in(exp_types)]
         elif self._is_endpoint_exfiltration:
             return [
                 EventType.is_in([EventType.CREATED, EventType.MODIFIED, EventType.READ_BY_APP]),
