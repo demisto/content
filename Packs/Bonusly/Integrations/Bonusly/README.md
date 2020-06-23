@@ -1,5 +1,15 @@
 ## Overview
 
+Bonus.ly is an employee recognition platform which enterprises use to for employee recognition. We're building tools to help people feel a sense of purpose and progress at work. The platform which also has an API enables employees to recognize each other by providing a point based bonus system. Bonus.ly helps your employees feel connected, engaged, and aligned is mission critical right now. Bonusly makes employee recognition easy and fun, fostering community and creating company-wide alignment. It also provides employees with positive feedback in the work that they are doing. 
+
+Use Cases
+Automate a bonus.ly when an employee completes an incident within the SLA time period. 
+Allow for command line bonus.ly recognitions
+Commands for bonuses like create, retrieve, update, delete
+IAM (I don’t have a admin key access at this time) 
+IAM CRUD Users / Companies
+
+
 
 ## Configure Bonusly on Cortex XSOAR
 

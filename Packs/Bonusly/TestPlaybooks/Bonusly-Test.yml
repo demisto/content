@@ -3,6 +3,7 @@ name: Bonusly-Test
 version: -1
 fromversion: 4.5.0
 starttaskid: '0'
+description: 'Test Playbook'
 tasks:
   '0':
     id: '0'
@@ -31,7 +32,7 @@ tasks:
       id: '1'
       version: -1
       name: DeleteContext
-      description: ''
+      description: 'Deletes Context'
       script: DeleteContext
       type: regular
       iscommand: true
