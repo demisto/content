@@ -3,6 +3,7 @@ import os
 import re
 import argparse
 import requests
+from circleci.api import Api as circle_api
 
 from slackclient import SlackClient
 
@@ -10,6 +11,28 @@ from demisto_sdk.commands.common.tools import str2bool, run_command, LOG_COLORS,
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
+
+
+def get_faild_steps_list():
+    options = options_handler()
+    failed_steps_list = []
+    circle_client = circle_api(options.circleci)
+    vcs_type = 'github'
+    build_report = circle_client.get_build_info(username='demisto', project='content', build_num=options.buildNumber,
+                                                vcs_type=vcs_type)
+    for step in build_report.get('steps', ''):
+        step_name = step.get('name', '')
+        actions = step.get('actions', [])
+        for action in actions:
+            action_status = action.get('status', '')
+            if action_status and action_status == 'failed':
+                action_name = action.get('name', '')
+                if action_name != step_name:
+                    failed_steps_list.append(f'* {step_name}: {action_name}')
+                else:
+                    failed_steps_list.append(f'* {step_name}')
+
+    return failed_steps_list
 
 
 def http_request(url, params_dict=None, verify=True, text=False):
@@ -42,24 +65,28 @@ def options_handler():
     return options
 
 
-def get_failing_entities_file_data(report_file_name):
+def get_failing_unit_tests_file_data():
     try:
-        failing_entities_list = None
-        file_name = f'./artifacts/{report_file_name}.txt'
+        failing_ut_list = None
+        file_name = './artifacts/failed_lint_report.txt'
         if os.path.isfile(file_name):
-            print(f'Extracting {report_file_name}')
-            with open(file_name, 'r') as failed_entities_file:
-                failing_entity = failed_entities_file.readlines()
-                failing_entities_list = [line.strip('\n') for line in failing_entity]
+            print('Extracting lint_report')
+            with open(file_name, 'r') as failed_unittests_file:
+                failing_ut = failed_unittests_file.readlines()
+                failing_ut_list = [line.strip('\n') for line in failing_ut]
         else:
-            print(f'Did not find {report_file_name}.txt file')
+            print('Did not find failed_lint_report.txt file')
     except Exception as err:
-        print_error(f'Error getting {report_file_name}.txt file: \n {err}')
-    return failing_entities_list
+        print_error(f'Error getting failed_lint_report.txt file: \n {err}')
+    return failing_ut_list
 
 
-def get_entities_fields(report_file_name, entity_title):
-    failed_entities = get_failing_entities_file_data(report_file_name)
+def get_entities_fields(entity_title, report_file_name=''):
+    failed_entities = []
+    if 'lint' in report_file_name:  # lint case
+        failed_entities = get_failing_unit_tests_file_data()
+    else:
+        failed_entities = get_faild_steps_list()
     entity_fields = []
     if failed_entities:
         entity_fields.append({
@@ -71,7 +98,7 @@ def get_entities_fields(report_file_name, entity_title):
 
 
 def get_attachments_for_unit_test(build_url, is_sdk_build=False):
-    unittests_fields = get_entities_fields(report_file_name="failed_lint_report", entity_title="Failed Unittests")
+    unittests_fields = get_entities_fields(entity_title="Failed Unittests", report_file_name="failed_lint_report")
     color = 'good' if not unittests_fields else 'danger'
     if not unittests_fields:
         title = 'Content Nightly Unit Tests - Success' if not is_sdk_build else 'SDK Nightly Unit Tests - Success'
@@ -89,7 +116,7 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
 
 
 def get_attachments_for_all_steps(build_url):
-    steps_fields = get_entities_fields(report_file_name="task_report", entity_title="Failed Steps")
+    steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
     title = 'SDK Nightly Build - Success' if not steps_fields else 'SDK Nightly Build - Failure'
 

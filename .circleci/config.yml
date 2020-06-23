@@ -106,26 +106,16 @@ jobs:
           name: Create ID Set
           when: always
           command: |
-            set +e
-
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
             demisto-sdk create-id-set -o ./Tests/id_set.json
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Create ID Set" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
       - run:
           name: Infrastructure testing
           when: always
           command: |
-            set +e
-
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
@@ -157,7 +147,6 @@ jobs:
           name: Validate Files and Yaml
           when: always
           command: |
-            set +e
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container or Nightly run"
@@ -168,27 +157,12 @@ jobs:
             ./Tests/scripts/pyflake.sh *.py
             find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
-            flake8_exit_code=$?
-
             [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
             ./Tests/scripts/validate.sh
-
-            validate_exit_code=$?
-
-            if [ $validate_exit_code -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Validate" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
-
-            let "exit_code = $flake8_exit_code + $validate_exit_code"
-            exit $exit_code
       - run:
           name: Secrets
           when: always
           command: |
-            set +e
-
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
@@ -196,18 +170,10 @@ jobs:
             fi
 
             demisto-sdk secrets --post-commit --ignore-entropy
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Secrets" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
       - run:
           name: Collect Test List And Content Packs
           when: always
           command: |
-            set +e
-
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
@@ -216,12 +182,6 @@ jobs:
 
             [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
             python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Collect Test List And Content Packs" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
       - run:
           name: Spell Checks
           command: |
@@ -235,8 +195,6 @@ jobs:
           name: Build Content Descriptor
           when: always
           command: |
-            set +e
-
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - running only in container number 0"
@@ -253,55 +211,30 @@ jobs:
                 # new release notes summary generator in packs format
                 python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md
             fi
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Build Content Descriptor" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
-
       - run:
           name: Common Server Documentation
           when: always
           command: |
-            set +e
-
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
             ./Documentation/commonServerDocs.sh
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Common Server Documentation" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
       - run:
           name: Content Docs Site
           when: always
           command: |
-            set +e
-
             if [ $CIRCLE_NODE_INDEX -ne 0 ];
               then
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
             ./Documentation/docs_site_update.sh
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Content Docs Site" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
       - run:
           name: Create Content Artifacts
           when: always
           command: |
-            set +e
-
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - running only in container number 0"
@@ -313,30 +246,16 @@ jobs:
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
             zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
             rm -r test_content_dir
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Create Content Artifacts" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
       - run:
           name: Calculate Packs Dependencies
           when: always
           command: |
-            set +e
-
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
             python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Calculate Packs Dependencies" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
       - run:
           name: Run Unit Testing and Lint
           when: always
@@ -357,7 +276,7 @@ jobs:
             echo "vulture py3 version: $(python3 -m vulture --version) 2>&1"
             SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
             mkdir ./unit-tests
-            if [ -n "$SHOULD_LINT_ALL" ] || [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
+            if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
               demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
             else
@@ -420,8 +339,6 @@ jobs:
           name: Prepare Content Packs For Testing
           when: always
           command: |
-            set +e
-
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo 'Skipping - running only in container number 0.'
@@ -432,12 +349,6 @@ jobs:
               exit 0
             fi
             ./Tests/scripts/prepare_content_packs_for_testing.sh
-
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                echo "Prepare Content Packs For Testing" >> $CIRCLE_ARTIFACTS/task_report.txt
-                exit 1
-            fi
       - store_artifacts:
           path: artifacts
           destination: artifacts
@@ -446,11 +357,6 @@ jobs:
           name: Create Instance
           when: always
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -482,11 +388,6 @@ jobs:
           name: Setup Instance
           when: always
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -508,11 +409,6 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -541,11 +437,6 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -574,11 +465,6 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -607,11 +493,6 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -644,11 +525,6 @@ jobs:
           when: always
           no_output_timeout: 5h
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -712,11 +588,6 @@ jobs:
       - run:
           name: Destroy Instances
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping instance tests for sdk nightly build"
-              exit 0
-            fi
-
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -736,10 +607,6 @@ jobs:
       - run:
           name: Upload Packs To Marketplace Storage
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping for sdk nightly build"
-              exit 0
-            fi
             if [[ $CIRCLE_BRANCH != master ]]; then
               echo "Skipping packs uploading on non master branch"
               exit 0
@@ -762,10 +629,6 @@ jobs:
       - run:
           name: Zip Content Packs From GCS
           command: |
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-              echo "Skipping for sdk nightly build"
-              exit 0
-            fi
             if [[ $CIRCLE_BRANCH != master ]]; then
               echo "Skipping packs zipping on non master branch"
               exit 0
