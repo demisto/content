@@ -4002,7 +4002,7 @@ if IS_PY3:  # merge_lists does not work in python 2
         :type sync: ``bool``
         :param sync: Whether to use the context directly from the DB.
 
-        :rtype ``tuple``
+        :rtype: ``tuple``
         :return: The updated integration context along with the current version.
 
         """
