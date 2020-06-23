@@ -12,7 +12,7 @@ from threatconnect.Config.ResourceType import ResourceType
 import copy
 
 '''GLOBAL VARS'''
-FRESHNESS = int(demisto.params()['freshness'])
+FRESHNESS = int(demisto.params().get('freshness', 0))
 MAX_CONTEXT = 100
 ''' HELPER FUNCTIONS '''
 
