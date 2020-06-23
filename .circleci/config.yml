@@ -77,7 +77,7 @@ jobs:
               echo 'Copy the changes from the contributor branch'
               git remote add $USER git@github.com:$USER/content.git
               git fetch $USER $BRANCH
-              git checkout -t $USER/$BRANCH
+              git checkout $USER/$BRANCH Packs/
               exit 0
             fi
 
@@ -371,6 +371,10 @@ jobs:
                 elif [ -n "${INSTANCE_TESTS}" ] ;
                   then
                     export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+
+                elif [ -n "${CONTRIB_BRANCH}" ] ;
+                  then
+                    export IFRA_ENV_TYPE="Content-GA" # disable-secrets-detection
 
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
