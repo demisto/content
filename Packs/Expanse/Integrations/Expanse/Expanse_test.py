@@ -158,12 +158,13 @@ def test_domains_by_certificate(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
-    assert results[0]['EntryContext']['Expanse.IPDomains(val.SearchTerm == obj.SearchTerm)'][
-               'TotalDomainCount'] == 1
+    assert results[0]['EntryContext']['Expanse.IPDomains(val.SearchTerm == obj.SearchTerm)']['TotalDomainCount'] == 1
+
 
 MOCK_TOKEN_RESPONSE = {
     'token': '123456789abcdefg'
 }
+
 MOCK_IP_RESPONSE = {
     "data": [
         {

@@ -1042,6 +1042,7 @@ def _fetch_certificate(md5_hash, token):
         demisto.results("No data found")
         return {}
 
+
 def _fetch_ips(params, token):
     """
     Returns all ip results matching search params.
