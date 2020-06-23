@@ -360,7 +360,7 @@ def get_release_notes_draft(github_token, asset_id):
 
 def create_content_descriptor(release_notes, version, asset_id, github_token):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
-    current_date = datetime.now().strftime(DATE_FORMAT)
+    current_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
 
     content_descriptor = {
         "installDate": "0001-01-01T00:00:00Z",
