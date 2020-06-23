@@ -37,18 +37,8 @@ class Client(BaseClient):
 
         soup = BeautifulSoup(r, 'html.parser')
 
-        def subs(text):
-            """Cleans up the parsed entries.
-            Returns:
-                A string.
-            """
-            patterns = (('comp', 'com p'), ('comm', 'com m'), ('comf', 'com f'), ('\n', ''))
-            for old, new in patterns:
-                text = text.replace(old, new)
-            return text
-
         pattern = re.compile("(https?:\/\/|\*\.)(\w+\.|\w+-\w+\.){1,3}\w{2,3}")
-        scraped_indicators = list(set([subs(pattern.match(cell.text).group(0)) for cell in soup.select(  # type: ignore # noqa
+        scraped_indicators = list(set([pattern.match(cell.text).group(0) for cell in soup.select(  # type: ignore # noqa
             "tbody tr td li") if pattern.match(cell.text)]))
         for indicator in scraped_indicators:
             result.append({
