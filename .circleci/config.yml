@@ -164,7 +164,7 @@ jobs:
 
             validate_exit_code=$?
 
-            if [ validate_exit_code -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
+            if [ $validate_exit_code -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
                 echo "Validate" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
