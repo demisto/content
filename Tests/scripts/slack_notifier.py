@@ -233,7 +233,8 @@ def slack_notifier(build_url, slack_token, container, build_type, env_results_fi
 def main():
     options = options_handler()
     if options.nightly:
-        slack_notifier(options.url, options.slack, options.node_index, 'nightly', options.env_results_file_name)
+        slack_notifier(options.url, options.slack, options.node_index, 'nightly',
+                       env_results_file_name=options.env_results_file_name)
     elif options.sdk:
         slack_notifier(options.url, options.slack, options.node_index, 'SDK nightly', is_sdk_nightly=True)
     else:
