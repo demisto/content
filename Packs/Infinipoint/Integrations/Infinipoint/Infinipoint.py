@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-PAGE_SIZE = 100
+PAGE_SIZE = int(demisto.params().get('page_size'))
 PROXY = demisto.params().get('proxy')
 INSECURE = demisto.params().get('insecure')
 BASE_URL = demisto.params().get('url')
@@ -522,7 +522,6 @@ def get_action_command(token, args):
     ]
 
     res = call_api(method, route, token, rules, condition='OR')
-    LOG('res %s' % (res,))
     if res:
         command_results = CommandResults(
             outputs_prefix='Infinipoint.Responses',
@@ -579,14 +578,6 @@ def run_osquery_command(token, args):
 
 def main():
 
-    # PROXY = demisto.params().get('proxy')
-    # INSECURE = demisto.params().get('insecure')
-    # BASE_URL = demisto.params().get('url')
-    # ACCESS_KEY = demisto.params().get('access_key')
-    # PRIVATE_KEY = demisto.params().get('private_key')
-    # verify_certificate = not demisto.params().get('insecure', False)
-    # proxy = demisto.params().get('proxy', False)
-
     # if not demisto.params().get('proxy', False):
     #     del os.environ['HTTP_PROXY']
     #     del os.environ['HTTPS_PROXY']
@@ -602,6 +593,7 @@ def main():
             test_module(token)
             demisto.results('ok')
 
+        # todo: replace all fetch-incidents command
         elif demisto.command() == 'infinipoint-get-cve':
             return_results(get_cve_command(token, demisto.args()))
 
@@ -634,7 +626,7 @@ def main():
 
         elif demisto.command() == "infinipoint-run-osquery":
             return_results(run_osquery_command(token, demisto.args()))
-        # todo : create get scripts as well
+
         elif demisto.command() == "infinipoint-run-script":
             return_results(run_script_command(token, demisto.args()))
 
