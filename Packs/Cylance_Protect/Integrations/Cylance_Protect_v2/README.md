@@ -71,7 +71,8 @@
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_2673377171530178254852">List console device resources for a tenant: cylance-protect-get-devices</a></li>
-<li><a href="#h_594628183251530425419438">Get a console device resource for a tenant: cylance-protect-get-device</a></li>
+<li><a href="#h_getbymacaddress">Get a console device resource for a tenant: cylance-protect-get-device</a></li>
+<li><a href="#h_594628183251530425419438">Get a console device resource for a tenant by MAC Address: cylance-protect-get-devicebymac</a></li>
 <li><a href="#h_594628183251530425419438">Update a device: cylance-protect-update-device</a></li>
 <li><a href="#h_841770284981530427896798">Get information for device threats: cylance-protect-get-device-threats</a></li>
 <li><a href="#h_1786905061791530428400287">Get information for console policy resources: cylance-protect-get-policies</a></li>
@@ -296,6 +297,128 @@
 <p> </p>
 <h5>Command Example</h5>
 <p><code>!cylance-protect-get-devices pageNumber=2 pageSize=75</code></p>
+<h5>Raw Output</h5>
+<pre>{  
+   "agent_version":"2.0.1440",
+   "date_first_registered":"2018-01-21T15:45:42",
+   "id":"652bbfa9-cf74-4e24-90f7-d01b16429701",
+   "ip_addresses":[  
+      "172.31.31.110"
+   ],
+   "mac_addresses":[  
+      "06-F8-13-8B-16-C9"
+   ],
+   "name":"WIN-0VJ9RO3P33Q",
+   "policy":{  
+      "id":null,
+      "name":"Default"
+   },
+   "state":"Online"
+}
+</pre>
+<h3 id="h_getbymacaddress">2. Get a console device resource for a tenant by MAC Address</h3>
+<hr>
+<p>Returns a single device resource that belongs to a tenant.</p>
+<h5>Base Command</h5>
+<p><code>cylance-protect-get-devicebymac</code></p>
+<h5>Input</h5>
+<table style="height: 271px; width: 750px;" border="2" cellpadding="6">
+<tbody>
+<tr>
+<td style="width: 180px;"><strong>Input Parameter</strong></td>
+<td style="width: 565px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 180px;">mac</td>
+<td style="width: 565px;">Device MAC</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<table style="height: 306px; width: 750px;" border="2" cellpadding="6">
+<tbody>
+<tr>
+<td style="width: 181px;"><strong>Path</strong></td>
+<td style="width: 454px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.AgentVersion</td>
+<td style="width: 454px;">CylancePROTECT Agent version installed on the device</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.DateFirstRegistered</td>
+<td style="width: 454px;">Date and time (in UTC) when the device record was created</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.BackgroundDetection</td>
+<td style="width: 454px;">If <em>true</em>, the agent is running</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.DateLastModified</td>
+<td style="width: 454px;">Date and time (in UTC) when the device record was last modified</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.DateOffline</td>
+<td style="width: 454px;">Date and time (in UTC) when the device last communicated with the console</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.Hostname</td>
+<td style="width: 454px;">Hostname for the device</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.ID</td>
+<td style="width: 454px;">Unique identifier for the device</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.IPAddress</td>
+<td style="width: 454px;">List of IP addresses for the device</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.MACAddress</td>
+<td style="width: 454px;">List of MAC addresses for the device</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.IsSafe</td>
+<td style="width: 454px;">If <em>true</em>, there are no outstanding threats</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.UpdateAvailable</td>
+<td style="width: 454px;">If <em>true</em>, there is available update for the device</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.State</td>
+<td style="width: 454px;">Machine state</td>
+</tr>
+<tr>
+<td style="width: 181px;">Endpoint.Hostname</td>
+<td style="width: 454px;">Device hostname</td>
+</tr>
+<tr>
+<td style="width: 181px;">Endpoint.MACAddress</td>
+<td style="width: 454px;">List of MAC addresses for the device</td>
+</tr>
+<tr>
+<td style="width: 181px;">Endpoint.IPAddress</td>
+<td style="width: 454px;">List of IP addresses for the device</td>
+</tr>
+<tr>
+<td style="width: 181px;">Endpoint.OSVersion</td>
+<td style="width: 454px;">Device OS version</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.OSVersion</td>
+<td style="width: 454px;">Device OS version</td>
+</tr>
+<tr>
+<td style="width: 181px;">CylanceProtect.Device.Name</td>
+<td style="width: 454px;">Device name</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<p><code>!cylance-protect-get-devicesbymac mac=XX:XX:XX:XX:XX:XX pageSize=75</code></p>
 <h5>Raw Output</h5>
 <pre>{  
    "agent_version":"2.0.1440",

@@ -1,12 +1,16 @@
-from CommonServerPython import *
-import jwt
-import uuid
-import requests
 import json
 import re
+import uuid
 import zipfile
-from StringIO import StringIO
 from datetime import datetime, timedelta
+from StringIO import StringIO
+
+import requests
+
+import demistomock as demisto
+import jwt
+from CommonServerPython import *
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -299,6 +303,73 @@ def get_device():
     demisto.results(entry)
 
 
+def get_device_mac():
+    device_mac = demisto.args()['mac']
+    device = get_device_request_mac(device_mac)
+
+    hr = []
+    if device:
+        device = device[0]
+        device_context = {
+            'IPAddress': device['ip_addresses'],
+            'MACAdress': device['mac_addresses'],
+            'Hostname': device['host_name'],
+            'OSVersion': device['os_version'],
+            'UpdateAvailable': device['update_available'],
+            'BackgroundDetection': device['background_detection'],
+            'DateFirstRegistered': device['date_first_registered'],
+            'DateLastModified': device['date_last_modified'],
+            'DateOffline': device['date_offline'],
+            'IsSafe': device['is_safe'],
+            'LastLoggedInUser': device['last_logged_in_user'],
+            'State': device['state'],
+            'ID': device['id'],
+            'Name': device['name']
+        }
+        if device['update_type']:
+            device_context['UpdateType'] = device['update_type']
+        if device['policy']:
+            policy = {}
+            if device['policy']['id']:
+                policy['ID'] = device['policy']['id']
+            if device['policy']['name']:
+                policy['Name'] = device['policy']['name']
+            if policy:
+                device_context['Policy'] = policy
+        endpoint_context = {
+            'IPAddress': device['ip_addresses'],
+            'MACAdress': device['mac_addresses'],
+            'Hostname': device['host_name'],
+            'OSVersion': device['os_version']
+        }
+        ec = {
+            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context,
+            'CylanceProtect.Device(val.ID && val.ID === obj.ID)': device_context
+        }
+
+        current_device = dict(device)
+        current_device['ip_addresses'] = ', '.join(current_device['ip_addresses'])
+        current_device['mac_addresses'] = ', '.join(current_device['mac_addresses'])
+        current_device['policy'] = current_device['policy']['name']
+        hr.append(current_device)
+
+    else:
+        ec = {}
+
+    title = 'Cylance Protect Device ' + device_mac
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': device,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, hr, headerTransform=underscoreToCamelCase, removeNull=True),
+        'EntryContext': ec
+    }
+
+    demisto.results(entry)
+
+
 def get_device_request(device_id):
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
     headers = {
@@ -306,6 +377,17 @@ def get_device_request(device_id):
         'Authorization': 'Bearer ' + access_token
     }
     uri = '%s/%s' % (URI_DEVICES, device_id)
+    res = api_call(uri=uri, method='get', headers=headers)
+    return res
+
+
+def get_device_request_mac(device_mac):
+    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
+    uri = '%s/macaddress/%s' % (URI_DEVICES, device_mac)
     res = api_call(uri=uri, method='get', headers=headers)
     return res
 
@@ -1362,7 +1444,8 @@ try:
 
     elif demisto.command() == 'cylance-protect-get-device':
         get_device()
-
+    elif demisto.command() == 'cylance-protect-get-devicebymac':
+        get_device_mac()
     elif demisto.command() == 'cylance-protect-update-device':
         update_device()
 
