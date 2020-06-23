@@ -15,8 +15,11 @@ try:
         username = employee["userName"]
         alerts = demisto.executeCommand("code42-alert-search", {"username": username})[0]["Contents"]
         alerts_count = len(alerts)
-        employee_res = {"Username": username, "Alerts Count": alerts_count}
-        res_data.append(employee_res)
+
+        # Ignores employees without alerts
+        if alerts_count:
+            employee_res = {"Username": username, "Alerts Count": alerts_count}
+            res_data.append(employee_res)
 
     # Sort such that highest alert counts are first and get top.
     res["data"] = sorted(res_data, key=lambda x: x["Alerts Count"], reverse=True)[:top]

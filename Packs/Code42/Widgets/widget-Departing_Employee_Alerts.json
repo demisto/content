@@ -28,8 +28,13 @@
                 "displayed": true,
                 "isDefault": true,
                 "key": "Alerts Count"
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "Alerts Count"
             }
-		]
+        ]
     },
     "query": "Code42GetDepartingEmployeeAlerts",
     "size": 0,
