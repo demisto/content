@@ -157,14 +157,21 @@ jobs:
             ./Tests/scripts/pyflake.sh *.py
             find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
+            flake8_exit_code=$?
+
             [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
             ./Tests/scripts/validate.sh
 
-            if [ $? -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
+            validate_exit_code = $?
+
+            if [ validate_exit_code -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
                 echo "Validate" >> $CIRCLE_ARTIFACTS/task_report.txt
                 exit 1
             fi
+
+            let "exit_code = $code_1 + $code_2"
+            exit $exit_code
       - run:
           name: Secrets
           when: always

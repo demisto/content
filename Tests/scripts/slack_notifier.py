@@ -47,14 +47,14 @@ def get_failing_entities_file_data(report_file_name):
         failing_entities_list = None
         file_name = "./artifacts/{}.txt".format(report_file_name)
         if os.path.isfile(file_name):
-            print("Extracting {}".format(report_file_name))
+            print(f'Extracting {report_file_name}')
             with open(file_name, 'r') as failed_entities_file:
                 failing_entity = failed_entities_file.readlines()
                 failing_entities_list = [line.strip('\n') for line in failing_entity]
         else:
-            print("Did not find {}.txt file".format(report_file_name))
+            print(f'Did not find {report_file_name}.txt file')
     except Exception as err:
-        print_error("Error getting {}.txt file: \n {}".format(report_file_name, err))
+        print_error(f'Error getting {report_file_name}.txt file: \n {err}')
     return failing_entities_list
 
 
@@ -63,7 +63,7 @@ def get_entities_fields(report_file_name, entity_title):
     entity_fields = []
     if failed_entities:
         entity_fields.append({
-            "title": "{} - ({})".format(entity_title, len(failed_entities)),
+            "title": f'{entity_title} - ({len(failed_entities)})',
             "value": '\n'.join(failed_entities),
             "short": False
         })
@@ -195,7 +195,7 @@ def get_fields():
     return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, slack_token, env_results_file_name, container):
+def slack_notifier(build_url, slack_token, container, build_type, env_results_file_name=None, is_sdk_nightly=False):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
@@ -204,41 +204,20 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
         print("Extracting build status")
         # container 1: unit tests
         if int(container):
-            print_color("Starting Slack notifications about nightly build - unit tests", LOG_COLORS.GREEN)
-            content_team_attachments = get_attachments_for_unit_test(build_url)
+            print_color(f'Starting Slack notifications about {build_type} build - unit tests', LOG_COLORS.GREEN)
+            if is_sdk_nightly:
+                content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+            else:
+                content_team_attachments = get_attachments_for_unit_test(build_url)
 
         # container 0: test playbooks
         else:
-            print_color("Starting Slack notifications about nightly build - tests playbook", LOG_COLORS.GREEN)
-            content_team_attachments, _ = get_attachments_for_test_playbooks(build_url, env_results_file_name)
-
-        print("Sending Slack messages to #content-team")
-        slack_client = SlackClient(slack_token)
-        slack_client.api_call(
-            "chat.postMessage",
-            channel="dmst-content-team",
-            username="Content CircleCI",
-            as_user="False",
-            attachments=content_team_attachments
-        )
-
-
-def sdk_slack_notifier(build_url, slack_token, container):
-    branches = run_command("git branch")
-    branch_name_reg = re.search(r'\* (.*)', branches)
-    branch_name = branch_name_reg.group(1)
-
-    if branch_name == 'master':
-        print("Extracting build status")
-        # container 1: unit tests
-        if int(container):
-            print_color("Starting Slack notifications about SDK nightly build - unit tests", LOG_COLORS.GREEN)
-            content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
-
-        # container 0: regular steps
-        else:
-            print_color("Starting Slack notifications about SDK nightly build - all steps", LOG_COLORS.GREEN)
-            content_team_attachments = get_attachments_for_all_steps(build_url)
+            if is_sdk_nightly:
+                print_color(f'Starting Slack notifications about {build_type} build - all steps', LOG_COLORS.GREEN)
+                content_team_attachments = get_attachments_for_all_steps(build_url)
+            else:
+                print_color(f'Starting Slack notifications about {build_type} build - test playbook', LOG_COLORS.GREEN)
+                content_team_attachments, _ = get_attachments_for_test_playbooks(build_url, env_results_file_name)
 
         print("Sending Slack messages to #content-team")
         slack_client = SlackClient(slack_token)
@@ -254,9 +233,9 @@ def sdk_slack_notifier(build_url, slack_token, container):
 def main():
     options = options_handler()
     if options.nightly:
-        slack_notifier(options.url, options.slack, options.env_results_file_name, options.node_index)
+        slack_notifier(options.url, options.slack, options.node_index, 'nightly', options.env_results_file_name)
     elif options.sdk:
-        sdk_slack_notifier(options.url, options.slack, options.node_index)
+        slack_notifier(options.url, options.slack, options.node_index, 'SDK nightly', is_sdk_nightly=True)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
