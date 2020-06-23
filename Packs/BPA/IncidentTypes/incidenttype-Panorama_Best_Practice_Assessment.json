@@ -1,0 +1,30 @@
+[
+	{
+		"id": "Panorama Best Practice Assessment",
+		"version": 1,
+		"modified": "2020-06-23T14:47:19.212552263Z",
+		"sortValues": null,
+		"vcShouldIgnore": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "Panorama Best Practice Assessment",
+		"prevName": "Panorama Best Practice Assessment",
+		"color": "#CFD8DC",
+		"playbookId": "Comprehensive PAN-OS Best Practice Assessment",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": true,
+		"preProcessingScript": "",
+		"closureScript": "",
+		"disabled": false,
+		"reputationCalc": 0
+	}
+]
