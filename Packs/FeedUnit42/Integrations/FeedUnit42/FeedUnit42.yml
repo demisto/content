@@ -75,7 +75,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Unit42 feed of IOCs published in their playbook viewer which Contains malicious indicators.
+description: Unit42 feed of IOCs published in their playbook viewer which contains malicious indicators.
 display: Unit42 Feed
 name: Unit42 Feed
 script:
