@@ -23,6 +23,11 @@
                 "displayed": true,
                 "isDefault": true,
                 "key": "Username"
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "Alerts Count"
             }
 		]
     },
