@@ -19,18 +19,6 @@ args:
   name: paperSize
   required: false
   secret: false
-- default: false
-  description: customer's logo
-  isArray: false
-  name: customerLogo
-  required: false
-  secret: false
-- default: false
-  description: demito's logo
-  isArray: false
-  name: demistoLogo
-  required: false
-  secret: false
 comment: Parse Sane-json-reports and export them as docx files (used internally, thus deprecated).
 commonfields:
   id: SaneDocReports
@@ -46,7 +34,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/sane-doc-reports:1.0.0.9308
+dockerimage: demisto/sane-doc-reports:1.0.0.6861
 runas: DBotWeakRole
 runonce: false
 tests:
