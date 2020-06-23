@@ -7,7 +7,7 @@
 	"caseInsensitive": true,
 	"cliName": "pcapflows",
 	"closeForm": false,
-	"content": false,
+	"content": true,
 	"columns": [
 		{
 			"key": "sourceip",

@@ -8,7 +8,7 @@
 	"cliName": "pcapnumberofpackets",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "",
 	"editForm": true,

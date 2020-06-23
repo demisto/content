@@ -9,7 +9,7 @@
 	"closeForm": false,
 	"columns": null,
 	"commitMessage": "",
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "",
 	"editForm": true,

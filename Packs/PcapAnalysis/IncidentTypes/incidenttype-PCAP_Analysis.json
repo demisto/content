@@ -1,12 +1,9 @@
 {
 	"id": "PCAP Analysis",
 	"version": -1,
-	"sortValues": null,
-	"vcShouldIgnore": false,
 	"shouldCommit": false,
 	"locked": false,
-	"name": "PCAP analysys",
-	"prevName": "PCAP analysys",
+	"name": "PCAP Analysis",
 	"color": "#DBDBDB",
 	"hours": 0,
 	"days": 0,
@@ -22,5 +19,6 @@
 	"closureScript": "",
 	"disabled": false,
 	"reputationCalc": 0,
+	"vcShouldIgnore": false,
     "fromVersion": "5.5.0"
 }
