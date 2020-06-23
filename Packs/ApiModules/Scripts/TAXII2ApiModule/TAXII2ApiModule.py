@@ -1,3 +1,5 @@
+from requests.sessions import merge_setting, CaseInsensitiveDict
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -8,7 +10,7 @@ import re
 import types
 import urllib3
 from taxii2client import v20, v21
-from taxii2client.common import TokenAuth
+from taxii2client.common import TokenAuth, _HTTPConnection
 from taxii2client.exceptions import TAXIIServiceException
 
 # disable insecure warnings
@@ -19,7 +21,8 @@ TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
 
 DFLT_LIMIT_PER_FETCH = 1000
-DFLT_API_USERNAME = "_api_token_key"
+API_USERNAME = "_api_token_key"
+HEADER_USERNAME = "_header:"
 
 ERR_NO_COLL = "No collection is available for this user, please make sure you entered the configuration correctly"
 
@@ -79,19 +82,30 @@ class Taxii2FeedClient:
         :param password: password used for basic authentication
         :param field_map: map used to create fields entry ({field_name: field_value})
         """
+        self._conn = None
         self.server = None
         self.api_root = None
         self.collections = None
-        self.latest_fetched_indicator_created = None  # will store latest fetched indicator create time for caching
+        self.latest_fetched_indicator_created = None
 
         self.collection_to_fetch = collection_to_fetch
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
+
         self.auth = None
+        self.auth_header = None
+        self.auth_key = None
         if username and password:
-            if username == DFLT_API_USERNAME:
+            # methods of authentication:
+            # 1. API Token
+            # 2. Authentication Header
+            # 3. Basic
+            if username == API_USERNAME:
                 self.auth = TokenAuth(key=password)
+            elif username.startswith(HEADER_USERNAME):
+                self.auth_header = username.split(HEADER_USERNAME)[1]
+                self.auth_key = password
             else:
                 self.auth = requests.auth.HTTPBasicAuth(username, password)
 
@@ -111,13 +125,25 @@ class Taxii2FeedClient:
         :param version: taxii version key (either 2.0 or 2.1)
         """
         server_url = urljoin(self.base_url)
+        self._conn = _HTTPConnection(
+            verify=self.verify, proxies=self.proxies, version=version, auth=self.auth
+        )
+        if self.auth_header:
+            # add auth_header to the session object
+            self._conn.session.headers = (
+                merge_setting(
+                    self._conn.session.headers,
+                    {self.auth_header: self.auth_key},
+                    dict_class=CaseInsensitiveDict,
+                ),
+            )
         if version is TAXII_VER_2_0:
             self.server = v20.Server(
-                server_url, verify=self.verify, auth=self.auth, proxies=self.proxies,
+                server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
             )
         else:
             self.server = v21.Server(
-                server_url, verify=self.verify, auth=self.auth, proxies=self.proxies,
+                server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
             )
 
     def init_roots(self):
@@ -128,13 +154,17 @@ class Taxii2FeedClient:
             self.init_server()
         try:
             # try TAXII 2.0
-            self.api_root = self.server.api_roots[0]
+            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr]
+            # override _conn - api_root isn't initialized with the right _conn
+            self.api_root._conn = self._conn
         except (TAXIIServiceException, HTTPError) as e:
             if isinstance(e, HTTPError) and "406 Client Error" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
-            self.api_root = self.server.api_roots[0]
+            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr]
+            # override _conn - api_root isn't initialized with the right _conn
+            self.api_root._conn = self._conn
 
     def init_collections(self):
         """
@@ -308,12 +338,16 @@ class Taxii2FeedClient:
         if indicators_objs:
             for indicator_obj in indicators_objs:
                 indicators.extend(self.parse_single_indicator(indicator_obj))
-                indicator_created_str = indicator_obj.get('created')
+                indicator_created_str = indicator_obj.get("created")
                 if self.latest_fetched_indicator_created is None:
                     self.latest_fetched_indicator_created = indicator_created_str
                 else:
-                    last_datetime = datetime.strptime(self.latest_fetched_indicator_created, TAXII_TIME_FORMAT)
-                    indicator_created_datetime = datetime.strptime(indicator_created_str, TAXII_TIME_FORMAT)
+                    last_datetime = datetime.strptime(
+                        self.latest_fetched_indicator_created, TAXII_TIME_FORMAT
+                    )
+                    indicator_created_datetime = datetime.strptime(
+                        indicator_created_str, TAXII_TIME_FORMAT  # type: ignore[arg-type]
+                    )
                     if indicator_created_datetime > last_datetime:
                         self.latest_fetched_indicator_created = indicator_created_str
         return indicators

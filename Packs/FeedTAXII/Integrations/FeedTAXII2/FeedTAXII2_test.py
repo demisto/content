@@ -1,7 +1,6 @@
 # from FeedTAXII2 import fetch_indicators_command
 import json
-from Packs.FeedTAXII.Integrations.FeedTAXII2.FeedTAXII2 import fetch_indicators_command
-from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *  # noqa: E402
+from FeedTAXII2 import *
 
 with open('test_data/results.json', 'r') as f:
     RESULTS_JSON = json.load(f)

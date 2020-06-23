@@ -69,14 +69,6 @@ configuration:
   name: collection_to_fetch
   required: false
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time
     unit> of type minute/hour/day. For example, 1 minute, 12 hour
   display: First Fetch Time
@@ -92,6 +84,14 @@ configuration:
   name: limit
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
 display: TAXII 2 Feed
 name: TAXII 2 Feed

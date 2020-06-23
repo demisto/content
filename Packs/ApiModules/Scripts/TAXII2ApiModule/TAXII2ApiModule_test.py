@@ -1,6 +1,6 @@
 from CommonServerPython import *
 # from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import Taxii2FeedClient
-from TAXII2ApiModule import Taxii2FeedClient
+from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
 from taxii2client import v20, v21
 # import types
 
@@ -165,6 +165,65 @@ class TestBuildIterator:
         iocs = mock_client.build_iterator(limit=0)
         assert iocs == []
 
+
+class TestInitServer:
+    """
+    Scenario: Initialize server
+    """
+    def test_default_v20(self):
+        """
+        Scenario: Intialize server with the default option
+
+        Given:
+        - no version is provided to init_server
+
+        Then:
+        - initalize with v20.Server
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        mock_client.init_server()
+        assert isinstance(mock_client.server, v20.Server)
+
+    def test_v21(self):
+        """
+        Scenario: Intialize server with v21
+
+        Given:
+        - v21 version is provided to init_server
+
+        Then:
+        - initalize with v21.Server
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        mock_client.init_server(TAXII_VER_2_1)
+        assert isinstance(mock_client.server, v21.Server)
+
+    def test_auth_key(self):
+        """
+        Scenario: Intialize server with the default option with an auth key
+
+        Given:
+        - no version is provided to init_server
+        - client is set with `auth_key` and `auth_header`
+
+        Then:
+        - initialize with v20.Server with _conn.headers set with the auth_header
+        """
+        mock_auth_header_key = 'mock_auth'
+        mock_username = f'{HEADER_USERNAME}{mock_auth_header_key}'
+        mock_password = 'mock_pass'
+        mock_client = Taxii2FeedClient(
+            url='',
+            username=mock_username,
+            password=mock_password,
+            collection_to_fetch='',
+            proxies=[],
+            verify=False
+        )
+        mock_client.init_server()
+        assert isinstance(mock_client.server, v20.Server)
+        assert mock_auth_header_key in mock_client.server._conn.session.headers[0]
+        assert mock_client.server._conn.session.headers[0].get(mock_auth_header_key) == mock_password
 
 # class TestExtractIndicatorsAndParse:
 #     def test_20_empty(self, mocker):

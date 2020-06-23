@@ -28,7 +28,7 @@ def try_parse_integer(
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client):
+def module_test_command(client):
     if client.collections:
         demisto.results("ok")
     else:
@@ -49,7 +49,7 @@ def fetch_indicators_command(client, initial_interval, limit, last_run_ctx) -> T
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
-        indicators = []
+        indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
             added_after = last_run_ctx[collection.id] if collection.id in last_run_ctx else initial_interval
@@ -61,10 +61,14 @@ def fetch_indicators_command(client, initial_interval, limit, last_run_ctx) -> T
                     break
             last_run_ctx[collection.id] = client.latest_fetched_indicator_created
     else:
-        added_after = last_run_ctx[client.collection_to_fetch.id] if client.collection_to_fetch.id in last_run_ctx else initial_interval
+        added_after = last_run_ctx[client.collection_to_fetch.id] \
+            if client.collection_to_fetch.id in last_run_ctx \
+            else initial_interval
         indicators = client.build_iterator(limit, added_after)
         # in case no indicator was fetched
-        last_run_ctx[client.collection_to_fetch.id] = client.latest_fetched_indicator_created if client.latest_fetched_indicator_created else added_after
+        last_run_ctx[client.collection_to_fetch.id] = client.latest_fetched_indicator_created \
+            if client.latest_fetched_indicator_created \
+            else added_after
     return indicators, last_run_ctx
 
 
@@ -86,7 +90,7 @@ def get_indicators_command(client, raw="false", limit=10, added_after=None):
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
-        indicators = []
+        indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
             fetched_iocs = client.build_iterator(limit, added_after)
@@ -172,7 +176,7 @@ def main():
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
-            test_module(client)
+            module_test_command(client)
 
         elif demisto.command() == "fetch-indicators":
             initial_interval = params.get("initial_interval")
@@ -199,8 +203,8 @@ def main():
         return_error(err_msg)
 
 
-from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *  # noqa: E402
-# from TAXII2ApiModule import *  # noqa: E402
+# from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *  # noqa: E402
+from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
