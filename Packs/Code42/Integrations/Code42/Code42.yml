@@ -240,7 +240,7 @@ script:
     - contextPath: Code42.SecurityAlert.Severity
       description: The severity of the alert.
       type: string
-    description: Retrieve alert details by alert ID
+    description: Retrieve alert details by alert ID.
   - name: code42-alert-resolve
     arguments:
     - name: id
@@ -252,6 +252,43 @@ script:
       description: The alert ID of the resolved alert.
       type: string
     description: Resolves a Code42 Security alert.
+  - name: code42-alert-search
+    arguments:
+    - name: username
+      required: true
+      description: The username for the user to search alerts for.
+    outputs:
+    - contextPath: Code42.SecurityAlert.Username
+      description: The username associated with the alert.
+      type: string
+    - contextPath: Code42.SecurityAlert.Occurred
+      description: The timestamp when the alert occurred.
+      type: date
+    - contextPath: Code42.SecurityAlert.Description
+      description: The description of the alert.
+      type: string
+    - contextPath: Code42.SecurityAlert.ID
+      description: The alert ID.
+      type: string
+    - contextPath: Code42.SecurityAlert.Name
+      description: The alert rule name that generated the alert.
+      type: string
+    - contextPath: Code42.SecurityAlert.State
+      description: The alert state.
+      type: string
+    - contextPath: Code42.SecurityAlert.Type
+      description: The alert type.
+      type: string
+    - contextPath: Code42.SecurityAlert.Severity
+      description: The severity of the alert.
+      type: string
+    description: Search alerts by username.
+
+
+
+
+
+
   - name: code42-departingemployee-add
     arguments:
     - name: username
@@ -362,6 +399,7 @@ script:
       type: string
     - contextPath: Code42.HighRiskEmployee.RiskTags
       description: Risk tags to associate with the High Risk Employee.
+    description: Add the given risk tags to the user with the given username.
   - name: code42-highriskemployee-remove-risk-tags
     arguments:
     - name: username
@@ -379,6 +417,7 @@ script:
       type: string
     - contextPath: Code42.HighRiskEmployee.RiskTags
       description: Risk tags to disassociate from the High Risk Employee.
+    description: Remove the given risk tags from the user with the given username.
   dockerimage: demisto/py42:1.0.0.9242
   isfetch: true
   runonce: false

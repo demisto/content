@@ -20,7 +20,7 @@ from py42.sdk.queries.fileevents.filters import (
     FileCategory,
 )
 from py42.sdk.queries.alerts.alert_query import AlertQuery
-from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
+from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState, Actor as AlertActor
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -215,6 +215,10 @@ class Code42Client(BaseClient):
         query = _create_alert_query(event_severity_filter, start_time)
         res = self._sdk.alerts.search(query)
         return res["alerts"]
+
+    def search_alerts(self, username):
+        query = AlertQuery(AlertActor.eq(username))
+        return self._sdk.alerts.search(query)["alerts"]
 
     def get_alert_details(self, alert_id):
         res = self._sdk.alerts.get_details(alert_id)["alerts"]
@@ -508,6 +512,27 @@ def alert_resolve_command(client, args):
     except Exception as e:
         return_error(create_command_error_message(demisto.command(), e))
 
+
+def alert_search_command(client, args):
+    username = args["username"]
+    try:
+        alerts = client.search_alerts(username)
+        alert_context = []
+        for alert in alerts:
+            alert_context.append(map_to_code42_alert_context(alert))
+        readable_outputs = tableToMarkdown(
+            "Code42 Security Alert Search",
+            alert_context,
+            headers=SECURITY_ALERT_HEADERS,
+        )
+        return (
+            readable_outputs,
+            {"Code42.SecurityAlert": alert_context},
+            alerts
+        )
+
+    except Exception as e:
+        return_error(create_command_error_message(demisto.command(), e))
 
 @logger
 def departingemployee_add_command(client, args):
@@ -815,6 +840,7 @@ def main():
         commands = {
             "code42-alert-get": alert_get_command,
             "code42-alert-resolve": alert_resolve_command,
+            "code42-alert-search": alert_search_command,
             "code42-securitydata-search": securitydata_search_command,
             "code42-departingemployee-add": departingemployee_add_command,
             "code42-departingemployee-remove": departingemployee_remove_command,
