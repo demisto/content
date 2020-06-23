@@ -2,7 +2,16 @@ from CommonServerPython import *
 # from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import Taxii2FeedClient
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
 from taxii2client import v20, v21
-# import types
+import json
+
+with open('test_data/stix_envelope_no_indicators.json', 'r') as f:
+    STIX_ENVELOP_NO_IOCS = json.load(f)
+
+with open('test_data/stix_envelope_17|19.json', 'r') as f:
+    STIX_ENVLOPE_17_IOCS_19_OBJS = json.load(f)
+
+with open('test_data/cortex_parsed_indicators_17|19.json', 'r') as f:
+    CORTEX_17_IOCS_19_OBJS = json.load(f)
 
 
 class MockCollection:
@@ -225,10 +234,49 @@ class TestInitServer:
         assert mock_auth_header_key in mock_client.server._conn.session.headers[0]
         assert mock_client.server._conn.session.headers[0].get(mock_auth_header_key) == mock_password
 
-# class TestExtractIndicatorsAndParse:
-#     def test_20_empty(self, mocker):
-#         def envelope_generator():
-#             yield {}
-#             raise StopIteration
-#         mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False)
-#         res = mock_client.extract_indicators_from_envelope_and_parse(envelope_generator())
+
+class TestExtractIndicatorsAndParse:
+    """
+    Scenario: Test extract_indicators_from_envelope_and_parse
+    """
+    def test_21_empty(self):
+        """
+        Scenario: Test 21 envelope extract
+
+        Given:
+        - Envelope with 0 STIX2 objects
+
+        When:
+        - extract_indicators_from_envelope_and_parse is called
+
+        Then:
+        - Extract and parse the indicators from the envelope
+
+        """
+        expected = []
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOP_NO_IOCS)
+
+        assert len(actual) == 0
+        assert expected == actual
+
+    def test_21(self):
+        """
+        Scenario: Test 21 envelope extract
+
+        Given:
+        - Envelope with 19 STIX2 objects - out of them 17 are iocs
+
+        When:
+        - extract_indicators_from_envelope_and_parse is called
+
+        Then:
+        - Extract and parse the indicators from the envelope
+
+        """
+        expected = CORTEX_17_IOCS_19_OBJS
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVLOPE_17_IOCS_19_OBJS)
+
+        assert len(actual) == 17
+        assert expected == actual
