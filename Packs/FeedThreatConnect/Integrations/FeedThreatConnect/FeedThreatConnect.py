@@ -2,7 +2,7 @@
 # IMPORTS #
 ###########
 # STD packages
-from typing import Dict, Tuple, Any, Optional, List, Iterable
+from typing import Dict, Tuple, Any, Optional, List, Union, Iterator
 from itertools import islice
 from math import ceil
 from contextlib import contextmanager
@@ -29,7 +29,7 @@ Development info:
 INTEGRATION_NAME = 'ThreatConnect Feed'
 INTEGRATION_COMMAND_NAME = 'tc'
 INTEGRATION_CONTEXT_NAME = 'ThreatConnect'
-COMMAND_OUTPUT = Tuple[str, Dict[str, Any], Dict[str, Any]]
+COMMAND_OUTPUT = Tuple[str, Union[Dict[str, Any], List[Any]], Union[Dict[str, Any], List[Any]]]
 INDICATOR_MAPPING_NAMES = {
     'Address': FeedIndicatorType.IP,
     'Host': FeedIndicatorType.Host,
@@ -54,7 +54,7 @@ def susspress_stdout():
     sys.stdout = original_stdout
 
 
-def calculate_dbot_score(threat_assess_score: int) -> str:
+def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) -> int:
     """ Calculate dbot score by ThreatConnect assess score (0-500) to range of 0-3:
         1. feed dev docs:https://xsoar.pan.dev/docs/integrations/feeds
         2. For more info - https://threatconnect.com/blog/quickly-assess-maliciousness-suspicious-activity-analyze/
@@ -65,7 +65,11 @@ def calculate_dbot_score(threat_assess_score: int) -> str:
     Returns:
         int: Calculated DbotScore (range 0-3).
     """
-    return ceil(threat_assess_score / (500 / 3))
+    score = 0
+    if isinstance(threat_assess_score, int):
+        score = ceil(threat_assess_score / (500 / 3))
+
+    return score
 
 
 def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
@@ -79,7 +83,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """
     return {
         "value": indicator.get('summary'),
-        "type": INDICATOR_MAPPING_NAMES.get(indicator.get('type')),
+        "type": INDICATOR_MAPPING_NAMES.get(indicator.get('type', '')),
         "rawJSON": indicator,
         "score": calculate_dbot_score(indicator.get("threatAssessScore"))
     }
@@ -92,6 +96,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 
 class Client:
     """Object represnt a client for ThreatConnect actions"""
+
     def __init__(self):
         # Must suspress stdout due worng handling docker loop excutor.
         with susspress_stdout():
@@ -102,7 +107,7 @@ class Client:
             "tc_api_path": demisto.getParam("tc_api_path"),
         })
 
-    def get_owners(self) -> Iterable:
+    def get_owners(self) -> Iterator[Any]:
         """Get indicators owners - helping configuring the feed integration.
 
         Yields:
@@ -110,8 +115,8 @@ class Client:
         """
         return self._client.ti.owner().many()
 
-    def get_indicators(self, offset: Optional[int] = 0, limit: Optional[int] = None, owners: Optional[str] = None) \
-            -> Iterable:
+    def get_indicators(self, offset: int = 0, limit: Optional[int] = None, owners: Optional[str] = None) \
+            -> Iterator[Any]:
         """ Get indicators from threatconnect.
 
         Args:
@@ -180,12 +185,12 @@ def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    raw_response = client.get_indicators(
+    raw_response: Iterator[Any] = client.get_indicators(
         owners=argToList(demisto.getArg('owners') or demisto.getParam('owners')),
         limit=demisto.getArg('limit'),
         offset=demisto.getArg('offset'))
-    readable_output = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                      t=[parse_indicator(indicator) for indicator in raw_response])
+    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+                                           t=[parse_indicator(indicator) for indicator in raw_response])
 
     return readable_output, {}, list(raw_response)
 
@@ -201,9 +206,9 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    raw_response: List = client.get_owners()
-    readable_output = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                      t=list(raw_response))
+    raw_response: Iterator[Any] = client.get_owners()
+    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+                                           t=list(raw_response))
 
     return readable_output, {}, list(raw_response)
 
