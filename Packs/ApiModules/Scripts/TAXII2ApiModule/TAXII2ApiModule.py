@@ -1,11 +1,10 @@
-from requests.sessions import merge_setting, CaseInsensitiveDict
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 from typing import Union, Optional, List, Dict, Tuple
 from requests import HTTPError
+from requests.sessions import merge_setting, CaseInsensitiveDict
 import re
 import types
 import urllib3
