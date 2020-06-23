@@ -2865,6 +2865,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Azure AD Connect Health Feed",
+            "playbookID": "FeedAzureADConnectHealth_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Zoom Feed",
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
