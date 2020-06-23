@@ -1240,6 +1240,25 @@ def test_highriskemployee_remove_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(expected)
 
 
+def test_fetch_when_no_significant_file_categories_ignores_filter(code42_fetch_incidents_mock, mocker):
+    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace('"isSignificant": true', '"isSignificant": false')
+    alert_details_response = create_mock_code42_sdk_response(mocker, response_text)
+    code42_fetch_incidents_mock.alerts.get_details.return_value = alert_details_response
+    client = create_client(code42_fetch_incidents_mock)
+    _, _, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=None,
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    actual_query = str(code42_fetch_incidents_mock.securitydata.search_file_events.call_args[0][0])
+    assert "fileCategory" not in actual_query
+    assert "IMAGE" not in actual_query
+
+
 def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
     client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_get_all_command(client, {})
