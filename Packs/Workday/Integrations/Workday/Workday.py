@@ -239,7 +239,6 @@ class Client(BaseClient):
         self.username = username
         self.password = password
 
-    # TODO: fill request according to params
     def list_workers(self, page, count, employee_id=None) -> Tuple:
         if employee_id:
             body = GET_EMPLOYEE_BY_ID.format(
