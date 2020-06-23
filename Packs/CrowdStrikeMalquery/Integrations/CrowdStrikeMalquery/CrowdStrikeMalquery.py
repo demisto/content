@@ -9,13 +9,16 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# TODO - make sure to handle HTTP 429:
-#  The MalQuery API is rate-limited based on your subscription. Each customer can make a number of searches and
-#  downloads per month. If you reach your monthly quota, MalQuery API requests return an HTTP 429 status.
-
-
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+VENDOR_NAME = 'CrowdStrike Malquery'
+DBOT_SCORE = {
+    'unknown': 0,
+    'clean': 1,
+    'unwanted (PUA)': 2,
+    'malware': 3,
+    'malicious': 3,
+}
 
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
@@ -69,13 +72,14 @@ class Client(BaseClient):
 
     def get_access_token(self, new_token=False):
         """
-            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+           Obtains access and refresh token from server.
+           Access token is used and stored in the integration context until expiration time.
+           After expiration, new refresh token and access token are obtained and stored in the
+           integration context.
 
-            :param new_token: If set to True will generate a new token regardless of time passed
-
-            :rtype: ``str``
-            :return: Token
-        """
+           Returns:
+               str: Access token that will be added to authorization header.
+       """
         now = datetime.now()
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
@@ -137,13 +141,35 @@ class Client(BaseClient):
         params = {'ids': request_id}
         return self.http_request(method="GET", url_suffix='/entities/requests/v1', params=params)
 
+    def get_quotas(self):
+        return self.http_request(method="GET", url_suffix='/aggregates/quotas/v1')
+
+    def file_download(self, file_id):
+        headers = {"accept": "application/octet-stream"}
+        params = {'ids': file_id}
+        return self.http_request(method="GET", url_suffix='/entities/download-files/v1', headers=headers, params=params,
+                                 resp_type="response")
+
+    def samples_multidownload(self, body):
+        return self.http_request(method="POST", url_suffix='/entities/samples-multidownload/v1', json_data=body)
+
+    def fetch_samples(self, job_id):
+        headers = {"accept": "application/zip"}
+        params = {'ids': job_id}
+        return self.http_request(method="GET", url_suffix='/entities/samples-fetch/v1', headers=headers, params=params,
+                                 resp_type="response")
+
+    def get_files_metadata(self, files_ids):
+        params = {'ids': files_ids}
+        return self.http_request(method="GET", url_suffix='/entities/metadata/v1', params=params)
+
 
 def test_module(client: Client, args: dict):
     """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+    Returning 'ok' indicates that an access token was obtained successfully. Connection to the service is successful.
 
     Args:
-        client: HelloWorld client
+        client:  Client
 
     Returns:
         'ok' if test passed, anything else will fail the test.
@@ -156,8 +182,6 @@ def test_module(client: Client, args: dict):
     return 'ok'
 
 
-# all the commands return request_id in order to question the server onc again. do we wnat to genric polling it or
-# poll the results ourselves?
 def exact_search_command(client: Client, args: dict) -> CommandResults:
     pattern_names = ['hex', 'ascii', 'wide_string']
     patterns = [
@@ -171,12 +195,11 @@ def exact_search_command(client: Client, args: dict) -> CommandResults:
     if not patterns:
         raise DemistoException("You must provide a query to search in the following patterns: Hex, ASCII, Wide string")
 
-    # TODO: Check how a comma separated args returns and validate values types are the same as the api
     # dates format: YYYY/MM/DD
     query_filters = {
         "limit": int(args.get('limit')) if args.get('limit') else None,
-        "filter_meta": args.get('filter_meta'),
-        "filter_filetypes": args.get('file_types'),
+        "filter_meta": argToList(args.get('filter_meta')),
+        "filter_filetypes": argToList(args.get('file_types')),
         "max_size": args.get('max_size'),
         "min_size": args.get('min_size'),
         "max_date": args.get('max_date'),
@@ -213,7 +236,7 @@ def fuzzy_search_command(client: Client, args: dict) -> CommandResults:
 
     query_filters = {
         "limit": int(args.get('limit')) if args.get('limit') else None,
-        "filter_meta": args.get('filter_meta'),
+        "filter_meta": argToList(args.get('filter_meta')) if args.get('filter_meta') else None,
      }
     options = remove_None_values_keys(query_filters)
     body = {"options": options, "patterns": patterns}
@@ -232,16 +255,15 @@ def fuzzy_search_command(client: Client, args: dict) -> CommandResults:
         raw_response=raw_response)
 
 
-# TODO: Need to check with the yara_rule
+# TODO: Need to check with the yara_rule - command wasnt tested
 def hunt_command(client: Client, args: dict) -> CommandResults:
     yara_rule = args.get('yara_rule')
 
-    # TODO: Check how a comma separated args returns and validate values types are the same as the api
     # dates format: YYYY/MM/DD
     query_filters = {
         "limit": int(args.get('limit')) if args.get('limit') else None,
-        "filter_meta": args.get('filter_meta'),
-        "filter_filetypes": args.get('file_types'),
+        "filter_meta": argToList(args.get('filter_meta')),
+        "filter_filetypes": argToList(args.get('file_types')),
         "max_size": args.get('max_size'),
         "min_size": args.get('min_size'),
         "max_date": args.get('max_date'),
@@ -253,7 +275,6 @@ def hunt_command(client: Client, args: dict) -> CommandResults:
         "Request_ID": raw_response.get('meta', {}).get('reqid'),
         "Status": raw_response.get('meta', {}).get('status')
     }
-
     human_readable = tableToMarkdown('Search Result', entry_context, removeNull=True)
 
     return CommandResults(
@@ -264,8 +285,7 @@ def hunt_command(client: Client, args: dict) -> CommandResults:
         raw_response=raw_response)
 
 
-# TODO: ask arseny how the context should look like
-def get_request_command(client: Client, args: dict):
+def get_request_command(client: Client, args: dict) -> CommandResults:
     request_id = args.get('request_id')
     raw_response = client.get_request(request_id)
     resources = raw_response.get('resources')
@@ -274,7 +294,6 @@ def get_request_command(client: Client, args: dict):
         "Status": raw_response.get('meta', {}).get('status'),
         "Resources_Found": resources
     }
-
     human_readable = tableToMarkdown('Search Result', entry_context, removeNull=True)
 
     return CommandResults(
@@ -285,38 +304,104 @@ def get_request_command(client: Client, args: dict):
         raw_response=raw_response)
 
 
-def get_file_metadata_command():
-    pass
+def get_files_metadata_command(client: Client, args: dict):
+    indicator_type = 'File'
+    files_ids = argToList(args.get('files_ids'))
+    raw_response = client.get_files_metadata(files_ids)
+    files = raw_response.get('resources', [])
+    human_readable = ''
+    file_indicator_list = []
+
+    for file in files:
+        file_label = file.get('label')
+        sha256 = file.get('sha256')
+        dbot_score = Common.DBotScore(
+            indicator=sha256,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=VENDOR_NAME,
+            score=DBOT_SCORE[file_label]
+        )
+        file_entry = Common.File(sha256=sha256, dbot_score=dbot_score)
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
+        md = tableToMarkdown(table_name, file, removeNull=True)
+        human_readable += md
+        file_indicator_list.append(file_entry)
+
+    command_results = CommandResults(
+        outputs_prefix='Malquery.File',
+        outputs_key_field='IndicatorValue',
+        outputs=files,
+        readable_output=human_readable,
+        raw_response=raw_response,
+        indicators=file_indicator_list)
+
+    return command_results
 
 
-def file_download_command():
-    pass
+# TODO: Check if its fine with demisto.results instead of commandResults
+def file_download_command(client: Client, args: dict):
+    file_id = args.get('file_id')
+    raw_response = client.file_download(file_id)
+    try:
+        content = raw_response.content
+    except Exception as e:
+        raise DemistoException(
+            f"Failed to load file data. \n {e}")
+
+    demisto.results(fileResult(file_id, content))
 
 
-def sample_multidownload_command():
-    pass
+def samples_multidownload_command(client: Client, args: dict) -> CommandResults:
+    samples = argToList(args.get('samples'))
+    body = {"samples": samples}
+    raw_response = client.samples_multidownload(body)
+
+    entry_context = {
+        "Request_ID": raw_response.get('meta', {}).get('reqid'),
+        "Status": raw_response.get('meta', {}).get('status')
+    }
+    human_readable = tableToMarkdown('Samples Multidownload Result', entry_context, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='Malquery',
+        outputs_key_field='Request_ID',
+        outputs=entry_context,
+        raw_response=raw_response)
 
 
-def sample_fetch_command():
-    pass
+def samples_fetch_command(client: Client, args: dict):
+    job_id = args.get('job_id')
+    raw_response = client.fetch_samples(job_id)
+    content = raw_response.content
+    demisto.results(fileResult(job_id, content))
 
 
-def get_ratelimit_command():
-    pass
+def get_ratelimit_command(client: Client, args: dict) -> CommandResults:
+    raw_response = client.get_quotas()
+    meta = raw_response.get('meta', {})
+    headers = ['hunt_count', 'download_count', 'monitor_count', 'hunt_limit', 'download_limit', 'monitor_limit',
+               'refresh_time', 'days_left']
+    human_readable = tableToMarkdown('Quota Data', meta, headers=headers, removeNull=True)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='Malquery.Quota_Data',
+        outputs_key_field='refresh_time',
+        outputs=meta,
+        raw_response=raw_response)
 
 
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    # TODO: add typing
     params = demisto.params()
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
-    base_url = urljoin(params.get('base_url', '').rstrip('/'), '/malquery')
+    client_id: str = params.get('client_id')
+    client_secret: str = params.get('client_secret')
+    base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/malquery')
 
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate: bool = not params.get('insecure', False)
+    proxy: bool = params.get('proxy', False)
 
     commands = {
         'test-module': test_module,
@@ -324,10 +409,10 @@ def main():
         'cs-malquery-fuzzy-search': fuzzy_search_command,
         'cs-malquery-hunt': hunt_command,
         'cs-malquery-request-get-status': get_request_command,
-        'file': get_file_metadata_command,
+        'file': get_files_metadata_command,
         'cs-malquery-file-download': file_download_command,
-        'cs-malquery-sample-multidownload': sample_multidownload_command,
-        'cs-malquery-sample-fetch': sample_fetch_command,
+        'cs-malquery-samples-multidownload': samples_multidownload_command,
+        'cs-malquery-sample-fetch': samples_fetch_command,
         'cs-malquery-ratelimit-get': get_ratelimit_command,
 
     }
