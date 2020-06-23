@@ -157,6 +157,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: conditional task to verify a valid email exists to send the report to.
     nexttasks:
       '#default#':
       - "6"
