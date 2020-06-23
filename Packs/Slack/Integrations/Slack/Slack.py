@@ -6,7 +6,7 @@ from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
 from distutils.util import strtobool
-from typing import Tuple, Dict, List, Optional, Union
+from typing import Any, Tuple, Dict, List, Optional, Union
 import asyncio
 import concurrent
 import os
@@ -76,7 +76,6 @@ BOT_NAME: str
 BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
-SYNC_CONTEXT: bool
 
 ''' HELPER FUNCTIONS '''
 
@@ -254,6 +253,9 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
     Returns:
         The slack API response.
     """
+    if body is None:
+        body = {}
+
     set_name_and_icon(body, method)
     total_try_time = 0
     while True:
@@ -295,6 +297,9 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
     Returns:
         The slack API response.
     """
+    if body is None:
+        body = {}
+
     set_name_and_icon(body, method)
     total_try_time = 0
     while True:
@@ -963,8 +968,8 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
     Processes an incident creation message
     Args:
         message: The creation message
-        user_name The name of the user in Slack
-        user_email The email of the user in Slack
+        user_name: The name of the user in Slack
+        user_email: The email of the user in Slack
         demisto_user: The demisto user associated with the request (if exists)
 
     Returns:
@@ -1061,7 +1066,7 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
 
 
 @slack.RTMClient.run_on(event='message')
-async def listen(**payload: dict):
+async def listen(**payload: Any):
     """
     Listens to Slack RTM messages
 
