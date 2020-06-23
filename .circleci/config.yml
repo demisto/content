@@ -624,6 +624,10 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
+      - run:
+          name: Store Artifacts to GCS
+          command: ./Tests/scripts/upload_artifacts.sh
+          when: always
 
 workflows:
   version: 2
