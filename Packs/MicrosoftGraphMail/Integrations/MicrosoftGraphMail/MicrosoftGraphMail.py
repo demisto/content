@@ -1381,7 +1381,9 @@ def send_email_command(client: MsGraphClient, args):
     email = args.get('from', client._mailbox_to_fetch)
     suffix_endpoint = f'/users/{email}/sendMail'
     message_content = MsGraphClient.build_message(**prepared_args)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
+    headers = {'Prefer': 'outlook.allow-unsafe-html'}
+    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text",
+                                  headers=headers)
 
     message_content.pop('attachments', None)
     message_content.pop('internet_message_headers', None)
