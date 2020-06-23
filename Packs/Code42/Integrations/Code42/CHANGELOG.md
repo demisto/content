@@ -1,6 +1,6 @@
 ## [Unreleased]
 Added new commands:
-    - **Code42GetDepartingEmployees** which gets departing employees and alerts for each employee.
+    - **Code42GetDepartingEmployees** automation script which gets departing employees with alerts.
     - **code42-alert-search** that searches alerts by username.
     - **code42-departingemployee-get-all** that gets all the employees on the Departing Employee List.
     - **code42-highriskemployee-add** that takes a username and adds the employee to the High Risk Employee List.
