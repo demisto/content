@@ -106,7 +106,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "uniqueprotocols",
+								"fieldId": "protocols",
 								"height": 22,
 								"id": "3ca756a0-b3df-11ea-9b75-4d808d055f05",
 								"index": 2,
