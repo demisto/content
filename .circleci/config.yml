@@ -162,7 +162,7 @@ jobs:
             [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
             ./Tests/scripts/validate.sh
 
-            validate_exit_code = $?
+            validate_exit_code=$?
 
             if [ validate_exit_code -ne 0 ] && [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
               then
