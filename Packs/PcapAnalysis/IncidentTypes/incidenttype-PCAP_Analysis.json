@@ -1,7 +1,6 @@
 {
 	"id": "PCAP Analysis",
 	"version": -1,
-	"shouldCommit": false,
 	"locked": false,
 	"name": "PCAP Analysis",
 	"color": "#DBDBDB",
