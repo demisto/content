@@ -1,0 +1,3 @@
+!guardian-search query=`links | where from match 192.168.10.2 | where protocol match ssh`
+!guardian-list-all-assets
+!guardian-find-ip-by-mac mac=00:0c:29:22:50:26

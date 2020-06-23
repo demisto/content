@@ -1,0 +1,85 @@
+category: Network Security
+commonfields:
+  id: Nozomi_Guardian
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use this integration to query run a query for ICS data, list all assets in Nozomi Guardian, and find an IP address by a MAC address.
+display: NozomiGuardian
+name: Nozomi_Guardian
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The search query. For example "assets | where vendor match
+        Dell Inc."
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Runs the specified query in Nozomi Guardian.
+    execution: false
+    name: guardian-search
+    outputs:
+    - contextPath: NozomiGuardian.Queries
+      description: Query results.
+      type: String
+  - deprecated: false
+    description: Lists all assets discovered by Nozomi Guardian.
+    execution: false
+    name: guardian-list-all-assets
+    outputs:
+    - contextPath: NozomiGuardian.Assets
+      description: Nozomi Guardian assets.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The MAC address value.
+      isArray: false
+      name: mac
+      required: true
+      secret: false
+    deprecated: false
+    description: Finds an IP address according to the specified MAC address.
+    execution: false
+    name: guardian-find-ip-by-mac
+    outputs:
+    - contextPath: NozomiGuardian.Mappings
+      description: IP to MAC address mappings.
+      type: Unknown
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- NozomiGuardian-Test
