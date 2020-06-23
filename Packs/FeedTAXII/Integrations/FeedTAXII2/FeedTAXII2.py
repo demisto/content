@@ -44,7 +44,8 @@ def fetch_indicators_command(client, initial_interval, limit, last_run_ctx) -> T
     :param last_run_ctx: last run dict with {collection_id: last_run_time string}
     :return: indicators in cortex TIM format
     """
-    initial_interval, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
+    if initial_interval:
+        initial_interval, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
     if client.collection_to_fetch is None:
         # fetch all collections
         if client.collections is None:

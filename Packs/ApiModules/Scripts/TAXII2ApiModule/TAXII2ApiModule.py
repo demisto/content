@@ -41,6 +41,7 @@ HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
 )
 
 TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+TAXII_TIME_FORMAT_NO_MS = "%Y-%m-%dT%H:%M:%SZ"
 
 STIX_2_TYPES_TO_CORTEX_TYPES = {
     "ipv4-addr": FeedIndicatorType.IP,
@@ -62,14 +63,14 @@ STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
 
 class Taxii2FeedClient:
     def __init__(
-        self,
-        url,
-        collection_to_fetch,
-        proxies,
-        verify,
-        username=None,
-        password=None,
-        field_map=None,
+            self,
+            url,
+            collection_to_fetch,
+            proxies,
+            verify,
+            username=None,
+            password=None,
+            field_map=None,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -200,7 +201,7 @@ class Taxii2FeedClient:
         self.init_collection_to_fetch()
 
     def build_iterator(
-        self, limit: int = -1, added_after: str = None
+            self, limit: int = -1, added_after: str = None
     ) -> List[Dict[str, str]]:
         """
         Polls the taxii server and builds a list of cortex indicators objects from the result
@@ -222,7 +223,7 @@ class Taxii2FeedClient:
         return indicators
 
     def extract_indicators_from_envelope_and_parse(
-        self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
+            self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
     ) -> List[Dict[str, str]]:
         """
         Extract indicators from an 2.0 envelope generator, or 2.1 envelope (which then polls and repeats process)
@@ -280,7 +281,7 @@ class Taxii2FeedClient:
         return indicators
 
     def poll_collection(
-        self, page_size: int, added_after: Optional[str] = None
+            self, page_size: int, added_after: Optional[str] = None
     ) -> Union[types.GeneratorType, Dict[str, str]]:
         """
         Polls a taxii collection
@@ -312,7 +313,7 @@ class Taxii2FeedClient:
 
     @staticmethod
     def extract_indicators_from_stix_objects(
-        stix_objs: List[Dict[str, str]]
+            stix_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Extracts indicators from taxii objects
@@ -326,7 +327,7 @@ class Taxii2FeedClient:
         return indicators_objs
 
     def parse_indicators_list(
-        self, indicators_objs: List[Dict[str, str]]
+            self, indicators_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Parses a list of indicator objects, and updates the client.latest_fetched_indicator_created
@@ -341,18 +342,14 @@ class Taxii2FeedClient:
                 if self.latest_fetched_indicator_created is None:
                     self.latest_fetched_indicator_created = indicator_created_str
                 else:
-                    last_datetime = datetime.strptime(
-                        self.latest_fetched_indicator_created, TAXII_TIME_FORMAT
-                    )
-                    indicator_created_datetime = datetime.strptime(
-                        indicator_created_str, TAXII_TIME_FORMAT  # type: ignore[arg-type]
-                    )
+                    last_datetime = self.created_time_to_datetime(self.latest_fetched_indicator_created)
+                    indicator_created_datetime = self.created_time_to_datetime(indicator_created_str)
                     if indicator_created_datetime > last_datetime:
                         self.latest_fetched_indicator_created = indicator_created_str
         return indicators
 
     def parse_single_indicator(
-        self, indicator_obj: Dict[str, str]
+            self, indicator_obj: Dict[str, str]
     ) -> List[Dict[str, str]]:
         """
         Parses a single indicator object
@@ -394,11 +391,11 @@ class Taxii2FeedClient:
         return indicators
 
     def get_indicators_from_indicator_groups(
-        self,
-        indicator_groups: List[Tuple[str, str]],
-        indicator_obj: Dict[str, str],
-        indicator_types: Dict[str, str],
-        field_map: Dict[str, str],
+            self,
+            indicator_groups: List[Tuple[str, str]],
+            indicator_obj: Dict[str, str],
+            indicator_types: Dict[str, str],
+            field_map: Dict[str, str],
     ) -> List[Dict[str, str]]:
         """
         Get indicators from indicator regex groups
@@ -424,7 +421,7 @@ class Taxii2FeedClient:
         return indicators
 
     def extract_indicator_groups_from_pattern(
-        self, pattern: str, regexes: List
+            self, pattern: str, regexes: List
     ) -> List[Tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern
@@ -461,3 +458,15 @@ class Taxii2FeedClient:
         if fields:
             indicator["fields"] = fields
         return indicator
+
+    @staticmethod
+    def created_time_to_datetime(s_time):
+        """
+        Converts datetime to str in "%Y-%m-%dT%H:%M:%S.%fZ" format
+        :param s_time: time in string format
+        :return: datetime
+        """
+        try:
+            return datetime.strptime(s_time, TAXII_TIME_FORMAT)
+        except ValueError:
+            return datetime.strptime(s_time, TAXII_TIME_FORMAT_NO_MS)
