@@ -496,7 +496,8 @@ script:
             """Determine if file categorization is significant"""
             observed_file_categories = self._observation_data["fileCategories"]
             categories = [c["category"].upper() for c in observed_file_categories if c["isSignificant"]]
-            return FileCategory.is_in(categories)
+            if categories:
+                return FileCategory.is_in(categories)
 
 
     def map_observation_to_security_query(observation, actor):
