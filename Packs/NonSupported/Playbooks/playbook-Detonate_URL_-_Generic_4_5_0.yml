@@ -24,7 +24,6 @@ tasks:
       - "15"
       - "16"
       - "17"
-      - "18"
     separatecontext: false
     view: |-
       {
@@ -345,40 +344,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 1830fd50-9a15-487c-89fa-e3b2fe5e7dab
-    type: playbook
-    task:
-      id: 1830fd50-9a15-487c-89fa-e3b2fe5e7dab
-      version: -1
-      name: Detonate URL - Group-IB TDS Polygon
-      playbookName: Detonate URL - Group-IB TDS Polygon
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 3050,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 3380,
+        "width": 2960,
         "x": 50,
         "y": 50
       }
@@ -721,6 +694,7 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
-fromversion: 5.0.0
+fromversion: 4.0.0
+toversion: 4.5.0
 tests:
-- Detonate URL - Generic Test
+- No tests

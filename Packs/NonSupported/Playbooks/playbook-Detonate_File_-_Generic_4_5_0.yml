@@ -29,7 +29,6 @@ tasks:
       - "18"
       - "19"
       - "20"
-      - "21"
     separatecontext: false
     view: |-
       {
@@ -566,41 +565,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: a81c19c3-5817-43cf-8275-77825779d197
-    type: playbook
-    task:
-      id: a81c19c3-5817-43cf-8275-77825779d197
-      version: -1
-      name: Detonate File - Group-IB TDS Polygon
-      playbookName: Detonate File - Group-IB TDS Polygon
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": -370,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 5100,
-        "x": -370,
+        "width": 4680,
+        "x": 50,
         "y": 50
       }
     }
@@ -1045,6 +1018,7 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
-fromversion: 5.0.0
+fromversion: 4.0.0
+toversion: 4.5.0
 tests:
-- Detonate File - Generic Test
+- No tests
