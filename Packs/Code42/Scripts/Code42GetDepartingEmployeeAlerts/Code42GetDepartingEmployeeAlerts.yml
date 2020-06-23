@@ -1,3 +1,8 @@
+args:
+- defaultValue: 10
+  description: To limit results to x number of employees with the highest alert count.
+  name: top
+  type: number
 comment: Gets all departing employees and alerts for each.
 commonfields:
   id: 468c8e6f-6f50-486f-8cde-7dabe4cbeb2b
@@ -15,4 +20,5 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
+tags: []
 type: python
