@@ -1895,18 +1895,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Attachment - Incident Starter",
-            "timeout": 1200,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Have I Been Pwned? V2",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ]
-        },
-        {
-            "playbookID": "Phishing v2 Test - Attachment - Real",
+            "fromversion": "6.0.0",
             "timeout": 1200,
             "nightly": true,
             "integrations": [
