@@ -286,11 +286,11 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    user: str = params.get('credentials').get('identifier')
+    user: str = params.get('credentials', {}).get('identifier')
     base_url: str = params.get('base_url', "").rstrip('/')
     tenant_name: str = params.get('tenant_name')
     username = f"{user}@{tenant_name}"
-    password: str = params.get('credentials').get('password')
+    password: str = params.get('credentials', {}).get('password')
     token = params.get('token')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
