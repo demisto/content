@@ -48,6 +48,9 @@ API_ENDPOINTS = {
     },
     "assets/certificates": {
         "version": 2
+    },
+    "assets/ips": {
+        "version": 2
     }
 }
 
@@ -86,7 +89,7 @@ def make_url(endpoint):
     """
     url = "{BASE_URL}/api/v{version}/{endpoint}".format(
         BASE_URL=BASE_URL,
-        version=API_ENDPOINTS[endpoint]['version'],
+        version=API_ENDPOINTS.get(endpoint, {}).get('version', 2),
         endpoint=endpoint
     )
     return url
@@ -617,6 +620,18 @@ def get_expanse_exposure_context(data):
     }
 
 
+def get_expanse_certificate_to_domain_context(common_name, data):
+    """
+    provides custom context information for domains looked up via certificate
+    """
+    return {
+        "SearchTerm": common_name,
+        "TotalDomainCount": len(data),
+        "FlatDomainList": [domain['domain'] for domain in data],
+        "DomainList": data
+    }
+
+
 def fetch_events_incidents_command(start_date, end_date, token, next_=None):
     """
     retrieve active exposures from Expanse API and create incidents
@@ -678,6 +693,7 @@ def fetch_incidents_command():
     last_run = demisto.getLastRun()
     start_date = yesterday
     end_date = yesterday
+    completed_for_today = False
 
     if "start_time" not in last_run or "complete_for_today" not in last_run:
         # first time integration is running
@@ -699,8 +715,10 @@ def fetch_incidents_command():
     # Check if we've stored any events in the integration cache
     cache = demisto.getIntegrationContext()
     stored_incidents = cache.get("incidents")
+    demisto.debug("Checking for stored incidents")
 
     if stored_incidents is None:
+        demisto.debug("Did not detect any stored incidents")
         while more_events:
             event_incidents, page_token = fetch_events_incidents_command(start_date, end_date, token, page_token)
             for incident in event_incidents:
@@ -731,16 +749,21 @@ def fetch_incidents_command():
             demisto.incidents(incidents)
 
         # Add remaining incidents to cache
+        demisto.debug("Updating cache to store {} incidents".format(len(incidents)))
         cache["incidents"] = incidents
         demisto.setIntegrationContext(cache)
     else:
+        demisto.debug("Found {} stored incidents".format(len(stored_incidents)))
         # Send next PAGE_LIMIT number of incidents to demisto
         if len(stored_incidents) > PAGE_LIMIT:
             incidents_to_send = stored_incidents[:PAGE_LIMIT]
             del stored_incidents[:PAGE_LIMIT]
+            demisto.debug("Updating cache to store {} incidents".format(len(stored_incidents)))
         else:
             incidents_to_send = list(stored_incidents)
             stored_incidents = None
+            completed_for_today = False
+            demisto.debug("Updating cache to store 0 incidents")
         demisto.incidents(incidents_to_send)
 
         # Update Cache
@@ -749,7 +772,7 @@ def fetch_incidents_command():
 
     # Save last_run
     demisto.setLastRun({
-        "complete_for_today": True,
+        "complete_for_today": completed_for_today,
         "start_time": yesterday
     })
 
@@ -831,32 +854,28 @@ def domain_command():
 
 def certificate_command():
     """
-    searches by domain name for certificate information
+    searches by common name for certificate information
     """
-    search = demisto.args()['common_name']
+    common_name = demisto.args()['common_name']
+
     params = {
-        "commonNameSearch": search
+        "commonNameSearch": common_name
     }
     token = do_auth()
-    results = http_request('GET', 'assets/certificates', params, token=token)
-    try:
-        certs = results['data']
-        if len(results['data']) == 0:
-            demisto.results("No data found")
-            return
-    except Exception:
+    certs = _fetch_certificates(params=params, token=token)
+    if len(certs) == 0:
         demisto.results("No data found")
         return
 
     cert = certs[0]  # just return the first one
-    cert['search'] = search
+    cert['search'] = common_name
 
     expanse_cert_context = get_expanse_certificate_context(cert)
 
     ec = {
         'Expanse.Certificate(val.SearchTerm == obj.SearchTerm)': expanse_cert_context
     }
-    human_readable = tableToMarkdown("Certificate information for: {search}".format(search=search), expanse_cert_context)
+    human_readable = tableToMarkdown("Certificate information for: {search}".format(search=common_name), expanse_cert_context)
 
     return_outputs(human_readable, ec, cert)
 
@@ -939,6 +958,115 @@ def exposures_command():
     return_outputs(human_readable, ec, exposures)
 
 
+def domains_for_certificate_command():
+    """
+
+    :return:
+    """
+    search = demisto.args()['common_name']
+    params = {
+        "commonNameSearch": search
+    }
+    token = do_auth()
+
+    observed_ips = []
+    matching_domains = []
+
+    certificates = _fetch_certificates(params=params, token=token)
+    for certificate in certificates:
+        certificate_details = _fetch_certificate(md5_hash=certificate['certificate']['md5Hash'], token=token)
+        for ip in certificate_details['details']['recentIps']:
+            observed_ips.append(ip['ip'])
+
+    for ip in observed_ips:
+        params = {
+            'inetSearch': ip,
+            'assetType': 'DOMAIN'
+        }
+        matching_domains += _fetch_ips(params=params, token=token)
+
+    if len(matching_domains) == 0:
+        demisto.results("No data found")
+        return
+
+    context = get_expanse_certificate_to_domain_context(common_name=search, data=matching_domains)
+
+    ec = {
+        'Expanse.IPDomains(val.SearchTerm == obj.SearchTerm)': context
+    }
+
+    raw_domain_objects = context['DomainList']
+    del context['DomainList']  # Remove full objects from human readable response
+    human_readable = tableToMarkdown("Expanse Domains matching Certificate Common Name: {search}".format(search=search),
+                                     context)
+    context['DomainList'] = raw_domain_objects
+    return_outputs(human_readable, ec, matching_domains)
+
+
+def _fetch_certificates(params, token):
+    """
+    Fetches all certificates that match the provided params.
+
+    :param params: Search parameters
+    :param token: Expanse Refresh token
+    :return: List of certificate objects
+    """
+    certificates = []
+    results = http_request('GET', 'assets/certificates', params, token=token)
+    try:
+        if len(results['data']) > 0:
+            certificates += results['data']
+            next_page = results.get('pagination', {}).get('next', None)
+            while next_page is not None:
+                params['pageToken'] = get_page_token(next_page)
+                results = http_request('GET', 'assets/certificates', params, token=token)
+                certificates += results['data']
+                next_page = results.get('pagination', {}).get('next', None)
+        return certificates
+    except Exception:
+        demisto.results("No data found")
+        return []
+
+
+def _fetch_certificate(md5_hash, token):
+    """
+    Returns details for a single certificate.
+
+    :param md5_hash: Search term for certificates
+    :param token: Expanse Refresh token
+    :return: Certificate details objects
+    """
+    try:
+        return http_request('GET', 'assets/certificates/{}'.format(md5_hash), {}, token=token)
+    except Exception:
+        demisto.results("No data found")
+        return {}
+
+def _fetch_ips(params, token):
+    """
+    Returns all ip results matching search params.
+
+    :param params: Search parameters
+    :param token: Expanse Refresh token
+    :return: List of ip objects
+    """
+    ips = []
+    results = http_request('GET', 'assets/ips', params, token=token)
+    try:
+        if len(results['data']) > 0:
+            ips += results['data']
+            next_page = results.get('pagination', {}).get('next', None)
+            while next_page is not None:
+                params['pageToken'] = get_page_token(next_page)
+                results = http_request('GET', 'assets/ips', params, token=token)
+                ips += results['data']
+                next_page = results.get('pagination', {}).get('next', None)
+        return ips
+    except Exception:
+        demisto.results("No data found")
+        return []
+
+
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
     if arg is None:
         if required is True:
@@ -1004,6 +1132,9 @@ def main():
 
         elif active_command == 'expanse-get-exposures':
             exposures_command()
+
+        elif active_command == 'expanse-get-domains-for-certificate':
+            domains_for_certificate_command()
 
     # Log exceptions
     except Exception as e:

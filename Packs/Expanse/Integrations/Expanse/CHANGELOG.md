@@ -1,5 +1,6 @@
 ## [Unreleased]
 - Respect configured page limit when fetching new incidents
+- Added support for the ***expanse-get-domains-for-certificate*** command.
 
 ## [20.5.2] - 2020-05-26
 - Added support for filtering incident creation by Expanse Exposure severity level.
