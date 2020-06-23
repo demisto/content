@@ -3,15 +3,10 @@
 	"kind": "details",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
 		"id": "PCAP Analysis",
 		"kind": "details",
 		"modified": "2020-06-22T17:22:25.200862806Z",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "PCAP Analysis",
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -497,7 +492,6 @@
 			}
 		],
 		"typeId": "PCAP Analysis",
-		"vcShouldIgnore": false,
 		"version": -1
 	},
 	"typeId": "PCAP Analysis",
