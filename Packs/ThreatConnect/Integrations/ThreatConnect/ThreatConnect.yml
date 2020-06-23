@@ -2370,7 +2370,7 @@ script:
       description: The type of the group to associate to.
       type: String
   dockerimage45: demisto/threatconnect-sdk
-  dockerimage: demisto/threatconnect-sdk:1.0.0.7659
+  dockerimage: demisto/threatconnect-sdk:1.0.0.8854
   isfetch: false
   runonce: false
   script: '-'
