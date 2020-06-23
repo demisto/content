@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "A pack used for the complete investigation of potential phishing incidents. It can retrieve emails from user inboxes, extract and analyze attachments, authenticate the email using SPF, DKIM and DMARC checks, provide reputation for links and email adresses involved, and contain and remediate the incident by blocking malicious indicators found in the process with analyst approval.",
     "support": "xsoar",
-    "currentVersion": "1.4.0",
+    "currentVersion": "1.6.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
