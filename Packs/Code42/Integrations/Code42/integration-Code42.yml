@@ -1196,12 +1196,6 @@ script:
       description: The severity of the alert.
       type: string
     description: Search alerts by username.
-
-
-
-
-
-
   - name: code42-departingemployee-add
     arguments:
     - name: username
