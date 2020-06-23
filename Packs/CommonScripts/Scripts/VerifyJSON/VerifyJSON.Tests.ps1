@@ -1,8 +1,12 @@
-. $PSScriptRoot\VerifyJSON.ps1
+BeforeAll {
+    . $PSScriptRoot\VerifyJSON.ps1
+}
 
 Describe 'VerifJSON' {
     Context "Valid Json" {
-        Mock ReturnOutputs {}
+        BeforeAll {
+            Mock ReturnOutputs {}
+        }        
         It 'Check Valid Json passes' {
             $demisto.ContextArgs = @{json = '{"test": "this"}' }
             Main
@@ -11,7 +15,9 @@ Describe 'VerifJSON' {
     }
 
     Context "InValid Json" {
-        Mock ReturnError {}
+        BeforeAll {
+            Mock ReturnError {}
+        }        
         It 'Check InValid Json fails' {
             $demisto.ContextArgs = @{json = '{"test": this"}' }
             Main
@@ -20,7 +26,10 @@ Describe 'VerifJSON' {
     }
 
     Context "Schema Validation" {
-        Mock ReturnError {}
+        BeforeAll {
+            Mock ReturnError {}
+        }
+        
         It 'Check InValid Json schema fails' {
             $schema = @'
 {

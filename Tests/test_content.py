@@ -202,8 +202,8 @@ def print_test_summary(tests_data_keeper, is_ami=True):
     if empty_mocks_count > 0:
         empty_mock_successes_msg = '\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':'
         print(empty_mock_successes_msg)
-        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n'\
-                            '\t Investigate the playbook and the integrations.\n'\
+        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+                            '\t Investigate the playbook and the integrations.\n' \
                             '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
         print(proxy_explanation)
         for playbook_id in empty_files:
@@ -398,6 +398,8 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         prints_manager.add_print_job(mock_recording_message, print, thread_index, include_timestamp=True)
 
     # Mock recording - no mock file or playback failure.
+    c = demisto_client.configure(base_url=c.api_client.configuration.host,
+                                 api_key=c.api_client.configuration.api_key, verify_ssl=False)
     succeed = run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                              test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                              prints_manager, thread_index=thread_index)
@@ -496,10 +498,29 @@ def create_result_files(tests_data_keeper):
         skipped_integrations_file.write('\n'.join(skipped_integration))
 
 
+def change_placeholders_to_values(placeholders_map, config_item):
+    """Replaces placeholders in the object to their real values
+
+    Args:
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
+        config_item: (json object)
+            Integration configuration object.
+
+    Returns:
+        dict. json object with the real configuration.
+    """
+    item_as_string = json.dumps(config_item)
+    for key, value in placeholders_map.items():
+        item_as_string = item_as_string.replace(key, value)
+    return json.loads(item_as_string)
+
+
 def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id,
-                           prints_manager, thread_index=0):
+                           prints_manager, placeholders_map, thread_index=0):
     for integration in integrations:
-        integration_params = [item for item in secret_params if item['name'] == integration['name']]
+        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+                              in secret_params if item['name'] == integration['name']]
 
         if integration_params:
             matched_integration_params = integration_params[0]
@@ -649,8 +670,9 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
                                      include_timestamp=True)
         return
 
+    placeholders_map = {'%%SERVER_HOST%%': server}
     are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
-                                            playbook_id, prints_manager, thread_index=thread_index)
+                                            playbook_id, prints_manager, placeholders_map, thread_index=thread_index)
     if not are_params_set:
         failed_playbooks.append(playbook_id)
         return
@@ -670,29 +692,51 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
              build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
 
 
-def get_and_print_server_numeric_version(tests_settings):
-    if tests_settings.is_local_run or not os.path.isfile('./Tests/images_data.txt'):
-        # TODO: verify this logic, it's a workaround because the test_image file does not exist on local run
-        return '99.99.98'  # latest
-    with open('./Tests/images_data.txt', 'r') as image_data_file:
-        image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
-        if len(image_data) != 1:
-            print('Did not get one image data for server version, got {}'.format(image_data))
-            return '99.99.98'  # latest
+def get_server_numeric_version(ami_env, is_local_run=False):
+    """
+    Gets the current server version
+    Arguments:
+        ami_env: (str)
+            AMI version name.
+        is_local_run: (bool)
+            when running locally, assume latest version.
 
-        server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-        if server_numeric_version:
-            server_numeric_version = server_numeric_version[0]
-        else:
-            server_numeric_version = '99.99.98'  # latest
+    Returns:
+        (str) Server numeric version
+    """
+    default_version = '99.99.98'
+    env_results_path = './env_results.json'
+    if is_local_run:
+        print_color(f'Local run, assuming server version is {default_version}', LOG_COLORS.GREEN)
+        return default_version
 
-        if server_numeric_version.count('.') == 1:
-            server_numeric_version += ".0"
+    if not os.path.isfile(env_results_path):
+        print_warning(f'Did not find {env_results_path} file, assuming server version is {default_version}.')
+        return default_version
 
-        print('Server image info: {}'.format(image_data[0]))
-        print('Server version: {}'.format(server_numeric_version))
+    with open(env_results_path, 'r') as json_file:
+        env_results = json.load(json_file)
 
-        return server_numeric_version
+    instances_ami_names = set([env.get('AmiName') for env in env_results if ami_env in env.get('Role', '')])
+    if len(instances_ami_names) != 1:
+        print_warning(f'Did not get one AMI Name, got {instances_ami_names}.'
+                      f' Assuming server version is {default_version}')
+        return default_version
+
+    instances_ami_name = list(instances_ami_names)[0]
+    extracted_version = re.findall(r'Demisto-(?:Circle-CI|MarketPlace)-Content-[\w-]+-([\d.]+)-[\d]{5}',
+                                   instances_ami_name)
+    if extracted_version:
+        server_numeric_version = extracted_version[0]
+    else:
+        server_numeric_version = default_version
+
+    # make sure version is three-part version
+    if server_numeric_version.count('.') == 1:
+        server_numeric_version += ".0"
+
+    print_color(f'Server version: {server_numeric_version}', LOG_COLORS.GREEN)
+    return server_numeric_version
 
 
 def get_instances_ips_and_names(tests_settings):
@@ -806,9 +850,10 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:
-        prints_manager.add_print_job(f'~~ Thread {thread_index}failed ~~\n{str(exc)}\n{traceback.format_exc()}',
+        prints_manager.add_print_job(f'~~ Thread {thread_index + 1} failed ~~\n{str(exc)}\n{traceback.format_exc()}',
                                      print_error, thread_index)
-        failed_playbooks.append(f'~~ Thread {thread_index} failed ~~')
+        prints_manager.execute_thread_prints(thread_index)
+        failed_playbooks.append(f'~~ Thread {thread_index + 1} failed ~~')
         raise
 
     finally:
@@ -823,7 +868,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                 ami.upload_mock_files(build_name, build_number)
 
         if playbook_skipped_integration and build_name == 'master':
-            comment = 'The following integrations are skipped and critical for the test:\n {}'.\
+            comment = 'The following integrations are skipped and critical for the test:\n {}'. \
                 format('\n- '.join(playbook_skipped_integration))
             add_pr_comment(comment)
 
@@ -862,7 +907,8 @@ def manage_tests(tests_settings):
         tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
 
     """
-    tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
+    tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
+                                                                     tests_settings.is_local_run)
     instances_ips = get_instances_ips_and_names(tests_settings)
     is_nightly = tests_settings.nightly
     number_of_instances = len(instances_ips)

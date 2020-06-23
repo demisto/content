@@ -13,4 +13,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.7.3.286
+dockerimage: demisto/jmespath:1.0.0.6980
