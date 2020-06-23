@@ -814,6 +814,9 @@ def main():
                                    'thread_index': thread_index})
                 threads_list.append(t)
             run_threads_list(threads_list)
+            prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
+            prints_manager.execute_thread_prints(0)
+            sleep(45)
 
         else:
             # install content packs in every server
