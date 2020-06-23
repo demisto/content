@@ -185,4 +185,4 @@ inputs: []
 outputs: []
 fromversion: 4.5.0
 tests:
-- No tests (auto formatted)
+  - Test-BPA_Integration
