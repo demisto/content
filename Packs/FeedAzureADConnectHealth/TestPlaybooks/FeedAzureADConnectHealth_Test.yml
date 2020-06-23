@@ -24,12 +24,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+  "1":
+    id: "1"
+    taskid: 66679745-8641-4210-8346-8ee4bddb40c7
     type: regular
     task:
-      id: '1'
+      id: 66679745-8641-4210-8346-8ee4bddb40c7
       version: -1
       name: DeleteContext
       description: ''
@@ -49,12 +49,12 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+  "2":
+    id: "2"
+    taskid: f552224e-3b19-4897-8fe3-0b280e1887ae
     type: regular
     task:
-      id: '2'
+      id: f552224e-3b19-4897-8fe3-0b280e1887ae
       version: -1
       name: azure-ad-health-get-indicators
       description: ''
@@ -72,12 +72,12 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+  "3":
+    id: "3"
+    taskid: f522224e-3b19-4897-8fe3-0b280e1887ae
     type: title
     task:
-      id: '3'
+      id: f522224e-3b19-4897-8fe3-0b280e1887ae
       version: -1
       name: Test Done
       type: title
