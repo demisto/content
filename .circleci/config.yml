@@ -170,7 +170,7 @@ jobs:
                 exit 1
             fi
 
-            let "exit_code = $code_1 + $code_2"
+            let "exit_code = $flake8_exit_code + $validate_exit_code"
             exit $exit_code
       - run:
           name: Secrets
