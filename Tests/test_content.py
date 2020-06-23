@@ -202,8 +202,8 @@ def print_test_summary(tests_data_keeper, is_ami=True):
     if empty_mocks_count > 0:
         empty_mock_successes_msg = '\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':'
         print(empty_mock_successes_msg)
-        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n'\
-                            '\t Investigate the playbook and the integrations.\n'\
+        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+                            '\t Investigate the playbook and the integrations.\n' \
                             '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
         print(proxy_explanation)
         for playbook_id in empty_files:
@@ -398,6 +398,8 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         prints_manager.add_print_job(mock_recording_message, print, thread_index, include_timestamp=True)
 
     # Mock recording - no mock file or playback failure.
+    c = demisto_client.configure(base_url=c.api_client.configuration.host,
+                                 api_key=c.api_client.configuration.api_key, verify_ssl=False)
     succeed = run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                              test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                              prints_manager, thread_index=thread_index)
@@ -496,10 +498,29 @@ def create_result_files(tests_data_keeper):
         skipped_integrations_file.write('\n'.join(skipped_integration))
 
 
+def change_placeholders_to_values(placeholders_map, config_item):
+    """Replaces placeholders in the object to their real values
+
+    Args:
+        placeholders_map: (dict)
+             Dict that holds the real values to be replaced for each placeholder.
+        config_item: (json object)
+            Integration configuration object.
+
+    Returns:
+        dict. json object with the real configuration.
+    """
+    item_as_string = json.dumps(config_item)
+    for key, value in placeholders_map.items():
+        item_as_string = item_as_string.replace(key, value)
+    return json.loads(item_as_string)
+
+
 def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id,
-                           prints_manager, thread_index=0):
+                           prints_manager, placeholders_map, thread_index=0):
     for integration in integrations:
-        integration_params = [item for item in secret_params if item['name'] == integration['name']]
+        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+                              in secret_params if item['name'] == integration['name']]
 
         if integration_params:
             matched_integration_params = integration_params[0]
@@ -649,8 +670,9 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
                                      include_timestamp=True)
         return
 
+    placeholders_map = {'%%SERVER_HOST%%': server}
     are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
-                                            playbook_id, prints_manager, thread_index=thread_index)
+                                            playbook_id, prints_manager, placeholders_map, thread_index=thread_index)
     if not are_params_set:
         failed_playbooks.append(playbook_id)
         return
@@ -846,7 +868,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                 ami.upload_mock_files(build_name, build_number)
 
         if playbook_skipped_integration and build_name == 'master':
-            comment = 'The following integrations are skipped and critical for the test:\n {}'.\
+            comment = 'The following integrations are skipped and critical for the test:\n {}'. \
                 format('\n- '.join(playbook_skipped_integration))
             add_pr_comment(comment)
 

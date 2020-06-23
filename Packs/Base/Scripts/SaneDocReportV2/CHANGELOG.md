@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Updating sane doc reports and adding customer logo. 
 
 ## [20.5.0] - 2020-05-12
 -
