@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added the *exclude_passed_checks* argument to the ***pan-os-bpa-get-job-results*** command, which gives the option to exclude passed checks.
 
 ## [20.5.2] - 2020-05-26
 - Added an argument which enables you to download a Panorama report.

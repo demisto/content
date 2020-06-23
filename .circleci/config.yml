@@ -181,10 +181,14 @@ jobs:
             fi
             if [ -n "${GITHUB_TOKEN}" ] ;
               then
-                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN || echo "ignore errors"
+                # python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN || echo "ignore errors"
+                # new release notes summary generator in packs format
+                python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md --github-token $GITHUB_TOKEN
 
               else
-                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION || echo "ignore errors"
+                # python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION || echo "ignore errors"
+                # new release notes summary generator in packs format
+                python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md
             fi
       - run:
           name: Common Server Documentation
@@ -552,6 +556,9 @@ jobs:
             if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
                 ./Tests/scripts/instance_test.sh
+                export RETVAL=$?
+                cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
+                exit $RETVAL
               else
                 echo "Skipping instance tests"
                 exit 0
