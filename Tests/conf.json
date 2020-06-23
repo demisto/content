@@ -2865,12 +2865,23 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Azure AD Connect Health Feed",
+            "playbookID": "FeedAzureADConnectHealth_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Zoom Feed",
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Workday",
+            "playbookID": "Workday - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
+        "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
@@ -2917,6 +2928,7 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
+        "Cortex XDR - IOC - Test": "issue #25598",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
