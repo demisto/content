@@ -1,0 +1,23 @@
+{
+    "name": "Nozomi Networks",
+    "description": "An Integration Pack of Nozomi Networks OT Security Tools",
+    "support": "xsoar",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "currentVersion": "1.0.0",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "ot",
+        "nozomi"
+    ],
+    "created": "2020-05-04T07:35:05Z",
+    "updated": "2020-05-04T07:35:05Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
+}
