@@ -1,6 +1,6 @@
 {
     "name": "Unit42 Feed",
-    "description": "Ingests indicator from Unit42 TAXII2 server.",
+    "description": "Unit42 feed of IOCs published in their playbook viewer which Contains malicious indicators.",
     "support": "xsoar",
     "serverMinVersion": "5.5.0",
     "currentVersion": "1.0.0",
