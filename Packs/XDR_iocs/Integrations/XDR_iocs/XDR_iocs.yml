@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: XDR iocs
+  id: Cortex XDR - IOC
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -20,19 +20,33 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: the severity in XDR
+- defaultvalue: 'true'
+  additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators.
+  display: Auto Sync
+  name: autoSync
+  required: false
+  type: 8
+- additionalinfo: Map the severity of each indicator that will be synced to Cortex XDR.
+  display: Cortex XDR Severity
   hidden: false
   name: severity
   options:
-  - 'info'
-  - 'low'
-  - 'med'
-  - 'high'
+  - info
+  - low
+  - med
+  - high
   required: true
   type: 15
-- additionalinfo: The query used to collect indicators.
-  defaultvalue: type:File or type:Domain or type:IP
-  display: query
+- additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
+  defaultvalue: Cortex XDR
+  display: Indicator tag
+  hidden: false
+  name: tag
+  required: true
+  type: 0
+- additionalinfo: The tag for incomming indicators.
+  defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
+  display: Sync Query
   hidden: false
   name: query
   required: true
@@ -50,10 +64,10 @@ configuration:
   display: Indicator Reputation
   name: feedReputation
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -61,12 +75,12 @@ configuration:
   display: Source Reliability
   name: feedReliability
   options:
-    - A - Completely reliable
-    - B - Usually reliable
-    - C - Fairly reliable
-    - D - Not usually reliable
-    - E - Unreliable
-    - F - Reliability cannot be judged
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
   required: true
   type: 15
 - display: ''
@@ -83,42 +97,57 @@ configuration:
   required: false
   type: 1
 - display: ''
+  defaultvalue: 'true'
+  hidden: true
   name: feedIncremental
-  defaultvalue: true
   required: false
   type: 8
-- display: Feed Fetch Interval
+- defaultvalue: '1'
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this
-    feed. This means that if an indicator from this feed is on the exclusion list, the
-    indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-description: XDR handele indicators
-display: XDR iocs
-name: XDR iocs
+description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+display: Cortex XDR - IOC
+name: Cortex XDR - IOC
 script:
   commands:
-  - deprecated: false
-    description: |-
-      Run once when you configure the integration (do NOT run this twice!).
-      will all the indicators that were synced with XDR and then resync.
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: |-
+        For first sync, set to true.
+        (do NOT run this twice!)
+      isArray: false
+      name: firstTime
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Sync your IOC with Cortex XDR and delete the old.
     execution: false
     name: xdr-iocs-sync
-  - deprecated: false
-    description: |-
-      Update all IOCs to keep and delete the other.
-      Run this one time per day in 01:00 - 3:00 UTC time.
+  - arguments:
+    - default: false
+      description: IOCs to push. leave empty to push all recently modified IOCs.the indicators
+      isArray: true
+      name: indicator
+      required: false
+      secret: false
+    deprecated: false
+    description: Push modified IOCs to Cortex XDR.
     execution: false
-    name: xdr-iocs-to-keep
-  - deprecated: false
-    description: Push new IOCs to XDR. This runs every minute.
-    execution: false
-    name: xdr-push-iocs
+    name: xdr-iocs-push
   - arguments:
     - default: false
       description: The indicator to enable.
@@ -129,10 +158,10 @@ script:
     deprecated: false
     description: Enables IOCs in the XDR server.
     execution: false
-    name: xdr-enable-iocs
+    name: xdr-iocs-enable
   - arguments:
     - default: false
-      description: The indicator to enable.
+      description: The indicator to disable.
       isArray: true
       name: indicator
       required: true
@@ -140,8 +169,8 @@ script:
     deprecated: false
     description: Disables IOCs in the XDR server.
     execution: false
-    name: xdr-disable-iocs
-  dockerimage: demisto/python3:3.8.3.8715
+    name: xdr-iocs-disable
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false
@@ -150,6 +179,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
-- XDR iocs - Test
+- Cortex XDR - IOC - Test
+fromversion: 5.5.0

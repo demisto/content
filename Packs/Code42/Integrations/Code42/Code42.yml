@@ -11,7 +11,7 @@ configuration:
   defaultvalue: console.us.code42.com
   type: 0
   required: true
-- display: ""
+- display: "Username"
   name: credentials
   defaultvalue: ""
   type: 9

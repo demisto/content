@@ -10,7 +10,23 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "TIM"
+    ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "DomainTools": {
+            "mandatory": false,
+            "display_name": "DomainTools"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "JsonWhoIs": {
+            "mandatory": false,
+            "display_name": "JsonWhoIs"
+        }
+    }
 }
