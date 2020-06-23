@@ -45,7 +45,7 @@ def options_handler():
 def get_failing_entities_file_data(report_file_name):
     try:
         failing_entities_list = None
-        file_name = "./artifacts/{}.txt".format(report_file_name)
+        file_name = f'./artifacts/{report_file_name}.txt'
         if os.path.isfile(file_name):
             print(f'Extracting {report_file_name}')
             with open(file_name, 'r') as failed_entities_file:
