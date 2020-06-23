@@ -106,8 +106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -54,
-          "y": 1744
+          "x": -60,
+          "y": 1840
         }
       }
     note: false
@@ -369,10 +369,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: fab3c34b-010a-4203-830a-7dbf0dde26e5
+    taskid: 91028b3f-61f2-4383-8bfd-eff9dd01af96
     type: regular
     task:
-      id: fab3c34b-010a-4203-830a-7dbf0dde26e5
+      id: 91028b3f-61f2-4383-8bfd-eff9dd01af96
       version: -1
       name: Set output
       description: Set the playbook outputs to context.
@@ -384,13 +384,16 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      append: {}
+      append:
+        simple: "false"
       key:
         simple: Email
+      stringify: {}
       value:
-        simple: '${EWS.Items={Subject: val[''subject''], To: val[''toRecipients''],
-          From: val[''sender''], Text: val[''textBody''],HTML: val[''body''], Headers:
-          val[''headers'']}}'
+        simple: '${.={Subject: val[''EWS''][''Items''][''subject''], To: val[''EWS''][''Items''][''toRecipients''],
+          From: val[''EWS''][''Items''][''sender''], Text: val[''EWS''][''Items''][''textBody''],HTML:
+          val[''EWS''][''Items''][''body''], Headers: val[''EWS''][''Items''][''headers''],
+          ''HeadersMap'': val[''Email''][''0''][''HeadersMap''] }}'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -485,9 +488,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1759,
-        "width": 1261.5,
-        "x": -54,
+        "height": 1855,
+        "width": 1267.5,
+        "x": -60,
         "y": 50
       }
     }
