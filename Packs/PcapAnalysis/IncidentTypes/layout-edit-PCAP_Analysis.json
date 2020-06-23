@@ -1,0 +1,204 @@
+{
+	"kind": "edit",
+	"layout": {
+		"commitMessage": "",
+		"id": "PCAP Analysis",
+		"kind": "edit",
+		"modified": "2020-06-17T21:02:12.850937086Z",
+		"name": "",
+		"prevKind": "edit",
+		"prevTypeId": "PCAP Analysis",
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_occurred",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_reminder",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_owner",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_roles",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_type",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_severity",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_labels",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_phase",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_details",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_pcapencryptionkey",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_pcapfile",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"sortValues": null,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_dbotprediction",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotpredictionprobability",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_investigationstage",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_niststage",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_sansstage",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					},
+					{
+						"fieldId": "incident_urlsslverification",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"sortValues": null,
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"sortValues": null,
+				"type": "",
+				"version": 0
+			}
+		],
+		"shouldCommit": false,
+		"sortValues": null,
+		"system": false,
+		"typeId": "PCAP Analysis",
+		"vcShouldIgnore": false,
+		"version": -1
+	},
+	"typeId": "PCAP Analysis",
+	"version": -1
+}

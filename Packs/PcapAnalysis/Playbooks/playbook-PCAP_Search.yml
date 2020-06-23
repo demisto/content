@@ -1,0 +1,1550 @@
+id: PCAP Search
+version: -1
+fromversion: 5.5.0
+name: PCAP Search
+description: The playbook is used to parse and search in PCAP files. Supported type
+  files are pcap, cap, pcapng. The playboko can handle one PCAP file per incident.
+  The user inputs which objects the playbook should search for in the PCAP. The values
+  to search are IP addresses, CIDR ranges, TCP or UDP ports or protocols. The user
+  can specify in the QueryOperator input in case more than one input type was specified
+  (such as IP addresses and TCP ports) if the PCAP filter query will use an AND or
+  an OR operator between the inputs.  Another option is to use advanced filters just
+  like in Wireshark to use more fine grained filters or for objects not specified
+  in other inputs. Additional inputs allow the user to provide the WPA password for
+  decrypting 802.11 (wireless) traffic and adding an RSA certificate to decrypt SSL
+  traffic. In order to display the results within the relevant incident fields the
+  playbook needs to run in a PCAP Analysis incident type.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b3fa8b47-57a7-402b-80f4-4170a6a19d62
+    type: start
+    task:
+      id: b3fa8b47-57a7-402b-80f4-4170a6a19d62
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 46d1ff66-5bc5-49c2-8ce4-9928bee6a7c4
+    type: condition
+    task:
+      id: 46d1ff66-5bc5-49c2-8ce4-9928bee6a7c4
+      version: -1
+      name: Is there a PCAP file?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.PcapFileEntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 06c7501f-b470-4fca-8d60-9cedae6e91ee
+    type: regular
+    task:
+      id: 06c7501f-b470-4fca-8d60-9cedae6e91ee
+      version: -1
+      name: Set incident fields
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      columns:
+        simple: Bytes,DestinationIP,DestinationPort,Duration,EndTime,SourceIP,SourcePort,StartTime
+      context_path:
+        simple: PCAPResultsFlow
+      grid_id:
+        simple: pcapdetectedflows
+      keys:
+        simple: SourceIP,SourcePort,DestIP,DestPort,Duration,StartTime,EndTime,Bytes
+      overwrite:
+        simple: "true"
+      sort_by: {}
+      unpack_nested_elements: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2140,
+          "y": 2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Unique Ports
+      output:
+        complex:
+          root: PCAPResultsFlow
+          filters:
+          - - operator: lessThan
+              left:
+                value:
+                  simple: PCAPResultsFlow.DestPort
+                iscontext: true
+              right:
+                value:
+                  simple: "49151"
+          accessor: DestPort
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    - incidentfield: Protocols
+      output:
+        complex:
+          root: PCAPResults
+          accessor: Protocols
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    - incidentfield: Internal Addresses
+      output:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          accessor: Address
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    - incidentfield: External Addresses
+      output:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    - incidentfield: PCAP Start Time
+      output:
+        simple: ${PCAPResults.StartTime}
+    - incidentfield: PCAP End Time
+      output:
+        simple: ${PCAPResults.EndTime}
+    - incidentfield: PCAP Number Of Packets
+      output:
+        simple: ${PCAPResults.Packets}
+    - incidentfield: PCAP Number Of Streams
+      output:
+        simple: ${PCAPResults.StreamCount}
+    - incidentfield: File Name
+      output:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.PcapFileEntryID
+                iscontext: true
+          accessor: Name
+    - incidentfield: File Size
+      output:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.PcapFileEntryID
+                iscontext: true
+          accessor: Size
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 6b014220-9182-4bdd-864d-b48a8d7598f3
+    type: regular
+    task:
+      id: 6b014220-9182-4bdd-864d-b48a8d7598f3
+      version: -1
+      name: Create TCP ports query
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PcapQuery
+      stringify: {}
+      value:
+        complex:
+          root: inputs.TCPPortsToSearch
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: tcp.port == $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 73c7434b-cd49-4271-8ad8-e0a00ca8f98d
+    type: regular
+    task:
+      id: 73c7434b-cd49-4271-8ad8-e0a00ca8f98d
+      version: -1
+      name: Set protocols to array
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PcapQuery
+      stringify: {}
+      value:
+        complex:
+          root: inputs.ProtocolToSearch
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: toLowerCase
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1570,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 2b843a13-975a-4763-8cee-0f972e1a5aea
+    type: regular
+    task:
+      id: 2b843a13-975a-4763-8cee-0f972e1a5aea
+      version: -1
+      name: PCAP Miner execution
+      description: |-
+        PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
+        This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
+        a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
+        b) Copy the automation and change the `default timeout` parameter to match your needs.
+      tags:
+      - breakdown
+      scriptName: PcapMinerV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      convs_to_display: {}
+      custom_regex:
+        simple: ${inputs.RegexToSearch}
+      entry_id:
+        simple: ${inputs.PcapFileEntryID}
+      extract_ips:
+        simple: "True"
+      extract_strings: {}
+      filtered_file_name: {}
+      pcap_filter:
+        complex:
+          root: PcapQuery
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: inputs.QueryOperator
+                iscontext: true
+      protocol_output: {}
+      rsa_decrypt_key_entry_id:
+        simple: ${inputs.RsaDecryptKeyEntryID}
+      wpa_password:
+        simple: ${inputs.WpaPassword}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2050,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: a6f7a335-7dc0-4e0b-84ed-0ef9ff5ee3de
+    type: title
+    task:
+      id: a6f7a335-7dc0-4e0b-84ed-0ef9ff5ee3de
+      version: -1
+      name: Protocol search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1350,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 6e5238be-daa7-494d-8eb4-5f6bd53bf8cc
+    type: title
+    task:
+      id: 6e5238be-daa7-494d-8eb4-5f6bd53bf8cc
+      version: -1
+      name: UDP port search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: bbe9a7d2-4884-4970-8517-bcec13feca89
+    type: title
+    task:
+      id: bbe9a7d2-4884-4970-8517-bcec13feca89
+      version: -1
+      name: TCP port search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "91"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: b03ea835-91ca-4210-868c-166e18f8da8c
+    type: title
+    task:
+      id: b03ea835-91ca-4210-868c-166e18f8da8c
+      version: -1
+      name: IP search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 14ada8b4-7932-4210-833f-3a86c29fcc03
+    type: title
+    task:
+      id: 14ada8b4-7932-4210-833f-3a86c29fcc03
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: aa2bf203-7e2e-4fd8-86a5-cc1594694ea9
+    type: title
+    task:
+      id: aa2bf203-7e2e-4fd8-86a5-cc1594694ea9
+      version: -1
+      name: Advanced query filter search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2000,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 85b5b9ba-7141-48c9-87db-82afea2d11cf
+    type: regular
+    task:
+      id: 85b5b9ba-7141-48c9-87db-82afea2d11cf
+      version: -1
+      name: Create UDP ports query
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PcapQuery
+      stringify: {}
+      value:
+        complex:
+          root: inputs.UDPPortsToSearch
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: udp.port == $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: 8decf688-bcb1-49a8-8e5e-18bc70217801
+    type: condition
+    task:
+      id: 8decf688-bcb1-49a8-8e5e-18bc70217801
+      version: -1
+      name: Is there value to search?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "39"
+      - "75"
+      - "40"
+      - "38"
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IPAddressToSearch
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TCPPortsToSearch
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.UDPPortsToSearch
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.UrlToSearch
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.AdvancedSearchFilter
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ProtocolToSearch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: 0fa79a64-bd0d-4b27-8324-c8933820e646
+    type: regular
+    task:
+      id: 0fa79a64-bd0d-4b27-8324-c8933820e646
+      version: -1
+      name: Create free text query
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PcapQuery
+      stringify: {}
+      value:
+        complex:
+          root: inputs.AdvancedSearchFilter
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2240,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 22cec7dd-7d3f-4cc1-8eab-609ba07594e9
+    type: regular
+    task:
+      id: 22cec7dd-7d3f-4cc1-8eab-609ba07594e9
+      version: -1
+      name: Create IP query
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PcapQuery
+      stringify: {}
+      value:
+        complex:
+          root: inputs.IPAddressToSearch
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: ip.addr == $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -950,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 5fa20ab3-bd2c-4250-875c-3e914e805eac
+    type: condition
+    task:
+      id: 5fa20ab3-bd2c-4250-875c-3e914e805eac
+      version: -1
+      name: Are there flow results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "92"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PCAPResultsFlow
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2050,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 73239d01-5602-4219-8d11-fcff8053aecd
+    type: condition
+    task:
+      id: 73239d01-5602-4219-8d11-fcff8053aecd
+      version: -1
+      name: Is there an advanced query filter?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.AdvancedSearchFilter
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2000,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 06c8128b-7b8e-48ed-8e8c-fc91f4a4ec64
+    type: condition
+    task:
+      id: 06c8128b-7b8e-48ed-8e8c-fc91f4a4ec64
+      version: -1
+      name: Is there a protocol to search?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ProtocolToSearch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1350,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 4f67667c-9fca-4f6b-8664-70122d9ed048
+    type: condition
+    task:
+      id: 4f67667c-9fca-4f6b-8664-70122d9ed048
+      version: -1
+      name: Is there an IP to search?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IPAddressToSearch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: 5f22e796-fa8e-4efb-85f7-ca5ef8a1ab99
+    type: condition
+    task:
+      id: 5f22e796-fa8e-4efb-85f7-ca5ef8a1ab99
+      version: -1
+      name: Is there a UDP port to search?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.UDPPortsToSearch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: 2cb524e0-9f70-41c6-8afc-af33c3d02476
+    type: condition
+    task:
+      id: 2cb524e0-9f70-41c6-8afc-af33c3d02476
+      version: -1
+      name: Is there a TCP port to search?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TCPPortsToSearch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: 83feb993-32d0-4340-87ff-b8dc9984619c
+    type: regular
+    task:
+      id: 83feb993-32d0-4340-87ff-b8dc9984619c
+      version: -1
+      name: Check if IP addresses are internal or external
+      description: Returns yes if the IP is in one of the ranges provided, returns
+        no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+      - "95"
+      - "96"
+      - "97"
+      - "98"
+    scriptarguments:
+      ip:
+        simple: ${PCAPResults.IP}
+      ipRanges:
+        simple: ${inputs.InternalIPRange}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2050,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: d3988de9-fce0-4376-894b-cd08cf2640be
+    type: condition
+    task:
+      id: d3988de9-fce0-4376-894b-cd08cf2640be
+      version: -1
+      name: Is this a PCAP analysis incident type?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.type
+            iscontext: true
+          right:
+            value:
+              simple: PCAP Analysis
+    view: |-
+      {
+        "position": {
+          "x": -2050,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: c0e21d21-213c-4b7e-8bad-9ceae44c69f3
+    type: regular
+    task:
+      id: c0e21d21-213c-4b7e-8bad-9ceae44c69f3
+      version: -1
+      name: Set internal IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InternalIPAddresses
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3280,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: 447165d7-4b3c-42f9-8f2f-ff8d38e5831d
+    type: regular
+    task:
+      id: 447165d7-4b3c-42f9-8f2f-ff8d38e5831d
+      version: -1
+      name: Set external IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExternalIPAddresses
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2870,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 18fa07c7-6953-4d54-833b-e1f4f1ffe87e
+    type: regular
+    task:
+      id: 18fa07c7-6953-4d54-833b-e1f4f1ffe87e
+      version: -1
+      name: Set destination TCP ports
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DestinationTcpPorts
+      stringify: {}
+      value:
+        complex:
+          root: PCAPResultsFlow
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PCAPResultsFlow.Transport
+                iscontext: true
+              right:
+                value:
+                  simple: TCP
+          accessor: DestPort
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2460,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: 46d41b9f-6fe3-4af1-85c5-6e7223dbfea9
+    type: regular
+    task:
+      id: 46d41b9f-6fe3-4af1-85c5-6e7223dbfea9
+      version: -1
+      name: Set destination UDP ports
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DestinationTcpPorts
+      stringify: {}
+      value:
+        complex:
+          root: PCAPResultsFlow
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PCAPResultsFlow.Transport
+                iscontext: true
+              right:
+                value:
+                  simple: UDP
+          accessor: DestPort
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2050,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: e4d96417-40aa-421f-84ce-b94213b07979
+    type: regular
+    task:
+      id: e4d96417-40aa-421f-84ce-b94213b07979
+      version: -1
+      name: Set detected protocols
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DetectedProtocols
+      stringify: {}
+      value:
+        complex:
+          root: PCAPResults
+          accessor: Protocols
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3690,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2605,
+        "width": 5430,
+        "x": -3690,
+        "y": -300
+      }
+    }
+  }
+inputs:
+- key: QueryOperator
+  value:
+    simple: and
+  required: true
+  description: |-
+    In case the playbook has several search inputs provided such as IPAddressToSearch, TCPPortsToSearch ,UDPPortsToSearch, ProtocolToSearch and AdvancedSearchFilter. This input will specify if the inputs will be treated as an AND or an OR search for all the PCAP search filter.
+    Values can be "and" or "or" and the default value is "and"
+    If the IPAddressToSearch was defined as 192.168.1.1,192.168.1.2
+    The TCPPortsToSearch was defined as 445,443
+    And the QueryOperator was defined as "and"
+    The resultant query will be (ip.addr == 192.168.1.1 or ip.addr ==  192.168.1.2) and (tcp.port == 445 or tcp.port == 443)
+    If the QueryOperator was defined as "or"
+    The resultant query will be (ip.addr == 192.168.1.1 or ip.addr ==  192.168.1.2) or (tcp.port == 445 or tcp.port == 443)
+  playbookInputQuery:
+- key: IPAddressToSearch
+  value: {}
+  required: false
+  description: The value of an IP address to search. Can be a single IP or a comma
+    delimited list of IP addresses. CIDR ranges are also acceptable. All IPs will
+    be treated with the OR operator.
+  playbookInputQuery:
+- key: TCPPortsToSearch
+  value: {}
+  required: false
+  description: The value of a TCP port number to search. Can be a single port or a
+    comma delimited list of ports. All TCP ports will be treated with the OR operator.
+  playbookInputQuery:
+- key: UDPPortsToSearch
+  value: {}
+  required: false
+  description: The value of a UDP port number to search. Can be a single port or a
+    comma delimited list of ports. All UDP ports will be treated with the OR operator.
+  playbookInputQuery:
+- key: ProtocolToSearch
+  value: {}
+  required: false
+  description: The protocols so search for within the PCAP file. Can be a single protocol
+    or a comma delimited list of protocols. The protocol names should be the same
+    as searching for in Wireshark. For example smb2,dns etc.  All protocols will be
+    treated with the OR operator.
+  playbookInputQuery:
+- key: WpaPassword
+  value: {}
+  required: false
+  description: This input value is used to provide a WPA (Wi-Fi Protected Access)
+    password to decrypt encrypted 802.11 Wi-FI traffic.
+  playbookInputQuery:
+- key: AdvancedSearchFilter
+  value: {}
+  required: false
+  description: |-
+    Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html
+    This input is meant to handle more complex filters not covered by the other inputs. For example search by an attribute such as http.host, arp.dst.hw etc.
+  playbookInputQuery:
+- key: RsaDecryptKeyEntryID
+  value:
+    complex:
+      root: File
+      filters:
+      - - operator: inList
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: incident.pcapencryptionkey.name
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: key
+      accessor: EntryID
+  required: false
+  description: This input specifics the file entry id for the RSA decrypt key if the
+    user provided the key in the incident.
+  playbookInputQuery:
+- key: PcapFileEntryID
+  value:
+    complex:
+      root: File
+      filters:
+      - - operator: inList
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: incident.pcapfile.name
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pcap
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: cap
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pcapng
+      accessor: EntryID
+  required: false
+  description: This input specifics the file entry id for the PCAP file if the user
+    provided the file in the incident. One PCAP file can run per incident.
+  playbookInputQuery:
+- key: InternalIPRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR format, separated by commas. An example of a list of
+    ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges
+    is not provided, the list provided in the IsIPInRanges script (the known IPv4
+    private address ranges) is used by default.'
+  playbookInputQuery:
+outputs:
+- contextPath: InternalIPAddresses
+  description: The internal IP addresses that were found in the PCAP.
+  type: string
+- contextPath: ExternalIPAddresses
+  description: The external IP addresses that were found in the PCAP.
+  type: string
+- contextPath: DestinationTcpPorts
+  description: A list of destination TCP ports that were found in the PCAP
+  type: string
+- contextPath: DestinationUdpPorts
+  description: A list of destination UDP ports that were found in the PCAP
+  type: String
+- contextPath: DetectedProtocols
+  description: A list of protocols that were found in the PCAP
+  type: string
+tests:
+- No tests
