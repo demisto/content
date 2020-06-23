@@ -573,7 +573,7 @@ def mirror_investigation():
     mirrors.append(mirror)
 
     set_to_integration_context_with_retries({'mirrors': mirrors, 'conversations': conversations}, OBJECTS_TO_KEYS,
-                                      SYNC_CONTEXT)
+                                            SYNC_CONTEXT)
 
     if kick_admin:
         body = {
