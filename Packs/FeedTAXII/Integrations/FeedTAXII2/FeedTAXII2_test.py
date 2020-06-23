@@ -1,4 +1,3 @@
-# from FeedTAXII2 import fetch_indicators_command
 import json
 from FeedTAXII2 import *
 

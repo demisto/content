@@ -1,5 +1,4 @@
 from CommonServerPython import *
-# from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import Taxii2FeedClient
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
 from taxii2client import v20, v21
 import json

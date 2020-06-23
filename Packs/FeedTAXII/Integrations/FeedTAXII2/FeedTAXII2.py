@@ -203,7 +203,6 @@ def main():
         return_error(err_msg)
 
 
-# from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *  # noqa: E402
 from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
