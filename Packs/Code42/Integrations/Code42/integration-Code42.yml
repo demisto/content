@@ -227,9 +227,10 @@ script:
 
         def __init__(self, sdk, base_url, auth, verify=True, proxy=False):
             super().__init__(base_url, verify=verify, proxy=proxy)
-            # Create the Code42 SDK instance
-            self._sdk = sdk or py42.sdk.from_local_account(base_url, auth[0], auth[1])
-            self._sdk_factory = lambda: py42.sdk.from_local_account(base_url, auth[0], auth[1])
+            # Allow sdk parameter for testing purposes.
+            # Otherwise, lazily load the SDK so that the TEST Command can effectively check auth.
+            self._sdk = sdk
+            self._sdk_factory = lambda: py42.sdk.from_local_account(base_url, auth[0], auth[1]) if not self._sdk else None
             py42.settings.set_user_agent_suffix("Cortex XSOAR")
 
         def _get_sdk(self):
