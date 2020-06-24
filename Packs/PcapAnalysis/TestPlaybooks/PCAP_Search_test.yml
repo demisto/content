@@ -1,5 +1,6 @@
 id: PCAP Search test
 version: -1
+fromversion: 5.5.0
 name: PCAP Search test
 description: test
 starttaskid: "0"
