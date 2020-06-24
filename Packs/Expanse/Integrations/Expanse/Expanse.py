@@ -693,7 +693,6 @@ def fetch_incidents_command():
     last_run = demisto.getLastRun()
     start_date = yesterday
     end_date = yesterday
-    completed_for_today = False
 
     if "start_time" not in last_run or "complete_for_today" not in last_run:
         # first time integration is running
@@ -715,7 +714,6 @@ def fetch_incidents_command():
     # Check if we've stored any events in the integration cache
     cache = demisto.getIntegrationContext()
     stored_incidents = cache.get("incidents")
-    demisto.debug("Checking for stored incidents")
 
     if stored_incidents is None:
         demisto.debug("Did not detect any stored incidents")
@@ -759,22 +757,23 @@ def fetch_incidents_command():
             incidents_to_send = stored_incidents[:PAGE_LIMIT]
             del stored_incidents[:PAGE_LIMIT]
             demisto.debug("Updating cache to store {} incidents".format(len(stored_incidents)))
+            demisto.setLastRun({
+                "complete_for_today": False,
+                "start_time": yesterday
+            })
         else:
             incidents_to_send = list(stored_incidents)
             stored_incidents = None
-            completed_for_today = False
             demisto.debug("Updating cache to store 0 incidents")
+            demisto.setLastRun({
+                "complete_for_today": True,
+                "start_time": yesterday
+            })
         demisto.incidents(incidents_to_send)
 
         # Update Cache
         cache["incidents"] = stored_incidents
         demisto.setIntegrationContext(cache)
-
-    # Save last_run
-    demisto.setLastRun({
-        "complete_for_today": completed_for_today,
-        "start_time": yesterday
-    })
 
 
 def ip_command():
