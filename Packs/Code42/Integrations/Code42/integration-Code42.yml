@@ -486,7 +486,7 @@ script:
                 if exp_types:
                     return [ExposureType.is_in(exp_types)]
                 else:
-                    # If not given a support exposure type, search for all unsupported exposure types.s
+                    # If not given a support exposure type, search for all unsupported exposure types
                     supported_exp_types = list(self.exposure_type_map.values())
                     return [ExposureType.not_in(supported_exp_types)]
             elif self._is_endpoint_exfiltration:
