@@ -1,5 +1,5 @@
 import requests
-from typing import Tuple, Dict, Any
+from typing import Tuple
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -633,17 +633,19 @@ def format_get_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
         'ipv6_address': result.get('ipv4-address'),
         'read_only': result.get('read-only'),
     }}
-
-    if result.get('domain'):
+    domain_data = result.get('domain')
+    if domain_data:
         outputs.update({
-            'domain-name': result.get('domain').get('name'),
-            'domain-uid': result.get('domain').get('uid'),
-            'domain-type': result.get('domain').get('type'),
+            'domain-name': domain_data.get('name'),
+            'domain-uid': domain_data.get('uid'),
+            'domain-type': domain_data.get('type'),
         })
-    if result.get('meta-info'):
+
+    meta_info = result.get('meta-info')
+    if meta_info:
         outputs.update({
-            'creator': result.get('meta-info').get('creator'),
-            'last_modifier': result.get('meta-info').get('last-modifier')
+            'creator': meta_info.get('creator'),
+            'last_modifier': meta_info.get('last-modifier')
         })
 
     table_data = outputs[f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)']
@@ -674,21 +676,24 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
         'type': result.get('type'),
     }
 
-    if result.get('domain'):
+    domain_data = result.get('domain')
+    if domain_data:
         common_output.update({
-            'domain-name': result.get('domain').get('name'),
-            'domain-uid': result.get('domain').get('uid'),
-            'domain-type': result.get('domain').get('type'),
+            'domain-name': domain_data.get('name'),
+            'domain-uid': domain_data.get('uid'),
+            'domain-type': domain_data.get('type'),
         })
 
-    if result.get('meta-info'):
+    meta_info = result.get('meta-info')
+    if meta_info:
         common_output.update({
-            'creator': result.get('meta-info').get('creator'),
-            'last_modifier': result.get('meta-info').get('last-modifier'),
+            'creator': meta_info.get('creator'),
+            'last_modifier': meta_info.get('last-modifier'),
         })
-    if result.get('groups'):
+    groups = result.get('groups')
+    if groups:
         group_list = []
-        for group in result.get('groups'):
+        for group in groups:
             group_list.append(group.get('name'))
         common_output['groups'] = group_list
 
@@ -713,10 +718,9 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
             'read-only': result.get('read-only')
         }
     elif endpoint == 'group':
-        if result.get('groups'):
-            unique_outputs = {
-                'groups-name': result.get('groups')[0]
-            }
+        groups = result.get('groups')
+        if groups:
+            unique_outputs = {'groups-name': groups[0]}
     elif endpoint == 'host':
         unique_outputs = {
             'ipv4-address': result.get('ipv4-address'),
@@ -756,11 +760,13 @@ def format_update_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
         'ipv6-address': result.get('ipv4-address'),
         'total-number': result.get('total-number'),
     }
-    if result.get('domain'):
+
+    domain_data = result.get('domain')
+    if domain_data:
         output.update({
-            'domain-name': result.get('domain').get('name'),
-            'domain-uid': result.get('domain').get('uid'),
-            'domain-type': result.get('domain').get('type'),
+            'domain-name': domain_data.get('name'),
+            'domain-uid': domain_data.get('uid'),
+            'domain-type': domain_data.get('type'),
         })
 
     outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': output}
@@ -871,7 +877,7 @@ def main():
 
         elif command in commands:
             readable_output, outputs, result = \
-                (commands[demisto.command()](**demisto.args()))  # type: ignore
+                (commands[demisto.command()](**demisto.args()))
             return_outputs(readable_output, outputs, result)
 
     except Exception as e:
