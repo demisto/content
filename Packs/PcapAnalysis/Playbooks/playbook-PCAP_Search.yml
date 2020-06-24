@@ -1547,4 +1547,4 @@ outputs:
   description: A list of protocols that were found in the PCAP
   type: string
 tests:
-- No tests
+- PCAP Search test
