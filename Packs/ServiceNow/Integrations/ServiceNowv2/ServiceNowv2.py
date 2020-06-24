@@ -1794,7 +1794,7 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
@@ -1809,8 +1809,8 @@ def test_module(client: Client, *_):
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket.")
         if client.incident_name not in ticket:
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
-    demisto.results('ok')
-    return '', {}, {}
+
+    return 'ok', {}, {}, True
 
 
 def main():
