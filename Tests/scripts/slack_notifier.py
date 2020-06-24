@@ -20,7 +20,7 @@ def get_faild_steps_list():
     vcs_type = 'github'
     build_report = circle_client.get_build_info(username='demisto', project='content', build_num=options.buildNumber,
                                                 vcs_type=vcs_type)
-    for step in build_report.get('steps', ''):
+    for step in build_report.get('steps', []):
         step_name = step.get('name', '')
         actions = step.get('actions', [])
         for action in actions:
@@ -28,9 +28,9 @@ def get_faild_steps_list():
             if action_status and action_status == 'failed':
                 action_name = action.get('name', '')
                 if action_name != step_name:
-                    failed_steps_list.append(f'* {step_name}: {action_name}')
+                    failed_steps_list.append(f'{step_name}: {action_name}')
                 else:
-                    failed_steps_list.append(f'* {step_name}')
+                    failed_steps_list.append(f'{step_name}')
 
     return failed_steps_list
 

@@ -127,21 +127,16 @@ jobs:
             python3 -m pytest ./Tests/Marketplace/Tests/upload_packs_test.py -v
             python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
 
-            if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ;
-              then
-                  if [ $pytest_exit_code -ne 0 ] ; then
-                    echo "Infrastructure testing - pytest" >> $CIRCLE_ARTIFACTS/task_report.txt
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
+                  echo Checking for sdk related pylint errors
+                  pylint_test_result=$(python3 -m pylint --errors-only ./Tests | grep demisto_sdk) | echo
+                  pylint_utils_result=$(python3 -m pylint --errors-only ./Utils | grep demisto_sdk) | echo
+
+                  if [ -n $pylint_test_result ] || [ -n $pylint_utils_result ] ; then
+                      echo Pylint exit code on Test directory: $pylint_test_result
+                      echo Pylint exit code on Utils directory:$pylint_utils_result
+                      exit 1
                   fi
-
-                  python3 -m pylint --errors-only ./Tests
-                  pylint_exit_code=$?
-
-                  if [ $pylint_exit_code -ne 0 ] ; then
-                    echo "Infrastructure testing - pylint" >> $CIRCLE_ARTIFACTS/task_report.txt
-                  fi
-
-                let "exit_code = $flake8_exit_code + $validate_exit_code"
-                exit $exit_code
             fi
       - run:
           name: Validate Files and Yaml
