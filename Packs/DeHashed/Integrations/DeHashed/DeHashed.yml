@@ -72,6 +72,18 @@ script:
       name: page
       required: false
       secret: false
+    - default: false
+      description: sets results' start range
+      isArray: false
+      name: results_from
+      required: false
+      secret: false
+    - default: false
+      description: sets results' end range
+      isArray: false
+      name: results_to
+      required: false
+      secret: false
     deprecated: false
     description: search if an information is being compromised.
     execution: false

@@ -1,10 +1,15 @@
+
+from urllib3.exceptions import NewConnectionError
+
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 # CONSTANTS
 INTEGRATION_CONTEXT_BRAND = 'DeHashed'
-
+RESULTS_FROM = 0
+RESULTS_TO = 49
 
 class Client(BaseClient):
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=None, headers=None, auth=None,
@@ -12,11 +17,6 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.email = email
         self.api_key = api_key
-
-    """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
 
     def dehashed_search(self, asset_type: str, value: list, operation: str = None, results_page_number: str = None) -> dict:
         query_value = ''
@@ -52,11 +52,39 @@ def test_module(client: object) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    result = client.dehashed_search(asset_type='vin', value=['test', 'test1'], operation='is')
-    if isinstance(result, dict):
-        return 'ok'
+    try:
+        result = client.dehashed_search(asset_type='vin', value=['test', 'test1'], operation='is')
+    except Exception as e:
+        raise DemistoException(
+            f"Test failed. please check if Server Url, Email or Api key are correct. \n {e}"
+        )
     else:
-        return f'Test failed because got unexpected response from api: {result}'
+        if isinstance(result, dict):
+            return 'ok'
+        else:
+            return f'Test failed because got unexpected response from api: {result}'
+
+
+def convert_string_to_int(input) -> int:
+    try:
+        input_as_int = int(input)
+    except ValueError as e:
+        raise DemistoException(f'"results_from" and "results_to expected" to be integers/n {e}')
+    else:
+        return input_as_int
+
+
+def filter_results(entries: list, results_from: int, results_to: int):
+    if results_from:
+        results_from_int = convert_string_to_int(results_from)
+    else:
+        results_from_int = RESULTS_FROM
+    if results_to:
+        results_to_int = convert_string_to_int(results_to)
+    else:
+        results_to_int = RESULTS_TO
+
+    return entries[results_from_int:results_to_int], results_from_int, results_to_int
 
 
 def dehashed_search_command(client: object, args: dict) -> [tuple, str]:
@@ -70,23 +98,38 @@ def dehashed_search_command(client: object, args: dict) -> [tuple, str]:
     operation = args.get('operation')
     value = argToList(args.get('value'))
     results_page_number = args.get('page')
+    results_from = args.get('results_from')
+    results_to = args.get('results_to')
+
     result = client.dehashed_search(asset_type, value, operation, results_page_number)
     if not isinstance(result, dict):
         raise DemistoException(f'Got unexpected output from api: {result}')
 
     query_data = result.get('entries')
+
     if not query_data:
-        return 'No results match your query', None, None
+        return 'No matching results found', None, None
     else:
-        context_data = createContext(query_data, keyTransform=underscoreToCamelCase)
-        headers = [key.replace('_', ' ') for key in [*query_data[0].keys()]]
+        filtered_results, results_from, results_to = filter_results(query_data, results_from, results_to)
+        if not results_page_number:
+            results_page_number = 1
+
+        query_entries = createContext(filtered_results, keyTransform=underscoreToCamelCase)
+        headers = [key.replace('_', ' ') for key in [*filtered_results[0].keys()]]
+        last_query = {"ResultsFrom": results_from,
+                      "ResultsTo": results_to,
+                      "DisplayedResults": len(filtered_results),
+                      "TotalResults": result.get("total"),
+                      }
         return (
-            tableToMarkdown('DeHashed Search', query_data, headers=headers, removeNull=True,
-                            headerTransform=pascalToSpace),
+            tableToMarkdown(f'DeHashed Search - Got {result.get("total")} results. Display only: {len(filtered_results)} Page number:'
+                            f' {results_page_number}.',
+                            filtered_results, headers=headers, removeNull=True, headerTransform=pascalToSpace),
             {
-                f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': context_data
+                f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': query_entries,
+                f'{INTEGRATION_CONTEXT_BRAND}.LastQuery(true)': last_query
             },
-            query_data
+            filtered_results
                 )
 
 

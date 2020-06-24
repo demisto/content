@@ -29,6 +29,15 @@
     "operation": "regex",
     "asset_type": "vin"
   },
+
+  "regex_op_multi_range": {
+    "value": "joh?n(ath[oa]n),joh?n11(ath[oa]n)",
+    "operation": "regex",
+    "asset_type": "vin",
+    "results_from": "0",
+    "results_to": "1"
+  },
+
   "api_response": {
     "balance": 4955,
     "entries":     [
@@ -61,7 +70,7 @@
     ],
     "success": true,
     "took": "25µs",
-    "total": 0
+    "total": 2
   },
   "expected_results": {
     "full_results":
@@ -95,5 +104,26 @@
     ]
 
 
+  },
+    "expected_results_range": {
+    "full_results":
+      [
+              {
+            "Id": "123",
+            "Email": "testgamil.com",
+            "Username": null,
+            "Password": "test",
+            "HashedPassword": null,
+            "Name": null,
+            "Vin": null,
+            "Address": null,
+            "IpAddress": null,
+            "Phone": null,
+            "ObtainedFrom": "SGB.net"
+        }
+    ]
+
+
   }
+
 }
