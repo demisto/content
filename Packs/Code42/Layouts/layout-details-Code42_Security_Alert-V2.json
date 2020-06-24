@@ -24,48 +24,32 @@
                                           {
                                                  "dropEffect": "move",
                                                  "endCol": 2,
-                                                 "fieldId": "code42alertid",
+                                                 "fieldId": "type",
                                                  "height": 22,
-                                                 "id": "6dc82070-b637-11ea-b3d2-913a8f1b2f41",
+                                                 "id": "incident-type-field",
                                                  "index": 0,
                                                  "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
                                           {
-                                                 "endCol": 2,
-                                                 "fieldId": "code42username",
-                                                 "height": 22,
-                                                 "id": "5b671ae0-b5a0-11ea-b9fd-2fc523985e07",
-                                                 "index": 1,
-                                                 "sectionItemType": "field",
-                                                 "startCol": 0
-                                          },
-                                          {
-                                                 "endCol": 2,
-                                                 "fieldId": "code42alertstate",
-                                                 "height": 22,
-                                                 "id": "75a42690-b637-11ea-b3d2-913a8f1b2f41",
-                                                 "index": 2,
-                                                 "sectionItemType": "field",
-                                                 "startCol": 0
-                                          },
-                                          {
+                                                 "dropEffect": "move",
                                                  "endCol": 2,
                                                  "fieldId": "code42alertname",
                                                  "height": 22,
                                                  "id": "732ae930-b637-11ea-b3d2-913a8f1b2f41",
-                                                 "index": 3,
+                                                 "index": 1,
+                                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
                                           {
                                                  "dropEffect": "move",
                                                  "endCol": 2,
-                                                 "fieldId": "code42alerttimestamp",
+                                                 "fieldId": "owner",
                                                  "height": 22,
-                                                 "id": "7821f7d0-b637-11ea-b3d2-913a8f1b2f41",
-                                                 "index": 4,
+                                                 "id": "incident-owner-field",
+                                                 "index": 2,
                                                  "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                                  "sectionItemType": "field",
                                                  "startCol": 0
@@ -76,26 +60,68 @@
                                                  "fieldId": "severity",
                                                  "height": 22,
                                                  "id": "incident-severity-field",
-                                                 "index": 5,
+                                                 "index": 3,
                                                  "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
                                           {
                                                  "endCol": 2,
-                                                 "fieldId": "type",
+                                                 "fieldId": "code42alertdescription",
                                                  "height": 22,
-                                                 "id": "incident-type-field",
-                                                 "index": 6,
+                                                 "id": "83c5f080-b639-11ea-b3d2-913a8f1b2f41",
+                                                 "index": 4,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
                                           {
                                                  "endCol": 2,
-                                                 "fieldId": "owner",
+                                                 "fieldId": "code42username",
                                                  "height": 22,
-                                                 "id": "incident-owner-field",
+                                                 "id": "5b671ae0-b5a0-11ea-b9fd-2fc523985e07",
+                                                 "index": 5,
+                                                 "sectionItemType": "field",
+                                                 "startCol": 0
+                                          },
+                                          {
+                                                 "dropEffect": "move",
+                                                 "endCol": 2,
+                                                 "fieldId": "code42alerttimestamp",
+                                                 "height": 22,
+                                                 "id": "7821f7d0-b637-11ea-b3d2-913a8f1b2f41",
+                                                 "index": 6,
+                                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                                 "sectionItemType": "field",
+                                                 "startCol": 0
+                                          },
+                                          {
+                                                 "dropEffect": "move",
+                                                 "endCol": 2,
+                                                 "fieldId": "code42alertstate",
+                                                 "height": 22,
+                                                 "id": "75a42690-b637-11ea-b3d2-913a8f1b2f41",
                                                  "index": 7,
+                                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                                 "sectionItemType": "field",
+                                                 "startCol": 0
+                                          },
+                                          {
+                                                 "dropEffect": "move",
+                                                 "endCol": 2,
+                                                 "fieldId": "code42alertid",
+                                                 "height": 22,
+                                                 "id": "6dc82070-b637-11ea-b3d2-913a8f1b2f41",
+                                                 "index": 8,
+                                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                                 "sectionItemType": "field",
+                                                 "startCol": 0
+                                          },
+                                          {
+                                                 "endCol": 2,
+                                                 "fieldId": "code42alerttype",
+                                                 "height": 22,
+                                                 "id": "727f7c10-b639-11ea-b3d2-913a8f1b2f41",
+                                                 "index": 9,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
@@ -104,7 +130,7 @@
                                                  "fieldId": "sourcebrand",
                                                  "height": 22,
                                                  "id": "incident-sourceBrand-field",
-                                                 "index": 8,
+                                                 "index": 10,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
@@ -113,16 +139,7 @@
                                                  "fieldId": "sourceinstance",
                                                  "height": 22,
                                                  "id": "incident-sourceInstance-field",
-                                                 "index": 9,
-                                                 "sectionItemType": "field",
-                                                 "startCol": 0
-                                          },
-                                          {
-                                                 "endCol": 2,
-                                                 "fieldId": "playbookid",
-                                                 "height": 22,
-                                                 "id": "incident-playbookId-field",
-                                                 "index": 10,
+                                                 "index": 11,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
@@ -131,7 +148,16 @@
                                                  "fieldId": "dbotsource",
                                                  "height": 22,
                                                  "id": "incident-source-field",
-                                                 "index": 11,
+                                                 "index": 12,
+                                                 "sectionItemType": "field",
+                                                 "startCol": 0
+                                          },
+                                          {
+                                                 "endCol": 2,
+                                                 "fieldId": "playbookid",
+                                                 "height": 22,
+                                                 "id": "incident-playbookId-field",
+                                                 "index": 13,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           }
@@ -177,7 +203,7 @@
                                    "type": "linkedIncidents",
                                    "w": 1,
                                    "x": 0,
-                                   "y": 13
+                                   "y": 9
                             },
                             {
                                    "displayType": "ROW",
@@ -189,7 +215,7 @@
                                    "type": "childInv",
                                    "w": 1,
                                    "x": 1,
-                                   "y": 13
+                                   "y": 9
                             },
                             {
                                    "displayType": "ROW",
@@ -202,7 +228,7 @@
                                    "type": "team",
                                    "w": 1,
                                    "x": 2,
-                                   "y": 6
+                                   "y": 4
                             },
                             {
                                    "displayType": "CARD",
@@ -255,7 +281,7 @@
                                    "static": false,
                                    "w": 1,
                                    "x": 0,
-                                   "y": 6
+                                   "y": 2
                             },
                             {
                                    "displayType": "ROW",
@@ -293,7 +319,7 @@
                                    "static": false,
                                    "w": 1,
                                    "x": 2,
-                                   "y": 4
+                                   "y": 2
                             },
                             {
                                    "displayType": "CARD",
@@ -359,7 +385,7 @@
                                    "static": false,
                                    "w": 1,
                                    "x": 1,
-                                   "y": 4
+                                   "y": 2
                             },
                             {
                                    "displayType": "ROW",
@@ -386,62 +412,7 @@
                                    "static": false,
                                    "w": 3,
                                    "x": 0,
-                                   "y": 10
-                            },
-                            {
-                                   "description": "This is a test",
-                                   "displayType": "ROW",
-                                   "h": 2,
-                                   "hideName": false,
-                                   "i": "caseinfoid-6434eb20-b58c-11ea-95a8-8b8d5f804e32",
-                                   "items": [
-                                          {
-                                                 "endCol": 2,
-                                                 "fieldId": "code42alerttype",
-                                                 "height": 22,
-                                                 "id": "92eac610-b58c-11ea-95a8-8b8d5f804e32",
-                                                 "index": 0,
-                                                 "sectionItemType": "field",
-                                                 "startCol": 0
-                                          },
-                                          {
-                                                 "dropEffect": "move",
-                                                 "endCol": 6,
-                                                 "fieldId": "code42fileevents",
-                                                 "height": 106,
-                                                 "id": "94153c50-b58c-11ea-95a8-8b8d5f804e32",
-                                                 "index": 1,
-                                                 "listId": "caseinfoid-6434eb20-b58c-11ea-95a8-8b8d5f804e32",
-                                                 "sectionItemType": "field",
-                                                 "startCol": 0
-                                          }
-                                   ],
-                                   "maxW": 3,
-                                   "minH": 1,
-                                   "minW": 1,
-                                   "moved": false,
-                                   "name": "Test Section",
-                                   "static": false,
-                                   "w": 3,
-                                   "x": 0,
-                                   "y": 2
-                            },
-                            {
-                                   "h": 2,
-                                   "i": "caseinfoid-bcee6390-b58c-11ea-95a8-8b8d5f804e32",
-                                   "items": [],
-                                   "maxW": 3,
-                                   "minH": 1,
-                                   "minW": 1,
-                                   "moved": false,
-                                   "name": "General Purpose Dynamic Section",
-                                   "query": "468c8e6f-6f50-486f-8cde-7dabe4cbeb2b",
-                                   "queryType": "script",
-                                   "static": false,
-                                   "type": "dynamic",
-                                   "w": 1,
-                                   "x": 0,
-                                   "y": 4
+                                   "y": 6
                             }
                      ],
                      "type": "custom"
