@@ -1,11 +1,8 @@
 import shutil
 from typing import Dict, Tuple, Any, Callable
+from dateparser import parse
 
-import dateparser
-
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-
-# IMPORTS
+from CommonServerPython import *
 
 
 # Disable insecure warnings
@@ -498,22 +495,22 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
             event_data.pop('eventDetail', None)  # deleting eventDetail to not load the context
             event_id = event_data.get('eventId')
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
-                event_created_time = dateparser.parse(event_data.get('persistedTime'))
+                event_created_time = parse(event_data.get('persistedTime'))
                 incident = {
                     'name': event_data.get('incidentSummary'),
                     'occurred': event_created_time.strftime(timestamp_format),
                     'severity': event_severity_to_dbot_score(event_data.get('severity')),
                     'rawJSON': json.dumps(event_data)
                 }
-                incidents.extend(incident)
-                last_event_ids.extend(event_id)
+                incidents.extend([incident])
+                last_event_ids.extend([event_id])
 
                 next_run = {
                     'time': event_created_time.strftime(timestamp_format),
                     'last_event_ids': json.dumps(last_event_ids)  # save the event IDs from the last fetch
                 }
 
-    demisto.info(f'Zimperium last fetch data: {str(next_run)}')
+    demisto.debug(f'Zimperium last fetch data: {str(next_run)}')
     return next_run, incidents
 
 
