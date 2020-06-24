@@ -65,8 +65,8 @@ data_test_expected_errors = [
     )
 ]
 data_test_time_format = [
-    ('', f'time data \'\' does not match the time format.'),
-    ('test', f'time data \'test\' does not match the time format.')
+    ('', 'time data \'\' does not match the time format.'),
+    ('test', 'time data \'test\' does not match the time format.')
 ]
 data_test_convert_time_format = [
     (('2019-12-19T00:00:00', 0, False), '2019-12-19T00:00:00Z'),

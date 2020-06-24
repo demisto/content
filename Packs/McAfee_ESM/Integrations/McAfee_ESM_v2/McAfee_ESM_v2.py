@@ -598,7 +598,7 @@ class McAfeeESMClient(BaseClient):
                     'Status': case_status.get('name'),
                     'Summary': result['cases'][i].get('summary')
                 }
-            context_entry[f'Case'] = cases
+            context_entry['Case'] = cases
         return context_entry
 
     def fetch_incidents(self, params: Dict):

@@ -1,19 +1,19 @@
 !esm-fetch-fields
-!esm-search
-!esm-fetch-alarms
-!esm-get-case-list
-!esm-add-case
-!esm-edit-case
+!esm-search timeRange="CURRENT_YEAR" filters="[{\"type\":\"EsmFieldFilter\",\"field\":{\"name\":\"SrcIP\"},\"operator\":\"IN\"}]" limit="3"
+!esm-fetch-alarms timeRange=CURRENT_MONTH
+!esm-get-case-list since="1 month"
+!esm-add-case summary="McAfee ESM v2 add case"
+!esm-edit-case id="33266" summary="McAfee ESM v2 edit case"
 !esm-get-case-statuses
-!esm-edit-case-status
-!esm-get-case-detail
-!esm-get-case-event-list
-!esm-add-case-status
-!esm-delete-case-status
+!esm-get-case-detail id="33264"
+!esm-get-case-event-list ids="42687"
+!esm-add-case-status name=test_add_case
+!esm-edit-case-status original_name=test_edit_case new_name=edited_case
+!esm-delete-case-status name=test_delete_case
 !esm-get-organization-list
 !esm-get-user-list
-!esm-acknowledge-alarms
-!esm-unacknowledge-alarms
-!esm-delete-alarms
-!esm-get-alarm-event-details
-!esm-list-alarm-events
+!esm-acknowledge-alarms alarmIds="42710"
+!esm-unacknowledge-alarms alarmIds="42687"
+!esm-delete-alarms alarmIds="42709"
+!esm-get-alarm-event-details eventId=144115188075855872|802641
+!esm-list-alarm-events alarmId=42687
