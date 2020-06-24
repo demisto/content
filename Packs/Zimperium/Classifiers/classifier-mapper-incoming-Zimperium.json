@@ -83,10 +83,6 @@
 					"simple": ""
 				}
 			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {}
 		}
 	}
 }
