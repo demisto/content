@@ -78,7 +78,7 @@ class MsClient:
         base_url_with_subscription = f"{server}subscriptions/{subscription_id}/"
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url_with_subscription, verify=verify, proxy=proxy,
-                                         self_deployed=self_deployed, ok_codes=ok_codes)
+                                         self_deployed=self_deployed, ok_codes=ok_codes, scope="https://management.azure.com/.default")
         self.server = server
         self.subscription_id = subscription_id
 
