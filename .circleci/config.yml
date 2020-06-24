@@ -355,7 +355,7 @@ jobs:
                     export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
 
                   else
-                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+                    export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
                 python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
 
@@ -388,8 +388,6 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            echo "Skipping tests step for this build testings"
-            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -418,8 +416,6 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            echo "Skipping tests step for this build testings"
-            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -448,8 +444,6 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            echo "Skipping tests step for this build testings"
-            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -478,8 +472,6 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            echo "Skipping tests step for this build testings"
-            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -512,8 +504,6 @@ jobs:
           when: always
           no_output_timeout: 5h
           command: |
-            echo "Skipping tests step for this build testings"
-            exit 0
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -563,7 +553,7 @@ jobs:
       - run:
           name: Instance Test
           command: |
-            if [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
                 ./Tests/scripts/instance_test.sh
                 export RETVAL=$?
