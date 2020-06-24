@@ -7,10 +7,10 @@ description: ""
 tasks:
   "0":
     id: "0"
-    taskid: eabafc0b-19a5-4ac7-89ab-5cd36e26680f
+    taskid: f474f7de-3696-476d-8bff-f13d3ce80c75
     type: start
     task:
-      id: eabafc0b-19a5-4ac7-89ab-5cd36e26680f
+      id: f474f7de-3696-476d-8bff-f13d3ce80c75
       version: -1
       name: ""
       iscommand: false
@@ -34,17 +34,17 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 9cb3d98b-1fed-4019-849f-2c347b821212
+    taskid: 67590df1-104d-47eb-82a9-c40c4f8ae130
     type: regular
     task:
-      id: 9cb3d98b-1fed-4019-849f-2c347b821212
+      id: 67590df1-104d-47eb-82a9-c40c4f8ae130
       version: -1
       name: taxii2-get-collections
       description: Get the list of collections from the discovery service.
-      script: FeedTAXII2|||taxii2-get-collections
+      script: '|||taxii2-get-collections'
       type: regular
       iscommand: true
-      brand: FeedTAXII2
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -63,18 +63,18 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 8fd496b1-4a32-4bfd-8c93-aa639603548b
+    taskid: 608addaa-5208-4931-8a21-8551a37907b2
     type: regular
     task:
-      id: 8fd496b1-4a32-4bfd-8c93-aa639603548b
+      id: 608addaa-5208-4931-8a21-8551a37907b2
       version: -1
       name: taxii2-get-indicators
       description: Allows you to test your feed, and to make sure you can fetch indicators
         successfuly .
-      script: FeedTAXII2|||taxii2-get-indicators
+      script: '|||taxii2-get-indicators'
       type: regular
       iscommand: true
-      brand: FeedTAXII2
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -98,10 +98,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: e38f5ad5-4167-4186-8cab-c76cc60621e0
+    taskid: 1d44d8bf-2fa8-4dc4-849f-ce17ef77bf65
     type: condition
     task:
-      id: e38f5ad5-4167-4186-8cab-c76cc60621e0
+      id: 1d44d8bf-2fa8-4dc4-849f-ce17ef77bf65
       version: -1
       name: Assert collections fetched
       type: condition
@@ -139,10 +139,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 9bd13823-c3e2-4b6a-8eab-9397071a1a7b
+    taskid: 6ef6a1a1-7d41-45e6-8ed8-7f69672171ff
     type: condition
     task:
-      id: 9bd13823-c3e2-4b6a-8eab-9397071a1a7b
+      id: 6ef6a1a1-7d41-45e6-8ed8-7f69672171ff
       version: -1
       name: Assert indicators fetched
       type: condition
@@ -185,10 +185,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2f63bcb5-e623-4ca5-8361-6d2e7d604c7a
+    taskid: 3cc2d511-8331-43f3-8c79-c86b098a683e
     type: title
     task:
-      id: 2f63bcb5-e623-4ca5-8361-6d2e7d604c7a
+      id: 3cc2d511-8331-43f3-8c79-c86b098a683e
       version: -1
       name: Done
       type: title

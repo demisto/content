@@ -166,3 +166,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+  - TAXII 2 Feed Test
