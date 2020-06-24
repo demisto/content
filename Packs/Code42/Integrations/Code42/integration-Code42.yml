@@ -1,8 +1,8 @@
 commonfields:
-  id: Code42Test
+  id: Code42
   version: -1
-name: Code42Test
-display: Code42Test
+name: Code42
+display: Code42
 category: Endpoint
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 configuration:
