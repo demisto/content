@@ -21,6 +21,9 @@ REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 
 FIELDS_WITH_NAME = ['request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority', 'service_category',
                     'requester', 'site', 'group', 'technician', 'category', 'subcategory', 'item']
 FIELDS_TO_IGNORE = ['has_draft', 'cancel_flag_comments']
+HUMAN_READABLE_FIELDS = ['CreatedTime', 'Id', 'Requester', 'Technician', 'Status', 'Subject']
+FIELDS_WITH_TIME = ['created_time', 'deleted_on', 'due_by_time', 'first_response_due_by_time', 'responded_time',
+                    'resolved_time', 'completed_time', 'assigned_time', 'last_updated_time']
 
 SERVER_URL = {
     'United States': 'https://sdpondemand.manageengine.com',
@@ -113,10 +116,12 @@ def create_output(request: dict) -> dict:
         value = request.get(field, None)
         if value not in [None, {}, []] and field not in FIELDS_TO_IGNORE:
             output[string_to_context_key(field)] = value
+            if field in FIELDS_WITH_TIME:
+                output[string_to_context_key(field)] = \
+                    timestamp_to_datestring(request.get('created_time', {}).get('value'))
+
     if output.get('Status'):
         output['Status'] = request.get('status', {}).get('name')
-    if output.get('CreatedTime'):
-        output['CreatedTime'] = timestamp_to_datestring(request.get('created_time', {}).get('value'))
     return output
 
 
@@ -166,6 +171,25 @@ def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> d
     return {'link_requests': all_linked_requests}
 
 
+def create_human_readable(output: dict) -> dict:
+    """
+    Converts the output of a command to a human readable output
+
+    Args:
+        output: the output that should be converted to the human readable representation
+
+    Returns:
+        dict: the dictionary that represents the human readable output
+    """
+    hr = {}
+    for field in HUMAN_READABLE_FIELDS:
+        if output.get(field):
+            hr[field] = output.get(field)
+            if field in ['Technician', 'Requester']:
+                hr[field] = output.get(field, {}).get('name')
+    return hr
+
+
 # Command functions:
 def list_requests_command(client: Client, args: dict):
     """
@@ -183,12 +207,13 @@ def list_requests_command(client: Client, args: dict):
     row_count = args.get('row_count', None)
     search_fields = args.get('search_fields', None)
     filter_by = args.get('filter_by', None)
-    list_info = create_list_info(start_index, row_count, search_fields, filter_by)
+    list_info = create_requests_list_info(start_index, row_count, search_fields, filter_by)
     params = {'input_data': f'{list_info}'}
     result = client.get_requests(request_id, params)
-    output = []
-    context: dict = defaultdict(list)
 
+    output = []
+    hr = []
+    context: dict = defaultdict(list)
     if request_id:
         requests = [result.get('request', [])]
     else:
@@ -196,8 +221,10 @@ def list_requests_command(client: Client, args: dict):
     for request in requests:
         request_output = create_output(request)
         output.append(request_output)
+        hr.append(create_human_readable(request_output))
+
     context['ServiceDeskPlus(val.ID===obj.ID)'] = {'Request': output}
-    markdown = tableToMarkdown(f'Requests', t=output)
+    markdown = tableToMarkdown(f'Requests', t=hr)
     return markdown, context, result
 
 
@@ -233,12 +260,13 @@ def create_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     params = {'input_data': f'{query}'}
     result = client.http_request('POST', url_suffix='requests', params=params)
     request = result.get('request', None)
+
     output = {}
     context: dict = defaultdict(list)
     if request:
         output = create_output(request)
-
-    markdown = tableToMarkdown('Service Desk Plus request was successfully created', t=output)
+    hr = create_human_readable(output)
+    markdown = tableToMarkdown('Service Desk Plus request was successfully created', t=hr)
     context['ServiceDeskPlus(val.ID===obj.ID)'] = {'Request': output}
     return markdown, context, result
 
@@ -264,8 +292,9 @@ def update_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     if request:
         output = create_output(request)
 
-    markdown = tableToMarkdown('Service Desk Plus request was successfully updated', t=output)
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'Request': output}
+    hr = create_human_readable(output)
+    markdown = tableToMarkdown('Service Desk Plus request was successfully updated', t=hr)
+    context['ServiceDeskPlus(val.ID===obj.ID)'] = {'Request': output}
     return markdown, context, result
 
 
@@ -318,6 +347,8 @@ def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     """
     request_id = args.get('request_id')
     result = client.http_request('GET', url_suffix=f'requests/{request_id}/link_requests')
+    # print(f'response:\n{result}')
+
     linked_requests = result.get('link_requests', [])
     context: dict = defaultdict(list)
     output = []
@@ -328,6 +359,8 @@ def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
 
     markdown = tableToMarkdown(f'Linked requests to request {request_id}', t=output, removeNull=True)
     context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'LinkRequests': output}
+    # print(f'context:\n{context}')
+
     return markdown, context, result
 
 
@@ -344,8 +377,8 @@ def modify_linked_request_command(client: Client, args: dict) -> Tuple[str, dict
     """
     request_id = args.get('request_id')
     action = args.get('action')
-    linked_requests_id = args.get('linked_requests_id').split(',')
-    comment = args.get('comment')
+    linked_requests_id = args.get('linked_requests_id', '').split(',')
+    comment = args.get('comment', '')
     input_data = create_modify_linked_input_data(linked_requests_id, comment)
     params = {'input_data': f'{input_data}'}
     if action == 'Link':
@@ -402,7 +435,20 @@ def get_resolutions_list_command(client: Client, args: dict) -> Tuple[str, dict,
     return markdown, context, result
 
 
-def create_list_info(start_index, row_count, search_fields, filter_by):
+def create_requests_list_info(start_index, row_count, search_fields, filter_by):
+    """
+    Returning the list_info dictionary that should be used to filter the requests that are being returned.
+
+    Args:
+         start_index: the index of the first request that should be returned
+         row_count: the number of requests that should be returned
+         search_fields: search for specific fields in the requests
+         filter_by: the filter by which to filter the returned requests
+
+     Returns:
+         A dictionary containing the list_info parameter that should be used for filtering the requests.
+
+    """
     list_info = {}
     if start_index is not None:
         list_info['start_index'] = start_index
@@ -425,14 +471,15 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
     demisto_incidents: List = list()
     time_from = new_last_run.get('time')
     time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-    list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter)
+    list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter, fetch_limit)
     params = {'input_data': f'{list_info}'}
 
     # Get incidents from Service Desk Plus
     demisto.debug(f'Fetching Service Desk Plus requests. From: '
                   f'{timestamp_to_datestring(time_from, date_format=date_format)}. To: '
                   f'{timestamp_to_datestring(time_to, date_format=date_format)}\n'
-                  f'last run id: {new_last_run.get("id", 0)}\n')
+                  f'last run id: {new_last_run.get("id", 0)}\n')  # todo: remove
+
     incidents = client.get_requests(params=params).get('requests', [])
 
     if incidents:
@@ -464,7 +511,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
     return demisto_incidents
 
 
-def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str) -> dict:
+def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str, fetch_limit: int) -> dict:
     """
     Returning the list_info dictionary that should be used to filter the requests that are being fetched
     The requests that will be returned when using this list_info are all requests created between 'time_from' and
@@ -478,6 +525,7 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
                        be filtered. Multiple fields, separated with a comma, can be used to filter. Every field should
                        be in the following format: 'field-name condition field-value' where condition is the condition
                        that this field should satisfy, for example 'is', 'is not', 'greater than' etc.
+         fetch_limit: the maximal number of requests that should be returned.
 
      Returns:
          A dictionary containing the list_info parameter that should be used for filtering the requests.
@@ -511,7 +559,8 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
         list_info = {
             'search_criteria': search_criteria,
             'sort_field': 'created_time',
-            'sort_order': 'asc'
+            'sort_order': 'asc',
+            'row_count': fetch_limit
         }
         return {'list_info': list_info}
     except:
@@ -535,17 +584,18 @@ def test_module(client: Client):
     try:
         client.http_request('GET', 'requests')
 
-        params: dict = demisto.params()
+        params: dict = ()
 
         if params.get('isFetch'):
             fetch_time = params.get('fetch_time', '1 day')
             fetch_status = params.get('fetch_status', 'Open')
-            fetch_filter = params.get('fetch_filter')
+            fetch_filter = params.get('fetch_filter', '')
+            fetch_limit = int(params.get('fetch_limit', 10))
 
             date_format = '%Y-%m-%dT%H:%M:%S'
             time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
             time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter)
+            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter, fetch_limit)
             params = {'input_data': f'{list_info}'}
             try:
                 client.get_requests(params=params).get('requests', [])
@@ -560,7 +610,7 @@ def test_module(client: Client):
         raise e
 
 
-def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, any]:
+def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, Any]:
     """
     Creates for the user the refresh token for the app, given the code the user got when defining the scopes of the app.
 
@@ -592,7 +642,7 @@ def main():
     params = demisto.params()
     server_url = SERVER_URL[params.get('server_url')]
 
-    client = Client(url=server_url+API_VERSION,
+    client = Client(url=server_url + API_VERSION,
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
                     client_id=params.get('client_id'),
