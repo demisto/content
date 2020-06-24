@@ -778,7 +778,6 @@ def update_server_configuration(client, server_configuration, error_msg):
         message = result_object.get('message', '')
         msg = f'{error_msg} {status_code}\n{message}'
         print_error(msg)
-    # client.api_client.pool.close()
     return response_data, status_code
 
 
