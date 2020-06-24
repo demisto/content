@@ -452,12 +452,11 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
                 #                       f"if they are Enabled in AutoFocus.")
                 exception_list.append(f"Exception 1 is : {e}\n")
 
-
     if 'Samples Feed' in indicator_feeds:
         client.indicator_feeds = ['Samples Feed']
         try:
             client.build_iterator(feed_tags, 1, 0)
-        except Exception as e :
+        except Exception as e:
             # exception_list.append("Could not fetch Samples Feed\n"
             #                       "\nCheck your instance configuration and your connection to AutoFocus.")
             exception_list.append(f"Exception 2 is : {e}\n")
