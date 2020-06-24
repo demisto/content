@@ -1,6 +1,7 @@
 id: PCAP Search test
 version: -1
 name: PCAP Search test
+description: test
 starttaskid: "0"
 tasks:
   "0":
