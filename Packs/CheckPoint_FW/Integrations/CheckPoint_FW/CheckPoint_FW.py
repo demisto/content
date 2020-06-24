@@ -1,4 +1,5 @@
 import requests
+from typing import Tuple, Dict, Any
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -141,18 +142,20 @@ class Client(BaseClient):
                                       json_data=body)
         return format_get_object(response, 'host')
 
-    def checkpoint_add_host_command(self, name: str, ip_address: str):
+    def checkpoint_add_host_command(self, name: str, ip_address: str, groups):
         """
         Add host objects.
 
         Args:
             name(str): Object name. Must be unique in the domain.
             ip_address(str): IPv4 or IPv6 address.
+            groups(str or list): Collection of group identifiers.
 
         """
         response = self._http_request(method='POST', url_suffix='add-host', headers=self.headers,
-                                      json_data={"name": name, "ip-address": ip_address})
-        return format_add_object(response, 'add')
+                                      json_data={"name": name, "ip-address": ip_address,
+                                                 'groups': groups})
+        return format_add_object(response, 'host')
 
     def checkpoint_update_host_command(self, identifier: str, ignore_warnings: bool,
                                        ignore_errors: bool, ip_address: str = None,
@@ -313,7 +316,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='add-address-range',
                                       headers=self.headers, json_data=body)
-        return format_add_object(response, 'address range')
+        return format_add_object(response, 'address-range')
 
     def checkpoint_update_address_range_command(self, identifier: str, ignore_warnings: bool,
                                                 ignore_errors: bool, ip_address_first: str = None,
@@ -468,6 +471,7 @@ class Client(BaseClient):
 
     def checkpoint_update_application_site_command(self, identifier: str,
                                                    urls_defined_as_regular_expression: bool,
+                                                   url_list=None,
                                                    description: str = None, new_name: str = None,
                                                    primary_category: str = None,
                                                    application_signature: str = None):
@@ -476,6 +480,8 @@ class Client(BaseClient):
 
         Args:
             identifier: uid or name.
+            url_list(str or list): URLs that determine this particular application.
+                                    can be a string of a URL or a list of URLs.
             urls_defined_as_regular_expression(bool): States whether the URL is defined as a
                                                       Regular Expression or not.
             description(str): A description for the application.
@@ -486,13 +492,14 @@ class Client(BaseClient):
         """
 
         body = {'name': identifier,
-                'application-signature': application_signature,
                 'description': description,
                 'new-name': new_name,
                 'primary-category': primary_category,
-                'primary_category': primary_category,
                 'urls-defined-as-regular-expression': urls_defined_as_regular_expression,
+                'application-signature': application_signature,
+                'url-list': url_list,
                 }
+
         response = self._http_request(method='POST', url_suffix='set-application-site',
                                       headers=self.headers, json_data=body)
         return format_update_object(response, 'application-site')
@@ -548,7 +555,7 @@ class Client(BaseClient):
                                   headers=self.headers, json_data=body)
 
 
-def login(base_url: str, username: str, password: str, verify_certificate: bool = False) -> str:
+def login(base_url: str, username: str, password: str, verify_certificate: bool) -> str:
     """
     login to checkpoint admin account using username and password.
     """
@@ -571,7 +578,7 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
     return 'ok' if response else f'Connection failed.{reason}\nFull response:\n{response.json()}'
 
 
-def format_list_objects(result: dict, endpoint: str):
+def format_list_objects(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     """
         Formats all objects info from CheckPoint into Demisto's outputs.
 
@@ -583,11 +590,11 @@ def format_list_objects(result: dict, endpoint: str):
         dict: the context to return into Demisto.
         dict: the report from CheckPoint (used for debugging).
     """
-    if not result.get('objects'):
-        return 'No data to show.', {}, result
+    printable_result = []
 
     object_list = result.get('objects')
-    printable_result = []
+    if not object_list:
+        return 'No data to show.', {}, result
 
     for element in object_list:
         current_object_data = {'name': element.get('name'),
@@ -597,13 +604,13 @@ def format_list_objects(result: dict, endpoint: str):
 
         printable_result.append(current_object_data)
 
-    outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
+    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
     readable_output = tableToMarkdown(f'CheckPoint data for listing {endpoint}s:', printable_result,
                                       ['name', 'uid', 'type'], removeNull=True)
     return readable_output, outputs, result
 
 
-def format_get_object(result: dict, endpoint: str):
+def format_get_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     """
         Formats object info from CheckPoint into Demisto's outputs.
 
@@ -622,23 +629,31 @@ def format_get_object(result: dict, endpoint: str):
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
-        'domain_name': result.get('domain').get('name'),
-        'domain_uid': result.get('domain').get('uid'),
-        'domain_type': result.get('domain').get('type'),
         'ipv4_address': result.get('ipv4-address'),
         'ipv6_address': result.get('ipv4-address'),
         'read_only': result.get('read-only'),
-        'creator': result.get('meta-info').get('creator'),
-        'last_modifier': result.get('meta-info').get('last-modifier')
     }}
-    table_data = outputs[f'checkpoint.{endpoint}']
+
+    if result.get('domain'):
+        outputs.update({
+            'domain-name': result.get('domain').get('name'),
+            'domain-uid': result.get('domain').get('uid'),
+            'domain-type': result.get('domain').get('type'),
+        })
+    if result.get('meta-info'):
+        outputs.update({
+            'creator': result.get('meta-info').get('creator'),
+            'last_modifier': result.get('meta-info').get('last-modifier')
+        })
+
+    table_data = outputs[f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)']
     readable_output = tableToMarkdown(f'CheckPoint Data for Getting {endpoint}:', table_data,
                                       removeNull=True)
 
     return readable_output, outputs, result
 
 
-def format_add_object(result: dict, endpoint: str):
+def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     """
         Formats adding object result from CheckPoint into Demisto's outputs.
 
@@ -657,12 +672,26 @@ def format_add_object(result: dict, endpoint: str):
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
-        'domain-name': result.get('domain').get('name'),
-        'domain-uid': result.get('domain').get('uid'),
-        'domain-type': result.get('domain').get('type'),
-        'creator': result.get('meta-info').get('creator'),
-        'last-modifier': result.get('meta-info').get('last-modifier')
     }
+
+    if result.get('domain'):
+        common_output.update({
+            'domain-name': result.get('domain').get('name'),
+            'domain-uid': result.get('domain').get('uid'),
+            'domain-type': result.get('domain').get('type'),
+        })
+
+    if result.get('meta-info'):
+        common_output.update({
+            'creator': result.get('meta-info').get('creator'),
+            'last_modifier': result.get('meta-info').get('last-modifier'),
+        })
+    if result.get('groups'):
+        group_list = []
+        for group in result.get('groups'):
+            group_list.append(group.get('name'))
+        common_output['groups'] = group_list
+
     unique_outputs = {}
     if endpoint == 'application-site':
         unique_outputs = {
@@ -694,16 +723,16 @@ def format_add_object(result: dict, endpoint: str):
             'ipv6-address': result.get('ipv4-address'),
             'read-only': result.get('read-only')
         }
-    common_output.update(unique_outputs)
-    outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': common_output}
 
-    table_data = outputs[f'Checkpoint.{endpoint}']
-    readable_output = tableToMarkdown(f'CheckPoint data for adding {endpoint}:', table_data,
+    common_output.update(unique_outputs)
+
+    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': common_output}
+    readable_output = tableToMarkdown(f'CheckPoint data for adding {endpoint}:', common_output,
                                       removeNull=True)
     return readable_output, outputs, result
 
 
-def format_update_object(result: dict, endpoint: str):
+def format_update_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     """
         Formats updated object result from CheckPoint into Demisto's outputs.
 
@@ -719,24 +748,28 @@ def format_update_object(result: dict, endpoint: str):
     if not result:
         return 'No data to show.', {}, result
 
-    outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
+    output = {
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
-        'domain-name': result.get('domain').get('name'),
-        'domain-uid': result.get('domain').get('uid'),
-        'domain-type': result.get('domain').get('type'),
         'ipv4-address': result.get('ipv4-address'),
         'ipv6-address': result.get('ipv4-address'),
         'total-number': result.get('total-number'),
-    }}
-    table_data = outputs[f'Checkpoint.{endpoint}']
-    readable_output = tableToMarkdown(f'CheckPoint Data for updating {endpoint}:', table_data,
+    }
+    if result.get('domain'):
+        output.update({
+            'domain-name': result.get('domain').get('name'),
+            'domain-uid': result.get('domain').get('uid'),
+            'domain-type': result.get('domain').get('type'),
+        })
+
+    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': output}
+    readable_output = tableToMarkdown(f'CheckPoint Data for updating {endpoint}:', output,
                                       removeNull=True)
     return readable_output, outputs, result
 
 
-def format_delete_object(result: dict, endpoint: str):
+def format_delete_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     """
         Formats deleted object result from CheckPoint into Demisto's outputs.
 
@@ -751,10 +784,10 @@ def format_delete_object(result: dict, endpoint: str):
     if not result:
         return 'No data to show.', {}, result
 
-    outputs = {f'Checkpoint.{endpoint}(val.uid && val.uid == obj.uid)': {
+    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': {
         'message': result.get('message'),
     }}
-    table_data = outputs[f'Checkpoint.{endpoint}']
+    table_data = outputs[f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)']
     readable_output = tableToMarkdown(f'CheckPoint Data for deleting {endpoint}:', table_data,
                                       removeNull=True)
     return readable_output, outputs, result
@@ -833,11 +866,12 @@ def main():
         elif command == 'checkpoint-install-policy':
             return_outputs(client.install_policy_command(**demisto.args()))
 
-        elif command == 'checkpoint-policy-verify':
+        elif command == 'checkpoint-verify-policy':
             return_outputs(client.verify_policy_command(**demisto.args()))
 
         elif command in commands:
-            readable_output, outputs, result = (commands[demisto.command()](**demisto.args()))
+            readable_output, outputs, result = \
+                (commands[demisto.command()](**demisto.args()))  # type: ignore
             return_outputs(readable_output, outputs, result)
 
     except Exception as e:
