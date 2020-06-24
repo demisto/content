@@ -3921,6 +3921,12 @@ def prettify_traffic_logs(traffic_logs):
             pretty_traffic_log['ActionSource'] = traffic_log['action_source']
         if 'application' in traffic_log:
             pretty_traffic_log['Application'] = traffic_log['application']
+        if 'bytes' in traffic_log:
+            pretty_traffic_log['Bytes'] = traffic_log['bytes']
+        if 'bytes_received' in traffic_log:
+            pretty_traffic_log['BytesReceived'] = traffic_log['bytes_received']
+        if 'bytes_sent' in traffic_log:
+            pretty_traffic_log['BytesSent'] = traffic_log['bytes_sent']
         if 'category' in traffic_log:
             pretty_traffic_log['Category'] = traffic_log['category']
         if 'device_name' in traffic_log:
@@ -4214,6 +4220,12 @@ def prettify_log(log):
         pretty_log['Action'] = log['action']
     if 'app' in log:
         pretty_log['Application'] = log['app']
+    if 'bytes' in log:
+        pretty_log['Bytes'] = log['bytes']
+    if 'bytes_received' in log:
+        pretty_log['BytesReceived'] = log['bytes_received']
+    if 'bytes_sent' in log:
+        pretty_log['BytesSent'] = log['bytes_sent']
     if 'category' in log:
         pretty_log['CategoryOrVerdict'] = log['category']
     if 'device_name' in log:
