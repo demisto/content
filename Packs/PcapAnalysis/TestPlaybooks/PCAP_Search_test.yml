@@ -84,8 +84,8 @@ tasks:
     task:
       id: 90177069-d0a3-4eb1-8e71-e19d55815078
       version: -1
-      name: PCAP Search 2
-      playbookName: PCAP Search 2
+      name: PCAP Search
+      playbookName: PCAP Search
       type: playbook
       iscommand: false
       brand: ""
