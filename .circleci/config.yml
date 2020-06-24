@@ -128,7 +128,6 @@ jobs:
             python3 -m pytest ./Tests/Marketplace/Tests/search_and_install_packs_test.py -v
 
             if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
-                  echo Checking for sdk related pylint errors
                   ./Tests/scripts/sdk_pylint_check.sh
             fi
             exit 0
