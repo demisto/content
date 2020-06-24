@@ -150,13 +150,15 @@ def test_prettify_traffic_logs():
 
 def test_prettify_logs():
     from Panorama import prettify_logs
-    traffic_logs = [{'action': 'my_action1', 'category': 'my_category1', 'rule': 'my_rule1', 'natdport': '100'},
-                    {'action': 'my_action2', 'category': 'my_category2', 'rule': 'my_rule2', 'natdport': '101'}]
+    traffic_logs = [{'action': 'my_action1', 'category': 'my_category1', 'rule': 'my_rule1', 'natdport': '100',
+                     'bytes': '12'},
+                    {'action': 'my_action2', 'category': 'my_category2', 'rule': 'my_rule2', 'natdport': '101',
+                     'bytes_sent': '11'}]
     response = prettify_logs(traffic_logs)
     expected = [{'Action': 'my_action1', 'CategoryOrVerdict': 'my_category1', 'Rule': 'my_rule1',
-                 'NATDestinationPort': '100'},
+                 'NATDestinationPort': '100', 'Bytes': '12'},
                 {'Action': 'my_action2', 'CategoryOrVerdict': 'my_category2', 'Rule': 'my_rule2',
-                 'NATDestinationPort': '101'}]
+                 'NATDestinationPort': '101', 'BytesSent': '11'}]
     assert response == expected
 
 
