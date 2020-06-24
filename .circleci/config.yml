@@ -347,6 +347,11 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -378,6 +383,11 @@ jobs:
           name: Setup Instance
           when: always
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -399,6 +409,11 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -427,6 +442,11 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -455,6 +475,11 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -483,6 +508,11 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -515,6 +545,11 @@ jobs:
           when: always
           no_output_timeout: 5h
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -578,6 +613,11 @@ jobs:
       - run:
           name: Destroy Instances
           command: |
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
@@ -597,6 +637,11 @@ jobs:
       - run:
           name: Upload Packs To Marketplace Storage
           command: |
+            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+              echo "Skipping instance tests for sdk nightly build"
+              exit 0
+            fi
+
             if [[ $CIRCLE_BRANCH != master ]]; then
               echo "Skipping packs uploading on non master branch"
               exit 0
