@@ -129,8 +129,8 @@ jobs:
 
             if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
                   echo Checking for sdk related pylint errors
-                  pylint_test_result=$(python3 -m pylint --errors-only ./Tests | grep demisto_sdk) | echo
-                  pylint_utils_result=$(python3 -m pylint --errors-only ./Utils | grep demisto_sdk) | echo
+                  pylint_test_result="$(python3 -m pylint --errors-only ./Tests | grep demisto_sdk)" | true
+                  pylint_utils_result="$(python3 -m pylint --errors-only ./Utils | grep demisto_sdk)" | true
 
                   if [ -n $pylint_test_result ] || [ -n $pylint_utils_result ] ; then
                       echo Pylint exit code on Test directory: $pylint_test_result
