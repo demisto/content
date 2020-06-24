@@ -181,6 +181,7 @@ def main():
 
         elif demisto.command() == "fetch-indicators":
             initial_interval = params.get("initial_interval")
+            return_error
             limit = try_parse_integer(params.get("limit") or -1)
             integration_ctx = demisto.getIntegrationContext() or {}
             (indicators, integration_ctx) = fetch_indicators_command(

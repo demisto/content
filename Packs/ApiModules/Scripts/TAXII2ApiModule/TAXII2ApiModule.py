@@ -214,6 +214,8 @@ class Taxii2FeedClient:
                 "Could not find a collection to fetch from. "
                 "Please make sure you provided a collection."
             )
+        if limit is None:
+            limit = -1
 
         page_size = self.get_page_size(limit, limit)
         if page_size <= 0:
@@ -247,7 +249,7 @@ class Taxii2FeedClient:
                         self.extract_indicators_from_stix_objects(stix_objects)
                     )
                 )
-                if len(indicators) >= limit:
+                if 0 < limit <= len(indicators):
                     break
         # TAXII 2.1
         elif isinstance(envelope, Dict):
@@ -256,18 +258,20 @@ class Taxii2FeedClient:
             obj_cnt += len(stix_objects)
             indicators_list = self.extract_indicators_from_stix_objects(stix_objects)
             indicators = self.parse_indicators_list(indicators_list)
-            while envelope.get("more", False) and cur_limit > 0:
+            while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.poll_collection(page_size, envelope.get("next", ""))
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")
                     obj_cnt += len(stix_objects)
-                    cur_limit -= len(envelope)  # type: ignore
-                    indicators.extend(
-                        self.parse_indicators_list(
-                            self.extract_indicators_from_stix_objects(stix_objects)
-                        )
-                    )
+                    extracted_iocs = self.extract_indicators_from_stix_objects(stix_objects)
+                    parsed_iocs = self.parse_indicators_list(extracted_iocs)
+                    indicators.extend(parsed_iocs)
+
+                    if limit > -1:
+                        cur_limit -= len(envelope)  # type: ignore
+                        if cur_limit < 0:
+                            break
                 else:
                     raise DemistoException(
                         "Error: TAXII 2 client received the following response while requesting "
