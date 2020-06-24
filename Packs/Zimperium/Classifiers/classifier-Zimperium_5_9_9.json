@@ -1,11 +1,15 @@
 {
-	"id": "Zimperium-mapper",
-	"name": "Zimperium - Incoming Mapper",
-	"type": "mapping-incoming",
-	"version": -1,
-	"fromversion": "6.0.0",
-	"description": "Maps incoming Zimperium incident fields.",
+	"brandName": "Zimperium",
+	"custom": true,
 	"defaultIncidentType": "",
+	"id": "Zimperium",
+	"fromVersion": "5.0.0",
+	"incidentSamples": [],
+	"indicatorSamples": [],
+	"isDefault": false,
+	"keyTypeMap": {
+		"ZIPS_EVENT": "Zimperium event"
+	},
 	"mapping": {
 		"Zimperium Event": {
 			"dontMapEventToLabels": false,
@@ -84,5 +88,14 @@
 				}
 			}
 		}
-	}
+	},
+	"propagationLabels": null,
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "type"
+	},
+	"unclassifiedCases": {},
+	"version": -1,
+	"toVersion": "5.9.9"
 }
