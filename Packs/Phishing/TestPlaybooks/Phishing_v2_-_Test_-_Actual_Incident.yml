@@ -1,6 +1,7 @@
 id: Phishing v2 - Test - Actual Incident
 version: -1
 fromversion: 6.0.0
+description: "Runs an actual phishing incident."
 name: Phishing v2 - Test - Actual Incident
 starttaskid: "0"
 tasks:
