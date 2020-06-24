@@ -173,6 +173,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "QuestKace",
+            "playbookID": "QuestKace test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
         },
@@ -2860,15 +2865,25 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Azure AD Connect Health Feed",
+            "playbookID": "FeedAzureADConnectHealth_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Zoom Feed",
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Workday",
+            "playbookID": "Workday - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
+        "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
-        "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
         "SignalSciences-Test": "Issue 24934",
@@ -2913,6 +2928,7 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
+        "Cortex XDR - IOC - Test": "issue #25598",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
@@ -2967,6 +2983,7 @@
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "Silverfort": "contribution",
+        "Nozomi_Guardian": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
