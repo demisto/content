@@ -410,10 +410,20 @@ script:
     class ObservationToSecurityQueryMapper(object):
         """Class to simplify the process of mapping observation data to query objects."""
 
+        # Exfiltration consts
         _ENDPOINT_TYPE = "FedEndpointExfiltration"
         _CLOUD_TYPE = "FedCloudSharePermissions"
+
+        # Query consts
         _PUBLIC_SEARCHABLE = "PublicSearchableShare"
         _PUBLIC_LINK = "PublicLinkShare"
+        _OUTSIDE_TRUSTED_DOMAINS = "SharedOutsideTrustedDomain"
+
+        exposure_type_map = {
+            "PublicSearchableShare": ExposureType.IS_PUBLIC,
+            "PublicLinkShare": ExposureType.SHARED_VIA_LINK,
+            "SharedOutsideTrustedDomain": "OutsideTrustedDomains"
+        }
 
         def __init__(self, observation, actor):
             self._obs = observation
@@ -462,19 +472,26 @@ script:
 
             return filters
 
+        @logger
         def _create_exposure_filters(self, exposure_types):
             """Determine exposure types based on alert type"""
-
+            exp_types = []
             if self._is_cloud_exfiltration:
-                exp_types = []
-                if self._PUBLIC_SEARCHABLE in exposure_types:
-                    exp_types.append(ExposureType.IS_PUBLIC)
-                if self._PUBLIC_LINK in exposure_types:
-                    exp_types.append(ExposureType.SHARED_VIA_LINK)
-                return [ExposureType.is_in(exp_types)]
+                for t in exposure_types:
+                    exp_type = self.exposure_type_map.get(t)
+                    if exp_type:
+                        exp_types.append(exp_type)
+                    else:
+                        LOG("Received unsupported exposure type {0}.".format(t))
+                if exp_types:
+                    return [ExposureType.is_in(exp_types)]
+                else:
+                    # If not given a support exposure type, search for all unsupported exposure types
+                    supported_exp_types = list(self.exposure_type_map.values())
+                    return [ExposureType.not_in(supported_exp_types)]
             elif self._is_endpoint_exfiltration:
                 return [
-                    EventType.is_in(["CREATED", "MODIFIED", "READ_BY_APP"]),
+                    EventType.is_in([EventType.CREATED, EventType.MODIFIED, EventType.READ_BY_APP]),
                     ExposureType.is_in(exposure_types),
                 ]
             return []
@@ -483,7 +500,8 @@ script:
             """Determine if file categorization is significant"""
             observed_file_categories = self._observation_data["fileCategories"]
             categories = [c["category"].upper() for c in observed_file_categories if c["isSignificant"]]
-            return FileCategory.is_in(categories)
+            if categories:
+                return FileCategory.is_in(categories)
 
 
     def map_observation_to_security_query(observation, actor):

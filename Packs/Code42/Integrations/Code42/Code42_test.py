@@ -395,79 +395,188 @@ MOCK_ALERTS_RESPONSE = """{
 }"""
 
 MOCK_ALERT_DETAILS_RESPONSE = """{
-    "type$": "ALERT_DETAILS_RESPONSE",
-    "alerts": [
-        {"type$": "ALERT_DETAILS",
-        "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
-        "type": "FED_ENDPOINT_EXFILTRATION",
-        "name": "Departing Employee Alert",
-        "description": "Cortex XSOAR is cool.",
-        "actor": "user1@example.com",
-        "actorId": "912098363086307495",
-        "target": "N/A",
-        "severity": "HIGH",
-        "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
-        "ruleSource": "Alerting",
-        "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
-        "createdAt": "2019-10-02T17:02:23.5867670Z",
-        "state": "OPEN",
-        "observations": [
-            {
-                "type$": "OBSERVATION",
-                "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
-                "observedAt": "2020-05-28T12:50:00.0000000Z",
-                "type": "FedEndpointExfiltration",
-                "data": {
-                    "type$": "OBSERVED_ENDPOINT_ACTIVITY",
-                    "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
-                    "sources": ["Endpoint"],
-                    "exposureTypes": ["ApplicationRead"],
-                    "firstActivityAt": "2020-05-28T12:50:00.0000000Z",
-                    "lastActivityAt": "2020-05-28T12:50:00.0000000Z",
-                    "fileCount": 3,
-                    "totalFileSize": 533846,
-                    "fileCategories": [
-                        {
-                            "type$": "OBSERVED_FILE_CATEGORY",
-                            "category": "Image",
-                            "fileCount": 3,
-                            "totalFileSize": 533846,
-                            "isSignificant": true
-                        }
-                    ],
-                    "files": [
-                        {
-                            "type$": "OBSERVED_FILE",
-                            "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
-                            "path": "C:/Users/QA/Downloads/",
-                            "name": "Customers.jpg",
-                            "category": "Image",
-                            "size": 265122
-                        },
-                        {
-                            "type$": "OBSERVED_FILE",
-                            "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_6",
-                            "path": "C:/Users/QA/Downloads/",
-                            "name": "data.png",
-                            "category": "Image",
-                            "size": 129129
-                        },
-                        {
-                            "type$": "OBSERVED_FILE",
-                            "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_7",
-                            "path": "C:/Users/QA/Downloads/",
-                            "name": "company_secrets.ps",
-                            "category": "Image",
-                            "size": 139595
-                        }
-                    ],
-                    "syncToServices": [],
-                    "sendingIpAddresses": ["127.0.0.1"]
-                    }
-                }
+  "type$": "ALERT_DETAILS_RESPONSE",
+  "alerts": [
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Departing Employee Alert",
+      "description": "Cortex XSOAR is cool.",
+      "actor": "user1@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "HIGH",
+      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleSource": "Alerting",
+      "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
+      "createdAt": "2019-10-02T17:02:23.5867670Z",
+      "state": "OPEN",
+      "observations": [
+        {
+          "type$": "OBSERVATION",
+          "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
+          "observedAt": "2020-05-28T12:50:00.0000000Z",
+          "type": "FedEndpointExfiltration",
+          "data": {
+            "type$": "OBSERVED_ENDPOINT_ACTIVITY",
+            "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
+            "sources": [
+              "Endpoint"
+            ],
+            "exposureTypes": [
+              "ApplicationRead"
+            ],
+            "firstActivityAt": "2020-05-28T12:50:00.0000000Z",
+            "lastActivityAt": "2020-05-28T12:50:00.0000000Z",
+            "fileCount": 3,
+            "totalFileSize": 533846,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Image",
+                "fileCount": 3,
+                "totalFileSize": 533846,
+                "isSignificant": true
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "Customers.jpg",
+                "category": "Image",
+                "size": 265122
+              },
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_6",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "data.png",
+                "category": "Image",
+                "size": 129129
+              },
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_7",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "company_secrets.ps",
+                "category": "Image",
+                "size": 139595
+              }
+            ],
+            "syncToServices": [],
+            "sendingIpAddresses": [
+              "127.0.0.1"
             ]
+          }
+        },
+        {
+          "type$": "OBSERVATION",
+          "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+          "observedAt": "2020-06-11T20:20:00.0000000Z",
+          "type": "FedCloudSharePermissions",
+          "data": {
+            "type$": "OBSERVED_CLOUD_SHARE_ACTIVITY",
+            "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+            "sources": [
+              "GoogleDrive"
+            ],
+            "exposureTypes": [
+              "SharedOutsideTrustedDomain"
+            ],
+            "firstActivityAt": "2020-06-11T20:20:00.0000000Z",
+            "lastActivityAt": "2020-06-11T20:25:00.0000000Z",
+            "fileCount": 1,
+            "totalFileSize": 182554405,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 1,
+                "totalFileSize": 182554405,
+                "isSignificant": false
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "14FnN9-YOhVUO_Tv8Mu-hEgevc2K4l07l_5_9e633ffd-9329-4cf4-8645-27a23b83ebc0",
+                "name": "Code42CrashPlan_8.0.0_1525200006800_778_Mac.dmg",
+                "category": "Archive",
+                "size": 182554405
+              }
+            ],
+            "outsideTrustedDomainsEmails": [
+              "user1@example.com"
+            ],
+            "outsideTrustedDomainsEmailsCount": 1,
+            "outsideTrustedDomainsCounts": [
+              {
+                "type$": "OBSERVED_DOMAIN_INFO",
+                "domain": "gmail.com",
+                "count": 1
+              }
+            ],
+            "outsideTrustedDomainsTotalDomainCount": 1,
+            "outsideTrustedDomainsTotalDomainCountTruncated": false
+          }
+        },
+        {
+          "type$": "OBSERVATION",
+          "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+          "observedAt": "2020-06-11T20:20:00.0000000Z",
+          "type": "FedCloudSharePermissions",
+          "data": {
+            "type$": "OBSERVED_CLOUD_SHARE_ACTIVITY",
+            "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+            "sources": [
+              "GoogleDrive"
+            ],
+            "exposureTypes": [
+              "UnknownExposureTypeThatWeDontSupportYet"
+            ],
+            "firstActivityAt": "2020-06-11T20:20:00.0000000Z",
+            "lastActivityAt": "2020-06-11T20:25:00.0000000Z",
+            "fileCount": 1,
+            "totalFileSize": 182554405,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 1,
+                "totalFileSize": 182554405,
+                "isSignificant": false
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "14FnN9-YOhVUO_Tv8Mu-hEgevc2K4l07l_5_9e633ffd-9329-4cf4-8645-27a23b83ebc0",
+                "name": "Code42CrashPlan_8.0.0_1525200006800_778_Mac.dmg",
+                "category": "Archive",
+                "size": 182554405
+              }
+            ],
+            "outsideTrustedDomainsEmails": [
+              "user1@example.com"
+            ],
+            "outsideTrustedDomainsEmailsCount": 1,
+            "outsideTrustedDomainsCounts": [
+              {
+                "type$": "OBSERVED_DOMAIN_INFO",
+                "domain": "gmail.com",
+                "count": 1
+              }
+            ],
+            "outsideTrustedDomainsTotalDomainCount": 1,
+            "outsideTrustedDomainsTotalDomainCountTruncated": false
+          }
         }
-    ]
+      ]
+    }
+  ]
 }"""
 
 MOCK_CODE42_ALERT_CONTEXT = [
@@ -590,7 +699,7 @@ MOCK_OBSERVATION_QUERIES = [
         "groups": [
             {
                 "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "actor", "value": "user2@example.com"}],
+                "filters": [{"operator": "IS", "term": "actor", "value": "user1@example.com"}],
             },
             {
                 "filterClause": "AND",
@@ -598,7 +707,7 @@ MOCK_OBSERVATION_QUERIES = [
                     {
                         "operator": "ON_OR_AFTER",
                         "term": "eventTimestamp",
-                        "value": "2019-10-02T16:50:00.000Z",
+                        "value": "2020-06-11T20:20:00.000Z",
                     }
                 ],
             },
@@ -608,15 +717,55 @@ MOCK_OBSERVATION_QUERIES = [
                     {
                         "operator": "ON_OR_BEFORE",
                         "term": "eventTimestamp",
-                        "value": "2019-10-02T16:55:00.000Z",
+                        "value": "2020-06-11T20:25:00.000Z",
                     }
                 ],
             },
             {
-                "filterClause": "OR",
+                "filterClause": "AND",
                 "filters": [
-                    {"operator": "IS", "term": "exposure", "value": "IsPublic"},
-                    {"operator": "IS", "term": "exposure", "value": "SharedViaLink"},
+                    {"operator": "IS", "term": "exposure", "value": "OutsideTrustedDomains"}
+                ],
+            },
+        ],
+        "pgNum": 1,
+        "pgSize": 10000,
+        "srtDir": "asc",
+        "srtKey": "eventId",
+    },
+    {
+        "groupClause": "AND",
+        "groups": [
+            {
+                "filterClause": "AND",
+                "filters": [{"operator": "IS", "term": "actor", "value": "user1@example.com"}],
+            },
+            {
+                "filterClause": "AND",
+                "filters": [
+                    {
+                        "operator": "ON_OR_AFTER",
+                        "term": "eventTimestamp",
+                        "value": "2020-06-11T20:20:00.000Z",
+                    }
+                ],
+            },
+            {
+                "filterClause": "AND",
+                "filters": [
+                    {
+                        "operator": "ON_OR_BEFORE",
+                        "term": "eventTimestamp",
+                        "value": "2020-06-11T20:25:00.000Z",
+                    }
+                ],
+            },
+            {
+                "filterClause": "AND",
+                "filters": [
+                    {"operator": "IS_NOT", "term": "exposure", "value": "IsPublic"},
+                    {"operator": "IS_NOT", "term": "exposure", "value": "SharedViaLink"},
+                    {"operator": "IS_NOT", "term": "exposure", "value": "OutsideTrustedDomains"},
                 ],
             },
         ],
@@ -926,7 +1075,9 @@ def get_empty_detectionlist_response(mocker, base_text):
 
 
 def test_client_when_no_alert_found_raises_exception(code42_sdk_mock):
-    code42_sdk_mock.alerts.get_details.return_value = """{'type$': 'ALERT_DETAILS_RESPONSE', 'alerts': []}"""
+    code42_sdk_mock.alerts.get_details.return_value = (
+        """{'type$': 'ALERT_DETAILS_RESPONSE', 'alerts': []}"""
+    )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Exception):
         client.get_alert_details("mock-id")
@@ -948,14 +1099,15 @@ def test_build_query_payload():
 
 def test_map_observation_to_security_query():
     response = json.loads(MOCK_ALERT_DETAILS_RESPONSE)
-    alerts = response["alerts"]
-    for i in range(0, len(alerts)):
-        observation = alerts[i]["observations"][0]
-        actor = alerts[i]["actor"]
-        query = map_observation_to_security_query(observation, actor)
-        assert query.sort_key == MOCK_OBSERVATION_QUERIES[i]["srtKey"]
-        assert query.page_number == MOCK_OBSERVATION_QUERIES[i]["pgNum"]
-        assert json.loads(str(query)) == MOCK_OBSERVATION_QUERIES[i]
+    alert = response["alerts"][0]
+    actor = alert["actor"]
+    observations = alert["observations"]
+    actual_queries = [
+        json.loads(str(map_observation_to_security_query(o, actor))) for o in observations
+    ]
+    assert actual_queries[0] == MOCK_OBSERVATION_QUERIES[0]
+    assert actual_queries[1] == MOCK_OBSERVATION_QUERIES[1]
+    assert actual_queries[2] == MOCK_OBSERVATION_QUERIES[2]
 
 
 def test_map_to_code42_event_context():
@@ -1094,6 +1246,29 @@ def test_highriskemployee_remove_command(code42_sdk_mock):
     expected = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected
     code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(expected)
+
+
+def test_fetch_when_no_significant_file_categories_ignores_filter(
+    code42_fetch_incidents_mock, mocker
+):
+    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace(
+        '"isSignificant": true', '"isSignificant": false'
+    )
+    alert_details_response = create_mock_code42_sdk_response(mocker, response_text)
+    code42_fetch_incidents_mock.alerts.get_details.return_value = alert_details_response
+    client = create_client(code42_fetch_incidents_mock)
+    _, _, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=None,
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    actual_query = str(code42_fetch_incidents_mock.securitydata.search_file_events.call_args[0][0])
+    assert "fileCategory" not in actual_query
+    assert "IMAGE" not in actual_query
 
 
 def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
