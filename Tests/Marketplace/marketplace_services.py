@@ -138,6 +138,7 @@ class PackStatus(enum.Enum):
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
+    FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
 
 
 class Pack(object):
@@ -454,7 +455,7 @@ class Pack(object):
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version, build_number):
+                             dependencies_data, server_min_version, build_number, commit_hash):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -492,6 +493,7 @@ class Pack(object):
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['versionInfo'] = build_number
+        pack_metadata['commit'] = commit_hash
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
@@ -626,9 +628,43 @@ class Pack(object):
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
         except Exception as e:
-            print_error(f"Failed in zipping {self._pack_name} folder.\n Additional info: {e}")
+            print_error(f"Failed in zipping {self._pack_name} folder. Additional info:\n {e}")
         finally:
             return task_status, zip_pack_path
+
+    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, remote_previous_commit_hash):
+        task_status = False
+        pack_was_modified = False
+
+        try:
+            pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
+
+            if not os.path.exists(pack_index_metadata_path):
+                print(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
+                task_status = True
+                return
+
+            with open(pack_index_metadata_path, 'r') as metadata_file:
+                downloaded_metadata = json.load(metadata_file)
+
+            previous_commit_hash = downloaded_metadata.get('commit', remote_previous_commit_hash)
+            # set 2 commits by hash value in order to check the modified files of the diff
+            current_commit = content_repo.commit(current_commit_hash)
+            previous_commit = content_repo.commit(previous_commit_hash)
+
+            for modified_file in current_commit.diff(previous_commit).iter_change_type('M'):
+                if modified_file.a_path.startswith(PACKS_FOLDER):
+                    modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
+
+                    if modified_file_path_parts[1] and modified_file_path_parts == self._pack_name:
+                        task_status, pack_was_modified = True, True
+                        return
+
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed in detecting modified files of {self._pack_name} pack. Additional info:\n {e}")
+        finally:
+            return task_status, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
@@ -974,7 +1010,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number):
+                        packs_dependencies_mapping, build_number, commit_hash):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1017,7 +1053,7 @@ class Pack(object):
                                                            author_image=author_image,
                                                            dependencies_data=dependencies_data,
                                                            server_min_version=self.server_min_version,
-                                                           build_number=build_number)
+                                                           build_number=build_number, commit_hash=commit_hash)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
