@@ -2881,6 +2881,7 @@
         }
     ],
     "skipped_tests": {
+        "Cisco ASA": "Issue 25741",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
