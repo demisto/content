@@ -760,6 +760,14 @@ MOCK_OBSERVATION_QUERIES = [
                     }
                 ],
             },
+            {
+                "filterClause": "AND",
+                "filters": [
+                    {"operator": "IS_NOT", "term": "exposure", "value": "IsPublic"},
+                    {"operator": "IS_NOT", "term": "exposure", "value": "SharedViaLink"},
+                    {"operator": "IS_NOT", "term": "exposure", "value": "OutsideTrustedDomains"},
+                ],
+            },
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -1240,8 +1248,12 @@ def test_highriskemployee_remove_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(expected)
 
 
-def test_fetch_when_no_significant_file_categories_ignores_filter(code42_fetch_incidents_mock, mocker):
-    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace('"isSignificant": true', '"isSignificant": false')
+def test_fetch_when_no_significant_file_categories_ignores_filter(
+    code42_fetch_incidents_mock, mocker
+):
+    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace(
+        '"isSignificant": true', '"isSignificant": false'
+    )
     alert_details_response = create_mock_code42_sdk_response(mocker, response_text)
     code42_fetch_incidents_mock.alerts.get_details.return_value = alert_details_response
     client = create_client(code42_fetch_incidents_mock)

@@ -485,6 +485,10 @@ script:
                         LOG("Received unsupported exposure type {0}.".format(t))
                 if exp_types:
                     return [ExposureType.is_in(exp_types)]
+                else:
+                    # If not given a support exposure type, search for all unsupported exposure types.s
+                    supported_exp_types = list(self.exposure_type_map.values())
+                    return [ExposureType.not_in(supported_exp_types)]
             elif self._is_endpoint_exfiltration:
                 return [
                     EventType.is_in([EventType.CREATED, EventType.MODIFIED, EventType.READ_BY_APP]),
