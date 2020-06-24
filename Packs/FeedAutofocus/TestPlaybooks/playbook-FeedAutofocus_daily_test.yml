@@ -87,6 +87,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      extend-context:
+        simple: Indicator=.[0]
       limit:
         simple: "10"
       offset: {}
