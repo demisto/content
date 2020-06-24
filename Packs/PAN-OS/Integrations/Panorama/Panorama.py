@@ -4714,6 +4714,45 @@ def panorama_add_static_route_command():
         'EntryContext': {"Panorama.StaticRoutes(val.Name == obj.Name)": static_route}
     })
 
+def panorama_override_vulnerability(threatid: str, vulnerability_profile: str, drop_mode: str):
+    xpath = "{}profiles/vulnerability/entry[@name='{}']/threat-exception/entry[@name='{}']/action".format(XPATH_OBJECTS, vulnerability_profile, threatid),
+    params = {'action': 'set',
+              'type': 'config',
+              'xpath': xpath,
+              'key': API_KEY,
+              'element': "<{0}></{0}>".format(drop_mode)
+              }
+
+    return http_request(
+        URL,
+        'POST',
+        body=params,
+    )
+
+
+def panorama_block_vulnerability():
+    """
+    Ovverride a vulnerability signature such that it is in block mode
+    """
+    threatid = demisto.args()['threat_id']
+    vulnerability_profile = demisto.args()['vulnerability_profile']
+    drop_mode = "drop" 
+    if demisto.args().get('drop_mode'):
+        drop_mode = demisto.args().get('drop_mode')
+
+    threat = panorama_override_vulnerability(threatid, vulnerability_profile, drop_mode)
+    threat_output  = {'id': threatid}
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': threat,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Threat with ID {} overridden.'.format(threatid),
+        'EntryContext': {
+            "Panorama.Vulnerability(val.Name == obj.Name)": threat_output
+        }
+    })
 
 @logger
 def panorama_delete_static_route(xpath_network: str, virtual_router: str, route_name: str) -> Dict[str, str]:
@@ -5504,6 +5543,10 @@ def main():
         # Reboot Panorama Device
         elif demisto.command() == 'panorama-device-reboot':
             panorama_device_reboot_command()
+        
+        # PAN-OS Set vulnerability to drop 
+        elif demisto.command() == 'panorama-block-vulnerability':
+            panorama_block_vulnerability()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

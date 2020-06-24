@@ -7,19 +7,25 @@ integration_params = {
     'port': '443',
     'vsys': 'vsys1',
     'server': 'https://1.1.1.1',
-    'key': 'thisisabogusAPIKEY!'
+    'key': 'thisisabogusAPIKEY!',
+#    'device_group': 'shared'
 }
 
+mock_demisto_args = {
+    'threat_id': "11111",
+    'vulnerability_profile': "mock_vuln_profile"
+}
 
 @pytest.fixture(autouse=True)
 def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
+    mocker.patch.object(demisto, 'args', return_value=mock_demisto_args)
 
 
 @pytest.fixture
 def patched_requests_mocker(requests_mock):
     """
-    This function mocks various PANOS API responses so we can accurately mock the responses.
+    This function mocks various PANOS API responses so we can accurately test the instance 
     """
 
     base_url = "{}:{}/api/".format(integration_params['server'], integration_params['port'])
@@ -36,11 +42,24 @@ def patched_requests_mocker(requests_mock):
     """
     version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_params['key']) 
     requests_mock.get(version_path, text=mock_version_xml, status_code=200)
+    
+    mock_response_xml = """
+    <response status="success" code="20">
+        <msg>command succeeded</msg>
+    </response>
+    """
+    set_path = base_url
+    requests_mock.post(base_url, text=mock_response_xml, status_code=200) 
+
     return requests_mock
 
 def test_panoram_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_major_version
     get_pan_os_major_version()
+
+def test_panoram_block_threatid(patched_requests_mocker):
+    from Panorama import panorama_block_vulnerability 
+    panorama_block_vulnerability()
 
 def test_add_argument_list():
     from Panorama import add_argument_list
