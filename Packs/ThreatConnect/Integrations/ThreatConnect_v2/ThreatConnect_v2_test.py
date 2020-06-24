@@ -1,4 +1,4 @@
-from ThreatConnect_v2 import calculate_freshness_time, create_context
+from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto
 from freezegun import freeze_time
 import pytest
 
@@ -218,6 +218,8 @@ data_test_create_context = [
 
 
 @ pytest.mark.parametrize('indicators, expected_output', data_test_create_context)
-def test_create_context(indicators, expected_output):
+def test_create_context(indicators, expected_output, mocker):
+    params = {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 0, "confidence": 0}
+    mocker.patch.object(demisto, 'params', return_value=params)
     output = create_context(indicators)
     assert output == expected_output, f'expected_output({indicators})\n\treturns: {output}\n\tinstead: {expected_output}'
