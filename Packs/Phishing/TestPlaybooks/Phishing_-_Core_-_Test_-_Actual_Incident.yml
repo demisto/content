@@ -13,6 +13,7 @@ tasks:
       id: dede0f49-cb50-454e-84c7-9b9b4ea43f0e
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -40,6 +41,7 @@ tasks:
       version: -1
       name: Done
       type: title
+      description: ""
       iscommand: false
       brand: ""
     separatecontext: false
@@ -63,6 +65,7 @@ tasks:
       id: 7d7b4274-7059-4367-8b62-b5ea595ce7b5
       version: -1
       name: Close manual review in the new incident
+      description: ""
       scriptName: ScheduleCommand
       type: regular
       iscommand: false
@@ -100,6 +103,7 @@ tasks:
       id: 3e6ef98e-211d-485c-8153-9a6c0d53fbfc
       version: -1
       name: Delete Context
+      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
