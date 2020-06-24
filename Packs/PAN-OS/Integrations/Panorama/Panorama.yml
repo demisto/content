@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama
+  id: Panorama-dev
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -39,7 +39,7 @@ configuration:
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
-name: Panorama
+name: Panorama-dev
 script:
   commands:
   - arguments:
@@ -556,6 +556,40 @@ script:
     - contextPath: Panorama.AddressGroups.Tag
       description: Address group tags.
       type: String
+
+  - arguments:
+    - default: false
+      auto: PREDEFINED
+      description: Type of session reject 
+      isArray: false
+      name: drop_mode 
+      required: false 
+      secret: false
+      predefined:
+        - drop 
+        - reset-both 
+        - alert 
+        - block-ip 
+        - reset-both
+        - reset-client
+        - reset-server
+    - default: false
+      description: Name of vulnerability profile 
+      isArray: false
+      name: vulnerability_profile 
+      required: true
+      secret: false
+    - default: false
+      description: Numberical Threat ID 
+      isArray: false
+      name: threat_id 
+      required: true 
+      secret: false
+    deprecated: false
+    description: Sets a vulnerability signature to block mode 
+    execution: false
+    name: panorama-block-vulnerability
+
   - arguments:
     - default: false
       description: Name of address group to delete.
