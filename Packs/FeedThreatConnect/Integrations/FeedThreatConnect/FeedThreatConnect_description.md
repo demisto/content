@@ -1,3 +1,2 @@
-## Hello World
-- This text is markdown
-- Here you should explain how to configure the instance in Demisto
+## ThreatConnect Feed
+This integration fetches indicators from ThreatConnect and indicators could be filtered by indicator owner.
