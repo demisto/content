@@ -14,6 +14,21 @@
     "operation": "regex",
     "asset_type": "all_fields"
   },
+    "is_op_multi": {
+    "value": "testgamil.co,test1gmail.com",
+    "operation": "is",
+    "asset_type": "email"
+  },
+    "contains_op_multi": {
+    "value": "test1,test2",
+    "operation": "contains",
+    "asset_type": "name"
+  },
+    "regex_op_multi": {
+    "value": "joh?n(ath[oa]n),joh?n11(ath[oa]n)",
+    "operation": "regex",
+    "asset_type": "vin"
+  },
   "api_response": {
     "balance": 4955,
     "entries":     [
