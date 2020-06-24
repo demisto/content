@@ -1034,6 +1034,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-Tests:
-  - Zimperium_Test
+tests:
+- Zimperium_Test
 fromversion: 5.0.0

@@ -2,7 +2,7 @@
     "name": "Common Types",
     "description": "Common types pack.",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
