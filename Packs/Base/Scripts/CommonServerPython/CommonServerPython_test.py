@@ -927,8 +927,9 @@ class TestCommandResults:
         - Validate HumanReadable exists
         """
         from CommonServerPython import CommandResults
-        context = CommandResults(readable_output='## Something').to_context()
-        assert context.get('HumanReadable')
+        markdown = '## Something'
+        context = CommandResults(readable_output=markdown).to_context()
+        assert context.get('HumanReadable') == markdown
 
     def test_empty_outputs(self):
         """
