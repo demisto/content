@@ -132,7 +132,6 @@ jobs:
                   ./Tests/scripts/sdk_pylint_check.sh
             fi
             exit 0
-            fi
       - run:
           name: Validate Files and Yaml
           when: always
@@ -711,7 +710,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          # should trigger every day at 9 PM UTC (12 AM Israel Time)
+          # should trigger every day at 12 AM UTC (3 AM Israel Time)
           cron: "0 0 * * *"
           filters:
             branches:
@@ -723,7 +722,7 @@ workflows:
   sdk_nightly:
     triggers:
       - schedule:
-          # should trigger every day at 9 PM UTC (12 AM Israel Time)
+          # should trigger every day at 12 AM UTC (3 AM Israel Time)
           cron: "0 0 * * *"
           filters:
             branches:

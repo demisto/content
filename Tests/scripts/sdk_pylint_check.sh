@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo Checking for sdk related pylint errors
+
 pylint_tests_result="$(python3 -m pylint --errors-only ./Tests | grep demisto_sdk)"
 pylint_utils_result="$(python3 -m pylint --errors-only ./Utils | grep demisto_sdk)"
 
