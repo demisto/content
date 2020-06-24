@@ -73,7 +73,7 @@ class Taxii2FeedClient:
             field_map=None,
     ):
         """
-        TAXII 2 Client used to poll and parse indicators in XSOAR formar
+        TAXII 2 Client used to poll and parse indicators in XSOAR form
         :param url: discovery service URL
         :param collection_to_fetch: Collection to fetch objects from
         :param proxies: proxies used in request
