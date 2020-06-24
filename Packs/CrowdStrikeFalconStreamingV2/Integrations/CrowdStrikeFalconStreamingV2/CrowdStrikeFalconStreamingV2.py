@@ -371,6 +371,7 @@ async def long_running_loop(
                             demisto.error(f'Failed storing sample events - {e}')
                     demisto.debug(f'Storing offset {offset_to_store}')
                     demisto.setIntegrationContext(integration_context)
+                    last_integration_context_set = datetime.utcnow()
     except Exception as e:
         demisto.error(f'An error occurred in the long running loop: {e}')
     finally:
