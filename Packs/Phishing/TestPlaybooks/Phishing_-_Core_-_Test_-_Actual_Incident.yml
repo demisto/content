@@ -7,15 +7,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 407687de-eb47-4604-86d9-c8f1ba3d3beb
+    taskid: dede0f49-cb50-454e-84c7-9b9b4ea43f0e
     type: start
     task:
-      id: 407687de-eb47-4604-86d9-c8f1ba3d3beb
+      id: dede0f49-cb50-454e-84c7-9b9b4ea43f0e
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -34,16 +33,15 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9a9d96a6-5185-45cf-848d-7b6e60c5b82d
+    taskid: 0d1a284b-aeed-4a0b-8e30-92af648efc63
     type: title
     task:
-      id: 9a9d96a6-5185-45cf-848d-7b6e60c5b82d
+      id: 0d1a284b-aeed-4a0b-8e30-92af648efc63
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -59,13 +57,12 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: a2a3b569-ae78-4001-8577-126cadb36903
+    taskid: 7d7b4274-7059-4367-8b62-b5ea595ce7b5
     type: regular
     task:
-      id: a2a3b569-ae78-4001-8577-126cadb36903
+      id: 7d7b4274-7059-4367-8b62-b5ea595ce7b5
       version: -1
       name: Close manual review in the new incident
-      description: ""
       scriptName: ScheduleCommand
       type: regular
       iscommand: false
@@ -75,7 +72,7 @@ tasks:
       - "3"
     scriptarguments:
       command:
-        simple: '!CompleteManualTask id=${CreatedIncidentID}'
+        simple: '!CompleteManualTask id=${incident.id}'
       cron:
         simple: '*/1 * * * *'
       endDate: {}
@@ -97,13 +94,12 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: cda6af61-d5bb-4b19-8892-afb72ac3bf3e
+    taskid: 3e6ef98e-211d-485c-8153-9a6c0d53fbfc
     type: regular
     task:
-      id: cda6af61-d5bb-4b19-8892-afb72ac3bf3e
+      id: 3e6ef98e-211d-485c-8153-9a6c0d53fbfc
       version: -1
       name: Delete Context
-      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -134,10 +130,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: c7098568-5222-46ae-8434-d614746c04c4
+    taskid: 60df83ab-a994-4acf-8b34-0d0d833a00e1
     type: regular
     task:
-      id: c7098568-5222-46ae-8434-d614746c04c4
+      id: 60df83ab-a994-4acf-8b34-0d0d833a00e1
       version: -1
       name: Download EML file
       description: Sends http request. Returns the response as json.
@@ -180,10 +176,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: c26250f1-6c0b-493a-8790-42e5daf1890f
+    taskid: b451083c-485d-4959-8a35-4224a30fa543
     type: regular
     task:
-      id: c26250f1-6c0b-493a-8790-42e5daf1890f
+      id: b451083c-485d-4959-8a35-4224a30fa543
       version: -1
       name: Create malicious URL indicator
       description: commands.local.cmd.new.indicator
@@ -314,10 +310,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: b10d0223-c3ed-4755-82a4-4788d5a0c2b5
+    taskid: 32c0308d-1dcc-4ec5-8841-195880f39186
     type: regular
     task:
-      id: b10d0223-c3ed-4755-82a4-4788d5a0c2b5
+      id: 32c0308d-1dcc-4ec5-8841-195880f39186
       version: -1
       name: Set phishing incident fields
       description: commands.local.cmd.set.incident
@@ -504,10 +500,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 5ef5eb15-c6bd-4864-8ffa-3dc052f35528
+    taskid: 67e1adaf-7153-4297-8122-66df66f819fe
     type: playbook
     task:
-      id: 5ef5eb15-c6bd-4864-8ffa-3dc052f35528
+      id: 67e1adaf-7153-4297-8122-66df66f819fe
       version: -1
       name: Phishing - Core
       description: |-
@@ -545,6 +541,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},

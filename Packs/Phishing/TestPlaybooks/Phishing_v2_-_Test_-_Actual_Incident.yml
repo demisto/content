@@ -1,21 +1,20 @@
 id: Phishing v2 - Test - Actual Incident
 version: -1
 fromversion: 6.0.0
-description: "Runs an actual phishing incident."
 name: Phishing v2 - Test - Actual Incident
+description: Runs an actual phishing incident.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c6e681a5-fe93-45c4-84cc-debc67781c8b
+    taskid: 873cca4f-9359-4e4a-85a0-4d4357b79f9c
     type: start
     task:
-      id: c6e681a5-fe93-45c4-84cc-debc67781c8b
+      id: 873cca4f-9359-4e4a-85a0-4d4357b79f9c
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -34,16 +33,15 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a6aef5d0-d974-4390-86cd-5c1229523dea
+    taskid: 34001326-7afe-4ff7-88de-cf305c1ede53
     type: title
     task:
-      id: a6aef5d0-d974-4390-86cd-5c1229523dea
+      id: 34001326-7afe-4ff7-88de-cf305c1ede53
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -59,13 +57,12 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 28d02eab-a0fe-475e-85c9-6582d89065d9
+    taskid: 0669cef4-9b2b-4ee3-83f6-da068655d082
     type: regular
     task:
-      id: 28d02eab-a0fe-475e-85c9-6582d89065d9
+      id: 0669cef4-9b2b-4ee3-83f6-da068655d082
       version: -1
       name: Close manual review in the new incident
-      description: ""
       scriptName: ScheduleCommand
       type: regular
       iscommand: false
@@ -75,7 +72,7 @@ tasks:
       - "3"
     scriptarguments:
       command:
-        simple: '!CompleteManualTask id=${CreatedIncidentID}'
+        simple: '!CompleteManualTask id=${incident.id}'
       cron:
         simple: '*/1 * * * *'
       endDate: {}
@@ -97,13 +94,12 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: ee48b38e-03e2-4764-889d-68748063f719
+    taskid: 7802ee38-5893-4675-8e5c-1a13f9ce9c4d
     type: regular
     task:
-      id: ee48b38e-03e2-4764-889d-68748063f719
+      id: 7802ee38-5893-4675-8e5c-1a13f9ce9c4d
       version: -1
       name: Delete Context
-      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -134,10 +130,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 53265b4d-2621-4e0b-8132-8c2c53e9775f
+    taskid: 11721f65-c7d0-4a06-86bc-6fbb2bdeaba0
     type: regular
     task:
-      id: 53265b4d-2621-4e0b-8132-8c2c53e9775f
+      id: 11721f65-c7d0-4a06-86bc-6fbb2bdeaba0
       version: -1
       name: Download EML file
       description: Sends http request. Returns the response as json.
@@ -180,10 +176,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 2b5f1f14-5dd5-49fd-861b-3afc51275a1c
+    taskid: f8c50668-42e6-4e73-8c89-d3cc143c0e99
     type: regular
     task:
-      id: 2b5f1f14-5dd5-49fd-861b-3afc51275a1c
+      id: f8c50668-42e6-4e73-8c89-d3cc143c0e99
       version: -1
       name: Create malicious URL indicator
       description: commands.local.cmd.new.indicator
@@ -314,10 +310,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 000032be-c61c-45ed-837f-24f9c56f751f
+    taskid: 93e8be1e-34c1-4b85-8d40-a389cec3b61d
     type: playbook
     task:
-      id: 000032be-c61c-45ed-837f-24f9c56f751f
+      id: 93e8be1e-34c1-4b85-8d40-a389cec3b61d
       version: -1
       name: Phishing Investigation - Generic v2
       description: |-
@@ -362,10 +358,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: aedfd64f-f698-480f-8a1f-df40f96abb7a
+    taskid: 2f4b2953-f3c3-41fe-82ba-e535f127b252
     type: regular
     task:
-      id: aedfd64f-f698-480f-8a1f-df40f96abb7a
+      id: 2f4b2953-f3c3-41fe-82ba-e535f127b252
       version: -1
       name: Set phishing incident fields
       description: commands.local.cmd.set.incident
@@ -550,6 +546,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
