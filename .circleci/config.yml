@@ -129,14 +129,9 @@ jobs:
 
             if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
                   echo Checking for sdk related pylint errors
-                  pylint_test_result="$(python3 -m pylint --errors-only ./Tests | grep demisto_sdk)" | true
-                  pylint_utils_result="$(python3 -m pylint --errors-only ./Utils | grep demisto_sdk)" | true
-
-                  if [ -n $pylint_test_result ] || [ -n $pylint_utils_result ] ; then
-                      echo Pylint exit code on Test directory: $pylint_test_result
-                      echo Pylint exit code on Utils directory:$pylint_utils_result
-                      exit 1
-                  fi
+                  ./Tests/scripts/sdk_pylint_check.sh
+            fi
+            exit 0
             fi
       - run:
           name: Validate Files and Yaml
@@ -680,3 +675,15 @@ workflows:
     jobs:
       - build:
           context: nightly_env
+  sdk_nightly:
+    triggers:
+      - schedule:
+          # should trigger every day at 9 PM UTC (12 AM Israel Time)
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build:
+          context: sdk_nightly_env
