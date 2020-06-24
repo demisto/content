@@ -1,5 +1,4 @@
 ## [Unreleased]
-Fixed a syntax error in the ***tc_indicators*** command.
 
 ## [20.5.0] - 2020-05-12
 -
