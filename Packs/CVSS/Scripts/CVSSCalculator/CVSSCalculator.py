@@ -161,7 +161,8 @@ def main():
     ###########################################
     confidentiality = values_map["CIA"].get(args.get('C'))
     modified_confidentiality = args.get('MC', "X")
-    modified_confidentiality = confidentiality if modified_confidentiality == "X" else values_map['CIA'].get(modified_confidentiality)
+    modified_confidentiality = confidentiality if\
+        modified_confidentiality == "X" else values_map['CIA'].get(modified_confidentiality)
     integrity = values_map['CIA'].get(args.get('I'))
     modified_integrity = args.get('MI', "X")
     modified_integrity = integrity if modified_integrity == "X" else values_map['CIA'].get(modified_integrity)
@@ -176,20 +177,24 @@ def main():
     modified_attack_vector = atack_vector if modified_attack_vector == "X" else values_map['AV'].get(modified_attack_vector)
     attack_complexity = values_map['AC'].get(args.get('AC'))
     modified_attack_complexity = args.get('MAC', "X")
-    modified_attack_complexity = attack_complexity if modified_attack_complexity == "X" else values_map['AC'].get(modified_attack_complexity)
+    modified_attack_complexity = attack_complexity if modified_attack_complexity == "X"\
+        else values_map['AC'].get(modified_attack_complexity)
     privileges_required = values_map['PR'].get(args.get('PR'))
     if type(privileges_required) == dict:
-        privileges_required = privileges_required.get("C") if scope_changed or modified_scope_changed else privileges_required.get("U")
+        privileges_required = privileges_required.get("C") if scope_changed or modified_scope_changed\
+            else privileges_required.get("U")
     modified_privileges_required = args.get('MPR', "X")
     if modified_privileges_required == "X":
         modified_privileges_required = privileges_required
     elif type(modified_privileges_required) == dict:
-        modified_privileges_required = modified_privileges_required.get("C") if scope_changed or modified_scope_changed else modified_privileges_required.get("U")
+        modified_privileges_required = modified_privileges_required.get("C") if scope_changed or\
+            modified_scope_changed else modified_privileges_required.get("U")
     else:
         modified_privileges_required = values_map['PR'].get(modified_privileges_required)
     user_interaction = values_map['UI'].get(args.get('UI'))
     modified_user_interaction = args.get('MUI', "X")
-    modified_user_interaction = user_interaction if modified_user_interaction == "X" else values_map['UI'].get(modified_user_interaction)
+    modified_user_interaction = user_interaction if modified_user_interaction == "X"\
+        else values_map['UI'].get(modified_user_interaction)
     remediation_level = values_map['RL'].get(args.get('RL', "X"))
     report_confidence = values_map['RC'].get(args.get('RC', "X"))
     confidentiality_requirement = values_map['CIAR'].get(args.get('CR', "X"))
@@ -211,7 +216,7 @@ def main():
         if not scope_changed:
             impact = 6.42 * iss
         else:
-            impact = 7.52 * (iss -0.029) - 3.25 * (iss - 0.02) ** 15
+            impact = 7.52 * (iss - 0.029) - 3.25 * (iss - 0.02) ** 15
 
     # Exploitability
     exploitability = None
@@ -230,7 +235,6 @@ def main():
             base_score =  calculated_value if calculated_value < 10 else 10
             base_score = round_up(base_score)
 
-
     ###########################################
     # Temporal Metric calculations
     ###########################################
@@ -243,18 +247,22 @@ def main():
     modified_impact = None
     modified_exploitability = None
     if version in ['3.0', '3.1']:
-        calculatedmodified_impact_sub_score = (1 - (( 1 - confidentiality_requirement * modified_confidentiality) * (1 - integrity_requirement * modified_integrity) * (1 - availability_requirement * modified_availability)))
+        calculatedmodified_impact_sub_score = (1 - ((1 - confidentiality_requirement * modified_confidentiality) *
+            (1 - integrity_requirement * modified_integrity) * (1 - availability_requirement * modified_availability)))
         modified_impact_sub_score = calculatedmodified_impact_sub_score if calculatedmodified_impact_sub_score < 0.915 else 0.915
 
     if version in ['3.0', '3.1']:
         if modified_scope_changed:
             if version == '3.0':
-                modified_impact = 7.52 * (modified_impact_sub_score - 0.029) - 3.25 * (modified_impact_sub_score * 0.9731 - 0.02) ** 15
+                modified_impact = 7.52 * (modified_impact_sub_score - 0.029) - 3.25 *\
+                                  (modified_impact_sub_score * 0.9731 - 0.02) ** 15
             elif version == '3.1':
-                modified_impact = 7.52 * (modified_impact_sub_score - 0.029) - 3.25 * (modified_impact_sub_score * 0.9731 - 0.02) ** 13
+                modified_impact = 7.52 * (modified_impact_sub_score - 0.029) - 3.25 *\
+                                  (modified_impact_sub_score * 0.9731 - 0.02) ** 13
         else:
             modified_impact = 6.42 * modified_impact_sub_score
-        modified_exploitability = 8.22 * modified_attack_vector * modified_attack_complexity * modified_privileges_required * modified_user_interaction
+        modified_exploitability = 8.22 * modified_attack_vector *\
+                                  modified_attack_complexity * modified_privileges_required * modified_user_interaction
 
     # Environmental Score
     environmental_score = None
@@ -295,7 +303,7 @@ def main():
         "EnvironmentalScore": environmental_score
     }
 
-    hrentry = {k: v for k,v in entry.items() if v}
+    hrentry = {k: v for k, v in entry.items() if v}
     markdown = tableToMarkdown('CVSS Score:', hrentry)
 
     results = CommandResults(
@@ -305,6 +313,7 @@ def main():
         outputs = entry
     )
     return_results(results)
+
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
