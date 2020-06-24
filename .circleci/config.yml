@@ -13,9 +13,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.6.0"
+      CONTENT_VERSION: "20.6.1"
       SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "63646dff0fba977f91d6d9fc2d7fd233bfb5561b" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "85b138633bcc10cedb4d6f4ed6e7074c28dd13d7" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -125,13 +125,9 @@ references:
         - project
 jobs:
   build:
-    docker:
-      - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
+    <<: *container_config
     parallelism: 2
-    environment:
-      CONTENT_VERSION: "20.6.1"
-      SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "85b138633bcc10cedb4d6f4ed6e7074c28dd13d7" # guardrails-disable-line disable-secrets-detection
+    <<: *environment
     steps:
       - checkout
       - setup_remote_docker
@@ -764,7 +760,7 @@ jobs:
           command: ./Tests/scripts/upload_artifacts.sh
           when: always
 
-  pre-build:
+  Prepare Environment:
     <<: *container_config
     resource_class: medium+
     <<: *environment
@@ -832,7 +828,7 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
           when: always
       - *store_artifacts
-  Validations:
+  Run Validations:
     <<: *container_config
     resource_class: medium+
     <<: *environment
@@ -1337,23 +1333,23 @@ workflows:
   nightly-workflows:
     triggers:
       - schedule:
-          # should trigger every day at 22:00 PM UTC (1 AM Israel Time)
-          cron: "0 22 * * *"
+          # should trigger every day at 20:00 PM UTC (11:00 PM Israel Time)
+          cron: "0 20 * * *"
           filters:
             branches:
               only:
                 - config_yaml
     jobs:
-      - pre-build:
+      - Prepare Environment:
           context: nightly_env
       - Create Instances:
           context: nightly_env
       - Run Unit Testing And Lint:
           requires:
-            - pre-build
-      - Validations:
+            - Prepare Environment
+      - Run Validations:
           requires:
-            - pre-build
+            - Prepare Environment
       - Server 6_0:
           requires:
             - Create Instances
