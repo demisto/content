@@ -345,7 +345,7 @@ jobs:
           name: Create Instance
           when: always
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
@@ -381,7 +381,7 @@ jobs:
           name: Setup Instance
           when: always
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
@@ -407,7 +407,7 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
@@ -440,7 +440,7 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
@@ -473,7 +473,7 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
@@ -506,7 +506,7 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
@@ -543,7 +543,7 @@ jobs:
           when: always
           no_output_timeout: 5h
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
@@ -635,7 +635,7 @@ jobs:
       - run:
           name: Upload Packs To Marketplace Storage
           command: |
-            if [ -n "${DEMISTO__SDK_NIGHTLY}" ]; then
+            if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
