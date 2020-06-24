@@ -21,9 +21,7 @@ class Client(BaseClient):
     def dehashed_search(self, asset_type: str, value: list, operation: str = None, results_page_number: str = None) -> dict:
         query_value = ''
         if operation == 'is':
-            demisto.log(f'int re: {value}')
             query_value = ' '.join((f'"{value}"' for value in value))
-            demisto.log(f'q{query_value}')
         elif operation == 'contains':
             query_value = ' OR '.join(value)
             if len(value) > 1:
@@ -36,8 +34,6 @@ class Client(BaseClient):
         else:
             query_string = f'{asset_type}:{query_value}'
 
-        demisto.log(f'got: {asset_type}, {value}, {operation}, {results_page_number}')
-        demisto.log(f'final string: {query_string}')
         if results_page_number:
             return self._http_request('GET', 'search', params={'query': query_string, 'page': results_page_number},
                                         auth=(self.email, self.api_key), timeout=15)
@@ -73,7 +69,6 @@ def dehashed_search_command(client: object, args: dict) -> [tuple, str]:
     asset_type = args.get('asset_type')
     operation = args.get('operation')
     value = argToList(args.get('value'))
-    demisto.log(f'value is: {value}')
     results_page_number = args.get('page')
     result = client.dehashed_search(asset_type, value, operation, results_page_number)
     if not isinstance(result, dict):
@@ -89,7 +84,7 @@ def dehashed_search_command(client: object, args: dict) -> [tuple, str]:
             tableToMarkdown('DeHashed Search', query_data, headers=headers, removeNull=True,
                             headerTransform=pascalToSpace),
             {
-                f'{INTEGRATION_CONTEXT_BRAND}.Search.{asset_type.title().replace("_", "")}(val.Id==obj.Id)': context_data
+                f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': context_data
             },
             query_data
                 )

@@ -77,8 +77,38 @@ script:
     execution: false
     name: dehashed-search
     outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
+    - contextPath: DeHashed.Search.Id
+      description: Object's id
+      type: String
+    - contextPath: DeHashed.Search.Email
+      description: Object's email
+      type: String
+    - contextPath: DeHashed.Search.Username
+      description: Object's username
+      type: String
+    - contextPath: DeHashed.Search.Password
+      description: Object's password
+      type: String
+    - contextPath: DeHashed.Search.HashedPassword
+      description: Object's hashed password
+      type: String
+    - contextPath: DeHashed.Search.Name
+      description: Object's name
+      type: String
+    - contextPath: DeHashed.Search.Vin
+      description: Object's vehicle identification
+      type: Number
+    - contextPath: DeHashed.Search.Address
+      description: Object's address
+      type: String
+    - contextPath: DeHashed.Search.IpDddress
+      description: Object's ip address
+      type: Number
+    - contextPath: DeHashed.Search.Phone
+      description: Object's phone
+      type: Number
+    - contextPath: DeHashed.Search.ObtainedFrom
+      description: Object's source
       type: String
   dockerimage: demisto/python3:3.8.3.9324
   feed: false

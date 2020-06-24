@@ -28,7 +28,7 @@ def test_module_command(requests_mock):
 
 def test_search_command_using_is_operator_without_filter(requests_mock):
     test_data = load_test_data('test_data/search.json')
-    scan_expected_result = {"DeHashed.Search.AllFields(val.Id==obj.Id)": test_data['expected_results']['full_results']}
+    scan_expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results']}
     url_params = {'query': '"testgamil.co"'}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
@@ -44,7 +44,7 @@ def test_search_command_using_is_operator_without_filter(requests_mock):
 
 def test_search_command_using_contains_operator_without_filter(requests_mock):
     test_data = load_test_data('test_data/search.json')
-    scan_expected_result = {"DeHashed.Search.AllFields(val.Id==obj.Id)": test_data['expected_results']['full_results']}
+    scan_expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results']}
     url_params = {'query': 'testgamil.co'}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
@@ -60,7 +60,7 @@ def test_search_command_using_contains_operator_without_filter(requests_mock):
 
 def test_search_command_using_regex_operator_without_filter(requests_mock):
     test_data = load_test_data('test_data/search.json')
-    scan_expected_result = {"DeHashed.Search.AllFields(val.Id==obj.Id)": test_data['expected_results']['full_results']}
+    scan_expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results']}
     url_params = {'query': '/joh?n(ath[oa]n)/'}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
@@ -76,7 +76,7 @@ def test_search_command_using_regex_operator_without_filter(requests_mock):
 
 def test_search_command_using_is_operator_with_filter_and_multi_values(requests_mock):
     test_data = load_test_data('test_data/search.json')
-    scan_expected_result = {"DeHashed.Search.Email(val.Id==obj.Id)": test_data['expected_results']['full_results']}
+    scan_expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results']}
     url_params = {'query': 'email:"testgamil.co" "test1gmail.com"'}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
@@ -92,7 +92,7 @@ def test_search_command_using_is_operator_with_filter_and_multi_values(requests_
 
 def test_search_command_using_contains_operator_with_filter_and_multi_values(requests_mock):
     test_data = load_test_data('test_data/search.json')
-    scan_expected_result = {"DeHashed.Search.Name(val.Id==obj.Id)": test_data['expected_results']['full_results']}
+    scan_expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results']}
     url_params = {'query': 'name:(test1 OR test2)'}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
@@ -108,7 +108,7 @@ def test_search_command_using_contains_operator_with_filter_and_multi_values(req
 
 def test_search_command_using_regex_operator_with_filter_and_multi_values(requests_mock):
     test_data = load_test_data('test_data/search.json')
-    scan_expected_result = {"DeHashed.Search.Vin(val.Id==obj.Id)": test_data['expected_results']['full_results']}
+    scan_expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results']}
     url_params = {'query': 'vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/'}
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
