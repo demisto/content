@@ -4,7 +4,7 @@ This integration was integrated and tested with version 7.70 of nmap. The nmap b
 ## Configure nmap on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for *מmap*.
+2. Search for *nmap*.
 3. Click **Add instance** to create and configure a new integration instance.
 
 
