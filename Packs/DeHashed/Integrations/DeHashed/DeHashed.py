@@ -1,5 +1,4 @@
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -22,7 +21,9 @@ class Client(BaseClient):
     def dehashed_search(self, asset_type: str, value: list, operation: str = None, results_page_number: str = None) -> dict:
         query_value = ''
         if operation == 'is':
+            demisto.log(f'int re: {value}')
             query_value = ' '.join((f'"{value}"' for value in value))
+            demisto.log(f'q{query_value}')
         elif operation == 'contains':
             query_value = ' OR '.join(value)
         elif operation == 'regex':
@@ -33,6 +34,8 @@ class Client(BaseClient):
         else:
             query_string = f'{asset_type}:{query_value}'
 
+        demisto.log(f'got: {asset_type}, {value}, {operation}, {results_page_number}')
+        demisto.log(f'final string: {query_string}')
         if results_page_number:
             return self._http_request('GET', 'search', params={'query': query_string, 'page': results_page_number},
                                         auth=(self.email, self.api_key))
@@ -51,8 +54,7 @@ def test_module(client: object) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-
-    result = client.dehashed_search('vin', 'test', 'is')
+    result = client.dehashed_search(asset_type='vin', value=['test', 'test1'], operation='is')
     if isinstance(result, dict):
         return 'ok'
     else:
@@ -69,19 +71,20 @@ def dehashed_search_command(client: object, args: dict) -> [tuple, str]:
     asset_type = args.get('asset_type')
     operation = args.get('operation')
     value = argToList(args.get('value'))
+    demisto.log(f'value is: {value}')
     results_page_number = args.get('page')
-
     result = client.dehashed_search(asset_type, value, operation, results_page_number)
     if not isinstance(result, dict):
         raise DemistoException(f'Got unexpected output from api: {result}')
 
     query_data = result.get('entries')
     if not query_data:
-        return "No results match your're query"
+        return 'No results match your query', None, None
     else:
         context_data = createContext(query_data, keyTransform=underscoreToCamelCase)
+        headers = [key.replace('_', ' ') for key in [*query_data[0].keys()]]
         return (
-            tableToMarkdown('DeHashed Search', query_data, headers=[*query_data[0].keys()],
+            tableToMarkdown('DeHashed Search', query_data, headers=headers, removeNull=True,
                             headerTransform=pascalToSpace),
             {
                 f'{INTEGRATION_CONTEXT_BRAND}.search.{asset_type}(val.Id==obj.Id)': context_data

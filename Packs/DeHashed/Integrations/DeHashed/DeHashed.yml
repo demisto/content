@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - defaultvalue: https://example.net
   display: Server URL (e.g. https://example.net)
-  name: url
+  name: base_url
   required: true
   type: 0
 - display: Email
@@ -38,18 +38,15 @@ script:
       isArray: false
       name: asset_type
       predefined:
-      - id
       - email
       - ip_address
       - username
-      - password
       - hashed_password
-      - hash_type
-      - ' name'
+      - name
       - vin
       - address
       - phone
-      - database_name
+      - all_fields
       required: true
       secret: false
     - default: false
@@ -64,8 +61,8 @@ script:
       isArray: false
       name: operation
       predefined:
-      - Is
-      - contain
+      - is
+      - contains
       - regex
       required: true
       secret: false
