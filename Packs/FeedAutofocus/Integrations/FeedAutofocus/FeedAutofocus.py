@@ -446,18 +446,21 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
             client.custom_feed_url_list = [url]
             try:
                 client.build_iterator(feed_tags, 1, 0)
-            except Exception:
-                exception_list.append(f"Could not fetch Custom Feed {url}\n"
-                                      f"\nCheck your API key the URL for the feed and Check "
-                                      f"if they are Enabled in AutoFocus.")
+            except Exception as e:
+                # exception_list.append(f"Could not fetch Custom Feed {url}\n"
+                #                       f"\nCheck your API key the URL for the feed and Check "
+                #                       f"if they are Enabled in AutoFocus.")
+                exception_list.append(f"Exception 1 is : {e}\n")
+
 
     if 'Samples Feed' in indicator_feeds:
         client.indicator_feeds = ['Samples Feed']
         try:
             client.build_iterator(feed_tags, 1, 0)
-        except Exception:
-            exception_list.append("Could not fetch Samples Feed\n"
-                                  "\nCheck your instance configuration and your connection to AutoFocus.")
+        except Exception as e :
+            # exception_list.append("Could not fetch Samples Feed\n"
+            #                       "\nCheck your instance configuration and your connection to AutoFocus.")
+            exception_list.append(f"Exception 2 is : {e}\n")
 
     if len(exception_list) > 0:
         raise Exception("\n".join(exception_list))
