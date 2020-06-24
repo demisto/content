@@ -370,19 +370,19 @@ class Validator:
         return validate_func(field_name, value, json_field_name)
 
 
-def is_sublist_of_list(s, l):
+def is_sublist_of_list(s, lst):
     sub_set = False
     if s == []:
         sub_set = True
-    elif s == l:
+    elif s == lst:
         sub_set = True
-    elif len(s) > len(l):
+    elif len(s) > len(lst):
         sub_set = False
     else:
-        for i in range(len(l)):
-            if l[i] == s[0]:
+        for i in range(len(lst)):
+            if lst[i] == s[0]:
                 n = 1
-                while (n < len(s)) and (i + n) < len(l) and (l[i + n] == s[n]):
+                while (n < len(s)) and (i + n) < len(lst) and (lst[i + n] == s[n]):
                     n += 1
 
                 if n == len(s):
