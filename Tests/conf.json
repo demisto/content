@@ -2340,7 +2340,8 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
+            "playbookID": "RasterizeImageTest",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Ipstack",

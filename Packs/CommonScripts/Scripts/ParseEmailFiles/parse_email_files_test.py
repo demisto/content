@@ -562,15 +562,20 @@ def test_no_content_type_file(mocker):
 
 
 def test_get_msg_mail_format():
-    format = get_msg_mail_format({
+    msg_mail_format = get_msg_mail_format({
         'Headers': 'Content-type:text/plain;'
     })
-    assert format == 'text/plain'
+    assert msg_mail_format == 'text/plain'
 
-    format = get_msg_mail_format({
+    msg_mail_format = get_msg_mail_format({
         'Something': 'else'
     })
-    assert format == ''
+    assert msg_mail_format == ''
+
+    msg_mail_format = get_msg_mail_format({
+        'Headers': None
+    })
+    assert msg_mail_format == ''
 
 
 def test_no_content_file(mocker):
