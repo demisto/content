@@ -2887,7 +2887,6 @@
         }
     ],
     "skipped_tests": {
-        "Cisco ASA": "Issue 25741",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
@@ -3059,7 +3058,8 @@
         "Digital Guardian": "partner integration",
 
 
-         "_comment5": "~~~ OTHER ~~~",
+        "_comment5": "~~~ OTHER ~~~",
+        "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
