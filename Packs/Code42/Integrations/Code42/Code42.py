@@ -156,7 +156,7 @@ class Code42Client(BaseClient):
 
     def __init__(self, sdk, base_url, auth, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy)
-        # Allow sdk parameter for testing purposes.
+        # Allow sdk parameter for unit testing.
         # Otherwise, lazily load the SDK so that the TEST Command can effectively check auth.
         self._sdk = sdk
         self._sdk_factory = lambda: py42.sdk.from_local_account(base_url, auth[0], auth[1]) if not self._sdk else None
