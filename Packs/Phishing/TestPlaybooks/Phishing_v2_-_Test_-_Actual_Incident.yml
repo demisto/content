@@ -65,6 +65,7 @@ tasks:
       id: 28d02eab-a0fe-475e-85c9-6582d89065d9
       version: -1
       name: Close manual review in the new incident
+      description: ""
       scriptName: ScheduleCommand
       type: regular
       iscommand: false

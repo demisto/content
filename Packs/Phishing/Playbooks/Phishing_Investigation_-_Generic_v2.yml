@@ -2116,4 +2116,4 @@ inputs:
 outputs: []
 fromversion: 4.5.0
 tests:
-- Phishing v2 Test - Attachment - Incident Starter
+- Phishing v2 - Test - Incident Starter
