@@ -10,16 +10,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 15ae4517-3f52-4ed4-a903-deec4860cd4f
+    taskid: 5617ffd4-8215-4fbf-889c-97826ea22934
     type: start
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-a903-deec4860cd4f
+      id: 5617ffd4-8215-4fbf-889c-97826ea22934
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -38,11 +36,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 15ae4517-3f52-4ed4-8a03-deec4860dc4f
+    taskid: ef517668-db34-44df-8859-d676f3545699
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-8a03-deec4860dc4f
+      id: ef517668-db34-44df-8859-d676f3545699
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -75,14 +72,13 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 15ae4517-3f52-4ed4-8a03-deec4860cd4f
+    taskid: b4da8012-50a4-4684-83da-a2ae14aa138c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-8a03-deec4860cd4f
+      id: b4da8012-50a4-4684-83da-a2ae14aa138c
       version: -1
       name: autofocus-get-indicators
-      description: Gets the indicators from AutoFocus.
+      description: Gets indicators from AutoFocus.
       script: '|||autofocus-daily-get-indicators'
       type: regular
       iscommand: true
@@ -91,8 +87,6 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      extend-context:
-        simple: Indicator=.[0]
       limit:
         simple: "10"
       offset: {}
@@ -111,11 +105,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 15ae4517-3f52-4ed4-8a03-deec4860cdf4
+    taskid: 38f31744-9b25-4933-821d-72a55c926755
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-8a03-deec4860cdf4
+      id: 38f31744-9b25-4933-821d-72a55c926755
       version: -1
       name: Verify Outputs
       type: condition
@@ -157,17 +150,15 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 15ae4517-3f52-4ed4-8a02-deec4860cd4f
+    taskid: df4e8e47-5d8d-4462-8ecd-a464e6700940
     type: title
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-8a02-deec4860cd4f
+      id: df4e8e47-5d8d-4462-8ecd-a464e6700940
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
