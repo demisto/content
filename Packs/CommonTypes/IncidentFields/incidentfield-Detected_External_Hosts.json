@@ -8,7 +8,7 @@
 	"cliName": "detectedexternalhosts",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "Detected external hosts",
 	"editForm": true,

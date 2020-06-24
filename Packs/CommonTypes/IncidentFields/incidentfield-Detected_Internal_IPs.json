@@ -8,7 +8,7 @@
 	"cliName": "detectedinternalips",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "Detected internal IPs",
 	"editForm": true,
