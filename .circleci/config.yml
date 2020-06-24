@@ -5,9 +5,9 @@ jobs:
       - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.6.0"
+      CONTENT_VERSION: "20.6.1"
       SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "63646dff0fba977f91d6d9fc2d7fd233bfb5561b" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "85b138633bcc10cedb4d6f4ed6e7074c28dd13d7" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -181,10 +181,14 @@ jobs:
             fi
             if [ -n "${GITHUB_TOKEN}" ] ;
               then
-                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN || echo "ignore errors"
+                # python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN || echo "ignore errors"
+                # new release notes summary generator in packs format
+                python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md --github-token $GITHUB_TOKEN
 
               else
-                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION || echo "ignore errors"
+                # python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION || echo "ignore errors"
+                # new release notes summary generator in packs format
+                python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md
             fi
       - run:
           name: Common Server Documentation
