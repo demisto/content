@@ -21,7 +21,8 @@ from Tests.test_integration import __get_integration_config, __test_integration_
 from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager, \
     get_server_numeric_version
 from Tests.update_content_data import update_content
-from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
+    install_all_content_packs
 
 MARKET_PLACE_MACHINES = ('master',)
 
@@ -800,17 +801,36 @@ def main():
         prints_manager.execute_thread_prints(0)
         sleep(60)
 
-        pack_ids = get_pack_ids_to_install()
-        # install content packs in every server
-        for server_url in servers:
-            try:
-                client = demisto_client.configure(base_url=server_url, username=username, password=password,
-                                                  verify_ssl=False)
-                search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, options.is_nightly)
-            except Exception as exc:
-                prints_manager.add_print_job(str(exc), print_error, 0)
-                prints_manager.execute_thread_prints(0)
-                installed_content_packs_successfully = False
+        if options.is_nightly:
+            threads_list = []
+            threads_print_manager = ParallelPrintsManager(len(servers))
+            # For each server url we install content
+            for thread_index, server_url in enumerate(servers):
+                client = demisto_client.configure(base_url=server_url, username=username,
+                                                  password=password, verify_ssl=False)
+                t = Thread(target=install_all_content_packs,
+                           kwargs={'client': client, 'host': server_url,
+                                   'prints_manager': threads_print_manager,
+                                   'thread_index': thread_index})
+                threads_list.append(t)
+            run_threads_list(threads_list)
+            prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
+            prints_manager.execute_thread_prints(0)
+            sleep(45)
+
+        else:
+            # install content packs in every server
+            pack_ids = get_pack_ids_to_install()
+            for server_url in servers:
+                try:
+                    client = demisto_client.configure(base_url=server_url, username=username, password=password,
+                                                      verify_ssl=False)
+
+                    search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                except Exception as exc:
+                    prints_manager.add_print_job(str(exc), print_error, 0)
+                    prints_manager.execute_thread_prints(0)
+                    installed_content_packs_successfully = False
 
     if new_integrations_files:
         new_integrations_names = get_integration_names_from_files(new_integrations_files)
