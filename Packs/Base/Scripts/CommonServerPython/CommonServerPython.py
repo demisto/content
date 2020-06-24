@@ -2584,8 +2584,6 @@ class CommandResults:
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None):
         # type: (str, str, object, list, str, object) -> None
-        if outputs is None:
-            outputs = {}
         if raw_response is None:
             raw_response = outputs
 
@@ -2619,7 +2617,7 @@ class CommandResults:
         if self.raw_response:
             raw_response = self.raw_response
 
-        if self.outputs:
+        if self.outputs is not None:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
