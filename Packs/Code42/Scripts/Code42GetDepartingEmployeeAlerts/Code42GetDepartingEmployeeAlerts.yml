@@ -20,5 +20,5 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags: ['dynamic-section', 'widget']
 type: python

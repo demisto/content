@@ -28,11 +28,6 @@
                 "displayed": true,
                 "isDefault": true,
                 "key": "Alerts Count"
-            },
-            {
-                "displayed": true,
-                "isDefault": true,
-                "key": "Alerts Count"
             }
         ]
     },
