@@ -33,13 +33,11 @@
                                                  "startCol": 0
                                           },
                                           {
-                                                 "dropEffect": "move",
                                                  "endCol": 2,
-                                                 "fieldId": "code42alertname",
+                                                 "fieldId": "name",
                                                  "height": 22,
-                                                 "id": "732ae930-b637-11ea-b3d2-913a8f1b2f41",
+                                                 "id": "381b6080-b63d-11ea-b3d2-913a8f1b2f41",
                                                  "index": 1,
-                                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
@@ -86,21 +84,10 @@
                                           {
                                                  "dropEffect": "move",
                                                  "endCol": 2,
-                                                 "fieldId": "code42alerttimestamp",
-                                                 "height": 22,
-                                                 "id": "7821f7d0-b637-11ea-b3d2-913a8f1b2f41",
-                                                 "index": 6,
-                                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                                 "sectionItemType": "field",
-                                                 "startCol": 0
-                                          },
-                                          {
-                                                 "dropEffect": "move",
-                                                 "endCol": 2,
                                                  "fieldId": "code42alertstate",
                                                  "height": 22,
                                                  "id": "75a42690-b637-11ea-b3d2-913a8f1b2f41",
-                                                 "index": 7,
+                                                 "index": 6,
                                                  "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                                  "sectionItemType": "field",
                                                  "startCol": 0
@@ -111,7 +98,7 @@
                                                  "fieldId": "code42alertid",
                                                  "height": 22,
                                                  "id": "6dc82070-b637-11ea-b3d2-913a8f1b2f41",
-                                                 "index": 8,
+                                                 "index": 7,
                                                  "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                                  "sectionItemType": "field",
                                                  "startCol": 0
@@ -121,7 +108,7 @@
                                                  "fieldId": "code42alerttype",
                                                  "height": 22,
                                                  "id": "727f7c10-b639-11ea-b3d2-913a8f1b2f41",
-                                                 "index": 9,
+                                                 "index": 8,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
@@ -130,7 +117,7 @@
                                                  "fieldId": "sourcebrand",
                                                  "height": 22,
                                                  "id": "incident-sourceBrand-field",
-                                                 "index": 10,
+                                                 "index": 9,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
@@ -139,7 +126,7 @@
                                                  "fieldId": "sourceinstance",
                                                  "height": 22,
                                                  "id": "incident-sourceInstance-field",
-                                                 "index": 11,
+                                                 "index": 10,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
@@ -148,7 +135,7 @@
                                                  "fieldId": "dbotsource",
                                                  "height": 22,
                                                  "id": "incident-source-field",
-                                                 "index": 12,
+                                                 "index": 11,
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           },
@@ -157,7 +144,18 @@
                                                  "fieldId": "playbookid",
                                                  "height": 22,
                                                  "id": "incident-playbookId-field",
+                                                 "index": 12,
+                                                 "sectionItemType": "field",
+                                                 "startCol": 0
+                                          },
+                                          {
+                                                 "dropEffect": "move",
+                                                 "endCol": 2,
+                                                 "fieldId": "code42alerttimestamp",
+                                                 "height": 22,
+                                                 "id": "7821f7d0-b637-11ea-b3d2-913a8f1b2f41",
                                                  "index": 13,
+                                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                                  "sectionItemType": "field",
                                                  "startCol": 0
                                           }
@@ -396,11 +394,23 @@
                                           {
                                                  "dropEffect": "move",
                                                  "endCol": 6,
-                                                 "fieldId": "exfiltratedfilelist",
-                                                 "height": 110,
-                                                 "id": "d857da20-5985-11ea-b904-997d555669cb",
+                                                 "fieldId": "code42fileevents",
+                                                 "height": 106,
+                                                 "id": "edd32d60-b645-11ea-b3d2-913a8f1b2f41",
                                                  "index": 0,
                                                  "listId": "caseinfoid-d0b3fb00-5985-11ea-b904-997d555669cb",
+                                                 "sectionItemType": "field",
+                                                 "startCol": 0
+                                          },
+                                          {
+                                                 "dropEffect": "move",
+                                                 "endCol": 6,
+                                                 "fieldId": "exfiltratedfilelist",
+                                                 "height": 22,
+                                                 "id": "d857da20-5985-11ea-b904-997d555669cb",
+                                                 "index": 1,
+                                                 "listId": "caseinfoid-d0b3fb00-5985-11ea-b904-997d555669cb",
+                                                 "sectionItemType": "field",
                                                  "startCol": 0
                                           }
                                    ],
