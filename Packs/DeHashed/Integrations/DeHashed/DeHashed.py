@@ -89,7 +89,7 @@ def dehashed_search_command(client: object, args: dict) -> [tuple, str]:
             tableToMarkdown('DeHashed Search', query_data, headers=headers, removeNull=True,
                             headerTransform=pascalToSpace),
             {
-                f'{INTEGRATION_CONTEXT_BRAND}.search.{asset_type}(val.Id==obj.Id)': context_data
+                f'{INTEGRATION_CONTEXT_BRAND}.Search.{asset_type.title().replace("_", "")}(val.Id==obj.Id)': context_data
             },
             query_data
                 )

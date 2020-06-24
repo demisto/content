@@ -1,19 +1,18 @@
 {
-  "is_op": {
+  "is_op_single": {
     "value": "testgamil.co",
-    "operator": "is",
+    "operation": "is",
     "asset_type": "all_fields"
   },
-  "single_command_args": {
-    "hash_list": [
-      "032196FB1AC01311B4AA1A7D0FD5EB5F420CA9B215AFE54234DFCF69E5D553F0"
-    ],
-    "comment": "test"
+    "contains_op_single": {
+    "value": "testgamil.co",
+    "operation": "contains",
+    "asset_type": "all_fields"
   },
-  "no_comment_command_args": {
-    "hash_list": [
-      "032196FB1AC01311B4AA1A7D0FD5EB5F420CA9B215AFE54234DFCF69E5D553F0"
-    ]
+    "regex_op_single": {
+    "value": "joh?n(ath[oa]n)",
+    "operation": "regex",
+    "asset_type": "all_fields"
   },
   "api_response": {
     "balance": 4955,
@@ -50,7 +49,7 @@
     "total": 0
   },
   "expected_results": {
-    "DeHashed.search.(val.Id==obj.Id)":
+    "full_results":
       [
               {
             "Id": "123",
