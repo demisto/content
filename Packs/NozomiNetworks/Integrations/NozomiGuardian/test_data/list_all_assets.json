@@ -1,0 +1,798 @@
+{
+    "result": [
+        {
+            "name": "192.168.20.110",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.20.110"
+            ],
+            "mac_address": [
+                "00:0c:29:b3:6a:30"
+            ],
+            "mac_address_level": {
+                "00:0c:29:b3:6a:30": "confirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "",
+            "roles": [
+                "other"
+            ],
+            "vendor": "VMware, Inc.",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "dns",
+                "http",
+                "ssh",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.20.110"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.20.3",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.20.3"
+            ],
+            "mac_address": [
+                "00:0c:29:22:50:26"
+            ],
+            "mac_address_level": {
+                "00:0c:29:22:50:26": "confirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "",
+            "roles": [
+                "other"
+            ],
+            "vendor": "VMware, Inc.",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "dns",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.20.3"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.20.102",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.20.102"
+            ],
+            "mac_address": [
+                "00:0c:29:58:09:f9"
+            ],
+            "mac_address_level": {
+                "00:0c:29:58:09:f9": "confirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "Windows 7",
+            "roles": [
+                "other"
+            ],
+            "vendor": "VMware, Inc.",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "Windows 7",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "computer",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "dns",
+                "http",
+                "netbios-ns",
+                "smb",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.20.102"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "demisto.ayman.local",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.20.20"
+            ],
+            "mac_address": [
+                "00:0c:29:92:ec:2a"
+            ],
+            "mac_address_level": {
+                "00:0c:29:92:ec:2a": "confirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "GNU/Linux",
+            "roles": [
+                "web_server"
+            ],
+            "vendor": "VMware, Inc.",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "GNU/Linux",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "dns",
+                "http",
+                "ssh",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.20.20"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.20.240",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.20.240"
+            ],
+            "mac_address": [
+                "b8:2a:72:d4:2d:f1"
+            ],
+            "mac_address_level": {
+                "b8:2a:72:d4:2d:f1": "confirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Dell Inc."
+            ],
+            "os": "",
+            "roles": [
+                "other"
+            ],
+            "vendor": "Dell Inc.",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.20.240"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.20.1",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.20.1"
+            ],
+            "mac_address": [
+                "b0:b2:dc:39:7b:95"
+            ],
+            "mac_address_level": {
+                "b0:b2:dc:39:7b:95": "confirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Zyxel Communications Corporation"
+            ],
+            "os": "",
+            "roles": [
+                "other"
+            ],
+            "vendor": "Zyxel Communications Corporation",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.20.1"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.20.2",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.20.2"
+            ],
+            "mac_address": [
+                "00:0c:29:22:50:44"
+            ],
+            "mac_address_level": {
+                "00:0c:29:22:50:44": "confirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "",
+            "roles": [
+                "other"
+            ],
+            "vendor": "VMware, Inc.",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.20.2"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.1.10",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.1.10"
+            ],
+            "mac_address": [
+                "00:0c:29:58:09:f9"
+            ],
+            "mac_address_level": {
+                "00:0c:29:58:09:f9": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "",
+            "roles": [
+                "other"
+            ],
+            "vendor": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "netbios-ns",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.1.10"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "172.17.0.14",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "172.17.0.14"
+            ],
+            "mac_address": [
+                "00:0c:29:92:ec:2a"
+            ],
+            "mac_address_level": {
+                "00:0c:29:92:ec:2a": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "",
+            "roles": [
+                "other"
+            ],
+            "vendor": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "172.17.0.14"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.10.2",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.10.2"
+            ],
+            "mac_address": [
+                "b0:b2:dc:39:7b:95"
+            ],
+            "mac_address_level": {
+                "b0:b2:dc:39:7b:95": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Zyxel Communications Corporation"
+            ],
+            "os": "",
+            "roles": [
+                "terminal"
+            ],
+            "vendor": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "dns",
+                "http",
+                "ssh",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.10.2"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.220.103",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.220.103"
+            ],
+            "mac_address": [
+                "00:0c:29:22:50:44"
+            ],
+            "mac_address_level": {
+                "00:0c:29:22:50:44": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "Windows 10",
+            "roles": [
+                "other"
+            ],
+            "vendor": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "Windows 10",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "computer",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "dns",
+                "http",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.220.103"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.40.106",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.40.106"
+            ],
+            "mac_address": [
+                "b0:b2:dc:39:7b:95"
+            ],
+            "mac_address_level": {
+                "b0:b2:dc:39:7b:95": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Zyxel Communications Corporation"
+            ],
+            "os": "",
+            "roles": [
+                "other"
+            ],
+            "vendor": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "ssh",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.40.106"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "192.168.220.102",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.220.102"
+            ],
+            "mac_address": [
+                "00:0c:29:22:50:44"
+            ],
+            "mac_address_level": {
+                "00:0c:29:22:50:44": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "Windows 7",
+            "roles": [
+                "other"
+            ],
+            "vendor": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "Windows 7",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "computer",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "dns",
+                "http",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.220.102"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "dc.lab.home",
+            "level": "2",
+            "appliance_hosts": [
+                "nozomi.lab.home"
+            ],
+            "capture_device": "em1",
+            "ip": [
+                "192.168.20.100"
+            ],
+            "mac_address": [
+                "00:0c:29:ca:b2:02"
+            ],
+            "mac_address_level": {
+                "00:0c:29:ca:b2:02": "confirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "VMware, Inc."
+            ],
+            "os": "",
+            "roles": [
+                "dns_server"
+            ],
+            "vendor": "VMware, Inc.",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "computer",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "dns",
+                "http",
+                "netbios-ns",
+                "smb",
+                "upgrade-to-see-details"
+            ],
+            "nodes": [
+                "192.168.20.100"
+            ],
+            "custom_fields": {}
+        }
+    ],
+    "header": [
+        "name",
+        "level",
+        "appliance_hosts",
+        "capture_device",
+        "ip",
+        "mac_address",
+        "mac_address_level",
+        "vlan_id",
+        "mac_vendor",
+        "os",
+        "roles",
+        "vendor",
+        "vendor:info",
+        "firmware_version",
+        "firmware_version:info",
+        "os_or_firmware",
+        "serial_number",
+        "serial_number:info",
+        "product_name",
+        "product_name:info",
+        "type",
+        "type:info",
+        "protocols",
+        "nodes",
+        "custom_fields"
+    ],
+    "total": 14
+}
