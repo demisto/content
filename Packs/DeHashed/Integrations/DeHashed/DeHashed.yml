@@ -1,0 +1,96 @@
+category: Utilities
+commonfields:
+  id: DeHashed
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Email
+  name: email
+  required: true
+  type: 0
+- display: Api Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This integration allows you to check if your personal information such
+  as your email, username, or password is being compromised.
+display: DeHashed
+name: DeHashed
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: when chooseing "all fields" option, it search the specified given
+        "value", no need to pass "operation" argument as well.
+      isArray: false
+      name: asset_type
+      predefined:
+      - id
+      - email
+      - ip_address
+      - username
+      - password
+      - hashed_password
+      - hash_type
+      - ' name'
+      - vin
+      - address
+      - phone
+      - database_name
+      required: true
+      secret: false
+    - default: false
+      description: searched value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: choose a search type that you want to perform
+      isArray: false
+      name: operation
+      predefined:
+      - Is
+      - contain
+      - regex
+      required: true
+      secret: false
+    - default: false
+      description: number for the next result page. every page contains 5,000 records.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: search if an information is being compromised.
+    execution: false
+    name: dehashed-search
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests

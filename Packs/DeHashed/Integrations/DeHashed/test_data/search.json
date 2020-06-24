@@ -1,0 +1,85 @@
+{
+  "is_op": {
+    "value": "testgamil.co",
+    "operator": "is",
+    "asset_type": "all_fields"
+  },
+  "single_command_args": {
+    "hash_list": [
+      "032196FB1AC01311B4AA1A7D0FD5EB5F420CA9B215AFE54234DFCF69E5D553F0"
+    ],
+    "comment": "test"
+  },
+  "no_comment_command_args": {
+    "hash_list": [
+      "032196FB1AC01311B4AA1A7D0FD5EB5F420CA9B215AFE54234DFCF69E5D553F0"
+    ]
+  },
+  "api_response": {
+    "balance": 4955,
+    "entries":     [
+              {
+            "id": "123",
+            "email": "testgamil.com",
+            "username": null,
+            "password": "test",
+            "hashed_password": null,
+            "name": null,
+            "vin": null,
+            "address": null,
+            "ip_address": null,
+            "phone": null,
+            "obtained_from": "SGB.net"
+        },
+        {
+            "id": "123",
+            "email": "testgamil.com",
+            "username": null,
+            "password": "test",
+            "hashed_password": null,
+            "name": null,
+            "vin": null,
+            "address": null,
+            "ip_address": null,
+            "phone": null,
+            "obtained_from": "Collections"
+        }
+    ],
+    "success": true,
+    "took": "25µs",
+    "total": 0
+  },
+  "expected_results": {
+    "DeHashed.search.(val.Id==obj.Id)":
+      [
+              {
+            "Id": "123",
+            "Email": "testgamil.com",
+            "Username": null,
+            "Password": "test",
+            "HashedPassword": null,
+            "Name": null,
+            "Vin": null,
+            "Address": null,
+            "IpAddress": null,
+            "Phone": null,
+            "ObtainedFrom": "SGB.net"
+        },
+        {
+            "Id": "123",
+            "Email": "testgamil.com",
+            "Username": null,
+            "Password": "test",
+            "HashedPassword": null,
+            "Name": null,
+            "Vin": null,
+            "Address": null,
+            "IpAddress": null,
+            "Phone": null,
+            "ObtainedFrom": "Collections"
+        }
+    ]
+
+
+  }
+}
