@@ -26,9 +26,11 @@ class Client(BaseClient):
             demisto.log(f'q{query_value}')
         elif operation == 'contains':
             query_value = ' OR '.join(value)
+            if len(value) > 1:
+                query_value = f'({query_value})'
+
         elif operation == 'regex':
             query_value = ' '.join((f'/{value}/' for value in value))
-
         if asset_type == 'all_fields':
             query_string = f'{query_value}'
         else:
@@ -38,7 +40,7 @@ class Client(BaseClient):
         demisto.log(f'final string: {query_string}')
         if results_page_number:
             return self._http_request('GET', 'search', params={'query': query_string, 'page': results_page_number},
-                                        auth=(self.email, self.api_key))
+                                        auth=(self.email, self.api_key), timeout=15)
         else:
             return self._http_request('GET', 'search', params={'query': query_string},
                                         auth=(self.email, self.api_key))
