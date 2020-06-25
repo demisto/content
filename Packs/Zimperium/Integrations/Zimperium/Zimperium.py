@@ -1,5 +1,5 @@
 import shutil
-from typing import Dict, Tuple, Any, Callable
+from typing import Dict, Tuple, Callable
 from dateparser import parse
 
 from CommonServerPython import *
@@ -369,7 +369,7 @@ def devices_get_last_updated(client: Client, args: Dict) -> CommandResults:
         table_name = f' (To get the next devices, run the command with the next page)'
     headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
     readable_output = tableToMarkdown(name=f"Last updated devices{table_name}:", t=devices_data, headers=headers,
-                                     removeNull=True)
+                                      removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.Devices',
@@ -645,7 +645,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command in commands:
-            return_results(*commands[command](client, demisto.args()))
+            return_results(commands[command](client, demisto.args()))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
