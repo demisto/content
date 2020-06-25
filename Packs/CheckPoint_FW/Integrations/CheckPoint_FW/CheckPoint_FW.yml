@@ -27,7 +27,7 @@ configuration:
   required: false
   type: 8
 description: Read information and to send commands to the Check Point Firewall server.
-display: CheckPoint_FW
+display: CheckPoint Firewall v2
 name: CheckPoint_FW
 script:
   commands:
