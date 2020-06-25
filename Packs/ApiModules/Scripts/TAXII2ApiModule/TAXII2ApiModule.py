@@ -455,6 +455,8 @@ class Taxii2FeedClient:
         :param field_map: field map used for mapping fields ({field_name: field_value})
         :return: Cortex indicator
         """
+        indicator_obj["value"] = value
+        indicator_obj["type"] = type_
         indicator = {
             "value": value,
             "type": type_,

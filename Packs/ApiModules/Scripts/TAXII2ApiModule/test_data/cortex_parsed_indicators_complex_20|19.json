@@ -7,7 +7,7 @@
       "pattern": "[ipv4-addr:value = '195.123.227.186' AND ipv4-addr:value = '1.1.1.1']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:33.126Z",
       "modified": "2020-06-10T01:14:33.126Z",
       "name": "bot_ip: 195.123.227.186",
@@ -24,7 +24,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "1.1.1.1"
     }
   },
   {
@@ -35,7 +36,7 @@
       "pattern": "[ipv4-addr:value = '195.123.227.186' AND ipv4-addr:value = '1.1.1.1']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:33.126Z",
       "modified": "2020-06-10T01:14:33.126Z",
       "name": "bot_ip: 195.123.227.186",
@@ -52,7 +53,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "1.1.1.1"
     }
   },
   {
@@ -63,7 +65,7 @@
       "pattern": "[ipv4-addr:value = '134.209.37.102' OR ipv4-addr:value = '2.2.2.2']",
       "confidence": 85,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:52.501Z",
       "modified": "2020-06-10T01:14:52.501Z",
       "name": "bot_ip: 134.209.37.102",
@@ -80,7 +82,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "2.2.2.2"
     }
   },
   {
@@ -91,7 +94,7 @@
       "pattern": "[ipv4-addr:value = '134.209.37.102' OR ipv4-addr:value = '2.2.2.2']",
       "confidence": 85,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:52.501Z",
       "modified": "2020-06-10T01:14:52.501Z",
       "name": "bot_ip: 134.209.37.102",
@@ -108,7 +111,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "2.2.2.2"
     }
   },
   {
@@ -119,7 +123,7 @@
       "pattern": "[ipv4-addr:value = '117.141.112.155' FOLLOWEDBY ipv4-addr:value = '3.3.3.3']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:54.684Z",
       "modified": "2020-06-10T01:14:54.684Z",
       "name": "bot_ip: 117.141.112.155",
@@ -136,7 +140,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "3.3.3.3"
     }
   },
   {
@@ -147,7 +152,7 @@
       "pattern": "[ipv4-addr:value = '117.141.112.155' FOLLOWEDBY ipv4-addr:value = '3.3.3.3']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:54.684Z",
       "modified": "2020-06-10T01:14:54.684Z",
       "name": "bot_ip: 117.141.112.155",
@@ -164,7 +169,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "3.3.3.3"
     }
   },
   {
@@ -175,7 +181,7 @@
       "pattern": "[ipv4-addr:value = '23.129.64.217']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:19.858Z",
       "modified": "2020-06-10T01:14:19.858Z",
       "name": "bot_ip: 23.129.64.217",
@@ -192,7 +198,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "23.129.64.217"
     }
   },
   {
@@ -203,7 +210,7 @@
       "pattern": "[ipv4-addr:value = '45.142.213.11']",
       "confidence": 85,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:10.753Z",
       "modified": "2020-06-10T01:14:10.753Z",
       "name": "bot_ip: 45.142.213.11",
@@ -220,7 +227,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "45.142.213.11"
     }
   },
   {
@@ -231,7 +239,7 @@
       "pattern": "[ipv4-addr:value = '157.245.250.190']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:15.950Z",
       "modified": "2020-06-10T01:14:15.950Z",
       "name": "bot_ip: 157.245.250.190",
@@ -248,7 +256,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "157.245.250.190"
     }
   },
   {
@@ -259,7 +268,7 @@
       "pattern": "[ipv4-addr:value = '144.91.106.47']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:15:00.764Z",
       "modified": "2020-06-10T01:15:00.764Z",
       "name": "bot_ip: 144.91.106.47",
@@ -276,7 +285,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "144.91.106.47"
     }
   },
   {
@@ -287,7 +297,7 @@
       "pattern": "[ipv4-addr:value = '141.98.81.208']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:39.995Z",
       "modified": "2020-06-10T01:14:39.995Z",
       "name": "bot_ip: 141.98.81.208",
@@ -304,7 +314,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "141.98.81.208"
     }
   },
   {
@@ -315,7 +326,7 @@
       "pattern": "[ipv4-addr:value = '51.81.53.159']",
       "confidence": 85,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:15:01.999Z",
       "modified": "2020-06-10T01:15:01.999Z",
       "name": "bot_ip: 51.81.53.159",
@@ -332,7 +343,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "51.81.53.159"
     }
   },
   {
@@ -343,7 +355,7 @@
       "pattern": "[ipv4-addr:value = '104.168.173.252']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:58.530Z",
       "modified": "2020-06-10T01:14:58.530Z",
       "name": "bot_ip: 104.168.173.252",
@@ -360,7 +372,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "104.168.173.252"
     }
   },
   {
@@ -371,7 +384,7 @@
       "pattern": "[ipv4-addr:value = '173.212.206.89']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:34.822Z",
       "modified": "2020-06-10T01:14:34.822Z",
       "name": "bot_ip: 173.212.206.89",
@@ -388,7 +401,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "173.212.206.89"
     }
   },
   {
@@ -399,7 +413,7 @@
       "pattern": "[ipv4-addr:value = '67.207.94.201']",
       "confidence": 15,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:29.751Z",
       "modified": "2020-06-10T01:14:29.751Z",
       "name": "bot_ip: 67.207.94.201",
@@ -416,7 +430,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "67.207.94.201"
     }
   },
   {
@@ -427,7 +442,7 @@
       "pattern": "[ipv4-addr:value = '89.163.242.76']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:35.839Z",
       "modified": "2020-06-10T01:14:35.839Z",
       "name": "bot_ip: 89.163.242.76",
@@ -444,7 +459,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "89.163.242.76"
     }
   },
   {
@@ -455,7 +471,7 @@
       "pattern": "[ipv4-addr:value = '51.75.71.205']",
       "confidence": 85,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:41.919Z",
       "modified": "2020-06-10T01:14:41.919Z",
       "name": "bot_ip: 51.75.71.205",
@@ -472,7 +488,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "51.75.71.205"
     }
   },
   {
@@ -483,7 +500,7 @@
       "pattern": "[ipv4-addr:value = '140.224.183.58']",
       "confidence": 85,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:11.651Z",
       "modified": "2020-06-10T01:14:11.651Z",
       "name": "bot_ip: 140.224.183.58",
@@ -500,7 +517,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "140.224.183.58"
     }
   },
   {
@@ -511,7 +529,7 @@
       "pattern": "[ipv4-addr:value = '161.35.22.86']",
       "confidence": 85,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:14:49.620Z",
       "modified": "2020-06-10T01:14:49.620Z",
       "name": "bot_ip: 161.35.22.86",
@@ -528,7 +546,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "161.35.22.86"
     }
   },
   {
@@ -539,7 +558,7 @@
       "pattern": "[ipv4-addr:value = '45.143.220.246']",
       "confidence": 50,
       "lang": "en",
-      "type": "indicator",
+      "type": "IP",
       "created": "2020-06-10T01:15:10.905Z",
       "modified": "2020-06-10T01:15:10.905Z",
       "name": "bot_ip: 45.143.220.246",
@@ -556,7 +575,8 @@
         "anomalous-activity"
       ],
       "pattern_version": "2.1",
-      "spec_version": "2.1"
+      "spec_version": "2.1",
+      "value": "45.143.220.246"
     }
   }
 ]
