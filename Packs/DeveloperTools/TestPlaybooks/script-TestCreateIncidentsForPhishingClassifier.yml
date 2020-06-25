@@ -58,6 +58,7 @@ args:
   defaultValue: "20"
 - name: historicListName
   defaultValue: test_phishing_historic_data
+  description: ''
 outputs:
 - contextPath: EmailSujbectKey
   description: EmailSujbectKey
@@ -70,5 +71,6 @@ outputs:
 scripttarget: 0
 subtype: python2
 runonce: false
-dockerimage: demisto/python:2.7.16.286
+dockerimage: demisto/python:2.7.18.9326
 runas: DBotWeakRole
+comment: ''
