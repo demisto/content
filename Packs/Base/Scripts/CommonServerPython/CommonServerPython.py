@@ -1193,7 +1193,7 @@ def argToList(arg, separator=','):
         if arg[0] == '[' and arg[-1] == ']':
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
-    return arg
+    return [arg]
 
 
 def argToBoolean(value):
@@ -2581,10 +2581,12 @@ class CommandResults:
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
+    def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None):
-
         # type: (str, str, object, list, str, object) -> None
+        if raw_response is None:
+            raw_response = outputs
+
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
@@ -2596,7 +2598,10 @@ class CommandResults:
 
     def to_context(self):
         outputs = {}  # type: dict
-        human_readable = None
+        if self.readable_output:
+            human_readable = self.readable_output
+        else:
+            human_readable = None
         raw_response = None
 
         if self.indicators:
@@ -2612,16 +2617,10 @@ class CommandResults:
         if self.raw_response:
             raw_response = self.raw_response
 
-        if self.outputs:
+        if self.outputs is not None:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
-            else:
-                human_readable = self.readable_output
-
-            if not self.raw_response:
-                raw_response = self.outputs
-
             if self.outputs_prefix and self.outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
@@ -2631,7 +2630,6 @@ class CommandResults:
                 outputs[outputs_key] = self.outputs
             else:
                 outputs = self.outputs
-                human_readable = self.readable_output  # prefix and key field not provided, human readable should
 
         return_entry = {
             'Type': EntryType.NOTE,
@@ -3055,7 +3053,7 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
     return start_time, end_time
 
 
-def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
+def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z", is_utc=False):
     """
       Parses timestamp (milliseconds) to a date string in the provided date format (by default: ISO 8601 format)
       Examples: (1541494441222, 1541495441000, etc.)
@@ -3066,9 +3064,15 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
       :type date_format: ``str``
       :param date_format: The date format the timestamp should be parsed to. (optional)
 
+      :type is_utc: ``bool``
+      :param is_utc: Should the string representation of the timestamp use UTC time or the local machine time
+
       :return: The parsed timestamp in the date_format
       :rtype: ``str``
     """
+    use_utc_time = is_utc or date_format.endswith('Z')
+    if use_utc_time:
+        return datetime.utcfromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
     return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
@@ -3784,6 +3788,29 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
+
+def dict_safe_get(dict_object, keys, default_return_value = None):
+    """Recursive safe get query, If keys found return value othewise return None or default value.
+
+    :type dict_object: ``dict``
+    :param dict_object: dictionary to query.
+
+    :type keys: ``list``
+    :param keys: keys for recursive get.
+
+    :type default_return_value: ``object``
+    :param default_return_value: Value to return when no key availble.
+
+    :rtype: ``object``
+    :return:: Value found.
+    """
+    for key in keys:
+        try:
+            dict_object = dict_object[key]
+        except (KeyError, TypeError):
+            return default_return_value
+
+    return dict_object
 
 
 class DemistoException(Exception):

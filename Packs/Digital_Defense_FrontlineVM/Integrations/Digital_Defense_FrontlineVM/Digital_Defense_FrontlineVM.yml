@@ -2,10 +2,11 @@ commonfields:
   id: Digital Defense FrontlineVM
   version: -1
 name: Digital Defense FrontlineVM
-display: Digital Defense Frontline VM
+display: Digital Defense FrontlineVM
 category: Vulnerability Management
-description: Use the Digital Defense Frontline VM to identify and evaluate the security and business risks of network devices
-  and applications deployed as premise, cloud, or hybrid network-based implementations.
+description: Use the Digital Defense FrontlineVM to identify and evaluate the security
+  and business risks of network devices and applications deployed as premise, cloud,
+  or hybrid network-based implementations.
 configuration:
 - display: Frontline VM URL
   name: frontlineURL
@@ -59,7 +60,6 @@ configuration:
 script:
   script: ''
   type: python
-  subtype: python3
   commands:
   - name: frontline-get-assets
     arguments:
@@ -86,7 +86,7 @@ script:
     - contextPath: FrontlineVM.Hosts.MAC
       description: The MAC address of the host.
     - contextPath: FrontlineVM.Hosts.OS
-      description: The operating system of the host. 
+      description: The operating system of the host.
     - contextPath: FrontlineVM.Hosts.OSType
       description: The operating system type of the host.
     - contextPath: FrontlineVM.Hosts.CriticalVulnCount
@@ -103,8 +103,9 @@ script:
       - low
       - trivial
       - info
-      description: 'The minimum severity level for which to return vulnerabilities. This argument overrides the "severity" argument when used together. 
-        Can be: "critical","high","medium","low","trivial", or "info".'
+      description: 'The minimum severity level for which to return vulnerabilities.
+        This argument overrides the "severity" argument when used together. Can be:
+        "critical","high","medium","low","trivial", or "info".'
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -114,16 +115,19 @@ script:
       - low
       - trivial
       - info
-      description: 'Returns all vulnerabilities from Frontline with the specified severity level.
-        Can be: "critical","high","medium","low","trivial", or "info".'
+      description: 'Returns all vulnerabilities from Frontline with the specified
+        severity level. Can be: "critical","high","medium","low","trivial", or "info".'
     - name: max_days_since_created
-      description: Retrieves vulnerabilities found prior to the specified date (in days).
+      description: Retrieves vulnerabilities found prior to the specified date (in
+        days).
     - name: min_days_since_created
       description: Retrieves vulnerabilities found after the specified date (in days).
     - name: host_id
-      description: Retrieves vulnerabilities from a specific host based on the Host ID.
+      description: Retrieves vulnerabilities from a specific host based on the Host
+        ID.
     - name: ip_address
-      description: The IP address of the host for which to retrieve the vulnerability data.
+      description: The IP address of the host for which to retrieve the vulnerability
+        data.
     outputs:
     - contextPath: FrontlineVM.Vulns
       description: Retrieved vulnerability data pulled from Frontline.Cloud.
@@ -156,6 +160,9 @@ script:
       description: The IP address start range of the asset to scan.
     - name: ip_range_end
       description: The IP address end range of the asset to scan.
+    - name: scan_name
+      description: A unique name for the scan to run in FrontlineVM. Default value will
+        be "Cortex XSOAR Scan [<asset_ip_address>]. Limited to 100 characters."
     outputs:
     - contextPath: FrontlineVM.Scan.ID
       description: The ID number of the scan.
@@ -164,8 +171,13 @@ script:
     - contextPath: FrontlineVM.Scan.Policy
       description: The policy name of the scan.
     - contextPath: FrontlineVM.Scan.IP
-      description: The IP address of the scan (can be a single IP address or a range of IP addresses).
+      description: The IP address of the scan (can be a single IP address or a range
+        of IP addresses).
     description: Performs a scan on the specified asset.
-  dockerimage: demisto/python3:3.7.4.1150
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   runonce: false
+  subtype: python3
+fromversion: 4.1.0
+tests:
+- No tests (auto formatted)

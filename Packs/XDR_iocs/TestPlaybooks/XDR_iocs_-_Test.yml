@@ -1,7 +1,9 @@
-id: XDR iocs - Test
+id: Cortex XDR - IOC - Test
 version: -1
-name: XDR iocs - Test
+name: Cortex XDR - IOC - Test
 starttaskid: "0"
+description: ""
+fromversion: '5.5.0'
 tasks:
   "0":
     id: "0"
@@ -13,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -50,7 +53,7 @@ tasks:
       merge: {}
       relatedIncidents: {}
       reputation:
-        simple: Good
+        simple: Bad
       seenNow: {}
       source: {}
       sourceTimeStamp: {}
@@ -92,7 +95,7 @@ tasks:
       merge: {}
       relatedIncidents: {}
       reputation:
-        simple: Good
+        simple: Bad
       seenNow: {}
       source: {}
       sourceTimeStamp: {}
@@ -135,7 +138,7 @@ tasks:
       relateToIncident: {}
       relatedIncidents: {}
       reputation:
-        simple: Good
+        simple: Bad
       seenNow: {}
       source: {}
       sourceTimeStamp: {}
@@ -149,35 +152,6 @@ tasks:
         "position": {
           "x": 0,
           "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 3748e1e4-d9eb-4fd0-8aef-c61bedce4981
-    type: regular
-    task:
-      id: 3748e1e4-d9eb-4fd0-8aef-c61bedce4981
-      version: -1
-      name: xdr-iocs-sync
-      description: run once when configure the integration (do NOT use this twice!).
-      script: 'xdr-iocs-sync'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 400
         }
       }
     note: false
@@ -223,76 +197,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 38497c0a-f0f0-4a9a-8bd5-8895f9ded9aa
-    type: regular
-    task:
-      id: 38497c0a-f0f0-4a9a-8bd5-8895f9ded9aa
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: fdf8f5e4-a22a-415d-8d5d-7a186488eeb4
-    type: regular
-    task:
-      id: fdf8f5e4-a22a-415d-8d5d-7a186488eeb4
-      version: -1
-      name: Sleep (60)
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-      - "10"
-      - "11"
-    scriptarguments:
-      seconds:
-        simple: "60"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
     id: "9"
     taskid: 12c5f3ea-5c81-42ea-8985-69e957165379
@@ -300,9 +204,9 @@ tasks:
     task:
       id: 12c5f3ea-5c81-42ea-8985-69e957165379
       version: -1
-      name: xdr-disable-iocs (test.com)
+      name: xdr-iocs-disable (test.com)
       description: Disable iocs in XDR server
-      script: 'xdr-disable-iocs'
+      script: 'xdr-iocs-disable'
       type: regular
       iscommand: true
       brand: ""
@@ -332,9 +236,9 @@ tasks:
     task:
       id: c2a2117a-b4e6-4e20-8176-712f12172f13
       version: -1
-      name: xdr-disable-iocs (88.88.88.88)
+      name: xdr-iocs-disable (88.88.88.88)
       description: Disable iocs in XDR server
-      script: 'xdr-disable-iocs'
+      script: 'xdr-iocs-disable'
       type: regular
       iscommand: true
       brand: ""
@@ -364,9 +268,9 @@ tasks:
     task:
       id: ddc92f88-ce5c-4f06-8911-8694c3d6e1bd
       version: -1
-      name: xdr-disable-iocs (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      name: xdr-iocs-disable (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
       description: Disable iocs in XDR server
-      script: 'xdr-disable-iocs'
+      script: 'xdr-iocs-disable'
       type: regular
       iscommand: true
       brand: ""
@@ -396,7 +300,7 @@ tasks:
     task:
       id: c9a9ecd7-afef-46ff-8240-fd4d9af54fed
       version: -1
-      name: Sleep (60)
+      name: Sleep (300)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -409,7 +313,7 @@ tasks:
       - "15"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "300"
     separatecontext: false
     view: |-
       {
@@ -435,6 +339,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "17"
@@ -466,6 +371,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "16"
@@ -497,6 +403,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "18"
@@ -527,6 +434,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "31"
@@ -539,7 +447,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${88_88_88_88.status}
+              simple: ${88_88_88_88}
             iscontext: true
           right:
             value:
@@ -567,6 +475,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "31"
@@ -579,7 +488,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${test_com.status}
+              simple: ${test_com}
             iscontext: true
           right:
             value:
@@ -607,6 +516,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "31"
@@ -619,7 +529,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e.status}
+              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e}
             iscontext: true
           right:
             value:
@@ -681,9 +591,9 @@ tasks:
     task:
       id: 030fa5e9-09a9-4a01-816c-1aa154b0d186
       version: -1
-      name: xdr-enable-iocs (test.com)
+      name: xdr-iocs-enable (test.com)
       description: Enable iocs in XDR server
-      script: 'xdr-enable-iocs'
+      script: 'xdr-iocs-enable'
       type: regular
       iscommand: true
       brand: ""
@@ -713,9 +623,9 @@ tasks:
     task:
       id: 54064545-7bd5-4dd1-87dd-29a5f1a7c3e3
       version: -1
-      name: xdr-enable-iocs (88.88.88.88)
+      name: xdr-iocs-enable (88.88.88.88)
       description: Enable iocs in XDR server
-      script: 'xdr-enable-iocs'
+      script: 'xdr-iocs-enable'
       type: regular
       iscommand: true
       brand: ""
@@ -745,9 +655,9 @@ tasks:
     task:
       id: b22de31d-afad-415c-8153-b355eccee4aa
       version: -1
-      name: xdr-enable-iocs (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      name: xdr-iocs-enable (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
       description: Enable iocs in XDR server
-      script: 'xdr-enable-iocs'
+      script: 'xdr-iocs-enable'
       type: regular
       iscommand: true
       brand: ""
@@ -777,7 +687,7 @@ tasks:
     task:
       id: 76bcb0bb-5758-4998-868a-ef00f1817b53
       version: -1
-      name: Sleep (60)
+      name: Sleep (300)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -790,7 +700,7 @@ tasks:
       - "26"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "300"
     separatecontext: false
     view: |-
       {
@@ -816,6 +726,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "28"
@@ -847,6 +758,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "29"
@@ -858,7 +770,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2180
+          "y": 2300
         }
       }
     note: false
@@ -878,6 +790,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "27"
@@ -908,6 +821,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "31"
@@ -920,7 +834,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e.status}
+              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e}
             iscontext: true
           right:
             value:
@@ -948,6 +862,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "31"
@@ -960,7 +875,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${test_com.status}
+              simple: ${test_com}
             iscontext: true
           right:
             value:
@@ -988,6 +903,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "31"
@@ -1000,7 +916,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${88_88_88_88.status}
+              simple: ${88_88_88_88}
             iscontext: true
           right:
             value:
@@ -1028,6 +944,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -1077,7 +994,7 @@ tasks:
     task:
       id: bfcd05f4-9f1e-4493-8389-b55c04795134
       version: -1
-      name: Sleep (60)
+      name: Sleep (300)
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -1085,10 +1002,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
+      - "10"
+      - "11"
     scriptarguments:
       seconds:
-        simple: "60"
+        simple: "300"
     separatecontext: false
     view: |-
       {
