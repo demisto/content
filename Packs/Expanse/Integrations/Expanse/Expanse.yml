@@ -657,7 +657,7 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: The certificate common name. ex. *.myhost.com
+      description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
       isArray: false
       name: common_name
       required: true
