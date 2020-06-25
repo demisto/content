@@ -136,6 +136,7 @@ class PackStatus(enum.Enum):
     FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
+    PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific build is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
@@ -736,11 +737,15 @@ class Pack(object):
             build_number (str): circleCI build number.
         Returns:
             bool: whether the operation succeeded.
+            bool: whether running build has not updated pack release notes.
         """
         task_status = False
+        not_updated_build = False
+
         try:
             if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
                 print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
+
                 changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
@@ -754,12 +759,13 @@ class Pack(object):
                     latest_release_notes = found_versions[0].vstring
 
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
+
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
                         print_error(f"Version mismatch detected between current version: {self._current_version} "
                                     f"and latest release notes version: {latest_release_notes}")
                         task_status = False
-                        return task_status
+                        return task_status, not_updated_build
                     else:
                         with open(changelog_index_path, "r") as changelog_file:
                             changelog = json.load(changelog_file)
@@ -774,7 +780,7 @@ class Pack(object):
                                 print(f"Found existing release notes for version: {latest_release_notes} "
                                       f"in the {self._pack_name} pack.")
                                 task_status = True
-                                return task_status
+                                return task_status, not_updated_build
 
                         latest_rn_file = latest_release_notes.replace('.', '_')
                         latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
@@ -795,10 +801,10 @@ class Pack(object):
                         changelog = json.load(changelog_file)
 
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
-                        print_error(
+                        print_warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
-                        task_status = False
-                        return task_status
+                        task_status, not_updated_build = True, True
+                        return task_status, not_updated_build
 
                     changelog[Pack.PACK_INITIAL_VERSION][  # update latest release notes build numbers
                         'displayName'] = f'{Pack.PACK_INITIAL_VERSION} - {build_number}'
@@ -822,17 +828,15 @@ class Pack(object):
             else:
                 print_error(f"No release notes found for: {self._pack_name}")
                 task_status = False
-                return task_status
+                return task_status, not_updated_build
 
             task_status = True
-            print_color(
-                f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)
+            print_color(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)
         except Exception as e:
-            print_error(
-                f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
-                f"Additional info: {e}")
+            print_error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
+                        f"Additional info: {e}")
         finally:
-            return task_status
+            return task_status, not_updated_build
 
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
