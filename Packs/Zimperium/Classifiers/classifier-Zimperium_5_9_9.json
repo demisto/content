@@ -3,7 +3,9 @@
 	"custom": true,
 	"defaultIncidentType": "",
 	"id": "Zimperium",
+	"version": -1,
 	"fromVersion": "5.0.0",
+	"toVersion": "5.9.9",
 	"incidentSamples": [],
 	"indicatorSamples": [],
 	"isDefault": false,
@@ -95,7 +97,5 @@
 		"complex": null,
 		"simple": "type"
 	},
-	"unclassifiedCases": {},
-	"version": -1,
-	"toVersion": "5.9.9"
+	"unclassifiedCases": {}
 }

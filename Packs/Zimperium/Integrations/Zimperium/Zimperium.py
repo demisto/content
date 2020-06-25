@@ -164,9 +164,10 @@ class Client(BaseClient):
             Response from API.
         """
 
-        file_path = demisto.getFilePath(entry_id)['path']
-        file_name = demisto.getFilePath(entry_id)['name']
-
+        file_path = demisto.getFilePath(entry_id).get('path')
+        file_name = demisto.getFilePath(entry_id).get('name')
+        if not file_path or not file_name:
+            raise Exception('Failed to find the file to upload for analysis.')
         try:
             shutil.copy(file_path, file_name)
         except Exception:
@@ -558,24 +559,28 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
 
     if events_data:
         last_event_ids = last_run.get('last_event_ids', [])
+        new_event_ids = []
+        last_event_created_time = ''
         for event_data in events_data:
             event_data.pop('eventDetail', None)  # deleting eventDetail to not load the context
             event_id = event_data.get('eventId')
+
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
-                event_created_time = parse(event_data.get('persistedTime'))
+                last_event_created_time = parse(event_data.get('persistedTime'))
                 incident = {
                     'name': event_data.get('incidentSummary'),
-                    'occurred': event_created_time.strftime(timestamp_format),
+                    'occurred': last_event_created_time.strftime(timestamp_format),
                     'severity': event_severity_to_dbot_score(event_data.get('severity')),
                     'rawJSON': json.dumps(event_data)
                 }
                 incidents.extend([incident])
-                last_event_ids.extend([event_id])
+                new_event_ids.extend([event_id])
 
-                next_run = {
-                    'time': event_created_time.strftime(timestamp_format),
-                    'last_event_ids': json.dumps(last_event_ids)  # save the event IDs from the last fetch
-                }
+        if new_event_ids and last_event_created_time:
+            next_run = {
+                'time': last_event_created_time.strftime(timestamp_format),
+                'last_event_ids': json.dumps(new_event_ids)  # save the event IDs from the last fetch
+            }
 
     demisto.debug(f'Zimperium last fetch data: {str(next_run)}')
     return next_run, incidents
