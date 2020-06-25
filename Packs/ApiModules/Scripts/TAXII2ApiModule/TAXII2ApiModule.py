@@ -463,11 +463,26 @@ class Taxii2FeedClient:
             "rawJSON": indicator_obj,
         }
         fields = {}
+        tags = []
+        # create tags from labels:
+        for label in indicator_obj.get("labels", []):
+            tags.append(label)
+
+        # add field_map fields
         for field_name, field_path in field_map.items():
             if field_path in indicator_obj:
                 fields[field_name] = indicator_obj.get(field_path)
-        if fields:
-            indicator["fields"] = fields
+
+        # union of tags and labels
+        if "tags" in fields:
+            field_tag = fields.get("tags")
+            if isinstance(field_tag, list):
+                tags.extend(field_tag)
+            else:
+                tags.append(field_tag)
+
+        fields["tags"] = tags
+        indicator["fields"] = fields
         return indicator
 
     @staticmethod

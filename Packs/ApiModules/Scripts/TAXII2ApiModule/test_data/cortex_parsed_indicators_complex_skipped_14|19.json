@@ -26,6 +26,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "23.129.64.217"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -55,6 +60,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "45.142.213.11"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -84,6 +94,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "157.245.250.190"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -113,6 +128,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "144.91.106.47"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -142,6 +162,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "141.98.81.208"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -171,6 +196,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "51.81.53.159"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -200,6 +230,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "104.168.173.252"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -229,6 +264,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "173.212.206.89"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -258,6 +298,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "67.207.94.201"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -287,6 +332,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "89.163.242.76"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -316,6 +366,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "51.75.71.205"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -345,6 +400,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "140.224.183.58"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -374,6 +434,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "161.35.22.86"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   },
   {
@@ -403,6 +468,11 @@
       "pattern_version": "2.1",
       "spec_version": "2.1",
       "value": "45.143.220.246"
+    },
+    "fields": {
+      "tags": [
+        "low"
+      ]
     }
   }
 ]
