@@ -207,16 +207,15 @@ class Client(BaseClient):
                                   params=params)
 
 
-def test_module(client: Client, *_) -> CommandResults:
+def test_module(client: Client, *_) -> str:
     """
     Performs basic get request to get incident samples
     """
     client.users_search_request(query='objectId==*', size='10', page='0')
     if demisto.params().get('isFetch'):
         client.events_search_request(query='eventId==*', size='10', page='0', verbose=False)
-    command_results = CommandResults(readable_output='ok')
 
-    return command_results
+    return 'ok'
 
 
 def users_search(client: Client, args: Dict) -> CommandResults:
@@ -624,7 +623,6 @@ def main():
     try:
         client = Client(base_url=base_url, api_key=api_key, verify=verify)
         commands: Dict[str, Callable[[Client, Dict[str, str]], CommandResults]] = {
-            'test-module': test_module,
             'zimperium-events-search': events_search,
             'zimperium-users-search': users_search,
             'zimperium-user-get-by-id': user_get_by_id,
@@ -635,7 +633,11 @@ def main():
             'zimperium-report-get': report_get,
             'zimperium-app-upload-for-analysis': app_upload_for_analysis,
         }
-        if demisto.command() == 'fetch-incidents':
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            return_results(test_module(client))
+
+        elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -644,8 +646,10 @@ def main():
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
+
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
