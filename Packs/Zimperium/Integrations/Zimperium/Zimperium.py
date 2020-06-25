@@ -207,17 +207,19 @@ class Client(BaseClient):
                                   params=params)
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, *_) -> CommandResults:
     """
     Performs basic get request to get incident samples
     """
     client.users_search_request(query='objectId==*', size='10', page='0')
     if demisto.params().get('isFetch'):
         client.events_search_request(query='eventId==*', size='10', page='0', verbose=False)
-    return 'ok', {}, {}
+    command_results = CommandResults(readable_output='ok')
+
+    return command_results
 
 
-def users_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def users_search(client: Client, args: Dict) -> CommandResults:
     """Search users
 
     Args:
@@ -238,13 +240,20 @@ def users_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not users.get('last'):
         table_name = f' (To get the next users, run the command with the next page)'
     headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
-    human_readable = tableToMarkdown(name=f"Users{table_name}:", t=users_data, headers=headers, removeNull=True)
-    entry_context = {f'Zimperium.Users(val.objectId === obj.objectId)': users_data}
+    readable_output = tableToMarkdown(name=f"Users{table_name}:", t=users_data, headers=headers, removeNull=True)
 
-    return human_readable, entry_context, users
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Users',
+        outputs_key_field='objectId',
+        outputs=users_data,
+        readable_output=readable_output,
+        raw_response=users
+    )
+
+    return command_results
 
 
-def user_get_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def user_get_by_id(client: Client, args: Dict) -> CommandResults:
     """Retrieve details for a single user.
 
     Args:
@@ -259,13 +268,20 @@ def user_get_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     user = client.user_get_by_id_request(object_id)
 
     headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
-    human_readable = tableToMarkdown(name=f"User:", t=user, headers=headers, removeNull=True)
-    entry_context = {f'Zimperium.Users(val.objectId === obj.objectId)': user}
+    readable_output = tableToMarkdown(name=f"User:", t=user, headers=headers, removeNull=True)
 
-    return human_readable, entry_context, user
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Users',
+        outputs_key_field='objectId',
+        outputs=user,
+        readable_output=readable_output,
+        raw_response=user
+    )
+
+    return command_results
 
 
-def devices_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def devices_search(client: Client, args: Dict) -> CommandResults:
     """Search devices
 
     Args:
@@ -286,13 +302,20 @@ def devices_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not devices.get('last'):
         table_name = f' (To get the next devices, run the command with the next page)'
     headers = ['deviceId', 'zdid', 'deviceHash', 'model', 'osType', 'osVersion', 'updatedDate']
-    human_readable = tableToMarkdown(name=f"Devices{table_name}:", t=devices_data, headers=headers, removeNull=True)
-    entry_context = {f'Zimperium.Devices(val.deviceId === obj.deviceId)': devices_data}
+    readable_output = tableToMarkdown(name=f"Devices{table_name}:", t=devices_data, headers=headers, removeNull=True)
 
-    return human_readable, entry_context, devices
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Devices',
+        outputs_key_field='deviceId',
+        outputs=devices_data,
+        readable_output=readable_output,
+        raw_response=devices
+    )
+
+    return command_results
 
 
-def device_get_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def device_get_by_id(client: Client, args: Dict) -> CommandResults:
     """Retrieve details for a single device.
 
     Args:
@@ -308,13 +331,20 @@ def device_get_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     device = client.device_get_by_id_request(zdid, device_id)
 
     headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
-    human_readable = tableToMarkdown(name=f"Device {device_id}:", t=device, headers=headers, removeNull=True)
-    entry_context = {f'Zimperium.Devices(val.deviceId === obj.deviceId)': device}
+    readable_output = tableToMarkdown(name=f"Device {device_id}:", t=device, headers=headers, removeNull=True)
 
-    return human_readable, entry_context, device
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Devices',
+        outputs_key_field='deviceId',
+        outputs=device,
+        readable_output=readable_output,
+        raw_response=device
+    )
+
+    return command_results
 
 
-def devices_get_last_updated(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def devices_get_last_updated(client: Client, args: Dict) -> CommandResults:
     """Retrieve last updated devices
 
     Args:
@@ -338,14 +368,21 @@ def devices_get_last_updated(client: Client, args: Dict) -> Tuple[str, Dict, Dic
     if not devices.get('last'):
         table_name = f' (To get the next devices, run the command with the next page)'
     headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
-    human_readable = tableToMarkdown(name=f"Last updated devices{table_name}:", t=devices_data, headers=headers,
+    readable_output = tableToMarkdown(name=f"Last updated devices{table_name}:", t=devices_data, headers=headers,
                                      removeNull=True)
-    entry_context = {f'Zimperium.Devices(val.deviceId === obj.deviceId)': devices_data}
 
-    return human_readable, entry_context, devices
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Devices',
+        outputs_key_field='deviceId',
+        outputs=devices_data,
+        readable_output=readable_output,
+        raw_response=devices
+    )
+
+    return command_results
 
 
-def app_classification_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def app_classification_get(client: Client, args: Dict) -> CommandResults:
     """Retrieve application classification.
 
     Args:
@@ -365,13 +402,20 @@ def app_classification_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     else:  # or it can have only one result, if queried using a hash or if it has only one version.
         application_data = application[0]
     headers = ['objectId', 'hash', 'name', 'version', 'classification', 'score', 'privacyEnum', 'securityEnum']
-    human_readable = tableToMarkdown(name=f"Application:", t=application_data, headers=headers, removeNull=True)
-    entry_context = {f'Zimperium.Application(val.objectId: === obj.objectId)': application_data}
+    readable_output = tableToMarkdown(name=f"Application:", t=application_data, headers=headers, removeNull=True)
 
-    return human_readable, entry_context, application
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Application',
+        outputs_key_field='objectId',
+        outputs=application_data,
+        readable_output=readable_output,
+        raw_response=application
+    )
+
+    return command_results
 
 
-def report_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def report_get(client: Client, args: Dict) -> CommandResults:
     """Retrieve a report.
 
     Args:
@@ -389,25 +433,35 @@ def report_get(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     report = client.report_get_request(bundle_id, itunes_id, app_hash, platform).get('report', {})
     report_data = report.get('report')
     if not report_data:
-        return 'A report was not found.', {}, {}
+        command_results = CommandResults(
+            readable_output='A report was not found.',
+            raw_response=report
+        )
+    else:
+        # deleting analysis metadata to not load the context
+        app_analysis = report_data.get('app_analysis')
+        if app_analysis and app_analysis.get('application_type') == 'Android':
+            analysis = app_analysis.get('analysis')
+            if analysis:
+                report_data['app_analysis']['analysis'] = list(analysis.keys())
 
-    # deleting analysis metadata to not load the context
-    app_analysis = report_data.get('app_analysis')
-    if app_analysis and app_analysis.get('application_type') == 'Android':
-        analysis = app_analysis.get('analysis')
-        if analysis:
-            report_data['app_analysis']['analysis'] = list(analysis.keys())
+        app_md5 = report.get('md5') if 'md5' in report else report_data.get('app_analysis', {}).get('md5_hash')
+        if app_md5:
+            report_data.update({'md5': app_md5})
+        readable_output = tableToMarkdown(name=f"Report:", t=report_data, removeNull=True)
 
-    app_md5 = report.get('md5') if 'md5' in report else report_data.get('app_analysis', {}).get('md5_hash')
-    if app_md5:
-        report_data.update({'md5': app_md5})
-    human_readable = tableToMarkdown(name=f"Report:", t=report_data, removeNull=True)
-    entry_context = {f'Zimperium.Reports(val.app_md5: === obj.app_md5)': report_data}
+        command_results = CommandResults(
+            outputs_prefix='Zimperium.Reports',
+            outputs_key_field='app_md5',
+            outputs=report_data,
+            readable_output=readable_output,
+            raw_response=report
+        )
 
-    return human_readable, entry_context, report
+    return command_results
 
 
-def app_upload_for_analysis(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def app_upload_for_analysis(client: Client, args: Dict) -> CommandResults:
     """Upload an application for analysis.
 
     Args:
@@ -422,13 +476,20 @@ def app_upload_for_analysis(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     upload = client.app_upload_for_analysis_request(entry_id)
 
     # headers = ['objectId', 'hash', 'name', 'classification', 'score', 'privacyEnum', 'SecurityEnum']
-    human_readable = tableToMarkdown(name=f"Upload:", t=upload, removeNull=True)
-    entry_context = {f'Zimperium.Analysis(val.objectId: === obj.objectId)': upload}
+    readable_output = tableToMarkdown(name=f"Upload:", t=upload, removeNull=True)
 
-    return human_readable, entry_context, upload
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Analysis',
+        outputs_key_field='objectId',
+        outputs=upload,
+        readable_output=readable_output,
+        raw_response=upload
+    )
+
+    return command_results
 
 
-def events_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def events_search(client: Client, args: Dict) -> CommandResults:
     """Search events.
 
     Args:
@@ -454,13 +515,20 @@ def events_search(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not events.get('last'):
         table_name = f' (To get the next events, run the command with the next page)'
     headers = ['eventId', 'eventName', 'eventState', 'incidentSummary', 'severity', 'persistedTime']
-    human_readable = tableToMarkdown(name=f"Users{table_name}:", t=events_data, headers=headers, removeNull=True)
-    entry_context = {f'Zimperium.Events(val.eventId === obj.eventId)': events_data}
+    readable_output = tableToMarkdown(name=f"Users{table_name}:", t=events_data, headers=headers, removeNull=True)
 
-    return human_readable, entry_context, events
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.Events',
+        outputs_key_field='eventId',
+        outputs=events_data,
+        readable_output=readable_output,
+        raw_response=events
+    )
+
+    return command_results
 
 
-def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: str = '50'):
+def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: str = '50') -> Tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -555,7 +623,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(base_url=base_url, api_key=api_key, verify=verify)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: Dict[str, Callable[[Client, Dict[str, str]], CommandResults]] = {
             'test-module': test_module,
             'zimperium-events-search': events_search,
             'zimperium-users-search': users_search,
@@ -577,7 +645,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_results(*commands[command](client, demisto.args()))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

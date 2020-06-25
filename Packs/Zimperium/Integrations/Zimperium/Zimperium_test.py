@@ -42,8 +42,8 @@ def test_zimperium_commands(command, args, http_response, context, mocker):
     """
     client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
     mocker.patch.object(Client, '_http_request', return_value=http_response)
-    _, outputs, _ = command(client, args)
-    assert outputs == context
+    command_results = command(client, args)
+    assert command_results.outputs == context
 
 
 def test_fetch_incidents(mocker):
