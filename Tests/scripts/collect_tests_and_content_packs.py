@@ -1174,8 +1174,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
 
-    #packs_to_install = {pack_to_install for pack_to_install in packs_to_install
-    #                    if pack_to_install not in IGNORED_FILES}
+    packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
     packs_to_install.update(["DeveloperTools", "Base"])
 

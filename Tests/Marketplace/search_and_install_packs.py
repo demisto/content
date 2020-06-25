@@ -138,9 +138,9 @@ def search_pack(client, prints_manager, pack_display_name):
 
             else:
                 print_msg = 'Did not find pack {} in bucket.\n'.format(pack_display_name)
-                prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.YELLOW)
+                prints_manager.add_print_job(print_msg, print_color, 0, LOG_COLORS.RED)
                 prints_manager.execute_thread_prints(0)
-                return {}
+                raise Exception(print_msg)
         else:
             result_object = ast.literal_eval(response_data)
             msg = result_object.get('message', '')
