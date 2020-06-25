@@ -232,7 +232,7 @@ def main():
             if scope_changed:
                 multiplier = 1.08
             calculated_value = multiplier * (impact + exploitability)
-            base_score =  calculated_value if calculated_value < 10 else 10
+            base_score = calculated_value if calculated_value < 10 else 10
             base_score = round_up(base_score)
 
     ###########################################
@@ -247,8 +247,13 @@ def main():
     modified_impact = None
     modified_exploitability = None
     if version in ['3.0', '3.1']:
-        calculatedmodified_impact_sub_score = (1 - ((1 - confidentiality_requirement * modified_confidentiality) *
-            (1 - integrity_requirement * modified_integrity) * (1 - availability_requirement * modified_availability)))
+        calculatedmodified_impact_sub_score = (
+                1 - (
+                        (1 - confidentiality_requirement * modified_confidentiality) *
+                        (1 - integrity_requirement * modified_integrity) *
+                        (1 - availability_requirement * modified_availability)
+                )
+        )
         modified_impact_sub_score = calculatedmodified_impact_sub_score if calculatedmodified_impact_sub_score < 0.915 else 0.915
 
     if version in ['3.0', '3.1']:
@@ -307,10 +312,10 @@ def main():
     markdown = tableToMarkdown('CVSS Score:', hrentry)
 
     results = CommandResults(
-        readable_output = markdown,
-        outputs_prefix = 'CVSS',
-        outputs_key_field = ['VectorString', 'Version'],
-        outputs = entry
+        readable_output=markdown,
+        outputs_prefix='CVSS',
+        outputs_key_field=['VectorString', 'Version'],
+        outputs=entry
     )
     return_results(results)
 
