@@ -2600,7 +2600,7 @@ class CommandResults:
             human_readable = self.readable_output
         else:
             human_readable = None
-        raw_response = None
+        raw_response = None  # type: ignore[assignment]
 
         if self.indicators:
             for indicator in self.indicators:
@@ -2627,7 +2627,7 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs
+                outputs = self.outputs  # type: ignore[assignment]
 
         return_entry = {
             'Type': EntryType.NOTE,
