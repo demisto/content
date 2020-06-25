@@ -104,7 +104,7 @@ script:
         Use this to mention the number of requests that needs to be returned.
         e.g: 15. By default, will return only the first 10 requests.
       isArray: false
-      name: row_count
+      name: page_size
       required: false
       secret: false
     - default: false
@@ -761,8 +761,17 @@ script:
     execution: false
     name: service-desk-plus-request-resolutions-list
     outputs:
-    - contextPath: ServiceDeskPlus.Request.Resolution
-      description: The resolution of the request
+    - contextPath: ServiceDeskPlus.Request.Resolution.Content
+      description: The content of the resolution of the request
+      type: Unknown
+    - contextPath: ServiceDeskPlus.Request.Resolution.SubmittedBy
+      description: The detailes of who submitted the resolution
+      type: Unknown
+    - contextPath: ServiceDeskPlus.Request.Resolution.SubmittedOn
+      description: The date the resolution was submitted
+      type: Unknown
+    - contextPath: ServiceDeskPlus.Request.Resolution.ResolutionAttachments
+      description: The attachments that were added to the resolution
       type: Unknown
   - arguments:
     - default: false

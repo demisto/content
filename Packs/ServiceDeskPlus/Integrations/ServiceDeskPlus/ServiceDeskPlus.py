@@ -23,7 +23,7 @@ FIELDS_WITH_NAME = ['request_type', 'impact', 'status', 'mode', 'level', 'urgenc
 FIELDS_TO_IGNORE = ['has_draft', 'cancel_flag_comments']
 HUMAN_READABLE_FIELDS = ['CreatedTime', 'Id', 'Requester', 'Technician', 'Status', 'Subject']
 FIELDS_WITH_TIME = ['created_time', 'deleted_on', 'due_by_time', 'first_response_due_by_time', 'responded_time',
-                    'resolved_time', 'completed_time', 'assigned_time', 'last_updated_time']
+                    'resolved_time', 'completed_time', 'assigned_time', 'last_updated_time', 'submitted_on']
 
 SERVER_URL = {
     'United States': 'https://sdpondemand.manageengine.com',
@@ -118,7 +118,7 @@ def create_output(request: dict) -> dict:
             output[string_to_context_key(field)] = value
             if field in FIELDS_WITH_TIME:
                 output[string_to_context_key(field)] = \
-                    timestamp_to_datestring(request.get('created_time', {}).get('value'))
+                    timestamp_to_datestring(request.get(field, {}).get('value'))
 
     if output.get('Status'):
         output['Status'] = request.get('status', {}).get('name')
@@ -190,6 +190,107 @@ def create_human_readable(output: dict) -> dict:
     return hr
 
 
+def resolution_human_readable(output: dict) -> dict:
+    """
+    Creates the human readable dictionary from the output of the resolution of the request
+
+    Args:
+        output: The resolution output that was created for the called request
+
+    Returns:
+        A dictionary containing all the valid fields in the resolution output
+    """
+    hr = {}
+    for key in output.keys():
+        if key == 'SubmittedBy':
+            hr['SubmittedBy'] = output.get('SubmittedBy', {}).get('name', '')
+        else:
+            hr[key] = output.get(key, '')
+    return hr
+
+
+def create_requests_list_info(start_index, row_count, search_fields, filter_by):
+    """
+    Returning the list_info dictionary that should be used to filter the requests that are being returned.
+
+    Args:
+         start_index: the index of the first request that should be returned
+         row_count: the number of requests that should be returned
+         search_fields: search for specific fields in the requests
+         filter_by: the filter by which to filter the returned requests
+
+     Returns:
+         A dictionary containing the list_info parameter that should be used for filtering the requests.
+
+    """
+    list_info = {}
+    if start_index is not None:
+        list_info['start_index'] = start_index
+    if row_count is not None:
+        list_info['row_count'] = row_count
+    if search_fields:
+        list_info['search_fields'] = search_fields
+    if filter_by:
+        list_info['filter_by'] = filter_by
+    return {'list_info': list_info}
+
+
+def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str, fetch_limit: int) -> dict:
+    """
+    Returning the list_info dictionary that should be used to filter the requests that are being fetched
+    The requests that will be returned when using this list_info are all requests created between 'time_from' and
+    'time_to' (inclusive) and are with the given status, in ascending order of creation time.
+
+    Args:
+         time_from: the time from which requests should be fetched
+         time_to: the time until which requests should be fetched
+         status: the status of the requests that should be fetched
+         fetch_filter: a string representing all the field according to which the results that are being fetched should
+                       be filtered. Multiple fields, separated with a comma, can be used to filter. Every field should
+                       be in the following format: 'field-name condition field-value' where condition is the condition
+                       that this field should satisfy, for example 'is', 'is not', 'greater than' etc.
+         fetch_limit: the maximal number of requests that should be returned.
+
+     Returns:
+         A dictionary containing the list_info parameter that should be used for filtering the requests.
+
+    """
+    try:
+        search_criteria = [{'field': 'created_time', 'values': [f'{time_from}', f'{time_to}'], 'condition': 'between'}]
+        if fetch_filter:
+            filters = ast.literal_eval(fetch_filter)
+            if isinstance(filters, dict):
+                query = {
+                    'field': filters.get('field'),
+                    'condition': filters.get('condition'),
+                    'values': filters.get('values', '').split(','),
+                    'logical_operator': filters.get('logical_operator', 'AND')
+                }
+                search_criteria.append(query)
+            else:
+                for filter in filters:
+                    query = {
+                        'field': filter.get('field'),
+                        'condition': filter.get('condition'),
+                        'values': filter.get('values', '').split(','),
+                        'logical_operator': filter.get('logical_operator', 'AND')
+                    }
+                    search_criteria.append(query)
+        else:
+            query = {'field': 'status.name', 'values': status.split(','), 'condition': 'is', 'logical_operator': 'AND'}
+            search_criteria.append(query)
+
+        list_info = {
+            'search_criteria': search_criteria,
+            'sort_field': 'created_time',
+            'sort_order': 'asc',
+            'row_count': fetch_limit
+        }
+        return {'list_info': list_info}
+    except:
+        return_error('Invalid input format. Please follow instructions for correct filter format.')
+
+
 # Command functions:
 def list_requests_command(client: Client, args: dict):
     """
@@ -204,7 +305,7 @@ def list_requests_command(client: Client, args: dict):
     """
     request_id = args.get('request_id', None)
     start_index = args.get('start_index', None)
-    row_count = args.get('row_count', None)
+    row_count = args.get('page_size', None)
     search_fields = args.get('search_fields', None)
     filter_by = args.get('filter_by', None)
     list_info = create_requests_list_info(start_index, row_count, search_fields, filter_by)
@@ -347,7 +448,6 @@ def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     """
     request_id = args.get('request_id')
     result = client.http_request('GET', url_suffix=f'requests/{request_id}/link_requests')
-    # print(f'response:\n{result}')
 
     linked_requests = result.get('link_requests', [])
     context: dict = defaultdict(list)
@@ -359,8 +459,6 @@ def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
 
     markdown = tableToMarkdown(f'Linked requests to request {request_id}', t=output, removeNull=True)
     context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'LinkRequests': output}
-    # print(f'context:\n{context}')
-
     return markdown, context, result
 
 
@@ -385,7 +483,7 @@ def modify_linked_request_command(client: Client, args: dict) -> Tuple[str, dict
         result = client.http_request('POST', url_suffix=f'requests/{request_id}/link_requests', params=params)
     else:
         result = client.http_request('DELETE', url_suffix=f'requests/{request_id}/link_requests', params=params)
-    markdown = f"## {result.get('response_status').get('messages')[0].get('message')}"
+    markdown = f"## {result.get('response_status', {}).get('messages')[0].get('message')}"
     return markdown, {}, result
 
 
@@ -401,8 +499,8 @@ def add_resolution_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     request_id = args.get('request_id')
-    resolution_content = args.get('resolution_content', '')
-    add_to_linked_requests = args.get('add_to_linked_requests', 'false')
+    resolution_content = args.get('resolution_content')
+    add_to_linked_requests = args.get('add_to_linked_requests') if args.get('add_to_linked_requests') else 'false'
     query = {'resolution': {'content': resolution_content, 'add_to_linked_requests': add_to_linked_requests}}
     params = {'input_data': f'{query}'}
     result = client.http_request('POST', url_suffix=f'requests/{request_id}/resolutions', params=params)
@@ -428,37 +526,15 @@ def get_resolutions_list_command(client: Client, args: dict) -> Tuple[str, dict,
     """
     request_id = args.get('request_id')
     result = client.http_request('GET', url_suffix=f'requests/{request_id}/resolutions')
+
     context: dict = defaultdict(list)
-    output = result.get('resolution', {})
-    markdown = tableToMarkdown(f'Resolution of request {request_id}', t=output)
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'Resolution': output}
+    output = create_output(result.get('resolution', {}))
+    hr = {}
+    if output:
+        context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'Resolution': output}
+        hr = resolution_human_readable(output)
+    markdown = tableToMarkdown(f'Resolution of request {request_id}', t=hr)
     return markdown, context, result
-
-
-def create_requests_list_info(start_index, row_count, search_fields, filter_by):
-    """
-    Returning the list_info dictionary that should be used to filter the requests that are being returned.
-
-    Args:
-         start_index: the index of the first request that should be returned
-         row_count: the number of requests that should be returned
-         search_fields: search for specific fields in the requests
-         filter_by: the filter by which to filter the returned requests
-
-     Returns:
-         A dictionary containing the list_info parameter that should be used for filtering the requests.
-
-    """
-    list_info = {}
-    if start_index is not None:
-        list_info['start_index'] = start_index
-    if row_count is not None:
-        list_info['row_count'] = row_count
-    if search_fields:
-        list_info['search_fields'] = search_fields
-    if filter_by:
-        list_info['filter_by'] = filter_by
-    return {'list_info': list_info}
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: str, fetch_filter: str) -> list:
@@ -511,62 +587,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
     return demisto_incidents
 
 
-def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str, fetch_limit: int) -> dict:
-    """
-    Returning the list_info dictionary that should be used to filter the requests that are being fetched
-    The requests that will be returned when using this list_info are all requests created between 'time_from' and
-    'time_to' (inclusive) and are with the given status, in ascending order of creation time.
-
-    Args:
-         time_from: the time from which requests should be fetched
-         time_to: the time until which requests should be fetched
-         status: the status of the requests that should be fetched
-         fetch_filter: a string representing all the field according to which the results that are being fetched should
-                       be filtered. Multiple fields, separated with a comma, can be used to filter. Every field should
-                       be in the following format: 'field-name condition field-value' where condition is the condition
-                       that this field should satisfy, for example 'is', 'is not', 'greater than' etc.
-         fetch_limit: the maximal number of requests that should be returned.
-
-     Returns:
-         A dictionary containing the list_info parameter that should be used for filtering the requests.
-
-    """
-    try:
-        search_criteria = [{'field': 'created_time', 'values': [f'{time_from}', f'{time_to}'], 'condition': 'between'}]
-        if fetch_filter:
-            filters = ast.literal_eval(fetch_filter)
-            if isinstance(filters, dict):
-                query = {
-                    'field': filters.get('field'),
-                    'condition': filters.get('condition'),
-                    'values': filters.get('values', '').split(','),
-                    'logical_operator': filters.get('logical_operator', 'AND')
-                }
-                search_criteria.append(query)
-            else:
-                for filter in filters:
-                    query = {
-                        'field': filter.get('field'),
-                        'condition': filter.get('condition'),
-                        'values': filter.get('values', '').split(','),
-                        'logical_operator': filter.get('logical_operator', 'AND')
-                    }
-                    search_criteria.append(query)
-        else:
-            query = {'field': 'status.name', 'values': status.split(','), 'condition': 'is', 'logical_operator': 'AND'}
-            search_criteria.append(query)
-
-        list_info = {
-            'search_criteria': search_criteria,
-            'sort_field': 'created_time',
-            'sort_order': 'asc',
-            'row_count': fetch_limit
-        }
-        return {'list_info': list_info}
-    except:
-        return_error('Invalid input format. Please follow instructions for correct filter format.')
-
-
 def test_module(client: Client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -584,13 +604,13 @@ def test_module(client: Client):
     try:
         client.http_request('GET', 'requests')
 
-        params: dict = ()
+        params: dict = demisto.params()
 
         if params.get('isFetch'):
-            fetch_time = params.get('fetch_time', '1 day')
-            fetch_status = params.get('fetch_status', 'Open')
-            fetch_filter = params.get('fetch_filter', '')
-            fetch_limit = int(params.get('fetch_limit', 10))
+            fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
+            fetch_status = params.get('fetch_status') if params.get('fetch_status') else 'Open'
+            fetch_filter = params.get('fetch_filter')
+            fetch_limit = int(params.get('fetch_limit')) if params.get('fetch_limit') else 10
 
             date_format = '%Y-%m-%dT%H:%M:%S'
             time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
@@ -669,11 +689,11 @@ def main():
         if command == 'test-module':
             demisto.results(test_module(client))
         elif command == "fetch-incidents":
-            fetch_time = params.get('fetch_time', '1 day')
-            fetch_limit = params.get('fetch_limit', 10)
-            fetch_status = params.get('fetch_status', 'Open')
+            fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
+            fetch_status = params.get('fetch_status') if params.get('fetch_status') else 'Open'
+            fetch_limit = int(params.get('fetch_limit')) if params.get('fetch_limit') else 10
             fetch_filter = params.get('fetch_filter')
-            incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),
+            incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=fetch_limit,
                                         status=fetch_status, fetch_filter=fetch_filter)
             demisto.incidents(incidents)
         elif command in commands:
@@ -681,8 +701,8 @@ def main():
         else:
             return_error('Command not found.')
     except Exception as e:
-        # raise e
-        return_error(f'Failed to execute {command} command. Error: {e}')
+        raise e
+        # return_error(f'Failed to execute {command} command. Error: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

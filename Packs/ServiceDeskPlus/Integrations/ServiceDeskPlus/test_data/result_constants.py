@@ -145,7 +145,7 @@ EXPECTED_UPDATE_REQUEST = {
                 'department': None
             },
             'IsEscalated': False,
-            'LastUpdatedTime': '2020-06-24T12:05:00.000Z',
+            'LastUpdatedTime': '2020-06-24T15:06:17.000Z',
             'HasNotes': False,
             'Status': 'Open',
             'Template': {
@@ -235,7 +235,7 @@ EXPECTED_LIST_SINGLE_REQUEST = {
                 'department': None
             },
             'IsEscalated': False,
-            'LastUpdatedTime': '2020-06-24T12:05:00.000Z',
+            'LastUpdatedTime': '2020-06-24T15:27:44.000Z',
             'HasNotes': False,
             'Status': 'Open',
             'Template': {
@@ -379,26 +379,49 @@ EXPECTED_LIST_MULTIPLE_REQUESTS = {
     }
 }
 
-EXPECTED_LINKED_REQUEST = {
+EXPECTED_LINKED_REQUEST_LIST = {
     'ServiceDeskPlus.Request(val.ID===obj.ID)': {
         'LinkRequests': [{
-                             'LinkedRequest': {
-                                 'subject': 'Test create request',
-                                 'id': '123640000000240013',
-                                 'udf_fields': {
-                                     'udf_char1': None
-                                 },
-                                 'display_id': '102'
-                             }
-                         }, {
-                             'LinkedRequest': {
-                                 'subject': 'Updating the last request',
-                                 'id': '123640000000241001',
-                                 'udf_fields': {
-                                     'udf_char1': None
-                                 },
-                                 'display_id': '96'
-                             }
-                         }]
+            'LinkedRequest': {
+                'subject': 'Test create request',
+                'id': '123640000000240013',
+                'udf_fields': {
+                    'udf_char1': None
+                },
+                'display_id': '102'
+            }
+        }, {
+            'LinkedRequest': {
+                'subject': 'Updating the last request',
+                'id': '123640000000241001',
+                'udf_fields': {
+                    'udf_char1': None
+                },
+                'display_id': '96'
+            }
+        }]
     }
 }
+
+EXPECTED_RESOLUTION_LIST = {
+    'ServiceDeskPlus.Request(val.ID===obj.ID)': {
+        'Resolution': {
+            'SubmittedOn': '2020-06-09T14:32:15.000Z',
+            'SubmittedBy': {
+                'email_id': 'akrupnik@paloaltonetworks.com',
+                'is_technician': True,
+                'sms_mail': None,
+                'phone': None,
+                'name': 'Arseny Krupnik',
+                'mobile': None,
+                'id': '123640000000142582',
+                'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712874208&t=user&height=60&width=60',
+                'is_vip_user': False,
+                'department': None
+            },
+            'Content': 'changing resolution from demisto'
+        }
+    }
+}
+
+EXPECTED_NO_RESOLUTION_LIST = {}

@@ -558,30 +558,102 @@ RESPONSE_LIST_MULTIPLE_REQUESTS = {
     }]
 }
 
-RESPONSE_LINKED_REQUEST = {
+RESPONSE_LINKED_REQUEST_LIST = {
     'response_status': [{
-                            'status_code': 2000,
-                            'status': 'success'
-                        }],
+        'status_code': 2000,
+        'status': 'success'
+    }],
     'link_requests': [{
-                          'comments': None,
-                          'linked_request': {
-                              'subject': 'Test create request',
-                              'id': '123640000000240013',
-                              'udf_fields': {
-                                  'udf_char1': None
-                              },
-                              'display_id': '102'
-                          }
-                      }, {
-                          'comments': None,
-                          'linked_request': {
-                              'subject': 'Updating the last request',
-                              'id': '123640000000241001',
-                              'udf_fields': {
-                                  'udf_char1': None
-                              },
-                              'display_id': '96'
-                          }
-                      }]
+        'comments': None,
+        'linked_request': {
+            'subject': 'Test create request',
+            'id': '123640000000240013',
+            'udf_fields': {
+                'udf_char1': None
+            },
+            'display_id': '102'
+        }
+    }, {
+        'comments': None,
+        'linked_request': {
+            'subject': 'Updating the last request',
+            'id': '123640000000241001',
+            'udf_fields': {
+                'udf_char1': None
+            },
+            'display_id': '96'
+        }
+    }]
+}
+
+RESPONSE_RESOLUTION_LIST = {
+    'response_status': {
+        'status_code': 2000,
+        'status': 'success'
+    },
+    'resolution': {
+        'submitted_on': {
+            'display_value': 'Jun 9, 2020 05:32 PM',
+            'value': '1591713135801'
+        },
+        'submitted_by': {
+            'email_id': 'akrupnik@paloaltonetworks.com',
+            'is_technician': True,
+            'sms_mail': None,
+            'phone': None,
+            'name': 'Arseny Krupnik',
+            'mobile': None,
+            'id': '123640000000142582',
+            'photo_url': 'https://contacts.zoho.com/file?exp=10&ID=712874208&t=user&height=60&width=60',
+            'is_vip_user': False,
+            'department': None
+        },
+        'resolution_attachments': [],
+        'content': 'changing resolution from demisto'
+    }
+}
+
+RESPONSE_NO_RESOLUTION_LIST = {
+    'response_status': {
+        'status_code': 2000,
+        'status': 'success'
+    },
+    'resolution': {
+        'submitted_on': None,
+        'submitted_by': None,
+        'resolution_attachments': [],
+        'content': None
+    }
+}
+
+RESPONSE_LINK_REQUEST = {
+    'response_status': {
+        'status_code': 2000,
+        'messages': [{
+            'status_code': 2000,
+            'type': 'success',
+            'message': 'Request successfully linked'
+        }],
+        'status': 'success'
+    }
+}
+
+RESPONSE_UNLINK_REQUEST = {
+    'response_status': {
+        'status_code': 2000,
+        'messages': [{
+                         'status_code': 2000,
+                         'type': 'success',
+                         'message': 'The request[s] link are removed successfully.'
+                     }],
+        'status': 'success'
+    }
+}
+
+RESPONSE_GENERATE_REFRESH_TOKEN = {
+    "access_token": "123456789",
+    "refresh_token": "987654321",
+    "api_domain": "https://www.zohoapis.com",
+    "token_type": "Bearer",
+    "expires_in": 3600
 }
