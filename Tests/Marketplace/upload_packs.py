@@ -445,11 +445,29 @@ def load_json(file_path):
 
 
 def init_content_git_client(content_repo_path):
+    """ Initializes content repo client.
+
+    Args:
+        content_repo_path (str): content repo full path
+
+    Returns:
+        git.repo.base.Repo: content repo object.
+
+    """
     return git.Repo(content_repo_path)
 
 
 def get_recent_commits_data(content_repo):
-    return content_repo.head.commit.hexsha, content_repo.commit('origin/master~3')
+    """ Returns recent commits hashes (of head and remote master)
+
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+
+    Returns:
+        str: last commit hash of head.
+        str: previous commit of origin/master (origin/master~1)
+    """
+    return content_repo.head.commit.hexsha, content_repo.commit('origin/master~1').hexsha
 
 
 def print_packs_summary(packs_list):

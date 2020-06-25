@@ -644,11 +644,11 @@ class Pack(object):
             content_repo (git.repo.base.Repo): content repo object.
             index_folder_path (str): full path to downloaded index folder.
             current_commit_hash (str): last commit hash of head.
-            remote_previous_commit_hash (str): previous commit of origin/master (origin/master~3)
+            remote_previous_commit_hash (str): previous commit of origin/master (origin/master~1)
 
         Returns:
-            bool:
-            bool:
+            bool: whether the operation succeeded.
+            bool: whether pack was modified and override will be required.
         """
         task_status = False
         pack_was_modified = False
