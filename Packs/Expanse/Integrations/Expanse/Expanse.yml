@@ -657,8 +657,8 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: The certificate common name.
-      isArray: true
+      description: The certificate common name. ex. *.myhost.com
+      isArray: false
       name: common_name
       required: true
       secret: false

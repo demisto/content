@@ -22,7 +22,6 @@ PAGE_LIMIT = int(demisto.params().get('page_limit', '10'))
 FIRST_RUN = int(demisto.params().get('first_run', '7'))
 SERVER = 'https://expander.expanse.co'
 VERIFY_CERTIFICATES = not demisto.params().get('insecure')
-PROXY = demisto.params().get('proxy')
 BEHAVIOR_ENABLED = demisto.params().get('behavior', False)
 MINIMUM_SEVERITY = demisto.params().get('minimum_severity', 'WARNING')
 BASE_URL = SERVER
@@ -622,12 +621,16 @@ def get_expanse_exposure_context(data):
 
 def get_expanse_certificate_to_domain_context(common_name, data):
     """
-    provides custom context information for domains looked up via certificate
+    Provides custom context information for domains looked up via certificate.
+
+    :param common_name: The original search parameter
+    :param data: The data returned from the API query
+    :return: A dict of aggregated domain details
     """
     return {
         "SearchTerm": common_name,
         "TotalDomainCount": len(data),
-        "FlatDomainList": [domain['domain'] for domain in data],
+        "FlatDomainList": [domain.get('domain') for domain in data],
         "DomainList": data
     }
 
@@ -861,7 +864,7 @@ def certificate_command():
         "commonNameSearch": common_name
     }
     token = do_auth()
-    certs = _fetch_certificates(params=params, token=token)
+    certs = fetch_certificates(params=params, token=token)
     if len(certs) == 0:
         demisto.results("No data found")
         return
@@ -959,8 +962,8 @@ def exposures_command():
 
 def domains_for_certificate_command():
     """
-
-    :return:
+    Returns all domains that have resolved to IP addresses a certificate has been seen on. There is no direct way to
+    correlate between certificates and domains in Expanse this does so indirectly.
     """
     search = demisto.args()['common_name']
     params = {
@@ -968,21 +971,18 @@ def domains_for_certificate_command():
     }
     token = do_auth()
 
-    observed_ips = []
     matching_domains = []
 
-    certificates = _fetch_certificates(params=params, token=token)
+    certificates = fetch_certificates(params=params, token=token)
     for certificate in certificates:
-        certificate_details = _fetch_certificate(md5_hash=certificate['certificate']['md5Hash'], token=token)
-        for ip in certificate_details['details']['recentIps']:
-            observed_ips.append(ip['ip'])
-
-    for ip in observed_ips:
-        params = {
-            'inetSearch': ip,
-            'assetType': 'DOMAIN'
-        }
-        matching_domains += _fetch_ips(params=params, token=token)
+        certificate_details = \
+            fetch_certificate(md5_hash=certificate.get('certificate', {}).get('md5Hash'), token=token)
+        for ip in certificate_details.get('details', {}).get('recentIps', []):
+            params = {
+                'inetSearch': ip.get('ip'),
+                'assetType': 'DOMAIN'
+            }
+            matching_domains += fetch_ips(params=params, token=token)
 
     if len(matching_domains) == 0:
         demisto.results("No data found")
@@ -994,15 +994,14 @@ def domains_for_certificate_command():
         'Expanse.IPDomains(val.SearchTerm == obj.SearchTerm)': context
     }
 
-    raw_domain_objects = context['DomainList']
-    del context['DomainList']  # Remove full objects from human readable response
+    hr_context = context.copy()
+    del hr_context['DomainList']  # Remove full objects from human readable response
     human_readable = tableToMarkdown("Expanse Domains matching Certificate Common Name: {search}".format(search=search),
-                                     context)
-    context['DomainList'] = raw_domain_objects
+                                     hr_context)
     return_outputs(human_readable, ec, matching_domains)
 
 
-def _fetch_certificates(params, token):
+def fetch_certificates(params, token):
     """
     Fetches all certificates that match the provided params.
 
@@ -1013,8 +1012,8 @@ def _fetch_certificates(params, token):
     certificates = []
     results = http_request('GET', 'assets/certificates', params, token=token)
     try:
-        if len(results['data']) > 0:
-            certificates += results['data']
+        if len(results.get('data', [])) > 0:
+            certificates += results.get('data', [])
             next_page = results.get('pagination', {}).get('next', None)
             while next_page is not None:
                 params['pageToken'] = get_page_token(next_page)
@@ -1022,12 +1021,12 @@ def _fetch_certificates(params, token):
                 certificates += results['data']
                 next_page = results.get('pagination', {}).get('next', None)
         return certificates
-    except Exception:
-        demisto.results("No data found")
+    except Exception as err:
+        demisto.error("Error fetching certificates: {}".format(err))
         return []
 
 
-def _fetch_certificate(md5_hash, token):
+def fetch_certificate(md5_hash, token):
     """
     Returns details for a single certificate.
 
@@ -1037,12 +1036,12 @@ def _fetch_certificate(md5_hash, token):
     """
     try:
         return http_request('GET', 'assets/certificates/{}'.format(md5_hash), {}, token=token)
-    except Exception:
-        demisto.results("No data found")
+    except Exception as err:
+        demisto.error("Error fetching certificate: {}".format(err))
         return {}
 
 
-def _fetch_ips(params, token):
+def fetch_ips(params, token):
     """
     Returns all ip results matching search params.
 
@@ -1053,8 +1052,8 @@ def _fetch_ips(params, token):
     ips = []
     results = http_request('GET', 'assets/ips', params, token=token)
     try:
-        if len(results['data']) > 0:
-            ips += results['data']
+        if len(results.get('data', [])) > 0:
+            ips += results.get('data', [])
             next_page = results.get('pagination', {}).get('next', None)
             while next_page is not None:
                 params['pageToken'] = get_page_token(next_page)
@@ -1062,8 +1061,8 @@ def _fetch_ips(params, token):
                 ips += results['data']
                 next_page = results.get('pagination', {}).get('next', None)
         return ips
-    except Exception:
-        demisto.results("No data found")
+    except Exception as err:
+        demisto.error("Error fetching ips: {}".format(err))
         return []
 
 
