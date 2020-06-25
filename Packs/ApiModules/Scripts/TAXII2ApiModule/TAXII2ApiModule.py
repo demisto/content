@@ -3,14 +3,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Union, Optional, List, Dict, Tuple
-from requests import HTTPError
 from requests.sessions import merge_setting, CaseInsensitiveDict
 import re
 import types
 import urllib3
 from taxii2client import v20, v21
 from taxii2client.common import TokenAuth, _HTTPConnection
-from taxii2client.exceptions import TAXIIServiceException
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -68,15 +66,17 @@ class Taxii2FeedClient:
             collection_to_fetch,
             proxies,
             verify,
+            skip_complex_mode=False,
             username=None,
             password=None,
             field_map=None,
     ):
         """
-        TAXII 2 Client used to poll and parse indicators in XSOAR form
+        TAXII 2 Client used to poll and parse indicators in XSOAR formar
         :param url: discovery service URL
         :param collection_to_fetch: Collection to fetch objects from
         :param proxies: proxies used in request
+        :param skip_complex_mode: if set to True will skip complex observations
         :param verify: verify https
         :param username: username used for basic authentication OR api_key used for authentication
         :param password: password used for basic authentication
@@ -88,8 +88,9 @@ class Taxii2FeedClient:
         self.collections = None
         self.latest_fetched_indicator_created = None
 
-        self.collection_to_fetch = collection_to_fetch
         self.base_url = url
+        self.collection_to_fetch = collection_to_fetch
+        self.skip_complex_mode = skip_complex_mode
         self.proxies = proxies
         self.verify = verify
 
@@ -97,7 +98,7 @@ class Taxii2FeedClient:
         self.auth_header = None
         self.auth_key = None
         if username and password:
-            # methods of authentication:
+            # authentication methods:
             # 1. API Token
             # 2. Authentication Header
             # 3. Basic
@@ -157,8 +158,9 @@ class Taxii2FeedClient:
             self.api_root = self.server.api_roots[0]  # type: ignore[union-attr]
             # override _conn - api_root isn't initialized with the right _conn
             self.api_root._conn = self._conn
-        except (TAXIIServiceException, HTTPError) as e:
-            if isinstance(e, HTTPError) and "406 Client Error" not in str(e):
+        # (TAXIIServiceException, HTTPError) should suffice, but sometimes it throws another HTTPError
+        except Exception as e:
+            if "406 Client Error" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
@@ -422,6 +424,9 @@ class Taxii2FeedClient:
                         )
                         indicators.append(indicator)
                         break
+        if self.skip_complex_mode and len(indicators) > 1:
+            # we managed to pull more than a single indicator - indicating complex relationship
+            return []
         return indicators
 
     def extract_indicator_groups_from_pattern(

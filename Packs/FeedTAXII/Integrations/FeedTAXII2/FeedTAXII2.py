@@ -8,6 +8,8 @@ from typing import Any, Tuple
 
 
 CONTEXT_PREFIX = "TAXII2"
+COMPLEX_OBSERVATION_MODE_SKIP = "Skip indicators with more than a single observation"
+COMPLEX_OBSERVATION_MODE_CREATE_ALL = "Create indicator for each observation"
 
 """ HELPER FUNCTIONS """
 
@@ -160,13 +162,14 @@ def main():
     password = credentials.get("password")
     proxies = handle_proxy()
     verify_certificate = not params.get("insecure", False)
+    skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get("observation_operator_mode")
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
 
     try:
         client = Taxii2FeedClient(
-            url, collection_to_fetch, proxies, verify_certificate, username, password
+            url, collection_to_fetch, proxies, verify_certificate, skip_complex_mode, username, password,
         )
         client.initialise()
         commands = {

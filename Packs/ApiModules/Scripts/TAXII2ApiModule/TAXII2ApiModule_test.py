@@ -4,13 +4,22 @@ from taxii2client import v20, v21
 import json
 
 with open('test_data/stix_envelope_no_indicators.json', 'r') as f:
-    STIX_ENVELOP_NO_IOCS = json.load(f)
+    STIX_ENVELOPE_NO_IOCS = json.load(f)
 
 with open('test_data/stix_envelope_17|19.json', 'r') as f:
-    STIX_ENVLOPE_17_IOCS_19_OBJS = json.load(f)
+    STIX_ENVELOPE_17_IOCS_19_OBJS = json.load(f)
+
+with open('test_data/stix_envelope_complex_20|19.json', 'r') as f:
+    STIX_ENVELOPE_20_IOCS_19_OBJS = json.load(f)
 
 with open('test_data/cortex_parsed_indicators_17|19.json', 'r') as f:
     CORTEX_17_IOCS_19_OBJS = json.load(f)
+
+with open('test_data/cortex_parsed_indicators_complex_20|19.json', 'r') as f:
+    CORTEX_COMPLEX_20_IOCS_19_OBJS = json.load(f)
+
+with open('test_data/cortex_parsed_indicators_complex_skipped_14|19.json', 'r') as f:
+    CORTEX_COMPLEX_14_IOCS_19_OBJS = json.load(f)
 
 
 class MockCollection:
@@ -254,12 +263,12 @@ class TestExtractIndicatorsAndParse:
         """
         expected = []
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
-        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOP_NO_IOCS)
+        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOPE_NO_IOCS)
 
         assert len(actual) == 0
         assert expected == actual
 
-    def test_21(self):
+    def test_21_simple(self):
         """
         Scenario: Test 21 envelope extract
 
@@ -275,7 +284,51 @@ class TestExtractIndicatorsAndParse:
         """
         expected = CORTEX_17_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
-        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVLOPE_17_IOCS_19_OBJS)
+        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOPE_17_IOCS_19_OBJS)
 
         assert len(actual) == 17
         assert expected == actual
+
+    def test_21_complex_not_skipped(self):
+        """
+        Scenario: Test 21 envelope complex extract without skip
+
+        Given:
+        - Envelope with 19 STIX2 objects - 14 normal iocs, 3 are complex indicators (x2 iocs), and 2 aren't indicators
+        - skip is False
+
+        When:
+        - extract_indicators_from_envelope_and_parse is called
+
+        Then:
+        - Extract and parse the indicators from the envelope with the complex iocs
+
+        """
+        expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOPE_20_IOCS_19_OBJS)
+
+        assert len(actual) == 20
+        assert actual == expected
+
+    def test_21_complex_skipped(self):
+        """
+        Scenario: Test 21 envelope complex extract with skip
+
+        Given:
+        - Envelope with 19 STIX2 objects - 14 normal iocs, 3 are complex indicators (x2 iocs), and 2 aren't indicators
+        - skip is True
+
+        When:
+        - extract_indicators_from_envelope_and_parse is called
+
+        Then:
+        - Extract and parse the indicators from the envelope with the complex iocs
+
+        """
+        expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, skip_complex_mode=True)
+        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOPE_20_IOCS_19_OBJS)
+
+        assert len(actual) == 14
+        assert actual == expected
