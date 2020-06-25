@@ -2581,10 +2581,12 @@ class CommandResults:
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
+    def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None):
-
         # type: (str, str, object, list, str, object) -> None
+        if raw_response is None:
+            raw_response = outputs
+
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
@@ -2596,7 +2598,10 @@ class CommandResults:
 
     def to_context(self):
         outputs = {}  # type: dict
-        human_readable = None
+        if self.readable_output:
+            human_readable = self.readable_output
+        else:
+            human_readable = None
         raw_response = None
 
         if self.indicators:
@@ -2612,16 +2617,10 @@ class CommandResults:
         if self.raw_response:
             raw_response = self.raw_response
 
-        if self.outputs:
+        if self.outputs is not None:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
-            else:
-                human_readable = self.readable_output
-
-            if not self.raw_response:
-                raw_response = self.outputs
-
             if self.outputs_prefix and self.outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
@@ -2631,7 +2630,6 @@ class CommandResults:
                 outputs[outputs_key] = self.outputs
             else:
                 outputs = self.outputs
-                human_readable = self.readable_output  # prefix and key field not provided, human readable should
 
         return_entry = {
             'Type': EntryType.NOTE,
