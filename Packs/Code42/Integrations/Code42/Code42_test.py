@@ -1260,15 +1260,14 @@ def test_highriskemployee_add_command(code42_high_risk_employee_mock):
     _, outputs, res = highriskemployee_add_command(
         client, {"username": _TEST_USERNAME, "note": "Dummy note"}
     )
-    expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
-    assert res == expected_user_id
+    assert res == _TEST_USER_ID
     assert outputs["Code42.HighRiskEmployee"]["UserID"] == _TEST_USER_ID
     assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
     code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(
-        expected_user_id
+        _TEST_USER_ID
     )
     code42_high_risk_employee_mock.detectionlists.update_user_notes.assert_called_once_with(
-        expected_user_id, "Dummy note"
+        _TEST_USER_ID, "Dummy note"
     )
 
 
