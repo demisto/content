@@ -327,7 +327,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "24"
+      - "26"
     scriptarguments:
       id:
         complex:
@@ -345,6 +345,40 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "26":
+    id: "26"
+    taskid: 49031b8b-6fb7-4594-8961-7d5952783aa3
+    type: regular
+    task:
+      id: 49031b8b-6fb7-4594-8961-7d5952783aa3
+      version: -1
+      name: Wait for investigation to begin
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      seconds:
+        simple: "15"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
