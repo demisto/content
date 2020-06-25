@@ -1547,5 +1547,8 @@ outputs:
 - contextPath: DetectedProtocols
   description: A list of protocols that were found in the PCAP
   type: string
+- contextPath: PcapQuery
+  description: The filter used for querying the PCAP file.
+  type: string
 tests:
 - PCAP Search test
