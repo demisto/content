@@ -460,18 +460,11 @@ def test_argToList():
     test2 = 'a,b,c'
     test3 = '["a","b","c"]'
     test4 = 'a;b;c'
-    test5 = 1
-    test6 = '1'
-    test7 = True
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
     for result in results:
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
-
-    assert argToList(test5) == [1]
-    assert argToList(test6) == ['1']
-    assert argToList(test7) == [True]
 
 
 def test_remove_nulls():
@@ -922,6 +915,43 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_readable_only_context(self):
+        """
+        Given:
+        - Markdown entry to CommandResults
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate HumanReadable exists
+        """
+        from CommonServerPython import CommandResults
+        markdown = '## Something'
+        context = CommandResults(readable_output=markdown).to_context()
+        assert context.get('HumanReadable') == markdown
+
+    def test_empty_outputs(self):
+        """
+        Given:
+        - Empty outputs
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate EntryContext key value
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs_prefix='FoundIndicators',
+            outputs_key_field='value',
+            outputs=[]
+        )
+        context = res.to_context()
+        assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
+
     def test_return_command_results(self):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
 
@@ -1109,7 +1139,7 @@ class TestCommandResults:
             raw_response=tickets
         )
 
-        assert results.to_context() == {
+        assert sorted(results.to_context()) == sorted({
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': tickets,
@@ -1117,7 +1147,7 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             }
-        }
+        })
 
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
