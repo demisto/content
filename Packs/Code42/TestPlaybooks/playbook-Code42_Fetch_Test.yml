@@ -1,0 +1,42 @@
+id: f07cb7c9-eecf-411a-84c2-41a44e50886f
+inputs: []
+name: Code42 Fetch Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b1cde161-602d-46ca-8a6e-dafc58fb0ea6
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: b1cde161-602d-46ca-8a6e-dafc58fb0ea6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
