@@ -34,30 +34,33 @@ def get_json(file_path):
     return get_file(json.load, file_path, 'json')
 
 
-def handle_yml_file(file_path, new_to_version):
+def handle_yml_file(file_path, new_to_version, should_rewrite=True):
     yml_content = get_yaml(file_path)
     if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(yml_content.get('fromversion', '0.0.0')) > parse_version(new_to_version):
         return False
 
     yml_content['toversion'] = new_to_version
-    with open(file_path, 'w') as f:
-        yaml.dump(yml_content, f)
-        print(f" - Updating {file_path}")
+    if should_rewrite:
+        with open(file_path, 'w') as f:
+            yaml.dump(yml_content, f)
+            print(f" - Updating {file_path}")
 
     return True
 
 
-def handle_json_file(file_path, new_to_version):
+def handle_json_file(file_path, new_to_version, should_rewrite=True):
     json_content = get_json(file_path)
     if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(json_content.get('fromVersion', '0.0.0')) > parse_version(new_to_version):
         return False
 
     json_content['toVersion'] = new_to_version
-    with open(file_path, 'w') as f:
-        json.dump(json_content, f, indent=4)
-        print(f" - Updating {file_path}")
+
+    if should_rewrite:
+        with open(file_path, 'w') as f:
+            json.dump(json_content, f, indent=4)
+            print(f" - Updating {file_path}")
 
     return True
 
@@ -162,4 +165,5 @@ def main():
     click.secho("Finished creating branch", fg="green")
 
 
-main()
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
