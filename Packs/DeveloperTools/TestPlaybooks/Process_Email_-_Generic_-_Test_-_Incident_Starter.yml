@@ -18,6 +18,7 @@ tasks:
       id: 47bc9bfd-59d6-49b4-895a-f1ce7334df3d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -44,6 +45,7 @@ tasks:
       id: 9d4cb848-b8fa-4cdf-828f-dcdf94fb4a53
       version: -1
       name: Begin Real Incident
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -68,6 +70,7 @@ tasks:
       id: fdc6605b-d55f-44f0-8a35-2b4e9d748f2d
       version: -1
       name: Delete Context
+      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
