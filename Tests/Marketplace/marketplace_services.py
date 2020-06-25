@@ -136,7 +136,7 @@ class PackStatus(enum.Enum):
     FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
-    PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific build is not updated in current build"
+    PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
