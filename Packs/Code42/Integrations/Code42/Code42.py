@@ -172,7 +172,7 @@ class Code42Client(BaseClient):
         self._sdk.detectionlists.departing_employee.remove(user_id)
         return user_id
 
-    def get_all_departing_employees(self):
+    def get_all_departing_employees(self, results=50):
         res = []
         pages = self._sdk.detectionlists.departing_employee.get_all()
         for page in pages:
@@ -202,13 +202,17 @@ class Code42Client(BaseClient):
         self._sdk.detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
-    def get_all_high_risk_employees(self, risk_tags=None):
+    def get_all_high_risk_employees(self, risk_tags=None, results=50):
         if isinstance(risk_tags, str):
             risk_tags = [risk_tags]
         res = []
         pages = self._sdk.detectionlists.high_risk_employee.get_all()
         for page in pages:
-            res.extend(_get_all_high_risk_employees_from_page(page, risk_tags))
+            employees = _get_all_high_risk_employees_from_page(page, risk_tags)
+            for employee in employees:
+                res.append(employee)
+                if len(res) == results:
+                    break
         return res
 
     def fetch_alerts(self, start_time, event_severity_filter):

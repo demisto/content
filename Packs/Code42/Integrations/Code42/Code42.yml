@@ -288,6 +288,11 @@ script:
       type: string
     description: Removes a user from the Departing Employee List.
   - name: code42-departingemployee-get-all
+    arguments:
+    - name: results
+      description: The number of items to return.
+      defaultvalue: 50
+      type: number
     outputs:
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -334,6 +339,10 @@ script:
     arguments:
     - name: risktags
       description: To filter results by employees who have these risk tags.
+    - name: results
+      description: The number of items to return.
+      defaultvalue: 50
+      type: number
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
       description: Internal Code42 User ID for the High Risk Employee.
