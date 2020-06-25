@@ -355,8 +355,8 @@ class Pack(object):
         return pack_integration_images
 
     @staticmethod
-    def _clean_release_notes(changelog_lines):
-        return re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
+    def _clean_release_notes(release_notes_lines):
+        return re.sub(r'<\!--.*?-->', '', release_notes_lines, flags=re.DOTALL)
 
     @staticmethod
     def _parse_pack_dependencies(first_level_dependencies, all_level_pack_dependencies_data):
@@ -759,6 +759,13 @@ class Pack(object):
                     latest_release_notes = found_versions[0].vstring
 
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
+                    # load latest release notes
+                    latest_rn_file = latest_release_notes.replace('.', '_')
+                    latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
+
+                    with open(latest_rn_path, 'r') as changelog_md:
+                        release_notes_lines = changelog_md.read()
+                    release_notes_lines = self._clean_release_notes(release_notes_lines)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
@@ -771,8 +778,9 @@ class Pack(object):
                             changelog = json.load(changelog_file)
 
                             if latest_release_notes in changelog:
-                                changelog[latest_release_notes][  # update latest release notes build numbers
-                                    'displayName'] = f'{latest_release_notes} - {build_number}'
+                                changelog[latest_release_notes][  # update latest release notes
+                                    'displayName'] = f'{latest_release_notes} - R{build_number}'
+                                changelog[latest_release_notes]['releaseNotes'] = release_notes_lines
                                 # write back the updated build number to the changelog in pack the folder
                                 with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
                                     json.dump(changelog, pack_changelog, indent=4)
@@ -782,13 +790,7 @@ class Pack(object):
                                 task_status = True
                                 return task_status, not_updated_build
 
-                        latest_rn_file = latest_release_notes.replace('.', '_')
-                        latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
-
-                        with open(latest_rn_path, 'r') as changelog_md:
-                            changelog_lines = changelog_md.read()
-                            changelog_lines = self._clean_release_notes(changelog_lines)
-                        version_changelog = {'releaseNotes': changelog_lines,
+                        version_changelog = {'releaseNotes': release_notes_lines,
                                              'displayName': f'{latest_release_notes} - {build_number}',
                                              'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
@@ -807,7 +809,7 @@ class Pack(object):
                         return task_status, not_updated_build
 
                     changelog[Pack.PACK_INITIAL_VERSION][  # update latest release notes build numbers
-                        'displayName'] = f'{Pack.PACK_INITIAL_VERSION} - {build_number}'
+                        'displayName'] = f'{Pack.PACK_INITIAL_VERSION} - R{build_number}'
                     # write back the updated build number to the changelog in pack the folder
                     with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
                         json.dump(changelog, pack_changelog, indent=4)
