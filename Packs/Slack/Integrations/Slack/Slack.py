@@ -1204,6 +1204,9 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     :param conversation_name: The conversation name
     :return: The slack conversation
     """
+
+    # TODO: Search for the channel in the cache, see `get_user_by_name`
+
     body = {
         'types': 'private_channel,public_channel',
         'limit': PAGINATED_COUNT
@@ -1225,6 +1228,8 @@ def get_conversation_by_name(conversation_name: str) -> dict:
 
     if conversation_filter:
         conversation = conversation_filter[0]
+
+    # TODO: Save the conversation in the cache
 
     return conversation
 
@@ -1554,10 +1559,12 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     if channel or group:
         if not destinations:
             destination_name = channel or group
+            # TODO delete this block
             conversation_filter = list(filter(lambda c: c.get('name') == destination_name, conversations))
             if conversation_filter:
                 conversation = conversation_filter[0]
                 conversation_id = conversation.get('id')
+            # Until here
             else:
                 mirrored_channel_filter = list(filter(lambda m: 'incident-{}'
                                                       .format(m['investigation_id']) == destination_name, mirrors))

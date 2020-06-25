@@ -470,6 +470,8 @@ async def test_clean_message(mocker):
     assert clean_link_message == 'Go to https://www.google.com/lulz'
 
 
+# TODO: test like this for conversations
+
 def test_get_user_by_name(mocker):
     from Slack import get_user_by_name
     # Set
