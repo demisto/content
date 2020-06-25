@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue in which the ***wildfire-get-sample*** command returned the wrong filename.
 
 ## [20.5.0] - 2020-05-12
 -

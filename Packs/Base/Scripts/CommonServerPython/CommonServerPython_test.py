@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type
+    appendContext, auto_detect_indicator_type, handle_proxy
 
 try:
     from StringIO import StringIO
@@ -640,6 +640,52 @@ def test_logger_replace_strs(mocker):
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
+SENSITIVE_PARAM = {
+    'app': None,
+    'authentication': {
+        'credential': '',
+        'credentials': {
+            'id': '',
+            'locked': False,
+            'modified': '0001-01-01T00: 00: 00Z',
+            'name': '',
+            'password': 'cred_pass',
+            'sortValues': None,
+            'sshkey': 'ssh_key_secret',
+            'sshkeyPass': 'ssh_key_secret_pass',
+            'user': '',
+            'vaultInstanceId': '',
+            'version': 0,
+            'workgroup': ''
+        },
+        'identifier': 'admin',
+        'password': 'ident_pass',
+        'passwordChanged': False
+    },
+}
+
+
+def test_logger_replace_strs_credentials(mocker):
+    mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
+    ilog = IntegrationLogger()
+    # log some secrets
+    ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh pass: ssh_key_secret_pass. ident: ident_pass:')
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+        assert s not in ilog.messages[0]
+
+
+def test_debug_logger_replace_strs(mocker):
+    mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
+    debug_logger = DebugLogger()
+    debug_logger.int_logger.set_buffering(True)
+    debug_logger.log_start_debug()
+    msg = debug_logger.int_logger.messages[0]
+    assert 'debug-mode started' in msg
+    assert 'Params:' in msg
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+        assert s not in msg
+
+
 def test_is_mac_address():
     from CommonServerPython import is_mac_address
 
@@ -869,6 +915,43 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_readable_only_context(self):
+        """
+        Given:
+        - Markdown entry to CommandResults
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate HumanReadable exists
+        """
+        from CommonServerPython import CommandResults
+        markdown = '## Something'
+        context = CommandResults(readable_output=markdown).to_context()
+        assert context.get('HumanReadable') == markdown
+
+    def test_empty_outputs(self):
+        """
+        Given:
+        - Empty outputs
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate EntryContext key value
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs_prefix='FoundIndicators',
+            outputs_key_field='value',
+            outputs=[]
+        )
+        context = res.to_context()
+        assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
+
     def test_return_command_results(self):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
 
@@ -1056,7 +1139,7 @@ class TestCommandResults:
             raw_response=tickets
         )
 
-        assert results.to_context() == {
+        assert sorted(results.to_context()) == sorted({
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': tickets,
@@ -1064,7 +1147,7 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             }
-        }
+        })
 
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
@@ -1221,6 +1304,7 @@ class TestBaseClient:
         'post'
     ]
 
+    @pytest.mark.skip(reason="Test - too long, only manual")
     @pytest.mark.parametrize('method', RETRIES_POSITIVE_TEST)
     def test_http_requests_with_retry_sanity(self, method):
         """
@@ -1245,9 +1329,9 @@ class TestBaseClient:
         ('get', 400), ('get', 401), ('get', 500),
         ('put', 400), ('put', 401), ('put', 500),
         ('post', 400), ('post', 401), ('post', 500),
-
     ]
 
+    @pytest.mark.skip(reason="Test - too long, only manual")
     @pytest.mark.parametrize('method, status', RETRIES_NEGATIVE_TESTS_INPUT)
     def test_http_requests_with_retry_negative_sanity(self, method, status):
         """
@@ -1824,3 +1908,30 @@ def test_auto_detect_indicator_type(indicator_value, indicatory_type):
         except Exception as e:
             assert str(e) == "Missing tldextract module, In order to use the auto detect function please" \
                              " use a docker image with it installed such as: demisto/jmespath"
+
+
+def test_handle_proxy(mocker):
+    os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+    mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+    handle_proxy()
+    assert os.getenv('REQUESTS_CA_BUNDLE') is None
+    os.environ['REQUESTS_CA_BUNDLE'] = '/test2.pem'
+    mocker.patch.object(demisto, 'params', return_value={})
+    handle_proxy()
+    assert os.environ['REQUESTS_CA_BUNDLE'] == '/test2.pem'  # make sure no change
+    mocker.patch.object(demisto, 'params', return_value={'unsecure': True})
+    handle_proxy()
+    assert os.getenv('REQUESTS_CA_BUNDLE') is None
+
+
+@pytest.mark.parametrize(argnames="dict_obj, keys, expected, default_return_value",
+                         argvalues=[
+                             ({'a': '1'}, ['a'], '1', None),
+                             ({'a': {'b': '2'}}, ['a', 'b'], '2', None),
+                             ({'a': {'b': '2'}}, ['a', 'c'], 'test', 'test'),
+                         ])
+def test_safe_get(dict_obj, keys, expected, default_return_value):
+    from CommonServerPython import dict_safe_get
+    assert expected == dict_safe_get(dict_object=dict_obj,
+                                     keys=keys,
+                                     default_return_value=default_return_value)
