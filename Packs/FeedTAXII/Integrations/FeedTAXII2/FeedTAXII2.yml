@@ -105,6 +105,13 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Comma separated list of tags, that'll be added to indicators created
+    by this feed.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
 display: TAXII 2 Feed
 name: TAXII 2 Feed

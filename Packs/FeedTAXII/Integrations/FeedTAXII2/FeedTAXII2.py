@@ -163,13 +163,14 @@ def main():
     proxies = handle_proxy()
     verify_certificate = not params.get("insecure", False)
     skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get("observation_operator_mode")
+    feed_tags = argToList(params.get('feedTags'))
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
 
     try:
         client = Taxii2FeedClient(
-            url, collection_to_fetch, proxies, verify_certificate, skip_complex_mode, username, password,
+            url, collection_to_fetch, proxies, verify_certificate, skip_complex_mode, username, password, feed_tags
         )
         client.initialise()
         commands = {

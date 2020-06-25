@@ -62,14 +62,15 @@ STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
 class Taxii2FeedClient:
     def __init__(
             self,
-            url,
+            url: str,
             collection_to_fetch,
             proxies,
-            verify,
-            skip_complex_mode=False,
-            username=None,
-            password=None,
-            field_map=None,
+            verify: bool,
+            skip_complex_mode: bool = False,
+            username: Optional[str] = None,
+            password: Optional[str] = None,
+            field_map: Optional[dict] = None,
+            tags: Optional[list] = None
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -81,6 +82,7 @@ class Taxii2FeedClient:
         :param username: username used for basic authentication OR api_key used for authentication
         :param password: password used for basic authentication
         :param field_map: map used to create fields entry ({field_name: field_value})
+        :param tags: custom tags to be added to the created indicator
         """
         self._conn = None
         self.server = None
@@ -111,6 +113,7 @@ class Taxii2FeedClient:
                 self.auth = requests.auth.HTTPBasicAuth(username, password)
 
         self.field_map = field_map if field_map else {}
+        self.tags = tags if tags else []
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
             re.compile(HASHES_EQUALS_VAL_PATTERN),
@@ -131,9 +134,9 @@ class Taxii2FeedClient:
         )
         if self.auth_header:
             # add auth_header to the session object
-            self._conn.session.headers = (
+            self._conn.session.headers = (  # type: ignore[attr-defined]
                 merge_setting(
-                    self._conn.session.headers,
+                    self._conn.session.headers,  # type: ignore[attr-defined]
                     {self.auth_header: self.auth_key},
                     dict_class=CaseInsensitiveDict,
                 ),
@@ -155,24 +158,24 @@ class Taxii2FeedClient:
             self.init_server()
         try:
             # try TAXII 2.0
-            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr]
+            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
             # override _conn - api_root isn't initialized with the right _conn
-            self.api_root._conn = self._conn
+            self.api_root._conn = self._conn  # type: ignore[attr-defined]
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it throws another HTTPError
         except Exception as e:
             if "406 Client Error" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
-            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr]
+            self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
             # override _conn - api_root isn't initialized with the right _conn
-            self.api_root._conn = self._conn
+            self.api_root._conn = self._conn  # type: ignore[attr-defined]
 
     def init_collections(self):
         """
         Collects available taxii collections
         """
-        self.collections = [x for x in self.api_root.collections]  # type: ignore[union-attr]
+        self.collections = [x for x in self.api_root.collections]  # type: ignore[union-attr, attr-defined, assignment]
 
     def init_collection_to_fetch(self, collection_to_fetch=None):
         """
@@ -346,7 +349,7 @@ class Taxii2FeedClient:
                 indicators.extend(self.parse_single_indicator(indicator_obj))
                 indicator_created_str = indicator_obj.get("created")
                 if self.latest_fetched_indicator_created is None:
-                    self.latest_fetched_indicator_created = indicator_created_str
+                    self.latest_fetched_indicator_created = indicator_created_str  # type: ignore[assignment]
                 else:
                     last_datetime = self.created_time_to_datetime(self.latest_fetched_indicator_created)
                     indicator_created_datetime = self.created_time_to_datetime(indicator_created_str)
@@ -445,8 +448,7 @@ class Taxii2FeedClient:
                 groups.extend(find_result)
         return groups
 
-    @staticmethod
-    def create_indicator(indicator_obj, type_, value, field_map):
+    def create_indicator(self, indicator_obj, type_, value, field_map):
         """
         Create a cortex indicator from a stix indicator
         :param indicator_obj: rawJSON value of the indicator
@@ -463,10 +465,14 @@ class Taxii2FeedClient:
             "rawJSON": indicator_obj,
         }
         fields = {}
-        tags = []
+        tags = list(self.tags)
         # create tags from labels:
         for label in indicator_obj.get("labels", []):
             tags.append(label)
+
+        # add description if able
+        if "description" in indicator_obj:
+            fields['description'] = indicator_obj["description"]
 
         # add field_map fields
         for field_name, field_path in field_map.items():

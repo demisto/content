@@ -28,6 +28,7 @@
       "value": "23.129.64.217"
     },
     "fields": {
+      "description": "TS ID: 55682983514; iType: bot_ip; Date First: 2020-06-02T07:26:46.206Z; State: active; Org: Emerald Onion; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -62,6 +63,7 @@
       "value": "45.142.213.11"
     },
     "fields": {
+      "description": "TS ID: 55694549856; iType: bot_ip; Date First: 2020-06-05T08:45:37.178Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -96,6 +98,7 @@
       "value": "157.245.250.190"
     },
     "fields": {
+      "description": "TS ID: 55697907923; iType: bot_ip; Date First: 2020-06-06T09:32:01.051Z; State: active; Org: Datalogic ADC; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -130,6 +133,7 @@
       "value": "144.91.106.47"
     },
     "fields": {
+      "description": "TS ID: 55694549829; iType: bot_ip; Date First: 2020-06-05T08:44:22.790Z; State: active; Org: Mills College; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -164,6 +168,7 @@
       "value": "141.98.81.208"
     },
     "fields": {
+      "description": "TS ID: 55691320102; iType: bot_ip; Date First: 2020-06-04T10:33:13.398Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -198,6 +203,7 @@
       "value": "51.81.53.159"
     },
     "fields": {
+      "description": "TS ID: 55694549861; iType: bot_ip; Date First: 2020-06-05T08:42:44.478Z; State: active; Org: OVH SAS; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -232,6 +238,7 @@
       "value": "104.168.173.252"
     },
     "fields": {
+      "description": "TS ID: 55691320097; iType: bot_ip; Date First: 2020-06-04T10:32:46.612Z; State: active; Org: Hostwinds LLC.; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -266,6 +273,7 @@
       "value": "173.212.206.89"
     },
     "fields": {
+      "description": "TS ID: 55697907953; iType: bot_ip; Date First: 2020-06-06T09:31:54.190Z; State: active; Org: Contabo GmbH; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -300,6 +308,7 @@
       "value": "67.207.94.201"
     },
     "fields": {
+      "description": "TS ID: 55697908164; iType: bot_ip; Date First: 2020-06-06T09:32:30.450Z; State: active; Org: Digital Ocean; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -334,6 +343,7 @@
       "value": "89.163.242.76"
     },
     "fields": {
+      "description": "TS ID: 55694549874; iType: bot_ip; Date First: 2020-06-05T08:45:20.346Z; State: active; Org: myLoc managed IT AG; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -368,6 +378,7 @@
       "value": "51.75.71.205"
     },
     "fields": {
+      "description": "TS ID: 55686993979; iType: bot_ip; Date First: 2020-06-03T07:29:11.148Z; State: active; Org: OVH SAS; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -402,6 +413,7 @@
       "value": "140.224.183.58"
     },
     "fields": {
+      "description": "TS ID: 55694549823; iType: bot_ip; Date First: 2020-06-05T08:45:24.055Z; State: active; Org: China Telecom FUJIAN NETWORK; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -436,6 +448,7 @@
       "value": "161.35.22.86"
     },
     "fields": {
+      "description": "TS ID: 55697907934; iType: bot_ip; Date First: 2020-06-06T09:32:22.615Z; State: active; Org: Racal-Redac; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
@@ -470,6 +483,7 @@
       "value": "45.143.220.246"
     },
     "fields": {
+      "description": "TS ID: 55691320117; iType: bot_ip; Date First: 2020-06-04T10:32:46.584Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
       "tags": [
         "low"
       ]
