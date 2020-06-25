@@ -10,4 +10,4 @@ pyminizip===0.2.4
 requests_mock==1.7.0
 google-cloud-storage==1.24.1
 prettytable==0.7.2
-gitpython==3.1.0
+GitPython==3.1.0
