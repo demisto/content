@@ -5,7 +5,7 @@ import json
 TEST_IP = "12.4.49.74"
 TEST_API_KEY = "123456789123456789"
 TEST_DOMAIN = "base2.pets.com"
-TEST_PAGE_LIMIT = 10
+TEST_PAGE_LIMIT = 1
 
 
 def http_request_mock(method, endpoint, params=None, token=False):
@@ -50,8 +50,7 @@ def http_request_mock_missing(method, endpoint, params=None, token=False):
 def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'api_key': TEST_API_KEY,
-        'first_run': '7',
-        'page_limit': TEST_PAGE_LIMIT
+        'first_run': '7'
     })
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
@@ -67,7 +66,22 @@ def test_fetch_incidents_with_behavior(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'api_key': TEST_API_KEY,
         'first_run': '7',
-        'behavior': True,
+        'behavior': True
+    })
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert r[0]['severity'] == 2
+
+
+def test_fetch_incidents_cache(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'api_key': TEST_API_KEY,
+        'first_run': '7',
         'page_limit': TEST_PAGE_LIMIT
     })
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
@@ -78,6 +92,14 @@ def test_fetch_incidents_with_behavior(mocker):
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
     assert r[0]['severity'] == 2
+
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "RDP_SERVER on 203.215.173.113:3389/TCP"
+    assert r[0]['severity'] == 3
 
 
 def test_ip(mocker):
@@ -766,8 +788,46 @@ MOCK_EVENTS = {
                 'remediationStatuses': []
             },
             'id': 'b4a1e2e6-165a-31a5-9e6a-af286adc3dcd'
+        },
+{
+            'eventType': 'ON_PREM_EXPOSURE_APPEARANCE',
+            'eventTime': '2020-02-05T00:00:00Z',
+            'businessUnit': {
+                'id': 'a1f0f39b-f358-3c8c-947b-926887871b88',
+                'name': 'VanDelay Import-Export'
+            },
+            'payload': {
+                '_type': 'ExposurePayload',
+                'id': 'aaaabbbb-4d55-3fdb-9155-4927eab91218',
+                'exposureType': 'RDP_SERVER',
+                'ip': '203.215.173.113',
+                'port': 3389,
+                'portProtocol': 'TCP',
+                'exposureId': '6bedf636-5b6a-3b47-82a5-92b511c0649b',
+                'domainName': None,
+                'scanned': '2020-02-05T00:00:00Z',
+                'geolocation': {
+                    'latitude': 33.7,
+                    'longitude': 73.17,
+                    'city': 'ISLAMABAD',
+                    'regionCode': '',
+                    'countryCode':
+                        'PK'
+                },
+                'configuration': {
+                    '_type': 'RdpServerConfiguration',
+                    'nativeRdpProtocol': True
+                },
+                'severity': 'CRITICAL',
+                'tags': {
+                    'ipRange': ['untagged']
+                },
+                'providers': ['InternallyHosted'],
+                'certificatePem': None,
+                'remediationStatuses': []
+            },
+            'id': 'aaaabbbb-165a-31a5-9e6a-af286adc3dcd'
         }
-
     ]
 }
 MOCK_BEHAVIOR = {
