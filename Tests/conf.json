@@ -1221,7 +1221,7 @@
             "timeout": 500
         },
         {
-            "playbookID": "process_email_-_generic_-_test",
+            "playbookID": "Process Email - Generic - Test - Incident Starter",
             "integrations": "Rasterize",
             "timeout": 240
         },
@@ -2894,6 +2894,8 @@
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
+        "Process Email - Generic - Test - Actual Incident": "Should never run as standalone. Issue #25947",
+        "Phishing v2 - Test - Actual Incident": "Should never run as standalone. Issue #25947",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
