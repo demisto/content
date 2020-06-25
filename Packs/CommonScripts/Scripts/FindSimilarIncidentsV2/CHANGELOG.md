@@ -1,4 +1,6 @@
 ## [Unreleased]
+  - Allow searching for for similar incidents using numeric and boolean fields
+  - Sort similar incidents with identical timestamp by ID
 
 
 ## [20.5.2] - 2020-05-26
