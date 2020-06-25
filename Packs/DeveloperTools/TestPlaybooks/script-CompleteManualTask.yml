@@ -45,7 +45,6 @@ args:
   description: Name of manual task.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 tests:
   - No test
