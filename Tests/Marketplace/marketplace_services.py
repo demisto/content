@@ -467,6 +467,7 @@ class Pack(object):
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
             server_min_version (str): server minimum version found during the iteration over content items.
             build_number (str): circleCI build number.
+            commit_hash (str): current commit hash.
 
         Returns:
             dict: parsed pack metadata.
@@ -633,6 +634,22 @@ class Pack(object):
             return task_status, zip_pack_path
 
     def detect_modified(self, content_repo, index_folder_path, current_commit_hash, remote_previous_commit_hash):
+        """ Detects pack modified files.
+
+        The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
+        index. In case that no commit was found in index (initial run), the default value will be set to previous commit
+        from origin/master.
+
+        Args:
+            content_repo (git.repo.base.Repo): content repo object.
+            index_folder_path (str): full path to downloaded index folder.
+            current_commit_hash (str): last commit hash of head.
+            remote_previous_commit_hash (str): previous commit of origin/master (origin/master~3)
+
+        Returns:
+            bool:
+            bool:
+        """
         task_status = False
         pack_was_modified = False
 
@@ -1023,6 +1040,7 @@ class Pack(object):
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
+            commit_hash (str): current commit hash.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
