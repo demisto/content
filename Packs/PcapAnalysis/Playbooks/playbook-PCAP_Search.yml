@@ -13,7 +13,8 @@ description: The playbook is used to parse and search in PCAP files. Supported t
   in other inputs. Additional inputs allow the user to provide the WPA password for
   decrypting 802.11 (wireless) traffic and adding an RSA certificate to decrypt SSL
   traffic. In order to display the results within the relevant incident fields the
-  playbook needs to run in a PCAP Analysis incident type.
+  playbook needs to run in a PCAP Analysis incident type. For handling of PCAP files
+  larger than 30 MB please refer to the PcapMinerV2 documentation.
 starttaskid: "0"
 tasks:
   "0":
