@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 83ad46bb-cad2-4aad-84f2-f43fe53dbd25
+    taskid: 7db6a89c-65c5-4b77-88fb-599ccc35a438
     type: start
     task:
-      id: 83ad46bb-cad2-4aad-84f2-f43fe53dbd25
+      id: 7db6a89c-65c5-4b77-88fb-599ccc35a438
       version: -1
       name: ""
       iscommand: false
@@ -20,19 +20,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 81332c38-2e5d-434b-8121-91042b72b7ca
+    taskid: 20cad0ce-d84a-4d48-804d-7cec6232453b
     type: regular
     task:
-      id: 81332c38-2e5d-434b-8121-91042b72b7ca
+      id: 20cad0ce-d84a-4d48-804d-7cec6232453b
       version: -1
       name: threatx-block-ip
       description: Temporarily block an IP or CIDR
@@ -50,19 +52,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 3c44089d-6e64-4294-8e0a-ed486efabe41
+    taskid: 50f18ea1-f3a8-412c-82a5-077169bd0d6c
     type: regular
     task:
-      id: 3c44089d-6e64-4294-8e0a-ed486efabe41
+      id: 50f18ea1-f3a8-412c-82a5-077169bd0d6c
       version: -1
       name: threatx-unblock-ip
       description: Unblock a blocked IP or CIDR
@@ -80,19 +84,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: e3ebe880-a2d8-4ff0-8f2b-ee6838f3f172
+    taskid: d61ac88a-1315-4765-891b-8f6a2a93a49d
     type: regular
     task:
-      id: e3ebe880-a2d8-4ff0-8f2b-ee6838f3f172
+      id: d61ac88a-1315-4765-891b-8f6a2a93a49d
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -110,19 +116,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: bbe3c65e-e816-4ff4-8441-5593ef0d508b
+    taskid: 54bcd200-cad1-41ec-852b-a9a19c37b218
     type: regular
     task:
-      id: bbe3c65e-e816-4ff4-8441-5593ef0d508b
+      id: 54bcd200-cad1-41ec-852b-a9a19c37b218
       version: -1
       name: threatx-blacklist-ip
       description: Add an IP or CIDR to the Blacklist
@@ -140,19 +148,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: a53244a6-8a5c-40cd-86a1-1c7fb44427fc
+    taskid: 463eb9c6-dfa2-4e2e-809c-b4a9ca6d6e22
     type: regular
     task:
-      id: a53244a6-8a5c-40cd-86a1-1c7fb44427fc
+      id: 463eb9c6-dfa2-4e2e-809c-b4a9ca6d6e22
       version: -1
       name: threatx-whitelist-ip
       description: Add an IP or CIDR to the Whitelist
@@ -170,19 +180,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 3170
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: eb1f7724-ffbd-4ccd-8a6a-419c59df49aa
+    taskid: fe38431b-e3c6-4bcc-89ee-928bafba932a
     type: regular
     task:
-      id: eb1f7724-ffbd-4ccd-8a6a-419c59df49aa
+      id: fe38431b-e3c6-4bcc-89ee-928bafba932a
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -200,19 +212,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2295
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: ca696715-0926-4f9c-8d78-8597bcc0323f
+    taskid: c321b3cb-6fdb-4548-8afe-8effddcec259
     type: regular
     task:
-      id: ca696715-0926-4f9c-8d78-8597bcc0323f
+      id: c321b3cb-6fdb-4548-8afe-8effddcec259
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -230,19 +244,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 3695
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 1c66ec6d-9718-4ca5-81c9-a09b23e05a86
+    taskid: cd1c3b5a-d7c2-44c8-8b1a-16a79d255083
     type: regular
     task:
-      id: 1c66ec6d-9718-4ca5-81c9-a09b23e05a86
+      id: cd1c3b5a-d7c2-44c8-8b1a-16a79d255083
       version: -1
       name: threatx-unblacklist-ip
       description: Remove an IP or CIDR from the Blacklist
@@ -260,19 +276,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: c4ab6ccb-88a8-4a58-842d-6bac1c0659ae
+    taskid: 16b5cc24-17f2-4072-840f-ce92f0a472df
     type: regular
     task:
-      id: c4ab6ccb-88a8-4a58-842d-6bac1c0659ae
+      id: 16b5cc24-17f2-4072-840f-ce92f0a472df
       version: -1
       name: threatx-add-entity-note
       description: 'Add a new note to the Entity. Example: !threatx-add-entity-note
@@ -300,12 +318,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 8d08071b-7cf0-4d7c-8225-f60cc8614d11
+    taskid: 746fcc32-55b0-49e1-8b67-19f56582f2dc
     type: regular
     task:
-      id: 8d08071b-7cf0-4d7c-8225-f60cc8614d11
+      id: 746fcc32-55b0-49e1-8b67-19f56582f2dc
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -330,12 +350,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: e548c763-978d-472a-8a49-23e5e41df2d6
+    taskid: 61db5999-969e-4956-849e-b2c71a9878f8
     type: regular
     task:
-      id: e548c763-978d-472a-8a49-23e5e41df2d6
+      id: 61db5999-969e-4956-849e-b2c71a9878f8
       version: -1
       name: threatx-get-entity-notes
       description: Get the notes attached to an Entity by Entity ID
@@ -360,12 +382,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 559774e3-45f0-4130-82c7-360cfe2729d7
+    taskid: ec41a7fa-99e1-4146-8be5-b1af11d33b9c
     type: regular
     task:
-      id: 559774e3-45f0-4130-82c7-360cfe2729d7
+      id: ec41a7fa-99e1-4146-8be5-b1af11d33b9c
       version: -1
       name: threatx-unwhitelist-ip
       description: Remove an IP or CIDR from the Whitelist
@@ -383,19 +407,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 3870
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: aa8f2111-fa41-45aa-83dc-73609b4b8658
+    taskid: 544ba1c0-8c28-459f-89d6-d08fd59ff7ee
     type: regular
     task:
-      id: aa8f2111-fa41-45aa-83dc-73609b4b8658
+      id: 544ba1c0-8c28-459f-89d6-d08fd59ff7ee
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -413,19 +439,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 4395
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 58c76c80-7608-4e42-8399-af6e6707485d
+    taskid: 117eec3b-1e7e-4342-8de3-402285d8fbd0
     type: regular
     task:
-      id: 58c76c80-7608-4e42-8399-af6e6707485d
+      id: 117eec3b-1e7e-4342-8de3-402285d8fbd0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -447,19 +475,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 0dd19e2b-2e0d-43d1-89e3-026e1086f43d
+    taskid: e06be206-2882-40d4-81a2-c299e855d001
     type: condition
     task:
-      id: 0dd19e2b-2e0d-43d1-89e3-026e1086f43d
+      id: e06be206-2882-40d4-81a2-c299e855d001
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -478,19 +508,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 4121f440-d731-4548-8246-64f8c21d36aa
+    taskid: 9af95aff-3c37-4c4e-8a11-9458740e8c71
     type: regular
     task:
-      id: 4121f440-d731-4548-8246-64f8c21d36aa
+      id: 9af95aff-3c37-4c4e-8a11-9458740e8c71
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -512,19 +544,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: f603e985-35dd-404a-83a7-216b237e73a5
+    taskid: 6458ab81-7833-43a7-86dd-62b4ba29450a
     type: condition
     task:
-      id: f603e985-35dd-404a-83a7-216b237e73a5
+      id: 6458ab81-7833-43a7-86dd-62b4ba29450a
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -543,19 +577,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: d43a31d1-1d1d-4e8f-8b12-4dee48413458
+    taskid: 70c87ac6-bd8b-4404-823f-5babaa1d3982
     type: regular
     task:
-      id: d43a31d1-1d1d-4e8f-8b12-4dee48413458
+      id: 70c87ac6-bd8b-4404-823f-5babaa1d3982
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -577,19 +613,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: f86ceb72-466f-4e29-8a3f-a4a9444e951c
+    taskid: 9413013f-15fa-4f40-8357-bd3d54f3d715
     type: regular
     task:
-      id: f86ceb72-466f-4e29-8a3f-a4a9444e951c
+      id: 9413013f-15fa-4f40-8357-bd3d54f3d715
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -607,19 +645,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 0ba4a04f-c6a2-4ea8-83f9-7e273fc0b043
+    taskid: a1409a53-89c3-403c-82cb-3b0efa9803e0
     type: condition
     task:
-      id: 0ba4a04f-c6a2-4ea8-83f9-7e273fc0b043
+      id: a1409a53-89c3-403c-82cb-3b0efa9803e0
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -638,19 +678,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1945
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: eab70059-bd7c-409d-8fe7-1d3abfa5dbce
+    taskid: 6b21fbdb-0688-4b49-8cba-acd08aac20dd
     type: regular
     task:
-      id: eab70059-bd7c-409d-8fe7-1d3abfa5dbce
+      id: 6b21fbdb-0688-4b49-8cba-acd08aac20dd
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -672,19 +714,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: a0d4e578-e8dd-4ff6-82fd-ffd783c34d54
+    taskid: a82c59a4-1760-4c8e-8cc0-b3ab4c915dff
     type: condition
     task:
-      id: a0d4e578-e8dd-4ff6-82fd-ffd783c34d54
+      id: a82c59a4-1760-4c8e-8cc0-b3ab4c915dff
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -703,19 +747,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2645
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: cd41b94f-b3c4-4bb3-8aa4-0fb827d9ed1c
+    taskid: aaa6c0f8-db28-47cf-8c6d-cfa937811bb0
     type: regular
     task:
-      id: cd41b94f-b3c4-4bb3-8aa4-0fb827d9ed1c
+      id: aaa6c0f8-db28-47cf-8c6d-cfa937811bb0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -737,19 +783,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2820
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 5965c282-01f1-4353-84ee-3977ec541056
+    taskid: 149e44de-ab63-43bc-8085-471b3abe1bf8
     type: regular
     task:
-      id: 5965c282-01f1-4353-84ee-3977ec541056
+      id: 149e44de-ab63-43bc-8085-471b3abe1bf8
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -767,19 +815,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2995
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 9a1173ee-693c-4097-8596-5fcd1a8dc678
+    taskid: e372c138-d952-46b2-8312-57da6679ffb3
     type: condition
     task:
-      id: 9a1173ee-693c-4097-8596-5fcd1a8dc678
+      id: e372c138-d952-46b2-8312-57da6679ffb3
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -798,19 +848,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 3345
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 72825d6d-ed98-4c05-84f0-ad1cd59263b0
+    taskid: d7541c51-2b44-45b8-87a3-05e834967a8d
     type: regular
     task:
-      id: 72825d6d-ed98-4c05-84f0-ad1cd59263b0
+      id: d7541c51-2b44-45b8-87a3-05e834967a8d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -832,19 +884,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 3520
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: b7dfdada-b369-41b1-8c51-4a5103e4611b
+    taskid: 1a374c76-701e-4129-8c27-3d2f57c232e7
     type: condition
     task:
-      id: b7dfdada-b369-41b1-8c51-4a5103e4611b
+      id: 1a374c76-701e-4129-8c27-3d2f57c232e7
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -863,19 +917,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 4045
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: 9c71852a-928a-4a13-8f03-5e80a74c4540
+    taskid: cdc87531-a77b-4a0b-8610-e948478179f2
     type: regular
     task:
-      id: 9c71852a-928a-4a13-8f03-5e80a74c4540
+      id: cdc87531-a77b-4a0b-8610-e948478179f2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -897,19 +953,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 4220
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: a39b57ce-7f6b-4971-80c0-9a956590a204
+    taskid: cdd9645c-c415-433c-8a75-5e87660f2249
     type: condition
     task:
-      id: a39b57ce-7f6b-4971-80c0-9a956590a204
+      id: cdd9645c-c415-433c-8a75-5e87660f2249
       version: -1
       name: Entity ID Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -935,12 +993,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 8a2dd037-b829-4f6f-8381-b75d86a876e0
+    taskid: 81cb6a5a-3393-4388-876c-9e393881d58e
     type: condition
     task:
-      id: 8a2dd037-b829-4f6f-8381-b75d86a876e0
+      id: 81cb6a5a-3393-4388-876c-9e393881d58e
       version: -1
       name: Entity Note Content Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -966,12 +1026,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
-    taskid: ff7aad18-8b5a-4c2a-8fc7-29b27831a6ce
+    taskid: ca5edf0c-c87e-40f3-88e4-0dad41836ad5
     type: condition
     task:
-      id: ff7aad18-8b5a-4c2a-8fc7-29b27831a6ce
+      id: ca5edf0c-c87e-40f3-88e4-0dad41836ad5
       version: -1
       name: Entity Note Timestamp Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -997,12 +1059,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: 722e5380-1b7d-41c0-89ec-064c8977eaf5
+    taskid: 2a3f8277-175e-457d-8020-0aa53720ccba
     type: condition
     task:
-      id: 722e5380-1b7d-41c0-89ec-064c8977eaf5
+      id: 2a3f8277-175e-457d-8020-0aa53720ccba
       version: -1
       name: Entity Note Username Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -1028,12 +1092,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: 83184daa-3fc8-4341-8350-5ba0d2ca7b8d
+    taskid: fd7d6aaf-b018-468d-8b12-432d158b5728
     type: condition
     task:
-      id: 83184daa-3fc8-4341-8350-5ba0d2ca7b8d
+      id: fd7d6aaf-b018-468d-8b12-432d158b5728
       version: -1
       name: Entity ID Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -1043,6 +1109,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "46"
       "yes":
       - "39"
     scriptarguments:
@@ -1052,19 +1120,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 4745
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "39":
     id: "39"
-    taskid: 29de9e7b-e727-441b-8601-dbb69bcc2d84
+    taskid: d75a80a2-e4c4-4609-8ad7-a10752e5cd8a
     type: condition
     task:
-      id: 29de9e7b-e727-441b-8601-dbb69bcc2d84
+      id: d75a80a2-e4c4-4609-8ad7-a10752e5cd8a
       version: -1
       name: Entity Name Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -1090,12 +1160,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
-    taskid: 2089b0a1-dace-42ca-86d9-51cabc73b6e5
+    taskid: 6aa78f84-0867-46a5-8493-69f7182e7639
     type: condition
     task:
-      id: 2089b0a1-dace-42ca-86d9-51cabc73b6e5
+      id: 6aa78f84-0867-46a5-8493-69f7182e7639
       version: -1
       name: Entity IP Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -1121,12 +1193,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "42":
     id: "42"
-    taskid: c0a05605-d9d1-4e0e-81a2-fa8f39151577
+    taskid: 4f7dc249-fe9e-47d4-828e-3b10c83368fa
     type: condition
     task:
-      id: c0a05605-d9d1-4e0e-81a2-fa8f39151577
+      id: 4f7dc249-fe9e-47d4-828e-3b10c83368fa
       version: -1
       name: Entity Risk Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -1152,12 +1226,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
-    taskid: 1eac0020-e7ac-4f6b-82ee-2a9c84a3d258
+    taskid: 44a19905-86c5-4c86-866c-128752e75774
     type: regular
     task:
-      id: 1eac0020-e7ac-4f6b-82ee-2a9c84a3d258
+      id: 44a19905-86c5-4c86-866c-128752e75774
       version: -1
       name: threatx-get-entities
       description: 'Get high-level Entity information using the Entity ID, Entity
@@ -1176,24 +1252,26 @@ tasks:
       entity_ip: {}
       entity_name: {}
       timeframe:
-        simple: 1-Day
+        simple: 1-Hour
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 4570
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "46":
     id: "46"
-    taskid: 2a057abf-c354-4d5e-8c11-4fc4ecbada18
+    taskid: a7e2b65e-7e2a-4082-87fb-20736720bcdc
     type: title
     task:
-      id: 2a057abf-c354-4d5e-8c11-4fc4ecbada18
+      id: a7e2b65e-7e2a-4082-87fb-20736720bcdc
       version: -1
       name: Success
       type: title
@@ -1203,20 +1281,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6680
+          "x": 162.5,
+          "y": 6670
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6695,
-        "width": 380,
+        "height": 6685,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
