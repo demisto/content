@@ -1,4 +1,4 @@
-This script is a helper script of Ransomware Exposure - RiskSense playbook and performs a particular task based on module_name arguments.
+This script is a helper script of Ransomware Exposure - RiskSense playbook and retrieve information of cves and trending cves from host finding details.
 ## Script Data
 ---
 
@@ -8,17 +8,12 @@ This script is a helper script of Ransomware Exposure - RiskSense playbook and p
 | Tags | RiskSense |
 | Demisto Version | 5.0.0 |
 
-## Used In
----
-This script is used in the following playbooks and scripts.
-* Ransomware Exposure - RiskSense
-
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| module_name | Script will execute particular function based on module_name |
+| trending | Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums, Twitter feeds as well as analysis of 3rd party threat intelligence sources. |
 
 ## Outputs
 ---
@@ -59,87 +54,7 @@ This script is used in the following playbooks and scripts.
 | RiskSense.RansomwareTrendingCves.Threats.Updated | The time when the threat was last updated. | String |
 | RiskSense.RansomwareTrendingCves.Threats.ThreatLastTrendingOn | The last time when threat was in trending. | String |
 | RiskSense.RansomwareTrendingCves.Threats.Trending | Whether the threat is trending. | boolean |
-| Date.CurrentDate | The current date. | String |
-| Date.WeekAgoDateDate | The date that was 7 days ago starting from current date | String |
-
-## Script Example
-```!RiskSenseRansomwareExposureHelperScript module_name="Ransomware"```
-
-## Context Example
-```
-{
-  "RiskSense.RansomwareCves": [
-    {
-      "CVSS": 5,
-      "Cve": "CVE-2010-1429",
-      "Description": "Red Hat JBoss Enterprise Application Platform (aka JBoss EAP or JBEAP) 4.2 before 4.2.0.CP09 and 4.3 before 4.3.0.CP08 allows remote attackers to obtain sensitive information about \"deployed web contexts\" via a request to the status servlet, as demonstrated by a full=true query string.  NOTE: this issue exists because of a CVE-2008-3273 regression.",
-      "ThreatCount": 4,
-      "Threats": [
-        {
-          "Category": "Ransomware",
-          "Cve": "CVE-2010-1429",
-          "Description": "",
-          "Published": "2011-10-24T00:00:00",
-          "Severity": null,
-          "Source": "SYMANTEC",
-          "ThreatLastTrendingOn": null,
-          "Title": "Perl.Bossworm",
-          "Trending": false,
-          "Updated": "2020-04-28T15:50:07"
-        }
-      ],
-      "Trending": false,
-      "VRR": 7.05,
-      "VulnLastTrendingOn": "Not Found"
-    }
-  ]
-}
-```
-
-## Human Readable Output
-### List of CVEs that have ransomware threat
-|CVE ID|CVSS Score|VRR Score|Threat Count|Last Trending On Date|Trending|
-|---|---|---|---|---|---|
-| CVE-2010-1429 | 5 | 7.05 | 1 | 2020-04-28 | true |
-
-
-## Script Example
-```!RiskSenseRansomwareExposureHelperScript module_name="Trending Ransomware"```
-
-## Context Example
-```
-{
-  "RiskSense.RansomwareTrendingCves": [
-    {
-      "CVSS": 5,
-      "Cve": "CVE-2010-1429",
-      "Description": "Red Hat JBoss Enterprise Application Platform (aka JBoss EAP or JBEAP) 4.2 before 4.2.0.CP09 and 4.3 before 4.3.0.CP08 allows remote attackers to obtain sensitive information about \"deployed web contexts\" via a request to the status servlet, as demonstrated by a full=true query string.  NOTE: this issue exists because of a CVE-2008-3273 regression.",
-      "ThreatCount": 4,
-      "Threats": [
-        {
-          "Category": "Ransomware",
-          "Cve": "CVE-2010-1429",
-          "Description": "",
-          "Published": "2011-10-24T00:00:00",
-          "Severity": null,
-          "Source": "SYMANTEC",
-          "ThreatLastTrendingOn": null,
-          "Title": "Perl.Bossworm",
-          "Trending": false,
-          "Updated": "2020-04-28T15:50:07"
-        }
-      ],
-      "Trending": false,
-      "VRR": 7.05,
-      "VulnLastTrendingOn": "Not Found"
-    }
-  ]
-}
-
-```
-
-## Human Readable Output
-### List of CVEs which are ransomware trending
-|CVE ID|CVSS Score|VRR Score|Threat Count|Last Trending On Date|Trending|
-|---|---|---|---|---|---|
-| CVE-2010-1429 | 5 | 7.05 | 1 | 2020-04-28 | true |
+| Date.CurrentDate | The current date | String |
+| Date.WeekAgoDate | The date that was 7 days ago starting from current date. | String |
+| CVECount | The count of the CVEs. | Number |
+| TrendingCVECount | The count of the trending CVEs. | Number |

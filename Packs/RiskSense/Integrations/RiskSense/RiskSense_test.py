@@ -359,11 +359,11 @@ class MyTestCase(unittest.TestCase):
         args['value'] = "2017-02-20,2020-01-01"
         validate_values_for_between_operator(args)
 
-        with pytest.raises(SystemExit):
+        with pytest.raises(ValueError):
             args['value'] = "2020-20-20,123.0.0"
             validate_values_for_between_operator(args)
 
-        with pytest.raises(SystemExit):
+        with pytest.raises(ValueError):
             args['value'] = "2020-20-20,123"
             validate_values_for_between_operator(args)
 

@@ -1,30 +1,30 @@
-id: BlueKeep CVE Exposure - RiskSense
+id: CVE Exposure - RiskSense
 version: -1
-name: BlueKeep CVE Exposure - RiskSense
-description: Block IPs and apply the tag to assets that are vulnerable to BlueKeep CVE
-  (CVE-2019-0708).
+name: CVE Exposure - RiskSense
+description: Block IPs and apply the tag to assets that are vulnerable to specified
+  CVE.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 296e7f69-00e3-498b-8ddc-d556d5e7f0a0
+    taskid: 0c2f9026-080c-4894-8d97-98e4d8756703
     type: start
     task:
-      id: 296e7f69-00e3-498b-8ddc-d556d5e7f0a0
+      id: 0c2f9026-080c-4894-8d97-98e4d8756703
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: 'start'
     nexttasks:
       '#none#':
-      - "1"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 50
+          "x": 130,
+          "y": 40
         }
       }
     note: false
@@ -34,12 +34,12 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: f9a5a481-c591-436f-8e11-4ac6518c0231
+    taskid: 5c12e6b5-bebc-4667-845d-eeb7d826155a
     type: condition
     task:
-      id: f9a5a481-c591-436f-8e11-4ac6518c0231
+      id: 5c12e6b5-bebc-4667-845d-eeb7d826155a
       version: -1
-      name: Is RiskSense enabled ?
+      name: Is RiskSense enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
       scriptName: IsIntegrationAvailable
@@ -60,48 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 7ee8ca00-5a99-44cb-8cfd-607b1efeee0a
-    type: regular
-    task:
-      id: 7ee8ca00-5a99-44cb-8cfd-607b1efeee0a
-      version: -1
-      name: Block assets
-      description: Blocks IP in configured firewall
-      scriptName: BlockIP
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      direction:
-        simple: both
-      ip:
-        complex:
-          root: RiskSense
-          accessor: HostFinding.HostIpAddress
-          transformers:
-          - operator: uniq
-      ipname: {}
-      rulename: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1040
+          "x": 140,
+          "y": 370
         }
       }
     note: false
@@ -111,31 +71,33 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 462a3ad1-873d-45ec-895a-74dd1795db52
+    taskid: e1a7f22d-c964-4537-80f8-c71c9ee58cd1
     type: regular
     task:
-      id: 462a3ad1-873d-45ec-895a-74dd1795db52
+      id: e1a7f22d-c964-4537-80f8-c71c9ee58cd1
       version: -1
-      name: Apply "BlueKeep-XSOAR" tag to found assets
-      description: Apply the new or existing tag to the asset, creates a new tag if it does not exist in RiskSense.
-      script: RiskSense|||risksense-apply-tag
+      name: Apply tag to found assets
+      description: Apply the new or existing tag to the asset, creates a new tag if
+        it does not exist in RiskSense.
+      script: '|||risksense-apply-tag'
       type: regular
       iscommand: true
-      brand: RiskSense
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
       assettype:
         simple: host
-      exclusivity: {}
+      exclude: {}
       fieldname:
         simple: id
       operator:
         simple: IN
       propagate_to_all_findings: {}
       tagname:
-        simple: BlueKeep-XSOAR
+        complex:
+          root: inputs.TagName
       value:
         complex:
           root: RiskSense
@@ -152,8 +114,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 865
+          "x": 490,
+          "y": 1080
         }
       }
     note: false
@@ -163,22 +125,22 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: aaa5eb7b-facb-41f4-8e9c-ed9dd1785f40
+    taskid: 7c77c3b8-f938-4e1d-81d7-9c04db2847fb
     type: title
     task:
-      id: aaa5eb7b-facb-41f4-8e9c-ed9dd1785f40
+      id: 7c77c3b8-f938-4e1d-81d7-9c04db2847fb
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Done'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1215
+          "x": -220,
+          "y": 1510
         }
       }
     note: false
@@ -188,28 +150,28 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 974df56a-fff1-428e-81cd-e2ee02f26e28
+    taskid: 16aa966e-1fd7-45c8-8d54-1107fd958cdf
     type: regular
     task:
-      id: 974df56a-fff1-428e-81cd-e2ee02f26e28
+      id: 16aa966e-1fd7-45c8-8d54-1107fd958cdf
       version: -1
-      name: Get open findings related to BlueKeep CVEs
+      name: Get open findings related to CVEs
       description: A detailed host finding view with the severity level. Displays
         vulnerability information like CVE, Threats associated with current findings
         and origin of findings.
-      script: RiskSense|||risksense-get-host-findings
+      script: '|||risksense-get-host-findings'
       type: regular
       iscommand: true
-      brand: RiskSense
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
-      exclusivity: {}
+      exclude: {}
       fieldname:
         simple: cves
       operator:
-        simple: EXACT
+        simple: IN
       page: {}
       size:
         simple: "1000"
@@ -220,13 +182,14 @@ tasks:
       status:
         simple: Open
       value:
-        simple: CVE-2019-0708
+        complex:
+          root: inputs.CVES
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 515
+          "x": 265,
+          "y": 710
         }
       }
     note: false
@@ -236,16 +199,16 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 76fd1a64-16ac-40d1-87b5-3058051ccb0e
+    taskid: 4f42421d-9238-4871-8d95-48ef34cc08ae
     type: condition
     task:
-      id: 76fd1a64-16ac-40d1-87b5-3058051ccb0e
+      id: 4f42421d-9238-4871-8d95-48ef34cc08ae
       version: -1
       name: Are asset findings found?
+      description: Returns 'yes' if asset findings found. Otherwise returns 'no'
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "10"
@@ -265,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 690
+          "x": 265,
+          "y": 865
         }
       }
     note: false
@@ -276,10 +239,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 8bb28b4b-5cd7-4797-8ce5-7bc11668a765
+    taskid: 9f36553b-2b15-4a90-85e0-65c486068d89
     type: title
     task:
-      id: 8bb28b4b-5cd7-4797-8ce5-7bc11668a765
+      id: 9f36553b-2b15-4a90-85e0-65c486068d89
       version: -1
       name: Get assets findings with asset and perform actions
       type: title
@@ -293,8 +256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 370
+          "x": 265,
+          "y": 590
         }
       }
     note: false
@@ -304,10 +267,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 73293f71-97fb-407d-85d7-e62121c52d6f
+    taskid: 8023da73-46df-44a8-8355-9876a09da604
     type: title
     task:
-      id: 73293f71-97fb-407d-85d7-e62121c52d6f
+      id: 8023da73-46df-44a8-8355-9876a09da604
       version: -1
       name: Blocks IP addresses (requires at least one integration)
       type: title
@@ -316,13 +279,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "17"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 880
+          "x": 910,
+          "y": 1055
         }
       }
     note: false
@@ -332,24 +295,24 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 9c7983c7-c1dd-464c-8628-1be5cbcfdd4c
+    taskid: ea128f99-f05a-47c6-8893-1c42fa831a2a
     type: regular
     task:
-      id: 9c7983c7-c1dd-464c-8628-1be5cbcfdd4c
+      id: ea128f99-f05a-47c6-8893-1c42fa831a2a
       version: -1
       name: Get asset information with owner
       description: Gets details of the supplied host. The host details can be searched
         based on input parameters like fieldname (Host Name, IP Address, Criticality,
         etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort direction.
-      script: RiskSenseV1|||risksense-get-hosts
+      script: '|||risksense-get-hosts'
       type: regular
       iscommand: true
-      brand: RiskSense
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
-      exclusivity: {}
+      exclude: {}
       fieldname:
         simple: id
       operator:
@@ -377,8 +340,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1040
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
@@ -388,31 +351,33 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: aff01de1-fa21-4b75-8173-24e33c50a735
+    taskid: 4083fb31-386a-4e65-8a14-78b53786244d
     type: regular
     task:
-      id: aff01de1-fa21-4b75-8173-24e33c50a735
+      id: 4083fb31-386a-4e65-8a14-78b53786244d
       version: -1
-      name: Apply "BlueKeep-XSOAR" tag to found asset findings
-      description: Apply the new or existing tag to the asset, creates a new tag if it does not exist in RiskSense.
-      script: RiskSense|||risksense-apply-tag
+      name: Apply tag to found asset findings
+      description: Apply the new or existing tag to the asset, creates a new tag if
+        it does not exist in RiskSense.
+      script: '|||risksense-apply-tag'
       type: regular
       iscommand: true
-      brand: RiskSense
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
       assettype:
         simple: hostFinding
-      exclusivity: {}
+      exclude: {}
       fieldname:
         simple: id
       operator:
         simple: IN
       propagate_to_all_findings: {}
       tagname:
-        simple: BlueKeep-XSOAR
+        complex:
+          root: inputs.TagName
       value:
         complex:
           root: RiskSense
@@ -429,8 +394,104 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1040
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: b31a916a-9752-45fb-8354-5856a5124be6
+    type: playbook
+    task:
+      id: b31a916a-9752-45fb-8354-5856a5124be6
+      version: -1
+      name: Block IP - Generic v2
+      playbookName: Block IP - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: RiskSense
+          accessor: HostFinding.HostIpAddress
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      StaticAddressGroup: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 7a49df8d-d2c9-44a4-897a-4ea385ed52f3
+    type: condition
+    task:
+      id: 7a49df8d-d2c9-44a4-897a-4ea385ed52f3
+      version: -1
+      name: Are Inputs provided?
+      description: Returns 'yes' if inputs are provided. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CVES
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.TagName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 175
         }
       }
     note: false
@@ -442,19 +503,45 @@ view: |-
   {
     "linkLabelsPosition": {
       "12_10_#default#": 0.17,
-      "1_10_#default#": 0.73
+      "12_15_yes": 0.76,
+      "18_1_yes": 0.18,
+      "1_10_#default#": 0.8
     },
     "paper": {
       "dimensions": {
-        "height": 1230,
-        "width": 1260,
-        "x": 50,
-        "y": 50
+        "height": 1535,
+        "width": 1510,
+        "x": -220,
+        "y": 40
       }
     }
   }
-inputs: []
-outputs: []
+inputs:
+- key: CVES
+  value:
+    simple: CVE-2017-11882,CVE-2017-0199,CVE-2017-5638,CVE-2012-0158
+  required: true
+  description: Specify Common Vulnerabilities and Exposures (CVE). You can mention
+    multiple cves by comma-separated list.
+  playbookInputQuery:
+- key: TagName
+  value:
+    simple: DHS-Top-10
+  required: true
+  description: Tags in RiskSense can be applied to assets, web applications, and vulnerabilities.
+    Tags are useful in the soft grouping, workflow creation and to identify compliance-related
+    assets.
+  playbookInputQuery:
+outputs:
+- contextPath: RiskSense.TagAssociation
+  description: Tag association details including tag name, association ID, created.
+  type: unknown
+- contextPath: RiskSense.HostFinding
+  description: List of the host finding details.
+  type: unknown
+- contextPath: RiskSense.Host
+  description: List of the host details.
+  type: unknown
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

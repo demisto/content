@@ -1,21 +1,20 @@
 args:
-- auto: PREDEFINED
-  default: false
-  description: Script will execute a particular function based on module_name.
+- default: false
+  defaultValue: 'False'
+  description: Trending is defined by RiskSense as vulnerabilities that are being
+    actively abused by attackers in the wild based on activity in hacker forums, Twitter
+    feeds as well as analysis of 3rd party threat intelligence sources.
   isArray: false
-  name: module_name
-  predefined:
-  - Ransomware
-  - Trending Ransomware
-  - Display CVEs Chart
+  name: trending
   required: true
   secret: false
-comment: This script is a helper script of Ransomware Exposure - RiskSense playbook and performs a particular task based on module_name arguments.
+comment: This script is a helper script of Ransomware Exposure - RiskSense playbook
+  and retrieve information of cves and trending cves from host finding details.
 commonfields:
-  id: RiskSenseRansomwareExposureHelperScript
+  id: RiskSenseGetRansomewareCVEScript
   version: -1
 enabled: false
-name: RiskSenseRansomwareExposureHelperScript
+name: RiskSenseGetRansomewareCVEScript
 outputs:
 - contextPath: RiskSense.RansomwareCves.Cve
   description: The ID of the CVE.
@@ -124,9 +123,15 @@ outputs:
 - contextPath: Date.CurrentDate
   description: The current date
   type: String
-- contextPath: Date.WeekAgoDate.
+- contextPath: Date.WeekAgoDate
   description: The date that was 7 days ago starting from current date.
   type: String
+- contextPath: CVECount
+  description: The count of the CVEs.
+  type: Number
+- contextPath: TrendingCVECount
+  description: The count of the trending CVEs.
+  type: Number
 script: '-'
 subtype: python3
 system: false
@@ -134,7 +139,10 @@ tags:
 - RiskSense
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.3.8715
+dependson:
+  must:
+  - '|||risksense-get-host-findings'
+dockerimage: demisto/python3:3.8.3.9324
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

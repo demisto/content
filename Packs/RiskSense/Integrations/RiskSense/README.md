@@ -52,7 +52,7 @@ Gets details of the supplied host. The host details can be searched based on inp
 | --- | --- | --- |
 | fieldname | The RiskSense host attribute by which to filter the results. Can be 'Host Name', 'IP Address', or 'Criticality'. Apart from the available choices, you can provide the attributes supported by RiskSense API. Refer to the API /host/filter API to get the list of supported attributes. The uid of filter attributes must be provided here, for example, assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
-| exclusivity | The exclusivity flag that determines whether the returned records matches filter criteria or not. The default set is false. If set to True, host not matching the specified values are fetched. | Optional | 
+| exclude | The exclude flag that determines whether the returned records matches filter criteria or not. The default set is false. If set to True, host not matching the specified values are fetched. | Optional | 
 | value | The value of the host property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
 | page | The index of the page. The index is a numeric value starting with 0. | Optional | 
 | size | The maximum number of records to fetch in one page. | Optional | 
@@ -1119,7 +1119,7 @@ Finds unique open host findings.The open findings can be searched based on input
 | fieldname | The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'Severity', and 'Source'. Apart from the available choices, one can provide the attributes supported by RiskSense API. Refer to the API /uniqueHostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
 | value | The value of the unique open finding property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
-| exclusivity | The exclusivity flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
+| exclude | The exclude flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
 | page | The index of the page. The index is a numeric value and starting with 0. | Optional | 
 | size | The maximum number of records to fetch in one page. | Optional | 
 | sort_by | The fieldname that should be considered for sorting the returned records. | Optional | 
@@ -1198,7 +1198,7 @@ A detailed host finding view with the severity level. Displays vulnerability inf
 | --- | --- | --- |
 | fieldname | The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'IP Address', or 'Host Name'. In addition to the available choices, you can provide the attributes supported by RiskSense API. Refer to the API /hostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with the value matching the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
-| exclusivity | The exclusivity flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
+| exclude | The exclude flag that determines whether the returned records matches filter criteria or not. By default set to False. | Optional | 
 | value | The value of the 'fieldname' to be considered for filter criteria. | Optional | 
 | page | The index of the page. The index is numeric value starting with 0. | Optional | 
 | size | The maximum number of records to fetch in one page. | Optional | 
@@ -2009,7 +2009,7 @@ Looks up the application details. The application details can be searched based 
 | fieldname | The RiskSense application attribute that should be considered for filtering the results. The available choices are 'Name', 'Network', or 'Address'. Apart from the available choices, one can provide the attributes supported by RiskSense API. Refer to the API /application/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with the value matching the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
 | value | The value of the apps property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
-| exclusivity | The exclusivity flag that determines whether the returned records matches filter criteria or not. The default is "false". | Optional | 
+| exclude | The exclude flag that determines whether the returned records matches filter criteria or not. The default is "false". | Optional | 
 | page | The index of the page. The index is a numeric value and starting with 0. | Optional | 
 | size | The maximum number of records to fetch in one page. | Optional | 
 | sort_by | The fieldname that should be considered for sorting the returned records. | Optional | 
@@ -3158,7 +3158,7 @@ Gets in-depth details of a single application. The command accepts an applicatio
 ### Application Details:
 |Address|Name|Network Name|Network Type|Discovered On|Last Found On|
 |---|---|---|---|---|---|
-| `https://freebirddemo.dev.ccs.thatcompany.net` | `https://freebirddemo.dev.ccs.thatcompany.net` | App-data | IP | 2019-06-12 | 2019-06-11 |
+| https://freebirddemo.dev.ccs.thatcompany.net | https://freebirddemo.dev.ccs.thatcompany.net | App-data | IP | 2019-06-12 | 2019-06-11 |
 |  |  |  |  |  |  |
 
 ### Findings Distribution:
@@ -3192,7 +3192,7 @@ Apply the new or existing tag to the asset, creates a new tag if it does not exi
 | propagate_to_all_findings | If the given argument is set to true, then it applies the tag to assets as well as findings of assets. Note - It only works if the tag with the given name does not exist. | Optional |
 | fieldname | The RiskSense asset attribute by which to filter the assets to apply the tag. It can be an attribute of Host, Application, Host Finding, Application Finding. If specified, the 'value' argument is mandatory. | Optional | 
 | operator | The match operator should be applied for filtering the assets to apply the tag based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with the value matching the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer to the API documentation for the list of supported operators. | Optional | 
-| exclusivity | The exclusivity flag that determines whether to apply the tag on assets matches filter criteria or not. Default set to false. If set to true, tag applied on an asset not matching the specified values. | Optional | 
+| exclude | The exclude flag that determines whether to apply the tag on assets matches filter criteria or not. Default set to false. If set to true, tag applied on an asset not matching the specified values. | Optional | 
 | value | The value of the asset property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
 
 

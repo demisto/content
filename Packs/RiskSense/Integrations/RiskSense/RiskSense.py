@@ -46,7 +46,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url, request_timeout, verify, proxy, headers):
-        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)  # type: ignore
         self.request_timeout = request_timeout
 
     def http_request(self, method, url_suffix, full_url=None, headers=None,
@@ -107,16 +107,16 @@ class Client(BaseClient):
                 demisto.debug(
                     'RiskSense API call failed: Bad Request. One or more argument(s) are invalid. Error: {}'.format(
                         error_msg))
-                return_error('RiskSense API call failed: Bad Request. One or more argument(s) are invalid.')
+                raise ValueError('RiskSense API call failed: Bad Request. One or more argument(s) are invalid.')
             elif status_code == 401:
-                return_error('Unauthenticated. Check the API key configured.')
+                raise ValueError('Unauthenticated. Check the API key configured.')
             elif status_code == 403:
-                return_error('Unauthorized. Check the permissions associated with API key configured.')
+                raise ValueError('Unauthorized. Check the permissions associated with API key configured.')
             elif status_code == 404:
-                return_error('No record(s) found.')
+                raise ValueError('No record(s) found.')
             # handling any server error
             elif status_code >= 500:
-                return_error('API call failed. Server error received.')
+                raise ValueError('API call failed. Server error received.')
             else:
                 resp.raise_for_status()
 
@@ -138,20 +138,20 @@ def validate_arguments(args):
     size = args.get('size', "10")
     page = args.get('page', "0")
     sort_order = args.get('sort_direction', 'ascending').lower()
-    exclusive_operator = args.get('exclusivity', 'False').lower()
+    exclusive_operator = args.get('exclude', 'False').lower()
     if sort_order not in ['ascending', 'descending']:
-        return_error('Sort_direction argument should be either Ascending or Descending.')
+        raise ValueError('Sort_direction argument should be either Ascending or Descending.')
 
     if exclusive_operator not in ['true', 'false']:
-        return_error('Exclusivity argument should be either true or false.')
+        raise ValueError('Exclusivity argument should be either true or false.')
 
     if not str(size).isdigit() or int(size) == 0:
-        return_error('Size argument must be a non-zero positive number. Accepted values between 1-1000.')
+        raise ValueError('Size argument must be a non-zero positive number. Accepted values between 1-1000.')
 
     if not str(page).isdigit():
-        return_error('Page argument must be positive number.')
+        raise ValueError('Page argument must be positive number.')
     if int(size) > 1000:
-        return_error('Maximum size supported by RiskSense is 1000.')
+        raise ValueError('Maximum size supported by RiskSense is 1000.')
     return True
 
 
@@ -208,7 +208,7 @@ def prepare_filter_payload(args, projection=None):
     # Fetching value of arguments.
     fieldname = args.get('fieldname', '')
     operator = args.get('operator', '')
-    exclusive_operator = args.get('exclusivity', '').lower()
+    exclusive_operator = args.get('exclude', '').lower()
     value = args.get('value', '')
     page = args.get('page')  # defaultValue 0
     size = args['size']  # defaultValue 10
@@ -222,9 +222,9 @@ def prepare_filter_payload(args, projection=None):
     # then validate their required fields
     if fieldname or value or operator or exclusive_operator:
         if not fieldname:
-            return_error('fieldname is missing.')
+            raise ValueError('fieldname is missing.')
         if not value:
-            return_error('value is missing.')
+            raise ValueError('value is missing.')
         if not operator:
             operator = 'EXACT'
         if not exclusive_operator:
@@ -239,7 +239,7 @@ def prepare_filter_payload(args, projection=None):
         # Check validation of IP Address in case of operator = EXACT
         if fieldname == 'ipAddress' and operator == 'EXACT':
             if not is_ip_valid(value, True):
-                return_error('IP Address is invalid.')
+                raise ValueError('IP Address is invalid.')
 
         # Check validation of multiple values
         validate_values_for_between_operator(args)
@@ -522,11 +522,11 @@ def prepare_payload_for_detail_commands(args):
             field = val
 
     if not field:
-        return_error('Argument is mandatory.')
+        raise ValueError('Argument is mandatory.')
 
     # Check validation of multiple values
     if len(value.split(',')) > 1:
-        return_error('Multiple values are not supported by command.')
+        raise ValueError('Multiple values are not supported by command.')
 
     filter_dict = {'field': field, 'exclusive': False, 'operator': 'EXACT', 'value': value}
     return {'filters': [filter_dict], 'projection': 'detail'}
@@ -699,7 +699,7 @@ def prepare_unique_cves_payload(args):
 
     # Check validation of multiple value
     if len(value.split(',')) > 1:
-        return_error('Multiple values are not supported by this command.')
+        raise ValueError('Multiple values are not supported by this command.')
 
     request_data['filters'] = [{'field': 'id', 'operator': 'EXACT', 'value': value}]
     request_data['projection'] = 'detail'
@@ -1464,7 +1464,7 @@ def get_request_timeout():
             raise ValueError
         return request_timeout
     except ValueError:
-        return_error('HTTP Request Timeout parameter must be a positive integer.')
+        raise ValueError('HTTP Request Timeout parameter must be a positive integer.')
 
 
 def get_self_link(resp):
@@ -1545,13 +1545,13 @@ def validate_values_for_between_operator(args):
     if operator == 'BETWEEN':
         values = value.split(',')
         if len(values) != 2:
-            return_error('BETWEEN operator requires exact two values.')
+            raise ValueError('BETWEEN operator requires exact two values.')
 
         if not (bool(re.match(REGEX_FOR_INR_OR_FLOAT, values[0]))
                 and bool(re.match(REGEX_FOR_INR_OR_FLOAT, values[1]))
                 or bool(re.match(REGEX_FOR_YYYY_MM_DD, values[0]))
                 and bool(re.match(REGEX_FOR_YYYY_MM_DD, values[1]))):
-            return_error('Value must be in number format or YYYY-MM-DD date format for BETWEEN operator.')
+            raise ValueError('Value must be in number format or YYYY-MM-DD date format for BETWEEN operator.')
 
 
 def get_user_id_from_integration_context(client):
@@ -1575,7 +1575,7 @@ def get_user_id_from_integration_context(client):
         if resp_json.get('userId', ''):
             user_id = resp_json.get('userId', '')
         else:
-            return_error('Unable to find user Id.')
+            raise ValueError('Unable to find user Id.')
 
         demisto.setIntegrationContext({'RiskSenseUserContext': {'userId': user_id}})
 
@@ -1683,7 +1683,7 @@ def prepare_request_payload_for_tag(args, tag_id):
     # Fetching value of arguments.
     fieldname = args.get('fieldname', '')
     operator = args.get('operator', '')
-    exclusive_operator = args.get('exclusivity', '').lower()
+    exclusive_operator = args.get('exclude', '').lower()
     value = args.get('value', '')
     filter_data = {}  # type: Dict[str, Any]
     filters = []  # type: List[Dict[str, Any]]
@@ -1693,9 +1693,9 @@ def prepare_request_payload_for_tag(args, tag_id):
     # then validate their required fields
     if fieldname or value or operator or exclusive_operator:
         if not fieldname:
-            return_error('fieldname is missing.')
+            raise ValueError('fieldname is missing.')
         if not value:
-            return_error('value is missing.')
+            raise ValueError('value is missing.')
         if not operator:
             operator = 'EXACT'
         if not exclusive_operator:
@@ -1710,7 +1710,7 @@ def prepare_request_payload_for_tag(args, tag_id):
         # Check validation of IP Address in case of operator = EXACT
         if fieldname == 'ipAddress' and operator == 'EXACT':
             if not is_ip_valid(value, True):
-                return_error('IP Address is invalid.')
+                raise ValueError('IP Address is invalid.')
 
         # Check validation of between operator.
         validate_values_for_between_operator(args)
@@ -1760,11 +1760,11 @@ def test_module(client):
     try:
         resp_json = client.http_request('GET', url_suffix='')
     except DemistoException:
-        return_error("Test connectivity failed. Check the configuration parameters provided.")
+        raise ValueError("Test connectivity failed. Check the configuration parameters provided.")
     clients = resp_json.get('_embedded', {}).get('clients', [])
     # Verifying client name mentioned in integration configuration
     if not any(client_info.get('name', '') == client_name for client_info in clients):
-        return_error('Invalid client name configured.')
+        raise ValueError('Invalid client name configured.')
     demisto.results('ok')
 
 
@@ -1795,7 +1795,7 @@ def get_hosts_command(client, args):
     if total_element == 0:
         return 'No host(s) found for the given argument.', {}, {}
     if page_number >= total_pages:
-        return_error('Invalid page navigation.')
+        raise ValueError('Invalid page navigation.')
 
     resp_list_host = resp.get('_embedded', {}).get('hosts', [])
     href = get_self_link(resp)
@@ -1990,7 +1990,7 @@ def get_host_findings_command(client, args):
     if total_element == 0:
         return 'No host finding(s) found for given argument(s).', {}, {}
     if page_number >= total_pages:
-        return_error('Invalid page navigation.')
+        raise ValueError('Invalid page navigation.')
 
     ec = {}  # type: Dict[str, Any]
     hr = ''
@@ -2080,7 +2080,7 @@ def get_unique_open_findings_command(client, args):
         return 'No unique open finding(s) found for the given argument(s).', {}, {}
 
     if page_number >= total_pages:
-        return_error('Invalid page navigation.')
+        raise ValueError('Invalid page navigation.')
 
     unique_open_finding_context = []  # type: List[Dict[str, Any]]
     unique_open_finding_hr = []  # type: List[Dict[str, Any]]
@@ -2143,7 +2143,7 @@ def get_apps_command(client, args):
         return 'No application(s) found for the given arguments.', {}, {}
 
     if page_number >= total_pages:
-        return_error('Invalid page navigation.')
+        raise ValueError('Invalid page navigation.')
 
     if resp and '_embedded' in resp.keys():
         href = get_self_link(resp)
@@ -2299,19 +2299,19 @@ def apply_tag_command(client, args):
     tag_name = args.get('tagname', '')
     propagate_to_all_findings = args.get('propagate_to_all_findings', 'false')
 
-    if args.get('exclusivity', 'false').lower() not in ['true', 'false']:
-        return_error('Exclusivity argument should be either true or false.')
+    if args.get('exclude', 'false').lower() not in ['true', 'false']:
+        raise ValueError('Exclusivity argument should be either true or false.')
 
     if propagate_to_all_findings.lower() not in ['true', 'false']:
-        return_error('Value of propagate_to_all_findings argument should be either true or false.')
+        raise ValueError('Value of propagate_to_all_findings argument should be either true or false.')
 
     # Check special character in tag name.
     if bool(re.match(r'[`*+=\\.;,\'\"@!#$%^&*()<>?/\|}{\]\[~]', tag_name)):
-        return_error('No special characters are allowed in the tag name.')
+        raise ValueError('No special characters are allowed in the tag name.')
 
     # Check tag name length.
     if len(tag_name) < 2:
-        return_error('Tag name must be at least 2 characters.')
+        raise ValueError('Tag name must be at least 2 characters.')
 
     tag_id = search_tag_id(tag_name, client_id, client)
     hr = ''
@@ -2319,7 +2319,7 @@ def apply_tag_command(client, args):
     if not tag_id:
         tag_id = create_tag(tag_name, client_id, client, propagate_to_all_findings)
         if not tag_id:
-            return_error('Unable to Create tag.')
+            raise ValueError('Unable to Create tag.')
 
     data = prepare_request_payload_for_tag(args, tag_id)
 
