@@ -1,11 +1,13 @@
-from CheckPoint import format_list_objects, format_add_object, \
+from CheckPoint_FW import format_list_objects, format_add_object, \
     format_update_object, format_delete_object
 
 MOCK_IP = '8.8.8.8'
 MOCK_ENDPOINT = 'host'
+MOCK_UID = '123'
 MOCK_FORMAT_LIST_OBJECT_NAME = 'format list test1'
 MOCK_FORMAT_ADD_OBJECT_NAME = 'format add test'
 MOCK_FORMAT_UPDATE_OBJECT_NAME = 'format update testing'
+KEY = '(val.uid && val.uid == obj.uid)'
 
 MOCK_LIST_RESPONSE = {'objects': [{'uid': '123',
                                    'name': 'format list test1',
@@ -67,7 +69,7 @@ MOCK_UPDATE_OBJECT_RESPONSE = {
         'name': 'SMC User',
         'domain-type': 'domain'
     },
-    'ipv4-address': '123.123.56.23',
+    'ipv4-address': '8.8.8.8',
     'interfaces': [],
     'groups': [],
     'comments': '',
@@ -91,20 +93,29 @@ MOCK_DELETE_OBJECT_RESPONSE = {'message': 'OK'}
 
 
 def test_format_list_objects():
-    _, outputs, _ = format_list_objects(MOCK_LIST_RESPONSE, MOCK_ENDPOINT, True)
-    assert outputs.get(f'Checkpoint.{MOCK_ENDPOINT}')[0].get('name') == MOCK_FORMAT_LIST_OBJECT_NAME
+    _, outputs, _ = format_list_objects(MOCK_LIST_RESPONSE, MOCK_ENDPOINT)
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}')[0].get('name') == MOCK_FORMAT_LIST_OBJECT_NAME
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}')[0].get('type') == 'host', 'Object type should be host.'
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}')[0].get('uid') == MOCK_UID, 'UID should be 123.'
 
 
 def test_format_add_object():
-    _, outputs, _ = format_add_object(MOCK_ADD_OBJECT_RESPONSE, MOCK_ENDPOINT, True)
-    assert outputs.get(f'Checkpoint.{MOCK_ENDPOINT}').get('name') == MOCK_FORMAT_ADD_OBJECT_NAME
+    _, outputs, _ = format_add_object(MOCK_ADD_OBJECT_RESPONSE, MOCK_ENDPOINT)
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}').get('name') == MOCK_FORMAT_ADD_OBJECT_NAME
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}').get('type') == 'host', 'Object type should be host.'
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}').get('uid') == MOCK_UID,\
+        'UID should be 123'
 
 
 def test_format_update_object():
-    _, outputs, _ = format_update_object(MOCK_UPDATE_OBJECT_RESPONSE, MOCK_ENDPOINT, True)
-    assert outputs.get(f'Checkpoint.{MOCK_ENDPOINT}').get('name') == MOCK_FORMAT_UPDATE_OBJECT_NAME
+    _, outputs, _ = format_update_object(MOCK_UPDATE_OBJECT_RESPONSE, MOCK_ENDPOINT)
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}').get('name') == MOCK_FORMAT_UPDATE_OBJECT_NAME,\
+        'name does not match'
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}').get('type') == 'host', 'Object type should be host.'
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}').get('ipv4-address') == MOCK_IP,\
+        'IP address does not match'
 
 
 def test_format_delete_object():
-    _, outputs, _ = format_delete_object(MOCK_DELETE_OBJECT_RESPONSE, MOCK_ENDPOINT, True)
-    assert outputs.get(f'Checkpoint.{MOCK_ENDPOINT}').get('message') == 'OK'
+    _, outputs, _ = format_delete_object(MOCK_DELETE_OBJECT_RESPONSE, MOCK_ENDPOINT)
+    assert outputs.get(f'CheckPoint.{MOCK_ENDPOINT}{KEY}').get('message') == 'OK'

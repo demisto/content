@@ -877,7 +877,7 @@ def main():
 
         elif command in commands:
             readable_output, outputs, result = \
-                (commands[demisto.command()](**demisto.args()))
+                (commands[demisto.command()](**demisto.args()))  # type: ignore
             return_outputs(readable_output, outputs, result)
 
     except Exception as e:
