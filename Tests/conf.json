@@ -1222,6 +1222,7 @@
         },
         {
             "playbookID": "Process Email - Generic - Test - Incident Starter",
+            "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240
         },

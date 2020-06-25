@@ -1,6 +1,8 @@
 id: Process Email - Generic - Test - Actual Incident
 version: -1
+fromversion: 6.0.0
 name: Process Email - Generic - Test - Actual Incident
+description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -11,6 +13,7 @@ tasks:
       id: ec4c2005-5c0f-407f-888b-a5d249961f54
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:

@@ -1,5 +1,6 @@
 id: Process Email - Generic - Test - Incident Starter
 version: -1
+fromversion: 6.0.0
 name: Process Email - Generic - Test - Incident Starter
 description: The reason for having a "starter" test and an "actual incident" test
   is so that we can create a new incident which will have the right incident type
