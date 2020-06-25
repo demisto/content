@@ -921,6 +921,43 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_readable_only_context(self):
+        """
+        Given:
+        - Markdown entry to CommandResults
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate HumanReadable exists
+        """
+        from CommonServerPython import CommandResults
+        markdown = '## Something'
+        context = CommandResults(readable_output=markdown).to_context()
+        assert context.get('HumanReadable') == markdown
+
+    def test_empty_outputs(self):
+        """
+        Given:
+        - Empty outputs
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate EntryContext key value
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs_prefix='FoundIndicators',
+            outputs_key_field='value',
+            outputs=[]
+        )
+        context = res.to_context()
+        assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
+
     def test_return_command_results(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
 
@@ -1108,7 +1145,7 @@ class TestCommandResults:
             raw_response=tickets
         )
 
-        assert results.to_context() == {
+        assert sorted(results.to_context()) == sorted({
             'Type': EntryType.NOTE,
             'ContentsFormat': EntryFormat.JSON,
             'Contents': tickets,
@@ -1116,7 +1153,7 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             }
-        }
+        })
 
     def test_create_dbot_score_with_invalid_score(self):
         from CommonServerPython import Common, DBotScoreType
