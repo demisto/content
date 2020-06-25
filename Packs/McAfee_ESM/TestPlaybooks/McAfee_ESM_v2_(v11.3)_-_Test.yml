@@ -18,13 +18,13 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - "23"
+      - "24"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 660,
-          "y": -130
+          "y": -320
         }
       }
     note: false
@@ -552,6 +552,32 @@ tasks:
         "position": {
           "x": 660,
           "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 51e2b525-8055-4722-8d08-08879698e126
+    type: playbook
+    task:
+      id: 51e2b525-8055-4722-8d08-08879698e126
+      version: -1
+      name: Init_McAfee_ESM_v2_Test
+      playbookName: Init_McAfee_ESM_v2_Test
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": -180
         }
       }
     note: false

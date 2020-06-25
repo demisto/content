@@ -18,13 +18,13 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - "23"
+      - "24"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -120
+          "y": -330
         }
       }
     note: false
@@ -592,12 +592,8 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
-            value:
-              simple: McAfeeESM.Case.ID
-            iscontext: true
-          right:
             value:
               simple: McAfeeESM.Case.ID
             iscontext: true
@@ -795,6 +791,32 @@ tasks:
         "position": {
           "x": 450,
           "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: de1f5fc5-d338-489e-8521-f75c166ddf9e
+    type: playbook
+    task:
+      id: de1f5fc5-d338-489e-8521-f75c166ddf9e
+      version: -1
+      name: Init_McAfee_ESM_v2_Test
+      playbookName: Init_McAfee_ESM_v2_Test
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -190
         }
       }
     note: false
