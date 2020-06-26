@@ -889,6 +889,8 @@ def delete_policy_content_command():
 
     uuid = get_policy_uuid(uuid, name)
 
+    content_deleted = []
+
     if content_type == IP_LIST_TYPE:
         delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips)
     elif content_type == URL_LIST_TYPE:
@@ -898,8 +900,15 @@ def delete_policy_content_command():
     elif content_type == LOCAL_CATEGORY_DB_TYPE:
         delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips,
                                       urls=urls, categories=categories)
+    elif content_type == LOCAL_CATEGORY_DB_TYPE:
+        content_deleted = delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips,
+                                                        urls=urls, categories=categories)
 
-    return_outputs('Successfully deleted content from the policy', {}, {})
+    if content_deleted:
+        human_readable = tableToMarkdown('Successfully deleted content from the policy', content_deleted)
+        return_outputs(human_readable, {}, content_deleted)
+    else:
+        return_outputs('Successfully deleted content from the policy', {}, {})
 
 
 def delete_policy_content_request(uuid, content_type, change_description, schema_version,
@@ -929,7 +938,48 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
     if not content or 'content' not in content:
         return_error('Could not update policy content - failed retrieving the current content')
 
-    if ips:
+    content_deleted = []
+
+    if content_type == LOCAL_CATEGORY_DB_TYPE:
+        found_object_to_delete = False
+        content_entities = []
+        if ips:
+            content_entities.extend(ips)
+        if urls:
+            content_entities.extend(urls)
+        if 'categories' in content['content']:
+            if not categories:
+                categories = [category.get('name') for category in content['content']['categories']]
+            categories_to_keep = []
+            for category_index, category in enumerate(content['content']['categories']):
+                if category.get('name') in categories:
+                    entries_to_keep = []
+                    for entry_index, entry in enumerate(category.get('entries')):
+                        if entry.get('url') in content_entities:
+                            content_deleted.append({
+                                'CategoryName': category.get('name'),
+                                'ObjectDeleted': entry.get('url')
+                            })
+                            found_object_to_delete = True
+                        else:
+                            entries_to_keep.append(entry)
+                    if entries_to_keep:
+                        categories_to_keep.append({
+                            'name': category.get('name'),
+                            'type': 'inline',
+                            'entries': entries_to_keep
+                        })
+                    else:
+                        content_deleted.append({
+                            'CategoryName': category.get('name'),
+                            'ObjectDeleted': 'The category was deleted.  Category cannot be empty.'
+                        })
+                else:
+                    categories_to_keep.append(category)
+            content['content']['categories'] = categories_to_keep
+        if not found_object_to_delete:
+            raise Exception('Deletion failed - Could not find object to delete.')
+    elif ips:
         if 'ipAddresses' in content['content']:
             ips_to_keep = [ip for ip in content['content']['ipAddresses'] if ip['ipAddress'] not in ips]
             content['content']['ipAddresses'] = ips_to_keep
@@ -944,9 +994,9 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
             content['content']['categories'] = categories_to_keep
 
     body['content'] = content['content']
-    response = http_request('POST', path, data=body)
+    http_request('POST', path, data=body)
 
-    return response
+    return content_deleted
 
 
 def list_tenants_command():

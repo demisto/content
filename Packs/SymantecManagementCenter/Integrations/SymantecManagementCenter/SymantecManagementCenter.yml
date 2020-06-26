@@ -607,6 +607,7 @@ script:
       - URL_LIST
       - IP_LIST
       - CATEGORY_LIST
+      - LOCAL_CATEGORY_DB
       required: true
       secret: false
     - default: false
@@ -687,6 +688,7 @@ script:
       - URL_LIST
       - IP_LIST
       - CATEGORY_LIST
+      - LOCAL_CATEGORY_DB
       required: true
       secret: false
     - default: false

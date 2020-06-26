@@ -5,7 +5,7 @@ import demistomock as demisto
 def test_add_policy_content_local_category_db(mocker, requests_mock):
     """
     Given:
-     - URL to add to as content to category of LOCAL_CATEGORY_DB
+     - URL to add to as content to category of type LOCAL_CATEGORY_DB
 
     When:
      - Running add content command
@@ -102,3 +102,94 @@ def test_add_policy_content_local_category_db(mocker, requests_mock):
 |---|---|---|---|---|---|
 | category2 | desc | LOCAL_CATEGORY_DB | test comment | www.cnn.com | uuid |
 """
+
+
+def test_delete_policy_content_local_category_db(mocker, requests_mock):
+    """
+    Given:
+     - IP to delete from content in category of type LOCAL_CATEGORY_DB
+
+    When:
+     - Running delete content command
+
+    Then:
+     - Ensure the expected request body is sent
+     - Verify expected human readable output
+    """
+    content = {
+        'content': {
+            'categories': [
+                {
+                    'type': 'inline',
+                    'name': 'category1',
+                    'entries': [{'type': 'url', 'url': 'www.demisto.com', 'comment': None}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category2',
+                    'entries': [
+                        {'type': 'url', 'url': 'www.google.com', 'comment': 'comment'},
+                        {'type': 'url', 'url': 'www.apple.com', 'comment': 'comment'},
+                    ]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category3',
+                    'entries': [{'type': 'url', 'url': 'www.demisto.com', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category4',
+                    'entries': [{'type': 'url', 'url': 'www.google.com', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category5',
+                    'entries': [{'type': 'url', 'url': '8.8.8.8', 'comment': 'comment'}]
+                },
+                {
+                    'type': 'inline',
+                    'name': 'category6',
+                    'entries': [
+                        {'type': 'url', 'url': 'www.demisto.com', 'comment': 'comment'},
+                        {'type': 'url', 'url': 'www.paloaltonetworks.net', 'comment': 'comment'}
+                    ]
+                }
+            ]
+        },
+        'schemaVersion': '1.0',
+        'revisionInfo': {
+            'revisionNumber': '1.12',
+            'revisionDescription': 'desc',
+            'author': 'admin',
+            'revisionDate': '2020-01-25T14:58:06'
+        }
+    }
+    ip_to_delete = '8.8.8.8'
+    mocker.patch.object(demisto, 'command', return_value='symantec-mc-delete-policy-content')
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': 'https://server',
+            'credentials': {}
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'uuid': 'uuid',
+            'content_type': LOCAL_CATEGORY_DB_TYPE,
+            'change_description': 'desc',
+            'category': 'category5',
+            'ip': ip_to_delete
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    requests_mock.get('https://server/api/policies/uuid/content', json=content)
+    requests_mock.post('https://server/api/policies/uuid/content', json={})
+    main()
+    expected_request_body = dict(content)
+    del expected_request_body['content']['categories'][4]
+    assert requests_mock.request_history[1].json()['content'] == expected_request_body['content']
