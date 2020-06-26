@@ -1,6 +1,4 @@
 import pytest
-import requests
-import requests_mock
 import demistomock as demisto
 
 integration_params = {
@@ -8,13 +6,13 @@ integration_params = {
     'vsys': 'vsys1',
     'server': 'https://1.1.1.1',
     'key': 'thisisabogusAPIKEY!',
-#    'device_group': 'shared'
 }
 
 mock_demisto_args = {
     'threat_id': "11111",
     'vulnerability_profile': "mock_vuln_profile"
 }
+
 
 @pytest.fixture(autouse=True)
 def set_params(mocker):
@@ -25,9 +23,8 @@ def set_params(mocker):
 @pytest.fixture
 def patched_requests_mocker(requests_mock):
     """
-    This function mocks various PANOS API responses so we can accurately test the instance 
+    This function mocks various PANOS API responses so we can accurately test the instance
     """
-
     base_url = "{}:{}/api/".format(integration_params['server'], integration_params['port'])
     # Version information
     mock_version_xml = """
@@ -40,26 +37,26 @@ def patched_requests_mocker(requests_mock):
         </result>
     </response>
     """
-    version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_params['key']) 
+    version_path = "{}{}{}".format(base_url, "?type=version&key=", integration_params['key'])
     requests_mock.get(version_path, text=mock_version_xml, status_code=200)
-    
     mock_response_xml = """
     <response status="success" code="20">
         <msg>command succeeded</msg>
     </response>
     """
-    set_path = base_url
-    requests_mock.post(base_url, text=mock_response_xml, status_code=200) 
-
+    requests_mock.post(base_url, text=mock_response_xml, status_code=200)
     return requests_mock
+
 
 def test_panoram_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_major_version
     get_pan_os_major_version()
 
+
 def test_panoram_block_threatid(patched_requests_mocker):
-    from Panorama import panorama_block_vulnerability 
+    from Panorama import panorama_block_vulnerability
     panorama_block_vulnerability()
+
 
 def test_add_argument_list():
     from Panorama import add_argument_list
