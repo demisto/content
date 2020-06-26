@@ -159,7 +159,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Code42.SecurityAlert
+              simple: Code42.SecurityAlert.ID
           operator: isNotEmpty
       label: "yes"
     id: "3"
@@ -173,12 +173,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e0986f6d-7b59-4120-8ae9-7920a745ab58
+      id: f80bfb2f-dccd-415e-85bc-0427c2d1652c
       iscommand: false
       name: Validate code42-alert-get
       type: condition
       version: -1
-    taskid: e0986f6d-7b59-4120-8ae9-7920a745ab58
+    taskid: f80bfb2f-dccd-415e-85bc-0427c2d1652c
     timertriggers: []
     type: condition
     view: |-
@@ -264,7 +264,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Code42.SecurityAlert
+              simple: Code42.SecurityAlert.ID
           operator: isNotEmpty
       label: "yes"
     id: "8"
@@ -278,12 +278,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4bf0656a-503d-40fd-8dee-6917eb8b1afc
+      id: 83227c49-a096-42be-8721-fdc9962efae5
       iscommand: false
       name: Validate code42-alert-resolve
       type: condition
       version: -1
-    taskid: 4bf0656a-503d-40fd-8dee-6917eb8b1afc
+    taskid: 83227c49-a096-42be-8721-fdc9962efae5
     timertriggers: []
     type: condition
     view: |-
@@ -371,7 +371,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Code42.DepartingEmployee
+              simple: Code42.DepartingEmployee.UserID
           operator: isNotEmpty
       label: "yes"
     id: "11"
@@ -385,12 +385,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7c516c49-8697-4af8-87f1-20ab31334a11
+      id: c0d459a9-1d1e-4c78-823e-748d2af904fe
       iscommand: false
       name: Validate code42-departingemployee-add
       type: condition
       version: -1
-    taskid: 7c516c49-8697-4af8-87f1-20ab31334a11
+    taskid: c0d459a9-1d1e-4c78-823e-748d2af904fe
     timertriggers: []
     type: condition
     view: |-
@@ -476,7 +476,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Code42.DepartingEmployee
+              simple: Code42.DepartingEmployee.UserID
           operator: isNotEmpty
       label: "yes"
     id: "14"
@@ -490,12 +490,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 87c44f7a-b4da-49f8-84ad-09972b0ba4a3
+      id: 3e883931-5c04-4175-835d-19279b7f645f
       iscommand: false
       name: Validate code42-departingemployee-remove
       type: condition
       version: -1
-    taskid: 87c44f7a-b4da-49f8-84ad-09972b0ba4a3
+    taskid: 3e883931-5c04-4175-835d-19279b7f645f
     timertriggers: []
     type: condition
     view: |-
@@ -537,7 +537,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 5445
         }
       }
   "16":
@@ -578,7 +578,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5620
         }
       }
   "17":
@@ -620,7 +620,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 5795
         }
       }
   "18":
@@ -644,7 +644,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 5970
         }
       }
   "20":
@@ -697,13 +697,13 @@ tasks:
     task:
       brand: Code42
       description: Get all employees on the Departing Employee List.
-      id: 0f882a99-ab43-4330-8903-cf779d93b773
+      id: d290b8ae-29b0-46ca-80bb-834238694862
       iscommand: true
       name: Code42-departingemployee-get-all
       script: Code42|||code42-departingemployee-get-all
       type: regular
       version: -1
-    taskid: 0f882a99-ab43-4330-8903-cf779d93b773
+    taskid: d290b8ae-29b0-46ca-80bb-834238694862
     timertriggers: []
     type: regular
     view: |-
@@ -740,12 +740,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b001b4f1-f185-47b1-8564-7cbf2cfa92cf
+      id: 84da2359-0662-49bd-84d5-ed3724e48b7e
       iscommand: false
       name: Validate code42-departingemployee-get-all
       type: condition
       version: -1
-    taskid: b001b4f1-f185-47b1-8564-7cbf2cfa92cf
+    taskid: 84da2359-0662-49bd-84d5-ed3724e48b7e
     timertriggers: []
     type: condition
     view: |-
@@ -774,13 +774,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5bdb7a44-0160-4697-861b-baa6d11e0072
+      id: 121c9696-a391-439b-809d-6fad7ff4539e
       iscommand: false
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 5bdb7a44-0160-4697-861b-baa6d11e0072
+    taskid: 121c9696-a391-439b-809d-6fad7ff4539e
     timertriggers: []
     type: regular
     view: |-
@@ -807,13 +807,13 @@ tasks:
     task:
       brand: Code42
       description: Adds a user from the High Risk Employee List.
-      id: c2eabe98-3b75-4452-8fde-6b4f852676b8
+      id: 290f6851-3129-42b2-8c85-df4c0a9ccdc8
       iscommand: true
       name: Code42-highriskemployee-add
       script: Code42|||code42-highriskemployee-add
       type: regular
       version: -1
-    taskid: c2eabe98-3b75-4452-8fde-6b4f852676b8
+    taskid: 290f6851-3129-42b2-8c85-df4c0a9ccdc8
     timertriggers: []
     type: regular
     view: |-
@@ -829,7 +829,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Code42.HighRiskEmployee
+              simple: Code42.HighRiskEmployee.UserID
           operator: isNotEmpty
       label: "yes"
     id: "25"
@@ -843,12 +843,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: aa0b2c75-a4c8-4d71-891e-6fc61ad28040
+      id: f3fe075d-34ed-4c26-8d21-f378f5d1c7e8
       iscommand: false
       name: Validate code42-highriskemployee-add
       type: condition
       version: -1
-    taskid: aa0b2c75-a4c8-4d71-891e-6fc61ad28040
+    taskid: f3fe075d-34ed-4c26-8d21-f378f5d1c7e8
     timertriggers: []
     type: condition
     view: |-
@@ -877,13 +877,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9310f8ff-b594-4c08-839a-df5a8fcb1e7a
+      id: db4c0622-0db9-402c-88a0-57a085066441
       iscommand: false
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 9310f8ff-b594-4c08-839a-df5a8fcb1e7a
+    taskid: db4c0622-0db9-402c-88a0-57a085066441
     timertriggers: []
     type: regular
     view: |-
@@ -909,13 +909,13 @@ tasks:
     task:
       brand: Code42
       description: Removes a user from the High Risk Employee List.
-      id: d3613dc6-7a4a-4905-854b-097ab5248c51
+      id: fe761cd2-284a-42b2-873f-709cbf14b73f
       iscommand: true
       name: Code42-highriskemployee-remove
       script: Code42|||code42-highriskemployee-remove
       type: regular
       version: -1
-    taskid: d3613dc6-7a4a-4905-854b-097ab5248c51
+    taskid: fe761cd2-284a-42b2-873f-709cbf14b73f
     timertriggers: []
     type: regular
     view: |-
@@ -931,7 +931,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Code42.HighRiskEmployee
+              simple: Code42.HighRiskEmployee.UserID
           operator: isNotEmpty
       label: "yes"
     id: "28"
@@ -945,12 +945,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4f6affc9-159e-4ee3-8452-8d042d4bb74f
+      id: 7dfa261d-5d18-4491-8529-4df9b0856d14
       iscommand: false
       name: Validate code42-highriskemployee-remove
       type: condition
       version: -1
-    taskid: 4f6affc9-159e-4ee3-8452-8d042d4bb74f
+    taskid: 7dfa261d-5d18-4491-8529-4df9b0856d14
     timertriggers: []
     type: condition
     view: |-
@@ -979,13 +979,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b00ee694-e2ba-411a-8466-a5b3eae724d8
+      id: c2779d4e-9f0c-41c4-8364-58cdd0db3504
       iscommand: false
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: b00ee694-e2ba-411a-8466-a5b3eae724d8
+    taskid: c2779d4e-9f0c-41c4-8364-58cdd0db3504
     timertriggers: []
     type: regular
     view: |-
@@ -1012,13 +1012,13 @@ tasks:
     skipunavailable: false
     task:
       brand: Code42
-      id: de4c15c9-9c2a-48e3-85ca-81963415016a
+      id: 10fa1977-fd58-4524-8688-0ab9725a87d9
       iscommand: true
       name: Code42-highriskemployee-add-risk-tags
       script: Code42|||code42-highriskemployee-add-risk-tags
       type: regular
       version: -1
-    taskid: de4c15c9-9c2a-48e3-85ca-81963415016a
+    taskid: 10fa1977-fd58-4524-8688-0ab9725a87d9
     timertriggers: []
     type: regular
     view: |-
@@ -1034,7 +1034,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Code42.HighRiskEmployee
+              simple: Code42.HighRiskEmployee.UserID
           operator: isNotEmpty
       label: "yes"
     id: "31"
@@ -1048,12 +1048,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 85d1d38d-34dc-4efb-8dd0-7d687e5497ab
+      id: c8b59082-bec7-4ed4-8cb7-8a32f097e212
       iscommand: false
-      name: Validate code42-highriskemployee-add
+      name: Validate code42-highriskemployee-add-risk-tags
       type: condition
       version: -1
-    taskid: 85d1d38d-34dc-4efb-8dd0-7d687e5497ab
+    taskid: c8b59082-bec7-4ed4-8cb7-8a32f097e212
     timertriggers: []
     type: condition
     view: |-
@@ -1082,13 +1082,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2057143d-1baf-4154-8f60-496cda262b00
+      id: 1a4bb879-ba2c-4825-8c39-fc8b1eb7d27a
       iscommand: false
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 2057143d-1baf-4154-8f60-496cda262b00
+    taskid: 1a4bb879-ba2c-4825-8c39-fc8b1eb7d27a
     timertriggers: []
     type: regular
     view: |-
@@ -1103,7 +1103,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "34"
+      - "37"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1115,13 +1115,13 @@ tasks:
     skipunavailable: false
     task:
       brand: Code42
-      id: afb67c30-6df3-4b62-803c-d888048565f9
+      id: 3fd90be8-ab7e-4e14-8308-ee4f87ca981a
       iscommand: true
       name: Code42-highriskemployee-remove-risk-tags
       script: Code42|||code42-highriskemployee-remove-risk-tags
       type: regular
       version: -1
-    taskid: afb67c30-6df3-4b62-803c-d888048565f9
+    taskid: 3fd90be8-ab7e-4e14-8308-ee4f87ca981a
     timertriggers: []
     type: regular
     view: |-
@@ -1150,20 +1150,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: bb0ecc1a-ba56-4e42-8786-a2618381c0db
+      id: 84293fd1-6417-4955-8216-18b217cda5a4
       iscommand: false
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: bb0ecc1a-ba56-4e42-8786-a2618381c0db
+    taskid: 84293fd1-6417-4955-8216-18b217cda5a4
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4920
         }
       }
   "35":
@@ -1182,20 +1182,20 @@ tasks:
     task:
       brand: Code42
       description: Get all employees on the High Risk Employee List.
-      id: 68839631-90a8-4b59-8186-d3610f0472c3
+      id: 65767c92-d77b-4e8d-845a-36fac9bbba72
       iscommand: true
       name: Code42-highriskemployee-get-all
       script: Code42|||code42-highriskemployee-get-all
       type: regular
       version: -1
-    taskid: 68839631-90a8-4b59-8186-d3610f0472c3
+    taskid: 65767c92-d77b-4e8d-845a-36fac9bbba72
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 5095
         }
       }
   "36":
@@ -1225,19 +1225,54 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d522be01-b75a-4259-89a3-aba478bf64cb
+      id: ccc2ce6a-b83a-47bc-8e31-76b172de259d
       iscommand: false
       name: Validate code42-highriskmployee-get-all
       type: condition
       version: -1
-    taskid: d522be01-b75a-4259-89a3-aba478bf64cb
+    taskid: ccc2ce6a-b83a-47bc-8e31-76b172de259d
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 5270
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.HighRiskEmployee.UserID
+          operator: isNotEmpty
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0294a8f9-5bf9-4be0-873a-85d55c79ac11
+      iscommand: false
+      name: Validate code42-highriskemployee-remove-risk-tags
+      type: condition
+      version: -1
+    taskid: 0294a8f9-5bf9-4be0-873a-85d55c79ac11
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
         }
       }
 version: -1
@@ -1246,7 +1281,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5810,
+        "height": 5985,
         "width": 380,
         "x": 50,
         "y": 50
