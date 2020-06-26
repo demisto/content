@@ -15,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 
 handle_proxy()
 
+
 class Utils(object):
     """
     Class with some utility methods.
@@ -46,8 +47,7 @@ class ContextManager(object):
     - DBotScore context: Contains the value of the IOC, the vendor (TruSTAR) and a score of 0.
     - Standard context: Groups all IOCs by types and returns the value of each one.
     - TruSTAR context: Contains all the information fetched from TruSTAR corresponding to each indicator.
-
-    Data is also returned on the TruSTAR context for phishing submissions and reports. 
+    Data is also returned on the TruSTAR context for phishing submissions and reports.
     """
 
     INDICATOR_TYPES = {
@@ -75,7 +75,7 @@ class ContextManager(object):
         indicator_type = ts_indicator.get('indicatorType')
         dbot_score = Common.DBotScore(
             indicator=ts_indicator.get('value'),
-            indicator_type= self.DBOTSCORE_TYPES.get(indicator_type),
+            indicator_type=self.DBOTSCORE_TYPES.get(indicator_type),
             integration_name='TruSTAR',
             score=Common.DBotScore.NONE
         )
@@ -83,8 +83,8 @@ class ContextManager(object):
 
 
     def _get_xsoar_file_indicator(self, ts_indicator, dbot_score):
-        """ 
-        Returns a Common.File object. Handles logic to create the object with 
+        """
+        Returns a Common.File object. Handles logic to create the object with
         the corresponding type (SHA1, SHA256, MD5 or Name if software).
         """
 
@@ -92,7 +92,7 @@ class ContextManager(object):
         key = "name" if key == "SOFTWARE" else key
         value = ts_indicator.get('value')
         args = {
-            key.lower(): value, 
+            key.lower(): value,
             'dbot_score': dbot_score
         }
         xsoar_file_indicator = Common.File(**args)
@@ -206,7 +206,6 @@ class ContextManager(object):
             for i in indicator_dicts 
             if i.get('indicatorType') == "REGISTRY_KEY"
         ]
-
         standard_ec = {}
         if emails:
             standard_ec['Account.Email(val.Address && val.Address === obj.Address)'] = emails
