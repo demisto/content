@@ -291,7 +291,7 @@ script:
     arguments:
     - name: results
       description: The number of items to return.
-      defaultvalue: 50
+      defaultvalue: "50"
       type: number
     outputs:
     - contextPath: Code42.DepartingEmployee.UserID
