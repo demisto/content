@@ -148,6 +148,12 @@ def _get_all_high_risk_employees_from_page(page, risk_tags):
     return res
 
 
+def _try_convert_str_list_to_list(str_list):
+    if isinstance(str_list, str):
+        return str_list.split()
+    return str_list
+
+
 class Code42Client(BaseClient):
     """
     Client will implement the service API, should not contain Cortex XSOAR logic.
@@ -193,18 +199,19 @@ class Code42Client(BaseClient):
         return user_id
 
     def add_user_risk_tags(self, username, risk_tags):
+        risk_tags = _try_convert_str_list_to_list(risk_tags)
         user_id = self.get_user_id(username)
         self._sdk.detectionlists.add_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def remove_user_risk_tags(self, username, risk_tags):
+        risk_tags = _try_convert_str_list_to_list(risk_tags)
         user_id = self.get_user_id(username)
         self._sdk.detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def get_all_high_risk_employees(self, risk_tags=None):
-        if isinstance(risk_tags, str):
-            risk_tags = [risk_tags]
+        risk_tags = _try_convert_str_list_to_list(risk_tags)
         res = []
         pages = self._sdk.detectionlists.high_risk_employee.get_all()
         for page in pages:
@@ -631,8 +638,8 @@ def highriskemployee_get_all_command(client, args):
 
 @logger
 def highriskemployee_add_risk_tags_command(client, args):
-    username = args["username"]
-    tags = args["risktags"]
+    username = args.get("username")
+    tags = args.get("risktags")
     try:
         user_id = client.add_user_risk_tags(username, tags)
         rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
@@ -644,8 +651,8 @@ def highriskemployee_add_risk_tags_command(client, args):
 
 @logger
 def highriskemployee_remove_risk_tags_command(client, args):
-    username = args["username"]
-    tags = args["risktags"]
+    username = args.get("username")
+    tags = args.get("risktags")
     try:
         user_id = client.remove_user_risk_tags(username, tags)
         rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
