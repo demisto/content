@@ -1,7 +1,7 @@
 commonfields:
-  id: TruSTAR_V2
+  id: TruSTAR v2
   version: -1
-name: TruSTAR_V2
+name: TruSTAR v2
 display: TruSTAR v2
 category: Data Enrichment & Threat Intelligence
 description: TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams,
@@ -34,14 +34,11 @@ configuration:
   required: false
 script:
   commands:
-  - name: test-module
-    arguments: []
-    description: Test if module is working ok
   - name: trustar-search-indicators
     arguments:
-    - name: search-term
+    - name: search_term
       description: The term to search for (e.g. covid-19)
-    - name: enclave-ids
+    - name: enclave_ids
       isArray: true
       description: Comma-separated list of enclave ids; only indicators found in reports
         from these enclaves will be returned (defaults to all of user’s enclaves).
@@ -130,7 +127,7 @@ script:
       isArray: true
       description: Comma separated indicator values. Values can be any of the following types; 
         i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
-    - name: enclave-ids
+    - name: enclave_ids
       isArray: true
       description: Comma-separated list of enclave IDs; only indicators found in reports
         from these enclaves will be returned (defaults to all of user’s enclaves).
@@ -191,7 +188,7 @@ script:
       and returns correlated indicators from those reports.
   - name: trustar-trending-indicators
     arguments:
-    - name: indicator-type
+    - name: indicator_type
       auto: PREDEFINED
       predefined:
       - CVE
@@ -200,7 +197,7 @@ script:
       description: The types of indicators to be returned. If other, then all indicator
         types except for CVE and MALWARE will be returned.
       defaultValue: other
-    - name: days-back
+    - name: days_back
       description: The number of days back to count correlations for.
       defaultValue: "3"
     outputs:
@@ -264,13 +261,13 @@ script:
       isArray: true
       description: Comma separated indicator values. Values can be any of the following types; 
         i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
-    - name: enclave-ids
+    - name: enclave_ids
       isArray: true
       description: a list of enclave IDs to restrict to. By default, uses all of the user’s enclaves.
     outputs:
     - contextPath: TruSTAR.IndicatorsMetadata.notes
       description: Indicator notes
-      type: Array
+      type: string
     - contextPath: TruSTAR.IndicatorsMetadata.indicatorType
       description: Indicator type
       type: string
@@ -288,10 +285,10 @@ script:
       type: Date
     - contextPath: TruSTAR.IndicatorsMetadata.tags
       description: Indicator tags
-      type: Array
+      type: string
     - contextPath: TruSTAR.IndicatorsMetadata.enclaveIds
       description: Enclave IDs where indicator is present
-      type: Array
+      type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
       type: String
@@ -345,7 +342,7 @@ script:
       isArray: true
       description: Comma separated indicator values. Values can be any of the following types; 
         i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
-    - name: enclave-ids
+    - name: enclave_ids
       isArray: true
       description: The enclaves to search for indicator summaries in. 
         These should be enclaves containing data from sources on the TruSTAR Marketplace.
@@ -370,7 +367,7 @@ script:
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.attributes
       description: Indicator attributes
-      type: Array
+      type: String
     - contextPath: TruSTAR.IndicatorSummaries.enclaveId
       description: Indicator enclave ID
       type: string
@@ -494,14 +491,14 @@ script:
       description: End of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01
         10:30:00). Based on updated time, and not created time. Default is current
         time.
-    - name: distribution-type
+    - name: distribution_type
       auto: PREDEFINED
       predefined:
       - ENCLAVE
       - COMMUNITY
       description: Whether to search for reports in the community, or only in enclaves
       defaultValue: ENCLAVE
-    - name: enclave-ids
+    - name: enclave_ids
       isArray: true
       description: Comma separated list of enclave ids to search for reports in. Even
         if distributionType is COMMUNITY, these enclaves will still be searched as
@@ -510,7 +507,7 @@ script:
       description: a list of names of tags to filter by; only reports containing ALL
         of these tags will be returned
       isArray: true
-    - name: excluded-tags
+    - name: excluded_tags
       description: reports containing ANY of these tags will be excluded from the
         results.
       isArray: true
@@ -530,7 +527,7 @@ script:
       Station).'
   - name: trustar-get-indicators-for-report
     arguments:
-    - name: report-id
+    - name: report_id
       required: true
       description: the ID of the report to get the indicators from
     - name: limit
@@ -588,7 +585,7 @@ script:
     description: Return a list of indicators extracted from a report.
   - name: trustar-move-report
     arguments:
-    - name: report-id
+    - name: report_id
       description: the ID of the report you want to move 
       required: true
 
@@ -598,11 +595,10 @@ script:
     description: Move a report from one enclave to another.
   - name: trustar-copy-report
     arguments:
-    - name: report-id
+    - name: report_id
       description: the ID of the report you want to move 
       required: true
-
-    - name: dest-enclave-id
+    - name: dest_enclave_id
       description: the ID of the destination enclave
       required: true
     description: Copies a report from one enclave to another.
@@ -611,25 +607,25 @@ script:
     - name: title
       required: true
       description: Title of the report
-    - name: report-body
+    - name: report_body
       required: true
       description: Text content of report
-    - name: enclave-ids
+    - name: enclave_ids
       isArray: true
       description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the
         enclave name. Mandatory if the distribution type is ENCLAVE.
-    - name: distribution-type
+    - name: distribution_type
       auto: PREDEFINED
       predefined:
       - COMMUNITY
       - ENCLAVE
       description: Distribution type of the report
       defaultValue: ENCLAVE
-    - name: external-url
+    - name: external_url
       description: URL for the external report that this originated from, if one exists.
         Limit 500 alphanumeric characters. Must be unique across all reports for a
         given company.
-    - name: time-began
+    - name: time_began
       description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00.
         Default is current time.
     outputs:
@@ -646,10 +642,10 @@ script:
       in TruSTAR’s system.
   - name: trustar-delete-report
     arguments:
-    - name: report-id
+    - name: report_id
       required: true
       description: Finds a report by its internal or external id.
-    - name: id-type
+    - name: id_type
       auto: PREDEFINED
       predefined:
       - internal
@@ -673,7 +669,7 @@ script:
     - name: limit
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: "25"
-    - name: distribution-type
+    - name: distribution_type
       auto: PREDEFINED
       predefined:
       - COMMUNITY
@@ -684,10 +680,10 @@ script:
       indicator values.
   - name: trustar-report-details
     arguments:
-    - name: report-id
+    - name: report_id
       required: true
       description: Finds a report by its internal or external id.
-    - name: id-type
+    - name: id_type
       auto: PREDEFINED
       predefined:
       - internal
@@ -707,29 +703,29 @@ script:
     description: Finds a report by its ID and returns the report details.
   - name: trustar-update-report
     arguments:
-    - name: report-id
+    - name: report_id
       required: true
       description: TruSTAR report id or external tracking id.
     - name: title
       description: Title of the report
     - name: report-body
       description: Text content of report
-    - name: enclave-ids
+    - name: enclave_ids
       isArray: true
       description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the
         enclave name. Mandatory if the distribution type is ENCLAVE.
-    - name: external-url
+    - name: external_url
       description: URL for the external report that this originated from, if one exists.
         Limit 500 alphanumeric characters. Must be unique across all reports for a
         given company.
-    - name: distribution-type
+    - name: distribution_type
       auto: PREDEFINED
       predefined:
       - COMMUNITY
       - ENCLAVE
       description: Distribution type of the report
       defaultValue: ENCLAVE
-    - name: time-began
+    - name: time_began
       description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00.
         Default is current time.
     outputs:
@@ -747,10 +743,10 @@ script:
       be updated. All others will be left unchanged.
   - name: trustar-search-reports
     arguments:
-    - name: search-term
+    - name: search_term
       default: true
-      description: The term to search for
-    - name: enclave-ids
+      description: The term to search for (e.g. covid-19) If empty, no search term will be applied. Otherwise, must be at least 3 characters.
+    - name: enclave_ids
       isArray: true
       description: Comma-separated list of enclave ids; only indicators found in reports
         from these enclaves will be returned (defaults to all of user’s enclaves)
@@ -775,7 +771,7 @@ script:
     - name: indicator
       required: true
       description: The value of the indicator to delete.
-    - name: indicator-type
+    - name: indicator_type
       required: true
       auto: PREDEFINED
       predefined:
@@ -945,7 +941,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/trustar:20.1.0.8837
+  dockerimage: demisto/trustar:20.1.0.9485
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+  - TruSTAR v2-Test

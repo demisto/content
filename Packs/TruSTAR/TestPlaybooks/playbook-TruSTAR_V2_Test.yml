@@ -1,6 +1,6 @@
-id: TruSTAR_V2-Test
+id: TruSTAR v2-Test
 version: -1
-name: TruSTAR_V2-Test
+name: TruSTAR v2-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -66,20 +66,20 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 634f0364-e01e-4a27-89f6-06adfb2aabfe
+    taskid: 0837ca55-8bbe-4087-84b0-2c121099f049
     type: regular
     task:
-      id: 634f0364-e01e-4a27-89f6-06adfb2aabfe
+      id: 0837ca55-8bbe-4087-84b0-2c121099f049
       version: -1
       name: trustar-indicators-metadata
       description: Provide metadata associated with a list of indicators, including
         value, indicatorType, noteCount, sightings, lastSeen, enclaveIds, and tags.
         The metadata is determined based on the enclaves the user making the request
         has READ access to.
-      script: TruSTAR_V2|||trustar-indicators-metadata
+      script: TruSTAR v2|||trustar-indicators-metadata
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "3"
@@ -172,23 +172,25 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: e7831ae2-1d30-486a-811a-52cdbc12602b
+    taskid: 8ca3eb52-258f-4d12-81b6-203a12261ece
     type: regular
     task:
-      id: e7831ae2-1d30-486a-811a-52cdbc12602b
+      id: 8ca3eb52-258f-4d12-81b6-203a12261ece
       version: -1
       name: trustar-report-details
       description: Finds a report by its ID and returns the report details.
-      script: TruSTAR_V2|||trustar-report-details
+      script: TruSTAR v2|||trustar-report-details
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
       id-type: {}
-      report-id:
+      id_type: {}
+      report-id: {}
+      report_id:
         simple: ${TruSTAR.Report.id}
     separatecontext: false
     view: |-
@@ -240,17 +242,17 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: d080b95b-85c6-4cf3-8b70-84358e8c1eb7
+    taskid: 4b365946-2795-439e-82f4-1fdfa9a0687a
     type: regular
     task:
-      id: d080b95b-85c6-4cf3-8b70-84358e8c1eb7
+      id: 4b365946-2795-439e-82f4-1fdfa9a0687a
       version: -1
       name: trustar-trending-indicators
       description: Find indicators that are trending in the community.
-      script: TruSTAR_V2|||trustar-trending-indicators
+      script: TruSTAR v2|||trustar-trending-indicators
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "8"
@@ -301,25 +303,29 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 76658b99-a5f5-455b-832a-e7609fa1e1af
+    taskid: fe45cb91-a425-4506-8cb5-b69c05593f82
     type: regular
     task:
-      id: 76658b99-a5f5-455b-832a-e7609fa1e1af
+      id: fe45cb91-a425-4506-8cb5-b69c05593f82
       version: -1
       name: trustar-search-indicators
       description: Searches for all indicators that contain the given search term.
-      script: TruSTAR_V2|||trustar-search-indicators
+      script: TruSTAR v2|||trustar-search-indicators
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
       enclave-ids: {}
+      enclave_ids: {}
       limit:
         simple: "1"
+      page-number: {}
+      page-size: {}
       search-term: {}
+      search_term: {}
     separatecontext: false
     view: |-
       {
@@ -333,18 +339,18 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 9a8b13af-ebda-4e19-8dbf-174e5433a5fe
+    taskid: 874d50b7-8f3e-4dea-8837-8afb3d13ba9f
     type: regular
     task:
-      id: 9a8b13af-ebda-4e19-8dbf-174e5433a5fe
+      id: 874d50b7-8f3e-4dea-8837-8afb3d13ba9f
       version: -1
       name: trustar-related-indicators
       description: Finds all reports that contain any of the given indicators and
         returns correlated indicators from those reports.
-      script: TruSTAR_V2|||trustar-related-indicators
+      script: TruSTAR v2|||trustar-related-indicators
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "11"
@@ -354,8 +360,6 @@ tasks:
         simple: ${TruSTAR.Indicators.value}
       limit:
         simple: "1"
-      page-number: {}
-      page-size: {}
     separatecontext: false
     view: |-
       {
@@ -402,18 +406,18 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 91238ae7-ab25-4f38-869b-7d1222c084dd
+    taskid: 4e8ba86c-e2a4-4840-84f7-68097ba8ab71
     type: regular
     task:
-      id: 91238ae7-ab25-4f38-869b-7d1222c084dd
+      id: 4e8ba86c-e2a4-4840-84f7-68097ba8ab71
       version: -1
       name: trustar-get-enclaves
       description: Returns the list of all enclaves that the user has access to, as
         well as whether they can read, create, and update reports in that enclave.
-      script: TruSTAR_V2|||trustar-get-enclaves
+      script: TruSTAR v2|||trustar-get-enclaves
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "13"
@@ -430,29 +434,34 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: ae47d371-109f-4123-8ea9-6efa634ac943
+    taskid: 2fc8572d-2f8a-4778-8a9d-4c0d49253560
     type: regular
     task:
-      id: ae47d371-109f-4123-8ea9-6efa634ac943
+      id: 2fc8572d-2f8a-4778-8a9d-4c0d49253560
       version: -1
       name: trustar-submit-report
       description: Submit a new incident report, and receive the ID it has been assigned
         in TruSTAR’s system.
-      script: TruSTAR_V2|||trustar-submit-report
+      script: TruSTAR v2|||trustar-submit-report
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "17"
     scriptarguments:
       distribution-type: {}
-      enclave-ids:
+      distribution_type: {}
+      enclave-ids: {}
+      enclave_ids:
         simple: 28177710-9cb8-aa2f-29e8-135c14365e80
       external-url: {}
-      report-body:
+      external_url: {}
+      report-body: {}
+      report_body:
         simple: 104.28.58.252
       time-began: {}
+      time_began: {}
       title:
         simple: Demisto Test Playbook report
     separatecontext: false
@@ -468,30 +477,33 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: a81f1956-83a9-4e5a-818a-0cf9e6bb0c31
+    taskid: 478a59f4-9420-4bb3-88b6-b719c5348ec0
     type: regular
     task:
-      id: a81f1956-83a9-4e5a-818a-0cf9e6bb0c31
+      id: 478a59f4-9420-4bb3-88b6-b719c5348ec0
       version: -1
       name: trustar-get-reports
       description: 'Returns incident reports matching the specified filters. All parameters
         are optional: if nothing is specified, the latest 25 reports accessible by
         the user will be returned (matching the view the user would have by logging
         into Station).'
-      script: TruSTAR_V2|||trustar-get-reports
+      script: TruSTAR v2|||trustar-get-reports
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "15"
       - "5"
     scriptarguments:
-      distribution-type:
+      distribution-type: {}
+      distribution_type:
         simple: COMMUNITY
-      enclave-ids:
+      enclave-ids: {}
+      enclave_ids:
         simple: 28177710-9cb8-aa2f-29e8-135c14365e80
       excluded-tags: {}
+      excluded_tags: {}
       from: {}
       from_time:
         simple: 1 minutes ago
@@ -511,29 +523,33 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: a86e5c3a-0c14-4a09-882c-6acf43901e9b
+    taskid: 03cc8623-68ee-41b6-803a-7d5e69d907be
     type: regular
     task:
-      id: a86e5c3a-0c14-4a09-882c-6acf43901e9b
+      id: 03cc8623-68ee-41b6-803a-7d5e69d907be
       version: -1
       name: trustar-update-report
       description: Update the report with the specified ID. Either the internal TruSTAR
         report ID or an external tracking ID can be used. Only the fields passed will
         be updated. All others will be left unchanged.
-      script: TruSTAR_V2|||trustar-update-report
+      script: TruSTAR v2|||trustar-update-report
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "16"
       - "6"
     scriptarguments:
       distribution-type: {}
+      distribution_type: {}
       enclave-ids: {}
+      enclave_ids: {}
       external-url: {}
+      external_url: {}
       report-body: {}
-      report-id:
+      report-id: {}
+      report_id:
         complex:
           root: TruSTAR
           filters:
@@ -547,6 +563,7 @@ tasks:
                   simple: Demisto Test Playbook report
           accessor: Report.id
       time-began: {}
+      time_began: {}
       title:
         simple: New title
     separatecontext: false
@@ -562,24 +579,26 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: d7a042d1-2104-47b5-80a0-1a77a990271c
+    taskid: 31c62053-5f2c-4203-8cdd-0ab5d848968b
     type: regular
     task:
-      id: d7a042d1-2104-47b5-80a0-1a77a990271c
+      id: 31c62053-5f2c-4203-8cdd-0ab5d848968b
       version: -1
       name: trustar-delete-report
       description: Deletes a report as specified by given id (id can be TruSTAR report
         id or external id).
-      script: TruSTAR_V2|||trustar-delete-report
+      script: TruSTAR v2|||trustar-delete-report
       type: regular
       iscommand: true
-      brand: TruSTAR_V2
+      brand: TruSTAR v2
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
       id-type: {}
-      report-id:
+      id_type: {}
+      report-id: {}
+      report_id:
         complex:
           root: TruSTAR
           filters:

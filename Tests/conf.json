@@ -2839,10 +2839,9 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "TruSTAR_V2",
-            "playbookID": "TruSTAR_V2-Test",
-            "timeout": 500,
-            "nightly": true
+            "integrations": "TruSTAR v2",
+            "playbookID": "TruSTAR v2-Test",
+            "timeout": 500
         }
 
     ],

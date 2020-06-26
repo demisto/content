@@ -338,6 +338,7 @@ class TrustarClient:
 
 
     def test_module(self):
+        """Tests connectivity with TruSTAR"""
         response = self.client.ping()
         return "ok"
 
@@ -437,7 +438,7 @@ class TrustarClient:
         :return: Entry context with the submitted report.
         """
         if distribution_type == 'ENCLAVE' and enclave_ids is None:
-            return 'Distribution type is ENCLAVE, but no enclave ID was given.'
+            raise Exception('Distribution type is ENCLAVE, but no enclave ID was given.')
 
         ts_report = trustar.models.Report(
             title=title,
@@ -490,6 +491,7 @@ class TrustarClient:
         response = self.client.get_correlated_reports_page(
             indicators, 
             enclave_ids, 
+            is_enclave=(distribution_type=="ENCLAVE"),
             page_number=0, 
             page_size=limit
         )
@@ -551,8 +553,8 @@ class TrustarClient:
         if kwargs.get('report_body'):
             kwargs["reportBody"] = kwargs.pop('report_body')
 
-        if kwargs.get('envlave_ids'):
-            kwargs["enclaveIds"] = kwargs.pop('envlave_ids')
+        if kwargs.get('enclave_ids'):
+            kwargs["enclaveIds"] = kwargs.pop('enclave_ids')
 
         if kwargs.get('external_url'):
             kwargs["externalUrl"] = kwargs.pop('external_url')
@@ -701,7 +703,7 @@ class TrustarClient:
         enclaves the user making the request has READ access to.
 
         :param indicators: indicators list to search the corresponding metadata.
-        :param envlave_ids: list of enclave IDs to restrict to. By default, uses all of the user’s enclaves.
+        :param enclave_ids: list of enclave IDs to restrict to. By default, uses all of the user’s enclaves.
 
         :return: Entry context with indicators metadata.
         """
