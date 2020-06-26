@@ -1093,6 +1093,18 @@ def assert_detection_list_outputs_match_response_items(outputs_list, response_it
 """TESTS"""
 
 
+def test_client_lazily_inits_sdk(mocker):
+    mocker.patch("py42.sdk.from_local_account")
+
+    # test that sdk does not init during ctor
+    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
+    assert client._sdk is None
+
+    # test that sdk init from first method call
+    client.get_user_id("Test")
+    assert client._sdk is not None
+
+
 def test_client_when_no_alert_found_raises_exception(code42_sdk_mock):
     code42_sdk_mock.alerts.get_details.return_value = (
         """{'type$': 'ALERT_DETAILS_RESPONSE', 'alerts': []}"""
@@ -1320,13 +1332,7 @@ def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employe
     client = create_client(code42_high_risk_employee_mock)
     _, outputs, res = highriskemployee_get_all_command(
         client,
-        {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
-        },
+        {"risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"},
     )
     outputs_list = outputs["Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)"]
     # Only first employee has the given risk tags
@@ -1347,11 +1353,7 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     _, outputs, res = highriskemployee_get_all_command(
         client,
         {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
+            "risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"
         },
     )
     outputs_list = outputs["Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)"]
@@ -1373,7 +1375,7 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
     assert outputs["Code42.HighRiskEmployee"]["RiskTags"] == tags
     code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(
-        _TEST_USER_ID, "FLIGHT_RISK"
+        _TEST_USER_ID, ["FLIGHT_RISK"]
     )
 
 
@@ -1381,12 +1383,12 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     tags = ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
     client = create_client(code42_sdk_mock)
     _, outputs, res = highriskemployee_remove_risk_tags_command(
-        client, {"username": _TEST_USERNAME, "risktags": ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]}
+        client, {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK CONTRACT_EMPLOYEE"}
     )
     assert res == _TEST_USER_ID
     assert outputs["Code42.HighRiskEmployee"]["UserID"] == _TEST_USER_ID
     assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
-    assert outputs["Code42.HighRiskEmployee"]["RiskTags"] == tags
+    assert outputs["Code42.HighRiskEmployee"]["RiskTags"] == "FLIGHT_RISK CONTRACT_EMPLOYEE"
     code42_sdk_mock.detectionlists.remove_user_risk_tags.assert_called_once_with(
         _TEST_USER_ID, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
     )
