@@ -1303,13 +1303,7 @@ def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employe
     client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_get_all_command(
         client,
-        {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
-        },
+        {"risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"},
     )
     # Only first employee has the given risk tags
     expected = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
@@ -1345,11 +1339,7 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     _, _, res = highriskemployee_get_all_command(
         client,
         {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
+            "risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"
         },
     )
     # Only first employee has the given risk tags
@@ -1366,14 +1356,14 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected_user_id
     code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(
-        expected_user_id, "FLIGHT_RISK"
+        expected_user_id, ["FLIGHT_RISK"]
     )
 
 
 def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
     _, _, res = highriskemployee_remove_risk_tags_command(
-        client, {"username": "user1@example.com", "risktags": ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]}
+        client, {"username": "user1@example.com", "risktags": "FLIGHT_RISK CONTRACT_EMPLOYEE"}
     )
     expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected_user_id
