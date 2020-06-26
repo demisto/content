@@ -1074,6 +1074,18 @@ def get_empty_detectionlist_response(mocker, base_text):
 """TESTS"""
 
 
+def test_client_lazily_inits_sdk(mocker):
+    mocker.patch("py42.sdk.from_local_account")
+
+    # test that sdk does not init during ctor
+    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
+    assert client._sdk is None
+
+    # test that sdk init from first method call
+    client.get_user_id("Test")
+    assert client._sdk is not None
+
+
 def test_client_when_no_alert_found_raises_exception(code42_sdk_mock):
     code42_sdk_mock.alerts.get_details.return_value = (
         """{'type$': 'ALERT_DETAILS_RESPONSE', 'alerts': []}"""
