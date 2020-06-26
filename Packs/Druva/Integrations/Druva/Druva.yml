@@ -1,0 +1,211 @@
+commonfields:
+  id: Druva Ransomware Response
+  version: -1
+name: Druva Ransomware Response
+display: Druva Ransomware Response
+category: Data Enrichment & Threat Intelligence
+description: Druva Ransomware Response Playbook
+configuration:
+- display: Druva API URL
+  name: url
+  defaultvalue: https://apis.druva.com
+  type: 0
+  required: true
+- display: Client ID
+  name: clientId
+  defaultvalue: INVsCjjfIfKTATq0+2wUtoFfh9aixfnn
+  type: 4
+  required: true
+- display: Secret Key
+  name: secretKey
+  defaultvalue: xNvNBWKJKYSQsrhMejJ1UFZD1+HNyONr
+  type: 4
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: druva-find-device
+    arguments:
+    - name: search_string
+      required: true
+      description: Prefix Search String for data source name
+    outputs:
+    - contextPath: Druva.Resource.resourceID
+      description: Resource ID.
+      type: number
+    - contextPath: Druva.Resource.resourceName
+      description: Resource Name
+      type: string
+    - contextPath: Druva.Resource.resourceType
+      description: Resource Type
+    - contextPath: Druva.Resource.resourceParent
+      description: Resource Server or User
+      type: string
+    description: Finds Device ID for specific hostname
+  - name: druva-list-quarantine-ranges
+    arguments: []
+    outputs:
+    - contextPath: Druva.activeQuarantineRanges.resourceID
+      description: Resource ID.
+      type: number
+    - contextPath: Druva.activeQuarantineRanges.resourceName
+      description: Resource Name
+      type: string
+    - contextPath: Druva.activeQuarantineRanges.resourceParent
+      description: Resource User Or Server
+      type: string
+    - contextPath: Druva.activeQuarantineRanges.resourceType
+      description: Resource Type
+      type: string
+    - contextPath: Druva.activeQuarantineRanges.fromDate
+      description: Quarantine Start Date
+      type: string
+    - contextPath: Druva.activeQuarantineRanges.toDate
+      description: Quarantine End Date
+      type: string
+    - contextPath: Druva.activeQuarantineRanges.rangeID
+      description: Quarantine Range ID
+    description: Lists all quarantine ranges in your environment
+  - name: druva-quarantine-resource
+    arguments:
+    - name: resource_id
+      required: true
+      description: resource id for which you would like to list resources
+    - name: resource_type
+      required: true
+      description: 'type or resource : Endpoint or  File Server or NAS'
+    - name: from_date
+      description: 'Date from which a quarantine range should start. If not provided
+        then it is considered as open ended. example: 2020-10-25'
+    - name: to_date
+      description: 'Date from which a quarantine range should end. If not provided
+        then it is considered as open ended. example: 2020-10-25'
+    outputs:
+    - contextPath: Druva.QuarantinedRangeID
+      description: RangeID of the Quarantined Resource
+      type: string
+    description: Quarantine a resource
+  - name: druva-delete-quarantine-range
+    arguments:
+    - name: range_id
+      required: true
+      description: ID of range to be deleted
+    - name: resource_id
+      required: true
+      description: resource id for which you would like to delete the range
+    description: Delete a quarantine range
+  - name: druva-view-quarantine-range
+    arguments:
+    - name: range_id
+      required: true
+      description: ID of range to be viewed
+    - name: resource_id
+      required: true
+      description: resource id for which you would like to view the range
+    description: View Quarantine Range Details
+  - name: druva-update-quarantine-range
+    arguments:
+    - name: resource_id
+      required: true
+      description: ID of resource to be updated
+    - name: range_id
+      required: true
+      description: ID of range to be updated
+    - name: resource_type
+      required: true
+      description: 'type or resource to be updated : Endpoint or  File Server or NAS '
+    - name: from_date
+      description: 'Update Date from which a quarantine range should start. If not
+        provided then it is considered as open ended. example: 2020-10-25'
+    - name: to_date
+      description: 'Updated Date from which a quarantine range should end. If not
+        provided then it is considered as open ended. example: 2020-10-25'
+    outputs:
+    - contextPath: Druva.updatedQuarantineRange
+      description: Range ID of the Updated Quarantined Range
+      type: string
+    description: Updates an existing Quarantine Range
+  - name: druva-list-quarantine-snapshots
+    arguments:
+    - name: resource_id
+      required: true
+      description: resource id for which you would like to view the quarantined snapshots
+    - name: range_id
+      required: true
+      description: ID of range for which quarantined snapshots are to be viewed
+    outputs:
+    - contextPath: Druva.quarantinedSnapshots.snapshotID
+      description: ID of the quarantined snapshot
+      type: string
+    - contextPath: Druva.quarantinedSnapshots.name
+      description: Name of the quarantined snapshot
+      type: string
+    description: List all quarantine Snapshots for a quarantine range
+  - name: druva-delete-quarantined-snapshot
+    arguments:
+    - name: resource_id
+      required: true
+      description: resource id for which you would like to delete a quarantined snapshots
+    - name: snapshot_id
+      required: true
+      description: ID of snapshot you would like to delete
+    - name: range_id
+      required: true
+      description: Range id for which you would like to delete a quarantined snapshots
+    outputs:
+    - contextPath: Druva.quarantinedSnapshots.snapshotID
+      description: ID of the quarantined snapshot
+      type: string
+    description: Delete a quarantined Snapshot
+  - name: druva-endpoint-search-file-hash
+    arguments:
+    - name: sha1_checksum
+      required: true
+      description: checksum of the file to be searched
+    outputs:
+    - contextPath: Druva.searchEndpointsFileHashResults.deviceID
+      description: Device ID of device the input hash
+      type: string
+    - contextPath: Druva.searchEndpointsFileHashResults.fileName
+      description: Name of the file on the Endpoint
+      type: string
+    - contextPath: Druva.searchEndpointsFileHashResults.objectID
+      description: Object ID
+      type: string
+    - contextPath: Druva.searchEndpointsFileHashResults.userID
+      description: User ID of the Endpoint
+      type: string
+    description: Search a file use SHA1 checksum
+  - name: druva-endpoint-initiate-restore
+    arguments:
+    - name: source_resourceid
+      required: true
+      description: 'Select resource id to restore from '
+    - name: target_resourceid
+      required: true
+      description: 'Select resource id to restore to '
+    - name: restore_location
+      required: true
+      description: 'Select Target Restore Location: 1) Desktop - If you want to restore
+        the data to the desktop on the target device. 2) Original - If you want to
+        restore data to the same location from which it was backed up. 3) If you want
+        to restore the data at a custom location, specify absolute path of the location.
+        Example - /Users/username/Desktop'
+    description: Restore Data to a replacement device
+  - name: druva-endpoint-check-restore-status
+    arguments:
+    - name: restore_id
+      required: true
+      description: Job ID of Restore
+    description: Check Restore Job Status
+  - name: druva-endpoint-decommission
+    arguments:
+    - name: resource_id
+      required: true
+      description: ID of endpoint resource to be decommissioned
+    description: Remote Wipe Infected Endpoint Resource
+  dockerimage: demisto/python3:3.8.2.6981
+  isfetch: false
+  runonce: false
+  subtype: python3
