@@ -16,6 +16,10 @@
             "playbookID": "FeedMicrosoftIntune_Test",
             "fromversion": "5.5.0"
         },
+{
+    "integrations": "Druva Ransomware Response",
+    "playbookID": "Druva-Test"
+},
         {
             "integrations": "Smokescreen IllusionBLACK",
             "playbookID": "Smokescreen IllusionBLACK-Test",

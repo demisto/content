@@ -13,12 +13,10 @@ configuration:
   required: true
 - display: Client ID
   name: clientId
-  defaultvalue: INVsCjjfIfKTATq0+2wUtoFfh9aixfnn
   type: 4
   required: true
 - display: Secret Key
   name: secretKey
-  defaultvalue: xNvNBWKJKYSQsrhMejJ1UFZD1+HNyONr
   type: 4
   required: true
 script:
@@ -205,7 +203,7 @@ script:
       required: true
       description: ID of endpoint resource to be decommissioned
     description: Remote Wipe Infected Endpoint Resource
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   runonce: false
   subtype: python3
