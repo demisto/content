@@ -160,16 +160,69 @@ def test_domains_by_certificate(mocker):
 
 
 def test_fetch_incidents_command_cache(mocker):
+    mocker.patch("Expanse.PAGE_LIMIT", TEST_PAGE_LIMIT)
     mocker.patch('Expanse.do_auth')
     mocker.patch.object(demisto, 'getLastRun', return_value={})
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": [MOCK_INCIDENT]})
     mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'results')
     Expanse.fetch_incidents_command()
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
     assert demisto.setIntegrationContext.call_args[0][0]['incidents'] is None
+    assert demisto.setLastRun.call_args[0][0]['complete_for_today'] is True
+
+
+def test_fetch_incidents_command_cache_continue(mocker):
+    mocker.patch("Expanse.PAGE_LIMIT", TEST_PAGE_LIMIT)
+    mocker.patch('Expanse.do_auth')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": [MOCK_INCIDENT] * 2})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'results')
+    Expanse.fetch_incidents_command()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert len(demisto.setIntegrationContext.call_args[0][0]['incidents']) == 1
+    assert demisto.setLastRun.call_args[0][0]['complete_for_today'] is False
+
+
+def test_fetch_incidents_command_new_cache(mocker):
+    mocker.patch("Expanse.PAGE_LIMIT", TEST_PAGE_LIMIT + 1)
+    mocker.patch('Expanse.do_auth')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": None})
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'results')
+    Expanse.fetch_incidents_command()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert demisto.setIntegrationContext.call_args[0][0]['incidents'] is None
+    assert demisto.setLastRun.call_args[0][0]['complete_for_today'] is True
+
+
+def test_fetch_incidents_command_new_cache_continue(mocker):
+    mocker.patch("Expanse.PAGE_LIMIT", TEST_PAGE_LIMIT)
+    mocker.patch('Expanse.do_auth')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": None})
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'results')
+    Expanse.fetch_incidents_command()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert len(demisto.setIntegrationContext.call_args[0][0]['incidents']) == 1
+    assert demisto.setLastRun.call_args[0][0]['complete_for_today'] is False
 
 
 MOCK_TOKEN_RESPONSE = {

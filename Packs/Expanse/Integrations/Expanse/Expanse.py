@@ -748,11 +748,24 @@ def fetch_incidents_command():
             demisto.incidents(incidents_to_send)
         else:
             demisto.incidents(incidents)
+            incidents = []
 
         # Add remaining incidents to cache
-        demisto.debug("Updating cache to store {} incidents".format(len(incidents)))
-        cache["incidents"] = incidents
-        demisto.setIntegrationContext(cache)
+        if len(incidents) > 0:
+            demisto.debug("Updating cache to store {} incidents".format(len(incidents)))
+            cache["incidents"] = incidents
+            demisto.setIntegrationContext(cache)
+            demisto.setLastRun({
+                "complete_for_today": False,
+                "start_time": yesterday
+            })
+        else:
+            cache["incidents"] = None
+            demisto.setIntegrationContext(cache)
+            demisto.setLastRun({
+                "complete_for_today": True,
+                "start_time": yesterday
+            })
     else:
         demisto.debug("Found {} stored incidents".format(len(stored_incidents)))
         # Send next PAGE_LIMIT number of incidents to demisto
