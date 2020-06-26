@@ -1,0 +1,1685 @@
+id: TestWootCloudPlaybook
+name: TestWootCloudPlaybook
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+description: ''
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: wootcloud-get-pkt-alerts
+      description: ''
+      script: '|||wootcloud-get-pkt-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.signature
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.continent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.network
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.subnet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.zip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.managed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.control
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.total_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.managed_info.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.continent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.network
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.subnet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.zip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.managed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.control
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.total_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.managed_info.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.payload
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.http_method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.http_user_agent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.length
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.redirect
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.http_refer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.subtype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.references
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: wootcloud-get-bt-alerts
+      description: ''
+      script: '|||wootcloud-get-bt-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.signature
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.managed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.control
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.total_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.managed_info.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.subtype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.title
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: wootcloud-get-anomaly-alerts
+      description: ''
+      script: '|||wootcloud-get-anomaly-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.anomaly_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.signature
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.average
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.minimum
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.maximum
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.standard_deviation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.anomaly_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.observed_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.deviation_from_norm
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.units
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.subtype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.managed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.control
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.total_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.managed_info.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.connections.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.connections.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.connections.connection_count
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: wootcloud-fetch-packet-alert
+      description: ''
+      script: '|||wootcloud-fetch-packet-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.signature
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.continent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.network
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.subnet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.zip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.managed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.control
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.total_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.source.inferred.managed_info.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.continent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.network
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.subnet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.time_zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.zip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.managed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.control
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.total_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.destination.inferred.managed_info.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.payload
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.http_method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.http_user_agent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.length
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.redirect
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.http_refer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.http.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.subtype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.PacketAlert.references
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: wootcloud-fetch-bluetooth-alert
+      description: ''
+      script: '|||wootcloud-fetch-bluetooth-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.signature
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.managed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.control
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.total_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.inferred.managed_info.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.subtype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.BluetoothAlert.title
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: wootcloud-fetch-anomaly-alert
+      description: ''
+      script: '|||wootcloud-fetch-anomaly-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.anomaly_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.signature
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.average
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.minimum
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.maximum
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.standard_deviation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.anomaly_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.observed_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.deviation_from_norm
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.units
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.subtype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.managed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.control
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.total_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.device_details.managed_info.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.connections.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.connections.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.connections.connection_count
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: '14'
+    type: title
+    task:
+      id: '14'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
