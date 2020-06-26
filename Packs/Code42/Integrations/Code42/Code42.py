@@ -703,7 +703,7 @@ def _stringify_lists_if_needed(event):
     shared_with = event.get("sharedWith")
     private_ip_addresses = event.get("privateIpAddresses")
     if shared_with:
-        shared_list = [u.get("cloudUsername") for u in shared_with]
+        shared_list = [u.get("cloudUsername") for u in shared_with if u.get("cloudUsername")]
         event["sharedWith"] = str(shared_list)
     if private_ip_addresses:
         event["privateIpAddresses"] = str(private_ip_addresses)
@@ -782,7 +782,11 @@ class Code42SecurityIncidentFetcher(object):
         return incident
 
     def _relate_files_to_alert(self, alert_details):
-        for obs in alert_details.get("observations"):
+        observations = alert_details.get("observations")
+        if not observations:
+            alert_details["fileevents"] = []
+            return
+        for obs in observations:
             file_events = self._get_file_events_from_alert_details(obs, alert_details)
             alert_details["fileevents"] = [_process_event_from_observation(e) for e in file_events]
 
