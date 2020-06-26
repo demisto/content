@@ -121,10 +121,10 @@ Sends an email using Gmail.
 }
 ```
 ##### Human Readable Output
-### Email sent:
-|Type|ID|To|From|Subject|Body|Labels|ThreadId|
-|---|---|---|---|---|---|---|---|
-| Gmail | 16f662789d3a2972 | test@demistodev.com | example@demisto.com | this is the subject | this is the body | SENT | 16f662789d3a2972 |
+> ### Email sent:
+> |Type|ID|To|From|Subject|Body|Labels|ThreadId|
+> |---|---|---|---|---|---|---|---|
+> | Gmail | 16f662789d3a2972 | test@demistodev.com | example@demisto.com | this is the subject | this is the body | SENT |  16f662789d3a2972 |
 ### 2. Get an authentication link
 ---
 Returns a link to use to authenticate to Gmail. It starts the OAuth2 process. 
@@ -137,12 +137,12 @@ There is no context output for this command.
 ##### Command Example
 ```!gmail-auth-link```
 ##### Human Readable Output
-## Gmail Auth Link
-Please follow the following **link**.
-After Completing the authentication process, copy the received code
-to the **Auth Code** configuration parameter of the integration instance.
-Save the integration instance and then run *!gmail-auth-test* to test that
-the authentication is properly set.
+> ## Gmail Auth Link
+> Please follow the following **link**.
+> After Completing the authentication process, copy the received code
+>to the **Auth Code** configuration parameter of the integration instance.
+> Save the integration instance and then run *!gmail-auth-test* to test that
+> the authentication is properly set.
     
 ### 3. Test authorization
 ---
