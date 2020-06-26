@@ -199,6 +199,12 @@ script:
     description: Run any command supported in the API.
     execution: false
     name: panorama
+ 
+  - name: panorama-get-predefined-threats-list
+    arguments:
+     - name: target
+       description: Get pre-defined threats list from the firewall
+
   - deprecated: false
     description: Commits a configuration to Palo Alto Firewall or Panorama, but does
       not validate if the commit was successful. Committing to Panorama does not push
