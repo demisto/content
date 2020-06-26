@@ -1,4 +1,4 @@
-from Expanse import main
+import Expanse
 import demistomock as demisto
 import json
 
@@ -55,7 +55,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
@@ -71,35 +71,11 @@ def test_fetch_incidents_with_behavior(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
     assert r[0]['severity'] == 2
-
-
-def test_fetch_incidents_cache(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'api_key': TEST_API_KEY,
-        'first_run': '7',
-        'page_limit': TEST_PAGE_LIMIT
-    })
-    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
-    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-    mocker.patch.object(demisto, 'results')
-    main()
-    results = demisto.results.call_args[0]
-    r = json.loads(results[0]['Contents'])
-    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
-    assert r[0]['severity'] == 2
-
-    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-    mocker.patch.object(demisto, 'results')
-    main()
-    results = demisto.results.call_args[0]
-    r = json.loads(results[0]['Contents'])
-    assert r[0]['name'] == "RDP_SERVER on 203.215.173.113:3389/TCP"
-    assert r[0]['severity'] == 3
 
 
 def test_ip(mocker):
@@ -108,7 +84,7 @@ def test_ip(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='ip')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['Contents']['search'] == TEST_IP
     assert results[0]['EntryContext']['DBotScore']['Type'] == 'ip'
@@ -122,7 +98,7 @@ def test_ip_missing_values(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock_missing)
     mocker.patch.object(demisto, 'command', return_value='ip')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['IP(val.Address == obj.Address)']['Geo'].get('Location') is None
 
@@ -132,7 +108,7 @@ def test_domain(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='domain')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['Contents']['domain'] == TEST_DOMAIN
     assert results[0]['EntryContext']['DBotScore']['Type'] == 'url'
@@ -144,7 +120,7 @@ def test_certificate(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='expanse-get-certificate')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['Expanse.Certificate(val.SearchTerm == obj.SearchTerm)']['CommonName'] == TEST_DOMAIN
 
@@ -154,7 +130,7 @@ def test_behavior(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='expanse-get-behavior')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['Expanse.Behavior(val.SearchTerm == obj.SearchTerm)']['SearchTerm'] == TEST_IP
     assert results[0]['EntryContext']['Expanse.Behavior(val.SearchTerm == obj.SearchTerm)']['ExternalAddresses'] \
@@ -166,7 +142,7 @@ def test_exposures(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='expanse-get-exposures')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['Expanse.Exposures(val.SearchTerm == obj.SearchTerm)']['SearchTerm'] == TEST_IP
     assert results[0]['EntryContext']['Expanse.Exposures(val.SearchTerm == obj.SearchTerm)']['WarningExposureCount'] \
@@ -178,9 +154,22 @@ def test_domains_by_certificate(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='expanse-get-domains-for-certificate')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['Expanse.IPDomains(val.SearchTerm == obj.SearchTerm)']['TotalDomainCount'] == 1
+
+
+def test_fetch_incidents_command_cache(mocker):
+    mocker.patch('Expanse.do_auth')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": [MOCK_INCIDENT]})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'results')
+    Expanse.fetch_incidents_command()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert demisto.setIntegrationContext.call_args[0][0]['incidents'] is None
 
 
 MOCK_TOKEN_RESPONSE = {
@@ -789,7 +778,7 @@ MOCK_EVENTS = {
             },
             'id': 'b4a1e2e6-165a-31a5-9e6a-af286adc3dcd'
         },
-{
+        {
             'eventType': 'ON_PREM_EXPOSURE_APPEARANCE',
             'eventTime': '2020-02-05T00:00:00Z',
             'businessUnit': {
@@ -1327,4 +1316,15 @@ MOCK_IPS_RESONSE = {
             "commonName": None
         }
     ]
+}
+
+MOCK_INCIDENT = {
+    'name': "NTP_SERVER on 203.215.173.113:123/UDP",
+    'occurred': "2020-06-26T00:00:00Z",
+    'rawJSON': {},
+    'type': 'Expanse Appearance',
+    'CustomFields': {
+        'expanserawjsonevent': {}
+    },
+    'severity': 2
 }
