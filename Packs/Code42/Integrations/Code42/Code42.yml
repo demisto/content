@@ -318,7 +318,7 @@ script:
     - contextPath: Code42.HighRiskEmployee.Note
       description: Note associated with the High Risk Employee.
       type: string
-    description: Removes a user from the High Risk Employee List.
+    description: Adds a user from the High Risk Employee List.
   - name: code42-highriskemployee-remove
     arguments:
     - name: username
@@ -333,7 +333,7 @@ script:
   - name: code42-highriskemployee-get-all
     arguments:
     - name: risktags
-      description: To filter results by employees who have these risk tags.
+      description: To filter results by employees who have these risk tags. Space delimited.
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
       description: Internal Code42 User ID for the High Risk Employee.
@@ -352,7 +352,7 @@ script:
       description: The username of the High Risk Employee.
     - name: risktags
       required: true
-      description: Risk tags to associate with the High Risk Employee.
+      description: Space-delimited risk tags to associate with the High Risk Employee.
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -369,7 +369,7 @@ script:
       description: The username of the High Risk Employee.
     - name: risktags
       required: true
-      description: Risk tags to disassociate from the High Risk Employee.
+      description: Space-delimited risk tags to disassociate from the High Risk Employee.
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
