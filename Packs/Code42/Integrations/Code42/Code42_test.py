@@ -1074,6 +1074,18 @@ def get_empty_detectionlist_response(mocker, base_text):
 """TESTS"""
 
 
+def test_client_lazily_inits_sdk(mocker):
+    mocker.patch("py42.sdk.from_local_account")
+
+    # test that sdk does not init during ctor
+    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
+    assert client._sdk is None
+
+    # test that sdk init from first method call
+    client.get_user_id("Test")
+    assert client._sdk is not None
+
+
 def test_client_when_no_alert_found_raises_exception(code42_sdk_mock):
     code42_sdk_mock.alerts.get_details.return_value = (
         """{'type$': 'ALERT_DETAILS_RESPONSE', 'alerts': []}"""
@@ -1171,7 +1183,7 @@ def test_departingemployee_remove_command(code42_sdk_mock):
 
 def test_departingemployee_get_all_command(code42_departing_employee_mock):
     client = create_client(code42_departing_employee_mock)
-    _, _, res = departingemployee_get_all_command(client, {"username": "user1@example.com"})
+    _, _, res = departingemployee_get_all_command(client, {})
     expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     assert res == expected
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
@@ -1191,12 +1203,31 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
     )
     client = create_client(code42_departing_employee_mock)
 
-    _, _, res = departingemployee_get_all_command(client, {"username": "user1@example.com"})
+    _, _, res = departingemployee_get_all_command(client, {})
 
     # Expect to have employees from 3 pages in the result
     expected_page = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     expected = expected_page + expected_page + expected_page
     assert res == expected
+
+
+def test_departingemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
+    code42_departing_employee_mock, mocker
+):
+
+    # Setup get all departing employees
+    page = MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE
+    # Setup 3 pages of employees
+    employee_page_generator = (
+        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
+    )
+    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
+        employee_page_generator
+    )
+    client = create_client(code42_departing_employee_mock)
+
+    _, _, res = departingemployee_get_all_command(client, {"results": 1})
+    assert len(res) == 1
 
 
 def test_departingemployee_get_all_command_when_no_employees(
@@ -1248,29 +1279,6 @@ def test_highriskemployee_remove_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(expected)
 
 
-def test_fetch_when_no_significant_file_categories_ignores_filter(
-    code42_fetch_incidents_mock, mocker
-):
-    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace(
-        '"isSignificant": true', '"isSignificant": false'
-    )
-    alert_details_response = create_mock_code42_sdk_response(mocker, response_text)
-    code42_fetch_incidents_mock.alerts.get_details.return_value = alert_details_response
-    client = create_client(code42_fetch_incidents_mock)
-    _, _, _ = fetch_incidents(
-        client=client,
-        last_run={"last_fetch": None},
-        first_fetch_time=MOCK_FETCH_TIME,
-        event_severity_filter=None,
-        fetch_limit=10,
-        include_files=True,
-        integration_context=None,
-    )
-    actual_query = str(code42_fetch_incidents_mock.securitydata.search_file_events.call_args[0][0])
-    assert "fileCategory" not in actual_query
-    assert "IMAGE" not in actual_query
-
-
 def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
     client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_get_all_command(client, {})
@@ -1307,18 +1315,29 @@ def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employe
     client = create_client(code42_high_risk_employee_mock)
     _, _, res = highriskemployee_get_all_command(
         client,
-        {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
-        },
+        {"risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"},
     )
     # Only first employee has the given risk tags
     expected = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
     assert res == expected
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+
+
+def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
+    code42_high_risk_employee_mock, mocker
+):
+    # Setup get all high risk employees
+    page = MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
+    # Setup 3 pages of employees
+    employee_page_generator = (
+        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
+    )
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
+        employee_page_generator
+    )
+    client = create_client(code42_high_risk_employee_mock)
+    _, _, res = highriskemployee_get_all_command(client, {"results": 1})
+    assert len(res) == 1
 
 
 def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_employee_mock, mocker):
@@ -1332,11 +1351,7 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     _, _, res = highriskemployee_get_all_command(
         client,
         {
-            "risktags": [
-                "PERFORMANCE_CONCERNS",
-                "SUSPICIOUS_SYSTEM_ACTIVITY",
-                "POOR_SECURITY_PRACTICES",
-            ]
+            "risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"
         },
     )
     # Only first employee has the given risk tags
@@ -1353,14 +1368,14 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected_user_id
     code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(
-        expected_user_id, "FLIGHT_RISK"
+        expected_user_id, ["FLIGHT_RISK"]
     )
 
 
 def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
     _, _, res = highriskemployee_remove_risk_tags_command(
-        client, {"username": "user1@example.com", "risktags": ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]}
+        client, {"username": "user1@example.com", "risktags": "FLIGHT_RISK CONTRACT_EMPLOYEE"}
     )
     expected_user_id = "123412341234123412"  # value found in GET_USER_RESPONSE
     assert res == expected_user_id
@@ -1383,6 +1398,29 @@ def test_security_data_search_command(code42_file_events_mock):
     assert filter_groups[2]["filters"][0]["value"] == "user3@example.com"
     assert filter_groups[3]["filters"][0]["term"] == "exposure"
     assert filter_groups[3]["filters"][0]["value"] == "ApplicationRead"
+
+
+def test_fetch_when_no_significant_file_categories_ignores_filter(
+    code42_fetch_incidents_mock, mocker
+):
+    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace(
+        '"isSignificant": true', '"isSignificant": false'
+    )
+    alert_details_response = create_mock_code42_sdk_response(mocker, response_text)
+    code42_fetch_incidents_mock.alerts.get_details.return_value = alert_details_response
+    client = create_client(code42_fetch_incidents_mock)
+    _, _, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": None},
+        first_fetch_time=MOCK_FETCH_TIME,
+        event_severity_filter=None,
+        fetch_limit=10,
+        include_files=True,
+        integration_context=None,
+    )
+    actual_query = str(code42_fetch_incidents_mock.securitydata.search_file_events.call_args[0][0])
+    assert "fileCategory" not in actual_query
+    assert "IMAGE" not in actual_query
 
 
 def test_fetch_incidents_handles_single_severity(code42_sdk_mock):
