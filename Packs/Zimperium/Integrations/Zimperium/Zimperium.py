@@ -1,14 +1,13 @@
 import shutil
 from typing import Dict, Tuple, Callable
 from dateparser import parse
-
+import urllib3
 from CommonServerPython import *
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
-# CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
@@ -560,7 +559,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     if events_data:
         last_event_ids = last_run.get('last_event_ids', [])
         new_event_ids = []
-        last_event_created_time = ''
+        last_event_created_time = None
         for event_data in events_data:
             event_data.pop('eventDetail', None)  # deleting eventDetail to not load the context
             event_id = event_data.get('eventId')
