@@ -1208,7 +1208,7 @@ def test_departingemployee_remove_command(code42_sdk_mock):
 
 def test_departingemployee_get_all_command(code42_departing_employee_mock):
     client = create_client(code42_departing_employee_mock)
-    _, outputs, res = departingemployee_get_all_command(client, {"username": _TEST_USERNAME})
+    _, outputs, res = departingemployee_get_all_command(client, {})
     outputs_list = outputs["Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)"]
     expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     assert res == expected
@@ -1228,7 +1228,7 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
         employee_page_generator
     )
     client = create_client(code42_departing_employee_mock)
-    _, outputs, res = departingemployee_get_all_command(client, {"username": _TEST_USERNAME})
+    _, outputs, res = departingemployee_get_all_command(client, {})
     outputs_list = outputs["Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)"]
 
     # Expect to have employees from 3 pages in the result
@@ -1236,6 +1236,25 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
     expected = expected_page + expected_page + expected_page
     assert res == expected
     assert_departingemployee_outputs_match_response(outputs_list, res)
+
+
+def test_departingemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
+    code42_departing_employee_mock, mocker
+):
+
+    # Setup get all departing employees
+    page = MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE
+    # Setup 3 pages of employees
+    employee_page_generator = (
+        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
+    )
+    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
+        employee_page_generator
+    )
+    client = create_client(code42_departing_employee_mock)
+
+    _, _, res = departingemployee_get_all_command(client, {"results": 1})
+    assert len(res) == 1
 
 
 def test_departingemployee_get_all_command_when_no_employees(
@@ -1342,6 +1361,23 @@ def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employe
     assert_detection_list_outputs_match_response_items(outputs_list, expected)
 
 
+def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
+    code42_high_risk_employee_mock, mocker
+):
+    # Setup get all high risk employees
+    page = MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
+    # Setup 3 pages of employees
+    employee_page_generator = (
+        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
+    )
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
+        employee_page_generator
+    )
+    client = create_client(code42_high_risk_employee_mock)
+    _, _, res = highriskemployee_get_all_command(client, {"results": 1})
+    assert len(res) == 1
+
+
 def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_employee_mock, mocker):
     no_employees_response = get_empty_detectionlist_response(
         mocker, MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
@@ -1380,7 +1416,6 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
 
 
 def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
-    tags = ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
     client = create_client(code42_sdk_mock)
     _, outputs, res = highriskemployee_remove_risk_tags_command(
         client, {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK CONTRACT_EMPLOYEE"}

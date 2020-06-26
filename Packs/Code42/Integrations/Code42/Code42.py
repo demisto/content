@@ -187,12 +187,15 @@ class Code42Client(BaseClient):
         self._get_sdk().detectionlists.departing_employee.remove(user_id)
         return user_id
 
-    def get_all_departing_employees(self):
+    def get_all_departing_employees(self, results):
         res = []
         pages = self._get_sdk().detectionlists.departing_employee.get_all()
         for page in pages:
             employees = page["items"]
-            res.extend(employees)
+            for employee in employees:
+                res.append(employee)
+                if len(res) == results:
+                    return res
         return res
 
     def add_user_to_high_risk_employee(self, username, note=None):
@@ -219,12 +222,16 @@ class Code42Client(BaseClient):
         self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
-    def get_all_high_risk_employees(self, risk_tags=None):
+    def get_all_high_risk_employees(self, risk_tags, results):
         risk_tags = _try_convert_str_list_to_list(risk_tags)
         res = []
         pages = self._get_sdk().detectionlists.high_risk_employee.get_all()
         for page in pages:
-            res.extend(_get_all_high_risk_employees_from_page(page, risk_tags))
+            employees = _get_all_high_risk_employees_from_page(page, risk_tags)
+            for employee in employees:
+                res.append(employee)
+                if len(res) == results:
+                    return res
         return res
 
     def fetch_alerts(self, start_time, event_severity_filter):
@@ -578,8 +585,9 @@ def departingemployee_remove_command(client, args):
 
 @logger
 def departingemployee_get_all_command(client, args):
+    results = args.get("results") or 50
     try:
-        employees = client.get_all_departing_employees()
+        employees = client.get_all_departing_employees(results)
         employees_context = [
             {
                 "UserID": e["userId"],
@@ -629,10 +637,11 @@ def highriskemployee_remove_command(client, args):
 @logger
 def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
+    results = args.get("results")
     try:
-        employees = client.get_all_high_risk_employees(tags)
+        employees = client.get_all_high_risk_employees(tags, results)
         employees_context = [
-            {"UserID": e["userId"], "Username": e["userName"], "Note": e["notes"]}
+            {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
             for e in employees
         ]
         readable_outputs = tableToMarkdown("Retrieved All High Risk Employees", employees_context)
@@ -671,6 +680,36 @@ def highriskemployee_remove_risk_tags_command(client, args):
         return_error(create_command_error_message(demisto.command(), e))
 
 
+@logger
+def securitydata_search_command(client, args):
+    code42_security_data_context = []
+    _json = args.get("json")
+    file_context = []
+    # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
+    if _json is not None:
+        file_events = client.search_file_events(_json)
+    else:
+        # Build payload
+        payload = build_query_payload(args)
+        file_events = client.search_file_events(payload)
+    if file_events:
+        for file_event in file_events:
+            code42_context_event = map_to_code42_event_context(file_event)
+            code42_security_data_context.append(code42_context_event)
+            file_context_event = map_to_file_context(file_event)
+            file_context.append(file_context_event)
+        readable_outputs = tableToMarkdown(
+            "Code42 Security Data Results",
+            code42_security_data_context,
+            headers=SECURITY_EVENT_HEADERS,
+        )
+        security_data_context_key = "Code42.SecurityData(val.EventID && val.EventID == obj.EventID)"
+        context = {security_data_context_key: code42_security_data_context, "File": file_context}
+        return readable_outputs, context, file_events
+    else:
+        return "No results found", {}, {}
+
+
 def _create_incident_from_alert_details(details):
     return {"name": "Code42 - {}".format(details["name"]), "occurred": details["createdAt"]}
 
@@ -680,7 +719,7 @@ def _stringify_lists_if_needed(event):
     shared_with = event.get("sharedWith")
     private_ip_addresses = event.get("privateIpAddresses")
     if shared_with:
-        shared_list = [u["cloudUsername"] for u in shared_with]
+        shared_list = [u.get("cloudUsername") for u in shared_with if u.get("cloudUsername")]
         event["sharedWith"] = str(shared_list)
     if private_ip_addresses:
         event["privateIpAddresses"] = str(private_ip_addresses)
@@ -729,7 +768,7 @@ class Code42SecurityIncidentFetcher(object):
             if remaining_incidents:
                 return (
                     self._last_run,
-                    remaining_incidents[: self._fetch_limit],
+                    remaining_incidents[:self._fetch_limit],
                     remaining_incidents[self._fetch_limit:],
                 )
 
@@ -759,7 +798,11 @@ class Code42SecurityIncidentFetcher(object):
         return incident
 
     def _relate_files_to_alert(self, alert_details):
-        for obs in alert_details["observations"]:
+        observations = alert_details.get("observations")
+        if not observations:
+            alert_details["fileevents"] = []
+            return
+        for obs in observations:
             file_events = self._get_file_events_from_alert_details(obs, alert_details)
             alert_details["fileevents"] = [_process_event_from_observation(e) for e in file_events]
 
@@ -787,36 +830,6 @@ def fetch_incidents(
         integration_context,
     )
     return fetcher.fetch()
-
-
-@logger
-def securitydata_search_command(client, args):
-    code42_security_data_context = []
-    _json = args.get("json")
-    file_context = []
-    # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
-    if _json is not None:
-        file_events = client.search_file_events(_json)
-    else:
-        # Build payload
-        payload = build_query_payload(args)
-        file_events = client.search_file_events(payload)
-    if file_events:
-        for file_event in file_events:
-            code42_context_event = map_to_code42_event_context(file_event)
-            code42_security_data_context.append(code42_context_event)
-            file_context_event = map_to_file_context(file_event)
-            file_context.append(file_context_event)
-        readable_outputs = tableToMarkdown(
-            "Code42 Security Data Results",
-            code42_security_data_context,
-            headers=SECURITY_EVENT_HEADERS,
-        )
-        security_data_context_key = "Code42.SecurityData(val.EventID && val.EventID == obj.EventID)"
-        context = {security_data_context_key: code42_security_data_context, "File": file_context}
-        return readable_outputs, context, file_events
-    else:
-        return "No results found", {}, {}
 
 
 def test_module(client):
