@@ -318,7 +318,7 @@ script:
     - contextPath: Code42.HighRiskEmployee.Note
       description: Note associated with the High Risk Employee.
       type: string
-    description: Removes a user from the High Risk Employee List.
+    description: Adds a user from the High Risk Employee List.
   - name: code42-highriskemployee-remove
     arguments:
     - name: username
