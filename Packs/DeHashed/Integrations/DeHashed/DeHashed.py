@@ -40,7 +40,7 @@ class Client(BaseClient):
                                         auth=(self.email, self.api_key))
 
 
-def test_module(client: object) -> str:
+def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -85,7 +85,7 @@ def filter_results(entries: list, results_from: int, results_to: int):
     return entries[results_from_int:results_to_int], results_from_int, results_to_int
 
 
-def dehashed_search_command(client: object, args: dict) -> [tuple, str]:
+def dehashed_search_command(client: Client, args: dict) -> [tuple, str]:
     """
 
     :param client:
