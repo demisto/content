@@ -2,8 +2,6 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
-# CONSTANTS
 INTEGRATION_CONTEXT_BRAND = 'DeHashed'
 RESULTS_FROM = 0
 RESULTS_TO = 49
@@ -34,10 +32,10 @@ class Client(BaseClient):
 
         if results_page_number:
             return self._http_request('GET', 'search', params={'query': query_string, 'page': results_page_number},
-                                        auth=(self.email, self.api_key), timeout=15)
+                                      auth=(self.email, self.api_key), timeout=15)
         else:
             return self._http_request('GET', 'search', params={'query': query_string},
-                                        auth=(self.email, self.api_key))
+                                      auth=(self.email, self.api_key))
 
 
 def test_module(client: Client) -> str:
