@@ -151,4 +151,3 @@ def test_search_command_using_regex_operator_with_filter_and_change_result_range
     markdown, context, raw = dehashed_search_command(client, test_data['regex_op_multi_range'])
 
     assert expected_result == context
-
