@@ -63,16 +63,16 @@ def test_module(client: Client) -> str:
             return f'Test failed because got unexpected response from api: {result}'
 
 
-def convert_string_to_int(input) -> int:
+def convert_string_to_int(argument) -> int:
     try:
-        input_as_int = int(input)
+        input_as_int = int(argument)
     except ValueError as e:
         raise DemistoException(f'"results_from" and "results_to expected" to be integers/n {e}')
     else:
         return input_as_int
 
 
-def filter_results(entries: list, results_from: int, results_to: int):
+def filter_results(entries: list, results_from: int, results_to: int) -> tuple:
     if results_from:
         results_from_int = convert_string_to_int(results_from)
     else:
@@ -85,7 +85,7 @@ def filter_results(entries: list, results_from: int, results_to: int):
     return entries[results_from_int:results_to_int], results_from_int, results_to_int
 
 
-def dehashed_search_command(client: Client, args: dict) -> [tuple, str]:
+def dehashed_search_command(client: Client, args: dict) -> tuple:
     """
 
     :param client:
