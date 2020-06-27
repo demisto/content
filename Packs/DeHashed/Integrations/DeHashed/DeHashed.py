@@ -128,9 +128,7 @@ def dehashed_search_command(client: Client, args: dict) -> tuple:
             {
                 f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': query_entries,
                 f'{INTEGRATION_CONTEXT_BRAND}.LastQuery(true)': last_query
-            },
-            filtered_results
-                )
+            }, filtered_results)
 
 
 def main():
