@@ -11,7 +11,7 @@ def load_test_data(json_path):
 
 
 def test_module_command(requests_mock):
-    from DeHashed import Client, test_module, dehashed_search_command
+    from DeHashed import Client, test_module
 
     test_data = load_test_data("test_data/search.json")
     url_params = {"query": 'vin:"test" "test1"'}
@@ -27,7 +27,7 @@ def test_module_command(requests_mock):
 
 
 def test_search_command_using_is_operator_without_filter(requests_mock):
-    from DeHashed import Client, test_module, dehashed_search_command
+    from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
@@ -53,7 +53,7 @@ def test_search_command_using_is_operator_without_filter(requests_mock):
 
 
 def test_search_command_using_contains_operator_without_filter(requests_mock):
-    from DeHashed import Client, test_module, dehashed_search_command
+    from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
@@ -81,7 +81,7 @@ def test_search_command_using_contains_operator_without_filter(requests_mock):
 
 
 def test_search_command_using_regex_operator_without_filter(requests_mock):
-    from DeHashed import Client, test_module, dehashed_search_command
+    from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
@@ -109,7 +109,7 @@ def test_search_command_using_regex_operator_without_filter(requests_mock):
 
 
 def test_search_command_using_is_operator_with_filter_and_multi_values(requests_mock):
-    from DeHashed import Client, test_module, dehashed_search_command
+    from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
@@ -137,7 +137,7 @@ def test_search_command_using_is_operator_with_filter_and_multi_values(requests_
 def test_search_command_using_contains_operator_with_filter_and_multi_values(
     requests_mock,
 ):
-    from DeHashed import Client, test_module, dehashed_search_command
+    from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
@@ -167,7 +167,7 @@ def test_search_command_using_contains_operator_with_filter_and_multi_values(
 def test_search_command_using_regex_operator_with_filter_and_multi_values(
     requests_mock,
 ):
-    from DeHashed import Client, test_module, dehashed_search_command
+    from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
@@ -197,7 +197,7 @@ def test_search_command_using_regex_operator_with_filter_and_multi_values(
 def test_search_command_using_regex_operator_with_filter_and_change_result_range(
     requests_mock,
 ):
-    from DeHashed import Client, test_module, dehashed_search_command
+    from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
     expected_result = {
