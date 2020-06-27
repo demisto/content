@@ -1,7 +1,6 @@
 id: get_original_email_-_generic
 version: -1
 name: Get Original Email - Generic
-fromversion: 4.0.0
 description: |-
   Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
 
@@ -19,13 +18,13 @@ tasks:
       id: d7920fee-8ada-4d48-8197-2e08d19a54dc
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
-      - "7"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -35,6 +34,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: b52aade3-aa90-4343-8417-d4aa26803d62
@@ -43,10 +44,10 @@ tasks:
       id: b52aade3-aa90-4343-8417-d4aa26803d62
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -56,6 +57,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: eaebbf2e-aa04-4581-8157-2f55adc08880
@@ -63,12 +66,12 @@ tasks:
     task:
       id: eaebbf2e-aa04-4581-8157-2f55adc08880
       version: -1
-      name: Get Original Message - Gmail
-      description: ""
+      name: Get Original Email - Gmail
       playbookName: Get Original Email - Gmail
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -81,59 +84,43 @@ tasks:
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: 96353c64-dc04-4475-89a8-f0f90922090f
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 73a4ccfb-a535-4af3-8587-121339850a37
     type: playbook
     task:
-      id: 96353c64-dc04-4475-89a8-f0f90922090f
+      id: 73a4ccfb-a535-4af3-8587-121339850a37
       version: -1
       name: Get Original Email - EWS
-      description: |-
-        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
-
-        You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
       playbookName: Get Original Email - EWS
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      InReplyTo:
-        complex:
-          root: incident
-          accessor: labels.Email/Header/In-Reply-To
-      Mailbox:
-        complex:
-          root: incident
-          accessor: labels.Email/from
-      ThreadTopic:
-        complex:
-          root: incident
-          accessor: labels.Email/Header/Thread-Topic
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 50,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 820,
-        "x": 40,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
@@ -170,6 +157,9 @@ outputs:
 - contextPath: Email.Subject
   description: The email subject
   type: string
+- contextPath: Email.HeadersMap
+  description: The headers of the email.
+fromversion: 4.0.0
 tests:
-  - Phishing v2 Test - Attachment
-  - Phishing v2 Test - Inline
+- Phishing v2 Test - Attachment
+- Phishing v2 Test - Inline

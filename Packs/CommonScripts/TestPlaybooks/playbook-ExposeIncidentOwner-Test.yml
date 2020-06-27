@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b86b1453-bf78-4555-876c-e6a34d113b59
+    taskid: a17a72b9-a3eb-4c4d-8e75-2ebbc74f45cf
     type: start
     task:
-      id: b86b1453-bf78-4555-876c-e6a34d113b59
+      id: a17a72b9-a3eb-4c4d-8e75-2ebbc74f45cf
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 505a5981-74f6-43ca-897a-291edd09ab79
+    taskid: 1a7e58fa-99c5-4b17-876c-84efa847a839
     type: regular
     task:
-      id: 505a5981-74f6-43ca-897a-291edd09ab79
+      id: 1a7e58fa-99c5-4b17-876c-84efa847a839
       version: -1
       name: AssignAnalystToIncident
       description: |-
@@ -72,10 +72,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 5435febf-58c9-492d-88e2-9e9fe43f8fa8
+    taskid: ae667d80-b514-4825-8759-c6464fe0915a
     type: regular
     task:
-      id: 5435febf-58c9-492d-88e2-9e9fe43f8fa8
+      id: ae667d80-b514-4825-8759-c6464fe0915a
       version: -1
       name: ExposeIncidentOwner
       description: Expose the incident owner into IncidentOwner context key
@@ -103,10 +103,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 660e7c80-8140-483c-80a6-b32f2d9d4deb
+    taskid: ec1f5155-a8a8-483f-86f6-2f1c2eacbc0a
     type: condition
     task:
-      id: 660e7c80-8140-483c-80a6-b32f2d9d4deb
+      id: ec1f5155-a8a8-483f-86f6-2f1c2eacbc0a
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal.
@@ -118,7 +118,7 @@ tasks:
       "no":
       - "5"
       "yes":
-      - "4"
+      - "6"
     scriptarguments:
       left:
         simple: ${incident.owner}
@@ -139,21 +139,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 96fe633d-c088-4b71-8ac0-ec49ffe79fd8
+  "5":
+    id: "5"
+    taskid: 41d47758-7788-424d-84d0-40139b75f475
     type: regular
     task:
-      id: 96fe633d-c088-4b71-8ac0-ec49ffe79fd8
+      id: 41d47758-7788-424d-84d0-40139b75f475
       version: -1
-      name: Close
-      scriptName: CloseInvestigation
+      name: Error
       type: regular
       iscommand: false
       brand: ""
-    scriptarguments:
-      notes: {}
-      reason: {}
     separatecontext: false
     view: |-
       {
@@ -167,15 +163,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 1046b7f1-b263-41fa-8d40-08ea70e4d6e8
-    type: regular
+  "6":
+    id: "6"
+    taskid: 45b57291-8cfe-4ad2-8b1d-ab6e2740dbd1
+    type: title
     task:
-      id: 1046b7f1-b263-41fa-8d40-08ea70e4d6e8
+      id: 45b57291-8cfe-4ad2-8b1d-ab6e2740dbd1
       version: -1
-      name: Error
-      type: regular
+      name: Done
+      type: title
       iscommand: false
       brand: ""
     separatecontext: false
@@ -183,7 +179,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 735
         }
       }
     note: false

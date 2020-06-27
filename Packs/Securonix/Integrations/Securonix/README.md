@@ -14,7 +14,7 @@ For more information, visit: `securonix/etnants/<tenantname>/securonix_home/resp
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| host | Host (Overrides the default hostname, https://{tenant}.net/Snypr) | False |
+| host | Host (Overrides the default hostname: `https://{tenant}.net/Snypr`) | False |
 | tenant | Tenant | True |
 | username | Username | True |
 | password | Password | True |

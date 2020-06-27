@@ -62,7 +62,8 @@ class GCPConfig(object):
                        "HelloWorld",
                        "ExportIndicators",
                        "Malware",
-                       "DefaultPlaybook"
+                       "DefaultPlaybook",
+                       "CalculateTimeDifference"
                        ]  # cores packs list
 
 
@@ -173,10 +174,12 @@ class Pack(object):
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
         self._sever_min_version = "1.0.0"  # initialized min version
+        self._latest_version = None  # pack latest version found in changelog
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
+        self._display_name = None  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -194,7 +197,11 @@ class Pack(object):
     def latest_version(self):
         """ str: pack latest version from sorted keys of changelog.json file.
         """
-        return self._get_latest_version()
+        if not self._latest_version:
+            self._latest_version = self._get_latest_version()
+            return self._latest_version
+        else:
+            return self._latest_version
 
     @property
     def status(self):
@@ -267,6 +274,18 @@ class Pack(object):
         """ setter of description property of the pack.
         """
         self._description = description_value
+
+    @property
+    def display_name(self):
+        """ str: Display name of the pack (found in pack_metadata.json).
+        """
+        return self._display_name
+
+    @display_name.setter
+    def display_name(self, display_name_value):
+        """ setter of display name property of the pack.
+        """
+        self._display_name = display_name_value
 
     @property
     def server_min_version(self):
@@ -641,6 +660,7 @@ class Pack(object):
 
             pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
             blob = storage_bucket.blob(pack_full_path)
+            blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
 
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
@@ -944,6 +964,7 @@ class Pack(object):
             self.current_version = user_metadata.get('currentVersion', '')
             self.hidden = user_metadata.get('hidden', False)
             self.description = user_metadata.get('description', False)
+            self.display_name = user_metadata.get('name', '')
 
             print(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -1196,7 +1217,7 @@ class Pack(object):
         author_image_storage_path = ""
 
         try:
-            author_image_path = os.path.join(self._pack_name, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+            author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
                 image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,

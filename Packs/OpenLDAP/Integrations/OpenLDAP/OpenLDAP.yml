@@ -147,7 +147,7 @@ script:
       description: ''
       execution: false
       name: ad-authenticate-and-roles
-  dockerimage: demisto/ldap:1.0.0.4710
+  dockerimage: demisto/ldap:1.0.0.8854
   isfetch: false
   longRunning: false
   longRunningPort: false
