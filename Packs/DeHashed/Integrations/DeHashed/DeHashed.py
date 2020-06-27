@@ -98,6 +98,11 @@ def test_module(client: Client) -> str:
 
 
 def convert_string_to_int(argument) -> int:
+    """
+    converts commands arguments to integers
+    :param argument: str
+    :return: converted argument as int
+    """
     try:
         input_as_int = int(argument)
     except ValueError as e:
@@ -111,6 +116,13 @@ def convert_string_to_int(argument) -> int:
 def filter_results(
     entries: list, results_from: Union[str, None], results_to: Union[str, None]
 ) -> tuple:
+    """
+    gets raw results returned from the api and limit the number of entries to return to demisto
+    :param entries: search results of the performed query
+    :param results_from: start range
+    :param results_to: end range
+    :return: filtered results
+    """
     if results_from:
         results_from_int = convert_string_to_int(results_from)
     else:
@@ -125,10 +137,16 @@ def filter_results(
 
 def dehashed_search_command(client: Client, args: dict) -> tuple:
     """
-
-    :param client:
+    this command returns data regarding a compromised assets given as arguments
+    :param client: Demisto client
     :param args:
-    :return:
+    - asset_type: email, ip_address, username, hashed_password, name, vin, address, phone,all_fields.
+    - value: value to search
+    - operation: choose a search type that you to perform.
+    - results_page_number: number for the next result page.
+    - results_from: sets results' start range
+    - results_to: sets results' end range
+    :return: Demisto outputs
     """
     asset_type = args.get("asset_type")
     operation = args.get("operation")

@@ -11,6 +11,14 @@ def load_test_data(json_path):
 
 
 def test_module_command(requests_mock):
+    """
+    Given:
+        - Performs a basic GET request to check if the API is reachable and authentication is successful.
+    When
+        - Setting a new instance of the integration.
+    Then
+        - returns "ok".
+    """
     from DeHashed import Client, test_module
 
     test_data = load_test_data("test_data/search.json")
@@ -27,6 +35,14 @@ def test_module_command(requests_mock):
 
 
 def test_search_command_using_is_operator_without_filter(requests_mock):
+    """
+    Given:
+        - "Is" operator, value to search, and not using any filters.
+    When
+        - Searching an object that matches the specified value.
+    Then
+        - returns Demisto outputs.
+    """
     from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
@@ -53,6 +69,14 @@ def test_search_command_using_is_operator_without_filter(requests_mock):
 
 
 def test_search_command_using_contains_operator_without_filter(requests_mock):
+    """
+    Given:
+        - "Contains" operator, value to search.
+    When
+        - Searching an object that contains the specified value.
+    Then
+        - returns Demisto outputs.
+    """
     from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
@@ -81,6 +105,14 @@ def test_search_command_using_contains_operator_without_filter(requests_mock):
 
 
 def test_search_command_using_regex_operator_without_filter(requests_mock):
+    """
+    Given:
+        - "Regex" operator, value to search.
+    When
+        - Searching an object that contains the specified value.
+    Then
+        - returns Demisto outputs.
+    """
     from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
@@ -109,6 +141,14 @@ def test_search_command_using_regex_operator_without_filter(requests_mock):
 
 
 def test_search_command_using_is_operator_with_filter_and_multi_values(requests_mock):
+    """
+    Given:
+        - "Is" operator, value to search and "email" as a filter.
+    When
+        - Searching an object that matches the specified value.
+    Then
+        - returns Demisto outputs.
+    """
     from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
@@ -137,6 +177,14 @@ def test_search_command_using_is_operator_with_filter_and_multi_values(requests_
 def test_search_command_using_contains_operator_with_filter_and_multi_values(
     requests_mock,
 ):
+    """
+    Given:
+        - "Contains" operator, value to search and "name" as a filter.
+    When
+        - Searching an object that contains the specified value.
+    Then
+        - returns Demisto outputs.
+    """
     from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
@@ -167,6 +215,14 @@ def test_search_command_using_contains_operator_with_filter_and_multi_values(
 def test_search_command_using_regex_operator_with_filter_and_multi_values(
     requests_mock,
 ):
+    """
+    Given:
+        - "Regex" operator, value to search and "vin" as a filter.
+    When
+        - Searching an object that contains the specified value.
+    Then
+        - returns Demisto outputs.
+    """
     from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
@@ -197,6 +253,14 @@ def test_search_command_using_regex_operator_with_filter_and_multi_values(
 def test_search_command_using_regex_operator_with_filter_and_change_result_range(
     requests_mock,
 ):
+    """
+    Given:
+        - "Regex" operator, value to search, "vin" as a filter and a range of results amount to return.
+    When
+        - Searching an object that contains the specified value.
+    Then
+        - returns Demisto outputs.
+    """
     from DeHashed import Client, dehashed_search_command
 
     test_data = load_test_data("test_data/search.json")
