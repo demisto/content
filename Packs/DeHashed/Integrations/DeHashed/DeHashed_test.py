@@ -152,4 +152,3 @@ def test_search_command_using_regex_operator_with_filter_and_change_result_range
 
     assert expected_result == context
 
-

@@ -1,3 +1,5 @@
+from typing import Union
+
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,7 +16,7 @@ class Client(BaseClient):
         self.email = email
         self.api_key = api_key
 
-    def dehashed_search(self, asset_type: str, value: list, operation: str = None, results_page_number: str = None)\
+    def dehashed_search(self, asset_type: str, value: list, operation: str, results_page_number: str = None)\
             -> dict:
         query_value = ''
         if operation == 'is':
@@ -71,7 +73,7 @@ def convert_string_to_int(argument) -> int:
         return input_as_int
 
 
-def filter_results(entries: list, results_from: any, results_to: any) -> tuple:
+def filter_results(entries: list, results_from: Union[str, None], results_to: Union[str, None]) -> tuple:
     if results_from:
         results_from_int = convert_string_to_int(results_from)
     else:
