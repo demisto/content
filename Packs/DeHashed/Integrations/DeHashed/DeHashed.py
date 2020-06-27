@@ -1,6 +1,3 @@
-
-from urllib3.exceptions import NewConnectionError
-
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -10,6 +7,7 @@ requests.packages.urllib3.disable_warnings()
 INTEGRATION_CONTEXT_BRAND = 'DeHashed'
 RESULTS_FROM = 0
 RESULTS_TO = 49
+
 
 class Client(BaseClient):
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=None, headers=None, auth=None,
