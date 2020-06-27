@@ -16,7 +16,8 @@ class Client(BaseClient):
         self.email = email
         self.api_key = api_key
 
-    def dehashed_search(self, asset_type: str, value: list, operation: str, results_page_number: str = None)\
+    def dehashed_search(self, asset_type: Union[str, None], value: list, operation: Union[str, None],
+                        results_page_number: str = None)\
             -> dict:
         query_value = ''
         if operation == 'is':
