@@ -1,9 +1,8 @@
 import json
 import urllib
-from DeHashed import Client, test_module, dehashed_search_command
 
-DEHASHED_URL = 'https://url.com/'  # disable-secrets-detection
-INTEGRATION_CONTEXT_BRAND = 'DeHashed'
+DEHASHED_URL = "https://url.com/"  # disable-secrets-detection
+INTEGRATION_CONTEXT_BRAND = "DeHashed"
 
 
 def load_test_data(json_path):
@@ -12,142 +11,214 @@ def load_test_data(json_path):
 
 
 def test_module_command(requests_mock):
-    test_data = load_test_data('test_data/search.json')
-    url_params = {'query': 'vin:"test" "test1"'}
+    from DeHashed import Client, test_module, dehashed_search_command
+
+    test_data = load_test_data("test_data/search.json")
+    url_params = {"query": 'vin:"test" "test1"'}
     encoded = urllib.parse.urlencode(url_params)
 
-    requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
+    requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(
-        base_url=f'{DEHASHED_URL}'
-    )
+    client = Client(base_url=f"{DEHASHED_URL}")
     client._headers = {}
     res = test_module(client)
 
-    assert res == 'ok'
+    assert res == "ok"
 
 
 def test_search_command_using_is_operator_without_filter(requests_mock):
-    test_data = load_test_data('test_data/search.json')
-    expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results'],
-                       'DeHashed.LastQuery(true)': {'ResultsFrom': 0, 'ResultsTo': 49, 'DisplayedResults': 2,
-                                                    'TotalResults': 2}}
-    url_params = {'query': '"testgamil.co"'}
-    encoded = urllib.parse.urlencode(url_params)
-    requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
+    from DeHashed import Client, test_module, dehashed_search_command
 
-    client = Client(
-        base_url=f'{DEHASHED_URL}'
-    )
+    test_data = load_test_data("test_data/search.json")
+    expected_result = {
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
+            "full_results"
+        ],
+        "DeHashed.LastQuery(true)": {
+            "ResultsFrom": 0,
+            "ResultsTo": 49,
+            "DisplayedResults": 2,
+            "TotalResults": 2,
+        },
+    }
+    url_params = {"query": '"testgamil.co"'}
+    encoded = urllib.parse.urlencode(url_params)
+    requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
+
+    client = Client(base_url=f"{DEHASHED_URL}")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(client, test_data['is_op_single'])
+    markdown, context, raw = dehashed_search_command(client, test_data["is_op_single"])
 
     assert expected_result == context
 
 
 def test_search_command_using_contains_operator_without_filter(requests_mock):
-    test_data = load_test_data('test_data/search.json')
-    expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results'],
-                       'DeHashed.LastQuery(true)': {'ResultsFrom': 0, 'ResultsTo': 49, 'DisplayedResults': 2,
-                                                    'TotalResults': 2}}
-    url_params = {'query': 'testgamil.co'}
-    encoded = urllib.parse.urlencode(url_params)
-    requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
+    from DeHashed import Client, test_module, dehashed_search_command
 
-    client = Client(
-        base_url=f'{DEHASHED_URL}'
-    )
+    test_data = load_test_data("test_data/search.json")
+    expected_result = {
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
+            "full_results"
+        ],
+        "DeHashed.LastQuery(true)": {
+            "ResultsFrom": 0,
+            "ResultsTo": 49,
+            "DisplayedResults": 2,
+            "TotalResults": 2,
+        },
+    }
+    url_params = {"query": "testgamil.co"}
+    encoded = urllib.parse.urlencode(url_params)
+    requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
+
+    client = Client(base_url=f"{DEHASHED_URL}")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(client, test_data['contains_op_single'])
+    markdown, context, raw = dehashed_search_command(
+        client, test_data["contains_op_single"]
+    )
 
     assert expected_result == context
 
 
 def test_search_command_using_regex_operator_without_filter(requests_mock):
-    test_data = load_test_data('test_data/search.json')
-    expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results'],
-                       'DeHashed.LastQuery(true)': {'ResultsFrom': 0, 'ResultsTo': 49, 'DisplayedResults': 2,
-                                                    'TotalResults': 2}}
-    url_params = {'query': '/joh?n(ath[oa]n)/'}
-    encoded = urllib.parse.urlencode(url_params)
-    requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
+    from DeHashed import Client, test_module, dehashed_search_command
 
-    client = Client(
-        base_url=f'{DEHASHED_URL}'
-    )
+    test_data = load_test_data("test_data/search.json")
+    expected_result = {
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
+            "full_results"
+        ],
+        "DeHashed.LastQuery(true)": {
+            "ResultsFrom": 0,
+            "ResultsTo": 49,
+            "DisplayedResults": 2,
+            "TotalResults": 2,
+        },
+    }
+    url_params = {"query": "/joh?n(ath[oa]n)/"}
+    encoded = urllib.parse.urlencode(url_params)
+    requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
+
+    client = Client(base_url=f"{DEHASHED_URL}")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(client, test_data['regex_op_single'])
+    markdown, context, raw = dehashed_search_command(
+        client, test_data["regex_op_single"]
+    )
 
     assert expected_result == context
 
 
 def test_search_command_using_is_operator_with_filter_and_multi_values(requests_mock):
-    test_data = load_test_data('test_data/search.json')
-    expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results'],
-                       'DeHashed.LastQuery(true)': {'ResultsFrom': 0, 'ResultsTo': 49, 'DisplayedResults': 2,
-                                                    'TotalResults': 2}}
-    url_params = {'query': 'email:"testgamil.co" "test1gmail.com"'}
-    encoded = urllib.parse.urlencode(url_params)
-    requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
+    from DeHashed import Client, test_module, dehashed_search_command
 
-    client = Client(
-        base_url=f'{DEHASHED_URL}'
-    )
+    test_data = load_test_data("test_data/search.json")
+    expected_result = {
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
+            "full_results"
+        ],
+        "DeHashed.LastQuery(true)": {
+            "ResultsFrom": 0,
+            "ResultsTo": 49,
+            "DisplayedResults": 2,
+            "TotalResults": 2,
+        },
+    }
+    url_params = {"query": 'email:"testgamil.co" "test1gmail.com"'}
+    encoded = urllib.parse.urlencode(url_params)
+    requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
+
+    client = Client(base_url=f"{DEHASHED_URL}")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(client, test_data['is_op_multi'])
+    markdown, context, raw = dehashed_search_command(client, test_data["is_op_multi"])
 
     assert expected_result == context
 
 
-def test_search_command_using_contains_operator_with_filter_and_multi_values(requests_mock):
-    test_data = load_test_data('test_data/search.json')
-    expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results'],
-                       'DeHashed.LastQuery(true)': {'ResultsFrom': 0, 'ResultsTo': 49, 'DisplayedResults': 2,
-                                                    'TotalResults': 2}}
-    url_params = {'query': 'name:(test1 OR test2)'}
-    encoded = urllib.parse.urlencode(url_params)
-    requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
+def test_search_command_using_contains_operator_with_filter_and_multi_values(
+    requests_mock,
+):
+    from DeHashed import Client, test_module, dehashed_search_command
 
-    client = Client(
-        base_url=f'{DEHASHED_URL}'
-    )
+    test_data = load_test_data("test_data/search.json")
+    expected_result = {
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
+            "full_results"
+        ],
+        "DeHashed.LastQuery(true)": {
+            "ResultsFrom": 0,
+            "ResultsTo": 49,
+            "DisplayedResults": 2,
+            "TotalResults": 2,
+        },
+    }
+    url_params = {"query": "name:(test1 OR test2)"}
+    encoded = urllib.parse.urlencode(url_params)
+    requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
+
+    client = Client(base_url=f"{DEHASHED_URL}")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(client, test_data['contains_op_multi'])
+    markdown, context, raw = dehashed_search_command(
+        client, test_data["contains_op_multi"]
+    )
 
     assert expected_result == context
 
 
-def test_search_command_using_regex_operator_with_filter_and_multi_values(requests_mock):
-    test_data = load_test_data('test_data/search.json')
-    expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results']['full_results'],
-                       'DeHashed.LastQuery(true)': {'ResultsFrom': 0, 'ResultsTo': 49, 'DisplayedResults': 2,
-                                                    'TotalResults': 2}}
-    url_params = {'query': 'vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/'}
-    encoded = urllib.parse.urlencode(url_params)
-    requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
+def test_search_command_using_regex_operator_with_filter_and_multi_values(
+    requests_mock,
+):
+    from DeHashed import Client, test_module, dehashed_search_command
 
-    client = Client(
-        base_url=f'{DEHASHED_URL}'
-    )
+    test_data = load_test_data("test_data/search.json")
+    expected_result = {
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results"][
+            "full_results"
+        ],
+        "DeHashed.LastQuery(true)": {
+            "ResultsFrom": 0,
+            "ResultsTo": 49,
+            "DisplayedResults": 2,
+            "TotalResults": 2,
+        },
+    }
+    url_params = {"query": "vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/"}
+    encoded = urllib.parse.urlencode(url_params)
+    requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
+
+    client = Client(base_url=f"{DEHASHED_URL}")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(client, test_data['regex_op_multi'])
+    markdown, context, raw = dehashed_search_command(
+        client, test_data["regex_op_multi"]
+    )
 
     assert expected_result == context
 
 
-def test_search_command_using_regex_operator_with_filter_and_change_result_range(requests_mock):
-    test_data = load_test_data('test_data/search.json')
-    expected_result = {"DeHashed.Search(val.Id==obj.Id)": test_data['expected_results_range']['full_results'],
-                       'DeHashed.LastQuery(true)': {'ResultsFrom': 0, 'ResultsTo': 1, 'DisplayedResults': 1,
-                                                    'TotalResults': 2}}
-    url_params = {'query': 'vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/'}
-    encoded = urllib.parse.urlencode(url_params)
-    requests_mock.get(f'{DEHASHED_URL}search?{encoded}', json=test_data['api_response'])
+def test_search_command_using_regex_operator_with_filter_and_change_result_range(
+    requests_mock,
+):
+    from DeHashed import Client, test_module, dehashed_search_command
 
-    client = Client(
-        base_url=f'{DEHASHED_URL}'
-    )
+    test_data = load_test_data("test_data/search.json")
+    expected_result = {
+        "DeHashed.Search(val.Id==obj.Id)": test_data["expected_results_range"][
+            "full_results"
+        ],
+        "DeHashed.LastQuery(true)": {
+            "ResultsFrom": 0,
+            "ResultsTo": 1,
+            "DisplayedResults": 1,
+            "TotalResults": 2,
+        },
+    }
+    url_params = {"query": "vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/"}
+    encoded = urllib.parse.urlencode(url_params)
+    requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
+
+    client = Client(base_url=f"{DEHASHED_URL}")
     client._headers = {}
-    markdown, context, raw = dehashed_search_command(client, test_data['regex_op_multi_range'])
+    markdown, context, raw = dehashed_search_command(
+        client, test_data["regex_op_multi_range"]
+    )
 
     assert expected_result == context
