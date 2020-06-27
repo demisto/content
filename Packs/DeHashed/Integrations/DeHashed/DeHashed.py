@@ -14,7 +14,8 @@ class Client(BaseClient):
         self.email = email
         self.api_key = api_key
 
-    def dehashed_search(self, asset_type: str, value: list, operation: str = None, results_page_number: str = None) -> dict:
+    def dehashed_search(self, asset_type: str, value: list, operation: str = None, results_page_number: str = None)\
+            -> dict:
         query_value = ''
         if operation == 'is':
             query_value = ' '.join((f'"{value}"' for value in value))
@@ -70,7 +71,7 @@ def convert_string_to_int(argument) -> int:
         return input_as_int
 
 
-def filter_results(entries: list, results_from: int, results_to: int) -> tuple:
+def filter_results(entries: list, results_from: any, results_to: any) -> tuple:
     if results_from:
         results_from_int = convert_string_to_int(results_from)
     else:
@@ -108,7 +109,7 @@ def dehashed_search_command(client: Client, args: dict) -> tuple:
     else:
         filtered_results, results_from, results_to = filter_results(query_data, results_from, results_to)
         if not results_page_number:
-            results_page_number = 1
+            results_page_number = "1"
 
         query_entries = createContext(filtered_results, keyTransform=underscoreToCamelCase)
         headers = [key.replace('_', ' ') for key in [*filtered_results[0].keys()]]
@@ -118,9 +119,9 @@ def dehashed_search_command(client: Client, args: dict) -> tuple:
                       "TotalResults": result.get("total"),
                       }
         return (
-            tableToMarkdown(f'DeHashed Search - Got {result.get("total")} results. Display only: {len(filtered_results)} Page number:'
-                            f' {results_page_number}.',
-                            filtered_results, headers=headers, removeNull=True, headerTransform=pascalToSpace),
+            tableToMarkdown(f'DeHashed Search - Got {result.get("total")} results. Display only:'
+                            f' {len(filtered_results)} Page number:{results_page_number}.', filtered_results,
+                            headers=headers, removeNull=True, headerTransform=pascalToSpace),
             {
                 f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': query_entries,
                 f'{INTEGRATION_CONTEXT_BRAND}.LastQuery(true)': last_query
