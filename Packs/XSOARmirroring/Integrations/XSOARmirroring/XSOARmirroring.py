@@ -572,10 +572,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
     if last_update >= modified and not formatted_entries:
         demisto.info(f'Nothing new in the incident, incident id {incident_id}')
-        return IncidentMirror(
-            incident={},
-            entries=[]
-        )
+        incident = {}  # this empties out the incident, which will result in not updating the local one
 
     mirror_data = IncidentMirror(
         incident=incident,
