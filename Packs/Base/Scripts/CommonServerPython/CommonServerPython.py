@@ -3595,3 +3595,29 @@ def batch(iterable, batch_size=1):
 
 class DemistoException(Exception):
     pass
+
+
+class IncidentMirror(object):
+    def __init__(self, incident, entries):
+        self.incident = incident
+        self.entries = entries
+
+    def update_local(self):
+        if self.incident:
+            demisto.info(f'Updating incident {self.incident["id"]}')
+            return_list = [self.incident] + self.entries
+            demisto.results(return_list)
+
+def is_incident_closed(status):
+    """Checks if the status marks the incident as a closed one
+
+    :type status: ``int``
+    :param status: status representation of a given incident.
+
+    :rtype: ``bool``
+    :return:: True if status marks the incident as closed, False otherwise.
+    """
+    if status == 2:
+        return True
+
+    return False
