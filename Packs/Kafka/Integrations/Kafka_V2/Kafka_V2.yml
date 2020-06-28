@@ -12,8 +12,8 @@ configuration:
   required: false
   type: 8
 - display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                        Certificate Settings
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                   Certificate Settings
     CA certificate of Kafka server (.cer)
   name: ca_cert
   required: false
@@ -31,8 +31,8 @@ configuration:
   required: false
   type: 4
 - display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                        Fetch Incidents Settings
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                               Fetch Incidents Settings
     Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   required: false
@@ -41,10 +41,11 @@ configuration:
   name: partition
   required: false
   type: 0
-- display: Offset to fetch messages from
+- display: Offset to fetch messages from (Exclusive)
   name: offset
   required: false
   type: 0
+  additionalinfo: The initial offset to start fetching from, not including the value set (e.g. if 3 is set, the first event that will be fetched will be with offset 4).
 - defaultvalue: '50'
   display: Max number of messages to fetch
   name: max_messages

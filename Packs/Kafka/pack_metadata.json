@@ -1,16 +1,16 @@
 {
-  "name": "Kafka",
-  "description": "The Open source distributed streaming platform",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Messaging"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Kafka",
+    "description": "The Open source distributed streaming platform",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }

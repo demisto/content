@@ -347,7 +347,8 @@ def fetch_incidents(client):
 
         consumer_args = {
             'consumer_timeout_ms': 2000,  # wait max 2 seconds for new messages
-            'reset_offset_on_start': True
+            'reset_offset_on_start': True,
+            'auto_offset_reset': offset_to_fetch_from
         }
 
         if partition_to_fetch_from:
