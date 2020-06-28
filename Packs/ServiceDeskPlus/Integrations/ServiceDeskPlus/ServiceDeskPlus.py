@@ -551,10 +551,11 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
     params = {'input_data': f'{list_info}'}
 
     # Get incidents from Service Desk Plus
-    demisto.debug(f'Fetching Service Desk Plus requests. From: '
-                  f'{timestamp_to_datestring(time_from, date_format=date_format)}. To: '
-                  f'{timestamp_to_datestring(time_to, date_format=date_format)}\n'
-                  f'last run id: {new_last_run.get("id", 0)}\n')  # todo: remove
+    # demisto.debug(f'Fetching Service Desk Plus requests. From: '
+    #               f'{timestamp_to_datestring(time_from, date_format=date_format)}. To: '
+    #               f'{timestamp_to_datestring(time_to, date_format=date_format)}\n'
+    #               f'last run id: {new_last_run.get("id", 0)}\n')  # todo: remove
+    demisto.info(f'Fetching ServiceDeskPlus incidents. with the query params: {str(params)}')
 
     incidents = client.get_requests(params=params).get('requests', [])
 

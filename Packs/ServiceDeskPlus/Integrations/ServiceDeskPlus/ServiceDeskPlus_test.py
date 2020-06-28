@@ -3,15 +3,16 @@ from ServiceDeskPlus import Client, create_request_command, update_request_comma
     linked_request_command, get_resolutions_list_command, delete_request_command, assign_request_command, \
     pickup_request_command, modify_linked_request_command, add_resolution_command, generate_refresh_token, \
     create_output, args_to_query, create_modify_linked_input_data, create_human_readable, resolution_human_readable, \
-    create_requests_list_info, create_fetch_list_info
+    create_requests_list_info, create_fetch_list_info, fetch_incidents, test_module
 from test_data.response_constants import RESPONSE_CREATE_REQUEST, RESPONSE_UPDATE_REQUEST, \
     RESPONSE_LIST_SINGLE_REQUEST, RESPONSE_LIST_MULTIPLE_REQUESTS, RESPONSE_LINKED_REQUEST_LIST, \
     RESPONSE_RESOLUTION_LIST, RESPONSE_NO_RESOLUTION_LIST, RESPONSE_LINK_REQUEST, RESPONSE_UNLINK_REQUEST, \
-    RESPONSE_GENERATE_REFRESH_TOKEN
+    RESPONSE_GENERATE_REFRESH_TOKEN, RESPONSE_FETCH_INCIDENTS
 from test_data.result_constants import EXPECTED_CREATE_REQUEST, EXPECTED_UPDATE_REQUEST, EXPECTED_LIST_SINGLE_REQUEST, \
     EXPECTED_LIST_MULTIPLE_REQUESTS, EXPECTED_LINKED_REQUEST_LIST, EXPECTED_RESOLUTION_LIST, EXPECTED_NO_RESOLUTION_LIST
 
 
+# test commands with context:
 @pytest.mark.parametrize('command, args, response, expected_result', [
     (create_request_command, {'subject': 'Create request test', 'mode': 'E-Mail', 'requester': 'First Last',
                               'level': 'Tier 1', 'impact': 'Affects Group', 'priority': 'High', 'status': 'On Hold',
@@ -50,6 +51,7 @@ def test_commands(command, args, response, expected_result, mocker):
     assert expected_result == result[1]
 
 
+# test commands without context:
 @pytest.mark.parametrize('command, args, response, expected_result', [
     (delete_request_command, {'request_id': '1234'}, {}, '### Successfully deleted request 1234'),
     (assign_request_command, {'request_id': '1234'}, {}, '### Service Desk Plus request 1234 was successfully assigned'),
@@ -82,7 +84,6 @@ def test_command_hr(command, args, response, expected_result, mocker):
     - mock the ServiceDeskPlus response
     Then
     - convert the result to human readable table
-    - create the context
     validate the human readable output
     """
     mocker.patch('ServiceDeskPlus.Client.update_access_token')
@@ -92,6 +93,7 @@ def test_command_hr(command, args, response, expected_result, mocker):
     assert expected_result == result[0]
 
 
+# test helper functions:
 def test_create_output():
     input = RESPONSE_CREATE_REQUEST.get('request')
     expected_output = EXPECTED_CREATE_REQUEST.get('ServiceDeskPlus(val.ID===obj.ID)').get('Request')
@@ -184,4 +186,59 @@ def test_create_fetch_list_info():
     assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
 
 
-# {"field":"technician.name", "values":"Arseny Krupnik,Hema Halliyal Halliyal", "condition":"is", "logical_operator":"AND"},  {"field":"group.name",  "values":"Network",  "condition":"is", "logical_operator":"AND"}
+def test_fetch_incidents(mocker):
+    """
+    Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's get_requests command.
+    Then
+    - run the fetch incidents command using the Client.
+    Validate the length of the results and the different fields of the fetched incidents.
+    """
+    mocker.patch('ServiceDeskPlus.Client.update_access_token')
+    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
+    mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
+    mocker.patch('ServiceDeskPlus.date_to_timestamp', return_value='1592918317168')
+    mocker.patch('ServiceDeskPlus.create_fetch_list_info', return_value={})
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+
+    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit=10, status='Open', fetch_filter='')
+    assert len(incidents) == 3
+
+    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit=2, status='Open', fetch_filter='')
+    assert len(incidents) == 2
+    assert incidents[0].get('name') == 'Test fetch incidents - 1234'
+
+    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit=1, status='Open', fetch_filter='')
+    assert len(incidents) == 1
+    assert incidents[0].get('name') == 'Test fetch incidents - 1234'
+
+    incidents = fetch_incidents(client, fetch_time='1 hour', fetch_limit=0, status='Open', fetch_filter='')
+    assert len(incidents) == 0
+
+
+def test_test_module(mocker):
+    """
+    Unit test
+    Given
+    - test module command
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's send_request.
+    Then
+    - run the test module command using the Client
+    Validate the content of the HumanReadable.
+    """
+    mocker.patch('ServiceDeskPlus.Client.update_access_token')
+    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
+
+    mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
+    mocker.patch.object(client, 'http_request', return_value=RESPONSE_FETCH_INCIDENTS)
+    result = test_module(client)
+    assert result == 'ok'

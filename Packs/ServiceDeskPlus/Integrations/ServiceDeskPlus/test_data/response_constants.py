@@ -642,10 +642,10 @@ RESPONSE_UNLINK_REQUEST = {
     'response_status': {
         'status_code': 2000,
         'messages': [{
-                         'status_code': 2000,
-                         'type': 'success',
-                         'message': 'The request[s] link are removed successfully.'
-                     }],
+            'status_code': 2000,
+            'type': 'success',
+            'message': 'The request[s] link are removed successfully.'
+        }],
         'status': 'success'
     }
 }
@@ -656,4 +656,152 @@ RESPONSE_GENERATE_REFRESH_TOKEN = {
     "api_domain": "https://www.zohoapis.com",
     "token_type": "Bearer",
     "expires_in": 3600
+}
+
+tdict = {
+    'fs': 123
+}
+
+RESPONSE_FETCH_INCIDENTS = {
+    'response_status': [{
+        'status_code': 2000,
+        'status': 'success'
+    }],
+    'list_info': {
+        'has_more_rows': False,
+        'sort_field': 'created_time',
+        'start_index': 1,
+        'sort_order': 'asc',
+        'search_criteria': [{
+            'condition': 'between',
+            'field': 'created_time',
+            'values': ['1590736751000', '1593328751000']
+        }],
+        'row_count': 3
+    },
+    'requests': [{
+        'requester': {
+            'phone': None,
+            'name': 'Daniel',
+            'mobile': None,
+            'id': '123640000000193011'
+        },
+        'template': {
+            'name': 'Default Request',
+            'id': '123640000000006655'
+        },
+        'created_time': {
+            'display_value': 'Jun 23, 2020 04:18 PM',
+            'value': '1592918317168'
+        },
+        'has_draft': False,
+        'cancel_flag_comments': None,
+        'display_id': '95',
+        'subject': 'Test fetch incidents',
+        'technician': {
+            'name': 'Arseny Krupnik',
+            'mobile': None,
+            'id': '123640000000142582'
+        },
+        'due_by_time': None,
+        'is_service_request': False,
+        'cancellation_requested': False,
+        'has_notes': False,
+        'id': '1234',
+        'status': {
+            'in_progress': True,
+            'internal_name': 'Open',
+            'name': 'Open',
+            'id': '123640000000006657'
+        },
+        'group': {
+            'site': None,
+            'deleted': False,
+            'name': 'Network',
+            'id': '123640000000006681'
+        }
+    },
+        {
+            'requester': {
+                'phone': None,
+                'name': 'Daniel',
+                'mobile': None,
+                'id': '123640000000193011'
+            },
+            'template': {
+                'name': 'Default Request',
+                'id': '123640000000006655'
+            },
+            'created_time': {
+                'display_value': 'Jun 23, 2020 04:20 PM',
+                'value': '1592918445273'
+            },
+            'has_draft': False,
+            'cancel_flag_comments': None,
+            'display_id': '96',
+            'subject': 'Updating the last request',
+            'technician': {
+                'name': 'Arseny Krupnik',
+                'mobile': None,
+                'id': '123640000000142582'
+            },
+            'due_by_time': None,
+            'is_service_request': False,
+            'cancellation_requested': False,
+            'has_notes': False,
+            'id': '5678',
+            'status': {
+                'in_progress': True,
+                'internal_name': 'Open',
+                'name': 'Open',
+                'id': '123640000000006657'
+            },
+            'group': {
+                'site': None,
+                'deleted': False,
+                'name': 'Network',
+                'id': '123640000000006681'
+            }
+        },
+        {
+            'requester': {
+                'name': 'Arseny Krupnik',
+                'mobile': None,
+                'id': '123640000000142582',
+            },
+            'template': {
+                'name': 'Default Request',
+                'id': '123640000000006655'
+            },
+            'created_time': {
+                'display_value': 'Jun 24, 2020 09:19 AM',
+                'value': '1592979595354'
+            },
+            'has_draft': False,
+            'cancel_flag_comments': None,
+            'display_id': '99',
+            'subject': 'new request for demo',
+            'technician': {
+                'name': 'Arseny Krupnik',
+                'mobile': None,
+                'id': '123640000000142582',
+            },
+            'due_by_time': None,
+            'is_service_request': False,
+            'cancellation_requested': False,
+            'has_notes': False,
+            'id': '0912',
+            'status': {
+                'in_progress': True,
+                'internal_name': 'Open',
+                'name': 'Open',
+                'id': '123640000000006657'
+            },
+            'group': {
+                'site': None,
+                'deleted': False,
+                'name': 'Network',
+                'id': '123640000000006681'
+            }
+        }]
 }
