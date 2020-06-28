@@ -15,7 +15,7 @@ configuration:
 - display: API Token
   name: api_token
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
