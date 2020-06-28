@@ -997,6 +997,8 @@ tasks:
       service: {}
       source: {}
       source_user: {}
+      source_zone:
+        simple: test_zone_DO_NOT_DELETE
       tags:
         simple: Bark_test_tag2
       target: {}
