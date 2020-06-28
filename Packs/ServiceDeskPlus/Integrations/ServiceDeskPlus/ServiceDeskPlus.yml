@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: ea49692b-3ad1-42c3-9881-09625da8cf8e
+  id: ServiceDeskPlus
   version: -1
 configuration:
 - display: 'Data Center Location: Select the domain location that is applicable for
@@ -76,12 +76,9 @@ configuration:
   required: false
   type: 12
 description: IT Service Management
-detaileddescription: |-
-  ## Hello World
-  - This text is markdown
-  - Here you should explain how to configure the instance in Demisto
 display: Service Desk Plus
-name: ea49692b-3ad1-42c3-9881-09625da8cf8e
+name: ServiceDeskPlus
+beta: true
 script:
   commands:
   - arguments:

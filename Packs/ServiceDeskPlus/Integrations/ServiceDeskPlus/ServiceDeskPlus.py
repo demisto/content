@@ -50,7 +50,6 @@ class Client(BaseClient):
         })
         if self.refresh_token:
             self.update_access_token()  # Add a valid access token to the headers
-            # self.access_token_refreshed = False  # todo: remove
 
     def update_access_token(self):
         """
@@ -84,8 +83,6 @@ class Client(BaseClient):
             res = self._http_request(method, url_suffix, full_url=full_url, resp_type='response', ok_codes=ok_codes,
                                      params=params)
             if res.status_code in [200, 201]:
-                # self.access_token_refreshed = False  # todo: remove
-
                 try:
                     return res.json()
                 except ValueError as exception:
@@ -179,10 +176,11 @@ def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> d
         linked_request = {
             'linked_request': {
                 'id': request_id
-            }
+            },
+            'comments': comment
         }
-        if comment:
-            linked_request['comments'] = comment
+        # if comment:
+        #     linked_request['comments'] = str(comment)
         all_linked_requests.append(linked_request)
     return {
         'link_requests': all_linked_requests
@@ -275,6 +273,7 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
          A dictionary containing the list_info parameter that should be used for filtering the requests.
 
     """
+    list_info = {}
     try:
         search_criteria = [{
                                'field': 'created_time',
@@ -285,10 +284,10 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
             filters = ast.literal_eval(fetch_filter)
             if isinstance(filters, dict):
                 query = {
-                    'field': filters.get('field'),
-                    'condition': filters.get('condition'),
+                    'field': str(filters.get('field')),
+                    'condition': str(filters.get('condition')),
                     'values': filters.get('values', '').split(','),
-                    'logical_operator': filters.get('logical_operator', 'AND')
+                    'logical_operator': str(filters.get('logical_operator', 'AND'))
                 }
                 search_criteria.append(query)
             else:
@@ -315,11 +314,11 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
             'sort_order': 'asc',
             'row_count': fetch_limit
         }
-        return {
-            'list_info': list_info
-        }
     except Exception as e:
         return_error('Invalid input format. Please follow instructions for correct filter format.')
+    return {
+        'list_info': list_info
+    }
 
 
 # Command functions:
@@ -641,11 +640,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
         'input_data': f'{list_info}'
     }
 
-    # Get incidents from Service Desk Plus
-    # demisto.debug(f'Fetching Service Desk Plus requests. From: '
-    #               f'{timestamp_to_datestring(time_from, date_format=date_format)}. To: '
-    #               f'{timestamp_to_datestring(time_to, date_format=date_format)}\n'
-    #               f'last run id: {new_last_run.get("id", 0)}\n')  # todo: remove
     demisto.info(f'Fetching ServiceDeskPlus incidents. with the query params: {str(params)}')
 
     incidents = client.get_requests(params=params).get('requests', [])
@@ -704,9 +698,9 @@ def test_module(client: Client):
 
         if params.get('isFetch'):
             fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
-            fetch_status = params.get('fetch_status') if params.get('fetch_status') else 'Open'
-            fetch_filter = params.get('fetch_filter')
-            fetch_limit = int(params.get('fetch_limit')) if params.get('fetch_limit') else 10
+            fetch_status = str(params.get('fetch_status')) if params.get('fetch_status') else 'Open'
+            fetch_filter = str(params.get('fetch_filter'))
+            fetch_limit = int(params.get('fetch_limit', '10')) if params.get('fetch_limit') else 10
 
             date_format = '%Y-%m-%dT%H:%M:%S'
             time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
