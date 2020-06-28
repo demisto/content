@@ -1,7 +1,3 @@
-import json
-from typing import Tuple
-
-import dateparser
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -15,7 +11,7 @@ VENDOR_NAME = 'CrowdStrike Malquery'
 DBOT_SCORE = {
     'unknown': 0,
     'clean': 1,
-    'unwanted (PUA)': 2,
+    'unwanted': 2,
     'malware': 3,
     'malicious': 3,
 }
@@ -48,6 +44,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def __init__(self, base_url, verify, proxy, client_id, client_secret):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.client_id = client_id,
@@ -81,7 +78,8 @@ class Client(BaseClient):
                str: Access token that will be added to authorization header.
        """
         now = datetime.now()
-        integration_context = demisto.getIntegrationContext()
+        integration_context = demisto.getIntegrationContext()[0] \
+            if isinstance(demisto.getIntegrationContext(), list) else demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
         valid_until = integration_context.get('valid_until')
         if access_token and not new_token:
@@ -89,8 +87,8 @@ class Client(BaseClient):
                 # token expired
                 access_token = self.get_token_request()
                 integration_context = {
-                    'access_token': access_token,
-                    'valid_until': date_to_timestamp(now) / 1000},
+                                          'access_token': access_token,
+                                          'valid_until': date_to_timestamp(now) / 1000},
                 demisto.setIntegrationContext(integration_context)
                 return access_token
             else:
@@ -132,7 +130,7 @@ class Client(BaseClient):
         return self.http_request(method="POST", url_suffix='/queries/exact-search/v1', json_data=body)
 
     def fuzzy_search(self, body):
-        return self.http_request(method="POST", url_suffix='/combined/fuzzy-search/v1', json_data=body)
+        return self.http_request(method="POST", url_suffix='/combined/fuzzy-search/v1', json_data=body, timeout=20)
 
     def hunt(self, body):
         return self.http_request(method="POST", url_suffix='/queries/hunt/v1', json_data=body)
@@ -153,9 +151,9 @@ class Client(BaseClient):
     def samples_multidownload(self, body):
         return self.http_request(method="POST", url_suffix='/entities/samples-multidownload/v1', json_data=body)
 
-    def fetch_samples(self, job_id):
+    def fetch_samples(self, request_id):
         headers = {"accept": "application/zip"}
-        params = {'ids': job_id}
+        params = {'ids': request_id}
         return self.http_request(method="GET", url_suffix='/entities/samples-fetch/v1', headers=headers, params=params,
                                  resp_type="response")
 
@@ -183,7 +181,7 @@ def test_module(client: Client, args: dict):
 
 
 def exact_search_command(client: Client, args: dict) -> CommandResults:
-    pattern_names = ['hex', 'ascii', 'wide_string']
+    pattern_names = ['hex', 'ascii', 'wide']
     patterns = [
         {
             "type": key,
@@ -193,7 +191,8 @@ def exact_search_command(client: Client, args: dict) -> CommandResults:
 
     # must provide a pattern (hex, ascii ot wide string)
     if not patterns:
-        raise DemistoException("You must provide a query to search in the following patterns: Hex, ASCII, Wide string")
+        raise DemistoException("You must provide a query to search in one of the following patterns: Hex, ASCII, "
+                               "Wide string")
 
     # dates format: YYYY/MM/DD
     query_filters = {
@@ -207,10 +206,7 @@ def exact_search_command(client: Client, args: dict) -> CommandResults:
     options = remove_None_values_keys(query_filters)
     body = {"options": options, "patterns": patterns}
     raw_response = client.exact_search(body)
-    entry_context = {
-        "Request_ID": raw_response.get('meta', {}).get('reqid'),
-        "Status": raw_response.get('meta', {}).get('status')
-    }
+    entry_context = {"Request_ID": raw_response.get('meta', {}).get('reqid')}
 
     human_readable = tableToMarkdown('Search Result', entry_context, removeNull=True)
 
@@ -223,7 +219,7 @@ def exact_search_command(client: Client, args: dict) -> CommandResults:
 
 
 def fuzzy_search_command(client: Client, args: dict) -> CommandResults:
-    pattern_names = ['hex', 'ascii', 'wide_string']
+    pattern_names = ['hex', 'ascii', 'wide']
     patterns = [
         {
             "type": key,
@@ -237,25 +233,21 @@ def fuzzy_search_command(client: Client, args: dict) -> CommandResults:
     query_filters = {
         "limit": int(args.get('limit')) if args.get('limit') else None,
         "filter_meta": argToList(args.get('filter_meta')) if args.get('filter_meta') else None,
-     }
+    }
     options = remove_None_values_keys(query_filters)
     body = {"options": options, "patterns": patterns}
     raw_response = client.fuzzy_search(body)
-    entry_context = {
-        "Request_ID": raw_response.get('meta', {}).get('reqid'),
-        "Status": raw_response.get('meta', {}).get('status')
-    }
-    human_readable = tableToMarkdown('Search Result', entry_context, removeNull=True)
+    resources_found = raw_response.get('resources', {})
+    human_readable = tableToMarkdown('Fuzzy Search Result', resources_found, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='Malquery',
-        outputs_key_field='Request_ID',
-        outputs=entry_context,
+        outputs_prefix='Malquery.File(val.md5 && val.md5 == obj.md5 || val.sha256 && val.sha256 == obj.sha256)',
+        outputs_key_field='',
+        outputs=resources_found,
         raw_response=raw_response)
 
 
-# TODO: Need to check with the yara_rule - command wasnt tested
 def hunt_command(client: Client, args: dict) -> CommandResults:
     yara_rule = args.get('yara_rule')
 
@@ -271,10 +263,7 @@ def hunt_command(client: Client, args: dict) -> CommandResults:
     options = remove_None_values_keys(query_filters)
     body = {"options": options, "yara_rule": yara_rule}
     raw_response = client.hunt(body)
-    entry_context = {
-        "Request_ID": raw_response.get('meta', {}).get('reqid'),
-        "Status": raw_response.get('meta', {}).get('status')
-    }
+    entry_context = {"Request_ID": raw_response.get('meta', {}).get('reqid')}
     human_readable = tableToMarkdown('Search Result', entry_context, removeNull=True)
 
     return CommandResults(
@@ -289,12 +278,20 @@ def get_request_command(client: Client, args: dict) -> CommandResults:
     request_id = args.get('request_id')
     raw_response = client.get_request(request_id)
     resources = raw_response.get('resources')
-    entry_context = {
-        "Request_ID": raw_response.get('meta', {}).get('reqid'),
-        "Status": raw_response.get('meta', {}).get('status'),
-        "Resources_Found": resources
-    }
-    human_readable = tableToMarkdown('Search Result', entry_context, removeNull=True)
+    status = raw_response.get('meta', {}).get('status')
+    if status != 'done':
+        entry_context = {
+            "Request_ID": request_id,
+            "Status": status
+        }
+        human_readable = tableToMarkdown('Request Status:', entry_context, removeNull=True)
+    else:
+        entry_context = {
+            "Request_ID": request_id,
+            "Status": status,
+            "File": resources if len(resources) else None
+        }
+        human_readable = tableToMarkdown(f'Search Result for request: {request_id}', resources, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
@@ -306,39 +303,29 @@ def get_request_command(client: Client, args: dict) -> CommandResults:
 
 def get_files_metadata_command(client: Client, args: dict):
     indicator_type = 'File'
-    files_ids = argToList(args.get('files_ids'))
-    raw_response = client.get_files_metadata(files_ids)
-    files = raw_response.get('resources', [])
-    human_readable = ''
-    file_indicator_list = []
-
-    for file in files:
-        file_label = file.get('label')
-        sha256 = file.get('sha256')
-        dbot_score = Common.DBotScore(
-            indicator=sha256,
-            indicator_type=DBotScoreType.FILE,
-            integration_name=VENDOR_NAME,
-            score=DBOT_SCORE[file_label]
-        )
-        file_entry = Common.File(sha256=sha256, dbot_score=dbot_score)
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
-        md = tableToMarkdown(table_name, file, removeNull=True)
-        human_readable += md
-        file_indicator_list.append(file_entry)
-
+    file_id = args.get('file')
+    raw_response = client.get_files_metadata(file_id)
+    file = raw_response.get('resources', [])[0]
+    file_label = file.get('label')
+    sha256 = file.get('sha256')
+    dbot_score = Common.DBotScore(indicator=sha256,
+                                  indicator_type=DBotScoreType.FILE,
+                                  integration_name=VENDOR_NAME,
+                                  score=DBOT_SCORE[file_label])
+    file_entry = Common.File(sha256=sha256, dbot_score=dbot_score)
+    table_name = f'{VENDOR_NAME} {indicator_type} reputation'
+    human_readable = tableToMarkdown(table_name, file, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='Malquery.File',
-        outputs_key_field='IndicatorValue',
-        outputs=files,
+        outputs_key_field='sha256',
+        outputs=file,
         readable_output=human_readable,
         raw_response=raw_response,
-        indicators=file_indicator_list)
+        indicators=[file_entry])
 
     return command_results
 
 
-# TODO: Check if its fine with demisto.results instead of commandResults
 def file_download_command(client: Client, args: dict):
     file_id = args.get('file_id')
     raw_response = client.file_download(file_id)
@@ -348,19 +335,15 @@ def file_download_command(client: Client, args: dict):
         raise DemistoException(
             f"Failed to load file data. \n {e}")
 
-    demisto.results(fileResult(file_id, content))
+    return fileResult(file_id, content)
 
 
 def samples_multidownload_command(client: Client, args: dict) -> CommandResults:
     samples = argToList(args.get('samples'))
     body = {"samples": samples}
     raw_response = client.samples_multidownload(body)
-
-    entry_context = {
-        "Request_ID": raw_response.get('meta', {}).get('reqid'),
-        "Status": raw_response.get('meta', {}).get('status')
-    }
-    human_readable = tableToMarkdown('Samples Multidownload Result', entry_context, removeNull=True)
+    entry_context = {"Request_ID": raw_response.get('meta', {}).get('reqid')}
+    human_readable = tableToMarkdown('Samples Multidownload Request', entry_context, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
@@ -371,10 +354,16 @@ def samples_multidownload_command(client: Client, args: dict) -> CommandResults:
 
 
 def samples_fetch_command(client: Client, args: dict):
-    job_id = args.get('job_id')
-    raw_response = client.fetch_samples(job_id)
-    content = raw_response.content
-    demisto.results(fileResult(job_id, content))
+    request_id = args.get('request_id')
+    raw_response = client.fetch_samples(request_id)
+    try:
+        content = raw_response.content
+        return fileResult(request_id, content)
+    except DemistoException as e:
+        if str(e).find('Could not find sample archive'):
+            return 'Could not find sample archive, The file is not indexed by MalQuery.'
+        else:
+            raise
 
 
 def get_ratelimit_command(client: Client, args: dict) -> CommandResults:
@@ -399,7 +388,6 @@ def main():
     client_id: str = params.get('client_id')
     client_secret: str = params.get('client_secret')
     base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/malquery')
-
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
 
@@ -408,12 +396,12 @@ def main():
         'cs-malquery-exact-search': exact_search_command,
         'cs-malquery-fuzzy-search': fuzzy_search_command,
         'cs-malquery-hunt': hunt_command,
-        'cs-malquery-request-get-status': get_request_command,
+        'cs-malquery-get-request': get_request_command,
         'file': get_files_metadata_command,
         'cs-malquery-file-download': file_download_command,
         'cs-malquery-samples-multidownload': samples_multidownload_command,
         'cs-malquery-sample-fetch': samples_fetch_command,
-        'cs-malquery-ratelimit-get': get_ratelimit_command,
+        'cs-malquery-get-ratelimit': get_ratelimit_command,
 
     }
     command = demisto.command()
