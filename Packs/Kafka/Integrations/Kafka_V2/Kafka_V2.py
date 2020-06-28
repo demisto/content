@@ -178,11 +178,15 @@ def print_topics(client):
         for topic in kafka_topics:
             partitions = []
             for partition in topic.partitions.values():
-                partitions.append({
-                    'ID': partition.id,
-                    'EarliestOffset': partition.earliest_available_offset(),
-                    'OldestOffset': partition.latest_available_offset()
-                })
+                partition_output = {'ID': partition.id}
+                try:
+                    partition_output['EarliestOffset'] = partition.earliest_available_offset()
+                    partition_output['OldestOffset'] = partition.latest_available_offset()
+                except Exception as e:
+                    demisto.error('Failed fetching available offset for topic {} partition {} - {}'.format(
+                        topic.name, partition.id, str(e))
+                    )
+                partitions.append(partition_output)
 
             topics.append({
                 'Name': topic.name,
