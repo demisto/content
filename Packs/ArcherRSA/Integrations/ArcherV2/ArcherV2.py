@@ -10,8 +10,6 @@ import dateparser
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
 REQUEST_HEADERS = {'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
                    'Content-Type': 'application/json'}
 
@@ -87,33 +85,6 @@ def get_search_options_soap_request(token, report_guid):
            f'            <sessionToken>{token}</sessionToken>' + \
            f'            <searchReportGuid>{report_guid}</searchReportGuid>' + \
            '        </GetSearchOptionsByGuid>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
-
-
-def get_value_list_soap_request(token, field_id):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <GetValueListForField xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <fieldId>{field_id}</fieldId>' + \
-           '        </GetValueListForField>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
-
-
-def get_user_info_soap_request(token, username, domain):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <LookupDomainUserId xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <username>{username}</username>' + \
-           f'            <usersDomain>{domain}</usersDomain>' + \
-           '        </LookupDomainUserId>' + \
            '    </soap:Body>' + \
            '</soap:Envelope>'
 
@@ -240,12 +211,12 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
-                                 resp_type='response', ok_codes=[200, 401])
+                                 resp_type='response', ok_codes=(200, 401))
 
         if res.status_code == 401:
             self.update_session()
             res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
-                                     resp_type='response', ok_codes=[200, 401])
+                                     resp_type='response', ok_codes=(200, 401))
             return res
 
         return res.json()
@@ -258,7 +229,7 @@ class Client(BaseClient):
             'Password': self.password
         }
 
-        res = self._http_request('Post', '/rsaarcher/api/core/security/login', json_data=body, ok_codes=[200])
+        res = self._http_request('POST', '/rsaarcher/api/core/security/login', json_data=body)
 
         session = res.get('RequestedObject').get('SessionToken')
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
@@ -267,8 +238,8 @@ class Client(BaseClient):
         body = get_token_soap_request(self.username, self.password, self.instance_name)
         headers = {'SOAPAction': 'http://archer-tech.com/webservices/CreateUserSessionFromInstance',
                    'Content-Type': 'text/xml; charset=utf-8'}
-        res = self._http_request('Post', 'rsaarcher/ws/general.asmx', headers=headers, data=body, ok_codes=[200],
-                                 resp_type='content')
+        res = self._http_request('POST'
+                                 '', 'rsaarcher/ws/general.asmx', headers=headers, data=body, resp_type='content')
 
         return extract_from_xml(res, 'Envelope.Body.CreateUserSessionFromInstanceResponse.CreateUserSessionFromInstanceResult')
 
@@ -276,15 +247,14 @@ class Client(BaseClient):
         body = terminate_session_soap_request(token)
         headers = {'SOAPAction': 'http://archer-tech.com/webservices/TerminateSession',
                    'Content-Type': 'text/xml; charset=utf-8'}
-        self._http_request('Post', 'rsaarcher/ws/general.asmx', headers=headers, data=body, ok_codes=[200], resp_type='content')
+        self._http_request('POST', 'rsaarcher/ws/general.asmx', headers=headers, data=body, resp_type='content')
 
     def do_soap_request(self, command, **kwargs):
         req_data = SOAP_COMMANDS[command]
         headers = {'SOAPAction': req_data['soapAction'], 'Content-Type': 'text/xml; charset=utf-8'}
         token = self.get_token()
         body = req_data['soapBody'](token, **kwargs)  # type: ignore
-        res = self._http_request('Post', req_data['urlSuffix'], headers=headers,
-                                 data=body, ok_codes=[200], resp_type='content')
+        res = self._http_request('POST', req_data['urlSuffix'], headers=headers, data=body, resp_type='content')
         self.destroy_token(token)
         return extract_from_xml(res, req_data['outputPath']), res
 
@@ -528,7 +498,8 @@ def search_applications_command(client: Client, args: Dict[str, str]):
                                  'Guid': app_obj.get('Guid')})
 
     markdown = tableToMarkdown('Search applications results', applications)
-    context: dict = {f'Archer.Application(val.Id && val.Id == obj.Id)': applications}
+    context: dict = {
+        'Archer.Application(val.Id && val.Id == obj.Id)': applications}
     return_outputs(markdown, context, res)
 
 
@@ -552,7 +523,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
                 return_error(errors)
 
     markdown = tableToMarkdown('Application fields', fields)
-    context: dict = {f'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)': fields}
+    context: dict = {'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)': fields}
     return_outputs(markdown, context, res)
 
 
@@ -577,7 +548,7 @@ def get_field_command(client: Client, args: Dict[str, str]):
 
     markdown = tableToMarkdown('Application field', field)
     context: dict = {
-        f'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
+        'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
             field
     }
     return_outputs(markdown, context, res)
@@ -607,7 +578,7 @@ def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
                 return_error(errors)
 
     markdown = tableToMarkdown(f'Level mapping for level {level}', items)
-    context: dict = {f'Archer.LevelMapping(val.Id && val.Id == obj.Id)': items}
+    context: dict = {'Archer.LevelMapping(val.Id && val.Id == obj.Id)': items}
     return_outputs(markdown, context, res)
 
 
@@ -621,7 +592,7 @@ def get_record_command(client: Client, args: Dict[str, str]):
 
     markdown = tableToMarkdown('Record details', record)
     context: dict = {
-        f'Archer.Record(val.Id && val.Id == obj.Id)':
+        'Archer.Record(val.Id && val.Id == obj.Id)':
             record
     }
     return_outputs(markdown, context, res)
@@ -693,7 +664,7 @@ def get_reports_command(client: Client, args: Dict[str, str]):
     ec = res.get('ReportValues').get('ReportValue')
 
     context: dict = {
-        f'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
+        'Archer.Report(val.ReportGUID && val.ReportGUID == obj.ReportGUID)': ec
     }
     return_outputs(ec, context, {})
 
@@ -733,7 +704,7 @@ def get_value_list_command(client: Client, args: Dict[str, str]):
             markdown = tableToMarkdown(f'Value list for field {field_id}', values_list)
 
             context: dict = {
-                f'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
+                'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)':
                     field_data
             }
             return_outputs(markdown, context, values_list_res)
@@ -817,8 +788,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     numeric_operator = args.get('numeric-operator')
     fields_to_display = argToList(args.get('fields-to-display'))
     fields_to_get = argToList(args.get('fields-to-get'))
-    full_data = args.get('full-data')
-    full_data = True if (full_data and full_data.lower() == 'true') else False
+    full_data = args.get('full-data', 'true') == 'true'
 
     if fields_to_get and 'Id' not in fields_to_get:
         fields_to_get.append('Id')

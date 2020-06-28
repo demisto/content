@@ -111,17 +111,6 @@ SEARCH_RECORDS_RES = \
     '    </soap:Body>' + \
     '</soap:Envelope>'
 
-XML_ENVELOPE = \
-    '<?xml version="1.0" encoding="utf-8"?>' + \
-    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' \
-    ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">' + \
-    '    <soap:Body>' + \
-    '        <ExecuteSearchResponse xmlns="http://archer-tech.com/webservices/">' + \
-    '            <ExecuteSearchResult>Incident 1010</ExecuteSearchResult>' + \
-    '        </ExecuteSearchResponse>' + \
-    '    </soap:Body>' + \
-    '</soap:Envelope>'
-
 
 def test_extract_from_xml():
     field_id = extract_from_xml(XML_FOR_TEST, 'Envelope.Body.GetValueListForField.fieldId')
@@ -157,6 +146,7 @@ def test_get_record_failed(requests_mock):
     client = Client(BASE_URL, '', '', '', '')
     record, res, errors = client.get_record(75, 1010)
     assert errors == 'No resource found.'
+    assert res
     assert record == {}
 
 
@@ -169,6 +159,7 @@ def test_get_record_success(requests_mock):
     client = Client(BASE_URL, '', '', '', '')
     record, res, errors = client.get_record(1, 1010)
     assert errors is None
+    assert res
     assert record == {'Device Name': 'The device name', 'Id': 1010}
 
 
@@ -190,6 +181,7 @@ def test_search_records(requests_mock):
     requests_mock.post(BASE_URL + 'rsaarcher/ws/search.asmx', text=SEARCH_RECORDS_RES)
     client = Client(BASE_URL, '', '', '', '')
     records, raw_res = client.search_records(1, ['External Links', 'Device Name'])
+    assert raw_res
     assert len(records) == 1
     assert records[0]['record']['Id'] == '238756'
     assert records[0]['record']['Device Name'] == 'DEVICE NAME'

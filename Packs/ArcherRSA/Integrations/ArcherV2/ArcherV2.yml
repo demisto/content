@@ -3,8 +3,7 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- defaultvalue: https://example.net
-  display: Server URL (e.g. https://example.net)
+- display: Server URL (e.g. https://www.rsa.com)
   name: url
   required: true
   type: 0
@@ -494,3 +493,4 @@ script:
   type: python
 tests:
 - Archer v2 - Test
+fromversion: 5.0.0
