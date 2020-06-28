@@ -503,7 +503,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         arg_name='lastUpdate',
         required=True
     )
-    categories = params.get('categories', None)  # todo: check this out
+    categories = params.get('categories', None)
     if categories:
         categories = categories.split(',')
     else:
@@ -526,7 +526,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         arg_name='occurred',
         required=False
     )
-    # formatted_entries = []
+    # formatted_entries = []  todo: check how to get context
     # formatted_entries.append({
     #             'Type': EntryFormat.TEXT,
     #             'Contents': "Testing",
@@ -534,26 +534,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
     #             'EntryContext': {"teste": "lkdfgjkldf"}
     #         }
     # )
-    # mirror_data = IncidentMirror(
-    #     incident=incident,
-    #     entries=formatted_entries
-    # )
-    # return mirror_data
 
     if (datetime.fromtimestamp(modified) - datetime.fromtimestamp(occurred) < timedelta(minutes=1)
             and datetime.fromtimestamp(last_update) - datetime.fromtimestamp(modified) < timedelta(minutes=1)):
-        last_update = occurred + 1
-
-    demisto.info(f' \n\n\n\n\n\n occurred is {timestamp_to_datestring(occurred * 1000)}\n\n\n\n\n\n modified is '
-                 f'{timestamp_to_datestring(modified * 1000)} \n\n\n\n\n\n last_update is '
-                 f'{timestamp_to_datestring(last_update * 1000)}\n\n\n\n\n\n ')
-
-    if last_update >= modified:
-        demisto.info(f'Nothing new in the incident, incident id {incident_id}')
-        return IncidentMirror(
-            incident={},
-            entries=[]
-        )
+        last_update = occurred + 1  #todo check why does the last update time always goes up
 
     entries = client.get_incident_entries(
         incident_id=incident_id,  # type: ignore
@@ -585,6 +569,14 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             },
             'ContentsFormat': EntryFormat.JSON
         })
+
+    if last_update >= modified and not formatted_entries:
+        demisto.info(f'Nothing new in the incident, incident id {incident_id}')
+        return IncidentMirror(
+            incident={},
+            entries=[]
+        )
+
     mirror_data = IncidentMirror(
         incident=incident,
         entries=formatted_entries
@@ -618,7 +610,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     inc_status = args.get('status')
     delta: dict = args.get('delta')  # type: ignore
 
-    demisto.info(f'Got the following delta keys {str(delta.keys())}')
+    if delta:
+        demisto.info(f'Got the following delta keys {str(list(delta.keys()))}')
+
     demisto.info(f'Sending incident with remote ID [{incident_id}] to remote system\n')
 
     new_incident_id: str = incident_id  # type: ignore
