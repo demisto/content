@@ -67,19 +67,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: number for the next result page. every page contains 5,000 records.
+      description: A number for result page to get. each page contains up to 5,000
+        entries.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: 'sets results'' start range. defualt value is: 0.'
+      description: 'sets a starting point for disply range. Deshased response can
+        have over 5,000 entries. defult value is: 0.'
       isArray: false
       name: results_from
       required: false
       secret: false
     - default: false
-      description: 'sets results'' end range. default value is: 50.'
+      description: 'sets an end point for disply range. Deshased response can have
+        over 5,000 entries. defult value is: 100.'
       isArray: false
       name: results_to
       required: false
@@ -127,13 +130,13 @@ script:
       type: Number
     - contextPath: Dehashed.LastQuery.ResultsTo
       description: The "results_to" value that was passed to the last query.
+      type: Unknown
+    - contextPath: Dehashed.LastQuery.TotalResults
+      description: The total entries that returned from the last query.
       type: Number
     - contextPath: Dehashed.LastQuery.DisplayedResults
       description: The number of entries that were displayed in demisto from the last
         query.
-      type: Number
-    - contextPath: Dehashed.LastQuery.TotalResults
-      description: The total entries that returned from the last query.
       type: Number
   dockerimage: demisto/python3:3.8.3.9324
   feed: false

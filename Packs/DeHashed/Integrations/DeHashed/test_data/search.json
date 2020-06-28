@@ -35,7 +35,7 @@
     "operation": "regex",
     "asset_type": "vin",
     "results_from": "0",
-    "results_to": "1"
+    "results_to": "0"
   },
 
   "api_response": {

@@ -52,9 +52,10 @@ def test_search_command_using_is_operator_without_filter(requests_mock):
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 50,
+            "ResultsTo": 1,
             "DisplayedResults": 2,
             "TotalResults": 2,
+            "PageNumber": 1
         },
     }
     url_params = {"query": '"testgamil.co"'}
@@ -86,9 +87,10 @@ def test_search_command_using_contains_operator_without_filter(requests_mock):
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 50,
+            "ResultsTo": 1,
             "DisplayedResults": 2,
             "TotalResults": 2,
+            "PageNumber": 1
         },
     }
     url_params = {"query": "testgamil.co"}
@@ -122,9 +124,10 @@ def test_search_command_using_regex_operator_without_filter(requests_mock):
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 50,
+            "ResultsTo": 1,
             "DisplayedResults": 2,
             "TotalResults": 2,
+            "PageNumber": 1
         },
     }
     url_params = {"query": "/joh?n(ath[oa]n)/"}
@@ -158,9 +161,10 @@ def test_search_command_using_is_operator_with_filter_and_multi_values(requests_
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 50,
+            "ResultsTo": 1,
             "DisplayedResults": 2,
             "TotalResults": 2,
+            "PageNumber": 1
         },
     }
     url_params = {"query": 'email:"testgamil.co" "test1gmail.com"'}
@@ -194,9 +198,10 @@ def test_search_command_using_contains_operator_with_filter_and_multi_values(
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 50,
+            "ResultsTo": 1,
             "DisplayedResults": 2,
             "TotalResults": 2,
+            "PageNumber": 1
         },
     }
     url_params = {"query": "name:(test1 OR test2)"}
@@ -232,9 +237,10 @@ def test_search_command_using_regex_operator_with_filter_and_multi_values(
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 50,
+            "ResultsTo": 1,
             "DisplayedResults": 2,
             "TotalResults": 2,
+            "PageNumber": 1
         },
     }
     url_params = {"query": "vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/"}
@@ -270,9 +276,10 @@ def test_search_command_using_regex_operator_with_filter_and_change_result_range
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 1,
+            "ResultsTo": 0,
             "DisplayedResults": 1,
             "TotalResults": 2,
+            "PageNumber": 1
         },
     }
     url_params = {"query": "vin:/joh?n(ath[oa]n)/ /joh?n11(ath[oa]n)/"}

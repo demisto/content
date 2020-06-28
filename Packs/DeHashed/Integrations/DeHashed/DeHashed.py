@@ -7,7 +7,7 @@ requests.packages.urllib3.disable_warnings()
 
 INTEGRATION_CONTEXT_BRAND = "DeHashed"
 RESULTS_FROM = 0
-RESULTS_TO = 50
+RESULTS_TO = 100
 
 
 class Client(BaseClient):
@@ -34,7 +34,7 @@ class Client(BaseClient):
         self.api_key = api_key
 
     def dehashed_search(self, asset_type: Union[str, None], value: list, operation: Union[str, None],
-                        results_page_number: str = None, ) -> dict:
+                        results_page_number: Union[int, None] = None) -> dict:
         """
         this function gets query parameters from demisto and perform a "GET" request to Dehashed api
         :param asset_type: email, ip_address, username, hashed_password, name, vin, address, phone,all_fields.
@@ -98,35 +98,13 @@ def test_module(client: Client) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    try:
-        result = client.dehashed_search(
-            asset_type="vin", value=["test", "test1"], operation="is"
-        )
-    except Exception as e:
-        raise DemistoException(
-            f"Test failed. please check if Server Url, Email or Api key are correct. \n {e}"
-        )
+    result = client.dehashed_search(
+        asset_type="vin", value=["test", "test1"], operation="is"
+    )
+    if isinstance(result, dict):
+        return "ok"
     else:
-        if isinstance(result, dict):
-            return "ok"
-        else:
-            return f"Test failed because got unexpected response from api: {result}"
-
-
-def convert_string_to_int(argument) -> int:
-    """
-    converts commands arguments to integers
-    :param argument: str
-    :return: converted argument as int
-    """
-    try:
-        input_as_int = int(argument)
-    except ValueError as e:
-        raise DemistoException(
-            f'"results_from" and "results_to expected" to be integers/n {e}'
-        )
-    else:
-        return input_as_int
+        return f"Test failed because got unexpected response from api: {result}"
 
 
 def validate_filter_parameters(results_from_value, results_to_value):
@@ -141,7 +119,7 @@ def validate_filter_parameters(results_from_value, results_to_value):
 
 
 def filter_results(
-    entries: list, results_from: Union[str, None], results_to: Union[str, None]
+    entries: list, results_from: Union[int, None], results_to: Union[int, None]
 ) -> tuple:
     """
     gets raw results returned from the api and limit the number of entries to return to demisto
@@ -150,18 +128,41 @@ def filter_results(
     :param results_to: end range
     :return: filtered results
     """
-    if results_from:
-        results_from_int = convert_string_to_int(results_from)
+    last_entry_index = len(entries) - 1
+    if results_to is not None:  # index can be zero
+        if last_entry_index < results_to:
+            raise DemistoException(f'Result list\'s index out of range. Result list contains {len(entries)}'
+                                   f' entries, but requested: {results_to}')
     else:
-        results_from_int = RESULTS_FROM
-    if results_to:
-        results_to_int = convert_string_to_int(results_to)
-    else:
-        results_to_int = RESULTS_TO
+        if RESULTS_TO > last_entry_index:
+            results_to = last_entry_index
+        else:
+            results_to = RESULTS_TO
 
-    validate_filter_parameters(results_to_int, results_from_int)
+    if results_from is None:  # index can be zero
+        results_from = RESULTS_FROM
 
-    return entries[results_from_int:results_to_int], results_from_int, results_to_int
+    validate_filter_parameters(results_to, results_from)
+
+    return entries[results_from:results_to + 1], results_from, results_to
+
+
+def arg_to_int(arg_val: str, arg_name: Union[str, None]) -> int:
+    """
+    converts commands arguments to integers
+    :param arg_name: argument name
+    :param arg_val: value to convert to int
+    :return: converted argument as int
+    """
+    if isinstance(arg_val, str) and len(arg_val):
+        try:
+            input_as_int = int(arg_val)
+        except ValueError:
+            raise DemistoException(
+                f'"{arg_name}" expected to be Integer. passed {arg_val} instead.'
+            )
+        else:
+            return input_as_int
 
 
 def dehashed_search_command(client: Client, args: dict) -> tuple:
@@ -180,9 +181,9 @@ def dehashed_search_command(client: Client, args: dict) -> tuple:
     asset_type = args.get("asset_type")
     operation = args.get("operation")
     value = argToList(args.get("value"))
-    results_page_number = args.get("page")
-    results_from = args.get("results_from")
-    results_to = args.get("results_to")
+    results_page_number = arg_to_int(args.get("page"), "page")
+    results_from = arg_to_int(args.get("results_from"), "results_from")
+    results_to = arg_to_int(args.get("results_to"), "results_to")
 
     result = client.dehashed_search(asset_type, value, operation, results_page_number)
     if not isinstance(result, dict):
@@ -196,31 +197,32 @@ def dehashed_search_command(client: Client, args: dict) -> tuple:
         filtered_results, results_from, results_to = filter_results(
             query_data, results_from, results_to
         )
-        if not results_page_number:
-            results_page_number = "1"
-
         query_entries = createContext(
             filtered_results, keyTransform=underscoreToCamelCase
         )
         headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
+        if not results_page_number:
+            results_page_number = 1
         last_query = {
             "ResultsFrom": results_from,
             "ResultsTo": results_to,
             "DisplayedResults": len(filtered_results),
             "TotalResults": result.get("total"),
+            "PageNumber": results_page_number
         }
         return (
             tableToMarkdown(
-                f'DeHashed Search - Got {result.get("total")} results. Display only:'
-                f" {len(filtered_results)} Page number:{results_page_number}.",
+                f'DeHashed Search - got total results: {result.get("total")}, page number: {results_page_number}'
+                f', page size is: {len(filtered_results)}. returning results from {results_from} to {results_to}.',
                 filtered_results,
                 headers=headers,
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
             {
-                f"{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)": query_entries,
                 f"{INTEGRATION_CONTEXT_BRAND}.LastQuery(true)": last_query,
+                f"{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)": query_entries,
+
             },
             filtered_results,
         )
