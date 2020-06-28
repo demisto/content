@@ -45,10 +45,12 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
-        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/v3+json'})
+        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={
+            'Accept': 'application/v3+json'
+        })
         if self.refresh_token:
             self.update_access_token()  # Add a valid access token to the headers
-            self.access_token_refreshed = False  # todo: remove
+            # self.access_token_refreshed = False  # todo: remove
 
     def update_access_token(self):
         """
@@ -60,10 +62,20 @@ class Client(BaseClient):
             'client_id': self.client_id,
             'client_secret': self.client_secret
         }
-        res = self.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
-        if res.get('access_token'):
-            self._headers.update({'Authorization': 'Bearer ' + res.get('access_token')})
-            self.access_token_refreshed = True
+        try:
+            res = self.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
+            if 'error' in res:
+                return_error(
+                    f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
+                    f'and Refresh Token.\n{res}')
+            if res.get('access_token'):
+                self._headers.update({
+                    'Authorization': 'Bearer ' + res.get('access_token')
+                })
+                # self.access_token_refreshed = True
+        except Exception as e:
+            return_error(f'Error occurred while creating an access token. Please check the Client ID, Client Secret and'
+                         f'Refresh Token\n\n{e.args[0]}')
 
     def http_request(self, method, url_suffix, full_url=None, params=None):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
@@ -72,7 +84,7 @@ class Client(BaseClient):
             res = self._http_request(method, url_suffix, full_url=full_url, resp_type='response', ok_codes=ok_codes,
                                      params=params)
             if res.status_code in [200, 201]:
-                self.access_token_refreshed = False  # todo: remove
+                # self.access_token_refreshed = False  # todo: remove
 
                 try:
                     return res.json()
@@ -81,10 +93,10 @@ class Client(BaseClient):
                                            .format(res.content), exception)
 
             if res.status_code in [401]:
-                # if the access token hasn't been refreshed, refresh it and run the command again
-                if not self.access_token_refreshed:  # todo: remove
-                    self.update_access_token()
-                    return self.http_request(method, url_suffix, full_url=full_url, params=params)
+                # if not self.access_token_refreshed:  # todo: remove
+                #     return_error('got 401')
+                #     self.update_access_token()
+                #     return self.http_request(method, url_suffix, full_url=full_url, params=params)
                 try:
                     err_msg = f'Unauthorized request - check domain location and the given credentials \n{str(res.json())}'
                 except ValueError:
@@ -143,8 +155,12 @@ def args_to_query(args: dict) -> dict:
             if field not in FIELDS_WITH_NAME or 'name' in value:
                 request_fields[field] = value
             else:
-                request_fields[field] = {'name': value}
-    return {'request': request_fields}
+                request_fields[field] = {
+                    'name': value
+                }
+    return {
+        'request': request_fields
+    }
 
 
 def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> dict:
@@ -168,7 +184,9 @@ def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> d
         if comment:
             linked_request['comments'] = comment
         all_linked_requests.append(linked_request)
-    return {'link_requests': all_linked_requests}
+    return {
+        'link_requests': all_linked_requests
+    }
 
 
 def create_human_readable(output: dict) -> dict:
@@ -232,7 +250,9 @@ def create_requests_list_info(start_index, row_count, search_fields, filter_by):
         list_info['search_fields'] = search_fields
     if filter_by:
         list_info['filter_by'] = filter_by
-    return {'list_info': list_info}
+    return {
+        'list_info': list_info
+    }
 
 
 def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str, fetch_limit: int) -> dict:
@@ -256,7 +276,11 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
 
     """
     try:
-        search_criteria = [{'field': 'created_time', 'values': [f'{time_from}', f'{time_to}'], 'condition': 'between'}]
+        search_criteria = [{
+                               'field': 'created_time',
+                               'values': [f'{time_from}', f'{time_to}'],
+                               'condition': 'between'
+                           }]
         if fetch_filter:
             filters = ast.literal_eval(fetch_filter)
             if isinstance(filters, dict):
@@ -277,7 +301,12 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
                     }
                     search_criteria.append(query)
         else:
-            query = {'field': 'status.name', 'values': status.split(','), 'condition': 'is', 'logical_operator': 'AND'}
+            query = {
+                'field': 'status.name',
+                'values': status.split(','),
+                'condition': 'is',
+                'logical_operator': 'AND'
+            }
             search_criteria.append(query)
 
         list_info = {
@@ -286,8 +315,10 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
             'sort_order': 'asc',
             'row_count': fetch_limit
         }
-        return {'list_info': list_info}
-    except:
+        return {
+            'list_info': list_info
+        }
+    except Exception as e:
         return_error('Invalid input format. Please follow instructions for correct filter format.')
 
 
@@ -309,7 +340,9 @@ def list_requests_command(client: Client, args: dict):
     search_fields = args.get('search_fields', None)
     filter_by = args.get('filter_by', None)
     list_info = create_requests_list_info(start_index, row_count, search_fields, filter_by)
-    params = {'input_data': f'{list_info}'}
+    params = {
+        'input_data': f'{list_info}'
+    }
     result = client.get_requests(request_id, params)
 
     output = []
@@ -324,7 +357,9 @@ def list_requests_command(client: Client, args: dict):
         output.append(request_output)
         hr.append(create_human_readable(request_output))
 
-    context['ServiceDeskPlus(val.ID===obj.ID)'] = {'Request': output}
+    context['ServiceDeskPlus(val.ID===obj.ID)'] = {
+        'Request': output
+    }
     markdown = tableToMarkdown(f'Requests', t=hr)
     return markdown, context, result
 
@@ -358,7 +393,9 @@ def create_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {'input_data': f'{query}'}
+    params = {
+        'input_data': f'{query}'
+    }
     result = client.http_request('POST', url_suffix='requests', params=params)
     request = result.get('request', None)
 
@@ -368,7 +405,9 @@ def create_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         output = create_output(request)
     hr = create_human_readable(output)
     markdown = tableToMarkdown('Service Desk Plus request was successfully created', t=hr)
-    context['ServiceDeskPlus(val.ID===obj.ID)'] = {'Request': output}
+    context['ServiceDeskPlus(val.ID===obj.ID)'] = {
+        'Request': output
+    }
     return markdown, context, result
 
 
@@ -384,7 +423,9 @@ def update_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {'input_data': f'{query}'}
+    params = {
+        'input_data': f'{query}'
+    }
     request_id = args.get('request_id')
     result = client.http_request('PUT', url_suffix=f'requests/{request_id}', params=params)
     request = result.get('request', None)
@@ -395,7 +436,9 @@ def update_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
 
     hr = create_human_readable(output)
     markdown = tableToMarkdown('Service Desk Plus request was successfully updated', t=hr)
-    context['ServiceDeskPlus(val.ID===obj.ID)'] = {'Request': output}
+    context['ServiceDeskPlus(val.ID===obj.ID)'] = {
+        'Request': output
+    }
     return markdown, context, result
 
 
@@ -411,7 +454,9 @@ def assign_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {'input_data': f'{query}'}
+    params = {
+        'input_data': f'{query}'
+    }
     request_id = args.get('request_id')
     result = client.http_request('PUT', url_suffix=f'requests/{request_id}/assign', params=params)
     markdown = f'### Service Desk Plus request {request_id} was successfully assigned'
@@ -458,7 +503,9 @@ def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         output.append(request_output)
 
     markdown = tableToMarkdown(f'Linked requests to request {request_id}', t=output, removeNull=True)
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'LinkRequests': output}
+    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {
+        'LinkRequests': output
+    }
     return markdown, context, result
 
 
@@ -478,7 +525,9 @@ def modify_linked_request_command(client: Client, args: dict) -> Tuple[str, dict
     linked_requests_id = args.get('linked_requests_id', '').split(',')
     comment = args.get('comment', '')
     input_data = create_modify_linked_input_data(linked_requests_id, comment)
-    params = {'input_data': f'{input_data}'}
+    params = {
+        'input_data': f'{input_data}'
+    }
     if action == 'Link':
         result = client.http_request('POST', url_suffix=f'requests/{request_id}/link_requests', params=params)
     else:
@@ -501,8 +550,15 @@ def add_resolution_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     request_id = args.get('request_id')
     resolution_content = args.get('resolution_content')
     add_to_linked_requests = args.get('add_to_linked_requests') if args.get('add_to_linked_requests') else 'false'
-    query = {'resolution': {'content': resolution_content, 'add_to_linked_requests': add_to_linked_requests}}
-    params = {'input_data': f'{query}'}
+    query = {
+        'resolution': {
+            'content': resolution_content,
+            'add_to_linked_requests': add_to_linked_requests
+        }
+    }
+    params = {
+        'input_data': f'{query}'
+    }
     result = client.http_request('POST', url_suffix=f'requests/{request_id}/resolutions', params=params)
 
     if add_to_linked_requests == 'true':
@@ -531,24 +587,59 @@ def get_resolutions_list_command(client: Client, args: dict) -> Tuple[str, dict,
     output = create_output(result.get('resolution', {}))
     hr = {}
     if output:
-        context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {'Resolution': output}
+        context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {
+            'Resolution': output
+        }
         hr = resolution_human_readable(output)
     markdown = tableToMarkdown(f'Resolution of request {request_id}', t=hr)
     return markdown, context, result
+
+
+def close_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+    """
+    Close the request with the given request_id with comments and resolution defined by the user.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    request_id = args.get('request_id')
+    params = {
+        "request": {
+            "closure_info": {
+                "requester_ack_resolution": args.get('requester_ack_resolution'),
+                "requester_ack_comments": args.get('requester_ack_comments'),
+                "closure_comments": args.get('closure_comments'),
+                "closure_code": {
+                    'name': args.get('closure_code')
+                }
+            }
+        }
+    }
+    result = client.http_request('PUT', url_suffix=f'requests/{request_id}/close', params=params)
+    hr = f'### Successfully closed request {request_id}'
+    return hr, {}, result
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: str, fetch_filter: str) -> list:
     date_format = '%Y-%m-%dT%H:%M:%S'
     last_run = demisto.getLastRun()
     if not last_run:  # if first time running
-        new_last_run = {'time': date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])}
+        new_last_run = {
+            'time': date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
+        }
     else:
         new_last_run = last_run
     demisto_incidents: List = list()
     time_from = new_last_run.get('time')
     time_to = date_to_timestamp(datetime.now(), date_format=date_format)
     list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter, fetch_limit)
-    params = {'input_data': f'{list_info}'}
+    params = {
+        'input_data': f'{list_info}'
+    }
 
     # Get incidents from Service Desk Plus
     # demisto.debug(f'Fetching Service Desk Plus requests. From: '
@@ -580,10 +671,15 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
 
         if demisto_incidents:
             last_incident_time = date_to_timestamp(demisto_incidents[-1].get('occurred').split('.')[0])
-            new_last_run.update({'time': last_incident_time, 'id': last_incident_id})
+            new_last_run.update({
+                                    'time': last_incident_time,
+                                    'id': last_incident_id
+                                })
 
     if not demisto_incidents:
-        new_last_run.update({'time': time_to})
+        new_last_run.update({
+                                'time': time_to
+                            })
     demisto.setLastRun(new_last_run)
     return demisto_incidents
 
@@ -604,7 +700,6 @@ def test_module(client: Client):
         return_error('Please enter a refresh token (see detailed instruction (?) for more information)')
     try:
         client.http_request('GET', 'requests')
-
         params: dict = demisto.params()
 
         if params.get('isFetch'):
@@ -617,7 +712,9 @@ def test_module(client: Client):
             time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
             time_to = date_to_timestamp(datetime.now(), date_format=date_format)
             list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter, fetch_limit)
-            params = {'input_data': f'{list_info}'}
+            params = {
+                'input_data': f'{list_info}'
+            }
             try:
                 client.get_requests(params=params).get('requests', [])
             except Exception as e:
@@ -678,6 +775,7 @@ def main():
         'service-desk-plus-request-update': update_request_command,
         'service-desk-plus-request-assign': assign_request_command,
         'service-desk-plus-request-pickup': pickup_request_command,
+        'service-desk-plus-request-close': close_request_command,
         'service-desk-plus-linked-request-list': linked_request_command,
         'service-desk-plus-link-request-modify': modify_linked_request_command,
         'service-desk-plus-request-resolution-add': add_resolution_command,

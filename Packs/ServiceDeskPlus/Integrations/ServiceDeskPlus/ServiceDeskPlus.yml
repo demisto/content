@@ -816,9 +816,50 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Link or Unlink multiple commands
     execution: false
     name: service-desk-plus-link-request-modify
-  dockerimage: demisto/python3:3.7.4.2245
+  - arguments:
+    - default: false
+      description: The comments that should be added when closing the request
+      isArray: false
+      name: closure_comments
+      required: false
+      secret: false
+    - default: false
+      description: 'A dictionary that represents the closure code that should be added
+        to the request. For example, {"name": "success"}'
+      isArray: false
+      name: closure_code
+      required: false
+      secret: false
+    - default: false
+      description: The requester comments that should be added to the request
+      isArray: false
+      name: requester_ack_comments
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean.
+      isArray: false
+      name: requester_ack_resolution
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The id of the request that should be closed
+      isArray: false
+      name: request_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Close the existing request with the given request id
+    execution: false
+    name: service-desk-plus-request-close
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false

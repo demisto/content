@@ -3,7 +3,7 @@ from ServiceDeskPlus import Client, create_request_command, update_request_comma
     linked_request_command, get_resolutions_list_command, delete_request_command, assign_request_command, \
     pickup_request_command, modify_linked_request_command, add_resolution_command, generate_refresh_token, \
     create_output, args_to_query, create_modify_linked_input_data, create_human_readable, resolution_human_readable, \
-    create_requests_list_info, create_fetch_list_info, fetch_incidents, test_module
+    create_requests_list_info, create_fetch_list_info, fetch_incidents, test_module, close_request_command
 from test_data.response_constants import RESPONSE_CREATE_REQUEST, RESPONSE_UPDATE_REQUEST, \
     RESPONSE_LIST_SINGLE_REQUEST, RESPONSE_LIST_MULTIPLE_REQUESTS, RESPONSE_LINKED_REQUEST_LIST, \
     RESPONSE_RESOLUTION_LIST, RESPONSE_NO_RESOLUTION_LIST, RESPONSE_LINK_REQUEST, RESPONSE_UNLINK_REQUEST, \
@@ -54,6 +54,7 @@ def test_commands(command, args, response, expected_result, mocker):
 # test commands without context:
 @pytest.mark.parametrize('command, args, response, expected_result', [
     (delete_request_command, {'request_id': '1234'}, {}, '### Successfully deleted request 1234'),
+    (close_request_command, {'request_id': '1234'}, {}, '### Successfully closed request 1234'),
     (assign_request_command, {'request_id': '1234'}, {}, '### Service Desk Plus request 1234 was successfully assigned'),
     (pickup_request_command, {'request_id': '1234'}, {}, '### Service Desk Plus request 1234 was successfully picked up'),
     (modify_linked_request_command, {'action': 'Link', 'request_id': '1234', 'linked_requests_id': '5678'},
