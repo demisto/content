@@ -1,0 +1,77 @@
+category: Authentication
+commonfields:
+  id: CyberArkPAS
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '2'
+  display: CyberArk PAS API Version
+  hidden: false
+  name: apiVersion
+  required: false
+  type: 0
+- defaultvalue: cyberark
+  display: Authentication Type
+  hidden: false
+  name: authType
+  options:
+  - cyberark
+  required: false
+  type: 15
+description: Use this integration to create, list, modify and delete entities in the
+  PAS solution. This integration was integrated and tested with version11.4 of CyberArk
+  Privileged Account Security
+display: CyberArkPAS
+name: CyberArkPAS
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: Offset of the first account that is returned in the collection
+        of results. If not specified, the default value is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: Maximum number of returned accounts. If not specified, the default
+        value is 50. The maximum number that can be specified is 1000.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: A command to list CyberArk Accounts
+    execution: false
+    name: cyberark-list-accounts
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here
+      type: String
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
