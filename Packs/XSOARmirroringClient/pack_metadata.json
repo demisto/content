@@ -1,6 +1,6 @@
 {
-    "name": "XSOAR Mirroring Server",
-    "description": "Allows mirroring of XSOAR incidents between different instances.",
+    "name": "XSOAR Mirroring Client",
+    "description": "Serves as the client for XSOAR Mirroring Server Pack.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
