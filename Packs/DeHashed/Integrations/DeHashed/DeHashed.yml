@@ -73,13 +73,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: sets results' start range
+      description: 'sets results'' start range. defualt value is: 0.'
       isArray: false
       name: results_from
       required: false
       secret: false
     - default: false
-      description: sets results' end range
+      description: 'sets results'' end range. default value is: 50.'
       isArray: false
       name: results_to
       required: false
@@ -122,6 +122,19 @@ script:
     - contextPath: DeHashed.Search.ObtainedFrom
       description: Object's source
       type: String
+    - contextPath: Dehashed.LastQuery.ResultsFrom
+      description: The "results_from" value that was passed to the last query.
+      type: Number
+    - contextPath: Dehashed.LastQuery.ResultsTo
+      description: The "results_to" value that was passed to the last query.
+      type: Number
+    - contextPath: Dehashed.LastQuery.DisplayedResults
+      description: The number of entries that were displayed in demisto from the last
+        query.
+      type: Number
+    - contextPath: Dehashed.LastQuery.TotalResults
+      description: The total entries that returned from the last query.
+      type: Number
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false

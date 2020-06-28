@@ -52,7 +52,7 @@ def test_search_command_using_is_operator_without_filter(requests_mock):
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 49,
+            "ResultsTo": 50,
             "DisplayedResults": 2,
             "TotalResults": 2,
         },
@@ -86,7 +86,7 @@ def test_search_command_using_contains_operator_without_filter(requests_mock):
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 49,
+            "ResultsTo": 50,
             "DisplayedResults": 2,
             "TotalResults": 2,
         },
@@ -122,7 +122,7 @@ def test_search_command_using_regex_operator_without_filter(requests_mock):
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 49,
+            "ResultsTo": 50,
             "DisplayedResults": 2,
             "TotalResults": 2,
         },
@@ -158,7 +158,7 @@ def test_search_command_using_is_operator_with_filter_and_multi_values(requests_
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 49,
+            "ResultsTo": 50,
             "DisplayedResults": 2,
             "TotalResults": 2,
         },
@@ -194,7 +194,7 @@ def test_search_command_using_contains_operator_with_filter_and_multi_values(
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 49,
+            "ResultsTo": 50,
             "DisplayedResults": 2,
             "TotalResults": 2,
         },
@@ -232,7 +232,7 @@ def test_search_command_using_regex_operator_with_filter_and_multi_values(
         ],
         "DeHashed.LastQuery(true)": {
             "ResultsFrom": 0,
-            "ResultsTo": 49,
+            "ResultsTo": 50,
             "DisplayedResults": 2,
             "TotalResults": 2,
         },

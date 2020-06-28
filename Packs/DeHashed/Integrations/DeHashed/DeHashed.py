@@ -7,7 +7,7 @@ requests.packages.urllib3.disable_warnings()
 
 INTEGRATION_CONTEXT_BRAND = "DeHashed"
 RESULTS_FROM = 0
-RESULTS_TO = 49
+RESULTS_TO = 50
 
 
 class Client(BaseClient):
@@ -33,23 +33,39 @@ class Client(BaseClient):
         self.email = email
         self.api_key = api_key
 
-    def dehashed_search(
-        self,
-        asset_type: Union[str, None],
-        value: list,
-        operation: Union[str, None],
-        results_page_number: str = None,
-    ) -> dict:
+    def dehashed_search(self, asset_type: Union[str, None], value: list, operation: Union[str, None],
+                        results_page_number: str = None, ) -> dict:
+        """
+        this function gets query parameters from demisto and perform a "GET" request to Dehashed api
+        :param asset_type: email, ip_address, username, hashed_password, name, vin, address, phone,all_fields.
+        :param value: value to search
+        :param operation: choose a search type to perform.
+        :param results_page_number: a page number to get. every page contains 5,000 entries.
+        :return: a dictionary containing: a list of entries that match the query, number of total results exits for the
+         given query, request status, how much time the request took, and balance.
+        """
+
+        if not value:
+            raise DemistoException('This command must get "value" as argument')
+
         query_value = ""
-        if operation == "is":
-            query_value = " ".join((f'"{value}"' for value in value))
-        elif operation == "contains":
-            query_value = " OR ".join(value)
-            if len(value) > 1:
+        if len(value) > 1:
+            if operation == "is":
+                query_value = " ".join((f'"{value}"' for value in value))
+            elif operation == "contains":
+                query_value = " OR ".join(value)
                 query_value = f"({query_value})"
 
-        elif operation == "regex":
-            query_value = " ".join((f"/{value}/" for value in value))
+            elif operation == "regex":
+                query_value = " ".join((f"/{value}/" for value in value))
+        else:
+            if operation == "is":
+                query_value = f'"{value[0]}"'
+            elif operation == "contains":
+                query_value = value[0]
+            elif operation == 'regex':
+                query_value = f"/{value[0]}/"
+
         if asset_type == "all_fields":
             query_string = f"{query_value}"
         else:
@@ -77,7 +93,7 @@ def test_module(client: Client) -> str:
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
-        client: HelloWorld client
+        client: DeHashed client
 
     Returns:
         'ok' if test passed, anything else will fail the test.
@@ -113,6 +129,17 @@ def convert_string_to_int(argument) -> int:
         return input_as_int
 
 
+def validate_filter_parameters(results_from_value, results_to_value):
+    if results_to_value < 0:
+        raise DemistoException(f'Argument "results_to" expected to be a none negative number, but given:'
+                               f' {results_to_value}')
+    elif results_from_value < 0:
+        raise DemistoException(f'Argument "results_from" expected to be a none negative number, but given:'
+                               f' {results_from_value}')
+    elif results_to_value > results_from_value:
+        raise DemistoException(f'Argument "results_to" expected to be less than or equal to "results_from"')
+
+
 def filter_results(
     entries: list, results_from: Union[str, None], results_to: Union[str, None]
 ) -> tuple:
@@ -132,6 +159,8 @@ def filter_results(
     else:
         results_to_int = RESULTS_TO
 
+    validate_filter_parameters(results_to_int, results_from_int)
+
     return entries[results_from_int:results_to_int], results_from_int, results_to_int
 
 
@@ -142,10 +171,10 @@ def dehashed_search_command(client: Client, args: dict) -> tuple:
     :param args:
     - asset_type: email, ip_address, username, hashed_password, name, vin, address, phone,all_fields.
     - value: value to search
-    - operation: choose a search type that you to perform.
-    - results_page_number: number for the next result page.
-    - results_from: sets results' start range
-    - results_to: sets results' end range
+    - operation: choose a search type to perform.
+    - results_page_number: a page number to get. every page contains 5,000 entries.
+    - results_from: sets result's start range
+    - results_to: sets result's end range
     :return: Demisto outputs
     """
     asset_type = args.get("asset_type")
