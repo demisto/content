@@ -48,6 +48,7 @@ MOCK_TAG_LIST = [{
     u'id': 72714981
 }]
 
+
 # demisto/python-deb doesn't contain a latest tag
 
 
