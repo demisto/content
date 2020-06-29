@@ -1023,7 +1023,7 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
     for incident in incidents:
         # Add relevant labels to context
         labels = incident.get('labels', [])
-        keys = [label.get('type') for label in labels]
+        keys = [l.get('type') for l in labels]
         if 'Reporter' not in keys:
             labels.append({'type': 'Reporter', 'value': user_name})
         if 'ReporterEmail' not in keys:
