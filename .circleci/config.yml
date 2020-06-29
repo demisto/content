@@ -375,7 +375,7 @@ jobs:
 
                 elif [ -n "${CONTRIB_BRANCH}" ] ;
                   then
-                    export IFRA_ENV_TYPE="Content-GA" # disable-secrets-detection
+                    export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
 
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection

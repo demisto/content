@@ -9,7 +9,7 @@ post_data=$(cat <<EOF
 {
   "build_parameters": {
     "NIGHTLY": "true",
-    "TIME_TO_LIVE": 720
+    "TIME_TO_LIVE": 900
   }
 }
 EOF)
