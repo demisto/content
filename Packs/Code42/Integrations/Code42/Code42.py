@@ -758,6 +758,7 @@ def securitydata_search_command(client, args):
             outputs_prefix="Code42.SecurityData",
             outputs_key_field="EventID",
             outputs=code42_security_data_context,
+            readable_output=readable_outputs,
             raw_response=file_events
         )
         file_results = CommandResults(
