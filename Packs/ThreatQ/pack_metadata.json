@@ -2,7 +2,7 @@
     "name": "ThreatQ",
     "description": "A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "ThreatQ",
     "url": "",
     "email": "support@threat.com",
