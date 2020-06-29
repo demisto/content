@@ -1048,7 +1048,12 @@ script:
                 integration_context["remaining_incidents"] = remaining_incidents
                 demisto.setIntegrationContext(integration_context)
             elif command in commands:
-                return_results(*commands[command](client, demisto.args()))
+                results = commands[command](client, demisto.args())
+                if isinstance(results, CommandResults):
+                    return_results(results)
+                else:
+                    # Case for when command affects multiple outputs.
+                    return_results(*results)
         # Log exceptions
         except Exception as e:
             return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")

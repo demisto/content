@@ -754,6 +754,20 @@ def securitydata_search_command(client, args):
             code42_security_data_context,
             headers=SECURITY_EVENT_HEADERS,
         )
+
+        code42_results = CommandResults(
+            outputs_prefix="Code42.SecurityData",
+            outputs_key_field="EventID",
+            outputs=code42_security_data_context,
+            raw_response=file_events
+        )
+        file_results = CommandResults(
+            outputs_prefix="File",
+            outputs_key_field=None,
+            outputs=file_context,
+        )
+
+
         security_data_context_key = "Code42.SecurityData(val.EventID && val.EventID == obj.EventID)"
         context = {security_data_context_key: code42_security_data_context, "File": file_context}
         return readable_outputs, context, file_events
@@ -958,7 +972,12 @@ def main():
             integration_context["remaining_incidents"] = remaining_incidents
             demisto.setIntegrationContext(integration_context)
         elif command in commands:
-            return_results(*commands[command](client, demisto.args()))
+            results = commands[command](client, demisto.args())
+            if isinstance(results, CommandResults):
+                return_results(results)
+            else:
+                # Case for when command affects multiple outputs.
+                return_results(*results)
     # Log exceptions
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
