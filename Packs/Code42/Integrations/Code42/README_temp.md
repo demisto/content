@@ -1,5 +1,23 @@
-Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
-This integration was integrated and tested with version xx of Code42
+## Overview
+---
+
+Code42 provides simple, fast detection and response to everyday data loss from insider threats by focusing on customer data on endpoints and the cloud to answer questions like:
+
+* Where is my data?
+* Where has my data been?
+* When did my data leave?
+* What data exactly left my organization?
+
+This integration was integrated and tested with the fully-hosted SaaS implementation of Code42 and requires a Platinum level subscription.
+
+## Use Cases
+---
+
+* Ingesting File Exfiltration alerts from Code42
+* Management of Departing Employees within Code42
+* General file event and metadata search
+
+
 ## Configure Code42 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,7 +27,7 @@ This integration was integrated and tested with version xx of Code42
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | console_url | Code42 Console URL for the pod your Code42 instance is running in | True |
-| credentials | Username | True |
+| credentials |  | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 | alert_severity | Alert severities to fetch when fetching incidents | False |
@@ -191,11 +209,10 @@ Adds a user to the Departing Employee List.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. | 
 | Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
 | Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
 | Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. | 
-| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. | 
+| Code42.DepartingEmployee.DepartureDate | unknown | The departure date for the Departing Employee. | 
 
 
 #### Command Example
@@ -203,9 +220,9 @@ Adds a user to the Departing Employee List.
 
 #### Human Readable Output
 
-| **UserID** | **DepartureDate** | **Note** | **Username** | **CaseID** |
+| **UserID** | **DepartureDate** | **Note** | **Username** |
 | --- | --- | --- | --- |
-| 123 | 2020-02-28 | Leaving for competitor | john.user@example.com | 123 |
+| 123 | 2020-02-28 | Leaving for competitor | john.user@example.com |
 
 
 ### code42-departingemployee-remove
@@ -227,16 +244,18 @@ Removes a user from the Departing Employee List.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | unknown | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. | 
 | Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
 | Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
 
 
 #### Command Example
-``` ```
+```!code42-departingemployee-remove username="john.user@example.com"```
 
 #### Human Readable Output
 
+| **UserID** | **Username** |
+| --- | --- | 
+| 123 | john.user@example.com |
 
 
 ### code42-departingemployee-get-all
@@ -249,10 +268,7 @@ Get all employees on the Departing Employee List.
 `code42-departingemployee-get-all`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| results | The number of items to return. | Optional | 
-
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -261,61 +277,22 @@ Get all employees on the Departing Employee List.
 | Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
 | Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
 | Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. | 
-| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. | 
+| Code42.DepartingEmployee.DepartureDate | unknown | The departure date for the Departing Employee. | 
 
 
 #### Command Example
 ```!code42-departingemployee-get-all```
 
-#### Context Example
-```
-{
-    "Code42": {
-        "DepartingEmployee": [
-            {
-                "DepartureDate": null,
-                "Note": "test",
-                "UserID": "921333907298179098",
-                "Username": "user1@example.com"
-            },
-            {
-                "DepartureDate": "2020-07-20",
-                "Note": "This is added using csv file to test bulk adding of users to high risk employee list",
-                "UserID": "948333588694228306",
-                "Username": "user2@example.com"
-            },
-            {
-                "DepartureDate": null,
-                "Note": "",
-                "UserID": "912211111144144039",
-                "Username": "user3@example.com"
-            }
-        ]
-    }
-}
-```
-
 #### Human Readable Output
 
->### All Departing Employees
->|DepartureDate|Note|UserID|Username|
->|---|---|---|---|
->|  | test | 921286907298179098 | user1@example.com |
->| 2020-07-20 | This is added using csv file to test bulk adding of users to high risk employee list | 948938588694228306 | sagar.patel+l2@code42.com |
->|  |  | 912249223544144039 | unicode@example.com |
->|  |  | 894165832411107815 | testuser@example.com |
->|  | L3 security risk | 949093399968329042 | sagar.patel+l3@code42.com |
->|  | tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
->|  |  | 906619740182876328 | resilient.ibm.user@example.com |
->|  |  | 906619632003387560 | resilient.ibm.admin@example.com |
->|  |  | 912338501981077099 | mike.mccollow+testair@code42.com |
->|  | leaving for competition | 951984198921509692 | john.anderson@qrstinc.com |
->|  | Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
+| **UserID** | **DepartureDate** | **Note** | **Username** |
+| --- | --- | --- | --- |
+| 123 | 2020-02-28 | Leaving for competitor | john.user@example.com |
 
 
 ### code42-highriskemployee-add
 ***
-Adds a user from the High Risk Employee List.
+Removes a user from the High Risk Employee List.
 
 
 #### Base Command
@@ -339,30 +316,13 @@ Adds a user from the High Risk Employee List.
 
 
 #### Command Example
-```!code42-highriskemployee-add username="partner.demisto@example.com" note="Risky activity"```
-
-#### Context Example
-```
-{
-    "Code42": {
-        "HighRiskEmployee": {
-            "UserID": "942876157732602741",
-            "Username": "partner.demisto@example.com"
-        }
-    }
-}
-```
+```!code42-highriskemployee-add username="john.user@123.org" note="Risky activity"```
 
 #### Human Readable Output
 
->### Code42 High Risk Employee List User Added
->|UserID|Username|
->|---|---|
->| 942876157732602741 | partner.demisto@example.com |
->### Code42 High Risk Employee List User Added
->|UserID|Username|
->|---|---|
->| 942876157732602741 | partner.demisto@example.com |
+| **UserID** | **Note** | **Username** |
+| --- | --- | --- |
+| 123 | Leaving for competitor | john.user@example.com |
 
 
 ### code42-highriskemployee-remove
@@ -384,35 +344,18 @@ Removes a user from the High Risk Employee List.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | Unknown | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | Unknown | The username of the High Risk Employee. | 
+| Code42.HighRiskEmployee.UserID | unknown | Internal Code42 User ID for the High Risk Employee. | 
+| Code42.HighRiskEmployee.Username | unknown | The username of the High Risk Employee. | 
 
 
 #### Command Example
-```!code42-highriskemployee-remove username="partner.demisto@example.com" note="Risky activity"```
-
-#### Context Example
-```
-{
-    "Code42": {
-        "HighRiskEmployee": {
-            "UserID": "942876157732602741",
-            "Username": "partner.demisto@example.com"
-        }
-    }
-}
-```
+```!code42-highriskemployee-remove username="john.user@example.com"```
 
 #### Human Readable Output
 
->### Code42 High Risk Employee List User Removed
->|UserID|Username|
->|---|---|
->| 942876157732602741 | partner.demisto@example.com |
->### Code42 High Risk Employee List User Removed
->|UserID|Username|
->|---|---|
->| 942876157732602741 | partner.demisto@example.com |
+| **UserID** | **Username** |
+| --- | --- |
+| 123 | john.user@example.com |
 
 
 ### code42-highriskemployee-get-all
@@ -427,8 +370,7 @@ Get all employees on the High Risk Employee List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| risktags | To filter results by employees who have these risk tags. Space delimited. | Optional | 
-| results | The number of items to return. | Optional | 
+| risktags | To filter results by employees who have these risk tags. | Optional | 
 
 
 #### Context Output
@@ -441,57 +383,18 @@ Get all employees on the High Risk Employee List.
 
 
 #### Command Example
-```!code42-highriskemployee-get-all```
-
-#### Context Example
-```
-{
-    "Code42": {
-        "HighRiskEmployee": [
-            {
-                "Note": "tests and more tests",
-                "UserID": "111117397520286581",
-                "Username": "user1@example.com"
-            },
-            {
-                "Note": "Leaving for competitor",
-                "UserID": "822222723650937319",
-                "Username": "user2@example.com"
-            },
-            {
-                "Note": "Test user addition from XSOAR",
-                "UserID": "913333363086307495",
-                "Username": "user3@example.com"
-            }
-        ]
-    }
-}
-```
+```!code42-highriskemployee-get-all risktags="PERFORMANCE_CONCERNS"```
 
 #### Human Readable Output
 
->### Retrieved All High Risk Employees
->|Note|UserID|Username|
->|---|---|---|
->| tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
->| Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
->| Test user addition from XSOAR | 912098363086307495 | spatel@code42.com |
->| test | 921286907298179098 | juliya.smith+partners@code42.com |
->| Risky activity | 942876157732602741 | partner.demisto@example.com |
->### Retrieved All High Risk Employees
->|Note|UserID|Username|
->|---|---|---|
->| tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
->| Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
->| Test user addition from XSOAR | 912098363086307495 | spatel@code42.com |
->| test | 921286907298179098 | juliya.smith+partners@code42.com |
->| Risky activity | 942876157732602741 | partner.demisto@example.com |
+| **UserID** | **Note** | **Username** |
+| --- | --- | --- |
+| 123 | Leaving for competitor | john.user@example.com |
 
 
 ### code42-highriskemployee-add-risk-tags
 ***
  
-
 
 #### Base Command
 
@@ -501,7 +404,7 @@ Get all employees on the High Risk Employee List.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | The username of the High Risk Employee. | Required | 
-| risktags | Space-delimited risk tags to associate with the High Risk Employee. | Required | 
+| risktags | Risk tags to associate with the High Risk Employee. | Required | 
 
 
 #### Context Output
@@ -510,19 +413,22 @@ Get all employees on the High Risk Employee List.
 | --- | --- | --- |
 | Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
 | Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to associate with the High Risk Employee. | 
+| Code42.HighRiskEmployee.RiskTags | unknown | Risk tags to associate with the High Risk Employee. | 
 
 
 #### Command Example
-``` ```
+```!code42-highriskemployee-add-risk-tags username="john.user@example.com" risktags="PERFORMANCE_CONCERNS"```
 
 #### Human Readable Output
 
+| **UserID** | **RiskTags** | **Username** |
+| --- | --- | --- |
+| 123 | FLIGHT_RISK | john.user@example.com |
 
 
 ### code42-highriskemployee-remove-risk-tags
 ***
- 
+
 
 
 #### Base Command
@@ -533,7 +439,7 @@ Get all employees on the High Risk Employee List.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | The username of the High Risk Employee. | Required | 
-| risktags | Space-delimited risk tags to disassociate from the High Risk Employee. | Required | 
+| risktags | Risk tags to disassociate from the High Risk Employee. | Required | 
 
 
 #### Context Output
@@ -542,126 +448,45 @@ Get all employees on the High Risk Employee List.
 | --- | --- | --- |
 | Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
 | Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to disassociate from the High Risk Employee. | 
+| Code42.HighRiskEmployee.RiskTags | unknown | Risk tags to disassociate from the High Risk Employee. | 
 
 
 #### Command Example
-```!code42-highriskemployee-remove-risk-tags username="partner.demisto@example.com" risktags="PERFORMANCE_CONCERNS"```
-
-#### Context Example
-```
-{
-    "Code42": {
-        "HighRiskEmployee": [
-            {
-                "RiskTags": "PERFORMANCE_CONCERNS",
-                "UserID": "942876157732602741",
-                "Username": "partner.demisto@example.com"
-            }
-        ]
-    }
-}
-```
+```!code42-highriskemployee-remove-risk-tags username="john.user@example.com" risktags="PERFORMANCE_CONCERNS"```
 
 #### Human Readable Output
 
->### Code42 Risk Tags Removed
->|RiskTags|UserID|Username|
->|---|---|---|
->| PERFORMANCE_CONCERNS | 942876157732602741 | partner.demisto@example.com |
->### Code42 Risk Tags Removed
->|RiskTags|UserID|Username|
->|---|---|---|
->| PERFORMANCE_CONCERNS | 942876157732602741 | partner.demisto@example.com |
+| **UserID** | **RiskTags** | **Username** |
+| --- | --- | --- |
+| 123 | FLIGHT_RISK | john.user@example.com |
 
-
-### code42-user-create
-***
-Creates a Code42 user.
 
 
 #### Base Command
 
-`code42-user-create`
+`code42-highriskemployee-remove-risk-tags`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| orgname | The name of the Code42 organization from which to add the user. | Required | 
-| username | The username to give to the user. | Required | 
-| email |  | Required | 
+| username | The username of the High Risk Employee. | Required | 
+| risktags | Risk tags to disassociate from the High Risk Employee. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.User.Username | String | A username for a Code42 user. | 
-| Code42.User.Email | String | An email for a Code42 user. | 
-| Code42.User.UserID | String | An ID for a Code42 user. | 
+| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
+| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
+| Code42.HighRiskEmployee.RiskTags | unknown | Risk tags to disassociate from the High Risk Employee. | 
 
 
 #### Command Example
-``` ```
+```!code42-highriskemployee-remove-risk-tags username="john.user@example.com" risktags="PERFORMANCE_CONCERNS"```
 
 #### Human Readable Output
 
-
-
-### code42-user-block
-***
-Blocks a user in Code42.  A blocked user is not allowed to log in or restore files. Backups will continue if the user is still active.
-
-
-#### Base Command
-
-`code42-user-block`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
+| **UserID** | **RiskTags** | **Username** |
 | --- | --- | --- |
-| username | The username of the user to block. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.User.UserID | String | An ID for a Code42 user. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
-### code42-user-deactivate
-***
-Deactivate a user in Code42; signing them out of their devices. Backups discontinue for a deactivated user, and their archives go to cold storage.
-
-
-#### Base Command
-
-`code42-user-deactivate`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username of the user to deactivate. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.User.UserID | String | The ID of a Code42 User. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
+| 123 | FLIGHT_RISK | john.user@example.com |
