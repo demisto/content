@@ -3,6 +3,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import urllib3
+import requests
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -66,6 +67,53 @@ class Client(BaseClient):
         )
         return res
 
+    def add_account(self, address, user_name, platform_id, safe_name,
+                    name='', secret='', secret_type='password', platform_account_properties='',
+                    automatic_management_enabled='true', manual_management_reason='', remote_machines='',
+                    access_restricted_to_remote_machines='false'):
+        LOG('Adding a new Account')
+
+        headers = {
+            'Authorization': self.auth_token
+        }
+
+        body = {
+            "userName": user_name,
+            "address": address,
+            "platformId": platform_id,
+            "safeName": safe_name
+        }
+
+        if name:
+            body['name'] = name
+
+        if secret and secret_type:
+            body['secret'] = secret
+            body['secretType'] = secret_type
+
+        if platform_account_properties:
+            body['platformAccountProperties'] = platform_account_properties
+
+        if automatic_management_enabled == "false":
+            body['secretManagement'] = {
+                "automaticManagementEnabled": automatic_management_enabled,
+                "manualManagementReason": manual_management_reason
+            }
+
+        if remote_machines:
+            body['remoteMachinesAccess'] = {
+                "remoteMachines": remote_machines,
+                "accessRestrictedToRemoteMachines": access_restricted_to_remote_machines
+            }
+        res = self._http_request(
+            "POST",
+            url_suffix='/PasswordVault/api/Accounts',
+            resp_type="json",
+            headers=headers,
+            data=body
+        )
+        return res
+
 
 '''' Commands '''
 
@@ -94,13 +142,49 @@ def list_accounts(client, args):
             })
 
     if not raws:
-        return f'{INTEGRATION_NAME} - Could not any Accounts'
+        return f'{INTEGRATION_NAME} - Could not find any Accounts'
 
     context_entry = {
-        "CyberArk": {"Accounts": cyberark_ec}
+        "CyberArk.Accounts": cyberark_ec
     }
 
-    human_readable = tableToMarkdown(t=context_entry["CyberArk"]['Accounts'], name=title)
+    human_readable = tableToMarkdown(t=context_entry.get('CyberArk.Accounts'), name=title)
+    return [human_readable, context_entry, raws]
+
+
+def add_account(client, args):
+    title = f'{INTEGRATION_NAME} - Add a New Account'
+    raws = []
+    cyberark_ec = []
+    raw_response = client.add_account(user_name=args.get('user-name'), address=args.get('address'),
+                                      platform_id=args.get('platform-Id'), safe_name=args.get('safe-name'),
+                                      name=args.get('name'), secret=args.get('secret'),
+                                      secret_type=args.get('secret-type'),
+                                      platform_account_properties=args.get('platform-account-properties'),
+                                      automatic_management_enabled=args.get('automatic-management-enabled'),
+                                      manual_management_reason=args.get('manual-management-reason'),
+                                      remote_machines=args.get('remote-machines'),
+                                      access_restricted_to_remote_machines=
+                                      args.get('access-restricted-to-remote-machines'))
+    if raw_response:
+        raws.append(raw_response)
+        cyberark_ec.append({
+            'AccountName': raw_response['name'],
+            'UserName': raw_response['userName'],
+            'PlatformID': raw_response['platformId'],
+            'SafeName': raw_response['safeName'],
+            'AccountID': raw_response['id'],
+            'CreatedTime': raw_response['createdTime']
+        })
+
+    if not raws:
+        return f'{INTEGRATION_NAME} - Could not create the new Account'
+
+    context_entry = {
+        "CyberArk.Accounts": cyberark_ec
+    }
+
+    human_readable = tableToMarkdown(t=context_entry.get('CyberArk.Accounts'), name=title)
     return [human_readable, context_entry, raws]
 
 
@@ -135,6 +219,10 @@ def main():
 
         elif demisto.command() == 'cyberark-list-accounts':
             result = list_accounts(client, args=demisto.args())
+            return_outputs(*result)
+
+        elif demisto.command() == 'cyberark-add-account':
+            result = add_account(client, args=demisto.args())
             return_outputs(*result)
 
 

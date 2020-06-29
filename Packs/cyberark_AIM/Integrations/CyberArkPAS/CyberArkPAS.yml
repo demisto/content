@@ -63,9 +63,111 @@ script:
     execution: false
     name: cyberark-list-accounts
     outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
+    - contextPath: CyberArk.Accounts
+      description: CyberArk Accounts
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the account.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The name or address of the machine where the account will be used,
+        vDNS/IP/URL where the account is managed
+      isArray: false
+      name: address
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: Account user's name
+      isArray: false
+      name: user-name
+      required: true
+      secret: false
+    - default: false
+      description: 'The platform assigned to this account, Valid platform IDs, example:
+        WinServerLocal'
+      isArray: false
+      name: platform-Id
+      required: true
+      secret: false
+    - default: false
+      description: The Safe where the account will be created.
+      isArray: false
+      name: safe-name
+      required: true
+      secret: false
+    - default: false
+      description: The password value, password or private SSH key
+      isArray: false
+      name: secret
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: password
+      description: The type of password, password or key
+      isArray: false
+      name: secret-type
+      predefined:
+      - password
+      - key
+      required: false
+      secret: false
+    - default: false
+      description: 'Object containing key-value pairs to associate with the account,
+        as defined by the account platform. These properties are validated against
+        the mandatory and optional properties of the specified platform''s definition;
+        example: {"Location": "IT", "OwnerName": "MSSPAdmin"}'
+      isArray: false
+      name: platform-account-properties
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'true'
+      description: Whether the account secret is automatically managed by the CPM.True
+        or False
+      isArray: false
+      name: automatic-management-enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Reason for disabling automatic secret management.
+      isArray: false
+      name: manual-management-reason
+      required: false
+      secret: false
+    - default: false
+      description: 'List of remote machines, separated by semicolons.Example: server1.cyberark.com;server2.cyberark.com'
+      isArray: false
+      name: remote-machines
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether or not to restrict access only to specified remote machines
+      isArray: false
+      name: access-restricted-to-remote-machines
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: A command to add a new CyberArk Account
+    execution: false
+    name: cyberark-add-account
+    outputs:
+    - contextPath: CyberArk.Accounts
+      type: Unknown
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: false
