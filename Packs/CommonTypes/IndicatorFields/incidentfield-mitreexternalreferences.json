@@ -30,6 +30,13 @@
 	"mergeStrategy": "",
 	"hidden": false,
 	"associatedTypes": [
+		"Domain",
+		"IP",
+		"IPv6",
+		"CIDR",
+		"IPv6CIDR",
+		"File",
+		"URL",
 		"MITRE ATT&CK"
 	],
 	"systemAssociatedTypes": null,

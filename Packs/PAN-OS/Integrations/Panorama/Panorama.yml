@@ -2606,6 +2606,15 @@ script:
     - contextPath: Panorama.TrafficLogs.Logs.ToZone
       description: To zone of the traffic log.
       type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Bytes
+      description: Total log bytes.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.BytesReceived
+      description: Log bytes received.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.BytesSent
+      description: Log bytes sent.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2969,6 +2978,15 @@ script:
       description: |-
         A list of the URL filtering categories that the firewall used to
         enforce the policy.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Bytes
+      description: Total log bytes.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.BytesReceived
+      description: Log bytes received.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.BytesSent
+      description: Log bytes sent.
       type: String
   - arguments:
     - default: false

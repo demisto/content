@@ -32,8 +32,10 @@ args:
 - name: malicious_location
   required: true
   auto: PREDEFINED
+  description: ''
   predefined:
   - attachment
   - inline
 scripttarget: 0
 runonce: false
+comment: ''

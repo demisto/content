@@ -13,16 +13,16 @@ from distutils.version import LooseVersion
 import demisto_client
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_last_release_version, checked_type, get_yaml, str2bool, server_version_compare
+    run_command, get_last_release_version, checked_type, get_yaml, str2bool, format_version
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
-
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager, \
     get_server_numeric_version
 from Tests.update_content_data import update_content
-from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
+    install_all_content_packs
 
 MARKET_PLACE_MACHINES = ('master',)
 
@@ -86,10 +86,11 @@ def check_test_version_compatible_with_server(test, server_version, prints_manag
     Returns:
         (bool) True if test is compatible with server version or False otherwise.
     """
-    test_from_version = test.get('fromversion', '0.0.0')
-    test_to_version = test.get('toversion', '99.99.99')
-    if (server_version_compare(test_from_version, server_version) > 0
-            or server_version_compare(test_to_version, server_version) < 0):
+    test_from_version = format_version(test.get('fromversion', '0.0.0'))
+    test_to_version = format_version(test.get('toversion', '99.99.99'))
+    server_version = format_version(server_version)
+
+    if not (LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version)):
         warning_message = 'Test Playbook: {} was ignored in the content installation test due to version mismatch ' \
                           '(test versions: {}-{}, server version: {})'.format(test.get('playbookID'),
                                                                               test_from_version,
@@ -800,17 +801,36 @@ def main():
         prints_manager.execute_thread_prints(0)
         sleep(60)
 
-        pack_ids = get_pack_ids_to_install()
-        # install content packs in every server
-        for server_url in servers:
-            try:
-                client = demisto_client.configure(base_url=server_url, username=username, password=password,
-                                                  verify_ssl=False)
-                search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager, options.is_nightly)
-            except Exception as exc:
-                prints_manager.add_print_job(str(exc), print_error, 0)
-                prints_manager.execute_thread_prints(0)
-                installed_content_packs_successfully = False
+        if options.is_nightly:
+            threads_list = []
+            threads_print_manager = ParallelPrintsManager(len(servers))
+            # For each server url we install content
+            for thread_index, server_url in enumerate(servers):
+                client = demisto_client.configure(base_url=server_url, username=username,
+                                                  password=password, verify_ssl=False)
+                t = Thread(target=install_all_content_packs,
+                           kwargs={'client': client, 'host': server_url,
+                                   'prints_manager': threads_print_manager,
+                                   'thread_index': thread_index})
+                threads_list.append(t)
+            run_threads_list(threads_list)
+            prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
+            prints_manager.execute_thread_prints(0)
+            sleep(45)
+
+        else:
+            # install content packs in every server
+            pack_ids = get_pack_ids_to_install()
+            for server_url in servers:
+                try:
+                    client = demisto_client.configure(base_url=server_url, username=username, password=password,
+                                                      verify_ssl=False)
+
+                    search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                except Exception as exc:
+                    prints_manager.add_print_job(str(exc), print_error, 0)
+                    prints_manager.execute_thread_prints(0)
+                    installed_content_packs_successfully = False
 
     if new_integrations_files:
         new_integrations_names = get_integration_names_from_files(new_integrations_files)

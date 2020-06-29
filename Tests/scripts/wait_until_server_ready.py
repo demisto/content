@@ -71,7 +71,7 @@ def main():
                     continue
                 if res.status_code == 200:
                     if SETUP_TIMEOUT != 60 * 60:
-                        print(f'Resetting SETUP_TIMEOUT to an hour.')
+                        print('Resetting SETUP_TIMEOUT to an hour.')
                         SETUP_TIMEOUT = 60 * 60
                     print(f'[{datetime.datetime.now()}] {ami_instance_name} is ready to use')
                     instance_ips_to_poll.remove(ami_instance_ip)
