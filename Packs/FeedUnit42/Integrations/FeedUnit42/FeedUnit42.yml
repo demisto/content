@@ -75,7 +75,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Unit42 feed of published IOCs which contains malicious indicators.
+description: Unit42 feed of published IOCs, which contains known malicious indicators.
 display: Unit42 Feed
 name: Unit42 Feed
 script:
