@@ -1,1 +1,1 @@
-my new file contents
+my new file contents 12345678
