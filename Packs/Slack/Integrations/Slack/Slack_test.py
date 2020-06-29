@@ -496,11 +496,11 @@ class TestGetConversationByName:
         - Check if the right conversation returned
         - Check that a API command was called.
         """
-        def get_integration_context():
+        def get_context():
             return {}
         from Slack import get_conversation_by_name
 
-        self.set_conversation_mock(mocker, get_context=get_integration_context)
+        self.set_conversation_mock(mocker, get_context=get_context)
 
         conversation_name = 'general'
         conversation = get_conversation_by_name(conversation_name)
