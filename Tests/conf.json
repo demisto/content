@@ -19,7 +19,8 @@
         },
         {
             "integrations": "MITRE ATT&CK",
-            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "URLhaus",

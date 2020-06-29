@@ -632,7 +632,7 @@ def get_indicator_type_id(indicator_name: str) -> str:
         if indicator.get('name', '').lower() == indicator_name.lower():
             return indicator.get('id')
 
-    raise ValueError(f'Could not find indicator')
+    raise ValueError('Could not find indicator')
 
 
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
