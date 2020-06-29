@@ -389,9 +389,9 @@ class PCAP():
             if self.protocol_data[protocol]:
                 ec[f'PCAPResults{protocol}'] = list(self.protocol_data[protocol].values())  # type: ignore
         if 'ICMP' in self.extracted_protocols and self.icmp_data:
-            ec[f'PcapResultsICMP'] = list(self.icmp_data)  # type: ignore
+            ec['PcapResultsICMP'] = list(self.icmp_data)  # type: ignore
         if 'KERBEROS' in self.extracted_protocols and self.kerb_data:
-            ec[f'PCAPResultsKERBEROS'] = self.kerb_data  # type: ignore
+            ec['PCAPResultsKERBEROS'] = self.kerb_data  # type: ignore
         if 'SSH' in self.extracted_protocols:
             temp = {
                 'EntryID': self.entry_id,
