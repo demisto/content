@@ -418,7 +418,7 @@ script:
     - name: ID
       required: true
       default: true
-      description: Incident Entry ID, If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"<incident number>\""
+      description: Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"<incident number>\"".
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID
@@ -465,7 +465,7 @@ script:
     - name: ID
       required: true
       default: true
-      description: Incident Entry ID, If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"<incident number>\""
+      description: Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"<incident number>\"".
     - name: description
       description: Updated description
     - name: status
