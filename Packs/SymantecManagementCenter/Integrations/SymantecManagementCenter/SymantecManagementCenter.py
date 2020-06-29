@@ -999,6 +999,131 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
     return content_deleted
 
 
+def update_policy_content_command():
+    """
+        Command to update existing policy content in Symantec MC
+        :return: An entry indicating whether the update was successful
+    """
+    uuid = demisto.args().get('uuid')
+    name = demisto.args().get('name')
+    content_type = demisto.args()['content_type']
+    change_description = demisto.args()['change_description']
+    schema_version = demisto.args().get('schema_version')
+    ips = argToList(demisto.args().get('ip', []))
+    urls = argToList(demisto.args().get('url', []))
+    categories = argToList(demisto.args().get('category', []))
+    content_description = demisto.args().get('description')
+    content_enabled = demisto.args().get('enabled')
+
+    if not (content_description or content_enabled):
+        raise ValueError('No attributes to update were provided.')
+
+    verify_policy_content(content_type, ips, categories, urls)
+
+    uuid = get_policy_uuid(uuid, name)
+
+    if content_type == IP_LIST_TYPE:
+        update_policy_content_request(
+            uuid, content_type, change_description, schema_version, ips=ips,
+            content_description=content_description, content_enabled=content_enabled
+        )
+    elif content_type == URL_LIST_TYPE:
+        update_policy_content_request(
+            uuid, content_type, change_description, schema_version, urls=urls,
+            content_description=content_description, content_enabled=content_enabled
+        )
+    elif content_type == LOCAL_CATEGORY_DB_TYPE:
+        update_policy_content_request(
+            uuid, content_type, change_description, schema_version, ips=ips, urls=urls,
+            categories=categories, content_description=content_description, content_enabled=content_enabled
+        )
+
+    output = demisto.args()
+    human_readable = tableToMarkdown('Successfully updated content of the policy', output)
+    return_outputs(human_readable, {}, output)
+
+
+def update_policy_content_request(uuid, content_type, change_description, schema_version,
+                                  ips=None, urls=None, categories=None, content_description=None, content_enabled=None):
+    """
+    Update content of a specified policy using the provided arguments
+    :param uuid: Policy UUID
+    :param content_type: Policy content type
+    :param change_description: Policy update change description
+    :param schema_version: Policy schema version
+    :param ips: IPs to update from the content
+    :param urls: URLs to update from the content
+    :param categories: Category names to update from the content
+    :param content_description: Content description to update.
+    :param content_enabled: Content enablement to update.
+    :return: Content update response
+    """
+    path = 'policies/' + uuid + '/content'
+
+    body = {
+        'contentType': content_type,
+        'changeDescription': change_description
+    }
+
+    if schema_version:
+        body['schemaVersion'] = schema_version
+
+    content = get_policy_content_request(uuid)
+
+    if not content or 'content' not in content:
+        return_error('Could not update policy content - failed retrieving the current content')
+
+    found_object_to_update = False
+
+    if ips:
+        if categories:
+            if 'categories' in content['content']:
+                for category_index, category in enumerate(content['content']['categories']):
+                    if category.get('name') in categories:
+                        for entry_index, entry in enumerate(category.get('entries')):
+                            if entry.get('url') in ips:
+                                found_object_to_update = True
+                                content['content']['categories'][category_index]['entries'][entry_index][
+                                    'comment'] = content_description
+        else:
+            if 'ipAddresses' in content['content']:
+                for ip in content['content']['ipAddresses']:
+                    if ip['ipAddress'] in ips:
+                        found_object_to_update = True
+                        if content_description:
+                            ip['description'] = content_description
+                        if content_enabled:
+                            ip['enabled'] = bool(strtobool(content_enabled))
+    elif urls:
+        if categories:
+            if 'categories' in content['content']:
+                for category_index, category in enumerate(content['content']['categories']):
+                    if category.get('name') in categories:
+                        for entry_index, entry in enumerate(category.get('entries')):
+                            if entry.get('url') in urls:
+                                found_object_to_update = True
+                                content['content']['categories'][category_index]['entries'][entry_index][
+                                    'comment'] = content_description
+        else:
+            if 'urls' in content['content']:
+                for url in content['content']['urls']:
+                    found_object_to_update = True
+                    if url['url'] in urls:
+                        found_object_to_update = True
+                        if content_description:
+                            url['description'] = content_description
+                        if content_enabled:
+                            url['enabled'] = bool(strtobool(content_enabled))
+
+    if not found_object_to_update:
+        raise Exception('Update failed - Could not find object to update.')
+
+    body['content'] = content['content']
+    response = http_request('POST', path, data=body)
+
+    return response
+
+
 def list_tenants_command():
     """
     List tenants in Symantec MC
@@ -1071,6 +1196,7 @@ def main():
         'symantec-mc-delete-policy': delete_policy_command,
         'symantec-mc-add-policy-content': add_policy_content_command,
         'symantec-mc-delete-policy-content': delete_policy_content_command,
+        'symantec-mc-update-policy-content': update_policy_content_command,
         'symantec-mc-list-tenants': list_tenants_command
     }
 
