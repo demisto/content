@@ -1251,7 +1251,7 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     Returns:
         The slack conversation
     """
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context(SYNC_CONTEXT)
 
     conversation_to_search = conversation_name.lower()
     # Find conversation in the cache
