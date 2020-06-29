@@ -659,8 +659,8 @@ def fetch_events_incidents_command(start_date, end_date, token, next_=None):
             next_page_token = None
 
         incidents = parse_events(events)
-        return (incidents, next_page_token)
-    return ([], None)
+        return (incidents, next_page_token, False)
+    return ([], None, True)
 
 
 def fetch_behavior_incidents_command(start_date, token, offset=0):
@@ -711,6 +711,7 @@ def fetch_incidents_command():
 
     # Fetch Events
     more_events = True
+    no_events_found = True
     page_token = None
     incidents = []
 
@@ -721,7 +722,7 @@ def fetch_incidents_command():
     if stored_incidents is None:
         demisto.debug("Did not detect any stored incidents")
         while more_events:
-            event_incidents, page_token = fetch_events_incidents_command(start_date, end_date, token, page_token)
+            event_incidents, page_token, no_events_found = fetch_events_incidents_command(start_date, end_date, token, page_token)
             for incident in event_incidents:
                 demisto.debug("Adding event incident name={name}, type={type}, severity={severity}".format(**incident))
             incidents += event_incidents
@@ -741,8 +742,11 @@ def fetch_incidents_command():
                 if next_offset is None:
                     more_behavior = False
 
-        # Send PAGE_LIMIT number of incidents to demisto
-        if len(incidents) > PAGE_LIMIT:
+        if len(incidents) == 0 and no_events_found:
+            # return and try again later, API may not have updated.
+            demisto.debug("Will retry - no events returned")
+            return
+        elif len(incidents) > PAGE_LIMIT:
             incidents_to_send = incidents[:PAGE_LIMIT]
             del incidents[:PAGE_LIMIT]
             demisto.incidents(incidents_to_send)

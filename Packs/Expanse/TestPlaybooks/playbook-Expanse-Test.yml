@@ -1,5 +1,5 @@
 id: test-Expanse
-version: 6
+version: -1
 name: test-Expanse
 starttaskid: "0"
 tasks:
@@ -254,10 +254,10 @@ tasks:
       id: aa2f5d92-1b67-4c54-89ea-d67aaec93703
       version: -1
       name: expanse-get-domains-for-certificate
-      script: Expanse_copy|||expanse-get-domains-for-certificate
+      script: Expanse|||expanse-get-domains-for-certificate
       type: regular
       iscommand: true
-      brand: Expanse_copy
+      brand: Expanse
     nexttasks:
       '#none#':
       - "8"
@@ -348,8 +348,10 @@ inputs:
   playbookInputQuery: null
 - key: common_name
   value:
-    simple: '*.enron.com'
+    simple: 'shack.com'
   required: false
   description: A partial certificate common name
   playbookInputQuery: null
 outputs: []
+description: ""
+fromversion: 5.0.0
