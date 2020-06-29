@@ -4,7 +4,7 @@ from test_data.feed_data import RESPONSE_DATA
 
 
 @pytest.mark.parametrize('command, args, response, length', [
-    # (get_indicators_command, {'limit': 2}, RESPONSE_DATA, 2),
+    (get_indicators_command, {'limit': 2}, RESPONSE_DATA, 2),
     (get_indicators_command, {'limit': 5}, RESPONSE_DATA, 5),
 ])  # noqa: E124
 def test_commands(command, args, response, length, mocker):
@@ -18,12 +18,12 @@ def test_commands(command, args, response, length, mocker):
     Then
     - convert the result to human readable table
     - create the context
-    validate the entry context
+    validate the raw_response
     """
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'get_stix_objects', return_value=response)
     command_results = command(client, args)
-    indicators = command_results.outputs
+    indicators = command_results.raw_response
     assert len(indicators) == length
 
 
