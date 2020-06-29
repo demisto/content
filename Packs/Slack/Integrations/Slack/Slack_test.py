@@ -540,7 +540,6 @@ class TestGetConversationByName:
         assert slack.WebClient.api_call.call_count == 1
 
 
-
 def test_get_user_by_name(mocker):
     from Slack import get_user_by_name
     # Set
