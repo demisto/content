@@ -117,7 +117,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
                                    .replace('"', r'\"')
                                    .replace("\n", "\\n")
                                    .replace("\r", "\\r")
-                                   if type(t[1]) not in (int, float, bool) else t[1]
+                                   if isinstance(t[1], STRING_TYPES) else t[1]
                                    ),
             similar_incident_keys.items()))
     incident_time = parse_datetime(incident_time)
