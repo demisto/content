@@ -100,7 +100,7 @@ To bring the next batch of indicators run:
 
 ## Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content/raw/3e9401284a518efa66d9b66bb5c1b5e0e61dbdb5/Packs/FeedAutofocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedAutofocus/AutoFocus_Feed_demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/3e9401284a518efa66d9b66bb5c1b5e0e61dbdb5/Packs/FeedAutofocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4 
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedAutofocus/AutoFocus_Feed_demo.mp4 
 </video>

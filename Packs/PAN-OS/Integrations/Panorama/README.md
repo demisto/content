@@ -4582,6 +4582,21 @@
 <td style="width: 426px;">Application associated with the session.</td>
 </tr>
 <tr>
+<td style="width: 260px;">Panorama.Monitor.Bytes</td>
+<td style="width: 55px;">String</td>
+<td style="width: 426px;">Total log bytes.</td>
+</tr>
+<tr>
+<td style="width: 260px;">Panorama.Monitor.BytesReceived</td>
+<td style="width: 55px;">String</td>
+<td style="width: 426px;">Log bytes received.</td>
+</tr>
+<tr>
+<td style="width: 260px;">Panorama.Monitor.BytesSent</td>
+<td style="width: 55px;">String</td>
+<td style="width: 426px;">Log bytes sent.</td>
+</tr>
+<tr>
 <td style="width: 260px;">Panorama.Monitor.Category</td>
 <td style="width: 55px;">String</td>
 <td style="width: 426px;">The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware"’, or "benign". For other subtypes, the value is "any".</td>

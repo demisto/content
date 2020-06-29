@@ -13,7 +13,9 @@
     "tags": [
         "TIM"
     ],
-    "useCases": [],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
     "keywords": [],
     "dependencies": {
         "PhishTank": {

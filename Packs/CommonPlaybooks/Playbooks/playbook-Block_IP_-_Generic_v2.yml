@@ -1,7 +1,6 @@
 id: Block IP - Generic v2
 version: -1
 name: Block IP - Generic v2
-fromversion: 4.0.0
 description: |-
   This playbook blocks malicious IPs using all integrations that are enabled.
 
@@ -14,15 +13,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    taskid: 650804b8-1cd4-4c33-8d83-8f72c789f860
     type: start
     task:
-      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      id: 650804b8-1cd4-4c33-8d83-8f72c789f860
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -37,18 +36,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    taskid: cbdf2261-0bd1-4856-86f8-c5082a16f3ee
     type: title
     task:
-      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      id: cbdf2261-0bd1-4856-86f8-c5082a16f3ee
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -60,18 +61,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: cea4b9a9-d2a5-42c6-84e7-7eab6d6ab7a8
+    taskid: 47c2b776-5038-453b-8115-48141dbad596
     type: title
     task:
-      id: cea4b9a9-d2a5-42c6-84e7-7eab6d6ab7a8
+      id: 47c2b776-5038-453b-8115-48141dbad596
       version: -1
       name: Block IPs
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -89,12 +92,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 077714b6-f53e-4ab4-8679-d2c172e67a59
+    taskid: 9dd50dac-37af-45ff-8c50-d02eadc60b93
     type: regular
     task:
-      id: 077714b6-f53e-4ab4-8679-d2c172e67a59
+      id: 9dd50dac-37af-45ff-8c50-d02eadc60b93
       version: -1
       name: Block IP with Check Point Firewall
       description: Block the IPs using Check Point Firewall
@@ -126,12 +131,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: cc26e2d3-b22c-4e90-819e-5a1dc485c2db
+    taskid: f5912507-b8b7-4a1e-8cbc-43d6ed014158
     type: condition
     task:
-      id: cc26e2d3-b22c-4e90-819e-5a1dc485c2db
+      id: f5912507-b8b7-4a1e-8cbc-43d6ed014158
       version: -1
       name: Is Check Point Firewall enabled?
       description: Verify that there is a valid instance of Check Point Firewall enabled.
@@ -184,12 +191,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 3f8eeba3-99f9-484c-8f73-a0c6d9bd02bb
+    taskid: 39db44de-9bb1-460e-8b42-023c12aa4778
     type: condition
     task:
-      id: 3f8eeba3-99f9-484c-8f73-a0c6d9bd02bb
+      id: 39db44de-9bb1-460e-8b42-023c12aa4778
       version: -1
       name: Is there an IP to block?
       description: Verify that the playbook input includes at least one IP to block.
@@ -220,34 +229,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: dbee1e60-454a-4043-8676-7f5bb3006b00
+    taskid: d8d7576b-c4e9-48a6-8046-68f589b27e2e
     type: playbook
     task:
-      id: dbee1e60-454a-4043-8676-7f5bb3006b00
+      id: d8d7576b-c4e9-48a6-8046-68f589b27e2e
       version: -1
-      name: Add Indicator to Miner - Minemeld
+      name: Add Indicator to Miner - Palo Alto MineMeld
       playbookName: Add Indicator to Miner - Palo Alto MineMeld
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      Indicator:
-        complex:
-          root: inputs.IP
-      MinerName:
-        complex:
-          root: inputs.IPBlacklistMiner
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -258,12 +263,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 43617e2e-a00d-4569-8d43-80b6e732798e
+    taskid: 1bed0b61-b979-45c7-8628-f337dc0912ed
     type: condition
     task:
-      id: 43617e2e-a00d-4569-8d43-80b6e732798e
+      id: 1bed0b61-b979-45c7-8628-f337dc0912ed
       version: -1
       name: Is Zscaler enabled?
       description: Verify that there is a valid instance of Zscaler enabled.
@@ -316,12 +323,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 6c6d1f99-8689-49d7-8c7c-f9ddcdd2a782
+    taskid: 5e4a94dc-b93a-43e9-8a81-176b36b3fc57
     type: regular
     task:
-      id: 6c6d1f99-8689-49d7-8c7c-f9ddcdd2a782
+      id: 5e4a94dc-b93a-43e9-8a81-176b36b3fc57
       version: -1
       name: Block IP with Zscaler
       description: Block the IPs using Zscaler.
@@ -347,39 +356,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 161ff68a-c259-4e8c-8d24-965fe952c1d2
+    taskid: b8398534-32b9-4455-84d6-2dd09bd2a592
     type: playbook
     task:
-      id: 161ff68a-c259-4e8c-8d24-965fe952c1d2
+      id: b8398534-32b9-4455-84d6-2dd09bd2a592
       version: -1
       name: PAN-OS - Block IP - Custom Block Rule
       playbookName: PAN-OS - Block IP - Custom Block Rule
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      IP:
-        complex:
-          root: inputs.IP
-          transformers:
-          - operator: uniq
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -390,42 +390,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "15":
     id: "15"
-    taskid: dcbbc272-0463-4e4c-81ba-ed176e92d04c
+    taskid: 9828866a-b42c-4155-8681-d7b183b80fe2
     type: playbook
     task:
-      id: dcbbc272-0463-4e4c-81ba-ed176e92d04c
+      id: 9828866a-b42c-4155-8681-d7b183b80fe2
       version: -1
       name: PAN-OS - Block IP - Static Address Group
       playbookName: PAN-OS - Block IP - Static Address Group
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      AddressGroupName:
-        complex:
-          root: inputs.StaticAddressGroup
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      IP:
-        complex:
-          root: inputs.IP
-          transformers:
-          - operator: uniq
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -436,47 +424,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 6843cc6b-0460-4f91-8ad4-7925fb5f817a
+    taskid: 9620e528-42f8-4c0d-8706-b46a73d188be
     type: playbook
     task:
-      id: 6843cc6b-0460-4f91-8ad4-7925fb5f817a
+      id: 9620e528-42f8-4c0d-8706-b46a73d188be
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      EDLServerIP:
-        complex:
-          root: inputs.EDLServerIP
-      IP:
-        complex:
-          root: inputs.IP
-          transformers:
-          - operator: uniq
-      IPListName:
-        complex:
-          root: inputs.IPListName
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      URL: {}
-      URLListName: {}
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -487,18 +458,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 901eaceb-8b70-4afa-81b8-cb26eb624fd2
+    taskid: 9d73fbe9-6b72-4cd3-8a23-235fb61bc197
     type: title
     task:
-      id: 901eaceb-8b70-4afa-81b8-cb26eb624fd2
+      id: 9d73fbe9-6b72-4cd3-8a23-235fb61bc197
       version: -1
       name: PAN-OS
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -516,18 +489,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: eaa34a69-51d5-4309-851e-cec547062d7e
+    taskid: fa041b26-6524-4e1f-8aeb-6d6e77e75c5c
     type: title
     task:
-      id: eaa34a69-51d5-4309-851e-cec547062d7e
+      id: fa041b26-6524-4e1f-8aeb-6d6e77e75c5c
       version: -1
       name: CheckPoint FW
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -542,18 +517,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 5ef9b8f5-62a4-415c-896d-a739062d19ad
+    taskid: 3c8ee2b0-16ec-4e9e-8e66-b86781a7144e
     type: title
     task:
-      id: 5ef9b8f5-62a4-415c-896d-a739062d19ad
+      id: 3c8ee2b0-16ec-4e9e-8e66-b86781a7144e
       version: -1
       name: MineMeld
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -568,18 +545,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: c35db5b5-164d-466d-825c-144a961f4f9c
+    taskid: ffef1804-3251-47ce-83d5-f398b82b8fa6
     type: title
     task:
-      id: c35db5b5-164d-466d-825c-144a961f4f9c
+      id: ffef1804-3251-47ce-83d5-f398b82b8fa6
       version: -1
       name: Zscaler
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -594,54 +573,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: be4682fc-8d29-42a2-8de6-6f31f277e4d9
+    taskid: 6c3dfdb9-9ac3-4a32-831b-67fc7bec6fd1
     type: playbook
     task:
-      id: be4682fc-8d29-42a2-8de6-6f31f277e4d9
+      id: 6c3dfdb9-9ac3-4a32-831b-67fc7bec6fd1
       version: -1
       name: PAN-OS DAG Configuration
       playbookName: PAN-OS DAG Configuration
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      action-type:
-        simple: drop
-      address_group_name:
-        simple: Demisto - Remediation IP Address Group
-      auto_commit:
-        complex:
-          root: inputs.AutoCommit
-      device-group: {}
-      inbound-or-outbound-rule:
-        simple: outbound
-      ip_list:
-        complex:
-          root: inputs.IP
-      log-forwarding-object-name:
-        complex:
-          root: inputs.LogForwarding
-      pre-post-rulebase:
-        simple: pre-rulebase
-      relative-rule-name: {}
-      rule-position:
-        simple: before
-      rule_name:
-        simple: Demisto Block Rule - ${incident.id}
-      tag_name:
-        complex:
-          root: inputs.DAG
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -652,12 +607,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "22":
     id: "22"
-    taskid: c3a30091-7a2f-405a-808c-c1553a264cb4
+    taskid: 4f95fd93-d93e-432b-891b-da70b95207d9
     type: condition
     task:
-      id: c3a30091-7a2f-405a-808c-c1553a264cb4
+      id: 4f95fd93-d93e-432b-891b-da70b95207d9
       version: -1
       name: Use Custom Block Rules?
       description: ""
@@ -694,12 +651,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: f62443fb-69ea-4a5d-8c10-f3dd19a1cdc8
+    taskid: c4e83fd9-f8b6-45da-833e-94db3447c312
     type: condition
     task:
-      id: f62443fb-69ea-4a5d-8c10-f3dd19a1cdc8
+      id: c4e83fd9-f8b6-45da-833e-94db3447c312
       version: -1
       name: Use Static Address Group?
       description: ""
@@ -731,12 +690,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 5358db30-716f-46d9-86d5-bd22d496c93c
+    taskid: 5ac3d7c2-8b78-45e9-8095-184b2a82a919
     type: condition
     task:
-      id: 5358db30-716f-46d9-86d5-bd22d496c93c
+      id: 5ac3d7c2-8b78-45e9-8095-184b2a82a919
       version: -1
       name: Use External Dynamic List?
       description: ""
@@ -774,12 +735,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 07323c54-1759-454b-89c5-09ae35d4e86d
+    taskid: 5387aea9-c64b-4b9d-848f-c9269f644889
     type: condition
     task:
-      id: 07323c54-1759-454b-89c5-09ae35d4e86d
+      id: 5387aea9-c64b-4b9d-848f-c9269f644889
       version: -1
       name: Use Dynamic Address Group?
       description: ""
@@ -811,6 +774,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -836,10 +802,12 @@ inputs:
   value: {}
   required: false
   description: The name of the IP blacklist Miner in  Minemeld.
+  playbookInputQuery:
 - key: IP
   value: {}
   required: false
   description: Array of malicious IPs to block.
+  playbookInputQuery:
 - key: CustomBlockRule
   value:
     simple: "True"
@@ -847,10 +815,12 @@ inputs:
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
     Specify True to use Custom Block Rules.
+  playbookInputQuery:
 - key: LogForwarding
   value: {}
   required: false
   description: Panorama log forwarding object name.
+  playbookInputQuery:
 - key: AutoCommit
   value:
     simple: "No"
@@ -859,18 +829,21 @@ inputs:
     This input determines whether to commit the configuration automatically.
     Yes - Commit automatically.
     No - Commit manually.
+  playbookInputQuery:
 - key: StaticAddressGroup
   value: {}
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
     Specify the Static Address Group name for IP handling.
+  playbookInputQuery:
 - key: IPListName
   value: {}
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
     Specify the EDL name for IP handling.
+  playbookInputQuery:
 - key: EDLServerIP
   value: {}
   required: false
@@ -878,12 +851,14 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
     * The IP address of the web server on which the files are stored.
     * The web server IP address is configured in the integration instance.
+  playbookInputQuery:
 - key: DAG
   value: {}
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
     Specify the Dynamic Address Group tag name for IP handling.
+  playbookInputQuery:
 outputs:
 - contextPath: CheckpointFWRule.Destination
   description: Rule Destination.
@@ -944,5 +919,6 @@ outputs:
   description: Percentage of rule hits.
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of rule hits.
+fromversion: 4.0.0
 tests:
-  - block_indicators_-_generic_-_test
+- block_indicators_-_generic_-_test

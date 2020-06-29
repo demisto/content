@@ -22,7 +22,7 @@
     Generate a pair of SSH keys. Send the private key to the user’s home directory,
     into the “.ssh” folder in the Apache server.
   </li>
-  <li>Append the private key to the “authorized_keys” file.</li>
+  <li>Append the public key to the “authorized_keys” file.</li>
   <li>Save the private SSH key in Demisto Credentials.</li>
   <li>
     To verify the location of the document root where the files are stored, run

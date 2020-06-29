@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.5.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,5 +10,283 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "VirusTotal": {
+            "mandatory": false,
+            "display_name": "VirusTotal"
+        },
+        "ExtraHop": {
+            "mandatory": false,
+            "display_name": "ExtraHop Reveal(x)"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "JoeSecurity": {
+            "mandatory": false,
+            "display_name": "Joe Security"
+        },
+        "SNDBOX": {
+            "mandatory": false,
+            "display_name": "SNDBOX"
+        },
+        "McAfee-TIE": {
+            "mandatory": false,
+            "display_name": "McAfee Threat Intelligence Exchange"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "Flashpoint": {
+            "mandatory": false,
+            "display_name": "Flashpoint"
+        },
+        "CarbonBlackProtect": {
+            "mandatory": false,
+            "display_name": "Carbon Black Enterprise Protection"
+        },
+        "CrowdStrikeIntel": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon Intel"
+        },
+        "CalculateTimeDifference": {
+            "mandatory": true,
+            "display_name": "CalculateTimeDifference"
+        },
+        "Cylance_Protect": {
+            "mandatory": false,
+            "display_name": "Cylance Protect"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "ReversingLabs_Titanium_Cloud": {
+            "mandatory": false,
+            "display_name": "ReversingLabs Titanium Cloud"
+        },
+        "Anomali_ThreatStream": {
+            "mandatory": false,
+            "display_name": "Anomali ThreatStream"
+        },
+        "VulnDB": {
+            "mandatory": false,
+            "display_name": "VulnDB"
+        },
+        "ThreatMiner": {
+            "mandatory": false,
+            "display_name": "ThreatMiner"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "Cofense-Intelligence": {
+            "mandatory": false,
+            "display_name": "Cofense Intelligence"
+        },
+        "VirusTotal-Private_API": {
+            "mandatory": false,
+            "display_name": "VirusTotal - Private API"
+        },
+        "Carbon_Black_Enterprise_Response": {
+            "mandatory": false,
+            "display_name": "Carbon Black Enterprise Response"
+        },
+        "Palo_Alto_Networks_WildFire": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks WildFire"
+        },
+        "ThreatQ": {
+            "mandatory": false,
+            "display_name": "ThreatQ"
+        },
+        "CheckpointFirewall": {
+            "mandatory": false,
+            "display_name": "Check Point Firewall"
+        },
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "D2": {
+            "mandatory": false,
+            "display_name": "D2"
+        },
+        "CrowdStrikeHost": {
+            "mandatory": false,
+            "display_name": "FalconHost"
+        },
+        "McAfee_Advanced_Threat_Defense": {
+            "mandatory": false,
+            "display_name": "McAfee Advanced Threat Defense"
+        },
+        "Phishing": {
+            "mandatory": false,
+            "display_name": "Phishing"
+        },
+        "ReversingLabs_A1000": {
+            "mandatory": false,
+            "display_name": "ReversingLabs A1000"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "Lastline": {
+            "mandatory": false,
+            "display_name": "Lastline"
+        },
+        "illuminate": {
+            "mandatory": false,
+            "display_name": "illuminate"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "isight": {
+            "mandatory": false,
+            "display_name": "FireEye iSIGHT"
+        },
+        "CrowdStrikeFalconSandbox": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon Sandbox"
+        },
+        "fireeye": {
+            "mandatory": false,
+            "display_name": "FireEye (AX Series)"
+        },
+        "Threat_Crowd": {
+            "mandatory": false,
+            "display_name": "Threat Crowd"
+        },
+        "XFE": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "ML": {
+            "mandatory": false,
+            "display_name": "Machine Learning"
+        },
+        "Symantec_Deepsight": {
+            "mandatory": false,
+            "display_name": "Symantec Deepsight Intelligence (Beta)"
+        },
+        "rasterize": {
+            "mandatory": false,
+            "display_name": "Rasterize"
+        },
+        "CuckooSandbox": {
+            "mandatory": false,
+            "display_name": "Cuckoo Sandbox"
+        },
+        "ANYRUN": {
+            "mandatory": false,
+            "display_name": "ANY.RUN"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "ThreatExchange": {
+            "mandatory": false,
+            "display_name": "ThreatExchange"
+        },
+        "AlienVault_OTX": {
+            "mandatory": false,
+            "display_name": "AlienVault OTX"
+        },
+        "ThreatGrid": {
+            "mandatory": false,
+            "display_name": "Cisco Threat Grid"
+        },
+        "ThreatConnect": {
+            "mandatory": false,
+            "display_name": "ThreatConnect"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
+        "Maltiverse": {
+            "mandatory": false,
+            "display_name": "Maltiverse"
+        },
+        "EclecticIQ": {
+            "mandatory": false,
+            "display_name": "EclecticIQ Platform"
+        },
+        "Traps": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Traps"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        },
+        "TruSTAR": {
+            "mandatory": false,
+            "display_name": "TruSTAR"
+        },
+        "epo": {
+            "mandatory": false,
+            "display_name": "McAfee ePO"
+        },
+        "Recorded_Future": {
+            "mandatory": false,
+            "display_name": "Recorded Future"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "PolySwarm": {
+            "mandatory": false,
+            "display_name": "PolySwarm"
+        },
+        "Cisco-umbrella": {
+            "mandatory": false,
+            "display_name": "Cisco Umbrella Investigate"
+        },
+        "ImageOCR": {
+            "mandatory": false,
+            "display_name": "Image OCR"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
+        },
+        "XForceExchange": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "URLHaus": {
+            "mandatory": false,
+            "display_name": "URLhaus"
+        },
+        "MISP": {
+            "mandatory": false,
+            "display_name": "MISP"
+        },
+        "Cybereason": {
+            "mandatory": false,
+            "display_name": "Cybereason"
+        },
+        "VMRay": {
+            "mandatory": false,
+            "display_name": "VMRay"
+        },
+        "HybridAnalysis": {
+            "mandatory": false,
+            "display_name": "Hybrid Analysis"
+        }
+    }
 }

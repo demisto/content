@@ -8,7 +8,6 @@ import threading
 
 import json as js
 import datetime
-from unittest.mock import mock_open
 
 USERS = '''[{
     "id": "U012A3CDE",
@@ -340,28 +339,13 @@ def setup(mocker):
     init_globals()
 
 
-def test_merge_lists():
-    from Slack import merge_lists
-
-    # Set
-    original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}]
-    updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}]
-    expected = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
-
-    # Arrange
-    result = merge_lists(original, updated, 'id')
-
-    # Assert
-    assert result == expected
-
-
 @pytest.mark.asyncio
 async def test_get_slack_name_user(mocker):
     from Slack import get_slack_name
 
     # Set
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             user = params['user']
             if user != 'alexios':
@@ -402,7 +386,7 @@ async def test_get_slack_name_channel(mocker):
     # Set
 
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             user = params['user']
             if user != 'alexios':
@@ -442,7 +426,7 @@ async def test_clean_message(mocker):
 
     # Set
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             return {'user': js.loads(USERS)[0]}
         elif method == 'conversations.info':
@@ -474,7 +458,7 @@ def test_get_user_by_name(mocker):
     from Slack import get_user_by_name
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'perikles',
@@ -535,7 +519,7 @@ def test_get_user_by_name_paging(mocker):
     from Slack import get_user_by_name
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if len(params) == 1:
             return {'members': js.loads(USERS), 'response_metadata': {
                 'next_cursor': 'dGVhbTpDQ0M3UENUTks='
@@ -571,15 +555,15 @@ def test_mirror_investigation_new_mirror(mocker):
     from Slack import mirror_investigation
 
     # Set
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
-        if method == 'channels.create':
+        if method == 'conversations.create':
+            if 'is_private' not in json:
+                return {'channel': {
+                    'id': 'new_channel', 'name': 'incident-999'
+                }}
             return {'channel': {
-                'id': 'new_channel', 'name': 'incident-999'
-            }}
-        if method == 'groups.create':
-            return {'group': {
                 'id': 'new_group', 'name': 'incident-999'
             }}
         else:
@@ -621,7 +605,7 @@ def test_mirror_investigation_new_mirror(mocker):
 
     calls = slack.WebClient.api_call.call_args_list
 
-    groups_call = [c for c in calls if c[0][0] == 'groups.create']
+    groups_call = [c for c in calls if c[0][0] == 'conversations.create']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
     topic_call = [c for c in calls if c[0][0] == 'conversations.setTopic']
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
@@ -649,15 +633,15 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
-        if method == 'channels.create':
+        if method == 'conversations.create':
+            if 'is_private' not in json:
+                return {'channel': {
+                    'id': 'new_channel', 'name': 'coolname'
+                }}
             return {'channel': {
-                'id': 'new_channel', 'name': 'coolname'
-            }}
-        if method == 'groups.create':
-            return {'group': {
                 'id': 'new_group', 'name': 'coolname'
             }}
         else:
@@ -699,7 +683,7 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
 
     calls = slack.WebClient.api_call.call_args_list
 
-    groups_call = [c for c in calls if c[0][0] == 'groups.create']
+    groups_call = [c for c in calls if c[0][0] == 'conversations.create']
     users_call = [c for c in calls if c[0][0] == 'users.list']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
     topic_call = [c for c in calls if c[0][0] == 'conversations.setTopic']
@@ -729,15 +713,15 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
-        if method == 'channels.create':
+        if method == 'conversations.create':
+            if 'is_private' not in json:
+                return {'channel': {
+                    'id': 'new_channel', 'name': 'coolname'
+                }}
             return {'channel': {
-                'id': 'new_channel', 'name': 'coolname'
-            }}
-        if method == 'groups.create':
-            return {'group': {
                 'id': 'new_group', 'name': 'coolname'
             }}
         else:
@@ -776,7 +760,7 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
     our_mirror = our_mirror_filter[0]
 
     calls = slack.WebClient.api_call.call_args_list
-    groups_call = [c for c in calls if c[0][0] == 'groups.create']
+    groups_call = [c for c in calls if c[0][0] == 'conversations.create']
     users_call = [c for c in calls if c[0][0] == 'users.list']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
     topic_call = [c for c in calls if c[0][0] == 'conversations.setTopic']
@@ -811,7 +795,7 @@ def test_mirror_investigation_existing_mirror_error_type(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
 
@@ -831,15 +815,13 @@ def test_mirror_investigation_existing_mirror_error_type(mocker):
     err_msg = return_error_mock.call_args[0][0]
 
     calls = slack.WebClient.api_call.call_args_list
-    groups_call = [c for c in calls if c[0][0] == 'groups.create']
-    channels_call = [c for c in calls if c[0][0] == 'channels.create']
+    channels_call = [c for c in calls if c[0][0] == 'conversations.create']
     users_call = [c for c in calls if c[0][0] == 'users.list']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
     topic_call = [c for c in calls if c[0][0] == 'conversations.setTopic']
 
     # Assert
     assert len(topic_call) == 0
-    assert len(groups_call) == 0
     assert len(users_call) == 0
     assert len(invite_call) == 0
     assert len(channels_call) == 0
@@ -853,7 +835,7 @@ def test_mirror_investigation_existing_mirror_error_name(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
 
@@ -873,14 +855,11 @@ def test_mirror_investigation_existing_mirror_error_name(mocker):
     err_msg = return_error_mock.call_args[0][0]
 
     calls = slack.WebClient.api_call.call_args_list
-    groups_call = [c for c in calls if c[0][0] == 'groups.create']
-    channels_call = [c for c in calls if c[0][0] == 'channels.create']
+    channels_call = [c for c in calls if c[0][0] == 'conversations.create']
     users_call = [c for c in calls if c[0][0] == 'users.list']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     # Assert
-
-    assert len(groups_call) == 0
     assert len(invite_call) == 0
     assert len(channels_call) == 0
     assert len(users_call) == 0
@@ -894,7 +873,7 @@ def test_mirror_investigation_existing_investigation(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
 
@@ -922,15 +901,12 @@ def test_mirror_investigation_existing_investigation(mocker):
     mirror_investigation()
 
     calls = slack.WebClient.api_call.call_args_list
-    groups_call = [c for c in calls if c[0][0] == 'groups.create']
-    channels_call = [c for c in calls if c[0][0] == 'channels.create']
+    channels_call = [c for c in calls if c[0][0] == 'conversations.create']
     users_call = [c for c in calls if c[0][0] == 'users.list']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
     topic_call = [c for c in calls if c[0][0] == 'conversations.setTopic']
 
     # Assert
-
-    assert len(groups_call) == 0
     assert len(channels_call) == 0
     assert len(users_call) == 0
     assert len(invite_call) == 0
@@ -953,7 +929,7 @@ def test_mirror_investigation_existing_channel(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
 
@@ -1012,7 +988,7 @@ def test_mirror_investigation_existing_channel_remove_mirror(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
 
@@ -1059,15 +1035,12 @@ def test_mirror_investigation_existing_channel_remove_mirror(mocker):
     mirror_investigation()
 
     calls = slack.WebClient.api_call.call_args_list
-    groups_call = [c for c in calls if c[0][0] == 'groups.create']
-    channels_call = [c for c in calls if c[0][0] == 'channels.create']
+    channels_call = [c for c in calls if c[0][0] == 'conversations.create']
     users_call = [c for c in calls if c[0][0] == 'users.list']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
     topic_call = [c for c in calls if c[0][0] == 'conversations.setTopic']
 
     # Assert
-
-    assert len(groups_call) == 0
     assert len(channels_call) == 0
     assert len(users_call) == 0
     assert len(invite_call) == 0
@@ -1090,7 +1063,7 @@ def test_mirror_investigation_existing_channel_with_topic(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
 
@@ -1118,15 +1091,12 @@ def test_mirror_investigation_existing_channel_with_topic(mocker):
     mirror_investigation()
 
     calls = slack.WebClient.api_call.call_args_list
-    groups_call = [c for c in calls if c[0][0] == 'groups.create']
-    channels_call = [c for c in calls if c[0][0] == 'channels.create']
+    channels_call = [c for c in calls if c[0][0] == 'conversations.create']
     users_call = [c for c in calls if c[0][0] == 'users.list']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
     topic_call = [c for c in calls if c[0][0] == 'conversations.setTopic']
 
     # Assert
-
-    assert len(groups_call) == 0
     assert len(channels_call) == 0
     assert len(users_call) == 0
     assert len(invite_call) == 0
@@ -1155,7 +1125,7 @@ def test_check_for_mirrors(mocker):
         'id': 'U012B3CUI'
     }
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         users = {'members': js.loads(USERS)}
         users['members'].append(new_user)
         return users
@@ -1255,7 +1225,7 @@ def test_check_for_mirrors_no_updates(mocker):
 def test_check_for_mirrors_email_user_not_matching(mocker):
     from Slack import check_for_mirrors
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'nope',
@@ -1317,7 +1287,7 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
 def test_check_for_mirrors_email_not_matching(mocker):
     from Slack import check_for_mirrors
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'perikles',
@@ -1379,7 +1349,7 @@ def test_check_for_mirrors_email_not_matching(mocker):
 def test_check_for_mirrors_user_email_not_matching(mocker):
     from Slack import check_for_mirrors
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'perikles',
@@ -1480,8 +1450,8 @@ async def test_handle_dm_create_demisto_user(mocker):
 
     # Set
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
-        if method == 'im.open':
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'conversations.open':
             return {
                 'channel': {
                     'id': 'ey'
@@ -1533,8 +1503,8 @@ async def test_handle_dm_nondemisto_user_shouldnt_create(mocker):
         return "sup"
 
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
-        if method == 'im.open':
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'conversations.open':
             return {
                 'channel': {
                     'id': 'ey'
@@ -1570,8 +1540,8 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
         return "sup"
 
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
-        if method == 'im.open':
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'conversations.open':
             return {
                 'channel': {
                     'id': 'ey'
@@ -1602,8 +1572,8 @@ async def test_handle_dm_non_create_nonexisting_user(mocker):
     # Set
 
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
-        if method == 'im.open':
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'conversations.open':
             return {
                 'channel': {
                     'id': 'ey'
@@ -1638,8 +1608,8 @@ async def test_handle_dm_empty_message(mocker):
 
     # Set
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
-        if method == 'im.open':
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'conversations.open':
             return {
                 'channel': {
                     'id': 'ey'
@@ -1675,8 +1645,8 @@ async def test_handle_dm_create_with_error(mocker):
     # Set
 
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
-        if method == 'im.open':
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'conversations.open':
             return {
                 'channel': {
                     'id': 'ey'
@@ -1875,7 +1845,7 @@ async def test_get_user_by_id_async_user_exists(mocker):
     # Set
 
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             return {'user': js.loads(USERS)[0]}
 
@@ -1901,7 +1871,7 @@ async def test_get_user_by_id_async_user_doesnt_exist(mocker):
     # Set
 
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             return {'user': js.loads(USERS)[0]}
 
@@ -2451,6 +2421,8 @@ async def test_check_entitlement(mocker):
     message4 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22|43 goodbye'
     message5 = 'hi test@demisto.com 43434@e093ba05-3f3c-402e-81a7-149db969be5d goodbye'
     message6 = 'hi test@demisto.com name-of-someone@mail-of-someone goodbye'
+    message7 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_1|43 goodbye'
+    message8 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_2 goodbye'
 
     # Arrange
     result1 = await check_and_handle_entitlement(message1, user, '')
@@ -2459,11 +2431,15 @@ async def test_check_entitlement(mocker):
     result4 = await check_and_handle_entitlement(message4, user, '')
     result5 = await check_and_handle_entitlement(message5, user, '')
     result6 = await check_and_handle_entitlement(message6, user, '')
+    result7 = await check_and_handle_entitlement(message7, user, '')
+    result8 = await check_and_handle_entitlement(message8, user, '')
 
     result1_args = demisto.handleEntitlementForUser.call_args_list[0][0]
     result2_args = demisto.handleEntitlementForUser.call_args_list[1][0]
     result3_args = demisto.handleEntitlementForUser.call_args_list[2][0]
     result4_args = demisto.handleEntitlementForUser.call_args_list[3][0]
+    result7_args = demisto.handleEntitlementForUser.call_args_list[4][0]
+    result8_args = demisto.handleEntitlementForUser.call_args_list[5][0]
 
     assert result1 == 'Thank you for your response.'
     assert result2 == 'Thank you for your response.'
@@ -2471,8 +2447,10 @@ async def test_check_entitlement(mocker):
     assert result4 == 'Thank you for your response.'
     assert result5 == ''
     assert result6 == ''
+    assert result7 == 'Thank you for your response.'
+    assert result8 == 'Thank you for your response.'
 
-    assert demisto.handleEntitlementForUser.call_count == 4
+    assert demisto.handleEntitlementForUser.call_count == 6
 
     assert result1_args[0] == 'e093ba05-3f3c-402e-81a7-149db969be5d'  # incident ID
     assert result1_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'  # GUID
@@ -2497,6 +2475,18 @@ async def test_check_entitlement(mocker):
     assert result4_args[2] == 'test@demisto.com'
     assert result4_args[3] == 'hi test@demisto.com  goodbye'
     assert result4_args[4] == '43'
+
+    assert result7_args[0] == '22_1'
+    assert result7_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
+    assert result7_args[2] == 'test@demisto.com'
+    assert result7_args[3] == 'hi test@demisto.com  goodbye'
+    assert result7_args[4] == '43'
+
+    assert result8_args[0] == '22_2'
+    assert result8_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
+    assert result8_args[2] == 'test@demisto.com'
+    assert result8_args[3] == 'hi test@demisto.com  goodbye'
+    assert result8_args[4] == ''
 
 
 @pytest.mark.asyncio
@@ -2552,12 +2542,12 @@ def test_send_request(mocker):
     import Slack
 
     # Set
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -2570,7 +2560,7 @@ def test_send_request(mocker):
     # Arrange
 
     user_res = Slack.slack_send_request('spengler', None, None, message='Hi')
-    channel_res = Slack.slack_send_request(None, 'general', None, file='file')
+    channel_res = Slack.slack_send_request(None, 'general', None, file_dict='file')
 
     user_args = Slack.send_message.call_args[0]
     channel_args = Slack.send_file.call_args[0]
@@ -2606,12 +2596,12 @@ def test_send_request_different_name(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -2656,12 +2646,12 @@ def test_send_request_with_severity(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -2709,12 +2699,12 @@ def test_send_request_with_notification_channel(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -2764,12 +2754,12 @@ def test_send_request_with_notification_channel_as_dest(mocker, notify):
     Slack.init_globals()
 
     # Set
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -2812,12 +2802,12 @@ def test_send_request_with_entitlement(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -2878,12 +2868,12 @@ def test_send_request_with_entitlement_blocks(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -2944,12 +2934,12 @@ def test_send_request_with_entitlement_blocks_message(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -3011,12 +3001,12 @@ def test_send_to_user_lowercase(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -3066,12 +3056,12 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -3116,12 +3106,12 @@ def test_send_request_no_user(mocker, capfd):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -3161,12 +3151,12 @@ def test_send_request_no_severity(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -3206,12 +3196,12 @@ def test_send_request_zero_severity(mocker):
 
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.list':
             return {'members': js.loads(USERS)}
         elif method == 'conversations.list':
             return {'channels': js.loads(CONVERSATIONS)}
-        elif method == 'im.open':
+        elif method == 'conversations.open':
             return {'channel': {'id': 'im_channel'}}
         return {}
 
@@ -3298,7 +3288,7 @@ def test_send_file_to_destinations(mocker):
     mocker.patch.object(Slack, 'send_slack_request_sync')
 
     # Arrange
-    Slack.send_file_to_destinations(['channel'], {'name': 'name', 'data': 'yo'}, None)
+    Slack.send_file_to_destinations(['channel'], {'name': 'name', 'path': 'yo'}, None)
 
     args = Slack.send_slack_request_sync.call_args[1]
 
@@ -3395,6 +3385,7 @@ def test_close_channel_should_delete_mirror(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'mirrorInvestigation')
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
     mocker.patch.object(slack.WebClient, 'api_call')
 
@@ -3404,11 +3395,13 @@ def test_close_channel_should_delete_mirror(mocker):
     archive_args = slack.WebClient.api_call.call_args
     context_args = demisto.setIntegrationContext.call_args[0][0]
     context_args_mirrors = js.loads(context_args['mirrors'])
+    mirror_args = demisto.mirrorInvestigation.call_args[0]
 
     # Assert
     assert archive_args[0][0] == 'conversations.archive'
     assert archive_args[1]['json']['channel'] == 'GKQ86DVPH'
     assert context_args_mirrors == mirrors
+    assert mirror_args == ('681', 'none:both', True)
 
 
 def test_close_channel_should_delete_mirrors(mocker):
@@ -3422,6 +3415,7 @@ def test_close_channel_should_delete_mirrors(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '684'})
+    mocker.patch.object(demisto, 'mirrorInvestigation')
     mocker.patch.object(slack.WebClient, 'api_call')
 
     # Arrange
@@ -3429,19 +3423,21 @@ def test_close_channel_should_delete_mirrors(mocker):
 
     archive_args = slack.WebClient.api_call.call_args
     context_args = demisto.setIntegrationContext.call_args[0][0]
+    mirrors_args = [args[0] for args in demisto.mirrorInvestigation.call_args_list]
     context_args_mirrors = js.loads(context_args['mirrors'])
 
     # Assert
     assert archive_args[0][0] == 'conversations.archive'
     assert archive_args[1]['json']['channel'] == 'GKB19PA3V'
     assert context_args_mirrors == mirrors
+    assert mirrors_args == [('684', 'none:both', True), ('692', 'none:both', True)]
 
 
 def test_get_conversation_by_name_paging(mocker):
     from Slack import get_conversation_by_name
     # Set
 
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.list':
             if len(params) == 2:
                 return {'channels': js.loads(CONVERSATIONS), 'response_metadata': {
@@ -3483,7 +3479,6 @@ def test_send_file_no_args_investigation(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'path', 'name': 'name'})
-    mocker.patch('builtins.open', mock_open(read_data="data"))
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(Slack, 'slack_send_request', return_value='cool')
 
@@ -3498,8 +3493,8 @@ def test_send_file_no_args_investigation(mocker):
     assert success_results[0] == 'File sent to Slack successfully.'
 
     assert send_args[0][1] == 'incident-681'
-    assert send_args[1]['file'] == {
-        'data': 'data',
+    assert send_args[1]['file_dict'] == {
+        'path': 'path',
         'name': 'name',
         'comment': ''
     }
@@ -4050,7 +4045,7 @@ async def test_message_setting_name_and_icon_async(mocker):
 
     # Set
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         return
 
     mocker.patch.object(demisto, 'params', return_value={'bot_name': 'kassandra', 'bot_icon': 'coolimage'})
@@ -4074,7 +4069,7 @@ async def test_message_not_setting_name_and_icon_async(mocker):
 
     # Set
     @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         return
 
     mocker.patch.object(demisto, 'params', return_value={'bot_name': 'kassandra', 'bot_icon': 'coolimage'})

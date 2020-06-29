@@ -69,9 +69,9 @@ tasks:
       id: 1dd39fd1-72fd-4e8c-8a40-92297b9d499a
       version: -1
       name: Notify and involve appropriate personnel
-      description: Depending on regulatory, compliance and legal requirements or company
+      description: Depending on regulatory, compliance, and legal requirements, or your company
         procedure, you may need to involve the legal department, PR department, upper
-        management, the employee's immediate supervisor and/or other personnel.
+        management, the employee's immediate supervisor, and/or other personnel.
       iscommand: false
       brand: ""
     nexttasks:
@@ -494,7 +494,7 @@ tasks:
     task:
       id: 6cfb8ea1-d144-449c-854e-3c8cbc9138d5
       version: -1
-      name: Contact the mobile server provider to report the device as stolen
+      name: Contact the mobile service provider to report the device as stolen
       iscommand: false
       brand: ""
       description: ''
@@ -716,7 +716,7 @@ tasks:
       version: -1
       name: Change account passwords for any cloud-based solutions used by the organization
       description: Some accounts do not reside on systems managed by employees but
-        the Incident Response staff must be able to revoke, lock or rotate credentials
+        the Incident Response staff must be able to revoke, lock, or rotate credentials
         to cloud accounts containing organizational information assets.
       iscommand: false
       brand: ""
@@ -1061,7 +1061,7 @@ tasks:
       id: 186926f8-d32d-4eb2-8c5b-fe51e56c13e6
       version: -1
       name: Remotely wipe the device
-      description: If the device was unencrypted the risk of confidential data leaking
+      description: If the device was unencrypted, the risk of confidential data leaking
         is too great and we should wipe immediately.
       iscommand: false
       brand: ""
@@ -1282,7 +1282,7 @@ tasks:
       id: bb6645c4-0c69-4448-809f-b429273b2543
       version: -1
       name: Insert device's MAC address to network security watchlists
-      description: If the thief attempts to use the device to access the network we
+      description: If the thief attempts to use the device to access the network, we
         want to block it and get an immediate critical alert to the SOC.
       iscommand: false
       brand: ""

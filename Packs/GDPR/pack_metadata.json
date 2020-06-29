@@ -10,7 +10,12 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "GDPR"
+    ],
+    "useCases": [
+        "GDPR Breach Notification",
+        "Compliance"
+    ],
     "keywords": []
 }

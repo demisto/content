@@ -116,7 +116,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.8.3.8347
+  dockerimage: demisto/python3:3.8.3.8715
   feed: true
   isfetch: false
   longRunning: false

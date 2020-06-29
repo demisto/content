@@ -1,6 +1,6 @@
 commonfields:
   id: TestXml2JSON
-  version: 17
+  version: -1
 name: TestXml2JSON
 script: |-
   import json
