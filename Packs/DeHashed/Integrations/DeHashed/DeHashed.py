@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Dict
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 requests.packages.urllib3.disable_warnings()
 
 INTEGRATION_CONTEXT_BRAND = "DeHashed"
-BASE_URL = "https://api.dehashed.com/" # disable-secrets-detection
+BASE_URL = "https://api.dehashed.com/"
 RESULTS_FROM = 1
 RESULTS_TO = 50
 
@@ -161,7 +161,7 @@ def arg_to_int(arg_val: str, arg_name: Union[str, None]) -> int:
             return input_as_int
 
 
-def dehashed_search_command(client: Client, args: dict) -> tuple:
+def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
     """
     this command returns data regarding a compromised assets given as arguments
     :param client: Demisto client
