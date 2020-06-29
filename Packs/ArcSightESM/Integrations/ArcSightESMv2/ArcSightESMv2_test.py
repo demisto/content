@@ -4,7 +4,7 @@ import requests_mock
 
 
 PARAMS = {
-    'server': 'server',
+    'server': 'https://server',
     'credentials': {},
     'proxy': True}
 
