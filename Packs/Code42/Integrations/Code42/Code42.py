@@ -640,7 +640,7 @@ def highriskemployee_add_command(client, args):
         hr_context = {"UserID": user_id, "Username": username}
         readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Added", hr_context)
         return CommandResults(
-            outputs_prefix="Code42HighRiskEmployee",
+            outputs_prefix="Code42.HighRiskEmployee",
             outputs_key_field="UserID",
             outputs=hr_context,
             readable_output=readable_outputs,
