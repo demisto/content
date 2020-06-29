@@ -95,6 +95,8 @@ class Taxii2FeedClient:
 
         self.collection_to_fetch = collection_to_fetch
         self.skip_complex_mode = skip_complex_mode
+        if not limit_per_request:
+            limit_per_request = DFLT_LIMIT_PER_REQUEST
         self.limit_per_request = limit_per_request
 
         self.base_url = url
@@ -211,12 +213,11 @@ class Taxii2FeedClient:
         self.init_collection_to_fetch()
 
     def build_iterator(
-        self, limit: int = -1, added_after: str = None
+        self, limit: int = -1, **kwargs
     ) -> List[Dict[str, str]]:
         """
         Polls the taxii server and builds a list of cortex indicators objects from the result
         :param limit: max amount of indicators to fetch
-        :param added_after: poll objects that were added after this time. string in TAXII 2 time format
         :return: Cortex indicators list
         """
         if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
@@ -230,7 +231,7 @@ class Taxii2FeedClient:
         page_size = self.get_page_size(limit, limit)
         if page_size <= 0:
             return []
-        envelope = self.poll_collection(page_size, added_after)
+        envelope = self.poll_collection(page_size, **kwargs)
         indicators = self.extract_indicators_from_envelope_and_parse(envelope, limit)
         return indicators
 
@@ -297,20 +298,19 @@ class Taxii2FeedClient:
         return indicators
 
     def poll_collection(
-        self, page_size: int, added_after: Optional[str] = None
+        self, page_size: int, **kwargs
     ) -> Union[types.GeneratorType, Dict[str, str]]:
         """
         Polls a taxii collection
         :param page_size: size of the request page
-        :param (optional) added_after: fetch taxii objects after this time (taxii time format)
         """
         get_objects = self.collection_to_fetch.get_objects
         if isinstance(self.collection_to_fetch, v20.Collection):
             envelope = v20.as_pages(
-                get_objects, per_request=page_size, added_after=added_after
+                get_objects, per_request=page_size, **kwargs
             )
         else:
-            envelope = get_objects(limit=page_size, added_after=added_after)
+            envelope = get_objects(limit=page_size, **kwargs)
         return envelope
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
