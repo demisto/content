@@ -1,23 +1,25 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import asyncio
+import concurrent
+import json
+import os
+import ssl
+import sys
+import threading
+import traceback
+from distutils.util import strtobool
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+import requests
 import slack
+import urllib3
 from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
-from distutils.util import strtobool
-from typing import Any, Tuple, Dict, List, Optional, Union
-import asyncio
-import concurrent
-import os
-import requests
-import ssl
-import sys
-import traceback
-import threading
+import demistomock as demisto
+from CommonServerPython import *
 
 # disable unsecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -1250,11 +1252,27 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     Returns:
         The slack conversation
     """
+    integration_context = get_integration_context(SYNC_CONTEXT)
+
+    conversation_to_search = conversation_name.lower()
+    # Find conversation in the cache
+    conversations = integration_context.get('conversations')
+    if conversations:
+        conversations = json.loads(conversations)
+        conversation_filter = list(
+            filter(
+                lambda c: conversation_to_search == c.get('name', '').lower(),
+                conversations
+            )
+        )
+        if conversation_filter:
+            return conversation_filter[0]
+
+    # If not found in cache, search for it
     body = {
         'types': 'private_channel,public_channel',
         'limit': PAGINATED_COUNT
     }
-
     response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
     conversation: dict = {}
     while True:
@@ -1271,6 +1289,16 @@ def get_conversation_by_name(conversation_name: str) -> dict:
 
     if conversation_filter:
         conversation = conversation_filter[0]
+
+    # Save conversations to cache
+    if conversation:
+        conversations = integration_context.get('conversations')
+        if conversations:
+            conversations = json.loads(conversations)
+            conversations.append(conversation)
+        else:
+            conversations = [conversation]
+        set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
     return conversation
 
