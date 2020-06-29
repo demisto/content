@@ -1212,8 +1212,7 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     # Find conversation in the cache
     conversations = integration_context.get('conversations')
     if conversations:
-        conver
-        sations = json.loads(conversations)
+        conversations = json.loads(conversations)
         conversation_filter = list(
             filter(
                 lambda u: conversation_to_search == u.get('name', '').lower(),
