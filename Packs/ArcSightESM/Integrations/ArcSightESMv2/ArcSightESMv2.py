@@ -371,12 +371,13 @@ def fetch():
             }
 
             incidents.append(incident)
-            if len(incidents) >= FETCH_CHUNK_SIZE:
-                break
 
             if len(already_fetched) > MAX_UNIQUE:
                 already_fetched.pop(0)
             already_fetched.append(r_id)
+
+            if len(incidents) >= FETCH_CHUNK_SIZE:
+                break
 
     last_run = {
         'already_fetched': already_fetched,

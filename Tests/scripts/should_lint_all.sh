@@ -7,6 +7,11 @@ if [ -n "$NIGHTLY" ]; then
     exit 0
 fi
 
+if [ -n "$DEMISTO_SDK_NIGHTLY" ]; then
+    echo "DEMISTO_SDK_NIGHTLY env var is set: $DEMISTO_SDK_NIGHTLY"
+    exit 0
+fi
+
 if [ -z "$CIRCLE_BRANCH" ]; then
     # simply compare against origin/master. Local testing case..
     DIFF_COMPARE=origin/master
