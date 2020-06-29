@@ -38,6 +38,7 @@ enabled: true
 args:
 - name: numberOfIncidents
   defaultValue: "2"
+  description: ''
 outputs:
 - contextPath: EmailSujbectKey
   description: EmailSujbectKey
@@ -49,4 +50,5 @@ outputs:
   description: IncidentsQuery
 scripttarget: 0
 runonce: false
+comment: ''
 runas: DBotWeakRole

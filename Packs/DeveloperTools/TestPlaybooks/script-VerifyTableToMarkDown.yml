@@ -83,4 +83,5 @@ type: javascript
 tags: []
 enabled: true
 scripttarget: 0
+comment: ''
 runonce: false
