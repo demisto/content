@@ -1,4 +1,4 @@
-from typing import Union, Dict
+from typing import Union, Dict, Optional, List
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -34,8 +34,8 @@ class Client(BaseClient):
         self.email = email
         self.api_key = api_key
 
-    def dehashed_search(self, asset_type: Union[str, None], value: list, operation: Union[str, None],
-                        results_page_number: Union[int, None] = None) -> dict:
+    def dehashed_search(self, asset_type: Optional[str], value: List[str], operation: Optional[str],
+                        results_page_number: Optional[int] = None) -> dict:
         """
         this function gets query parameters from demisto and perform a "GET" request to Dehashed api
         :param asset_type: email, ip_address, username, hashed_password, name, vin, address, phone,all_fields.
@@ -141,24 +141,26 @@ def filter_results(
     return entries[results_from - 1:results_to], results_from, results_to
 
 
-def arg_to_int(arg_val: str, arg_name: Union[str, None]) -> int:
+def arg_to_int(arg_val: Optional[str], arg_name: Optional[str]) -> Optional[int]:
     """
     converts commands arguments to integers
     :param arg_name: argument name
     :param arg_val: value to convert to int
     :return: converted argument as int
     """
-    if isinstance(arg_val, str) and len(arg_val):
-        try:
-            input_as_int = int(arg_val)
-        except ValueError:
-            raise DemistoException(
-                f'"{arg_name}" expected to be Integer. passed {arg_val} instead.'
-            )
-        else:
-            if input_as_int == 0:
-                raise DemistoException(f'"{arg_name}" expected to be greater than zero.')
-            return input_as_int
+    if arg_val is None:
+        return None
+    if not isinstance(arg_val, str):
+        return None
+    try:
+        result = int(arg_val)
+        if result <= 0:
+            raise DemistoException(f'"{arg_name}" expected to be greater than zero.')
+        return result
+    except ValueError:
+        raise DemistoException(
+            f'"{arg_name}" expected to be Integer. passed {arg_val} instead.'
+        )
 
 
 def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
