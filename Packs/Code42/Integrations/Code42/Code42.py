@@ -791,15 +791,15 @@ def securitydata_search_command(client, args):
         return "No results found", {}, {}
 
 
-def code42_user_create_command():
+def user_create_command(client, args):
+
+
+
+def user_block_command(client, args):
     pass
 
 
-def code42_user_block_command():
-    pass
-
-
-def code42_user_deactivate_command():
+def user_deactivate_command(client, args):
     pass
 
 

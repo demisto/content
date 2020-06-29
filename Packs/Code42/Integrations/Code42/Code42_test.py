@@ -20,8 +20,11 @@ from Code42 import (
     highriskemployee_get_all_command,
     highriskemployee_add_risk_tags_command,
     highriskemployee_remove_risk_tags_command,
-    fetch_incidents,
     securitydata_search_command,
+    user_create_command,
+    user_block_command,
+    user_deactivate_command,
+    fetch_incidents,
 )
 import time
 
@@ -857,6 +860,57 @@ MOCK_GET_USER_RESPONSE = """
     ]
 }"""
 
+
+MOCK_GET_ALL_ORGS_RESPONSE = """
+{
+    "totalCount": 1,
+    "orgs":
+    [
+        {
+            "orgId": 9999,
+            "orgUid": "890854247383109999",
+            "orgName": "Partner SaaS Cloud - Backup",
+            "orgExtRef": null,
+            "notes": null,
+            "status": "Active",
+            "active": true,
+            "blocked": false,
+            "parentOrgId": 2686,
+            "parentOrgUid": "00007871952600000",
+            "type": "ENTERPRISE",
+            "classification": "BASIC",
+            "externalId": "000054247383100000",
+            "hierarchyCounts": {},
+            "configInheritanceCounts": {},
+            "creationDate": "2019-03-04T22:21:49.749Z",
+            "modificationDate": "2020-02-26T19:21:57.684Z",
+            "deactivationDate": null,
+            "registrationKey": "0000-H74U-0000-8MMM",
+            "reporting":
+            {
+                "orgManagers": []
+            },
+            "customConfig": true,
+            "settings":
+            {
+                "maxSeats": null,
+                "maxBytes": null
+            },
+            "settingsInherited":
+            {
+                "maxSeats": "",
+                "maxBytes": ""
+            },
+            "settingsSummary":
+            {
+                "maxSeats": "",
+                "maxBytes": ""
+            }
+        }
+    ]
+}"""
+
+
 MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE = """
 {
     "items": [
@@ -904,6 +958,7 @@ MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE = """
     "totalCount": 3
 }
 """
+
 
 MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 {
@@ -1026,6 +1081,7 @@ _TEST_USERNAME = "user1@example.com"
 def code42_sdk_mock(mocker):
     code42_mock = mocker.MagicMock(spec=SDKClient)
     get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
+    get_org_response =
     code42_mock.users.get_by_username.return_value = get_user_response
     return code42_mock
 
@@ -1045,6 +1101,11 @@ def code42_fetch_incidents_mock(code42_sdk_mock, mocker):
     code42_mock = create_alerts_mock(code42_sdk_mock, mocker)
     code42_mock = create_file_events_mock(code42_mock, mocker)
     return code42_mock
+
+
+@pytest.fixture
+def code42_users_mock(code42_sdk_mock, mocker):
+    create_user_response = mocker.
 
 
 def create_alerts_mock(c42_sdk_mock, mocker):
@@ -1474,6 +1535,24 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     code42_sdk_mock.detectionlists.remove_user_risk_tags.assert_called_once_with(
         _TEST_USER_ID, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
     )
+
+
+def test_user_create_command():
+    client = create_client(code42_sdk_mock)
+    cmd_res = user_create_command(
+        client,
+        {"orgid": "TEST_ORG_ID", "username": "new.user@example.com", "email": "new.user@example.com"}
+    )
+
+
+def test_user_block_command():
+    client = create_client(code42_sdk_mock)
+    cmd_res = user_block_command(client, {"username": "new.user@example.com"})
+
+
+def test_user_deactivate_command():
+    client = create_client(code42_sdk_mock)
+    cmd_res = user_deactivate_command(client, {"username": "new.user@example.com"})
 
 
 def test_security_data_search_command(code42_file_events_mock):
