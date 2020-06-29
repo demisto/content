@@ -2557,25 +2557,25 @@ class CommandResults:
     """
     CommandResults class - use to return results to warroom
 
-    :type outputs_prefix: ``str``
+    :type outputs_prefix: ``str`` or ``None``
     :param outputs_prefix: should be identical to the prefix in the yml contextPath in yml file. for example:
             CortexXDR.Incident
 
-    :type outputs_key_field: ``str``
+    :type outputs_key_field: ``str`` or ``None``
     :param outputs_key_field: primary key field in the main object. If the command returns Incidents, and of the
             properties of Incident is incident_id, then outputs_key_field='incident_id'
 
-    :type outputs: ``list`` or ``dict``
+    :type outputs: ``list`` or ``dict`` or ``None``
     :param outputs: the data to be returned and will be set to context
 
-    :type indicators: ``list``
+    :type indicators: ``list`` or ``None``
     :param indicators: must be list of Indicator types, like Common.IP, Common.URL, Common.File, etc.
 
-    :type readable_output: ``str``
+    :type readable_output: ``str`` or ``None``
     :param readable_output: (Optional) markdown string that will be presented in the warroom, should be human readable -
         (HumanReadable) - if not set, readable output will be generated
 
-    :type raw_response: ``dict`` | ``list``
+    :type raw_response: ``dict`` or ``list`` or ``None``
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
@@ -2584,7 +2584,7 @@ class CommandResults:
     """
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None):
-        # type: (str, str, object, list, str, object) -> None
+        # type: (str or None, str or None, object or None, list or None, str or None, object or None) -> None
         if raw_response is None:
             raw_response = outputs
 
