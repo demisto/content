@@ -50,6 +50,8 @@ MOCK_TAG_LIST = [{
 
 
 # demisto/python-deb doesn't contain a latest tag
+
+
 @pytest.mark.parametrize('image', ['python', 'python-deb', 'python3', 'python3-deb'])
 def test_valid_docker_image(mocker, image):
     demisto_image = 'demisto/' + image
