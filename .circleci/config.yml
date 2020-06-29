@@ -444,12 +444,12 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
+
             if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
             fi
-
-            [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
 
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
@@ -587,7 +587,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ] || [ -n "${CONTRIB_BRANCH}" ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
                 exit 0
@@ -657,7 +657,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ]  || [ -n "${CONTRIB_BRANCH}" ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or on contributor branch"
                 exit 0
@@ -725,6 +725,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+
             if [ -n "${TIME_TO_LIVE}" ]
             then
                 echo "Skipping - Time to live was set to $TIME_TO_LIVE minutes"
