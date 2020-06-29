@@ -692,7 +692,8 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         ci_build_number (str): CI build number
 
     Returns:
-        None
+        response_data: The response data
+        status_code: The response status code
     """
     host = client.api_client.configuration.host
     installed_content_message = \
@@ -700,16 +701,68 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
 
     # make request to update server configs
+    server_configuration = {
+        'content.pack.verify': 'false',
+        'marketplace.initial.sync.delay': '0',
+        'content.pack.ignore.missing.warnings.contentpack': 'true',
+        'marketplace.bootstrap.bypass.url':
+            'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
+                branch_name, ci_build_number)
+
+    }
+    error_msg = "Failed to set GCP bucket server config - with status code "
+    return update_server_configuration(client, server_configuration, error_msg)
+
+
+def set_docker_hardening_for_build(client, prints_manager):
+    """Sets docker hardening configuration
+
+    Args:
+        client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object
+
+    Returns:
+        response_data: The response data
+        status_code: The response status code
+    """
+    host = client.api_client.configuration.host
+    installed_content_message = \
+        '\nMaking "POST" request to server - "{}" to set docker hardening server configuration.'.format(host)
+    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
+
+    # make request to update server configs
+    server_configuration = {
+        'docker.cpu.limit': '1.0',
+        'docker.run.internal.asuser': 'true',
+        'limit.docker.cpu': 'true',
+        'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
+    }
+    error_msg = "Failed to set docker hardening server config - with status code "
+
+    return update_server_configuration(client, server_configuration, error_msg)
+
+
+def update_server_configuration(client, server_configuration, error_msg):
+    """updates server configuration
+
+    Args:
+        client (demisto_client): The configured client to use.
+        server_configuration (dict): The server configuration to be added
+        error_msg (str): The error message
+
+    Returns:
+        response_data: The response data
+        status_code: The response status code
+    """
+    system_conf_response = demisto_client.generic_request_func(
+        self=client,
+        path='/system/config',
+        method='GET'
+    )
+    system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
+    system_conf.update(server_configuration)
     data = {
-        'data': {
-            'content.pack.verify': 'false',
-            'marketplace.initial.sync.delay': '0',
-            'content.pack.ignore.missing.warnings.contentpack': 'true',
-            'marketplace.bootstrap.bypass.url':
-                'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
-                    branch_name, ci_build_number
-                )
-        },
+        'data': system_conf,
         'version': -1
     }
     response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
@@ -723,8 +776,9 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
 
     if status_code >= 300 or status_code < 200:
         message = result_object.get('message', '')
-        msg = "Failed to set GCP bucket server config - with status code " + str(status_code) + '\n' + message
+        msg = f'{error_msg} {status_code}\n{message}'
         print_error(msg)
+    return response_data, status_code
 
 
 def get_pack_ids_to_install():
@@ -755,12 +809,14 @@ def main():
     username = secret_conf.get('username') if not username else username
     password = secret_conf.get('userPassword') if not password else password
 
-    if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
+    if LooseVersion(server_numeric_version) >= LooseVersion('5.5.0'):
         for server in servers:
             client = demisto_client.configure(base_url=server, username=username, password=password,
                                               verify_ssl=False)
-            set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
-            print('Restarting servers to apply GCS server config ...')
+            set_docker_hardening_for_build(client, prints_manager)
+            if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
+                set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
+            print('Restarting servers to apply server config ...')
             ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                          '"sudo systemctl restart demisto"'
             try:
