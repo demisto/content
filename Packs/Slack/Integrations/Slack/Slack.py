@@ -1660,8 +1660,6 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
                 conversation = get_conversation_by_name(destination_name)
                 if not conversation:
                     return_error(f'Could not find the Slack conversation {destination_name}')
-                conversations.append(conversation)
-                set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
                 conversation_id = conversation.get('id')
 
             if conversation_id:
