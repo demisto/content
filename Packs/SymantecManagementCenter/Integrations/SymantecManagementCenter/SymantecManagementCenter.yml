@@ -728,7 +728,7 @@ script:
     description: Deletes content from a policy in Symantec MC.
     execution: false
     name: symantec-mc-delete-policy-content
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   runonce: false
   script: '-'
