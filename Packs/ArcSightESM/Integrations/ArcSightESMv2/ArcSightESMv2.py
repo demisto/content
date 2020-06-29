@@ -690,7 +690,7 @@ def get_entries_command():
                 "act.authToken": AUTH_TOKEN,
                 "act.resourceId": resource_id,
             }
-        }
+        }  # type: Union[str, Dict[str, Dict[str, Any]]]
         res = send_request(query_path, json=body, params=params)
     else:
         query_path = 'www/manager-service/services/ActiveListService/'
@@ -766,7 +766,7 @@ def clear_entries_command():
                 "act.authToken": AUTH_TOKEN,
                 "act.resourceId": resource_id,
             }
-        }
+        }  # type: Union[str, Dict[str, Dict[str, Any]]]
         res = send_request(query_path, json=body, params=params)
     else:
         query_path = 'www/manager-service/services/ActiveListService/'
