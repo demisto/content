@@ -2,6 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: ThreatConnect
   version: -1
+deprecated: true
 configuration:
 - display: Access ID
   name: accessId
