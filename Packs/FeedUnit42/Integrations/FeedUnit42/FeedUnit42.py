@@ -117,7 +117,7 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
             if reference:  # if there is a reference, get the relevant pivot
                 if reference.startswith('attack-pattern'):
                     field = 'external_references'
-                    field_type = 'mitreexternalreferences'
+                    field_type = 'mitreexternalreferences'  # TODO - choose name
                 elif reference.startswith('campaign'):
                     field = 'name'
                     field_type = 'campaign'
@@ -135,7 +135,7 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
                                 indicator['fields'][field_type].extend([pivot_field])
                             else:
                                 indicator['fields'][field_type] = [pivot_field]
-                        else:  # a MITRE external reference
+                        else:  # an external reference
                             indicator['fields'][field_type] = pivot_field
 
     return indicators
