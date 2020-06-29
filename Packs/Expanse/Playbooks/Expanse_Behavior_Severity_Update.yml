@@ -1541,6 +1541,7 @@ tasks:
       version: -1
       name: Done
       type: title
+      description: Done
       iscommand: false
       brand: ""
     separatecontext: false
