@@ -934,7 +934,7 @@ def update_round_set_and_sleep_if_round_completed(executed_in_current_round: set
             print,
             thread_index)
         executed_in_current_round = set()
-        time.sleep(60)
+        time.sleep(30)
     executed_in_current_round.add(str(t))
     return executed_in_current_round
 
