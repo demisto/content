@@ -3817,6 +3817,7 @@ def dict_safe_get(dict_object, keys, default_return_value = None):
 CONTEXT_UPDATE_RETRY_TIMES = 3
 MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
 
+
 def merge_lists(original_list, updated_list, key):
     """
     Replace values in a list with those in an updated list.
