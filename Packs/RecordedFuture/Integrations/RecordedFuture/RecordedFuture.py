@@ -23,8 +23,8 @@ class Client(BaseClient):
                                   json_data={entity_type: entities},
                                   timeout=120)
 
-    def entity_enrich(self, entity: str, entity_type: str,
-                      fields: List[str] = None) -> Dict[str, Any]:
+    def entity_enrich(self, entity: str, entity_type: str, related: bool,
+                      risky: bool) -> Dict[str, Any]:
         """Entity enrich."""
         intel_map = {
             'ip': ['entity', 'risk', 'timestamps', 'threatLists', 'intelCard',
@@ -47,7 +47,12 @@ class Client(BaseClient):
         elif entity_type == 'cve':
             entity_type = 'vulnerability'
         cmd_url = f'{entity_type}/{entity.strip()}'
-        req_fields = ','.join(intel_map[entity_type]) if not fields else fields
+        fields = intel_map[entity_type]
+        if entity_type == 'ip' and not risky:
+            fields.remove('riskyCIDRIPs')
+        if not related:
+            fields.remove('relatedEntities')
+        req_fields = ','.join(fields)
         params = {'fields': req_fields}
         return self._http_request(method='get', url_suffix=cmd_url,
                                   params=params, timeout=30)
@@ -382,11 +387,11 @@ def build_triage_context(context_data: Dict[str, Any]) \
     return context, indicators
 
 
-def enrich_command(client: Client, entity: str,
-                   entity_type: str) -> CommandResults:
+def enrich_command(client: Client, entity: str, entity_type: str,
+                   related: bool, risky: bool) -> CommandResults:
     """Enrich command."""
     try:
-        entity_data = client.entity_enrich(entity, entity_type)
+        entity_data = client.entity_enrich(entity, entity_type, related, risky)
         markdown = build_intel_markdown(entity_data, entity_type)
         indicators, context = build_intel_context(entity, entity_data,
                                                   entity_type)
@@ -518,7 +523,6 @@ def build_intel_markdown(entity_data: Dict[str, Any], entity_type: str) -> str:
         threatlist_table = [{'Threat List Name': tl['name'],
                              'Description': tl['description']}
                             for tl in data.get('threatLists', [])]
-
         markdown.append(tableToMarkdown('Threat Lists', threatlist_table,
                                         ['Threat List Name', 'Description']))
         return '\n'.join(markdown)
@@ -548,8 +552,9 @@ def build_intel_context(entity: str, entity_data: Dict[str, Any],
         data.update(data.pop('entity'))
         data.update(data.pop('risk'))
         data.update(data.pop('timestamps'))
-        data['relatedEntities'] = handle_related_entities(
-            data.pop('relatedEntities'))
+        if data.get('relatedEntities', None):
+            data['relatedEntities'] = handle_related_entities(
+                data.pop('relatedEntities'))
     else:
         return [create_indicator(entity, entity_type, 0, '')], {}
     return indicators, data
@@ -603,20 +608,18 @@ def get_alerts_command(client: Client, params: Dict[str, str]) \
     """Get Alerts Command."""
     resp = client.get_alerts(params)
     headers = ['Rule', 'Alert Title', 'Triggered',
-               'Email', 'Status', 'Assignee']
-
-    mapped_alerts = [{
-        'id': a['id'], 'Alert Title': a.get('title', 'N/A'),
+               'Status', 'Assignee']
+    alerts_context = [{
+        'id': a['id'],
         'name': a.get('title', 'N/A'),
         'triggered': prettify_time(a.get('triggered')),
         'status': a.get('review', {}).get('status'),
         'assignee': a.get('review', {}).get('assignee'),
         'rule': a.get('rule', {}).get('name'),
-        'email': a.get('entities', {}).get('EmailAddress'),
-        "type": a.get('type')}
+        'type': a.get('type'),
+        'entities': a.get('entities', [])}
         for a in resp.get('data', {}).get('results', [])]
-
-    if not mapped_alerts:
+    if not alerts_context:
         return {
             'Type': entryTypes['note'],
             'Contents': {},
@@ -625,18 +628,23 @@ def get_alerts_command(client: Client, params: Dict[str, str]) \
             'HumanReadable': 'No results found',
             'EntryContext': {}
         }
-
+    alerts_table = [{'Alert Title': ma['name'],
+                     'Rule': ma['rule'],
+                     'Status': ma['status'],
+                     'Triggered': ma['triggered'],
+                     'Assignee': ma['assignee']}
+                    for ma in alerts_context]
     return {
         'Type': entryTypes['note'],
         'Contents': resp,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable':
-            tableToMarkdown('Recorded Future Alerts', mapped_alerts,
+            tableToMarkdown('Recorded Future Alerts', alerts_table,
                             headers=headers, removeNull=True),
         'EntryContext': {
             'RecordedFuture.Alert(val.ID === obj.id)':
-                createContext(mapped_alerts)
+                createContext(alerts_context)
         }
     }
 
@@ -686,15 +694,19 @@ def main() -> None:
             if params.get('offset', None):
                 params['from'] = params.pop('offset')
             if params.get('triggered_time', None):
-                date, _ = parse_date_range(params['triggered_time'],
+                date, _ = parse_date_range(params.pop('triggered_time'),
                                            date_format='%Y-%m-%d %H:%M:%S')
                 params['triggered'] = '[{},)'.format(date)
-                params.pop('triggered_time')
+
             return_results(get_alerts_command(client, params))
         elif command == 'recordedfuture-intelligence':
-            return_results(enrich_command(client,
-                                          demisto_args.get('entity'),
-                                          demisto_args.get('entity_type')))
+            return_results(
+                enrich_command(
+                    client,
+                    demisto_args.get('entity'),
+                    demisto_args.get('entity_type'),
+                    demisto_args.get('fetch_related_entities') == 'yes',
+                    demisto_args.get('fetch_riskyCIDRips') == 'yes'))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. '
                      f'Error: {str(e)}')

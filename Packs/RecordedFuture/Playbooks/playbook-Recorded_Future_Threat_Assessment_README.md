@@ -1,4 +1,4 @@
-Threat Assessment using the Recorded Future SOAR Triage API and the Phishing context.
+Threat Assessment using the Recorded Future SOAR Triage API and the context Phishing.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -20,13 +20,14 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| CVE | CVE ID to check if it is related to the phishing context. | CVE.ID | Optional |
-| IP | IP Address to check if it is related to the phishing context. | IP.Address | Optional |
-| URL | URL to check if it is related to the phishing context. | URL.Data | Optional |
-| MD5 | MD5 to check if it is related to the phishing context. | File.MD5 | Optional |
-| SHA1 | SHA\-1 to check if it is related to the phishing context. | File.SHA1 | Optional |
-| SHA256 | SHA\-256 to check if it is related to the phishing context. | File.SHA256 | Optional |
-| Domain | Domain to check if it is related to the phishing context. | Domain.Name | Optional |
+| CVE | CVE ID to check if it is related to the C2 context. | CVE.ID | Optional |
+| IP | IP Address to check if it is related to the C2 context. | IP.Address | Optional |
+| URL | URL to check if it is related to the C2 context. | URL.Data | Optional |
+| MD5 | MD5 to check if it is related to the C2 context. | File.MD5 | Optional |
+| SHA1 | SHA\-1 to check if it is related to the C2 context. | File.SHA1 | Optional |
+| SHA256 | SHA\-256 to check if it is related to the C2 context. | File.SHA256 | Optional |
+| Domain | Domain to check if it is related to the C2 context. | Domain.Name | Optional |
+| threat-assessment-context | Context to use for assessment. This is used by Recorded Future to calculate the relevant score and verdict. Valid values are "c2", "malware" and "phishing". | phishing | Required |
 
 ## Playbook Outputs
 ---
@@ -65,4 +66,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future Phishing Threat Assessment](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/triage_playbook.png)
+![Recorded Future Threat Assessment](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/triage_playbook.png)

@@ -205,6 +205,10 @@ tasks:
         simple: ${inputs.IP}
       entity_type:
         simple: ip
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
     reputationcalc: 1
     separatecontext: false
     view: |-

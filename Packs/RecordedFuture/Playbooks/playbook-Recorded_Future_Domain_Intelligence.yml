@@ -176,6 +176,10 @@ tasks:
         simple: ${inputs.Domain}
       entity_type:
         simple: domain
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
     reputationcalc: 1
     separatecontext: false
     view: |-

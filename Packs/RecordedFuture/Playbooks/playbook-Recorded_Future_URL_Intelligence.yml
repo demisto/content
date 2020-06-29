@@ -206,6 +206,10 @@ tasks:
         simple: ${inputs.URL}
       entity_type:
         simple: url
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
     separatecontext: false
     view: |-
       {

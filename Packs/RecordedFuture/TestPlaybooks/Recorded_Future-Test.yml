@@ -1059,6 +1059,10 @@ tasks:
         simple: 8.8.8.8
       entity_type:
         simple: ip
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
     separatecontext: false
     view: |-
       {

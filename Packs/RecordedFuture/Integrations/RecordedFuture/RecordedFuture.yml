@@ -62,7 +62,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.3.9324
   commands:
     - name: domain
       arguments:
@@ -384,7 +384,7 @@ script:
             - c2
             - malware
             - phishing
-          description: Context to use for verdict
+          description: Context to use for assessment. This is used by Recorded Future to calculate the relevant score and verdict.
           required: true
         - name: ip
           isArray: true
@@ -581,6 +581,20 @@ script:
           description: 'The value of the entity to fetch context for. (Should be provided
         with its type in entity_type argument, Hash types supported: MD5, SHA-1, SHA-256,
         SHA-512, CRC32, CTPH). Vulnerability supports CVEs.'
+        - name: fetch_related_entities
+          auto: PREDEFINED
+          predefined:
+            - yes
+            - no
+          description: "Should related entity data be fetched?"
+          required: true
+        - name: fetch_riskyCIDRips
+          auto: PREDEFINED
+          predefined:
+            - no
+            - yes
+          description: "Only for IP intelligence: Should risk scores for other IP addresses within the same CIDR be fetched?"
+          required: true
       outputs:
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested

@@ -39,7 +39,7 @@ class RFTest(unittest.TestCase):
                        'fields=entity,risk,timestamps,threatLists,intelCard,'
                        'metrics,location,relatedEntities,riskyCIDRIPs',
                        text=json.dumps(IP_LOOKUP))
-        resp = enrich_command(self.client, '184.168.221.96', 'ip')
+        resp = enrich_command(self.client, '184.168.221.96', 'ip', True, True)
         self.assertIsInstance(resp, CommandResults)
         self.assertEqual('184.168.221.96',
                          resp.to_context()['Contents']['data']['name'])

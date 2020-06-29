@@ -1,16 +1,16 @@
-id: Recorded Future Malware Threat Assessment
+id: Recorded Future Threat Assessment
 version: -1
-name: Recorded Future Malware Threat Assessment
-description: Threat Assessment using the Recorded Future SOAR Triage API and the Malware
-  context.
+name: Recorded Future Threat Assessment
+description: Threat Assessment using the Recorded Future SOAR Triage API and the context
+  Phishing.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 57976343-0695-4a08-85bf-9d35995ae557
+    taskid: 70db8e96-a768-4f64-89de-4f822c87d694
     type: start
     task:
-      id: 57976343-0695-4a08-85bf-9d35995ae557
+      id: 70db8e96-a768-4f64-89de-4f822c87d694
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 68d0ca7b-bb8f-403f-8bd6-4e78d19d0a12
+    taskid: 6c3bda0e-4e5a-414e-89ae-09ff9087f150
     type: condition
     task:
-      id: 68d0ca7b-bb8f-403f-8bd6-4e78d19d0a12
+      id: 6c3bda0e-4e5a-414e-89ae-09ff9087f150
       version: -1
       name: Is there anything to assess?
       description: Checks whether the playbook's input contains at least one domain
@@ -103,10 +103,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 7a92392a-79b1-44e9-8e76-3fa9302ba677
+    taskid: 7f5f8c9f-b25b-4a7a-854b-553dc88f1c54
     type: title
     task:
-      id: 7a92392a-79b1-44e9-8e76-3fa9302ba677
+      id: 7f5f8c9f-b25b-4a7a-854b-553dc88f1c54
       version: -1
       name: Done
       type: title
@@ -128,10 +128,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 4c367572-bdf2-4bf3-8646-22c2b5a0a9af
+    taskid: 2bb4b3b1-3c77-447b-8cce-2d600641142e
     type: condition
     task:
-      id: 4c367572-bdf2-4bf3-8646-22c2b5a0a9af
+      id: 2bb4b3b1-3c77-447b-8cce-2d600641142e
       version: -1
       name: Is Recorded Future API enabled?
       description: Checks if there is an active instance of the Recorded Future API
@@ -188,10 +188,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 3afc63f6-5987-465f-8d19-6e5976e2ba83
+    taskid: e9f5bca8-94bd-4b41-83b4-b97b9f47599b
     type: regular
     task:
-      id: 3afc63f6-5987-465f-8d19-6e5976e2ba83
+      id: e9f5bca8-94bd-4b41-83b4-b97b9f47599b
       version: -1
       name: Get Threat Assessment from Recorded Future
       description: Get an indicator of the risk based on context.
@@ -204,7 +204,7 @@ tasks:
       - "24"
     scriptarguments:
       context:
-        simple: malware
+        simple: ${inputs.threat-assessment-context}
       cve:
         simple: ${inputs.CVE}
       domain:
@@ -231,10 +231,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 611b3988-cbe6-4bc4-8044-6f00b811d9bc
+    taskid: 6f7224be-bf6f-4080-842d-c3196a87c951
     type: title
     task:
-      id: 611b3988-cbe6-4bc4-8044-6f00b811d9bc
+      id: 6f7224be-bf6f-4080-842d-c3196a87c951
       version: -1
       name: Threat Assessment Using Recorded Future API
       type: title
@@ -280,7 +280,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "CVE ID to check if it is related to the malware context."
+  description: CVE ID to check if it is related to the C2 context.
   playbookInputQuery:
 - key: IP
   value:
@@ -290,7 +290,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "IP Address to check if it is related to the malware context."
+  description: IP Address to check if it is related to the C2 context.
   playbookInputQuery:
 - key: URL
   value:
@@ -300,7 +300,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "URL to check if it is related to the malware context."
+  description: URL to check if it is related to the C2 context.
   playbookInputQuery:
 - key: MD5
   value:
@@ -310,7 +310,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "MD5 to check if it is related to the malware context."
+  description: MD5 to check if it is related to the C2 context.
   playbookInputQuery:
 - key: SHA1
   value:
@@ -320,7 +320,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "SHA-1 to check if it is related to the malware context."
+  description: SHA-1 to check if it is related to the C2 context.
   playbookInputQuery:
 - key: SHA256
   value:
@@ -330,7 +330,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "SHA-256 to check if it is related to the malware context."
+  description: SHA-256 to check if it is related to the C2 context.
   playbookInputQuery:
 - key: Domain
   value:
@@ -340,7 +340,14 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "Domain to check if it is related to the malware context."
+  description: Domain to check if it is related to the C2 context.
+  playbookInputQuery:
+- key: threat-assessment-context
+  value:
+    simple: phishing
+  required: true
+  description: Context to use for assessment. This is used by Recorded Future to calculate
+    the relevant score and verdict. Valid values are "c2", "malware" and "phishing".
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator

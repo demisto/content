@@ -1,7 +1,7 @@
 URL Enrichment using Recorded Future Intelligence
 
 ## Dependencies
-This playbook uses the following sub-playbookInsert the link to your image heres, integrations, and scripts.
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 This playbook does not use any sub-playbooks.

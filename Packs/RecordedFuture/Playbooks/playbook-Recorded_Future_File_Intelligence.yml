@@ -82,6 +82,10 @@ tasks:
         simple: ${inputs.MD5}
       entity_type:
         simple: file
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
     continueonerror: true
     separatecontext: false
     view: |-
@@ -226,6 +230,10 @@ tasks:
         simple: ${inputs.SHA256}
       entity_type:
         simple: file
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
     continueonerror: true
     separatecontext: false
     view: |-
@@ -303,6 +311,10 @@ tasks:
         simple: ${inputs.SHA1}
       entity_type:
         simple: file
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
     continueonerror: true
     separatecontext: false
     view: |-
