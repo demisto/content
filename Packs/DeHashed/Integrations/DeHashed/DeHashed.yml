@@ -33,7 +33,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: when chooseing "all fields" option, it search the specified given
+      description: when choosing "all fields" option, it search the specified given
         "value", no need to pass "operation" argument as well.
       isArray: false
       name: asset_type
