@@ -2873,6 +2873,11 @@
             "integrations": "Workday",
             "playbookID": "Workday - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "RSA Archer v2",
+            "playbookID": "Archer v2 - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
