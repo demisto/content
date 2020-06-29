@@ -2198,7 +2198,7 @@ script:
         Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject,
         URL, URL Path, User-agent, Username, X-Mailer"
     description: Runs an advanced indicator search.
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   runonce: false
   script: '-'
