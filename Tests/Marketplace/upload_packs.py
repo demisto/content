@@ -92,9 +92,10 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.mkdir(index_folder_path)
         return index_folder_path, index_blob
 
-    index_blob.cache_control = "no-cache"  # index zip should never be cached in the memory, should be updated version
-    index_blob.reload()
+    # index zip should never be cached in the memory, should be updated version
+    index_blob.cache_control = "no-cache,max-age=0"
     index_blob.download_to_filename(download_index_path)
+    index_blob.reload()
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -235,18 +236,8 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
-            'description': 'Master index for Demisto Content Packages',
-            'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
-            'landingPage': {
-                'sections': [
-                    'Trending',
-                    'Recommended by Demisto',
-                    'New',
-                    'Getting Started'
-                ]
-            },
             'packs': private_packs
         }
         json.dump(index, index_file, indent=4)
@@ -255,11 +246,9 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
 
-    index_blob.cache_control = "no-cache"  # disabling caching for index blob
-    if index_blob.exists():
-        index_blob.reload()
-
+    index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
     index_blob.upload_from_filename(index_zip_path)
+
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
@@ -414,7 +403,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         return private_packs
 
 
-def _build_summary_table(packs_input_list):
+def _build_summary_table(packs_input_list, include_pack_status=False):
     """Build summary table from pack list
 
     Args:
@@ -424,13 +413,15 @@ def _build_summary_table(packs_input_list):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack Name", "Version", "Status"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.latest_version, pack_status_message]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version]
         table.add_row(row)
 
     return table
@@ -464,20 +455,24 @@ def print_packs_summary(packs_list):
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
     print("\n")
-    print("--------------------------------------- Packs Upload Summary ---------------------------------------")
+    print("------------------------------------------ Packs Upload Summary ------------------------------------------")
     print(f"Total number of packs: {len(packs_list)}")
+    print("----------------------------------------------------------------------------------------------------------")
 
     if successful_packs:
         print_color(f"Number of successful uploaded packs: {len(successful_packs)}", LOG_COLORS.GREEN)
+        print_color("Uploaded packs:\n", LOG_COLORS.GREEN)
         successful_packs_table = _build_summary_table(successful_packs)
         print_color(successful_packs_table, LOG_COLORS.GREEN)
     if skipped_packs:
         print_warning(f"Number of skipped packs: {len(skipped_packs)}")
+        print_warning("Skipped packs:\n")
         skipped_packs_table = _build_summary_table(skipped_packs)
         print_warning(skipped_packs_table)
     if failed_packs:
         print_error(f"Number of failed packs: {len(failed_packs)}")
-        failed_packs_table = _build_summary_table(failed_packs)
+        print_error("Failed packs:\n")
+        failed_packs_table = _build_summary_table(failed_packs, include_pack_status=True)
         print_error(failed_packs_table)
         sys.exit(1)
 

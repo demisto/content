@@ -2,7 +2,7 @@
     "name": "Chronicle",
     "description": "Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.1.0",
     "author": "Chronicle",
     "url": "",
     "email": "chronicle-support@chronicle.security",
