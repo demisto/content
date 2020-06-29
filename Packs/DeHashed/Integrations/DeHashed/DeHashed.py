@@ -6,8 +6,9 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 requests.packages.urllib3.disable_warnings()
 
 INTEGRATION_CONTEXT_BRAND = "DeHashed"
-RESULTS_FROM = 0
-RESULTS_TO = 100
+BASE_URL = "https://api.dehashed.com/" # disable-secrets-detection
+RESULTS_FROM = 1
+RESULTS_TO = 50
 
 
 class Client(BaseClient):
@@ -77,7 +78,7 @@ class Client(BaseClient):
                 "search",
                 params={"query": query_string, "page": results_page_number},
                 auth=(self.email, self.api_key),
-                timeout=15,
+                timeout=25,
             )
         else:
             return self._http_request(
@@ -85,6 +86,7 @@ class Client(BaseClient):
                 "search",
                 params={"query": query_string},
                 auth=(self.email, self.api_key),
+                timeout=25
             )
 
 
@@ -108,11 +110,11 @@ def test_module(client: Client) -> str:
 
 
 def validate_filter_parameters(results_from_value, results_to_value):
-    if results_to_value < 0:
-        raise DemistoException(f'Argument "results_to" expected to be a none negative number, but given:'
+    if results_to_value <= 0:
+        raise DemistoException(f'Argument "results_to" expected to be greater than zero, but given:'
                                f' {results_to_value}')
-    elif results_from_value < 0:
-        raise DemistoException(f'Argument "results_from" expected to be a none negative number, but given:'
+    elif results_from_value <= 0:
+        raise DemistoException(f'Argument "results_from" expected to be greater than zero, but given:'
                                f' {results_from_value}')
     elif results_to_value > results_from_value:
         raise DemistoException(f'Argument "results_to" expected to be less than or equal to "results_from"')
@@ -128,23 +130,15 @@ def filter_results(
     :param results_to: end range
     :return: filtered results
     """
-    last_entry_index = len(entries) - 1
-    if results_to is not None:  # index can be zero
-        if last_entry_index < results_to:
-            raise DemistoException(f'Result list\'s index out of range. Result list contains {len(entries)}'
-                                   f' entries, but requested: {results_to}')
-    else:
-        if RESULTS_TO > last_entry_index:
-            results_to = last_entry_index
-        else:
-            results_to = RESULTS_TO
-
-    if results_from is None:  # index can be zero
+    if not results_from:
         results_from = RESULTS_FROM
-
+    if not results_to:
+        results_to = RESULTS_TO
+    if results_to > len(entries):
+        results_to = len(entries)
     validate_filter_parameters(results_to, results_from)
 
-    return entries[results_from:results_to + 1], results_from, results_to
+    return entries[results_from - 1:results_to], results_from, results_to
 
 
 def arg_to_int(arg_val: str, arg_name: Union[str, None]) -> int:
@@ -162,6 +156,8 @@ def arg_to_int(arg_val: str, arg_name: Union[str, None]) -> int:
                 f'"{arg_name}" expected to be Integer. passed {arg_val} instead.'
             )
         else:
+            if input_as_int == 0:
+                raise DemistoException(f'"{arg_name}" expected to be greater than zero.')
             return input_as_int
 
 
@@ -216,7 +212,6 @@ def dehashed_search_command(client: Client, args: dict) -> tuple:
                 f', page size is: {len(filtered_results)}. returning results from {results_from} to {results_to}.',
                 filtered_results,
                 headers=headers,
-                removeNull=True,
                 headerTransform=pascalToSpace,
             ),
             {
@@ -232,9 +227,9 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    email = demisto.params().get("email")
-    api_key = demisto.params().get("api_key")
-    base_url = demisto.params().get("base_url")
+    email = demisto.params().get("credentials", {}).get('identifier', '')
+    api_key = demisto.params().get("credentials", {}).get('password', '')
+    base_url = BASE_URL
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
 

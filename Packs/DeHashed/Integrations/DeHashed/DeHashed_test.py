@@ -51,8 +51,8 @@ def test_search_command_using_is_operator_without_filter(requests_mock):
             "full_results"
         ],
         "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 0,
-            "ResultsTo": 1,
+            "ResultsFrom": 1,
+            "ResultsTo": 2,
             "DisplayedResults": 2,
             "TotalResults": 2,
             "PageNumber": 1
@@ -86,8 +86,8 @@ def test_search_command_using_contains_operator_without_filter(requests_mock):
             "full_results"
         ],
         "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 0,
-            "ResultsTo": 1,
+            "ResultsFrom": 1,
+            "ResultsTo": 2,
             "DisplayedResults": 2,
             "TotalResults": 2,
             "PageNumber": 1
@@ -123,8 +123,8 @@ def test_search_command_using_regex_operator_without_filter(requests_mock):
             "full_results"
         ],
         "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 0,
-            "ResultsTo": 1,
+            "ResultsFrom": 1,
+            "ResultsTo": 2,
             "DisplayedResults": 2,
             "TotalResults": 2,
             "PageNumber": 1
@@ -160,8 +160,8 @@ def test_search_command_using_is_operator_with_filter_and_multi_values(requests_
             "full_results"
         ],
         "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 0,
-            "ResultsTo": 1,
+            "ResultsFrom": 1,
+            "ResultsTo": 2,
             "DisplayedResults": 2,
             "TotalResults": 2,
             "PageNumber": 1
@@ -197,8 +197,8 @@ def test_search_command_using_contains_operator_with_filter_and_multi_values(
             "full_results"
         ],
         "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 0,
-            "ResultsTo": 1,
+            "ResultsFrom": 1,
+            "ResultsTo": 2,
             "DisplayedResults": 2,
             "TotalResults": 2,
             "PageNumber": 1
@@ -236,8 +236,8 @@ def test_search_command_using_regex_operator_with_filter_and_multi_values(
             "full_results"
         ],
         "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 0,
-            "ResultsTo": 1,
+            "ResultsFrom": 1,
+            "ResultsTo": 2,
             "DisplayedResults": 2,
             "TotalResults": 2,
             "PageNumber": 1
@@ -275,8 +275,8 @@ def test_search_command_using_regex_operator_with_filter_and_change_result_range
             "full_results"
         ],
         "DeHashed.LastQuery(true)": {
-            "ResultsFrom": 0,
-            "ResultsTo": 0,
+            "ResultsFrom": 1,
+            "ResultsTo": 1,
             "DisplayedResults": 1,
             "TotalResults": 2,
             "PageNumber": 1

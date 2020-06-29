@@ -34,8 +34,8 @@
     "value": "joh?n(ath[oa]n),joh?n11(ath[oa]n)",
     "operation": "regex",
     "asset_type": "vin",
-    "results_from": "0",
-    "results_to": "0"
+    "results_from": "1",
+    "results_to": "1"
   },
 
   "api_response": {
