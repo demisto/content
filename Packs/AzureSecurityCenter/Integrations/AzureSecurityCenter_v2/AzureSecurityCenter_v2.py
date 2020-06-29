@@ -594,12 +594,13 @@ def list_alerts_command(client: MsClient, args: dict):
     return md, ec, alerts
 
 
-# Unsupported command. issue: issues/24583
+# There's a Microsoft API bug for reactivate alert -
+# https://social.msdn.microsoft.com/Forums/windows/en-US/c2139e1b-b26c-4264-a558-fa4b180b70e7/issue-while-setting-security-alert-state-from-dismiss-to-active?forum=AzureSecurityCenter
 def update_alert_command(client: MsClient, args: dict):
     """Update given alert
 
     Args:
-        client:
+        client: MsClient
         args (dict): usually demisto.args()
     """
     resource_group_name = args.get("resource_group_name")

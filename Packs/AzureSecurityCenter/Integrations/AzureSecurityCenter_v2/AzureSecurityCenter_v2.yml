@@ -109,6 +109,48 @@ script:
       type: string
   - arguments:
     - default: false
+      description: The name of the resource group within the user's subscription.
+        The name is case insensitive.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    - default: false
+      description: The location where Azure Security Center stores the data of the
+        subscription. Run the 'azure-sc-list-location' command to get the ascLocation.
+        This command requires the resourceGroupName argument.
+      isArray: false
+      name: asc_location
+      required: true
+      secret: false
+    - default: false
+      description: The alert ID.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      description: The update action type.
+      isArray: false
+      name: alert_update_action_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - dismiss
+#        - reactivate
+    deprecated: false
+    description: Update an alert's state.
+    execution: false
+    name: azure-sc-update-alert
+    outputs:
+    - contextPath: AzureSecurityCenter.Alert.ActionTaken
+      description: The action that was taken on the alert.
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.ID
+      description: The alert ID.
+      type: string
+  - arguments:
+    - default: false
       description: Resource group name
       isArray: false
       name: resource_group_name
