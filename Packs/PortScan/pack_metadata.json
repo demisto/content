@@ -1,6 +1,6 @@
 {
   "name": "Port Scan",
-  "description": "A generic solution for investigation of port scan incidents.",
+  "description": " ",
   "support": "xsoar",
   "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",
