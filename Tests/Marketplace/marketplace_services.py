@@ -541,6 +541,29 @@ class Pack(object):
 
         return dependencies_data_result
 
+    @staticmethod
+    def _create_changelog_entry(release_notes, version_display_name, build_number, new_version=True):
+        """ Creates dictionary entry for changelog.
+
+        Args:
+            release_notes (str): release notes md.
+            version_display_name (str): display name version.
+            build_number (srt): current build number.
+            new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
+
+        Returns:
+            dict: release notes entry of changelog
+
+        """
+        if new_version:
+            return {'releaseNotes': release_notes,
+                    'displayName': f'{version_display_name} - {build_number}',
+                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+        else:
+            return {'releaseNotes': release_notes,
+                    'displayName': f'{version_display_name} - R{build_number}',
+                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+
     def remove_unwanted_files(self, delete_test_playbooks=True):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
 
@@ -675,6 +698,7 @@ class Pack(object):
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
 
                     if modified_file_path_parts[1] and modified_file_path_parts == self._pack_name:
+                        print(f"Detected modified files in {self._pack_name} pack")
                         task_status, pack_was_modified = True, True
                         return
 
@@ -745,8 +769,11 @@ class Pack(object):
         try:
             if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
                 print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
-
+                # load changelog from downloaded index
                 changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+                with open(changelog_index_path, "r") as changelog_file:
+                    changelog = json.load(changelog_file)
+
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
                 if os.path.exists(release_notes_dir):
@@ -774,63 +801,55 @@ class Pack(object):
                         task_status = False
                         return task_status, not_updated_build
                     else:
-                        with open(changelog_index_path, "r") as changelog_file:
-                            changelog = json.load(changelog_file)
+                        if latest_release_notes in changelog:
+                            print(f"Found existing release notes for version: {latest_release_notes}")
+                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                                                                             version_display_name=latest_release_notes,
+                                                                             build_number=build_number,
+                                                                             new_version=False)
 
-                            if latest_release_notes in changelog:
-                                changelog[latest_release_notes][  # update latest release notes
-                                    'displayName'] = f'{latest_release_notes} - R{build_number}'
-                                changelog[latest_release_notes]['releaseNotes'] = release_notes_lines
-                                # write back the updated build number to the changelog in pack the folder
-                                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
-                                    json.dump(changelog, pack_changelog, indent=4)
+                        else:
+                            print(f"Created new release notes for version: {latest_release_notes}")
+                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                                                                             version_display_name=latest_release_notes,
+                                                                             build_number=build_number,
+                                                                             new_version=True)
 
-                                print(f"Found existing release notes for version: {latest_release_notes} "
-                                      f"in the {self._pack_name} pack.")
-                                task_status = True
-                                return task_status, not_updated_build
-
-                        version_changelog = {'releaseNotes': release_notes_lines,
-                                             'displayName': f'{latest_release_notes} - {build_number}',
-                                             'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
-
-                        with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
-                            json.dump(changelog, f, indent=4)
-
                 else:  # will enter only on initial version and release notes folder still was not created
-                    with open(changelog_index_path, "r") as changelog_file:
-                        changelog = json.load(changelog_file)
-
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
                         print_warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
                         return task_status, not_updated_build
 
-                    changelog[Pack.PACK_INITIAL_VERSION][  # update latest release notes build numbers
-                        'displayName'] = f'{Pack.PACK_INITIAL_VERSION} - R{build_number}'
-                    # write back the updated build number to the changelog in pack the folder
-                    with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
-                        json.dump(changelog, pack_changelog, indent=4)
+                    changelog[Pack.PACK_INITIAL_VERSION] = Pack._create_changelog_entry(
+                        release_notes=self.description,
+                        version_display_name=Pack.PACK_INITIAL_VERSION,
+                        build_number=build_number,
+                        new_version=False)
 
                     print(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
                           f"in the {self._pack_name} pack.")
 
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
-                changelog = {}
-                version_changelog = {'releaseNotes': self._description,
-                                     'displayName': f'{Pack.PACK_INITIAL_VERSION} - {build_number}',
-                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
-                changelog[Pack.PACK_INITIAL_VERSION] = version_changelog
-
-                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
-                    json.dump(changelog, f, indent=4)
-
+                version_changelog = Pack._create_changelog_entry(
+                    release_notes=self.description,
+                    version_display_name=Pack.PACK_INITIAL_VERSION,
+                    build_number=build_number,
+                    new_version=True
+                )
+                changelog = {
+                    Pack.PACK_INITIAL_VERSION: version_changelog
+                }
             else:
                 print_error(f"No release notes found for: {self._pack_name}")
                 task_status = False
                 return task_status, not_updated_build
+
+            # write back changelog with changes to pack folder
+            with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
+                json.dump(changelog, pack_changelog, indent=4)
 
             task_status = True
             print_color(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)

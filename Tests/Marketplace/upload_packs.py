@@ -444,7 +444,7 @@ def load_json(file_path):
     return result
 
 
-def init_content_git_client(content_repo_path):
+def get_content_git_client(content_repo_path):
     """ Initializes content repo client.
 
     Args:
@@ -569,7 +569,7 @@ def main():
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
     # content repo client initialized
-    content_repo = init_content_git_client(CONTENT_ROOT_PATH)
+    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo)
 
     if storage_base_path:
