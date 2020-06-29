@@ -719,7 +719,7 @@ class MsGraphClient:
 
         message_content.pop('attachments', None)
         message_content.pop('internet_message_headers', None)
-        human_readable = tableToMarkdown(f'Email was sent successfully.', message_content)
+        human_readable = tableToMarkdown('Email was sent successfully.', message_content)
         ec = {self.CONTEXT_SENT_EMAIL_PATH: message_content}
 
         return human_readable, ec
