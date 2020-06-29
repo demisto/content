@@ -472,7 +472,7 @@ def test_module(client: Client) -> str:
 
 def search_applications_command(client: Client, args: Dict[str, str]):
     app_id = args.get('application-id')
-    limit = int(args.get('limit'))
+    limit = args.get('limit')
     endpoint_url = 'rsaarcher/api/core/system/application/'
 
     if app_id:
