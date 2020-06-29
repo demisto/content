@@ -1296,24 +1296,25 @@ def test_departingemployee_get_all_command_when_no_employees(
     assert res == expected
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
     assert_departingemployee_outputs_match_response(outputs_list, res)
-#
-#
-# def test_highriskemployee_add_command(code42_high_risk_employee_mock):
-#     client = create_client(code42_high_risk_employee_mock)
-#     _, outputs, res = highriskemployee_add_command(
-#         client, {"username": _TEST_USERNAME, "note": "Dummy note"}
-#     )
-#     assert res == _TEST_USER_ID
-#     assert outputs["Code42.HighRiskEmployee"]["UserID"] == _TEST_USER_ID
-#     assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
-#     code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(
-#         _TEST_USER_ID
-#     )
-#     code42_high_risk_employee_mock.detectionlists.update_user_notes.assert_called_once_with(
-#         _TEST_USER_ID, "Dummy note"
-#     )
-#
-#
+
+
+def test_highriskemployee_add_command(code42_high_risk_employee_mock):
+    client = create_client(code42_high_risk_employee_mock)
+    cmd_res = highriskemployee_add_command(
+        client, {"username": _TEST_USERNAME, "note": "Dummy note"}
+    )
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert outputs["Code42.HighRiskEmployee"]["UserID"] == _TEST_USER_ID
+    assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
+    code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(
+        _TEST_USER_ID
+    )
+    code42_high_risk_employee_mock.detectionlists.update_user_notes.assert_called_once_with(
+        _TEST_USER_ID, "Dummy note"
+    )
+
+
 # def test_highriskemployee_remove_command(code42_sdk_mock):
 #     client = create_client(code42_sdk_mock)
 #     _, outputs, res = highriskemployee_remove_command(client, {"username": _TEST_USERNAME})
