@@ -9,6 +9,22 @@ parameters:
   server_branch_name:
     type: string
     default: ""
+  backward_compatibility:
+    type: string
+    default: ""
+  nightly:
+    type: string
+    default: ""
+  instance_tests:
+    type: string
+    default: ""
+  demisto_sdk_nightly:
+    type: string
+    default: ""
+  mem_check:
+    type: string
+    default: ""
+
 
 references:
   environment: &environment
@@ -19,6 +35,8 @@ references:
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
+      BACKWARD_COMPATIBILITY: << pipeline.parameters.backward_compatibility >>
+      MEM_CHECK: << pipeline.parameters.mem_check >>
 
   container_config: &container_config
     docker:
@@ -45,11 +63,28 @@ references:
     run:
       name: Prepare Environment
       when: always
+      environment:
+        # In case this is a triggered build with nightly as parameter, we need to give the given parameter priority
+        NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
+        INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
+        DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
       command: |
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
+        if [ -n "${NIGHTLY_PARAMETER}" ];
+        then
+            echo 'export NIGHTLY=$NIGHTLY_PARAMETER' >> $BASH_ENV
+        fi
+        if [ -n "${INSTANCE_TESTS_PARAMETER}" ];
+        then
+            echo 'export INSTANCE_TESTS=INSTANCE_TESTS_PARAMETER' >> $BASH_ENV
+        fi
+        if [ -n "${DEMISTO_SDK_NIGHTLY_PARAMETER}" ];
+        then
+            echo 'export DEMISTO_SDK_NIGHTLY=DEMISTO_SDK_NIGHTLY_PARAMETER' >> $BASH_ENV
+        fi
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
         sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
