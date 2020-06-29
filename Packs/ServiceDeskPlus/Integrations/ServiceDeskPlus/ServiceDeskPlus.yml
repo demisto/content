@@ -20,12 +20,10 @@ configuration:
   required: true
   type: 4
 - display: Client Secret
-  hidden: false
   name: client_secret
   required: true
   type: 4
 - display: Refresh Token
-  hidden: false
   name: refresh_token
   required: false
   type: 4
@@ -48,19 +46,16 @@ configuration:
 - defaultvalue: Open
   display: The status of the requests that should be fetched. Multiple status can
     be entered, separated by a comma.
-  hidden: false
   name: fetch_status
   required: false
   type: 0
 - defaultvalue: 1 hour
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-  hidden: false
   name: fetch_time
   required: false
   type: 0
 - defaultvalue: '10'
   display: The maximum number of incidents that should be fetched each time
-  hidden: false
   name: fetch_limit
   required: false
   type: 0
@@ -71,14 +66,12 @@ configuration:
     "condition":"is", "values":"tech_1_name,tech_2_name", "logical_operator":"AND"},
     {"field":"due_by_time", "condition":"greater than", "values":"1592946000000",
     "logical_operator":"OR"}. Overrides the status filter, if given.
-  hidden: false
   name: fetch_filter
   required: false
   type: 12
 description: IT Service Management
 display: Service Desk Plus
 name: ServiceDeskPlus
-beta: true
 script:
   commands:
   - arguments:
@@ -170,7 +163,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete the request with the given id.
+    description: Delete the request with the given id. Multiple ids can be closed
+      by passed a string with all the ids of the requests that should be closed, separated
+      by a comma.
     execution: false
     name: service-desk-plus-request-delete
   - arguments:
@@ -865,3 +860,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- Service Desk Plus

@@ -3,7 +3,7 @@ from ServiceDeskPlus import Client, create_request_command, update_request_comma
     linked_request_command, get_resolutions_list_command, delete_request_command, assign_request_command, \
     pickup_request_command, modify_linked_request_command, add_resolution_command, generate_refresh_token, \
     create_output, args_to_query, create_modify_linked_input_data, create_human_readable, resolution_human_readable, \
-    create_requests_list_info, create_fetch_list_info, fetch_incidents, test_module, close_request_command
+    create_requests_list_info, create_fetch_list_info, fetch_incidents, close_request_command
 from test_data.response_constants import RESPONSE_CREATE_REQUEST, RESPONSE_UPDATE_REQUEST, \
     RESPONSE_LIST_SINGLE_REQUEST, RESPONSE_LIST_MULTIPLE_REQUESTS, RESPONSE_LINKED_REQUEST_LIST, \
     RESPONSE_RESOLUTION_LIST, RESPONSE_NO_RESOLUTION_LIST, RESPONSE_LINK_REQUEST, RESPONSE_UNLINK_REQUEST, \
@@ -53,7 +53,8 @@ def test_commands(command, args, response, expected_result, mocker):
 
 # test commands without context:
 @pytest.mark.parametrize('command, args, response, expected_result', [
-    (delete_request_command, {'request_id': '1234'}, {}, '### Successfully deleted request 1234'),
+    (delete_request_command, {'request_id': '1234'}, {}, "### Successfully deleted request(s) ['1234']"),
+    (delete_request_command, {'request_id': '1234,5678'}, {}, "### Successfully deleted request(s) ['1234', '5678']"),
     (close_request_command, {'request_id': '1234'}, {}, '### Successfully closed request 1234'),
     (assign_request_command, {'request_id': '1234'}, {}, '### Service Desk Plus request 1234 was successfully assigned'),
     (pickup_request_command, {'request_id': '1234'}, {}, '### Service Desk Plus request 1234 was successfully picked up'),
@@ -125,7 +126,8 @@ def test_create_modify_linked_input_data():
     assert create_modify_linked_input_data(linked_request_id, comment) == expected_output
 
     linked_request_id = ['1234', '5678', '0912']
-    expected_output = {'link_requests': [{'linked_request': {'id': '1234'}}, {'linked_request': {'id': '5678'}},
+    expected_output = {'link_requests': [{'linked_request': {'id': '1234'}},
+                                         {'linked_request': {'id': '5678'}},
                                          {'linked_request': {'id': '0912'}}]}
     assert create_modify_linked_input_data(linked_request_id, '') == expected_output
 
@@ -236,10 +238,11 @@ def test_test_module(mocker):
     - run the test module command using the Client
     Validate the content of the HumanReadable.
     """
+    from ServiceDeskPlus import test_module as module
     mocker.patch('ServiceDeskPlus.Client.update_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
 
     mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
     mocker.patch.object(client, 'http_request', return_value=RESPONSE_FETCH_INCIDENTS)
-    result = test_module(client)
+    result = module(client)
     assert result == 'ok'

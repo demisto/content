@@ -66,7 +66,7 @@ class Client(BaseClient):
             if 'error' in res:
                 return_error(
                     f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
-                    f'and Refresh Token.\n{res}')
+                    f'and Refresh Token - RES RETURNED.\n{res}')
             if res.get('access_token'):
                 self._headers.update({
                     'Authorization': 'Bearer ' + res.get('access_token')
@@ -173,14 +173,13 @@ def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> d
     """
     all_linked_requests = []
     for request_id in linked_requests_id:
-        linked_request = {
+        linked_request: Dict[str, Any] = {
             'linked_request': {
                 'id': request_id
-            },
-            'comments': comment
+            }
         }
-        # if comment:
-        #     linked_request['comments'] = str(comment)
+        if comment:
+            linked_request['comments'] = comment
         all_linked_requests.append(linked_request)
     return {
         'link_requests': all_linked_requests
@@ -276,10 +275,10 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
     list_info = {}
     try:
         search_criteria = [{
-                               'field': 'created_time',
-                               'values': [f'{time_from}', f'{time_to}'],
-                               'condition': 'between'
-                           }]
+            'field': 'created_time',
+            'values': [f'{time_from}', f'{time_to}'],
+            'condition': 'between'
+        }]
         if fetch_filter:
             filters = ast.literal_eval(fetch_filter)
             if isinstance(filters, dict):
@@ -314,7 +313,7 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
             'sort_order': 'asc',
             'row_count': fetch_limit
         }
-    except Exception as e:
+    except Exception:
         return_error('Invalid input format. Please follow instructions for correct filter format.')
     return {
         'list_info': list_info
@@ -365,7 +364,7 @@ def list_requests_command(client: Client, args: dict):
 
 def delete_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     """
-    Delete the request with the given request_id
+    Delete the request(s) with the given request_id
 
     Args:
         client: Client object with request.
@@ -374,9 +373,12 @@ def delete_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id')
-    result = client.http_request('DELETE', url_suffix=f'requests/{request_id}')
-    hr = f'### Successfully deleted request {request_id}'
+    request_id = args.get('request_id', '')
+    requests_list = request_id.split(',')
+    result = {}
+    for request in requests_list:
+        result = client.http_request('DELETE', url_suffix=f'requests/{request}')
+    hr = f'### Successfully deleted request(s) {requests_list}'
     return hr, {}, result
 
 
@@ -666,14 +668,14 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
         if demisto_incidents:
             last_incident_time = date_to_timestamp(demisto_incidents[-1].get('occurred').split('.')[0])
             new_last_run.update({
-                                    'time': last_incident_time,
-                                    'id': last_incident_id
-                                })
+                'time': last_incident_time,
+                'id': last_incident_id
+            })
 
     if not demisto_incidents:
         new_last_run.update({
-                                'time': time_to
-                            })
+            'time': time_to
+        })
     demisto.setLastRun(new_last_run)
     return demisto_incidents
 
@@ -699,7 +701,7 @@ def test_module(client: Client):
         if params.get('isFetch'):
             fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
             fetch_status = str(params.get('fetch_status')) if params.get('fetch_status') else 'Open'
-            fetch_filter = str(params.get('fetch_filter'))
+            fetch_filter = str(params.get('fetch_filter')) if params.get('fetch_filter') else ''
             fetch_limit = int(params.get('fetch_limit', '10')) if params.get('fetch_limit') else 10
 
             date_format = '%Y-%m-%dT%H:%M:%S'
@@ -785,7 +787,7 @@ def main():
             fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
             fetch_status = params.get('fetch_status') if params.get('fetch_status') else 'Open'
             fetch_limit = int(params.get('fetch_limit')) if params.get('fetch_limit') else 10
-            fetch_filter = params.get('fetch_filter')
+            fetch_filter = params.get('fetch_filter') if params.get('fetch_filter') else ''
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=fetch_limit,
                                         status=fetch_status, fetch_filter=fetch_filter)
             demisto.incidents(incidents)
