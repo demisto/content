@@ -227,16 +227,19 @@ Removes a user from the Departing Employee List.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | unknown | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. | 
+| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. | 
 | Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
 | Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
 
 
 #### Command Example
-``` ```
+```!code42-departingemployee-remove username="john.user@example.com"```
 
 #### Human Readable Output
 
+| **UserID** | **Username** |
+| --- | --- | 
+| 123 | john.user@example.com |
 
 
 ### code42-departingemployee-get-all
@@ -296,21 +299,20 @@ Get all employees on the Departing Employee List.
 ```
 
 #### Human Readable Output
-
->### All Departing Employees
->|DepartureDate|Note|UserID|Username|
->|---|---|---|---|
->|  | test | 921286907298179098 | user1@example.com |
->| 2020-07-20 | This is added using csv file to test bulk adding of users to high risk employee list | 948938588694228306 | sagar.patel+l2@code42.com |
->|  |  | 912249223544144039 | unicode@example.com |
->|  |  | 894165832411107815 | testuser@example.com |
->|  | L3 security risk | 949093399968329042 | sagar.patel+l3@code42.com |
->|  | tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
->|  |  | 906619740182876328 | resilient.ibm.user@example.com |
->|  |  | 906619632003387560 | resilient.ibm.admin@example.com |
->|  |  | 912338501981077099 | mike.mccollow+testair@code42.com |
->|  | leaving for competition | 951984198921509692 | john.anderson@qrstinc.com |
->|  | Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
+### All Departing Employees
+|DepartureDate|Note|UserID|Username|
+|---|---|---|---|
+|  | test | 921286907298179098 | user1@example.com |
+| 2020-07-20 | This is added using csv file to test bulk adding of users to high risk employee list | 948938588694228306 | sagar.patel+l2@code42.com |
+|  |  | 912249223544144039 | unicode@example.com |
+|  |  | 894165832411107815 | testuser@example.com |
+|  | L3 security risk | 949093399968329042 | sagar.patel+l3@code42.com |
+|  | tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
+|  |  | 906619740182876328 | resilient.ibm.user@example.com |
+|  |  | 906619632003387560 | resilient.ibm.admin@example.com |
+|  |  | 912338501981077099 | mike.mccollow+testair@code42.com |
+|  | leaving for competition | 951984198921509692 | john.anderson@qrstinc.com |
+|  | Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
 
 
 ### code42-highriskemployee-add
@@ -354,15 +356,10 @@ Adds a user from the High Risk Employee List.
 ```
 
 #### Human Readable Output
-
->### Code42 High Risk Employee List User Added
->|UserID|Username|
->|---|---|
->| 942876157732602741 | partner.demisto@example.com |
->### Code42 High Risk Employee List User Added
->|UserID|Username|
->|---|---|
->| 942876157732602741 | partner.demisto@example.com |
+### Code42 High Risk Employee List User Added
+|UserID|Username|
+|---|---|
+| 942876157732602741 | partner.demisto@example.com |
 
 
 ### code42-highriskemployee-remove
@@ -404,15 +401,11 @@ Removes a user from the High Risk Employee List.
 ```
 
 #### Human Readable Output
+### Code42 High Risk Employee List User Removed
+|UserID|Username|
+|---|---|
+| 942876157732602741 | partner.demisto@example.com |
 
->### Code42 High Risk Employee List User Removed
->|UserID|Username|
->|---|---|
->| 942876157732602741 | partner.demisto@example.com |
->### Code42 High Risk Employee List User Removed
->|UserID|Username|
->|---|---|
->| 942876157732602741 | partner.demisto@example.com |
 
 
 ### code42-highriskemployee-get-all
@@ -469,23 +462,14 @@ Get all employees on the High Risk Employee List.
 ```
 
 #### Human Readable Output
-
->### Retrieved All High Risk Employees
->|Note|UserID|Username|
->|---|---|---|
->| tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
->| Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
->| Test user addition from XSOAR | 912098363086307495 | spatel@code42.com |
->| test | 921286907298179098 | juliya.smith+partners@code42.com |
->| Risky activity | 942876157732602741 | partner.demisto@example.com |
->### Retrieved All High Risk Employees
->|Note|UserID|Username|
->|---|---|---|
->| tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
->| Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
->| Test user addition from XSOAR | 912098363086307495 | spatel@code42.com |
->| test | 921286907298179098 | juliya.smith+partners@code42.com |
->| Risky activity | 942876157732602741 | partner.demisto@example.com |
+### Retrieved All High Risk Employees
+|Note|UserID|Username|
+|---|---|---|
+| tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
+| Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
+| Test user addition from XSOAR | 912098363086307495 | spatel@code42.com |
+| test | 921286907298179098 | juliya.smith+partners@code42.com |
+| Risky activity | 942876157732602741 | partner.demisto@example.com |
 
 
 ### code42-highriskemployee-add-risk-tags
@@ -514,10 +498,13 @@ Get all employees on the High Risk Employee List.
 
 
 #### Command Example
-``` ```
+```!code42-highriskemployee-add-risk-tags username="partner.demisto@example.com" note="PERFORMANCE_CONCERN"```
 
 #### Human Readable Output
-
+### Code42 Risk Tags Added
+| RiskTags | UserID | Username |
+| -------- | ------ | -------- |
+| PERFORMANCE_CONCERNS | 1234567890 | partners.demisto@example.com |
 
 
 ### code42-highriskemployee-remove-risk-tags
@@ -564,15 +551,10 @@ Get all employees on the High Risk Employee List.
 ```
 
 #### Human Readable Output
-
->### Code42 Risk Tags Removed
->|RiskTags|UserID|Username|
->|---|---|---|
->| PERFORMANCE_CONCERNS | 942876157732602741 | partner.demisto@example.com |
->### Code42 Risk Tags Removed
->|RiskTags|UserID|Username|
->|---|---|---|
->| PERFORMANCE_CONCERNS | 942876157732602741 | partner.demisto@example.com |
+### Code42 Risk Tags Removed
+|RiskTags|UserID|Username|
+|---|---|---|
+| PERFORMANCE_CONCERNS | 942876157732602741 | partner.demisto@example.com |
 
 
 ### code42-user-create
@@ -602,10 +584,13 @@ Creates a Code42 user.
 
 
 #### Command Example
-``` ```
+```!code42-user-create orgname="TestOrg" username="new.user@example.com" email="new.user@example.com"```
 
 #### Human Readable Output
-
+### Code42 User Created
+| Email | UserID | Username |
+| ----- | ------ | -------- |
+| created.in.cortex.xsoar@example.com | 1111158111459014270 | created.in.cortex.xsoar@example.com |
 
 
 ### code42-user-block
@@ -631,11 +616,13 @@ Blocks a user in Code42.  A blocked user is not allowed to log in or restore fil
 
 
 #### Command Example
-``` ```
+```!code42-user-block username="partner.demisto@example.com"```
 
 #### Human Readable Output
-
-
+### Code42 User Blocked
+|UserID|
+| --- |
+| C2345 | 
 
 ### code42-user-deactivate
 ***
@@ -660,8 +647,10 @@ Deactivate a user in Code42; signing them out of their devices. Backups disconti
 
 
 #### Command Example
-``` ```
+```!code42-user-deactivate username="partner.demisto@example.com"```
 
 #### Human Readable Output
-
-
+### Code42 User Deactivated
+| UserID |
+| ------ |
+| 123456790 |

@@ -841,7 +841,7 @@ def user_deactivate_command(client, args):
     try:
         user_id = client.deactivate_user(username)
         outputs = {"UserID": user_id}
-        readable_outputs = tableToMarkdown("Code42 User Blocked", outputs)
+        readable_outputs = tableToMarkdown("Code42 User Deactivated", outputs)
         return CommandResults(
             outputs_prefix="Code42.User",
             outputs_key_field="UserID",
