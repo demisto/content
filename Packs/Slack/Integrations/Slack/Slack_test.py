@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import *
 import slack
@@ -8,8 +10,6 @@ import threading
 import json as js
 import datetime
 from unittest.mock import mock_open
-
-from Slack import get_conversation_by_name
 
 USERS = '''[{
     "id": "U012A3CDE",
@@ -490,6 +490,7 @@ class TestGetConversationByName:
         - Check if the right conversation returned
         - Check that no API command was called.
         """
+        from Slack import get_conversation_by_name
         self.set_conversation_mock(mocker)
 
         conversation_name = 'general'
@@ -513,12 +514,21 @@ class TestGetConversationByName:
         """
         def get_integration_context():
             return {}
+        from Slack import get_conversation_by_name
+
         self.set_conversation_mock(mocker, get_context=get_integration_context)
 
         conversation_name = 'general'
         conversation = get_conversation_by_name(conversation_name)
+
+        # Assertions
         assert conversation_name == conversation['name']
         assert slack.WebClient.api_call.call_count == 1
+
+        # Find that 'general' conversation has been added to context
+        conversations = json.loads(demisto.setIntegrationContext.call_args[0][0]['conversations'])
+        filtered = list(filter(lambda c: c['name'] == conversation_name, conversations))
+        assert filtered, 'Could not find the \'general\' conversation in the context'
 
     def test_get_conversation_by_name_not_exists(self, mocker):
         """
@@ -532,6 +542,7 @@ class TestGetConversationByName:
         - Check no conversation was returned.
         - Check that a API command was called.
         """
+        from Slack import get_conversation_by_name
         self.set_conversation_mock(mocker)
 
         conversation_name = 'no exists'

@@ -1215,7 +1215,7 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         conversations = json.loads(conversations)
         conversation_filter = list(
             filter(
-                lambda u: conversation_to_search == u.get('name', '').lower(),
+                lambda c: conversation_to_search == c.get('name', '').lower(),
                 conversations
             )
         )
@@ -1245,7 +1245,14 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         conversation = conversation_filter[0]
 
     # Save conversations to cache
-    set_to_latest_integration_context({'conversations': conversations})
+    if conversation:
+        conversations = integration_context.get('conversations')
+        if conversations:
+            conversations = json.loads(conversations)
+            conversations.append(conversation)
+        else:
+            conversations = [conversation]
+        set_to_latest_integration_context({'conversations': conversations})
 
     return conversation
 
