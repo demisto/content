@@ -261,6 +261,21 @@ class Code42Client(BaseClient):
             raise Exception("No user found with username {0}.".format(username))
         return res[0]["userUid"]
 
+    def create_user(self, org_name, username, email):
+        org_uid = self.get_org_uid(org_name)
+        return self._get_sdk().users.create_user(org_uid, username, email)
+
+    def block_user(self, username):
+
+
+    def get_org_uid(self, org_name):
+        org_pages = self._get_sdk().orgs.get_all()
+        for org_page in org_pages:
+            for org in org_page["orgs"]:
+                if org["orgName"] == org_name:
+                    return org["orgUid"]
+        raise Exception("No org found with name {0}.".format(org_name))
+
     def search_file_events(self, payload):
         res = self._get_sdk().securitydata.search_file_events(payload)
         return res["fileEvents"]
