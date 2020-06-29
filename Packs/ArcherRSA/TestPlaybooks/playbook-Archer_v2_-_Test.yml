@@ -1062,6 +1062,8 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
+      retry-count:
+        simple: "4"
       report-guid:
         simple: bce4222c-ecfe-4cef-a556-fe746e959f12
       reportGuid: {}
