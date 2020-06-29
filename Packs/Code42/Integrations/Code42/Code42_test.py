@@ -1199,6 +1199,7 @@ def test_departingemployee_add_command(code42_sdk_mock):
     assert cmd_res.outputs["Note"] == note
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
     add_func.assert_called_once_with(_TEST_USER_ID, departure_date=date)
     code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(_TEST_USER_ID, note)
 
@@ -1211,6 +1212,7 @@ def test_departingemployee_remove_command(code42_sdk_mock):
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
     code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(_TEST_USER_ID)
 
 
