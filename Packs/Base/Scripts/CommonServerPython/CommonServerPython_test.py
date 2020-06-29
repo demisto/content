@@ -2261,8 +2261,9 @@ def test_set_latest_integration_context_fail(mocker):
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
     int_context = get_integration_context_versioned()
-    mocker.patch.object(CommonServerPython, 'update_integration_context', return_value=(int_context['context'],
-                                                                            int_context['version']))
+    mocker.patch.object(CommonServerPython, 'update_integration_context', return_value=(
+        int_context['context'], int_context['version']
+    ))
     mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=ValueError)
 
     # Arrange
@@ -2273,4 +2274,3 @@ def test_set_latest_integration_context_fail(mocker):
 
     # Assert
     assert int_context_calls == CommonServerPython.CONTEXT_UPDATE_RETRY_TIMES
-

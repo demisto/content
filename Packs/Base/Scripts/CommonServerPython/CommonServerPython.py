@@ -3921,7 +3921,7 @@ def is_versioned_context_available():
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
-                                            max_retry_times = CONTEXT_UPDATE_RETRY_TIMES):
+                                            max_retry_times=CONTEXT_UPDATE_RETRY_TIMES):
     """
     Update the integration context with a dictionary of keys and values with multiple attempts.
     The function supports merging the context keys using the provided object_keys parameter.
@@ -3961,11 +3961,11 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
         try:
             set_integration_context(integration_context, sync, version)
             demisto.debug('Successfully updated integration context. New version is {}.'
-                         .format(version + 1 if version != -1 else version))
+                          ''.format(version + 1 if version != -1 else version))
             break
         except ValueError as ve:
             demisto.debug('Failed updating integration context with version {}: {} Attempts left - {}'
-                         .format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
+                          ''.format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
             # Sleep for a random time
             time_to_sleep = randint(1, 100) / 1000
             time.sleep(time_to_sleep)
