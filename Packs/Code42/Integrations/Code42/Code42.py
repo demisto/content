@@ -165,7 +165,11 @@ class Code42Client(BaseClient):
         # Allow sdk parameter for unit testing.
         # Otherwise, lazily load the SDK so that the TEST Command can effectively check auth.
         self._sdk = sdk
-        self._sdk_factory = lambda: py42.sdk.from_local_account(base_url, auth[0], auth[1]) if not self._sdk else None
+        self._sdk_factory = (
+            lambda: py42.sdk.from_local_account(base_url, auth[0], auth[1])
+            if not self._sdk
+            else None
+        )
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
 
     def _get_sdk(self):
@@ -263,15 +267,18 @@ class Code42Client(BaseClient):
 
     def create_user(self, org_name, username, email):
         org_uid = self.get_org(org_name)["orgUid"]
-        return self._get_sdk().users.create_user(org_uid, username, email)
+        response = self._get_sdk().users.create_user(org_uid, username, email)
+        return json.loads(response.text)
 
     def block_user(self, username):
         user_id = self.get_user(username)["userId"]
-        return self._get_sdk().users.block(user_id)
+        self._get_sdk().users.block(user_id)
+        return user_id
 
     def deactivate_user(self, username):
         user_id = self.get_user(username)["userId"]
-        return self._get_sdk().users.deactivate(user_id)
+        self._get_sdk().users.deactivate(user_id)
+        return user_id
 
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
@@ -782,12 +789,10 @@ def securitydata_search_command(client, args):
             outputs_key_field="EventID",
             outputs=code42_security_data_context,
             readable_output=readable_outputs,
-            raw_response=file_events
+            raw_response=file_events,
         )
         file_results = CommandResults(
-            outputs_prefix="File",
-            outputs_key_field=None,
-            outputs=file_context,
+            outputs_prefix="File", outputs_key_field=None, outputs=file_context
         )
         return code42_results, file_results
 
@@ -796,15 +801,56 @@ def securitydata_search_command(client, args):
 
 
 def user_create_command(client, args):
-
+    org_name = args.get("orgname")
+    username = args.get("username")
+    email = args.get("email")
+    try:
+        res = client.create_user(org_name, username, email)
+        outputs = {"Username": res["username"], "UserID": res["userUid"], "Email": res["email"]}
+        readable_outputs = tableToMarkdown("Code42 User Created", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=res,
+        )
+    except Exception as e:
+        return_error(create_command_error_message(demisto.command(), e))
 
 
 def user_block_command(client, args):
-    pass
+    username = args.get("username")
+    try:
+        user_id = client.block_user(username)
+        outputs = {"UserID": user_id}
+        readable_outputs = tableToMarkdown("Code42 User Blocked", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
+    except Exception as e:
+        return_error(create_command_error_message(demisto.command(), e))
 
 
 def user_deactivate_command(client, args):
-    pass
+    username = args.get("username")
+    try:
+        user_id = client.deactivate_user(username)
+        outputs = {"UserID": user_id}
+        readable_outputs = tableToMarkdown("Code42 User Blocked", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
+    except Exception as e:
+        return_error(create_command_error_message(demisto.command(), e))
 
 
 """Fetching"""
@@ -868,7 +914,7 @@ class Code42SecurityIncidentFetcher(object):
             if remaining_incidents:
                 return (
                     self._last_run,
-                    remaining_incidents[:self._fetch_limit],
+                    remaining_incidents[: self._fetch_limit],
                     remaining_incidents[self._fetch_limit:],
                 )
 
@@ -980,6 +1026,9 @@ def main():
             "code42-highriskemployee-get-all": highriskemployee_get_all_command,
             "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
             "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+            "code42-user-create": user_create_command,
+            "code42-user-block": user_block_command,
+            "code42-user-deactivate": user_deactivate_command,
         }
         command = demisto.command()
         if command == "test-module":

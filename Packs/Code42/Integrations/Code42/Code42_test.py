@@ -869,7 +869,7 @@ MOCK_GET_ALL_ORGS_RESPONSE = """
         {
             "orgId": 9999,
             "orgUid": "890854247383109999",
-            "orgName": "Partner SaaS Cloud - Backup",
+            "orgName": "TestCortexOrg",
             "orgExtRef": null,
             "notes": null,
             "status": "Active",
@@ -1043,7 +1043,7 @@ MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 """
 
 
-CREATE_USER_RESPONSE = """
+MOCK_CREATE_USER_RESPONSE = """
 {
     "userId": 291999,
     "userUid": "960849588659999999",
@@ -1075,14 +1075,18 @@ CREATE_USER_RESPONSE = """
 
 _TEST_USER_ID = "123412341234123412"  # value found in GET_USER_RESPONSE
 _TEST_USERNAME = "user1@example.com"
+_TEST_ORG_NAME = "TestCortexOrg"
 
 
 @pytest.fixture
 def code42_sdk_mock(mocker):
     code42_mock = mocker.MagicMock(spec=SDKClient)
     get_user_response = create_mock_code42_sdk_response(mocker, MOCK_GET_USER_RESPONSE)
-    get_org_response =
+    get_org_response = create_mock_code42_sdk_response_generator(
+        mocker, [MOCK_GET_ALL_ORGS_RESPONSE]
+    )
     code42_mock.users.get_by_username.return_value = get_user_response
+    code42_mock.orgs.get_all.return_value = get_org_response
     return code42_mock
 
 
@@ -1105,7 +1109,9 @@ def code42_fetch_incidents_mock(code42_sdk_mock, mocker):
 
 @pytest.fixture
 def code42_users_mock(code42_sdk_mock, mocker):
-    create_user_response = mocker.
+    create_user_response = create_mock_code42_sdk_response(mocker, MOCK_CREATE_USER_RESPONSE)
+    code42_sdk_mock.users.create_user.return_value = create_user_response
+    return code42_sdk_mock
 
 
 def create_alerts_mock(c42_sdk_mock, mocker):
@@ -1157,7 +1163,7 @@ def create_mock_code42_sdk_response_generator(mocker, response_pages):
 
 
 def create_client(sdk):
-    return Code42Client(sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
+    return Code42Client(sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
 
 
 def get_empty_detectionlist_response(mocker, base_text):
@@ -1279,9 +1285,8 @@ def test_departingemployee_add_command(code42_sdk_mock):
     date = "2020-01-01"
     note = "Dummy note"
     cmd_res = departingemployee_add_command(
-        client,
-        {"username": _TEST_USERNAME, "departuredate": date, "note": note},
-     )
+        client, {"username": _TEST_USERNAME, "departuredate": date, "note": note}
+    )
     add_func = code42_sdk_mock.detectionlists.departing_employee.add
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
@@ -1423,7 +1428,7 @@ def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
     cmd_res = highriskemployee_get_all_command(client, {})
     expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
     assert cmd_res.outputs_key_field == "UserID"
-    assert  cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.raw_response == expected_response
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
     assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
@@ -1495,9 +1500,7 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     client = create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(
         client,
-        {
-            "risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"
-        },
+        {"risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"},
     )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
@@ -1539,22 +1542,38 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     )
 
 
-def test_user_create_command():
-    client = create_client(code42_sdk_mock)
+def test_user_create_command(code42_users_mock):
+    client = create_client(code42_users_mock)
     cmd_res = user_create_command(
         client,
-        {"orgid": "TEST_ORG_ID", "username": "new.user@example.com", "email": "new.user@example.com"}
+        {
+            "orgname": _TEST_ORG_NAME,
+            "username": "new.user@example.com",
+            "email": "new.user@example.com",
+        },
     )
+    assert cmd_res.outputs_prefix == "Code42.User"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == json.loads(MOCK_CREATE_USER_RESPONSE)
+    assert cmd_res.outputs["UserID"] == "960849588659999999"
+    assert cmd_res.outputs["Username"] == "new.user@example.com"
+    assert cmd_res.outputs["Email"] == "new.user@example.com"
 
 
-def test_user_block_command():
-    client = create_client(code42_sdk_mock)
+def test_user_block_command(code42_users_mock):
+    client = create_client(code42_users_mock)
     cmd_res = user_block_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
 
 
-def test_user_deactivate_command():
-    client = create_client(code42_sdk_mock)
+def test_user_deactivate_command(code42_users_mock):
+    client = create_client(code42_users_mock)
     cmd_res = user_deactivate_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
 
 
 def test_security_data_search_command(code42_file_events_mock):
@@ -1573,7 +1592,7 @@ def test_security_data_search_command(code42_file_events_mock):
         ("md5Checksum", "d41d8cd98f00b204e9800998ecf8427e"),
         ("osHostName", "DESKTOP-0001"),
         ("deviceUserName", "user3@example.com"),
-        ("exposure", "ApplicationRead")
+        ("exposure", "ApplicationRead"),
     ]
     expected_file_events = json.loads(MOCK_SECURITY_EVENT_RESPONSE)["fileEvents"]
 
