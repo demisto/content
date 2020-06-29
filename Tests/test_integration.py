@@ -888,9 +888,14 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         # give playbook time to run
         time.sleep(1)
 
-        # fetch status
-        playbook_state = __get_investigation_playbook_state(client, investigation_id, prints_manager,
-                                                            thread_index=thread_index)
+        try:
+            # fetch status
+            playbook_state = __get_investigation_playbook_state(client, investigation_id, prints_manager,
+                                                                thread_index=thread_index)
+        except demisto_client.demisto_api.rest.ApiException:
+            playbook_state = 'Pending'
+            client = demisto_client.configure(base_url=client.api_client.configuration.host,
+                                              api_key=client.api_client.configuration.api_key, verify_ssl=False)
 
         if playbook_state in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION):
             break

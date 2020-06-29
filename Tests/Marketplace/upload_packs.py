@@ -92,9 +92,10 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         os.mkdir(index_folder_path)
         return index_folder_path, index_blob
 
-    index_blob.cache_control = "no-cache"  # index zip should never be cached in the memory, should be updated version
-    index_blob.reload()
+    # index zip should never be cached in the memory, should be updated version
+    index_blob.cache_control = "no-cache,max-age=0"
     index_blob.download_to_filename(download_index_path)
+    index_blob.reload()
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
@@ -235,18 +236,8 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     """
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
-            'description': 'Master index for Demisto Content Packages',
-            'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
-            'landingPage': {
-                'sections': [
-                    'Trending',
-                    'Recommended by Demisto',
-                    'New',
-                    'Getting Started'
-                ]
-            },
             'packs': private_packs
         }
         json.dump(index, index_file, indent=4)
@@ -255,11 +246,9 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
 
-    index_blob.cache_control = "no-cache"  # disabling caching for index blob
-    if index_blob.exists():
-        index_blob.reload()
-
+    index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
     index_blob.upload_from_filename(index_zip_path)
+
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 

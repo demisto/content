@@ -1,5 +1,6 @@
 ## [Unreleased]
-Added checks to verify that the Rasterize integration is enabled before attempting to rasterize HTML-formatted emails, and before taking URL screenshots.
+- Added checks to verify that the Rasterize integration is enabled before attempting to rasterize HTML-formatted emails, and before taking URL screenshots.
+- Email headers will now show in phishing incident layouts.
 
 ## [20.5.2] - 2020-05-26
 -
