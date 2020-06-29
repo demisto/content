@@ -1148,8 +1148,8 @@ def test_map_to_file_context():
 
 def test_alert_get_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
-    _, _, res = alert_get_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
-    assert res["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
+    res = alert_get_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
+    assert res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
 
 
 def test_alert_resolve_command(code42_alerts_mock):
