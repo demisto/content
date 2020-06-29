@@ -697,7 +697,7 @@ class Pack(object):
                 if modified_file.a_path.startswith(PACKS_FOLDER):
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
 
-                    if modified_file_path_parts[1] and modified_file_path_parts == self._pack_name:
+                    if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
                         print(f"Detected modified files in {self._pack_name} pack")
                         task_status, pack_was_modified = True, True
                         return
