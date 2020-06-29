@@ -1298,7 +1298,7 @@ def get_conversation_by_name(conversation_name: str) -> dict:
             conversations.append(conversation)
         else:
             conversations = [conversation]
-        set_to_integration_context_with_retries({'conversations': conversations})
+        set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
     return conversation
 
