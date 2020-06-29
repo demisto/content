@@ -1629,8 +1629,6 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     conversations: list = []
     mirrors: list = []
     if integration_context:
-        if 'conversations' in integration_context:
-            conversations = json.loads(integration_context['conversations'])
         if 'mirrors' in integration_context:
             mirrors = json.loads(integration_context['mirrors'])
 
