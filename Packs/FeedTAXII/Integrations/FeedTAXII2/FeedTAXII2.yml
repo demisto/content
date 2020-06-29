@@ -62,6 +62,46 @@ configuration:
   name: credentials
   required: false
   type: 9
+- additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections"
+    command to get a valid value. If left empty, the instance will try to fetch from
+    all the collections in the given discovery service.
+  display: Collection Name To Fetch Indicators From
+  name: collection_to_fetch
+  required: false
+  type: 0
+- additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed for
+    every fetch. When disabled, fetch-indicators will try to fetch just the latest entries (since the last fetch).
+  display: Full Feed Fetch
+  name: fetch_full_feed
+  required: false
+  defaultvalue: 'true'
+  type: 8
+- additionalinfo: Limit the number of indicators that can be fetched for every fetch.
+    If this field is left empty, there will be no limit on the number of indicators
+    fetched.
+  display: Max Indicators Per Fetch (disabled for Full Feed Fetch)
+  hidden: false
+  name: limit
+  required: false
+  type: 0
+- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
+    unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
+  defaultvalue: 1 year
+  display: First Fetch Time
+  hidden: false
+  name: initial_interval
+  required: false
+  type: 0
+- additionalinfo: Set the number of stix object that will be requested with each taxii poll (http request).
+    A single fetch is made of several taxii polls. Changing this setting can help speed up fetches,
+    or fix issues on slower networks. Please note server restrictions may apply,
+    overriding and limiting the "requested limit".
+  display: Max STIX Objects Per Poll
+  defaultvalue: 100
+  hidden: false
+  name: limit_per_request
+  required: false
+  type: 0
 - additionalinfo: Choose how to handle complex observations. Two or more Observation
     Expressions MAY be combined using a complex observation operator such as "AND",
     "OR". e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`
@@ -74,36 +114,6 @@ configuration:
   - Skip indicators with more than a single observation
   required: false
   type: 15
-- additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections"
-    command to get a valid value. If left empty, the instance will try to fetch from
-    all the collections in the given discovery service.
-  display: Collection Name To Fetch Indicators From
-  name: collection_to_fetch
-  required: false
-  type: 0
-- additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed
-    every fetch. When disabled, fetch-indicators will try to fetch just the latest entries (since the last fetch).
-  display: Full Feed Fetch
-  name: fetch_full_feed
-  required: false
-  defaultvalue: 'true'
-  type: 8
-- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
-    unit> of type minute/hour/day. For example, 1 minute, 12 hour
-  defaultvalue: 1 year
-  display: First Fetch Time (disabled for Full Feed Fetch)
-  hidden: false
-  name: initial_interval
-  required: false
-  type: 0
-- additionalinfo: Limit the number of indicators that can be fetched for every fetch.
-    If this field is left empty, there will be no limit on the number of indicators
-    fetched.
-  display: Max Indicators Per Fetch (disabled for Full Feed Fetch)
-  hidden: false
-  name: limit
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

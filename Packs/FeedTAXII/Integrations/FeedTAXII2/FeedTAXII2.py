@@ -20,6 +20,8 @@ def try_parse_integer(
     """
     Tries to parse an integer, and if fails will throw DemistoException with given err_msg
     """
+    if not int_to_parse:
+        return int_to_parse
     try:
         res = int(int_to_parse)
     except (TypeError, ValueError):
@@ -30,17 +32,16 @@ def try_parse_integer(
 """ COMMAND FUNCTIONS """
 
 
-def module_test_command(client, initial_interval, limit, fetch_full_feed):
+def module_test_command(client, limit, fetch_full_feed):
     if client.collections:
+        if fetch_full_feed:
+            if limit and limit != -1:
+                return_error(
+                    "Configuration Error - Max Indicators Per Fetch is disabled when Full Feed Fetch is enabled"
+                )
         demisto.results("ok")
     else:
         return_error("Could not connect to server")
-    if fetch_full_feed:
-        err_msg = ""
-        if initial_interval:
-            err_msg += "Configuration Error - First Fetch Time is disabled when Full Feed Fetch is enabled\n"
-        if limit:
-            err_msg += "Configuration Error - Max Indicators Per Fetch is disabled when Full Feed Fetch is enabled\n"
 
 
 def fetch_indicators_command(
@@ -55,11 +56,14 @@ def fetch_indicators_command(
     :param fetch_full_feed: when set to true, will ignore last run, and try to fetch the entire feed
     :return: indicators in cortex TIM format
     """
-    added_after = None
     if initial_interval:
         initial_interval, _ = parse_date_range(
             initial_interval, date_format=TAXII_TIME_FORMAT
         )
+        added_after = initial_interval
+    else:
+        #
+        added_after = None
     if client.collection_to_fetch is None:
         # fetch all collections
         if client.collections is None:
@@ -68,6 +72,7 @@ def fetch_indicators_command(
         for collection in client.collections:
             client.collection_to_fetch = collection
             if not fetch_full_feed:
+                # update added_after when not full feed fetch
                 added_after = (
                     last_run_ctx[collection.id]
                     if collection.id in last_run_ctx
@@ -79,9 +84,10 @@ def fetch_indicators_command(
                 limit -= len(fetched_iocs)
                 if limit <= 0:
                     break
-            last_run_ctx[collection.id] = client.last_fetched_indicator__created
+            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
     else:
         if not fetch_full_feed:
+            # update added_after when not full feed fetch
             added_after = (
                 last_run_ctx[client.collection_to_fetch.id]
                 if client.collection_to_fetch.id in last_run_ctx
@@ -90,8 +96,8 @@ def fetch_indicators_command(
         indicators = client.build_iterator(limit, added_after)
         # in case no indicator was fetched
         last_run_ctx[client.collection_to_fetch.id] = (
-            client.last_fetched_indicator__created
-            if client.last_fetched_indicator__created
+            client.last_fetched_indicator__modified
+            if client.last_fetched_indicator__modified
             else added_after
         )
     return indicators, last_run_ctx
@@ -192,20 +198,21 @@ def main():
     initial_interval = params.get("initial_interval")
     fetch_full_feed = params.get("fetch_full_feed") or False
     limit = try_parse_integer(params.get("limit") or -1)
+    limit_per_request = try_parse_integer(params.get('limit_per_request'))
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
-
     try:
         client = Taxii2FeedClient(
-            url,
-            collection_to_fetch,
-            proxies,
-            verify_certificate,
-            skip_complex_mode,
-            username,
-            password,
-            feed_tags,
+            url=url,
+            collection_to_fetch=collection_to_fetch,
+            proxies=proxies,
+            verify=verify_certificate,
+            skip_complex_mode=skip_complex_mode,
+            username=username,
+            password=password,
+            tags=feed_tags,
+            limit_per_request=limit_per_request
         )
         client.initialise()
         commands = {
@@ -216,7 +223,7 @@ def main():
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
-            module_test_command(client, initial_interval, limit, fetch_full_feed)
+            module_test_command(client, limit, fetch_full_feed)
 
         elif demisto.command() == "fetch-indicators":
             if fetch_full_feed:

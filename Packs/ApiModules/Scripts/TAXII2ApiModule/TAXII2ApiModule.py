@@ -18,7 +18,7 @@ urllib3.disable_warnings()
 TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
 
-DFLT_LIMIT_PER_FETCH = 1000
+DFLT_LIMIT_PER_REQUEST = 100
 API_USERNAME = "_api_token_key"
 HEADER_USERNAME = "_header:"
 
@@ -72,6 +72,7 @@ class Taxii2FeedClient:
         password: Optional[str] = None,
         field_map: Optional[dict] = None,
         tags: Optional[list] = None,
+        limit_per_request: int = DFLT_LIMIT_PER_REQUEST
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -84,16 +85,19 @@ class Taxii2FeedClient:
         :param password: password used for basic authentication
         :param field_map: map used to create fields entry ({field_name: field_value})
         :param tags: custom tags to be added to the created indicator
+        :param limit_per_request: Limit the objects requested per poll request
         """
         self._conn = None
         self.server = None
         self.api_root = None
         self.collections = None
-        self.last_fetched_indicator__created = None
+        self.last_fetched_indicator__modified = None
 
-        self.base_url = url
         self.collection_to_fetch = collection_to_fetch
         self.skip_complex_mode = skip_complex_mode
+        self.limit_per_request = limit_per_request
+
+        self.base_url = url
         self.proxies = proxies
         self.verify = verify
 
@@ -266,7 +270,7 @@ class Taxii2FeedClient:
             indicators = self.parse_indicators_list(indicators_list)
             while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
-                envelope = self.poll_collection(page_size, envelope.get("next", ""))
+                envelope = self.collection_to_fetch.get_objects(limit=page_size, next=envelope.get("next", ""))
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")
                     obj_cnt += len(stix_objects)
@@ -309,8 +313,7 @@ class Taxii2FeedClient:
             envelope = get_objects(limit=page_size, added_after=added_after)
         return envelope
 
-    @staticmethod
-    def get_page_size(max_limit: int, cur_limit: int) -> int:
+    def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
         Get a page size given the limit on entries `max_limit` and the limit on the current poll
         :param max_limit: max amount of entries allowed overall
@@ -318,9 +321,9 @@ class Taxii2FeedClient:
         :return: page size
         """
         return (
-            min(DFLT_LIMIT_PER_FETCH, cur_limit)
+            min(self.limit_per_request, cur_limit)
             if max_limit > -1
-            else DFLT_LIMIT_PER_FETCH
+            else self.limit_per_request
         )
 
     @staticmethod
@@ -350,18 +353,18 @@ class Taxii2FeedClient:
         if indicators_objs:
             for indicator_obj in indicators_objs:
                 indicators.extend(self.parse_single_indicator(indicator_obj))
-                indicator_created_str = indicator_obj.get("created")
-                if self.last_fetched_indicator__created is None:
-                    self.last_fetched_indicator__created = indicator_created_str  # type: ignore[assignment]
+                indicator_modified_str = indicator_obj.get("modified")
+                if self.last_fetched_indicator__modified is None:
+                    self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
                 else:
                     last_datetime = self.created_time_to_datetime(
-                        self.last_fetched_indicator__created
+                        self.last_fetched_indicator__modified
                     )
                     indicator_created_datetime = self.created_time_to_datetime(
-                        indicator_created_str
+                        indicator_modified_str
                     )
                     if indicator_created_datetime > last_datetime:
-                        self.last_fetched_indicator__created = indicator_created_str
+                        self.last_fetched_indicator__modified = indicator_modified_str
         return indicators
 
     def parse_single_indicator(
