@@ -117,7 +117,7 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
             if reference:  # if there is a reference, get the relevant pivot
                 if reference.startswith('attack-pattern'):
                     field = 'external_references'
-                    field_type = 'mitreexternalreferences'  # TODO - choose name
+                    field_type = 'relatedindicators'  # TODO - choose name
                 elif reference.startswith('campaign'):
                     field = 'name'
                     field_type = 'campaign'

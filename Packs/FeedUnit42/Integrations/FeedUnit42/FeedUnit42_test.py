@@ -82,7 +82,7 @@ def test_fetch_indicators_with_mitre_external_reference(mocker):
     for indicator in indicators:
         indicator_fields = indicator.get('fields')
         if indicator_fields.get('indicatoridentification') == 'indicator--010bb9ad-5686-485d-97e5-93c2187e56ce':
-            assert indicator_fields.get('mitreexternalreferences') == [
+            assert indicator_fields.get('relatedindicators') == [
                 {'description': 'Ballenthin', 'source_name': 'FireEye WMI 2015', 'url': 'example.com'},
                 {'external_id': 'T1047', 'source_name': 'mitre-attack',
                  'url': 'https://attack.mitre.org/techniques/T1047'},
