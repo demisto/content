@@ -846,6 +846,7 @@ script:
                 outputs_prefix="Code42.SecurityData",
                 outputs_key_field="EventID",
                 outputs=code42_security_data_context,
+                readable_output=readable_outputs,
                 raw_response=file_events
             )
             file_results = CommandResults(
@@ -1013,7 +1014,7 @@ script:
         # Remove trailing slash to prevent wrong URL path to service
         verify_certificate = not demisto.params().get("insecure", False)
         proxy = demisto.params().get("proxy", False)
-        LOG(f"Command being called is {demisto.command()}")
+        LOG("Command being called is {0}.".format(demisto.command()))
         try:
             client = Code42Client(
                 base_url=base_url,
@@ -1066,7 +1067,7 @@ script:
 
         # Log exceptions
         except Exception as e:
-            return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+            return_error("Failed to execute {0} command. Error: {1}".format(demisto.command(), str(e)))
 
 
     if __name__ in ("__main__", "__builtin__", "builtins"):
