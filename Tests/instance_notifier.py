@@ -68,19 +68,21 @@ def test_instances(secret_conf_path, server, username, password):
                 c, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager,
                 validate_test=validate_test)
             if failure_message == 'No configuration':
-                print_warning("Warning: skipping {} as it exists in content-test-conf conf.json but not "
-                              "in content repo".format(integration_name))
+                prints_manager.add_print_job(
+                    "Warning: skipping {} as it exists in content-test-conf conf.json but not in content repo\n".format(
+                        integration_name), print_warning, 0)
                 continue
             if not instance_id:
-                print_error(
-                    'Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
+                prints_manager.add_print_job(
+                    'Failed to create instance of {} with message: {}\n'.format(integration_name, failure_message),
+                    print_error, 0)
                 failed_integrations.append("{} {} - devops comments: {}".format(
                     integration_name, product_description, devops_comments))
             else:
                 instance_ids.append(instance_id)
-                print('Create integration %s succeed' % (integration_name,))
+                prints_manager.add_print_job('Create integration {} succeed\n'.format(integration_name), print_color, 0,
+                                             message_color=LOG_COLORS.GREEN)
                 __delete_integrations_instances(c, instance_ids, prints_manager)
-
             prints_manager.execute_thread_prints(0)
 
     return failed_integrations, integrations_counter

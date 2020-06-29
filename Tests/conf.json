@@ -19,7 +19,8 @@
         },
         {
             "integrations": "MITRE ATT&CK",
-            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "URLhaus",
@@ -224,11 +225,6 @@
         {
             "integrations": "Lockpath KeyLight v2",
             "playbookID": "Keylight v2 - Test"
-        },
-        {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
         },
         {
             "integrations": "Azure Security Center v2",
@@ -1858,9 +1854,6 @@
             ]
         },
         {
-            "playbookID": "ReadPDFFile-Test"
-        },
-        {
             "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
@@ -2112,9 +2105,6 @@
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
-        },
-        {
-            "playbookID": "ExtractDomainFromEmailTest"
         },
         {
             "playbookID": "Account Enrichment - Generic v2 - Test",
@@ -2919,6 +2909,7 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "RecordedFutureFeed - Test": "Issue 18922",
+        "Recorded Future Test": "Quota issues",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
@@ -2985,11 +2976,9 @@
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
         "ExtraHop v2": "No instance",
-        "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "Silverfort": "contribution",
-        "Nozomi_Guardian": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
@@ -3059,6 +3048,7 @@
 
 
          "_comment5": "~~~ OTHER ~~~",
+        "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
@@ -3166,6 +3156,49 @@
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK"
     },
+    "parallel_integrations": [
+        "Whois",
+        "Rasterize",
+        "CVE Search v2",
+        "VulnDB",
+        "VirusTotal",
+        "CheckPhish",
+        "Tanium",
+        "LogRhythmRest",
+        "ipinfo",
+        "Demisto REST API",
+        "syslog",
+        "ElasticsearchFeed",
+        "MITRE ATT&CK",
+        "Microsoft Intune Feed",
+        "JSON Feed",
+        "Plain Text Feed",
+        "Fastly Feed",
+        "Malware Domain List Active IPs Feed",
+        "Blocklist_de Feed",
+        "Cloudflare Feed",
+        "AzureFeed",
+        "SpamhausFeed",
+        "Cofense Feed",
+        "Bambenek Consulting Feed",
+        "AWS Feed",
+        "CSVFeed",
+        "ProofpointFeed",
+        "abuse.ch SSL Blacklist Feed",
+        "TAXIIFeed",
+        "Office 365 Feed",
+        "AutoFocus Feed",
+        "Recorded Future Feed",
+        "DShield Feed",
+        "AlienVault Reputation Feed",
+        "BruteForceBlocker Feed",
+        "Feodo Tracker Hashes Feed",
+        "Feodo Tracker IP Blocklist Feed",
+        "Feodo Tracker IP Blocklist Feed",
+        "AlienVault OTX TAXII Feed",
+        "Prisma Access Egress IP feed",
+        "GCP Whitelist Feed"
+    ],
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
