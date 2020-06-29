@@ -349,7 +349,6 @@ class TestChangelogCreation:
         assert not_updated_build is False
 
     def test_prepare_release_notes_upgrade_version_dup(self, mocker, dummy_pack):
-        # TODO When we move to not overriding packs in the build, we will need to change result returned.
         """
            Given:
                - Valid new version and valid current changelog found in index with existing version.
@@ -399,6 +398,44 @@ This is visible
 '''
         clean_rn = Pack._clean_release_notes(original_rn)
         assert expected_rn == clean_rn
+
+    def test_create_changelog_entry_new(self):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - new changelog entry must created
+           Then:
+               - return changelog entry with release notes and without R letter in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
+                                                         version_display_name=version_display_name,
+                                                         build_number=build_number, new_version=True)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
+
+    def test_create_changelog_entry_existing(self):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - changelog entry already exists
+           Then:
+               - return changelog entry with release notes and R letter appended in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
+                                                         version_display_name=version_display_name,
+                                                         build_number=build_number, new_version=False)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
 
 
 class TestImagesUpload:
