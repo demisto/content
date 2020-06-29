@@ -725,11 +725,11 @@ def _stringify_lists_if_needed(event):
         event["sharedWith"] = str(shared_list)
     if private_ip_addresses:
         event["privateIpAddresses"] = str(private_ip_addresses)
+    return event
 
 
 def _process_event_from_observation(event):
-    _stringify_lists_if_needed(event)
-    return event
+    return _stringify_lists_if_needed(event)
 
 
 class Code42SecurityIncidentFetcher(object):
@@ -795,7 +795,7 @@ class Code42SecurityIncidentFetcher(object):
     def _create_incident_from_alert(self, alert):
         details = self._client.get_alert_details(alert["id"])
         incident = _create_incident_from_alert_details(details)
-        self._relate_files_to_alert(details)
+        details = self._relate_files_to_alert(details)
         incident["rawJSON"] = json.dumps(details)
         return incident
 
@@ -807,6 +807,7 @@ class Code42SecurityIncidentFetcher(object):
         for obs in observations:
             file_events = self._get_file_events_from_alert_details(obs, alert_details)
             alert_details["fileevents"] = [_process_event_from_observation(e) for e in file_events]
+        return alert_details
 
     def _get_file_events_from_alert_details(self, observation, alert_details):
         security_data_query = map_observation_to_security_query(observation, alert_details["actor"])
@@ -857,7 +858,7 @@ def main():
     # Remove trailing slash to prevent wrong URL path to service
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
-    LOG(f"Command being called is {demisto.command()}")
+    LOG("Command being called is {0}.".format(demisto.command()))
     try:
         client = Code42Client(
             base_url=base_url,
@@ -905,7 +906,7 @@ def main():
             return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error("Failed to execute {0} command. Error: {1}".format(demisto.command(), str(e)))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
