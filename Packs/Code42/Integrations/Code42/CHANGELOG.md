@@ -9,6 +9,10 @@ Added new commands:
     - **code42-highriskemployee-remove-risk-tags** that takes a username and risk tags and disassociates the risk tags from the user.
 Improve error messages for all Commands to include exception detail.
 
+`Code42.DepartingEmployee.UserID` output added.
+
+`Code42.DepartingEmployee.CaseID` output removed. Use `Code42.DepartingEmployee.UserID`.
+
 ## [20.3.3] - 2020-03-18
 #### New Integration
 Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
