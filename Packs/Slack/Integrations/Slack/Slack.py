@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
 import slack
+import urllib3
 from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
 
@@ -18,7 +19,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 # disable unsecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 

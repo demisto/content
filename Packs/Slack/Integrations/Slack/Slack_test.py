@@ -1,14 +1,13 @@
-import json
+import asyncio
+import datetime
+import json as js
+import threading
+
+import pytest
+import slack
 
 import demistomock as demisto
 from CommonServerPython import *
-import slack
-import pytest
-import asyncio
-import threading
-
-import json as js
-import datetime
 
 USERS = '''[{
     "id": "U012A3CDE",
