@@ -174,7 +174,6 @@ def create_indicator(entity: str, entity_type: str,
                                               dbot_vendor, dbot_score,
                                               dbot_description))
     elif entity_type == 'file':
-        entity = entity
         dbot_obj = Common.DBotScore(entity, DBotScoreType.FILE,
                                     dbot_vendor, dbot_score,
                                     dbot_description)
