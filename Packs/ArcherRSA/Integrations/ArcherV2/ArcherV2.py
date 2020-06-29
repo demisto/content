@@ -206,11 +206,11 @@ class Client(BaseClient):
         self.domain = domain
         super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, **kwargs)
 
-    def do_request(self, method, url_suffix, data=None):
+    def do_request(self, method, url_suffix, data=None, params=None):
         if not REQUEST_HEADERS.get('Authorization'):
             self.update_session()
 
-        res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
+        res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
                                  resp_type='response', ok_codes=(200, 401))
 
         if res.status_code == 401:
@@ -472,12 +472,14 @@ def test_module(client: Client) -> str:
 
 def search_applications_command(client: Client, args: Dict[str, str]):
     app_id = args.get('application-id')
+    limit = int(args.get('limit'))
     endpoint_url = 'rsaarcher/api/core/system/application/'
 
     if app_id:
         endpoint_url = f'rsaarcher/api/core/system/application/{app_id}'
-
-    res = client.do_request('GET', endpoint_url)
+        res = client.do_request('GET', endpoint_url)
+    elif limit:
+        res = client.do_request('GET', endpoint_url, params={"$top": limit})
 
     errors = get_errors_from_res(res)
     if errors:
