@@ -105,6 +105,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GoogleKubernetesEngine",
+            "playbookID": "GoogleKubernetesEngine_Test",
+            "timeout": 1200,
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -165,6 +171,11 @@
             "integrations": "AWS Feed",
             "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "QuestKace",
+            "playbookID": "QuestKace test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Digital Defense FrontlineVM",
@@ -1525,6 +1536,11 @@
             "playbookID": "test-ThreatConnect"
         },
         {
+            "integrations": "ThreatConnect v2",
+            "playbookID": "ThreatConnect v2 - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
             "nightly": true
@@ -2233,7 +2249,8 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
+            "playbookID": "RasterizeImageTest",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Ipstack",
@@ -2764,15 +2781,25 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Azure AD Connect Health Feed",
+            "playbookID": "FeedAzureADConnectHealth_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Zoom Feed",
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Workday",
+            "playbookID": "Workday - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
+        "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
-        "Test - Cofense Intelligence": "Issue 25498",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
         "SignalSciences-Test": "Issue 24934",
@@ -2801,6 +2828,7 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "RecordedFutureFeed - Test": "Issue 18922",
+        "Recorded Future Test": "Quota issues",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
@@ -2816,6 +2844,7 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
+        "Cortex XDR - IOC - Test": "issue #25598",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
@@ -2866,7 +2895,6 @@
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
         "ExtraHop v2": "No instance",
-        "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "Silverfort": "contribution",
@@ -2949,6 +2977,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
+        "ThreatConnect": "Deprecated.",
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR"
     },
@@ -3042,7 +3071,8 @@
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
-        "MongoDB Key Value Store": "Our instance not using SSL"
+        "MongoDB Key Value Store": "Our instance not using SSL",
+        "GoogleKubernetesEngine": "SDK"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
@@ -3054,6 +3084,9 @@
                 "memory_threshold": 150
             },
             "demisto/pytan": {
+                "pid_threshold": 11
+            },
+            "demisto/google-k8s-engine:1.0.0.9467": {
                 "pid_threshold": 11
             }
         }
