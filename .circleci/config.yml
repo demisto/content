@@ -652,9 +652,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ]  || [ -n "${CONTRIB_BRANCH}" ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or on contributor branch"
+                echo "Skipping - not running in INSTANCE_TESTS build and unit-tests container"
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
