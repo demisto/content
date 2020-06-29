@@ -1478,8 +1478,14 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
 
 def test_security_data_search_command(code42_file_events_mock):
     client = create_client(code42_file_events_mock)
-    _, outputs, res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
-    outputs_list = outputs["Code42.SecurityData(val.EventID && val.EventID == obj.EventID)"]
+    cmd_res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
+    code42_res = cmd_res[0]
+    file_res = cmd_res[1]
+
+    assert code42_res.outputs_prefix == "Code42.SecurityData"
+    assert code42_res.outputs_key_field == "EventID"
+    assert file_res.outputs_prefix == "File"
+
     actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
     filter_groups = json.loads(str(actual_query))["groups"]
     expected_query_items = [
@@ -1497,13 +1503,13 @@ def test_security_data_search_command(code42_file_events_mock):
         assert _filter["term"] == expected_query_items[i][0]
         assert _filter["value"] == expected_query_items[i][1]
 
-    assert len(res) == len(outputs_list) == 3
-    assert res == expected_file_events
+    assert len(code42_res.raw_response) == len(code42_res.outputs) == 3
+    assert code42_res.raw_response == expected_file_events
 
     # Assert that the Outputs are mapped from the file events.
     for i in range(0, len(expected_file_events)):
         mapped_event = map_to_code42_event_context(expected_file_events[i])
-        output_item = outputs_list[i]
+        output_item = code42_res.outputs[i]
         assert output_item == mapped_event
 
 
