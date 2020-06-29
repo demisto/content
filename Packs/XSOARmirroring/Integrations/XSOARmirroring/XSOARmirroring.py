@@ -526,18 +526,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         arg_name='occurred',
         required=False
     )
-    # formatted_entries = []  todo: check how to get context
-    # formatted_entries.append({
-    #             'Type': EntryFormat.TEXT,
-    #             'Contents': "Testing",
-    #             'ContentsFormat': EntryFormat.TEXT,
-    #             'EntryContext': {"teste": "lkdfgjkldf"}
-    #         }
-    # )
 
     if (datetime.fromtimestamp(modified) - datetime.fromtimestamp(occurred) < timedelta(minutes=1)
             and datetime.fromtimestamp(last_update) - datetime.fromtimestamp(modified) < timedelta(minutes=1)):
-        last_update = occurred + 1  #todo check why does the last update time always goes up
+        last_update = occurred + 1  # in case we had new entries less than a minute after the incident creation
 
     entries = client.get_incident_entries(
         incident_id=incident_id,  # type: ignore
