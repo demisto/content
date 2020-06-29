@@ -3,7 +3,7 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g. https://www.rsa.com)
+- display: Server URL (e.g. https://192.168.0.1/rsaarcher/)
   name: url
   required: true
   type: 0
@@ -482,7 +482,7 @@ script:
     - contextPath: Archer.SearchByReport.Record
       description: The records found by the search.
       type: Unknown
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false
