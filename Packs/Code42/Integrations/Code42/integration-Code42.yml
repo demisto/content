@@ -260,12 +260,13 @@ script:
 
         def get_all_departing_employees(self, results):
             res = []
+            results = int(results) if results else None
             pages = self._get_sdk().detectionlists.departing_employee.get_all()
             for page in pages:
                 employees = page["items"]
                 for employee in employees:
                     res.append(employee)
-                    if len(res) == results:
+                    if results and len(res) == results:
                         return res
             return res
 
@@ -295,13 +296,14 @@ script:
 
         def get_all_high_risk_employees(self, risk_tags, results):
             risk_tags = _try_convert_str_list_to_list(risk_tags)
+            results = int(results) if results else None
             res = []
             pages = self._get_sdk().detectionlists.high_risk_employee.get_all()
             for page in pages:
                 employees = _get_all_high_risk_employees_from_page(page, risk_tags)
                 for employee in employees:
                     res.append(employee)
-                    if len(res) == results:
+                    if results and len(res) == results:
                         return res
             return res
 
@@ -722,7 +724,7 @@ script:
 
     def highriskemployee_get_all_command(client, args):
         tags = args.get("risktags")
-        results = args.get("results")
+        results = args.get("results") or 50
         try:
             employees = client.get_all_high_risk_employees(tags, results)
             employees_context = [
