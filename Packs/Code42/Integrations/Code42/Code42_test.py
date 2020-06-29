@@ -988,6 +988,36 @@ MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 """
 
 
+CREATE_USER_RESPONSE = """
+{
+    "userId": 291999,
+    "userUid": "960849588659999999",
+    "status": "Active",
+    "username": "new.user@example.com",
+    "email": "new.user@example.com",
+    "firstName": null,
+    "lastName": null,
+    "quotaInBytes": -1,
+    "orgId": 2689,
+    "orgUid": "890854247383106706",
+    "orgName": "New Users Org",
+    "userExtRef": null,
+    "notes": null,
+    "active": true,
+    "blocked": false,
+    "emailPromo": true,
+    "invited": true,
+    "orgType": "ENTERPRISE",
+    "usernameIsAnEmail": null,
+    "creationDate": "2020-06-29T19:23:04.285Z",
+    "modificationDate": "2020-06-29T19:23:04.306Z",
+    "passwordReset": false,
+    "localAuthenticationOnly": false,
+    "licenses": []
+}
+"""
+
+
 _TEST_USER_ID = "123412341234123412"  # value found in GET_USER_RESPONSE
 _TEST_USERNAME = "user1@example.com"
 
@@ -1097,11 +1127,11 @@ def test_client_lazily_inits_sdk(mocker):
     mocker.patch("py42.sdk.from_local_account")
 
     # test that sdk does not init during ctor
-    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=None)
+    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
     assert client._sdk is None
 
     # test that sdk init from first method call
-    client.get_user_id("Test")
+    client.get_user("Test")
     assert client._sdk is not None
 
 
@@ -1118,7 +1148,7 @@ def test_client_when_no_user_found_raises_exception(code42_sdk_mock):
     code42_sdk_mock.users.get_by_username.return_value = """{'totalCount': 0, 'users': []}"""
     client = create_client(code42_sdk_mock)
     with pytest.raises(Exception):
-        client.get_user_id("test@example.com")
+        client.get_user("test@example.com")
 
 
 def test_build_query_payload():

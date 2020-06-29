@@ -1,70 +1,87 @@
+category: Endpoint
 commonfields:
   id: Code42
   version: -1
-name: Code42
-display: Code42
-category: Endpoint
-description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 configuration:
-- display: Code42 Console URL for the pod your Code42 instance is running in
+- defaultvalue: console.us.code42.com
+  display: Code42 Console URL for the pod your Code42 instance is running in
   name: console_url
-  defaultvalue: console.us.code42.com
+  required: true
   type: 0
-  required: true
-- display: "Username"
+- display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
 - display: Alert severities to fetch when fetching incidents
   name: alert_severity
-  defaultvalue: ""
-  type: 16
-  required: false
   options:
   - High
   - Medium
   - Low
-- display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-  name: fetch_time
-  defaultvalue: 24 hours
-  type: 0
   required: false
-- display: Alerts to fetch per run; note that increasing this value may result in
+  type: 16
+- defaultvalue: 24 hours
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: Alerts to fetch per run; note that increasing this value may result in
     slow performance if too many results are returned at once
   name: fetch_limit
-  defaultvalue: "10"
+  required: false
   type: 0
-  required: false
-- display: Include the list of files in returned incidents.
+- defaultvalue: 'false'
+  display: Include the list of files in returned incidents.
   name: include_files
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
+description: Use the Code42 integration to identify potential data exfiltration from
+  insider threats while speeding investigation and response by providing fast access
+  to file events and metadata across physical and cloud environments.
+display: Code42
+name: Code42
 script:
-  script: ''
-  type: python
   commands:
-  - name: code42-securitydata-search
-    arguments:
-    - name: json
+  - arguments:
+    - default: false
       description: JSON query payload using Code42 query syntax.
-    - name: hash
+      isArray: false
+      name: json
+      required: false
+      secret: false
+    - default: false
       description: MD5 or SHA256 hash of the file to search for.
-    - name: username
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
       description: Username to search for.
-    - name: hostname
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
       description: Hostname to search for.
-    - name: exposure
-      auto: PREDEFINED
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Exposure types to search for. Can be "RemovableMedia", "ApplicationRead",
+        "CloudStorage", "IsPublic", "SharedViaLink", or "SharedViaDomain".
+      isArray: true
+      name: exposure
       predefined:
       - RemovableMedia
       - ApplicationRead
@@ -72,11 +89,23 @@ script:
       - IsPublic
       - SharedViaLink
       - SharedViaDomain
-      description: Exposure types to search for. Can be "RemovableMedia", "ApplicationRead", "CloudStorage", "IsPublic", "SharedViaLink", or "SharedViaDomain".
-      isArray: true
-    - name: results
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: The number of results to return. The default is 100.
-      defaultValue: "100"
+      isArray: false
+      name: results
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for a file in Security Data by JSON query, hash, username,
+      device hostname, exfiltration type, or a combination of parameters. At least
+      one argument must be passed in the command. If a JSON argument is passed, it
+      will be used to the exclusion of other parameters, otherwise parameters will
+      be combined with an AND clause.
+    execution: false
+    name: code42-securitydata-search
     outputs:
     - contextPath: Code42.SecurityData.EventTimestamp
       description: Timestamp for the event.
@@ -204,17 +233,18 @@ script:
     - contextPath: File.Hostname
       description: The hostname where the file event was captured.
       type: string
-    description: Searches for a file in Security Data by JSON query, hash, username,
-      device hostname, exfiltration type, or a combination of parameters. At least
-      one argument must be passed in the command. If a JSON argument is passed,
-      it will be used to the exclusion of other parameters, otherwise parameters will
-      be combined with an AND clause.
-  - name: code42-alert-get
-    arguments:
-    - name: id
+  - arguments:
+    - default: false
+      description: The alert ID to retrieve. Alert IDs are associated with alerts
+        that are fetched via fetch-incidents.
+      isArray: false
+      name: id
       required: true
-      description: The alert ID to retrieve. Alert IDs are associated with alerts that
-        are fetched via fetch-incidents.
+      secret: false
+    deprecated: false
+    description: Retrieve alert details by alert ID
+    execution: false
+    name: code42-alert-get
     outputs:
     - contextPath: Code42.SecurityAlert.Username
       description: The username associated with the alert.
@@ -240,59 +270,45 @@ script:
     - contextPath: Code42.SecurityAlert.Severity
       description: The severity of the alert.
       type: string
-    description: Retrieve alert details by alert ID
-  - name: code42-alert-resolve
-    arguments:
-    - name: id
-      required: true
+  - arguments:
+    - default: false
       description: The alert ID to resolve. Alert IDs are associated with alerts that
         are fetched via fetch-incidents.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Resolves a Code42 Security alert.
+    execution: false
+    name: code42-alert-resolve
     outputs:
     - contextPath: Code42.SecurityAlert.ID
       description: The alert ID of the resolved alert.
       type: string
-    description: Resolves a Code42 Security alert.
-  - name: code42-departingemployee-add
-    arguments:
-    - name: username
-      required: true
+  - arguments:
+    - default: false
       description: The username to add to the Departing Employee List.
-    - name: departuredate
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
       description: The departure date for the employee, in the format YYYY-MM-DD.
-    - name: note
+      isArray: false
+      name: departuredate
+      required: false
+      secret: false
+    - default: false
       description: Note to attach to the Departing Employee.
-    outputs:
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Note
-      description: Note associated with the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.DepartureDate
-      description: The departure date for the Departing Employee.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
     description: Adds a user to the Departing Employee List.
-  - name: code42-departingemployee-remove
-    arguments:
-    - name: username
-      required: true
-      description: The username to remove from the Departing Employee List.
-    outputs:
-    - contextPath: Code42.DepartingEmployee.UserID
-      description: Internal Code42 User ID for the Departing Employee.
-      type: string
-    - contextPath: Code42.DepartingEmployee.Username
-      description: The username of the Departing Employee.
-      type: string
-    description: Removes a user from the Departing Employee List.
-  - name: code42-departingemployee-get-all
-    arguments:
-    - name: results
-      description: The number of items to return.
-      defaultvalue: "50"
-      type: number
+    execution: false
+    name: code42-departingemployee-add
     outputs:
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -305,44 +321,66 @@ script:
       type: string
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
-    description: Get all employees on the Departing Employee List.
-  - name: code42-highriskemployee-add
-    arguments:
-    - name: username
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The username to remove from the Departing Employee List.
+      isArray: false
+      name: username
       required: true
-      description: The username to add to the High Risk Employee List.
-    - name: note
-      description: Note to attach to the High Risk Employee.
+      secret: false
+    deprecated: false
+    description: Removes a user from the Departing Employee List.
+    execution: false
+    name: code42-departingemployee-remove
     outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
       type: string
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
+    - contextPath: Code42.DepartingEmployee.Username
+      description: The username of the Departing Employee.
       type: string
-    - contextPath: Code42.HighRiskEmployee.Note
-      description: Note associated with the High Risk Employee.
-      type: string
-    description: Adds a user from the High Risk Employee List.
-  - name: code42-highriskemployee-remove
-    arguments:
-    - name: username
-      required: true
-      description: The username to remove from the High Risk Employee List.
-    outputs:
-    - contextPath: Code42.HighRiskEmployee.UserID
-      description: Internal Code42 User ID for the High Risk Employee.
-    - contextPath: Code42.HighRiskEmployee.Username
-      description: The username of the High Risk Employee.
-    description: Removes a user from the High Risk Employee List.
-  - name: code42-highriskemployee-get-all
-    arguments:
-    - name: risktags
-      description: To filter results by employees who have these risk tags. Space delimited.
-    - name: results
+  - arguments:
+    - default: false
       description: The number of items to return.
-      defaultvalue: 50
-      type: number
+      isArray: false
+      name: results
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all employees on the Departing Employee List.
+    execution: false
+    name: code42-departingemployee-get-all
+    outputs:
+    - contextPath: Code42.DepartingEmployee.UserID
+      description: Internal Code42 User ID for the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Username
+      description: The username of the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.Note
+      description: Note associated with the Departing Employee.
+      type: string
+    - contextPath: Code42.DepartingEmployee.DepartureDate
+      description: The departure date for the Departing Employee.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The username to add to the High Risk Employee List.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: Note to attach to the High Risk Employee.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a user from the High Risk Employee List.
+    execution: false
+    name: code42-highriskemployee-add
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
       description: Internal Code42 User ID for the High Risk Employee.
@@ -353,15 +391,68 @@ script:
     - contextPath: Code42.HighRiskEmployee.Note
       description: Note associated with the High Risk Employee.
       type: string
-    description: Get all employees on the High Risk Employee List.
-  - name: code42-highriskemployee-add-risk-tags
-    arguments:
-    - name: username
+  - arguments:
+    - default: false
+      description: The username to remove from the High Risk Employee List.
+      isArray: false
+      name: username
       required: true
+      secret: false
+    deprecated: false
+    description: Removes a user from the High Risk Employee List.
+    execution: false
+    name: code42-highriskemployee-remove
+    outputs:
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: Unknown
+    - contextPath: Code42.HighRiskEmployee.Username
       description: The username of the High Risk Employee.
-    - name: risktags
+      type: Unknown
+  - arguments:
+    - default: false
+      description: To filter results by employees who have these risk tags. Space
+        delimited.
+      isArray: false
+      name: risktags
+      required: false
+      secret: false
+    - default: false
+      description: The number of items to return.
+      isArray: false
+      name: results
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all employees on the High Risk Employee List.
+    execution: false
+    name: code42-highriskemployee-get-all
+    outputs:
+    - contextPath: Code42.HighRiskEmployee.UserID
+      description: Internal Code42 User ID for the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Username
+      description: The username of the High Risk Employee.
+      type: string
+    - contextPath: Code42.HighRiskEmployee.Note
+      description: Note associated with the High Risk Employee.
+      type: string
+  - arguments:
+    - default: false
+      description: The username of the High Risk Employee.
+      isArray: false
+      name: username
       required: true
+      secret: false
+    - default: false
       description: Space-delimited risk tags to associate with the High Risk Employee.
+      isArray: false
+      name: risktags
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: code42-highriskemployee-add-risk-tags
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -371,14 +462,23 @@ script:
       type: string
     - contextPath: Code42.HighRiskEmployee.RiskTags
       description: Risk tags to associate with the High Risk Employee.
-  - name: code42-highriskemployee-remove-risk-tags
-    arguments:
-    - name: username
-      required: true
+      type: Unknown
+  - arguments:
+    - default: false
       description: The username of the High Risk Employee.
-    - name: risktags
+      isArray: false
+      name: username
       required: true
+      secret: false
+    - default: false
       description: Space-delimited risk tags to disassociate from the High Risk Employee.
+      isArray: false
+      name: risktags
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: code42-highriskemployee-remove-risk-tags
     outputs:
     - contextPath: Code42.HighRiskEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -388,7 +488,78 @@ script:
       type: string
     - contextPath: Code42.HighRiskEmployee.RiskTags
       description: Risk tags to disassociate from the High Risk Employee.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the Code42 organization from which to add the user.
+      isArray: false
+      name: orgname
+      required: true
+      secret: false
+    - default: false
+      description: The username to give to the user.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      defaultValue: The email to give to the user.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a Code42 user.
+    execution: false
+    name: code42-user-create
+    outputs:
+    - contextPath: Code42.User.Username
+      description: A username for a Code42 user.
+      type: String
+    - contextPath: Code42.User.Email
+      description: An email for a Code42 user.
+      type: String
+    - contextPath: Code42.User.UserID
+      description: An ID for a Code42 user.
+      type: String
+  - arguments:
+    - default: false
+      description: The username of the user to block.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Blocks a user in Code42.  A blocked user is not allowed to log in
+      or restore files. Backups will continue if the user is still active.
+    execution: false
+    name: code42-user-block
+    outputs:
+    - contextPath: Code42.User.UserID
+      description: An ID for a Code42 user.
+      type: String
+  - arguments:
+    - default: false
+      description: The username of the user to deactivate.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    deprecated: false
+    description: Deactivate a user in Code42; signing them out of their devices. Backups
+      discontinue for a deactivated user, and their archives go to cold storage.
+    execution: false
+    name: code42-user-deactivate
+    outputs:
+    - contextPath: Code42.User.UserID
+      description: The ID of a Code42 User.
+      type: String
   dockerimage: demisto/py42:1.0.0.9242
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
+  type: python
