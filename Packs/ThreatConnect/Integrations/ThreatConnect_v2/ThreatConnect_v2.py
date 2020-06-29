@@ -563,7 +563,7 @@ def tc_indicator_get_tags(tc, owners, indicator_value, indicator_type):
 def tc_indicators_command():
     args = demisto.args()
     limit = int(args.get('limit', 500))
-    owners = args.get('owners')
+    owners = args.get('owner')
     ec, indicators, raw_response = tc_indicators(owners, limit)
 
     demisto.results({
