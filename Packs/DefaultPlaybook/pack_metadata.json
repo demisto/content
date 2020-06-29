@@ -13,7 +13,9 @@
     "tags": [
         "default"
     ],
-    "useCases": [],
+    "useCases": [
+        "Default"
+    ],
     "keywords": [],
     "dependencies": {
         "CommonPlaybooks": {
