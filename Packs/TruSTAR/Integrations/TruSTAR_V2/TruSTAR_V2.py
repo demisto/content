@@ -81,7 +81,6 @@ class ContextManager(object):
         )
         return dbot_score
 
-
     def _get_xsoar_file_indicator(self, ts_indicator, dbot_score):
         """
         Returns a Common.File object. Handles logic to create the object with
@@ -95,9 +94,8 @@ class ContextManager(object):
             key.lower(): value,
             'dbot_score': dbot_score
         }
-        xsoar_file_indicator = Common.File(**args)
+        xsoar_file_indicator = Common.File(**{k: v for k, v in args.items() if k})
         return xsoar_file_indicator
-
 
     def _get_xsoar_indicator(self, ts_indicator):
         """
@@ -110,37 +108,35 @@ class ContextManager(object):
 
         indicator_type = ts_indicator.get('indicatorType')
         if indicator_type == "CVE":
-            return Common.CVE(ts_indicator.get('value'), None, None, None, None) # Marked as mandatory positional args
+            return Common.CVE(ts_indicator.get('value'), None, None, None, None)  # Marked as mandatory positional args
 
         dbot_score = self._get_dbot_score(ts_indicator)
         if indicator_type in self.FILE_TYPES:
             return self._get_xsoar_file_indicator(ts_indicator, dbot_score)
-        
+
         XSOARIndicator = self.INDICATOR_TYPES.get(indicator_type)
         xsoar_indicator = XSOARIndicator(
             ts_indicator.get('value'),
             dbot_score=dbot_score
-        )
+        ) if XSOARIndicator is not None else None
         return xsoar_indicator
-
 
     def _remove_priority_level(self, indicator_dict):
         """  Removes priority level from indicator. It is a deprecated field """
         if indicator_dict.get('priorityLevel'):
             indicator_dict.pop('priorityLevel')
-        
+
         return indicator_dict
 
-
     def get_context(self, indicators, context='Indicator'):
-        """ 
+        """
         Handles logic to return an entry context with xsoar and non xsoar indicators
         on their corresponding contexts.
         """
         indicators = [self.convert_indicator_timestamps(d) for d in indicators]
         indicators = [self._remove_priority_level(d) for d in indicators]
         xsoar_indicators = [
-            self._get_xsoar_indicator(d) 
+            self._get_xsoar_indicator(d)
             for d in indicators
             if d.get('indicatorType') not in {'EMAIL_ADDRESS', 'REGISTRY_KEY', 'MALWARE', 'CIDR_BLOCK'}
         ]
@@ -156,54 +152,50 @@ class ContextManager(object):
         context['EntryContext'].update(standard_context)
         return context
 
-
-    def convert_indicator_timestamps(self, indicator): 
+    def convert_indicator_timestamps(self, indicator):
         """ Converts indicator timestamp fields. """
         d = {
-            t: Utils.normalize_time(indicator.get(t)) 
-            for t in  ['firstSeen', 'lastSeen']
+            t: Utils.normalize_time(indicator.get(t))
+            for t in ['firstSeen', 'lastSeen']
             if t in indicator.keys()
         }
         indicator.update(d)
         return indicator
-    
 
     def get_indicators_context(self, indicators, context='Indicators'):
-        ts_indicator_dicts = [ 
-            i.to_dict(remove_nones=True) 
-            for i in indicators 
+        ts_indicator_dicts = [
+            i.to_dict(remove_nones=True)
+            for i in indicators
         ]
-        
+
         return self.get_context(ts_indicator_dicts, context)
 
-
     def get_indicator_summaries_context(self, indicators, context='Indicators'):
-        ts_indicator_dicts = [ 
-            i.to_dict(remove_nones=True) 
-            for i in indicators 
+        ts_indicator_dicts = [
+            i.to_dict(remove_nones=True)
+            for i in indicators
         ]
 
         for d in ts_indicator_dicts:
-            d['indicatorType'] = d.pop('type') #Adding IndicatorType field
+            d['indicatorType'] = d.pop('type')  # Adding IndicatorType field
 
         return self.get_context(ts_indicator_dicts, context)
-
 
     def get_non_xsoar_standard_context(self, indicator_dicts):
         """
         Returns a standard context for those indicator types that can not be automated
-        with one of the 'Common' classes. Depending on the type of indicator, 
-        the data is put on the corresponding context. 
+        with one of the 'Common' classes. Depending on the type of indicator,
+        the data is put on the corresponding context.
         """
         emails = [
-            {'Address': i.get('value')} 
-            for i in indicator_dicts 
+            {'Address': i.get('value')}
+            for i in indicator_dicts
             if i.get('indicatorType') == "EMAIL_ADDRESS"
         ]
-        
+
         registries = [
-            {'Path': i.get('value')} 
-            for i in indicator_dicts 
+            {'Path': i.get('value')}
+            for i in indicator_dicts
             if i.get('indicatorType') == "REGISTRY_KEY"
         ]
         standard_ec = {}
@@ -214,13 +206,11 @@ class ContextManager(object):
 
         return standard_ec
 
-
     def translate_triage_submission(self, submissions):
         """ Returns Entry Contex for Phishing Submissions """
         submission_dicts = [s.to_dict(remove_nones=True) for s in submissions]
         ec = {'TruSTAR.PhishingSubmission(val.submissionId == obj.submissionId)': submission_dicts}
         return submission_dicts, ec
-
 
     def get_enclaves_ec(self, enclaves):
 
@@ -230,12 +220,10 @@ class ContextManager(object):
         }
         return context, ec
 
-
     def _get_report_context_fields(self, report):
         context_fields = ["id", "title", "reportBody"]
         fields = {k: v for k, v in report.items() if k in context_fields}
         return fields
-
 
     def get_reports_ec(self, reports):
         """ Returns entry context for Reports """
@@ -245,24 +233,24 @@ class ContextManager(object):
         }
         return ec
 
+# ## CLIENT ###
 
-    ### CLIENT ###
 
 class TrustarClient:
     """
-    Class wrapper of TruSTAR SDK. 
+    Class wrapper of TruSTAR SDK.
 
-    Interpretates a command and retrieves the correspondding data 
+    Interpretates a command and retrieves the correspondding data
     from TruSTAR to be shown on the war room and put on the corresponding
     context.
     """
 
     LIST_ARGS = [
-        "indicators", 
-        "values", 
-        "enclave_ids", 
-        "priority_event_score", 
-        "normalized_indicator_score", 
+        "indicators",
+        "values",
+        "enclave_ids",
+        "priority_event_score",
+        "normalized_indicator_score",
         "status",
         "tags",
         "exclueded_tags"
@@ -277,8 +265,8 @@ class TrustarClient:
     def _build_command_dict(self):
         command_dict = {
             'test-module': self.test_module,
-            'trustar-get-reports' : self.get_reports,
-            'trustar-get-enclaves' : self.get_enclaves,
+            'trustar-get-reports': self.get_reports,
+            'trustar-get-enclaves': self.get_enclaves,
             'trustar-related-indicators': self.get_related_indicators,
             'trustar-indicators-metadata': self.get_indicators_metadata,
             'trustar-indicator-summaries': self.get_indicator_summaries,
@@ -302,7 +290,6 @@ class TrustarClient:
         }
         return command_dict
 
-
     def get_entry(self, title='', contents=None, ec=None):
         """
         Returns Context dictionary
@@ -314,20 +301,19 @@ class TrustarClient:
             'ReadableContentsFormat': EntryFormat.MARKDOWN,
             'HumanReadable': tableToMarkdown(title, contents),
         }
-        if ec: 
-            entry['EntryContext'] = ec 
+        if ec:
+            entry['EntryContext'] = ec
 
         return entry
 
-
     def get_report_timestamps(self, report):
-        """ Given a report dictionary, it returns the timestamp fields 
-        on a dictionary. 
+        """ Given a report dictionary, it returns the timestamp fields
+        on a dictionary.
         """
-        d = { 
-            t: Utils.normalize_time(report[t]) 
-            for t in ['updated', 'created', 'timeBegan'] 
-            if report.get(t) 
+        d = {
+            t: Utils.normalize_time(report[t])
+            for t in ['updated', 'created', 'timeBegan']
+            if report.get(t)
         }
         return d
 
@@ -335,10 +321,9 @@ class TrustarClient:
         """ Returns report link on TruSTAR self.station. """
         return f'{self.station}/constellation/reports/{report_id}'
 
-
     def test_module(self):
         """Tests connectivity with TruSTAR"""
-        response = self.client.ping()
+        self.client.ping()
         return "ok"
 
     def search_indicators(self, search_term=None, enclave_ids=None, limit=None):
@@ -346,16 +331,16 @@ class TrustarClient:
         Searches for all indicators that contain the given search term.
 
         :param search_term: Term to be searched.
-        :param enclave_ids: list of enclaves to restrict the search to. 
+        :param enclave_ids: list of enclaves to restrict the search to.
         "param limit: Max number of entries to be returned.
 
         :return: Entry context with found indicators.
         """
         response = self.client.search_indicators_page(
-            search_term=search_term, 
-            enclave_ids=enclave_ids, 
+            search_term=search_term,
+            enclave_ids=enclave_ids,
             page_number=0,
-            page_size=limit, 
+            page_size=limit,
         )
 
         if not response:
@@ -364,13 +349,12 @@ class TrustarClient:
         results = self.context_manager.get_indicators_context(response)
         return results
 
-
-    def get_reports(self, 
-                    from_time=None, 
-                    to_time=None, 
-                    enclave_ids=None, 
-                    distribution_type=None, 
-                    tags=None, 
+    def get_reports(self,
+                    from_time=None,
+                    to_time=None,
+                    enclave_ids=None,
+                    distribution_type=None,
+                    tags=None,
                     excluded_tags=None):
         """
         Returns incident reports matching the specified filters.
@@ -378,7 +362,7 @@ class TrustarClient:
         :param from_time: Start of polling window.
         :param to_time: End of polling window.
         :param enclave_ids: List of user enclaves to restrict the query.
-        :param distribution_type: Whether to search for reports in the community, or only 
+        :param distribution_type: Whether to search for reports in the community, or only
         in enclaves.
         :param tags: a list of names of tags to filter by.
         :param excluded_tags: reports containing ANY of these tags will be excluded from the
@@ -390,20 +374,20 @@ class TrustarClient:
         from_time = Utils.date_to_unix(from_time) if from_time else from_time
         to_time = Utils.date_to_unix(to_time) if to_time else to_time
         response = self.client.get_reports_page(
-            is_enclave, 
-            enclave_ids, 
-            tags, 
-            excluded_tags, 
-            from_time, 
+            is_enclave,
+            enclave_ids,
+            tags,
+            excluded_tags,
+            from_time,
             to_time
         )
 
         if not response:
             return 'No reports were found.'
-        
+
         reports = []
         for report in response.items:
-            current_report= report.to_dict(remove_nones=True)
+            current_report = report.to_dict(remove_nones=True)
             current_report['reportDeepLink'] = self.get_report_deep_link(current_report.get("id"))
             current_report.update(self.get_report_timestamps(current_report))
             reports.append(current_report)
@@ -413,16 +397,13 @@ class TrustarClient:
         entry = self.get_entry(title, reports, ec)
         return entry
 
-
-
-    def submit_report(self, 
-                    title=None, 
-                    report_body=None, 
-                    enclave_ids=None, 
-                    external_url=None, 
-                    time_began=None, 
-                    distribution_type="ENCLAVE"):
-
+    def submit_report(self,
+                      title=None,
+                      report_body=None,
+                      enclave_ids=None,
+                      external_url=None,
+                      time_began=None,
+                      distribution_type="ENCLAVE"):
         """
         Submits a new report to TruSTAR self.station.
 
@@ -431,7 +412,7 @@ class TrustarClient:
         :param enclave_ids: Enclave IDs where to submit the report.
         :param external_url: External URL of the report.
         :param time_began: Incident time. Defaults to current time if not given.
-        :param distribution_type: Whether the report will be in the community, or only 
+        :param distribution_type: Whether the report will be in the community, or only
         in enclaves
 
         :return: Entry context with the submitted report.
@@ -449,14 +430,13 @@ class TrustarClient:
         )
 
         response = self.client.submit_report(ts_report)
-        report = ts_report.to_dict(remove_nones=True)  
+        report = ts_report.to_dict(remove_nones=True)
         report['reportDeepLink'] = self.get_report_deep_link(response.id)
         report['id'] = response.id
         ec = self.context_manager.get_reports_ec([report])
         title = 'TruSTAR report was successfully created'
         entry = self.get_entry(title, report, ec)
         return entry
-
 
     def delete_report(self, report_id=None, id_type=None):
         """
@@ -470,12 +450,11 @@ class TrustarClient:
         self.client.delete_report(report_id, id_type)
         return f'Report {report_id} was successfully deleted'
 
-
-    def get_correlated_reports(self, 
-                            indicators=None, 
-                            enclave_ids=None, 
-                            distribution_type=None, 
-                            limit=None):
+    def get_correlated_reports(self,
+                               indicators=None,
+                               enclave_ids=None,
+                               distribution_type=None,
+                               limit=None):
         """
         Returns a list of all reports that contain any of the provided
         indicator values.
@@ -483,19 +462,19 @@ class TrustarClient:
         :param indicators: indicators list to perform the query.
         :param enclave_ids: enclaves list to restrict the query.
         :param distribution_type: Distribution type of the report.
-        :param limit: Maximum value of report to be returned. 
+        :param limit: Maximum value of report to be returned.
 
         :return: Entry context with found reports.
         """
         response = self.client.get_correlated_reports_page(
-            indicators, 
-            enclave_ids, 
-            is_enclave=(distribution_type=="ENCLAVE"),
-            page_number=0, 
+            indicators,
+            enclave_ids,
+            is_enclave=(distribution_type == "ENCLAVE"),
+            page_number=0,
             page_size=limit
         )
-        
-        if not response: 
+
+        if not response:
             return 'No reports were found.'
 
         correlated_reports = []
@@ -503,12 +482,10 @@ class TrustarClient:
             current_report = report.to_dict(remove_nones=True)
             current_report.update(self.get_report_timestamps(current_report))
             correlated_reports.append(current_report)
-    
+
         title = 'TruSTAR correlated reports'
         entry = self.get_entry(title, correlated_reports)
         return entry
-
-
 
     def get_report_details(self, report_id=None, id_type=None):
         """
@@ -520,20 +497,19 @@ class TrustarClient:
         :return: Entry context with Report queried.
         """
         response = self.client.get_report_details(report_id, id_type)
-        if not response: 
+        if not response:
             return f"No details were found for report ID {report_id}"
-        
+
         current_report_dict = response.to_dict(remove_nones=True)
         id = current_report_dict.get("id")
-        current_report_dict.update(self.get_report_timestamps(current_report_dict))        
+        current_report_dict.update(self.get_report_timestamps(current_report_dict))
         current_report_dict['reportDeepLink'] = self.get_report_deep_link(id)
 
         ec = self.context_manager.get_reports_ec([current_report_dict])
-        
+
         title = f'TruSTAR report ID {report_id} details'
         entry = self.get_entry(title, current_report_dict, ec)
         return entry
-
 
     def update_report(self, **kwargs):
         """
@@ -559,12 +535,12 @@ class TrustarClient:
             kwargs["externalUrl"] = kwargs.pop('external_url')
 
         if kwargs.get('time_began'):
-            kwargs["timeBegan"] = kwargs.pop('time_began')        
+            kwargs["timeBegan"] = kwargs.pop('time_began')
 
         ts_report.update(kwargs)
         self.client.update_report(Report.from_dict(ts_report))
-        
-        ts_report.update(self.get_report_timestamps(ts_report))  
+
+        ts_report.update(self.get_report_timestamps(ts_report))
         ts_report['reportDeepLink'] = self.get_report_deep_link(report_id)
         ec = self.context_manager.get_reports_ec([ts_report])
 
@@ -572,12 +548,11 @@ class TrustarClient:
         entry = self.get_entry(title, ts_report, ec)
         return entry
 
-
     def get_enclaves(self):
         """
         Returns the list of all enclaves that the user has access to, as
         well as whether they can read, create, and update reports in that enclave.
-        
+
         :return: Entry context with list of enclaves
         """
         response = self.client.get_user_enclaves()
@@ -590,22 +565,21 @@ class TrustarClient:
         entry = self.get_entry(title, enclaves, ec)
         return entry
 
-
     def get_related_indicators(self, indicators=None, enclave_ids=None, limit=None):
-        """ 
-        Finds all reports that contain any of the given indicators 
+        """
+        Finds all reports that contain any of the given indicators
         and returns correlated indicators from those reports.
-        
+
         :param indicators: list of indicator values.
         :param enclave_ids: list of enclaves to filter found reports.
-        :param limit: Max num of related indicators to return. 
+        :param limit: Max num of related indicators to return.
 
         :return: Entry Context with related indicators.
         """
         related_indicator_response = self.client.get_related_indicators_page(
-            indicators=indicators, 
-            enclave_ids=enclave_ids, 
-            page_size=limit, 
+            indicators=indicators,
+            enclave_ids=enclave_ids,
+            page_size=limit,
             page_number=0
         )
 
@@ -615,25 +589,23 @@ class TrustarClient:
         results = self.context_manager.get_indicators_context(related_indicator_response.items)
         return results
 
-
     def get_trending_indicators(self, indicator_type=None, days_back=None):
         """
         Find indicators that are trending in the community.
-        
-        :param indicator_type: Types of indicators to be returned. If is equal to 'other', 
+
+        :param indicator_type: Types of indicators to be returned. If is equal to 'other',
         then all indicator types except for CVE and MALWARE will be returned.
         :param days_back: The number of days back to count correlations for.
-        
+
         """
         indicator_type = None if indicator_type == 'other' else indicator_type
         response = self.client.get_community_trends(indicator_type, days_back)
 
         if not response:
             return 'No trending indicators were found.'
-        
+
         results = self.context_manager.get_indicators_context(response)
         return results
-
 
     def search_reports(self, search_term=None, enclave_ids=None):
         """
@@ -660,7 +632,6 @@ class TrustarClient:
         entry = self.get_entry(title, reports, ec)
         return entry
 
-
     def add_to_whitelist(self, indicators=None):
         """
         Adds a list of indicators to the Company's whitelist.
@@ -674,7 +645,6 @@ class TrustarClient:
             return 'Indicator could not be added to the whitelist.'
 
         return f'{indicators} added to the whitelist successfully'
-
 
     def remove_from_whitelist(self, indicator=None, indicator_type=None):
         """
@@ -695,7 +665,6 @@ class TrustarClient:
         except Exception:
             return 'Indicator could not be removed from the whitelist.'
 
-
     def get_indicators_metadata(self, indicators=None, enclave_ids=None):
         """
         Provide metadata associated with a list of indicators. The metadata is determined based on the
@@ -712,26 +681,25 @@ class TrustarClient:
 
         if not response:
             return 'No indicators metadata were found.'
-        
+
         results = self.context_manager.get_indicators_context(response, "IndicatorsMetadata")
         return results
 
-
     def get_indicator_summaries(self, values=None, enclave_ids=None, limit=None):
         """
-        Provides structured summaries about indicators, which are derived from 
+        Provides structured summaries about indicators, which are derived from
         intelligence sources on the TruSTAR Marketplace.
-        
+
         :param values: list of indicator values to search on TruSTAR.
         :param enclave_ids: list of enclave_ids to restrict the query.
         :param limit: Maximum value of entries to return.
-        
+
         :return: Entry Context with indicator summaries.
         """
         response = self.client.get_indicator_summaries_page(
-            values, 
-            enclave_ids=enclave_ids, 
-            page_number=0, 
+            values,
+            enclave_ids=enclave_ids,
+            page_number=0,
             page_size=limit
         )
 
@@ -741,8 +709,6 @@ class TrustarClient:
         results = self.context_manager.get_indicator_summaries_context(response.items, "IndicatorSummaries")
         return results
 
-
-
     def move_report(self, report_id=None, dest_enclave_id=None):
         """
         Moves report from one user enclave to another.
@@ -750,11 +716,10 @@ class TrustarClient:
         :param report_id: Report ID.
         :dest_enclave_id: Enclave ID where the report will be moved.
 
-        :return: Success Message. 
+        :return: Success Message.
         """
         response = self.client.move_report(report_id=report_id, dest_enclave_id=dest_enclave_id)
         return f"{response} has been moved to enclave id: {dest_enclave_id}"
-
 
     def copy_report(self, report_id=None, dest_enclave_id=None):
         """
@@ -763,17 +728,16 @@ class TrustarClient:
         :param report_id: Report ID.
         :dest_enclave_id: Enclave ID where the report will be moved.
 
-        :return: Success Message. 
+        :return: Success Message.
         """
 
         response = self.client.copy_report(src_report_id=report_id, dest_enclave_id=dest_enclave_id)
         return f"{report_id} has been copied to enclave id: {dest_enclave_id} with id: {response}"
 
-
     def get_whitelist(self, limit=None):
         """
         Gets a list of indicators that the user’s company has whitelisted.
-        
+
         :param limit: Maximum number of whitelisted indicators to return.
         :return: Entry context with whitelisted indicators.
         """
@@ -781,10 +745,9 @@ class TrustarClient:
         response = self.client.get_whitelist_page(page_number=0, page_size=limit)
         if not response:
             return 'No Whitelist was found.'
-        
+
         results = self.context_manager.get_indicators_context(response.items, 'WhitelistedIndicators')
         return results
-
 
     def get_indicators_for_report(self, report_id=None, limit=None):
         """
@@ -797,8 +760,8 @@ class TrustarClient:
         """
 
         response = self.client.get_indicators_for_report_page(
-            report_id=report_id, 
-            page_number=0, 
+            report_id=report_id,
+            page_number=0,
             page_size=limit
         )
 
@@ -808,20 +771,19 @@ class TrustarClient:
         results = self.context_manager.get_indicators_context(response.items)
         return results
 
-
-    def get_all_phishing_indicators(self, 
-                                priority_event_score=None,
-                                normalized_indicator_score=None,
-                                from_time=None,
-                                to_time=None,
-                                status=None):
+    def get_all_phishing_indicators(self,
+                                    priority_event_score=None,
+                                    normalized_indicator_score=None,
+                                    from_time=None,
+                                    to_time=None,
+                                    status=None):
         """
         Get phishing indicators that match the given criteria.
 
         :param priority_event_score: A list with the scores to restrict the search to.
         :param normalized_indicator_score: A list with the scores to restrict the search to.
         :param from_time: Start of the polling window.
-        :param to_time: End of the polling window. 
+        :param to_time: End of the polling window.
         :param status: Status of the phishing indicatror.
 
         :return: Entry Context with Phishing Indicators found.
@@ -836,16 +798,15 @@ class TrustarClient:
         response = self.client.get_phishing_indicators_page(**args)
         if not response:
             return 'No phishing indicators were found.'
-        
+
         results = self.context_manager.get_indicators_context(response.items, 'PhishingIndicator')
         return results
 
-
-    def get_phishing_submissions(self, 
-                                priority_event_score=None,
-                                from_time=None,
-                                to_time=None,
-                                status=None):
+    def get_phishing_submissions(self,
+                                 priority_event_score=None,
+                                 from_time=None,
+                                 to_time=None,
+                                 status=None):
         """
         Fetches all phishing submissions that fit the given criteria.
 
@@ -871,7 +832,6 @@ class TrustarClient:
         entry = self.get_entry(title, submissions, ec)
         return entry
 
-
     def set_triage_status(self, submission_id=None, status=None):
         """
         Marks a phishing email submission with one of the phishing namespace.
@@ -888,21 +848,19 @@ class TrustarClient:
         except requests.exceptions.HTTPError as err:
             return str(err)
 
-
     def process(self, command, **kwargs):
         """
-        Processes the command that the user has selected. Retrieves the params and converts 
-        them to the methods params syntax. Then makes the call to the helper method of the 
+        Processes the command that the user has selected. Retrieves the params and converts
+        them to the methods params syntax. Then makes the call to the helper method of the
         corresponding command and return the results. It puts data on the corresponding context and
         it also shows the data on the War room.
         """
         func = self.command_dict.get(command)
-        args = { k.replace("-","_") : v for k, v in kwargs.items() }
-        list_args = {k: argToList(v) for k,v in args.items() if k in self.LIST_ARGS}
+        args = {k.replace("-", "_"): v for k, v in kwargs.items()}
+        list_args = {k: argToList(v) for k, v in args.items() if k in self.LIST_ARGS}
         args.update(list_args)
         result = func(**args)
         return return_results(result)
-
 
 
 def main():
