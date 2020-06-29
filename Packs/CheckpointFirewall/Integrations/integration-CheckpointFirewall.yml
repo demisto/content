@@ -928,10 +928,7 @@ script:
       type: string
     description: Block one or more IP addresses using Checkpoint Firewall
   - name: checkpoint
-    arguments:
-    - name: command
-      required: true
-      description: The command to execute.
+    arguments: []
     description: Use Check Point's Management API (requires management server R80
       or later). Specifying 'command'=<API command> is mandatory
   - name: checkpoint-delete-rule
