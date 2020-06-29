@@ -876,11 +876,11 @@ script:
             event["sharedWith"] = str(shared_list)
         if private_ip_addresses:
             event["privateIpAddresses"] = str(private_ip_addresses)
+        return event
 
 
     def _process_event_from_observation(event):
-        _stringify_lists_if_needed(event)
-        return event
+        return _stringify_lists_if_needed(event)
 
 
     class Code42SecurityIncidentFetcher(object):
@@ -946,7 +946,7 @@ script:
         def _create_incident_from_alert(self, alert):
             details = self._client.get_alert_details(alert["id"])
             incident = _create_incident_from_alert_details(details)
-            self._relate_files_to_alert(details)
+            details = self._relate_files_to_alert(details)
             incident["rawJSON"] = json.dumps(details)
             return incident
 
@@ -958,6 +958,7 @@ script:
             for obs in observations:
                 file_events = self._get_file_events_from_alert_details(obs, alert_details)
                 alert_details["fileevents"] = [_process_event_from_observation(e) for e in file_events]
+            return alert_details
 
         def _get_file_events_from_alert_details(self, observation, alert_details):
             security_data_query = map_observation_to_security_query(observation, alert_details["actor"])
