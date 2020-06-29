@@ -2,7 +2,6 @@ from CommonServerPython import *
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
 from taxii2client import v20, v21
 import json
-import copy
 
 with open('test_data/stix_envelope_no_indicators.json', 'r') as f:
     STIX_ENVELOPE_NO_IOCS = json.load(f)
@@ -307,8 +306,8 @@ class TestExtractIndicatorsAndParse:
         """
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
-        envelope_copy = copy.deepcopy(STIX_ENVELOPE_20_IOCS_19_OBJS)
-        actual = mock_client.extract_indicators_from_envelope_and_parse(envelope_copy)
+        envelope = STIX_ENVELOPE_20_IOCS_19_OBJS
+        actual = mock_client.extract_indicators_from_envelope_and_parse(envelope)
 
         assert len(actual) == 20
         assert actual == expected
@@ -330,8 +329,8 @@ class TestExtractIndicatorsAndParse:
         """
         expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, skip_complex_mode=True)
-        envelope_copy = copy.deepcopy(STIX_ENVELOPE_20_IOCS_19_OBJS)
-        actual = mock_client.extract_indicators_from_envelope_and_parse(envelope_copy)
+        envelope = STIX_ENVELOPE_20_IOCS_19_OBJS
+        actual = mock_client.extract_indicators_from_envelope_and_parse(envelope)
 
         assert len(actual) == 14
         assert actual == expected

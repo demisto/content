@@ -30,24 +30,36 @@ def try_parse_integer(
 """ COMMAND FUNCTIONS """
 
 
-def module_test_command(client):
+def module_test_command(client, initial_interval, limit, fetch_full_feed):
     if client.collections:
         demisto.results("ok")
     else:
         return_error("Could not connect to server")
+    if fetch_full_feed:
+        err_msg = ""
+        if initial_interval:
+            err_msg += "Configuration Error - First Fetch Time is disabled when Full Feed Fetch is enabled\n"
+        if limit:
+            err_msg += "Configuration Error - Max Indicators Per Fetch is disabled when Full Feed Fetch is enabled\n"
 
 
-def fetch_indicators_command(client, initial_interval, limit, last_run_ctx) -> Tuple[list, dict]:
+def fetch_indicators_command(
+    client, initial_interval, limit, last_run_ctx, fetch_full_feed: bool = False
+) -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
     :param initial_interval: initial interval in parse_date_range format
     :param limit: upper limit of indicators to fetch
     :param last_run_ctx: last run dict with {collection_id: last_run_time string}
+    :param fetch_full_feed: when set to true, will ignore last run, and try to fetch the entire feed
     :return: indicators in cortex TIM format
     """
+    added_after = None
     if initial_interval:
-        initial_interval, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
+        initial_interval, _ = parse_date_range(
+            initial_interval, date_format=TAXII_TIME_FORMAT
+        )
     if client.collection_to_fetch is None:
         # fetch all collections
         if client.collections is None:
@@ -55,23 +67,33 @@ def fetch_indicators_command(client, initial_interval, limit, last_run_ctx) -> T
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            added_after = last_run_ctx[collection.id] if collection.id in last_run_ctx else initial_interval
+            if not fetch_full_feed:
+                added_after = (
+                    last_run_ctx[collection.id]
+                    if collection.id in last_run_ctx
+                    else initial_interval
+                )
             fetched_iocs = client.build_iterator(limit, added_after)
             indicators.extend(fetched_iocs)
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
                     break
-            last_run_ctx[collection.id] = client.latest_fetched_indicator_created
+            last_run_ctx[collection.id] = client.last_fetched_indicator__created
     else:
-        added_after = last_run_ctx[client.collection_to_fetch.id] \
-            if client.collection_to_fetch.id in last_run_ctx \
-            else initial_interval
+        if not fetch_full_feed:
+            added_after = (
+                last_run_ctx[client.collection_to_fetch.id]
+                if client.collection_to_fetch.id in last_run_ctx
+                else initial_interval
+            )
         indicators = client.build_iterator(limit, added_after)
         # in case no indicator was fetched
-        last_run_ctx[client.collection_to_fetch.id] = client.latest_fetched_indicator_created \
-            if client.latest_fetched_indicator_created \
+        last_run_ctx[client.collection_to_fetch.id] = (
+            client.last_fetched_indicator__created
+            if client.last_fetched_indicator__created
             else added_after
+        )
     return indicators, last_run_ctx
 
 
@@ -162,15 +184,28 @@ def main():
     password = credentials.get("password")
     proxies = handle_proxy()
     verify_certificate = not params.get("insecure", False)
-    skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get("observation_operator_mode")
-    feed_tags = argToList(params.get('feedTags'))
+    skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get(
+        "observation_operator_mode"
+    )
+    feed_tags = argToList(params.get("feedTags"))
+
+    initial_interval = params.get("initial_interval")
+    fetch_full_feed = params.get("fetch_full_feed") or False
+    limit = try_parse_integer(params.get("limit") or -1)
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
 
     try:
         client = Taxii2FeedClient(
-            url, collection_to_fetch, proxies, verify_certificate, skip_complex_mode, username, password, feed_tags
+            url,
+            collection_to_fetch,
+            proxies,
+            verify_certificate,
+            skip_complex_mode,
+            username,
+            password,
+            feed_tags,
         )
         client.initialise()
         commands = {
@@ -181,14 +216,14 @@ def main():
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
-            module_test_command(client)
+            module_test_command(client, initial_interval, limit, fetch_full_feed)
 
         elif demisto.command() == "fetch-indicators":
-            initial_interval = params.get("initial_interval")
-            limit = try_parse_integer(params.get("limit") or -1)
+            if fetch_full_feed:
+                limit = -1
             integration_ctx = demisto.getIntegrationContext() or {}
             (indicators, integration_ctx) = fetch_indicators_command(
-                client, initial_interval, limit, integration_ctx
+                client, initial_interval, limit, integration_ctx, fetch_full_feed
             )
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)

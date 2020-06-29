@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 from typing import Union, Optional, List, Dict, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
 import re
+import copy
 import types
 import urllib3
 from taxii2client import v20, v21
@@ -61,16 +62,16 @@ STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
 
 class Taxii2FeedClient:
     def __init__(
-            self,
-            url: str,
-            collection_to_fetch,
-            proxies,
-            verify: bool,
-            skip_complex_mode: bool = False,
-            username: Optional[str] = None,
-            password: Optional[str] = None,
-            field_map: Optional[dict] = None,
-            tags: Optional[list] = None
+        self,
+        url: str,
+        collection_to_fetch,
+        proxies,
+        verify: bool,
+        skip_complex_mode: bool = False,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        field_map: Optional[dict] = None,
+        tags: Optional[list] = None,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -88,7 +89,7 @@ class Taxii2FeedClient:
         self.server = None
         self.api_root = None
         self.collections = None
-        self.latest_fetched_indicator_created = None
+        self.last_fetched_indicator__created = None
 
         self.base_url = url
         self.collection_to_fetch = collection_to_fetch
@@ -206,7 +207,7 @@ class Taxii2FeedClient:
         self.init_collection_to_fetch()
 
     def build_iterator(
-            self, limit: int = -1, added_after: str = None
+        self, limit: int = -1, added_after: str = None
     ) -> List[Dict[str, str]]:
         """
         Polls the taxii server and builds a list of cortex indicators objects from the result
@@ -230,7 +231,7 @@ class Taxii2FeedClient:
         return indicators
 
     def extract_indicators_from_envelope_and_parse(
-            self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
+        self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
     ) -> List[Dict[str, str]]:
         """
         Extract indicators from an 2.0 envelope generator, or 2.1 envelope (which then polls and repeats process)
@@ -269,7 +270,9 @@ class Taxii2FeedClient:
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")
                     obj_cnt += len(stix_objects)
-                    extracted_iocs = self.extract_indicators_from_stix_objects(stix_objects)
+                    extracted_iocs = self.extract_indicators_from_stix_objects(
+                        stix_objects
+                    )
                     parsed_iocs = self.parse_indicators_list(extracted_iocs)
                     indicators.extend(parsed_iocs)
 
@@ -290,7 +293,7 @@ class Taxii2FeedClient:
         return indicators
 
     def poll_collection(
-            self, page_size: int, added_after: Optional[str] = None
+        self, page_size: int, added_after: Optional[str] = None
     ) -> Union[types.GeneratorType, Dict[str, str]]:
         """
         Polls a taxii collection
@@ -322,7 +325,7 @@ class Taxii2FeedClient:
 
     @staticmethod
     def extract_indicators_from_stix_objects(
-            stix_objs: List[Dict[str, str]]
+        stix_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Extracts indicators from taxii objects
@@ -336,7 +339,7 @@ class Taxii2FeedClient:
         return indicators_objs
 
     def parse_indicators_list(
-            self, indicators_objs: List[Dict[str, str]]
+        self, indicators_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Parses a list of indicator objects, and updates the client.latest_fetched_indicator_created
@@ -348,17 +351,21 @@ class Taxii2FeedClient:
             for indicator_obj in indicators_objs:
                 indicators.extend(self.parse_single_indicator(indicator_obj))
                 indicator_created_str = indicator_obj.get("created")
-                if self.latest_fetched_indicator_created is None:
-                    self.latest_fetched_indicator_created = indicator_created_str  # type: ignore[assignment]
+                if self.last_fetched_indicator__created is None:
+                    self.last_fetched_indicator__created = indicator_created_str  # type: ignore[assignment]
                 else:
-                    last_datetime = self.created_time_to_datetime(self.latest_fetched_indicator_created)
-                    indicator_created_datetime = self.created_time_to_datetime(indicator_created_str)
+                    last_datetime = self.created_time_to_datetime(
+                        self.last_fetched_indicator__created
+                    )
+                    indicator_created_datetime = self.created_time_to_datetime(
+                        indicator_created_str
+                    )
                     if indicator_created_datetime > last_datetime:
-                        self.latest_fetched_indicator_created = indicator_created_str
+                        self.last_fetched_indicator__created = indicator_created_str
         return indicators
 
     def parse_single_indicator(
-            self, indicator_obj: Dict[str, str]
+        self, indicator_obj: Dict[str, str]
     ) -> List[Dict[str, str]]:
         """
         Parses a single indicator object
@@ -400,11 +407,11 @@ class Taxii2FeedClient:
         return indicators
 
     def get_indicators_from_indicator_groups(
-            self,
-            indicator_groups: List[Tuple[str, str]],
-            indicator_obj: Dict[str, str],
-            indicator_types: Dict[str, str],
-            field_map: Dict[str, str],
+        self,
+        indicator_groups: List[Tuple[str, str]],
+        indicator_obj: Dict[str, str],
+        indicator_types: Dict[str, str],
+        field_map: Dict[str, str],
     ) -> List[Dict[str, str]]:
         """
         Get indicators from indicator regex groups
@@ -432,8 +439,53 @@ class Taxii2FeedClient:
             return []
         return indicators
 
+    def create_indicator(self, indicator_obj, type_, value, field_map):
+        """
+        Create a cortex indicator from a stix indicator
+        :param indicator_obj: rawJSON value of the indicator
+        :param type_: cortex type of the indicator
+        :param value: indicator value
+        :param field_map: field map used for mapping fields ({field_name: field_value})
+        :return: Cortex indicator
+        """
+        ioc_obj_copy = copy.deepcopy(indicator_obj)
+        ioc_obj_copy["value"] = value
+        ioc_obj_copy["type"] = type_
+        indicator = {
+            "value": value,
+            "type": type_,
+            "rawJSON": ioc_obj_copy,
+        }
+        fields = {}
+        tags = list(self.tags)
+        # create tags from labels:
+        for label in ioc_obj_copy.get("labels", []):
+            tags.append(label)
+
+        # add description if able
+        if "description" in ioc_obj_copy:
+            fields["description"] = ioc_obj_copy["description"]
+
+        # add field_map fields
+        for field_name, field_path in field_map.items():
+            if field_path in ioc_obj_copy:
+                fields[field_name] = ioc_obj_copy.get(field_path)
+
+        # union of tags and labels
+        if "tags" in fields:
+            field_tag = fields.get("tags")
+            if isinstance(field_tag, list):
+                tags.extend(field_tag)
+            else:
+                tags.append(field_tag)
+
+        fields["tags"] = tags
+        indicator["fields"] = fields
+        return indicator
+
+    @staticmethod
     def extract_indicator_groups_from_pattern(
-            self, pattern: str, regexes: List
+        pattern: str, regexes: List
     ) -> List[Tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern
@@ -447,49 +499,6 @@ class Taxii2FeedClient:
             if find_result:
                 groups.extend(find_result)
         return groups
-
-    def create_indicator(self, indicator_obj, type_, value, field_map):
-        """
-        Create a cortex indicator from a stix indicator
-        :param indicator_obj: rawJSON value of the indicator
-        :param type_: cortex type of the indicator
-        :param value: indicator value
-        :param field_map: field map used for mapping fields ({field_name: field_value})
-        :return: Cortex indicator
-        """
-        indicator_obj["value"] = value
-        indicator_obj["type"] = type_
-        indicator = {
-            "value": value,
-            "type": type_,
-            "rawJSON": indicator_obj,
-        }
-        fields = {}
-        tags = list(self.tags)
-        # create tags from labels:
-        for label in indicator_obj.get("labels", []):
-            tags.append(label)
-
-        # add description if able
-        if "description" in indicator_obj:
-            fields['description'] = indicator_obj["description"]
-
-        # add field_map fields
-        for field_name, field_path in field_map.items():
-            if field_path in indicator_obj:
-                fields[field_name] = indicator_obj.get(field_path)
-
-        # union of tags and labels
-        if "tags" in fields:
-            field_tag = fields.get("tags")
-            if isinstance(field_tag, list):
-                tags.extend(field_tag)
-            else:
-                tags.append(field_tag)
-
-        fields["tags"] = tags
-        indicator["fields"] = fields
-        return indicator
 
     @staticmethod
     def created_time_to_datetime(s_time):

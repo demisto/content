@@ -25,7 +25,7 @@
       ],
       "pattern_version": "2.1",
       "spec_version": "2.1",
-      "value": "1.1.1.1"
+      "value": "195.123.227.186"
     },
     "fields": {
       "description": "TS ID: 55694549840; iType: bot_ip; Date First: 2020-06-05T08:42:19.170Z; State: active; Org: Layer6 Networks; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
@@ -95,7 +95,7 @@
       ],
       "pattern_version": "2.1",
       "spec_version": "2.1",
-      "value": "2.2.2.2"
+      "value": "134.209.37.102"
     },
     "fields": {
       "description": "TS ID: 55682983162; iType: bot_ip; Date First: 2020-06-02T07:26:06.274Z; State: active; Org: Covidien Lp; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
@@ -165,7 +165,7 @@
       ],
       "pattern_version": "2.1",
       "spec_version": "2.1",
-      "value": "3.3.3.3"
+      "value": "117.141.112.155"
     },
     "fields": {
       "description": "TS ID: 55694549819; iType: bot_ip; Date First: 2020-06-05T08:42:17.907Z; State: active; Org: China Mobile Guangdong; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",

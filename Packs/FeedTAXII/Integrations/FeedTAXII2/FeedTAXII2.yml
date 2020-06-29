@@ -81,10 +81,17 @@ configuration:
   name: collection_to_fetch
   required: false
   type: 0
+- additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed
+    every fetch. When disabled, fetch-indicators will try to fetch just the latest entries (since the last fetch).
+  display: Full Feed Fetch
+  name: fetch_full_feed
+  required: false
+  defaultvalue: 'true'
+  type: 8
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time
     unit> of type minute/hour/day. For example, 1 minute, 12 hour
   defaultvalue: 1 year
-  display: First Fetch Time
+  display: First Fetch Time (disabled for Full Feed Fetch)
   hidden: false
   name: initial_interval
   required: false
@@ -92,7 +99,7 @@ configuration:
 - additionalinfo: Limit the number of indicators that can be fetched for every fetch.
     If this field is left empty, there will be no limit on the number of indicators
     fetched.
-  display: Max Indicators Per Fetch
+  display: Max Indicators Per Fetch (disabled for Full Feed Fetch)
   hidden: false
   name: limit
   required: false
