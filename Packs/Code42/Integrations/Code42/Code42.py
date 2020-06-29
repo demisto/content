@@ -587,7 +587,9 @@ def departingemployee_add_command(client, args):
     note = args.get("note")
     try:
         user_id = client.add_user_to_departing_employee(username, departing_date, note)
+        # CaseID included but it deprecated.
         de_context = {
+            "CaseID": user_id,
             "UserID": user_id,
             "Username": username,
             "DepartureDate": departing_date,
@@ -610,7 +612,8 @@ def departingemployee_remove_command(client, args):
     username = args["username"]
     try:
         user_id = client.remove_user_from_departing_employee(username)
-        de_context = {"UserID": user_id, "Username": username}
+        # CaseID included but is deprecated.
+        de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
         readable_outputs = tableToMarkdown(
             "Code42 Departing Employee List User Removed", de_context
         )
@@ -778,6 +781,7 @@ def securitydata_search_command(client, args):
             outputs_prefix="Code42.SecurityData",
             outputs_key_field="EventID",
             outputs=code42_security_data_context,
+            readable_output=readable_outputs,
             raw_response=file_events
         )
         file_results = CommandResults(

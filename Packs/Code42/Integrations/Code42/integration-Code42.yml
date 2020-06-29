@@ -647,7 +647,9 @@ script:
         note = args.get("note")
         try:
             user_id = client.add_user_to_departing_employee(username, departing_date, note)
+            # CaseID included but it deprecated.
             de_context = {
+                "CaseID": user_id,
                 "UserID": user_id,
                 "Username": username,
                 "DepartureDate": departing_date,
@@ -671,7 +673,8 @@ script:
         username = args["username"]
         try:
             user_id = client.remove_user_from_departing_employee(username)
-            de_context = {"UserID": user_id, "Username": username}
+            # CaseID included but is deprecated.
+            de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
             readable_outputs = tableToMarkdown(
                 "Code42 Departing Employee List User Removed", de_context
             )
@@ -846,6 +849,7 @@ script:
                 outputs_prefix="Code42.SecurityData",
                 outputs_key_field="EventID",
                 outputs=code42_security_data_context,
+                readable_output=readable_outputs,
                 raw_response=file_events
             )
             file_results = CommandResults(
@@ -1013,7 +1017,7 @@ script:
         # Remove trailing slash to prevent wrong URL path to service
         verify_certificate = not demisto.params().get("insecure", False)
         proxy = demisto.params().get("proxy", False)
-        LOG(f"Command being called is {demisto.command()}")
+        LOG("Command being called is {0}.".format(demisto.command()))
         try:
             client = Code42Client(
                 base_url=base_url,
@@ -1066,7 +1070,7 @@ script:
 
         # Log exceptions
         except Exception as e:
-            return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+            return_error("Failed to execute {0} command. Error: {1}".format(demisto.command(), str(e)))
 
 
     if __name__ in ("__main__", "__builtin__", "builtins"):
@@ -1276,6 +1280,8 @@ script:
     - name: note
       description: Note to attach to the Departing Employee.
     outputs:
+    - contextPath: Code42.DepartingEmployee.CaseID
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
       type: string
@@ -1294,6 +1300,8 @@ script:
       required: true
       description: The username to remove from the Departing Employee List.
     outputs:
+    - contextPath: Code42.DepartingEmployee.CaseID
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
       type: string

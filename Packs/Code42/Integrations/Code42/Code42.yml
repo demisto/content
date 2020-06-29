@@ -310,6 +310,8 @@ script:
     execution: false
     name: code42-departingemployee-add
     outputs:
+    - contextPath: Code42.DepartingEmployee.CaseID
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
       type: string
@@ -334,6 +336,8 @@ script:
     execution: false
     name: code42-departingemployee-remove
     outputs:
+    - contextPath: Code42.DepartingEmployee.CaseID
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
       type: string
