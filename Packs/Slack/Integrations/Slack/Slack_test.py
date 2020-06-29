@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import json as js
 import threading
 
@@ -8,6 +7,8 @@ import slack
 
 import demistomock as demisto
 from CommonServerPython import *
+
+import datetime
 
 USERS = '''[{
     "id": "U012A3CDE",
