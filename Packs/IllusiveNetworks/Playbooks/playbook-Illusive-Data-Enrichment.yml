@@ -1,0 +1,870 @@
+id: Illusive-Data-Enrichment
+version: -1
+name: Illusive-Data-Enrichment
+description: This playbook is used for automatic enrichment of incidents in the organization
+  network, with Illusive’s set of forensics and data
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2adc21e6-056c-47ef-8ed7-79eeb7efd791
+    type: start
+    task:
+      id: 2adc21e6-056c-47ef-8ed7-79eeb7efd791
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4af1da4d-31f1-486a-86a1-c9acdaa57e04
+    type: regular
+    task:
+      id: 4af1da4d-31f1-486a-86a1-c9acdaa57e04
+      version: -1
+      name: illusive-get-incidents
+      description: Retrieve incidents
+      script: IllusiveNetworks|||illusive-get-incidents
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      has_forensics: {}
+      hostnames: {}
+      incident_id:
+        simple: ${inputs.illusive_incident_id}
+      limit: {}
+      offset: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4830af19-e92b-4742-8b67-3ebc2240cdb9
+    type: condition
+    task:
+      id: 4830af19-e92b-4742-8b67-3ebc2240cdb9
+      version: -1
+      name: 'Incident  has forensics? '
+      description: Check If incident has forensics
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.Incident.hasForensics
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2d311199-2ba2-40d3-80fc-32ec8ea954c4
+    type: regular
+    task:
+      id: 2d311199-2ba2-40d3-80fc-32ec8ea954c4
+      version: -1
+      name: illusive-get-incident-events
+      description: Retrieve all the events that are associated with an incident
+      script: IllusiveNetworks|||illusive-get-incident-events
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "18"
+      - "14"
+      - "20"
+      - "23"
+    scriptarguments:
+      incident_id:
+        simple: ${inputs.illusive_incident_id}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d7f62952-6dac-4e04-8787-4f43dce686ce
+    type: playbook
+    task:
+      id: d7f62952-6dac-4e04-8787-4f43dce686ce
+      version: -1
+      name: Illusive-Collect-Forensics-On-Demand
+      description: This playbook is used to collect forensics on-demand on any compromised
+        host and retrieve the forensics timeline upon successful collection.
+      playbookName: Illusive-Collect-Forensics-On-Demand
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      end_date: {}
+      'fqdn_or_ip ':
+        simple: ${inputs.fqdn_or_ip }
+      start_date: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 273c48a7-aedf-47bf-867b-1d394b1fdbd6
+    type: condition
+    task:
+      id: 273c48a7-aedf-47bf-867b-1d394b1fdbd6
+      version: -1
+      name: Check input - incident id
+      description: Check what input was inserted to playbook
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.illusive_incident_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 85395535-5466-4b22-8d60-d65aaea470ac
+    type: condition
+    task:
+      id: 85395535-5466-4b22-8d60-d65aaea470ac
+      version: -1
+      name: Input Validation
+      description: 'Check we get only one of the following inputs: illusive_incident_id
+        OR fqdn_or_ip'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.illusive_incident_id
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: 'inputs.fqdn_or_ip '
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.illusive_incident_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: 'inputs.fqdn_or_ip '
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 49e55a88-e0bf-49d0-8503-bfa1c28fe187
+    type: title
+    task:
+      id: 49e55a88-e0bf-49d0-8503-bfa1c28fe187
+      version: -1
+      name: Input Validation Error
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: c7438f03-5e66-4de3-8cd2-a2d812104e25
+    type: regular
+    task:
+      id: c7438f03-5e66-4de3-8cd2-a2d812104e25
+      version: -1
+      name: illusive-get-incidents
+      description: Retrieve incidents
+      script: IllusiveNetworks|||illusive-get-incidents
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "13"
+      - "22"
+      - "24"
+    scriptarguments:
+      has_forensics: {}
+      hostnames: {}
+      incident_id:
+        simple: ${Illusive.Forensics.IncidentId}
+      limit: {}
+      offset: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: d49ebba0-7c66-442d-8f3c-2fb677b96872
+    type: regular
+    task:
+      id: d49ebba0-7c66-442d-8f3c-2fb677b96872
+      version: -1
+      name: illusive-get-forensics-analyzers
+      description: Retrieve Illusive?s forensics analyzers on a certain event
+      script: IllusiveNetworks|||illusive-get-forensics-analyzers
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 810
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve Illusive’s forensics analyzers on a certain event
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 8452f5f2-1764-4071-8c3f-85bb1c43300b
+    type: regular
+    task:
+      id: 8452f5f2-1764-4071-8c3f-85bb1c43300b
+      version: -1
+      name: illusive-get-forensics-analyzers
+      description: Retrieve Illusive?s forensics analyzers on a certain event
+      script: IllusiveNetworks|||illusive-get-forensics-analyzers
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        complex:
+          root: Illusive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Illusive.Incident.Event.hasForensics
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Incident.Event.eventId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1120
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve Illusive’s forensics analyzers on a certain event
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 02494bf1-6d8d-4f0d-8a7a-a57cfde88e2b
+    type: playbook
+    task:
+      id: 02494bf1-6d8d-4f0d-8a7a-a57cfde88e2b
+      version: -1
+      name: Illusive-Collect-Forensics-On-Demand
+      description: This playbook is used to collect forensics on-demand on any compromised
+        host and retrieve the forensics timeline upon successful collection.
+      playbookName: Illusive-Collect-Forensics-On-Demand
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "21"
+      - "25"
+    scriptarguments:
+      end_date: {}
+      'fqdn_or_ip ':
+        simple: ${Illusive.Incident.sourceIp}
+      start_date: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: dfc57437-90a5-491f-85d8-7d1c3745e869
+    type: regular
+    task:
+      id: dfc57437-90a5-491f-85d8-7d1c3745e869
+      version: -1
+      name: illusive-get-forensics-timeline
+      description: Retrieve forensics timeline for a specific incident
+      script: IllusiveNetworks|||illusive-get-forensics-timeline
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      end_date: {}
+      incident_id:
+        simple: ${inputs.illusive_incident_id}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 930
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve forensics timeline for a specific incident
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: a31522df-ad9c-4e7f-8ded-8abc8001aa64
+    type: regular
+    task:
+      id: a31522df-ad9c-4e7f-8ded-8abc8001aa64
+      version: -1
+      name: illusive-get-forensics-analyzers
+      description: Retrieve Illusive?s forensics analyzers on a certain event
+      script: IllusiveNetworks|||illusive-get-forensics-analyzers
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 810
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve Illusive’s forensics analyzers on a certain event
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 481b323d-592c-4fd9-873d-ccd9ec52f57e
+    type: regular
+    task:
+      id: 481b323d-592c-4fd9-873d-ccd9ec52f57e
+      version: -1
+      name: illusive-get-forensics-triggering-process-info
+      description: Retrieve the triggering process information from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-triggering-process-info
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        complex:
+          root: Illusive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Illusive.Incident.Event.hasForensics
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Incident.Event.eventId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1300
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve the triggering process information from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 6795a7e6-0ff1-4afe-8ede-334eb4fba2fe
+    type: regular
+    task:
+      id: 6795a7e6-0ff1-4afe-8ede-334eb4fba2fe
+      version: -1
+      name: illusive-get-forensics-triggering-process-info
+      description: Retrieve the triggering process information from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-triggering-process-info
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 970
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve the triggering process information from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: d5351f79-ae8d-450d-8f5b-854d538ed18f
+    type: regular
+    task:
+      id: d5351f79-ae8d-450d-8f5b-854d538ed18f
+      version: -1
+      name: illusive-get-forensics-triggering-process-info
+      description: Retrieve the triggering process information from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-triggering-process-info
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 970
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve the triggering process information from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: afe46f86-0f41-4788-8734-cc44b9a53e5b
+    type: regular
+    task:
+      id: afe46f86-0f41-4788-8734-cc44b9a53e5b
+      version: -1
+      name: illusive-get-forensics-artifacts
+      description: Retrieve forensics artifacts from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-artifacts
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        complex:
+          root: Illusive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Illusive.Incident.Event.hasForensics
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Incident.Event.eventId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1460
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve forensics artifacts from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 74d7fca4-9021-4f39-876d-0337f58833e3
+    type: regular
+    task:
+      id: 74d7fca4-9021-4f39-876d-0337f58833e3
+      version: -1
+      name: illusive-get-forensics-artifacts
+      description: Retrieve forensics artifacts from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-artifacts
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 1140
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve forensics artifacts from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: b486821f-df56-483a-8892-5f46cd30c324
+    type: regular
+    task:
+      id: b486821f-df56-483a-8892-5f46cd30c324
+      version: -1
+      name: illusive-get-forensics-artifacts
+      description: Retrieve forensics artifacts from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-artifacts
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1140
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve forensics artifacts from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1825,
+        "width": 1410,
+        "x": -370,
+        "y": -270
+      }
+    }
+  }
+inputs:
+- key: illusive_incident_id
+  value:
+    simple: ${incident.illusivenetworksid}
+  required: false
+  description: |
+    Illusive incident ID
+  playbookInputQuery:
+- key: 'fqdn_or_ip '
+  value:
+    simple: ${incident.illusivenetworkshostname}
+  required: false
+  description: |
+    The endpoint's fqdn or IP address
+  playbookInputQuery:
+outputs:
+- contextPath: Illusive.Incident.incidentId
+  description: The Incident ID
+  type: number
+- contextPath: Illusive.Incident.sourceHostname
+  description: The compromised host's name
+  type: string
+- contextPath: Illusive.Incident.sourceIp
+  description: The compromised host's IP address
+  type: string
+- contextPath: Illusive.Incident.sourceOperatingSystem
+  description: The compromised host's operating system
+  type: string
+- contextPath: Illusive.Incident.lastSeenUser
+  description: The user who last reviewed the incident
+  type: string
+- contextPath: Illusive.Incident.deceptionFamilies
+  description: |-
+    The deception families of the
+    deceptions used to trigger
+    the incident
+  type: string
+- contextPath: Illusive.Incident.riskInsights.stepsToCrownJewel
+  description: The compromised host's lateral distance from Crown Jewels
+  type: number
+- contextPath: Illusive.Incident.riskInsights.stepsToDomainAdmin
+  description: The compromised host's lateral distance from domain admin accounts
+  type: number
+- contextPath: Illusive.Incident.eventsNumber
+  description: The number of associated events
+  type: number
+- contextPath: Illusive.Event.eventId
+  description: The corresponding event ID
+  type: number
+- contextPath: Illusive.Event.incidentId
+  description: The corresponding incident ID
+  type: number
+- contextPath: Illusive.Event.ForensicsAnalyzers
+  description: The forensics analyzer
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.commandLine
+  description: The triggering process command line
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.connectionsNum
+  description: The triggering process active connections
+  type: number
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.md5
+  description: The triggering process md5
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.sha256
+  description: The triggering process sha256
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.name
+  description: The triggering process name
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.parent
+  description: The parent process of the triggering process
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.path
+  description: The triggering process path
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.startTime
+  description: The triggering process start time
+  type: date
+- contextPath: Illusive.Incident.incidentTimeUTC
+  description: Date and time of the incident
+  type: date
+- contextPath: Illusive.Incident.closed
+  description: Whether the incident has been closed
+  type: boolean
+- contextPath: Illusive.Incident.flagged
+  description: Whether the incident has been flagged
+  type: boolean
+- contextPath: Illusive.Incident.hasForensics
+  description: Whether incident has forensics
+  type: boolean
+- contextPath: Illusive.Incident.incidentTypes
+  description: Type of events detected
+  type: string
+- contextPath: Illusive.Incident.policyName
+  description: The compromised host's policy
+  type: string
+- contextPath: Illusive.Incident.unread
+  description: Whether the incident has been read
+  type: boolean
+- contextPath: Illusive.Incident.userNotes
+  description: The analyst's comments
+  type: string
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,1482 @@
+id: Illusive-Incident-Escalation
+version: -1
+name: Illusive-Incident-Escalation
+description: This playbook is used for creating an automatic analysis of the Illusive’s
+  incident details, in order to end up with a certain score or a set of insights that
+  will enable automatic decisions and actions.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e9c6776c-ebe4-45e0-8e71-bf766b87ea5c
+    type: start
+    task:
+      id: e9c6776c-ebe4-45e0-8e71-bf766b87ea5c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1387feb6-8204-45e5-82c7-bd6ea08d45fd
+    type: condition
+    task:
+      id: 1387feb6-8204-45e5-82c7-bd6ea08d45fd
+      version: -1
+      name: Whether the proximity to a crown jewel is under a threshold
+      description: Check if the potentially compromised host is close to a crown jewel
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: IllusiveIncident.riskInsights.stepsToCrownJewel
+            iscontext: true
+          right:
+            value:
+              simple: inputs.proximity_threshold
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: IllusiveIncident.riskInsights.stepsToCrownJewel
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 35bf1327-efe3-44a5-8aea-c9a5327bc233
+    type: condition
+    task:
+      id: 35bf1327-efe3-44a5-8aea-c9a5327bc233
+      version: -1
+      name: Whether the number of associated events is above the threshold
+      description: Check if this incident has multiple associated events
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Illusive.Incident.eventsNumber
+            iscontext: true
+          right:
+            value:
+              simple: inputs.events_threshold
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b34b2b77-d01d-4728-88df-eea0cab3da44
+    type: condition
+    task:
+      id: b34b2b77-d01d-4728-88df-eea0cab3da44
+      version: -1
+      name: Whether the proximity to domain admin credentials is under a threshold
+      description: Check if the potentially compromised host is close to the credentials
+        of a domain admin
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "54"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: IllusiveIncident.riskInsights.stepsToDomainAdmin
+            iscontext: true
+          right:
+            value:
+              simple: inputs.proximity_threshold
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: IllusiveIncident.riskInsights.stepsToDomainAdmin
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ed1f6956-994e-41f9-802f-62dd8b19f2a7
+    type: condition
+    task:
+      id: ed1f6956-994e-41f9-802f-62dd8b19f2a7
+      version: -1
+      name: Whether the triggering process has been found malicious by VirusTotal
+      description: Check if a malicious triggering process has triggered this event
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IllusiveEvent.ForensicsAnalyzers.analyzerValue
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal analysed the process
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3aa1ab38-71f7-4adc-81f2-6a8b8d63c185
+    type: condition
+    task:
+      id: 3aa1ab38-71f7-4adc-81f2-6a8b8d63c185
+      version: -1
+      name: Whether there is a potential RDP connection
+      description: Check if an active RDP connection has been found on the potentially
+        compromised host
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: IllusiveEvent.ForensicsAnalyzers.analyzerName
+            iscontext: true
+          right:
+            value:
+              simple: Potentially Malicious RDP Connections
+    view: |-
+      {
+        "position": {
+          "x": -1110,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: c7862055-2f42-4feb-8a52-f5c96ac844ac
+    type: condition
+    task:
+      id: c7862055-2f42-4feb-8a52-f5c96ac844ac
+      version: -1
+      name: Weather the incident is a RANSOMWARE type
+      description: Check if a ransomware deception has triggered this event
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "63"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.Incident.incidentTypes
+            iscontext: true
+          right:
+            value:
+              simple: RANSOMWARE
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 605bdb80-bd81-4688-8d25-474847fa1b11
+    type: regular
+    task:
+      id: 605bdb80-bd81-4688-8d25-474847fa1b11
+      version: -1
+      name: Set Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: incident_score
+      stringify: {}
+      value:
+        simple: '{"name": "number_associated_events_above_threshold", "status": true,
+          "value":${inputs.events_weight}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 3b45efab-f84d-4346-80d4-ad954567ecf6
+    type: regular
+    task:
+      id: 3b45efab-f84d-4346-80d4-ad954567ecf6
+      version: -1
+      name: Set Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: incident_score
+      stringify: {}
+      value:
+        simple: '{"name": "number_associated_events_above_threshold", "status": false,
+          "value":${inputs.events_weight}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 9f5ca2ab-921b-4d45-89f0-ce5a7be83a9a
+    type: regular
+    task:
+      id: 9f5ca2ab-921b-4d45-89f0-ce5a7be83a9a
+      version: -1
+      name: Set Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: incident_score
+      stringify: {}
+      value:
+        simple: '{"name": "potential_RDP_connection", "status": true, "value":${inputs.rdp_weight}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1490,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: c9343636-a876-4a52-89d3-ac2afe3bc23d
+    type: regular
+    task:
+      id: c9343636-a876-4a52-89d3-ac2afe3bc23d
+      version: -1
+      name: Set Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: incident_score
+      stringify: {}
+      value:
+        simple: '{"name": "potential_RDP_connection", "status": false, "value":${inputs.rdp_weight}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: c6dfd163-e17a-4bd7-8380-4372efaa9758
+    type: regular
+    task:
+      id: c6dfd163-e17a-4bd7-8380-4372efaa9758
+      version: -1
+      name: Sum Incident Total Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.incidentScore
+      stringify: {}
+      value:
+        complex:
+          root: incident_score
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident_score.status
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: value
+          transformers:
+          - operator: SumList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: cab6a776-bf7d-4022-8df2-a6a5580344cc
+    type: regular
+    task:
+      id: cab6a776-bf7d-4022-8df2-a6a5580344cc
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 8db4b6dd-332d-49d6-8517-6f50f39510c3
+    type: regular
+    task:
+      id: 8db4b6dd-332d-49d6-8517-6f50f39510c3
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isActiveRdpConnection
+      stringify: {}
+      value:
+        complex:
+          root: incident_score
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident_score.name
+                iscontext: true
+              right:
+                value:
+                  simple: potential_RDP_connection
+          accessor: status
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 1d8e71c8-265c-4062-836c-6f01fedef088
+    type: regular
+    task:
+      id: 1d8e71c8-265c-4062-836c-6f01fedef088
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isMultipleEvents
+      stringify: {}
+      value:
+        complex:
+          root: incident_score
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident_score.name
+                iscontext: true
+              right:
+                value:
+                  simple: number_associated_events_above_threshold
+          accessor: status
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 2bf72761-0a50-41ae-85d1-547e9acb1953
+    type: regular
+    task:
+      id: 2bf72761-0a50-41ae-85d1-547e9acb1953
+      version: -1
+      name: illusive-get-incidents
+      description: Retrieve incidents
+      script: IllusiveNetworks|||illusive-get-incidents
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      has_forensics: {}
+      hostnames: {}
+      incident_id:
+        simple: ${inputs.illusive_incident_id}
+      limit: {}
+      offset: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: f2109be0-5927-49c1-847d-47eaefb34430
+    type: regular
+    task:
+      id: f2109be0-5927-49c1-847d-47eaefb34430
+      version: -1
+      name: illusive-get-incident-events
+      description: Retrieve all the events that are associated with an incident
+      script: IllusiveNetworks|||illusive-get-incident-events
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      incident_id:
+        simple: ${inputs.illusive_incident_id}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: bbfc137d-a846-438d-8df8-a2982ba0fc7f
+    type: regular
+    task:
+      id: bbfc137d-a846-438d-8df8-a2982ba0fc7f
+      version: -1
+      name: illusive-get-forensics-analyzers
+      description: Retrieve Illusive?s forensics analyzers on a certain event
+      script: IllusiveNetworks|||illusive-get-forensics-analyzers
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "2"
+      - "51"
+      - "52"
+      - "8"
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Incident.Event.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: df1fe539-c4f0-445b-8714-356730c222fe
+    type: regular
+    task:
+      id: df1fe539-c4f0-445b-8714-356730c222fe
+      version: -1
+      name: set IllusiveEvent
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IllusiveEvent
+      stringify: {}
+      value:
+        simple: ${Illusive.Event}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: c0f55310-d2ea-49f9-8def-0a378256eca5
+    type: regular
+    task:
+      id: c0f55310-d2ea-49f9-8def-0a378256eca5
+      version: -1
+      name: set IllusiveIncident
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IllusiveIncident
+      stringify: {}
+      value:
+        simple: ${Illusive.Incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 1ade72ef-a385-4656-85dc-a80aed3ecb30
+    type: regular
+    task:
+      id: 1ade72ef-a385-4656-85dc-a80aed3ecb30
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.incidentId
+      stringify: {}
+      value:
+        simple: ${inputs.illusive_incident_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 55c71814-746e-4236-89b0-8911720e633a
+    type: regular
+    task:
+      id: 55c71814-746e-4236-89b0-8911720e633a
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isCloseToAdminCredentials
+      stringify: {}
+      value:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: e346c616-1ee3-4d77-8414-eb80b7c02e34
+    type: regular
+    task:
+      id: e346c616-1ee3-4d77-8414-eb80b7c02e34
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isCloseToAdminCredentials
+      stringify: {}
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 74b17571-97e4-44ad-8ffe-95169d899a43
+    type: regular
+    task:
+      id: 74b17571-97e4-44ad-8ffe-95169d899a43
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isCloseToCrownJewel
+      stringify: {}
+      value:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 8f399692-efe5-46ea-8792-fa4b094ddacf
+    type: regular
+    task:
+      id: 8f399692-efe5-46ea-8792-fa4b094ddacf
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isCloseToCrownJewel
+      stringify: {}
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 137f3c1b-6197-4ab4-8160-221160307efd
+    type: condition
+    task:
+      id: 137f3c1b-6197-4ab4-8160-221160307efd
+      version: -1
+      name: Check proximity to high-risk assets
+      description: |-
+        Check if one of the following conditions is true:
+        the potentially compromised host is close to a crown jewel OR the credentials of a domain admin
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.IncidentEscalationPlaybook.isCloseToCrownJewel
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+        - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.IncidentEscalationPlaybook.isCloseToAdminCredentials
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: af94db2e-b2b3-43e7-8864-4faa6db1e56c
+    type: regular
+    task:
+      id: af94db2e-b2b3-43e7-8864-4faa6db1e56c
+      version: -1
+      name: Set Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: incident_score
+      stringify: {}
+      value:
+        simple: '{"name": "proximity_under_threshold", "status": true, "value":${inputs.proximity_weight}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 80cac6ab-b0fd-4ce2-8068-f687c3b3f6ee
+    type: regular
+    task:
+      id: 80cac6ab-b0fd-4ce2-8068-f687c3b3f6ee
+      version: -1
+      name: Set Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: incident_score
+      stringify: {}
+      value:
+        simple: '{"name": "proximity_under_threshold", "status": false, "value":${inputs.proximity_weight}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: f2841290-e495-4c2b-857c-bc94284b12f1
+    type: regular
+    task:
+      id: f2841290-e495-4c2b-857c-bc94284b12f1
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isTriggeringProcessMalicious
+      stringify: {}
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: dd988d7e-864e-44a9-8003-433c1d15f7ab
+    type: regular
+    task:
+      id: dd988d7e-864e-44a9-8003-433c1d15f7ab
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isTriggeringProcessMalicious
+      stringify: {}
+      value:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: c2378595-702b-4b77-8368-ce4a7fcd8c9b
+    type: regular
+    task:
+      id: c2378595-702b-4b77-8368-ce4a7fcd8c9b
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isRansomware
+      stringify: {}
+      value:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 22eb3e8f-e7fd-4d01-8563-ee1bd4bfada9
+    type: regular
+    task:
+      id: 22eb3e8f-e7fd-4d01-8563-ee1bd4bfada9
+      version: -1
+      name: Set Output
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Illusive.IncidentEscalationPlaybook.isRansomware
+      stringify: {}
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 2b302629-ef48-42ba-824e-3e3411cabeb9
+    type: condition
+    task:
+      id: 2b302629-ef48-42ba-824e-3e3411cabeb9
+      version: -1
+      name: Check triggering conditions for incident fidelity
+      description: |-
+        Check if one of the following conditions is true:
+        the event has been triggered by a ransomware deception OR a malicious triggering process
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.IncidentEscalationPlaybook.isRansomware
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+        - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.IncidentEscalationPlaybook.isTriggeringProcessMalicious
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: b0ee7642-7b2d-4a38-8f72-adf4f13d514d
+    type: regular
+    task:
+      id: b0ee7642-7b2d-4a38-8f72-adf4f13d514d
+      version: -1
+      name: Set Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: incident_score
+      stringify: {}
+      value:
+        simple: '{"name": "triggering", "status": false, "value":${inputs.triggering_weight}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: b653f456-2fa8-4116-8ea7-49d7b543b58e
+    type: regular
+    task:
+      id: b653f456-2fa8-4116-8ea7-49d7b543b58e
+      version: -1
+      name: Set Score
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: incident_score
+      stringify: {}
+      value:
+        simple: '{"name": "triggering", "status": true, "value":${inputs.triggering_weight}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2260,
+        "width": 3970,
+        "x": -1490,
+        "y": -600
+      }
+    }
+  }
+inputs:
+- key: proximity_threshold
+  value:
+    simple: "3"
+  required: false
+  description: The maximum number of steps from crown jewel, or domain admin credentials
+    to determine the proximity as high-risk
+  playbookInputQuery:
+- key: events_threshold
+  value:
+    simple: "1"
+  required: false
+  description: The minimum number of associated events to determine this incident
+    as a multiple-events incident
+  playbookInputQuery:
+- key: proximity_weight
+  value:
+    simple: "30"
+  required: false
+  description: The unified score in case the proximity to a crown jewel and/ or the
+    proximity to domain admin credentials is under the specified threshold
+  playbookInputQuery:
+- key: triggering_weight
+  value:
+    simple: "60"
+  required: false
+  description: The unified score in case the triggering process has been found malicious
+    and/ or the triggering deception is ransomware
+  playbookInputQuery:
+- key: events_weight
+  value:
+    simple: "5"
+  required: false
+  description: The score in case the number of events in the inspected incident is
+    above the specified threshold
+  playbookInputQuery:
+- key: rdp_weight
+  value:
+    simple: "5"
+  required: false
+  description: The score in case there is an active RDP connection to the source host
+  playbookInputQuery:
+- key: illusive_incident_id
+  value:
+    simple: ${incident.illusivenetworksid}
+  required: true
+  description: The incident ID of the Illusive Networks Incident
+  playbookInputQuery:
+outputs:
+- contextPath: Illusive.IncidentEscalationPlaybook.incidentId
+  description: The corresponding incident ID
+  type: number
+- contextPath: Illusive.IncidentEscalationPlaybook.isCloseToCrownJewel
+  description: 'Whether the proximity to a crown jewel is under a certain threshold '
+  type: boolean
+- contextPath: Illusive.IncidentEscalationPlaybook.isCloseToAdminCredentials
+  description: Whether the proximity to domain admin credentials is under a certain
+    threshold
+  type: boolean
+- contextPath: Illusive.IncidentEscalationPlaybook.isMultipleEvents
+  description: Whether the number of associated events is above a certain threshold
+  type: boolean
+- contextPath: Illusive.IncidentEscalationPlaybook.isTriggeringProcessMalicious
+  description: Whether the triggering process has been found malicious by VirusTotal
+  type: boolean
+- contextPath: Illusive.IncidentEscalationPlaybook.isActiveRdpConnection
+  description: Whether there is an active RDP connection to the source host
+  type: boolean
+- contextPath: Illusive.IncidentEscalationPlaybook.isRansomware
+  description: Whether the triggering deception is ransomware
+  type: boolean
+- contextPath: Illusive.IncidentEscalationPlaybook.incidentScore
+  description: The accumulated score of the incident
+  type: boolean
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
