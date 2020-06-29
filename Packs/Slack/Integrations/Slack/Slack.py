@@ -1,6 +1,8 @@
+import json
+import re
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 import slack
 from slack.errors import SlackApiError
 from slack.web.slack_response import SlackResponse
@@ -1204,14 +1206,26 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     :param conversation_name: The conversation name
     :return: The slack conversation
     """
+    integration_context = demisto.getIntegrationContext()
 
-    # TODO: Search for the channel in the cache, see `get_user_by_name`
+    conversation_to_search = conversation_name.lower()
+    # Find conversation in the cache
+    if conversations := integration_context.get('conversations'):
+        conversations = json.loads(conversations)
+        conversation_filter = list(
+            filter(
+                lambda u: conversation_to_search == u.get('name', '').lower(),
+                conversations
+            )
+        )
+        if conversation_filter:
+            return conversation_filter[0]
 
+    # If not found in cache, search for it
     body = {
         'types': 'private_channel,public_channel',
         'limit': PAGINATED_COUNT
     }
-
     response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
     conversation: dict = {}
     while True:
@@ -1229,7 +1243,8 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     if conversation_filter:
         conversation = conversation_filter[0]
 
-    # TODO: Save the conversation in the cache
+    # Save conversations to cache
+    set_to_latest_integration_context({'conversations': conversations})
 
     return conversation
 
@@ -1559,25 +1574,18 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     if channel or group:
         if not destinations:
             destination_name = channel or group
-            # TODO delete this block
-            conversation_filter = list(filter(lambda c: c.get('name') == destination_name, conversations))
-            if conversation_filter:
-                conversation = conversation_filter[0]
-                conversation_id = conversation.get('id')
-            # Until here
+            mirrored_channel_filter = list(filter(lambda m: 'incident-{}'
+                                                  .format(m['investigation_id']) == destination_name, mirrors))
+            if mirrored_channel_filter:
+                channel_mirror = mirrored_channel_filter[0]
+                conversation_id = channel_mirror['channel_id']
             else:
-                mirrored_channel_filter = list(filter(lambda m: 'incident-{}'
-                                                      .format(m['investigation_id']) == destination_name, mirrors))
-                if mirrored_channel_filter:
-                    channel_mirror = mirrored_channel_filter[0]
-                    conversation_id = channel_mirror['channel_id']
-                else:
-                    conversation = get_conversation_by_name(destination_name)
-                    if not conversation:
-                        return_error('Could not find the Slack conversation {}'.format(destination_name))
-                    conversations.append(conversation)
-                    set_to_latest_integration_context({'conversations': conversations})
-                    conversation_id = conversation.get('id')
+                conversation = get_conversation_by_name(destination_name)
+                if not conversation:
+                    return_error('Could not find the Slack conversation {}'.format(destination_name))
+                conversations.append(conversation)
+                set_to_latest_integration_context({'conversations': conversations})
+                conversation_id = conversation.get('id')
 
             if conversation_id:
                 destinations.append(conversation_id)
