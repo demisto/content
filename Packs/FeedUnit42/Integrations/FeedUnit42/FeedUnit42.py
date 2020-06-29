@@ -191,11 +191,9 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value'])
 
     command_results = CommandResults(
-        outputs_prefix='Unit42',
-        outputs_key_field='value',
-        outputs=limited_indicators,
+        outputs={},
         readable_output=readable_output,
-        raw_response=indicators
+        raw_response=limited_indicators
     )
 
     return command_results
