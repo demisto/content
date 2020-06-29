@@ -125,8 +125,8 @@ def find_zombie_processes():
     pid = str(os.getpid())
     zombies = []
     if len(lines) > 1:
-        for l in lines[1:]:
-            pinfo = l.split()
+        for line in lines[1:]:
+            pinfo = line.split()
             if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
                 zombies.append(pinfo[0])
     return zombies, ps_out
@@ -306,17 +306,18 @@ def rasterize_command():
 
 
 def rasterize_image_command():
-    entry_id = demisto.args().get('EntryID')
-    w = demisto.args().get('width', DEFAULT_W).rstrip('px')
-    h = demisto.args().get('height', DEFAULT_H).rstrip('px')
+    args = demisto.args()
+    entry_id = args.get('EntryID')
+    w = args.get('width', DEFAULT_W).rstrip('px')
+    h = args.get('height', DEFAULT_H).rstrip('px')
 
     file_path = demisto.getFilePath(entry_id).get('path')
-    filename = 'image.png'  # type: ignore
+    filename = f'{entry_id}.pdf'
 
     with open(file_path, 'rb') as f, open('output_image', 'w') as image:
         data = base64.b64encode(f.read()).decode('utf-8')
         image.write(data)
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h)
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type='pdf')
         res = fileResult(filename=filename, data=output)
         res['Type'] = entryTypes['image']
 

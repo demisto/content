@@ -10,6 +10,7 @@
 <li>A Secureworks account with API User role</li>
 <li>A persistent API key with the Security Roles permission</li>
 <li>For more information about setting up the API, see the SecureWorks <a href="https://portal.secureworks.com/portal/">ticketing API guide</a>.</li>
+<li>For tickets to be fetched, they first need to be updated as acknowledged.</li>
 </ul>
 <h2>Configure Dell Secureworks on Demisto</h2>
 <ol>
@@ -36,6 +37,7 @@
 </ol>
 <h2>Fetched Incidents Data</h2>
 <p>The integration fetches newly created tickets. Tickets that are fetched for the first time are marked using a designated custom field - <code>customerMiscellaneous4</code> which will be set with the value <code>MARKED</code>, and at the next time tickets are fetched, the designated field will be checked for the <code>MARKED</code> value. Tickets which were marked will be excluded and will not be fetched again, even if they are updated. Tickets of type <code>Health</code> will not be retrieved - tickets with <code>eventSource</code> of value <code>CTP_HEALTH</code> and with <code>categorizationClass</code> of value <code>Health</code> This can be further filtered by configuring the instance parameters <code>ticketType</code>, <code>groupingType</code>, <code>status</code> and <code>worklogs</code>, as seen above.</p>
+<p>A maximum amount of 10 ticket updates can be fetched in each interval (sorted in ascending order of ticket update time in the past 24 hours).</p>
 <h2>Commands</h2>
 <hr>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>

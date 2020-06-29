@@ -1,0 +1,134 @@
+id: FeedZoom_Test
+version: -1
+name: FeedZoom_Test
+description: Test playbook for Zoom Feed
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1079752f-9aa1-41f4-871f-e1c94fd85a74
+    type: start
+    task:
+      id: 1079752f-9aa1-41f4-871f-e1c94fd85a74
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c93c9537-dc1b-413b-8533-9df32ac9d3cd
+    type: regular
+    task:
+      id: c93c9537-dc1b-413b-8533-9df32ac9d3cd
+      version: -1
+      name: DeleteContext
+      description: Delete all context
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9943aeaa-d1d3-4339-81c3-4ab7e2f62dfc
+    type: regular
+    task:
+      id: 9943aeaa-d1d3-4339-81c3-4ab7e2f62dfc
+      version: -1
+      name: zoom-get-indicators
+      description: Get indicators from Zoom Feed
+      script: '|||zoom-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 34a6e107-ce31-4596-8a84-22fd4a67e02b
+    type: title
+    task:
+      id: 34a6e107-ce31-4596-8a84-22fd4a67e02b
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 200,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
