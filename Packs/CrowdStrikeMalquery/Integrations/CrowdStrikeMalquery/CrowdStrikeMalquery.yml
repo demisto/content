@@ -190,34 +190,34 @@ script:
     arguments: []
     outputs:
     - contextPath: Malquery.Quota.hunt_count
-      description: Hunt count.
+      description: How many hunts were executed in the last month.
       type: number
     - contextPath: Malquery.Quota.download_count
-      description: Download count.
+      description: How many downloads were executed in the last month.
       type: number
     - contextPath: Malquery.Quota.monitor_count
-      description: Monitor count.
+      description: How many monitors were created in the last month.
       type: number
     - contextPath: Malquery.Quota.hunt_limit
-      description: Hunt limit.
+      description: Total hunt limit per month.
       type: number
     - contextPath: Malquery.Quota.download_limit
-      description: Download limit.
+      description: Total download limit per month.
       type: number
     - contextPath: Malquery.Quota.monitor_limit
-      description: Monitor limit.
+      description: Total monitor limit per month.
       type: number
     - contextPath: Malquery.Quota.refresh_time
-      description: ""
+      description: Time when the limits are refreshed. ISO 8601 format.
       type: string
     - contextPath: Malquery.Quota.days_left
-      description: Days left to refresh time.
+      description: Days left until the limits are refreshed.
       type: number
     - contextPath: Malquery.Quota.hunt_counts.userid
-      description: ""
+      description: Download counts per user.
       type: String
     - contextPath: Malquery.Quota.hunt_counts.counter
-      description: ""
+      description: Download counts per user.
       type: number
     description: Get information about search and download quotas in your environment.
   - name: cs-malquery-samples-multidownload
