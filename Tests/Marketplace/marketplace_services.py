@@ -1076,10 +1076,7 @@ class Pack(object):
         try:
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
-            if 'dependencies' not in user_metadata:
-                user_metadata['dependencies'] = packs_dependencies_mapping.get(
-                    self._pack_name, {}).get('dependencies', {})
-                print(f"Adding auto generated dependencies for {self._pack_name} pack")
+            set_pack_dependencies(self._pack_name, user_metadata, packs_dependencies_mapping)
 
             if 'displayedImages' not in user_metadata:
                 user_metadata['displayedImages'] = packs_dependencies_mapping.get(
@@ -1451,3 +1448,16 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
                     f"Additional info:\n {e}")
     finally:
         return higher_version_result
+
+
+def set_pack_dependencies(pack_name, user_metadata, packs_dependencies_mapping):
+    pack_dependencies = packs_dependencies_mapping.get(pack_name, {}).get('dependencies', {})
+    if pack_name in GCPConfig.CORE_PACKS_LIST:
+        mandatory_dependencies = [dependency for dependency in pack_dependencies
+                                  if dependency.get('mandatory', False) is True]
+        if mandatory_dependencies:
+            raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
+                            f'found in the core pack {pack_name}')
+    if 'dependencies' not in user_metadata:
+        user_metadata['dependencies'] = {}
+    user_metadata['dependencies'].update(pack_dependencies)
