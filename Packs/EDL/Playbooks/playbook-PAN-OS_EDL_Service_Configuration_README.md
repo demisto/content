@@ -20,17 +20,17 @@ This playbook does not use any integrations.
 * AreValuesEqual
 
 ### Commands
-* panorama-create-edl
 * panorama-list-rules
 * panorama-get-edl
+* panorama-create-edl
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ip-edl-object-name | Set a name for the EDL object that will be configured on pan\-os. This value is used to set the rule name as well. | IP EDL Rule Validation | Optional |
-| url-edl-object-name | Set a name for the EDL object that will be configured on pan\-os. This value is used to set the rule name as well. | URL EDL Rule Validation | Optional |
+| ip-edl-object-name | Set a name for the EDL object that will be configured on pan\-os. This value is used to set the rule name as well. | Demisto Remediation - IP EDL | Optional |
+| url-edl-object-name | Set a name for the EDL object that will be configured on pan\-os. This value is used to set the rule name as well. | Demisto Remediation - URL EDL | Optional |
 | EDLServiceURL | The EDL service provides serval access methods to the EDL instance. By default, it uses a unique port, configured in the EDL Service integration, and an HTTP session. It is possible to either configure a certificate for the default option or to access the EDL by instance name, which is HTTPS by default.
 Please refer to the EDL Service integration tip for more information.
 EDLServiceURL input Examples:
@@ -43,19 +43,19 @@ Full constructed URL examples:
 $\{EDLServiceURL\}:$\{InstancePort\}/$\{IndicatorQuery\}
 2. By Instance Name \-
 $\{EDLServiceURL\}:$\{InstanceName\}/$\{IndicatorQuery\}
-  | http://ec2-52-213-240-199.eu-west-1.compute.amazonaws.com | Optional |
+  |  | Optional |
 | InstanceName | Name of the instance as configured in EDL Service integration.
 Only needed when accessing EDL Service by instance name.
 Refer to the EDL Service integration tip for more information. |  | Optional |
 | InstancePort | Instance name port as configured in EDL Service integration.
 Only needed when accessing EDL Service by URL and Port.
-Refer to the EDL Service integration tip for more information. | 1000 | Optional |
+Refer to the EDL Service integration tip for more information. |  | Optional |
 | IndicatorQuery | The query to run to create the EDL.
 When no query is entered, EDLs will contain all IP and URL indicators.
-The query should be inserted in the indicators tab\(top of this input window\) so the playbook can query and validate the indicator types and create only the relevant EDL objects and rules. | reputation:bad | Optional |
+The query should be inserted in the indicators tab\(top of this input window\) so the playbook can query and validate the indicator types and create only the relevant EDL objects and rules. |  | Optional |
 | AutoCommit | This input establishes whether to commit the configuration automatically.
 Yes \- Commit automatically.
-No \- Commit manually. | Yes | Optional |
+No \- Commit manually. | No | Optional |
 | RulePosition | The position of the rule in the ruleset. Valid values are:
   \* top
   \* bottom
@@ -71,7 +71,7 @@ allow/deny/drop
 | DeviceGroup | The device group to work on. Exists only in panorama\! |  | Optional |
 | LogForwarding | Log Forwarding object name. |  | Optional |
 | relative-rule-name | If the rule\-position that is chosen is before or after, specify the rule name to which it is related. |  | Optional |
-| Indicator Query | Indicators matching the indicator query will be used as playbook input | reputation:bad | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -82,4 +82,4 @@ allow/deny/drop
 
 ## Playbook Image
 ---
-![PAN-OS EDL Service Configuration](https://raw.githubusercontent.com/demisto/content/master/Packs/EDL/doc_files/PAN-OS_EDL_Service_Configuration.png)
+![PAN-OS EDL Service Configuration](Insert the link to your image here)
