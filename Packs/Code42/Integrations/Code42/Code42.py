@@ -327,7 +327,11 @@ class Code42Client(BaseClient):
 
 class Code42UserIDNotFoundError(Exception):
     def __init__(self, username):
-        super(Code42UserIDNotFoundError, self).__init__("No user ID found for username {0}.".format(username))
+        super(Code42UserIDNotFoundError, self).__init__(
+            "No user ID found for username {0}.".format(username)
+        )
+
+
 class Code42SearchFilters(object):
     def __init__(self):
         self._filters = []
