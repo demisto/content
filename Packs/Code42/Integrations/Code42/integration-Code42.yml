@@ -741,7 +741,9 @@ script:
 
     def _get_all_high_risk_employees_from_page(page, risk_tags):
         res = []
-        for employee in page["items"]:
+        # Note: page is a `Py42Response` and has no `get()` method.
+        employees = page["items"]
+        for employee in employees:
             if not risk_tags:
                 res.append(employee)
                 continue
@@ -783,7 +785,7 @@ script:
             return self._sdk
 
         def add_user_to_departing_employee(self, username, departure_date=None, note=None):
-            user_id = self.get_user(username)["userUid"]
+            user_id = self.get_user(username).get("userUid")
             self._get_sdk().detectionlists.departing_employee.add(
                 user_id, departure_date=departure_date
             )
@@ -792,7 +794,7 @@ script:
             return user_id
 
         def remove_user_from_departing_employee(self, username):
-            user_id = self.get_user(username)["userUid"]
+            user_id = self.get_user(username).get("userUid")
             self._get_sdk().detectionlists.departing_employee.remove(user_id)
             return user_id
 
@@ -801,34 +803,36 @@ script:
             results = int(results) if results else None
             pages = self._get_sdk().detectionlists.departing_employee.get_all()
             for page in pages:
+                # Note: page is a `Py42Response` and has no `get()` method.
                 employees = page["items"]
-                for employee in employees:
-                    res.append(employee)
-                    if results and len(res) == results:
-                        return res
+                if employees:
+                    for employee in employees:
+                        res.append(employee)
+                        if results and len(res) == results:
+                            return res
             return res
 
         def add_user_to_high_risk_employee(self, username, note=None):
-            user_id = self.get_user(username)["userUid"]
+            user_id = self.get_user(username).get("userUid")
             self._get_sdk().detectionlists.high_risk_employee.add(user_id)
             if note:
                 self._get_sdk().detectionlists.update_user_notes(user_id, note)
             return user_id
 
         def remove_user_from_high_risk_employee(self, username):
-            user_id = self.get_user(username)["userUid"]
+            user_id = self.get_user(username).get("userUid")
             self._get_sdk().detectionlists.high_risk_employee.remove(user_id)
             return user_id
 
         def add_user_risk_tags(self, username, risk_tags):
             risk_tags = _try_convert_str_list_to_list(risk_tags)
-            user_id = self.get_user(username)["userUid"]
+            user_id = self.get_user(username).get("userUid")
             self._get_sdk().detectionlists.add_user_risk_tags(user_id, risk_tags)
             return user_id
 
         def remove_user_risk_tags(self, username, risk_tags):
             risk_tags = _try_convert_str_list_to_list(risk_tags)
-            user_id = self.get_user(username)["userUid"]
+            user_id = self.get_user(username).get("userUid")
             self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
             return user_id
 
@@ -999,7 +1003,7 @@ script:
 
 
     def _create_category_filter(file_type):
-        category_value = CODE42_FILE_TYPE_MAPPER.get(file_type["category"], "UNCATEGORIZED")
+        category_value = CODE42_FILE_TYPE_MAPPER.get(file_type.get("category"), "UNCATEGORIZED")
         return FileCategory.eq(category_value)
 
 
@@ -1027,11 +1031,11 @@ script:
 
         @property
         def _observation_data(self):
-            return self._obs["data"]
+            return self._obs.get("data")
 
         @property
         def _exfiltration_type(self):
-            return self._obs["type"]
+            return self._obs.get("type")
 
         @property
         def _is_endpoint_exfiltration(self):
@@ -1056,13 +1060,23 @@ script:
 
         def _create_search_args(self):
             filters = FileEventQueryFilters()
-            exposure_types = self._observation_data["exposureTypes"]
-            begin_time = _convert_date_arg_to_epoch(self._observation_data["firstActivityAt"])
-            end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
+            begin_time = None
+            end_time = None
+            exposure_types = self._observation_data.get("exposureTypes")
+            first_activity = self._observation_data.get("firstActivityAt")
+            last_activity = self._observation_data.get("lastActivityAt")
+            if first_activity:
+                begin_time = _convert_date_arg_to_epoch(self._observation_data.get("firstActivityAt"))
+
+            if last_activity:
+                end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
 
             filters.append(self._create_user_filter())
-            filters.append(EventTimestamp.on_or_after(begin_time))
-            filters.append(EventTimestamp.on_or_before(end_time))
+
+            if begin_time:
+                filters.append(EventTimestamp.on_or_after(begin_time))
+            if end_time:
+                filters.append(EventTimestamp.on_or_before(end_time))
             filters.extend(self._create_exposure_filters(exposure_types))
             filters.append(self._create_file_category_filters())
 
@@ -1094,10 +1108,11 @@ script:
 
         def _create_file_category_filters(self):
             """Determine if file categorization is significant"""
-            observed_file_categories = self._observation_data["fileCategories"]
-            categories = [c["category"].upper() for c in observed_file_categories if c["isSignificant"]]
-            if categories:
-                return FileCategory.is_in(categories)
+            observed_file_categories = self._observation_data.get("fileCategories")
+            if observed_file_categories:
+                categories = [c.get("category").upper() for c in observed_file_categories if c.get("isSignificant") and c.get("category")]
+                if categories:
+                    return FileCategory.is_in(categories)
 
 
     def map_observation_to_security_query(observation, actor):
