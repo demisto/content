@@ -72,7 +72,7 @@ def delete_script_or_integration(path):
             os.remove(changelog_file)
 
     else:
-        os.system(f"rm -rf {path}")
+        exec(f"rm -rf {path}")
     print(f" - Deleting {path}")
 
 
@@ -199,7 +199,7 @@ def main():
     edit_all_packs(new_to_version)
 
     click.secho("Deleting empty directories\n")
-    os.system("find Packs -type d -empty -delete")
+    exec("find Packs -type d -empty -delete")
 
     click.secho("Finished creating branch", fg="green")
 
