@@ -592,6 +592,9 @@ class Pack(object):
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
+                print_error(f'pack path is: {self._pack_path}')
+                print_error(f'pwd result is: {subprocess.check_output("pwd")}')
+                print_error(f'ls result is: {subprocess.check_output("ls")}')
                 arg = f'./signDirectory {self._pack_path} keyfile base64'
                 signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 output, err = signing_process.communicate()
