@@ -52,8 +52,8 @@ tasks:
     scriptarguments:
       ip:
         complex:
-          root: ${expanse_raw_json_event
-          accessor: internalAddress}
+          root: ${Expanse
+          accessor: IP.Address}
     separatecontext: false
     view: |-
       {
