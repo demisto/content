@@ -427,7 +427,7 @@ def run_batch_admin_cmd(host_ids: list, command_type: str, full_command: str) ->
 def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None, timeout_duration: str = None) -> Dict:
     """
         Batch executes `get` command across hosts to retrieve files.
-        After this call is made `/real-time-response/combined/get-command-status/v1` is used to query for the results.
+        After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
 
       :param host_ids: List of host agent ID’s to run RTR command on.
       :param file_path: Full path to the file that is to be retrieved from each host in the batch.
@@ -1773,7 +1773,7 @@ def status_command():
     else:  # scope = admin
         response = status_admin_cmd(request_id, sequence_id)
 
-    resources: dict = response.get('resources', [])
+    resources: list = response.get('resources', [])
 
     output = []
 
@@ -1813,19 +1813,19 @@ def get_extracted_file_command():
     response = get_extracted_file(host_id, sha256, filename)
 
     # save an extracted file
-    content_type = response.headers.get('Content-Type','').lower()
+    content_type = response.headers.get('Content-Type', '').lower()
     if content_type == 'application/x-7z-compressed':
-        content_disposition = response.headers.get('Content-Disposition','').lower()
+        content_disposition = response.headers.get('Content-Disposition', '').lower()
         if content_disposition:
             filename = email.message_from_string(f'Content-Disposition: {content_disposition}\n\n').get_filename()
 
         if not filename:
             sha256 = sha256 or hashlib.sha256(response.content).hexdigest()
-            filename = sha256.lower() + '.dat'
+            filename = sha256.lower() + '.7z'
 
         return fileResult(filename, response.content)
 
-    return_error('A extracted file is missing in the response')
+    return_error('An extracted file is missing in the response')
 
 
 def list_host_files_command():
@@ -1833,7 +1833,7 @@ def list_host_files_command():
     host_id = args.get('host_id')
 
     response = list_host_files(host_id)
-    resources: dict = response.get('resources', [])
+    resources: list = response.get('resources', [])
 
     files_output = []
     file_standard_context = []
@@ -1867,8 +1867,12 @@ def list_host_files_command():
             'SHA256': resource.get('sha256'),
             'Size': resource.get('size'),
         })
+    
+    if files_output:
+        human_readable = tableToMarkdown('CrowdStrike Falcon files', files_output)
+    else:
+        human_readable = 'No result found'
 
-    human_readable = tableToMarkdown('CrowdStrike Falcon files', files_output)
     entry_context = {
         'CrowdStrike.Command(val.TaskID === obj.TaskID)': command_output,
         'CrowdStrike.File(val.ID === obj.ID)': files_output,
@@ -1883,7 +1887,7 @@ def refresh_session_command():
     host_id = args.get('host_id')
 
     response = refresh_session(host_id)
-    resources: dict = response.get('resources', [])
+    resources: list = response.get('resources', [])
     
     session_id = None
     for resource in resources:

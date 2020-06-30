@@ -1328,7 +1328,7 @@ def test_run_get(requests_mock, mocker):
         demisto,
         'args',
         return_value={
-            'host_ids': ['edfd6a04ad134c4344f8fb119a3ad88e'],
+            'host_ids': 'edfd6a04ad134c4344f8fb119a3ad88e',
             'file_path': "C:\\Windows\\notepad.exe",
             'raw': "Write-Output 'Hello, World!"
         }
@@ -1698,7 +1698,7 @@ def test_refresh_session(requests_mock, mocker):
               ],
               "command": "cat",
               "description": "Read a file from disk and display as ASCII or hex",
-              "examples": "    C:\\\u003e cat c:\\mytextfile.txt\r\n        Display the contents of the text file (ASCII encoding)\r\n    C:\\\u003e cat c:\\windows\\system32\\cmd.exe 100 -ShowHex\r\n        Display the first 100 hexadecimal characters for cmd.exe",
+              "examples": "    C:\\\u003e cat c:\\mytextfile.txt",
               "internal_only": False,
               "runnable": True,
               "sub_commands": []
@@ -1723,7 +1723,7 @@ def test_refresh_session(requests_mock, mocker):
               ],
               "command": "cd",
               "description": "Change the current working directory",
-              "examples": "    C:\\\u003e cd C:\\Users\\Administrator\r\n        Change working directory to 'C:\\Users\\Administrator'\r\n    C:\\Users\u003e cd ..\\Windows\r\n        Change working directory to 'C:\\Windows'",
+              "examples": "    C:\\\u003e cd C:\\Users\\Administrator\r\n",
               "internal_only": False,
               "runnable": True,
               "sub_commands": []
@@ -1795,7 +1795,7 @@ def test_refresh_session(requests_mock, mocker):
                   ],
                   "command": "view",
                   "description": "View most recent N events in a given event log",
-                  "examples": "    C:\\\u003e eventlog view Application 5\r\n        Displays the 5 most recent event log entries in the \"Application\" event source log",
+                  "examples": "    C:\\\u003e eventlog view Application",
                   "internal_only": False,
                   "runnable": True,
                   "sub_commands": []
@@ -1836,7 +1836,7 @@ def test_refresh_session(requests_mock, mocker):
                   ],
                   "command": "export",
                   "description": "Export the specified event log to a file (.csv) on disk",
-                  "examples": "    C:\\\u003eeventlog export System c:\\system_eventlog\r\n        Exports the entire 'System' event log to file 'c:\\system_eventlog.csv",
+                  "examples": "    C:\\\u003eeventlog export System",
                   "internal_only": False,
                   "runnable": True,
                   "sub_commands": []
@@ -1844,7 +1844,7 @@ def test_refresh_session(requests_mock, mocker):
                   "args": [],
                   "command": "list",
                   "description": "Event log list: show available event log sources",
-                  "examples": "    C:\\\u003e eventlog list\r\n        Displays available event log names",
+                  "examples": "    C:\\\u003e eventlog list",
                   "internal_only": False,
                   "runnable": True,
                   "sub_commands": []
@@ -1885,7 +1885,7 @@ def test_refresh_session(requests_mock, mocker):
                   ],
                   "command": "backup",
                   "description": "Back up the specified event log to a file (.evtx) on disk",
-                  "examples": "    C:\\\u003eeventlog backup System c:\\system_eventlog\r\n        Backs up the entire 'System' event log to file 'c:\\system_eventlog.evtx",
+                  "examples": "    C:\\\u003eeventlog backup System",
                   "internal_only": False,
                   "runnable": True,
                   "sub_commands": []
@@ -1912,7 +1912,7 @@ def test_refresh_session(requests_mock, mocker):
               ],
               "command": "filehash",
               "description": "Generate the MD5, SHA1, and SHA256 hashes of a file",
-              "examples": "C:\\\u003e filehash C:\\Windows\\System32\\cmd.exe\r\n\r\nFilename : C:\\Windows\\System32\\cmd.exe\r\nMD5      : 4E2ACF4F8A396486AB4268C94A6A245F\r\nSHA1     : 3CE71813199ABAE99348F61F0CAA34E2574F831C\r\nSHA256   : 9A7C58BD98D70631AA1473F7B57B426DB367D72429A5455B433A05EE251F3236",
+              "examples": "C:\\\u003e filehash C:\\Windows\\System32\\cmd.exe",
               "internal_only": False,
               "runnable": True,
               "sub_commands": []
@@ -1937,7 +1937,7 @@ def test_refresh_session(requests_mock, mocker):
               ],
               "command": "getsid",
               "description": "Enumerate local users and Security Identifiers (SID)",
-              "examples": "\u003egetsid\r\nUserName       SID\r\n--------       ---\r\nAdmin          S-1-5-21-3647622582-3640773343-236108083-1031\r\nSomeUser       S-1-5-21-2386721964-1418511206-4037700370-5267\r\nNetworkService S-1-5-20\r\nLocalService   S-1-5-19\r\nsystemprofile  S-1-5-18\r\n\r\n\u003egetsid some\r\nUserName       SID\r\n--------       ---\r\nSomeUser       S-1-5-21-2386721964-1418511206-4037700370-5267",
+              "examples": "\u003egetsid\r\nUserName       SID\r\n",
               "internal_only": False,
               "runnable": True,
               "sub_commands": []
@@ -1970,7 +1970,7 @@ def test_refresh_session(requests_mock, mocker):
               ],
               "command": "ls",
               "description": "Display the contents of the specified path",
-              "examples": "    C:\\Windows\u003e ls\r\n        Displays the contents of the 'C:\\Windows' directory\r\n    C:\\Windows\u003e ls ..\\Users\r\n        Displays the contents of the 'C:\\Users' directory",
+              "examples": "    C:\\Windows\u003e ls\r\n",
               "internal_only": False,
               "runnable": True,
               "sub_commands": []
@@ -1994,7 +1994,7 @@ def test_refresh_session(requests_mock, mocker):
               "args": [],
               "command": "ps",
               "description": "Display process information",
-              "examples": " C:\\\u003e ps\r\n\r\nName                    Id StartTime  (UTC-6)           WorkingMemory(kb) CPU(s) HandleCount Path\r\n ----                    -- ---------             ----------------- ------ ----------- ----\r\n cmd                   8140 6/11/2018 9:57:48 AM              4,664   0.08          73 C:\\WINDOWS\\system32\\cmd.exe\r\n conhost               4684 6/11/2018 8:44:11 AM             18,948  15.08         254 C:\\WINDOWS\\system32\\conhost.exe\r\n dwm                    424 6/11/2018 8:39:20 AM             85,188  13.53         552 C:\\WINDOWS\\system32\\dwm.exe\r\n explorer              5048 6/11/2018 8:39:34 AM            127,384  32.08        2393 C:\\WINDOWS\\Explorer.EXE\r\n\r\nFor example, the 'explorer' process has the following characteristics:\r\n\u003e Process Id is 5048. Use this value in subsequent commands like \"kill” or \"memdump\"\r\n\u003e Process has been running since 6/11 8:39 AM (local machine time)\r\n\u003e It's using 127 MB of working memory (RAM)\r\n\u003e During its lifetime, the process has used a total of 32 seconds of CPU time across all cores\r\n\u003e Has 2,393 object handles, which include: registry, files, threads, and other resources\r\n\u003e Executable path on disk is C:\\WINDOWS\\Explorer.EXE\r\n",
+              "examples": " C:\\\u003e ps\r\n\r\nName",
               "internal_only": False,
               "runnable": True,
               "sub_commands": []
@@ -2050,7 +2050,7 @@ def test_refresh_session(requests_mock, mocker):
                   ],
                   "command": "query",
                   "description": "Query a registry subkey or value",
-                  "examples": "    C:\\\u003e reg query\r\n        Enumerates root hives. \"HKEY_LOCAL_MACHINE\" and \"HKEY_USERS\" are most commonly used.\r\n    C:\\\u003e reg query HKLM\\Software\\SomeKey\r\n        Returns the subkeys and all value pairs of SomeKey\r\n    C:\\\u003e reg query HKLM\\Software\\SomeKey SomeValue\r\n        Returns the data of SomeValue",
+                  "examples": "    C:\\\u003e reg query\r\n",
                   "internal_only": False,
                   "runnable": True,
                   "sub_commands": []
