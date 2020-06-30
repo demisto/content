@@ -2600,7 +2600,7 @@ class CommandResults:
         if self.readable_output:
             human_readable = self.readable_output
         else:
-            human_readable = None
+            human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
 
         if self.indicators:
