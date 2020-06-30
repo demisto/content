@@ -554,7 +554,7 @@ script:
       description: The username of the user to deactivate.
       isArray: false
       name: username
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Deactivate a user in Code42; signing them out of their devices. Backups
@@ -586,7 +586,7 @@ script:
       description: The username of the user to reactivate.
       isArray: false
       name: username
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Reactivates the user with the given username.
