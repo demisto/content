@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "hunt_count": 45,
+    "download_count": 48,
+    "monitor_count": 0,
+    "hunt_limit": 100,
+    "download_limit": 50,
+    "monitor_limit": 10,
+    "refresh_time": "2020-07-01T00:00:00Z",
+    "days_left": 0,
+    "hunt_counts": [
+      {
+        "userid": "",
+        "counter": 45
+      }
+    ],
+    "download_counts": [
+      {
+        "userid": "",
+        "counter": 48}]}, "errors": []}

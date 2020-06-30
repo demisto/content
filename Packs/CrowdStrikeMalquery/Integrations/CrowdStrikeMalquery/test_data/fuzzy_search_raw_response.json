@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "query_time": 0.209373101,
+    "powered_by": "malquery-api",
+    "trace_id": "9499e153-e0b7-46f2-a72a-57c47ebc156b",
+    "status": "done",
+    "stats": {
+      "clean_count": 0,
+      "malware_count": 0,
+      "pua_count": 0,
+      "total_count": 2002,
+      "unknown_count": 10
+    }
+  },
+  "resources": [
+    {
+      "sha256": "e51f0a8884eb08fc43da0501ebd3776831e2fd4b0a8dd12e69866a8febe41495",
+      "filesize": 310552,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "bc74f8fc37b902536b52c1157b74724edc96a586b0e3e38717dd845981443a5b",
+      "filesize": 1672180,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "72b021085f62e5dc1335f878a2751bce68d95918c84215ec8dfebf491009ea09",
+      "filesize": 1672188,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "5e2e1735e10684b36d30b3a3362e66cd30fb493afac8e711d92bde8372b9b6d0",
+      "filesize": 279624,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "ec0d93607d777c6e3db8e98856e1b58ea8918f45b98ae601bc3f6af91fae9ec0",
+      "filesize": 287304,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "c392794b98f5a1180d6f6f4abe94a5f9d9ba09cb5e25de7e6736ded4e6c9e12d",
+      "filesize": 1661440,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "31c490852525bbe37ad536c153df05e1353e64c9a4bdb08505493c413db28368",
+      "filesize": 276040,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "0142d5e2b43b5e1ae66c0724959b3ccc7c9022160231c9ef6fa5e571b2edc8dc",
+      "filesize": 272384,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "d5023cd464d7578506770338e0fc43bd64887dbf234785b4d8f8547e57efa33d",
+      "filesize": 19055104,
+      "filetype": "PE32"
+    },
+    {
+      "sha256": "9dd98c144cb29cf3ab6dfa26514b8d10ed414e32a66dd4777eae5f03c502197c",
+      "filesize": 2673152,
+      "filetype": "PE32"
+    }
+  ]
+}

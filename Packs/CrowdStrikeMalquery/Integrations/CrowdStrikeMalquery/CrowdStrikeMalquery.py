@@ -67,7 +67,7 @@ class Client(BaseClient):
 
         return super()._http_request(*args, headers=default_headers, **kwargs)  # type: ignore[misc]
 
-    def get_access_token(self, new_token=False):
+    def get_access_token(self):
         """
            Obtains access and refresh token from server.
            Access token is used and stored in the integration context until expiration time.
@@ -82,18 +82,16 @@ class Client(BaseClient):
             if isinstance(demisto.getIntegrationContext(), list) else demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
         valid_until = integration_context.get('valid_until')
-        if access_token and not new_token:
+        if access_token:
             if get_passed_mins(now, valid_until) >= TOKEN_LIFE_TIME:
                 # token expired
                 access_token = self.get_token_request()
                 integration_context = {
                                           'access_token': access_token,
-                                          'valid_until': date_to_timestamp(now) / 1000},
+                                          'valid_until': date_to_timestamp(now) / 1000
+                                      },
                 demisto.setIntegrationContext(integration_context)
-                return access_token
-            else:
-                # token hasn't expired
-                return access_token
+            return access_token
         else:
             # there's no token
             access_token = self.get_token_request()
@@ -279,6 +277,8 @@ def get_request_command(client: Client, args: dict) -> CommandResults:
     raw_response = client.get_request(request_id)
     resources = raw_response.get('resources')
     status = raw_response.get('meta', {}).get('status')
+
+    # Possible values: inprogress, failed, done
     if status != 'done':
         entry_context = {
             "Request_ID": request_id,
@@ -301,7 +301,7 @@ def get_request_command(client: Client, args: dict) -> CommandResults:
         raw_response=raw_response)
 
 
-def get_files_metadata_command(client: Client, args: dict):
+def get_file_metadata_command(client: Client, args: dict):
     indicator_type = 'File'
     file_id = args.get('file')
     raw_response = client.get_files_metadata(file_id)
@@ -397,7 +397,7 @@ def main():
         'cs-malquery-fuzzy-search': fuzzy_search_command,
         'cs-malquery-hunt': hunt_command,
         'cs-malquery-get-request': get_request_command,
-        'file': get_files_metadata_command,
+        'file': get_file_metadata_command,
         'cs-malquery-file-download': file_download_command,
         'cs-malquery-samples-multidownload': samples_multidownload_command,
         'cs-malquery-sample-fetch': samples_fetch_command,
