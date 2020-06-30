@@ -203,5 +203,5 @@ def main():
     click.secho("Finished creating branch", fg="green")
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__main__":
     main()
