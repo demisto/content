@@ -2,6 +2,7 @@
 from typing import Dict, Any, List, Tuple
 from urllib import parse
 import requests
+import json
 # flake8: noqa: F402,F405 lgtm
 import demistomock as demisto
 from CommonServerPython import *
@@ -669,7 +670,14 @@ def main() -> None:
                 client.entity_lookup(['8.8.8.8'], 'ip')
                 return_results('ok')
             except Exception as err:
-                return_results(f'Failed to get response: {str(err)}.')
+                try:
+                    error = json.loads(str(err).split('\n')[1])
+                    if 'error' in error:
+                        message = error.get("error", {})["message"]
+                        return_results(f'Failed due to: {message}')
+                except Exception as err2:
+                    return_results('Unknown error. Please verify that the API'
+                                   ' URL and Token are correctly configured.')
         elif command in ['url', 'ip', 'domain', 'file', 'cve']:
             entities = argToList(demisto_args.get(command))
             return_results(lookup_command(client, entities, command))
