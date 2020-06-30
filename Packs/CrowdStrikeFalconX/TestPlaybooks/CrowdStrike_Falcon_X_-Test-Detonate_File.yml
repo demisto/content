@@ -73,7 +73,7 @@ tasks:
       id: 7fc6a518-4ddb-425c-8f12-1ca517d6bf45
       version: -1
       name: Set File
-      description: Sends http request. Returns the response as json.
+      description: Sends an http request and returns the response as JSON.
       scriptName: http
       type: regular
       iscommand: false

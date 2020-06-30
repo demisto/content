@@ -35,7 +35,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Defines visibility of this file in Falcon MalQuery.
+      description: Determines visibility of this file in Falcon MalQuery.
       isArray: false
       name: is_confidential
       predefined:
@@ -73,7 +73,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SHA256 ID of the sample, which is a SHA256 hash value. Find a sample
+      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample
         ID from the response when uploading a malware sample or search with - cs-fx-upload-file.
       isArray: false
       name: sha256
@@ -81,7 +81,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies the sandbox environment used for analysis
+      description: Specifies the sandbox environment used for analysis.
       isArray: false
       name: environment_id
       predefined:
@@ -161,13 +161,13 @@ script:
       description: Analysis ID
       type: String
     - contextPath: csfalconx.resource.state
-      description: Analysis State
+      description: Analysis state
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time Started
+      description: Time started
       type: String
     - contextPath: csfalconx.resource.sha256
-      description: SHA256 of the scan
+      description: SHA256 of the scanned file
       type: Unknown
     - contextPath: csfalconx.resource.environment_id
       description: 'Environment ID of the analysis '
@@ -189,16 +189,16 @@ script:
       description: Analysis ID
       type: String
     - contextPath: csfalconx.resource.verdict
-      description: Analysis Verdict
+      description: Analysis verdict
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time Started
+      description: Time started
       type: String
     - contextPath: csfalconx.resource.sandbox_environment_id
       description: Environment ID
       type: String
     - contextPath: csfalconx.resource.snadbox.environment_description
-      description: Environment Description
+      description: Environment description
       type: String
     - contextPath: csfalconx.resource.sandbox_threat_score
       description: Score of the threat
@@ -216,7 +216,7 @@ script:
       description: Size of the file
       type: Int
     - contextPath: csfalconx.resource.sandbox_sha256
-      description: SHS256 of the file Submission
+      description: SHS256 of the file submitted
       type: String
     - contextPath: csfalconx.resource.ioc_strict_csv
       description: ID of IOC pack to download
@@ -259,16 +259,16 @@ script:
       description: Analysis ID
       type: String
     - contextPath: csfalconx.resource.verdict
-      description: Analysis Verdict
+      description: Analysis verdict
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time Started
+      description: Time started
       type: String
     - contextPath: csfalconx.resource.sandbox_environment_id
       description: Environment ID
       type: String
     - contextPath: csfalconx.resource.snadbox.environment_description
-      description: Environment Description
+      description: Environment description
       type: String
     - contextPath: csfalconx.resource.sandbox_threat_score
       description: Score of the threat
@@ -286,7 +286,7 @@ script:
       description: Size of the file
       type: Int
     - contextPath: csfalconx.resource.sandbox_sha256
-      description: SHS256 of the file Submission
+      description: SHS256 of the file submitted
       type: String
     - contextPath: csfalconx.resource.ioc_strict_csv
       description: ID of IOC pack to download
@@ -329,16 +329,16 @@ script:
       description: Analysis ID
       type: String
     - contextPath: csfalconx.resource.verdict
-      description: Analysis Verdict
+      description: Analysis verdict
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time Started
+      description: Time started
       type: String
     - contextPath: csfalconx.resource.sandbox_environment_id
       description: Environment ID
       type: String
     - contextPath: csfalconx.resource.snadbox.environment_description
-      description: Environment Description
+      description: Environment description
       type: String
     - contextPath: csfalconx.resource.sandbox_threat_score
       description: Score of the threat
@@ -356,7 +356,7 @@ script:
       description: Size of the file
       type: Int
     - contextPath: csfalconx.resource.sandbox_sha256
-      description: SHS256 of the file Submission
+      description: SHS256 of the file submitted
       type: String
     - contextPath: csfalconx.resource.ioc_strict_csv
       description: ID of IOC pack to download
@@ -391,7 +391,7 @@ script:
       description: 'Total quota number '
       type: Number
     - contextPath: csfalconx.resource.quota.used
-      description: Used Quota
+      description: Used quota
       type: Number
     - contextPath: csfalconx.resource.quota.in_progress
       description: Analysis in progress
@@ -405,7 +405,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The offset to start retrieving reports from.
+      description: The offset from which to start retrieving reports.
       isArray: false
       name: offset
       required: false
@@ -432,7 +432,7 @@ script:
     name: cs-fx-find-reports
     outputs:
     - contextPath: csfalconx.resource.id
-      description: 'set of report IDs that match your criteria. '
+      description: 'Set of report IDs that match your criteria. '
       type: Number
   - arguments:
     - default: false
@@ -443,7 +443,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The offset to start retrieving reports from.
+      description: The offset from which to start retrieving reports.
       isArray: false
       name: offset
       required: false
@@ -471,7 +471,7 @@ script:
     name: cs-fx-find-submission-id
     outputs:
     - contextPath: csfalconx.resource.id
-      description: 'set of report IDs that match your criteria. '
+      description: 'Set of report IDs that match your criteria. '
       type: Number
   - arguments:
     - default: false
@@ -565,13 +565,13 @@ script:
       description: Analysis ID
       type: String
     - contextPath: csfalconx.resource.state
-      description: Analysis State
+      description: Analysis state
       type: String
     - contextPath: csfalconx.resource.created_timpestamp
-      description: Time Started
+      description: Time started
       type: String
     - contextPath: csfalconx.resource.sha256
-      description: SHA256 of the scan
+      description: SHA256 of the scanned file
       type: Unknown
     - contextPath: csfalconx.resource.environment_id
       description: Environment ID of the analysis
@@ -593,7 +593,7 @@ script:
     - default: false
       defaultValue: gzip
       description: Format used to compress your downloaded file. Currently, you must
-        provide the value gzip, the only valid format.
+        provide the value of the gzip file.
       isArray: false
       name: accept_encoding
       required: false

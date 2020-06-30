@@ -2,7 +2,7 @@ id: Detonate File - CrowdStrike Falcon X
 version: -1
 name: Detonate File - CrowdStrike Falcon X
 description: |-
-  Detonates a File using the McAfee Advanced Threat Defense sandbox.
+  Detonates a file using the CrowdStrike Falcon X sandbox.
   Advanced Threat Defense supports the following File Types:
   32-bit Portable Executables (PE)files; 64-bit PE+files
   exe, sys, dll, com, scr, cpl, ocx, cgi
@@ -166,7 +166,7 @@ tasks:
       version: -1
       name: Is CrowdStrike Falcon X enabled?
       description: |
-        Verify that there is a valid instance of McAfee ATD enabled.
+        Verify that there is a valid instance of CrowdStrike Falcon X enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -221,7 +221,7 @@ tasks:
       id: 44e9c26f-c38e-4c1c-8b60-80a92220810e
       version: -1
       name: Filter taskId
-      description: Checks that valid files only have been sent to detonation.
+      description: Checks that only valid files have been sent to detonation.
       type: condition
       iscommand: false
       brand: ""
@@ -256,8 +256,8 @@ tasks:
     task:
       id: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
       version: -1
-      name: Is File type supported?
-      description: Check if file type is supported.
+      name: Is file type supported?
+      description: Checks if the file type is supported.
       type: condition
       iscommand: false
       brand: ""
@@ -478,7 +478,7 @@ inputs:
     complex:
       root: File
   required: false
-  description: The file to detonate. File is taken from the context.
+  description: The file to detonate. The file is taken from the context.
 - key: Interval
   value:
     simple: "1"
@@ -533,10 +533,10 @@ outputs:
   description: SHA256 hash of the file (only in case of report type=json)
   type: string
 - contextPath: File.EntryID
-  description: The Entry ID of the sample
+  description: The entry ID of the sample
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that determined the file was malicious.
   type: string
 - contextPath: File.Malicious.Description
   description: For malicious files, the reason for the vendor to make the decision
@@ -557,7 +557,7 @@ outputs:
   description: IP's relevant to the sample
   type: string
 - contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
+  description: The entry ID of the report file
   type: string
 - contextPath: InfoFile.Extension
   description: The extension of the report file
@@ -566,7 +566,7 @@ outputs:
   description: The name of the report file
   type: string
 - contextPath: InfoFile.Info
-  description: The info of the report file
+  description: The file info of the report file
   type: string
 - contextPath: InfoFile.Size
   description: The size of the report file
@@ -589,4 +589,3 @@ outputs:
 fromversion: 5.0.0
 tests:
  -  No tests
-

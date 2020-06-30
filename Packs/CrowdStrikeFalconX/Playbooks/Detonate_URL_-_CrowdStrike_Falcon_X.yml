@@ -335,7 +335,7 @@ outputs:
   description: SHA256 hash of the file
   type: string
 - contextPath: File.Malicious
-  description: The File malicious description
+  description: The description of the malicious file
   type: unknown
 - contextPath: File.Type
   description: File type e.g. "PE"
@@ -353,10 +353,10 @@ outputs:
   description: SHA1 hash of the file
   type: string
 - contextPath: File
-  description: The File object
+  description: The file object
   type: unknown
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that determined the file was malicious.
   type: string
 - contextPath: DBotScore
   description: The DBotScore object
