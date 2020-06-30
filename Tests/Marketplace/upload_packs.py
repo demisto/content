@@ -635,7 +635,8 @@ def main():
         print_error(f'After signature extract path: {os.listdir(extract_destination_path)}')
         print_error(f'After signature pack path:: {os.listdir(pack._pack_path)}')
 
-        task_status, zip_pack_path = pack.zip_pack(extract_destination_path, should_encrypt_pack, enc_key)
+        task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, should_encrypt_pack,
+                                                   enc_key)
         print_error(f'After zip extract path: {os.listdir(extract_destination_path)}')
         print_error(f'After zip pack path:: {os.listdir(pack._pack_path)}')
         if not task_status:

@@ -612,13 +612,16 @@ class Pack(object):
         finally:
             return task_status
 
-    def zip_and_encrypt_pack(self, zip_pack_path, encryption_key, extract_destination_path):
+    def zip_and_encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
         # The path below is custom made for the private repo's build.
-        path_to_directory = self._pack_path
-        zip_and_encrypt_script_path = os.path.join(extract_destination_path, 'zipAndEncryptDirectory')
+        # path_to_directory = self._pack_path
+        current_working_dir = os.getcwd()
+        os.chdir(extract_destination_path)
+        # zip_and_encrypt_script_path = os.path.join(extract_destination_path, 'zipAndEncryptDirectory')
         output_file = zip_pack_path
-        full_command = f'{zip_and_encrypt_script_path} {path_to_directory} {output_file} "{encryption_key}"'
+        full_command = f'./zipAndEncryptDirectory ./{pack_name} {output_file} "{encryption_key}"'
         subprocess.call(full_command, shell=True)
+        os.chdir(current_working_dir)
 
     def zip_pack_without_encrypting(self, zip_pack_path):
         print_error("Should Not Encrypt")
@@ -629,7 +632,7 @@ class Pack(object):
                     relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                     pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
-    def zip_pack(self, extract_destination_path, should_encrypt=False, encryption_key=""):
+    def zip_pack(self, extract_destination_path, pack_name, should_encrypt=False, encryption_key=""):
         """ Zips pack folder.
 
         Returns:
@@ -641,7 +644,7 @@ class Pack(object):
 
         try:
             if should_encrypt:
-                self.zip_and_encrypt_pack(zip_pack_path, encryption_key, extract_destination_path)
+                self.zip_and_encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
             else:
                 self.zip_pack_without_encrypting(zip_pack_path)
             task_status = True
