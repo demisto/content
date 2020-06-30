@@ -318,8 +318,9 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         prints_manager (ParallelPrintsManager): A prints manager object.
         thread_index (int): the thread index.
 
-    Returns (list): A list of the installed packs' ids, or an empty list if is_nightly == True, in addition to a flag
-    that indicates if the operation succeeded or not.
+    Returns (list, bool):
+        A list of the installed packs' ids, or an empty list if is_nightly == True. 
+        A flag that indicates if the operation succeeded or not.
     """
     host = client.api_client.configuration.host
 
