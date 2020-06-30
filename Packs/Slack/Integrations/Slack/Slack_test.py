@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import slack
-import pytest
 import asyncio
+import json as js
 import threading
 
-import json as js
+import pytest
+import slack
+
+import demistomock as demisto
+from CommonServerPython import *
+
 import datetime
 
 USERS = '''[{
@@ -344,8 +345,7 @@ async def test_get_slack_name_user(mocker):
     from Slack import get_slack_name
 
     # Set
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             user = params['user']
             if user != 'alexios':
@@ -385,8 +385,7 @@ async def test_get_slack_name_channel(mocker):
 
     # Set
 
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             user = params['user']
             if user != 'alexios':
@@ -425,8 +424,7 @@ async def test_clean_message(mocker):
     from Slack import clean_message
 
     # Set
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             return {'user': js.loads(USERS)[0]}
         elif method == 'conversations.info':
@@ -452,6 +450,86 @@ async def test_clean_message(mocker):
     assert clean_user_message == 'Hello spengler!'
     assert clean_channel_message == 'Check general'
     assert clean_link_message == 'Go to https://www.google.com/lulz'
+
+
+class TestGetConversationByName:
+    @staticmethod
+    def set_conversation_mock(mocker, get_context=get_integration_context):
+        mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_context)
+        mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+        mocker.patch.object(slack.WebClient, 'api_call', return_value={'channels': js.loads(CONVERSATIONS)})
+
+    def test_get_conversation_by_name_exists_in_context(self, mocker):
+        """
+        Given:
+        - Conversation to find
+
+        When:
+        - Conversation exists in context
+
+        Then:
+        - Check if the right conversation returned
+        - Check that no API command was called.
+        """
+        from Slack import get_conversation_by_name
+        self.set_conversation_mock(mocker)
+
+        conversation_name = 'general'
+        conversation = get_conversation_by_name(conversation_name)
+
+        # Assertions
+        assert conversation_name == conversation['name']
+        assert slack.WebClient.api_call.call_count == 0
+
+    def test_get_conversation_by_name_exists_in_api_call(self, mocker):
+        """
+        Given:
+        - Conversation to find
+
+        When:
+        - Conversation not exists in context, but do in the API
+
+        Then:
+        - Check if the right conversation returned
+        - Check that a API command was called.
+        """
+        def get_context():
+            return {}
+        from Slack import get_conversation_by_name
+
+        self.set_conversation_mock(mocker, get_context=get_context)
+
+        conversation_name = 'general'
+        conversation = get_conversation_by_name(conversation_name)
+
+        # Assertions
+        assert conversation_name == conversation['name']
+        assert slack.WebClient.api_call.call_count == 1
+
+        # Find that 'general' conversation has been added to context
+        conversations = json.loads(demisto.setIntegrationContext.call_args[0][0]['conversations'])
+        filtered = list(filter(lambda c: c['name'] == conversation_name, conversations))
+        assert filtered, 'Could not find the \'general\' conversation in the context'
+
+    def test_get_conversation_by_name_not_exists(self, mocker):
+        """
+        Given:
+        - Conversation to find
+
+        When:
+        - Conversation do not exists.
+
+        Then:
+        - Check no conversation was returned.
+        - Check that a API command was called.
+        """
+        from Slack import get_conversation_by_name
+        self.set_conversation_mock(mocker)
+
+        conversation_name = 'no exists'
+        conversation = get_conversation_by_name(conversation_name)
+        assert not conversation
+        assert slack.WebClient.api_call.call_count == 1
 
 
 def test_get_user_by_name(mocker):
@@ -1426,8 +1504,7 @@ async def test_slack_loop_should_exit(mocker):
         def exception():
             return None
 
-    @asyncio.coroutine
-    def yeah_im_not_going_to_run(time):
+    async def yeah_im_not_going_to_run(time):
         return "sup"
 
     mocker.patch.object(asyncio, 'sleep', side_effect=yeah_im_not_going_to_run)
@@ -1449,8 +1526,7 @@ async def test_handle_dm_create_demisto_user(mocker):
     import Slack
 
     # Set
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.open':
             return {
                 'channel': {
@@ -1459,8 +1535,7 @@ async def test_handle_dm_create_demisto_user(mocker):
         else:
             return 'sup'
 
-    @asyncio.coroutine
-    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
+    async def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
@@ -1497,13 +1572,10 @@ async def test_handle_dm_nondemisto_user_shouldnt_create(mocker):
     import Slack
 
     # Set
-
-    @asyncio.coroutine
-    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
+    async def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.open':
             return {
                 'channel': {
@@ -1534,13 +1606,10 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
     Slack.init_globals()
 
     # Set
-
-    @asyncio.coroutine
-    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
+    async def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.open':
             return {
                 'channel': {
@@ -1570,9 +1639,7 @@ async def test_handle_dm_non_create_nonexisting_user(mocker):
     from Slack import handle_dm
 
     # Set
-
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.open':
             return {
                 'channel': {
@@ -1607,8 +1674,7 @@ async def test_handle_dm_empty_message(mocker):
     from Slack import handle_dm
 
     # Set
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.open':
             return {
                 'channel': {
@@ -1643,9 +1709,7 @@ async def test_handle_dm_create_with_error(mocker):
     import Slack
 
     # Set
-
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.open':
             return {
                 'channel': {
@@ -1680,11 +1744,10 @@ async def test_handle_dm_create_with_error(mocker):
 
 @pytest.mark.asyncio
 async def test_translate_create(mocker):
-    # Set
     import Slack
 
-    @asyncio.coroutine
-    def this_doesnt_create_incidents(incidents_json, user_name, email, demisto_id):
+    # Set
+    async def this_doesnt_create_incidents(incidents_json, user_name, email, demisto_id):
         return {
             'id': 'new_incident',
             'name': 'New Incident'
@@ -1747,8 +1810,7 @@ async def test_translate_create_newline_json(mocker):
     # Set
     import Slack
 
-    @asyncio.coroutine
-    def this_doesnt_create_incidents(incidents_json, user_name, email, demisto_id):
+    async def this_doesnt_create_incidents(incidents_json, user_name, email, demisto_id):
         return {
             'id': 'new_incident',
             'name': 'New Incident'
@@ -1843,9 +1905,7 @@ async def test_get_user_by_id_async_user_exists(mocker):
     from Slack import get_user_by_id_async
 
     # Set
-
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             return {'user': js.loads(USERS)[0]}
 
@@ -1869,9 +1929,7 @@ async def test_get_user_by_id_async_user_doesnt_exist(mocker):
     from Slack import get_user_by_id_async
 
     # Set
-
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'users.info':
             return {'user': js.loads(USERS)[0]}
 
@@ -1897,9 +1955,7 @@ async def test_handle_text(mocker):
     import Slack
 
     # Set
-
-    @asyncio.coroutine
-    def fake_clean(text, client):
+    async def fake_clean(text, client):
         return 'מה הולך'
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
@@ -4044,8 +4100,7 @@ async def test_message_setting_name_and_icon_async(mocker):
     from Slack import send_slack_request_async, init_globals
 
     # Set
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         return
 
     mocker.patch.object(demisto, 'params', return_value={'bot_name': 'kassandra', 'bot_icon': 'coolimage'})
@@ -4068,8 +4123,7 @@ async def test_message_not_setting_name_and_icon_async(mocker):
     from Slack import send_slack_request_async, init_globals
 
     # Set
-    @asyncio.coroutine
-    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+    async def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         return
 
     mocker.patch.object(demisto, 'params', return_value={'bot_name': 'kassandra', 'bot_icon': 'coolimage'})
