@@ -1626,11 +1626,8 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     """
 
     integration_context = get_integration_context(SYNC_CONTEXT)
-    conversations: list = []
     mirrors: list = []
     if integration_context:
-        if 'conversations' in integration_context:
-            conversations = json.loads(integration_context['conversations'])
         if 'mirrors' in integration_context:
             mirrors = json.loads(integration_context['mirrors'])
 
@@ -1651,23 +1648,16 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     if channel or group:
         if not destinations:
             destination_name = channel or group
-            conversation_filter = list(filter(lambda c: c.get('name') == destination_name, conversations))
-            if conversation_filter:
-                conversation = conversation_filter[0]
-                conversation_id = conversation.get('id')
+            mirrored_channel_filter = list(filter(lambda m: f'incident-{m["investigation_id"]}' == destination_name,
+                                                  mirrors))
+            if mirrored_channel_filter:
+                channel_mirror = mirrored_channel_filter[0]
+                conversation_id = channel_mirror['channel_id']
             else:
-                mirrored_channel_filter = list(filter(lambda m: f'incident-{m["investigation_id"]}' == destination_name,
-                                                      mirrors))
-                if mirrored_channel_filter:
-                    channel_mirror = mirrored_channel_filter[0]
-                    conversation_id = channel_mirror['channel_id']
-                else:
-                    conversation = get_conversation_by_name(destination_name)
-                    if not conversation:
-                        return_error(f'Could not find the Slack conversation {destination_name}')
-                    conversations.append(conversation)
-                    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-                    conversation_id = conversation.get('id')
+                conversation = get_conversation_by_name(destination_name)
+                if not conversation:
+                    return_error(f'Could not find the Slack conversation {destination_name}')
+                conversation_id = conversation.get('id')
 
             if conversation_id:
                 destinations.append(conversation_id)

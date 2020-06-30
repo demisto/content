@@ -1,4 +1,4 @@
-from FeedAutofocus import Client, fetch_indicators_command
+from FeedAutofocusDaily import Client, fetch_indicators_command
 
 INDICATORS = [
     "d4da1b2d5554587136f2bcbdf0a6a1e29ab83f1d64a4b2049f9787479ad02fad",
@@ -25,19 +25,19 @@ TYPES = [
 ]
 
 
+def test_fetch_indicators_command(mocker):
+    client = Client(api_key="a", insecure=False)
+    mocker.patch.object(client, 'daily_http_request', return_value=INDICATORS)
+    indicators = fetch_indicators_command(client, 9, 0)
+    for i in range(0, 9):
+        assert indicators[i]['type'] == TYPES[i]
+
+
 def test_type_finder():
-    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
+    client = Client(api_key="a", insecure=False)
     for i in range(0, 9):
         indicator_type = client.find_indicator_type(INDICATORS[i])
         assert indicator_type == TYPES[i]
-
-
-def test_url_format():
-    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
-    url1 = "https://autofocus.paloaltonetworks.com/IOCFeed/{ID}/{Name}"
-    url2 = "autofocus.paloaltonetworks.com/IOCFeed/{ID2}/{Name2}"
-    assert client.url_format(url1) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID}/{Name}"
-    assert client.url_format(url2) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID2}/{Name2}"
 
 
 def test_feed_tags_param(mocker):
@@ -53,7 +53,7 @@ def test_feed_tags_param(mocker):
     - run the fetch incidents command using the Client
     Validate The value of the tags field.
     """
-    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds='Daily Threat Feed')
-    mocker.patch.object(client, 'daily_custom_http_request', return_value=INDICATORS)
+    client = Client(api_key="a", insecure=False)
+    mocker.patch.object(client, 'daily_http_request', return_value=INDICATORS)
     indicators = fetch_indicators_command(client, ['test_tag'])
     assert indicators[0].get('fields').get('tags') == ['test_tag']
