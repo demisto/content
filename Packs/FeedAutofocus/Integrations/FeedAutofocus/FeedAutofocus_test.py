@@ -1,4 +1,4 @@
-from FeedAutofocus import Client
+from FeedAutofocus import Client, fetch_indicators_command
 
 INDICATORS = [
     "d4da1b2d5554587136f2bcbdf0a6a1e29ab83f1d64a4b2049f9787479ad02fad",
@@ -38,3 +38,22 @@ def test_url_format():
     url2 = "autofocus.paloaltonetworks.com/IOCFeed/{ID2}/{Name2}"
     assert client.url_format(url1) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID}/{Name}"
     assert client.url_format(url2) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID2}/{Name2}"
+
+
+def test_feed_tags_param(mocker):
+    """Unit test
+    Given
+    - fetch indicators command
+    - command args
+    - command raw response
+    When
+    - mock the feed tags param.
+    - mock the Client's daily_http_request.
+    Then
+    - run the fetch incidents command using the Client
+    Validate The value of the tags field.
+    """
+    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds='Daily Threat Feed')
+    mocker.patch.object(client, 'daily_custom_http_request', return_value=INDICATORS)
+    indicators = fetch_indicators_command(client, ['test_tag'])
+    assert indicators[0].get('fields').get('tags') == ['test_tag']
