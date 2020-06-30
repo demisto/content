@@ -1,6 +1,6 @@
 commonfields:
   id: NTT Cyber Threat Sensor
-  version: -1
+  version: 1.0.0
 name: NTT Cyber Threat Sensor
 display: NTT Cyber Threat Sensor
 category: Network Security
