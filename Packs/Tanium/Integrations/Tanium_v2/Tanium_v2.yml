@@ -129,7 +129,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The question parameters. For example, sensor1{key1=val1,key2=val2},sensor2{key1=val1}.
+      description: The question parameters. For example, sensor1{key1=val1,key2=val2};sensor2{key1=val1}.
       isArray: false
       name: parameters
       required: false
