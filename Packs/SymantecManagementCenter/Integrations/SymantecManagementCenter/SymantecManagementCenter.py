@@ -1039,7 +1039,7 @@ def update_policy_content_command():
         )
 
     output = demisto.args()
-    human_readable = tableToMarkdown('Successfully updated content of the policy', output)
+    human_readable = tableToMarkdown('Successfully updated content in the policy', output)
     return_outputs(human_readable, {}, output)
 
 
