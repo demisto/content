@@ -1,4 +1,4 @@
-id: 13e6c86c-ae18-4074-8a8c-acfec29b1fbc
+id: Code42 Change Blocked Status
 description: A simple playbook for blocking or unblocking a user in Code42.
 inputs:
 - description: Either the string "block" or "unblock".
@@ -31,6 +31,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ""
     taskid: 9a342074-7df0-4dd1-8a82-d7804e6082b3
     timertriggers: []
     type: start
@@ -124,6 +125,7 @@ tasks:
       name: Is Block or Unblock?
       type: condition
       version: -1
+      description: ""
     taskid: 435ab4db-7c90-42fe-8c5c-4d195b5d52a4
     timertriggers: []
     type: condition
@@ -214,6 +216,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ""
     taskid: d9a6c88f-b5e1-4c92-850a-99b4f59908aa
     timertriggers: []
     type: title
@@ -225,6 +228,9 @@ tasks:
         }
       }
 version: -1
+fromversion: 5.0.0
+tests:
+- No Test
 view: |-
   {
     "linkLabelsPosition": {},

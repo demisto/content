@@ -459,6 +459,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Associates risk tags with the employee with the given username.
     execution: false
     name: code42-highriskemployee-add-risk-tags
     outputs:
@@ -485,6 +486,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Disassociates risk tags from the user with the given username.
     execution: false
     name: code42-highriskemployee-remove-risk-tags
     outputs:
@@ -512,6 +514,7 @@ script:
       secret: false
     - default: false
       defaultValue: The email to give to the user.
+      description: The email of the employee to create.
       isArray: false
       name: email
       required: true
@@ -593,7 +596,7 @@ script:
     - contextPath: Code42.User.UserID
       description: The ID of a Code42 User.
       type: String
-  dockerimage: demisto/py42:1.0.0.9242
+  dockerimage: demisto/py42:1.0.0.9323
   feed: false
   isfetch: true
   longRunning: false

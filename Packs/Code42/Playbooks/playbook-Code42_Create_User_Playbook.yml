@@ -1,4 +1,5 @@
-id: f1a0cdb1-feb8-4752-8502-0e5e8587c81f
+id: Code42 Create User Playbook
+description: A simple playbook for creating a user in Code42.
 inputs:
 - description: The username to give to the newly created user.
   key: Username
@@ -35,6 +36,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ""
     taskid: b1876bae-e1fa-400e-8bd3-97ed9762ce39
     timertriggers: []
     type: start
@@ -128,6 +130,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ""
     taskid: 532d230b-7312-4430-8f2a-e1c8108c17fa
     timertriggers: []
     type: title
@@ -139,6 +142,9 @@ tasks:
         }
       }
 version: -1
+fromversion: 5.0.0
+tests:
+- No Test
 view: |-
   {
     "linkLabelsPosition": {},

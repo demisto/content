@@ -6,7 +6,7 @@
  "cliName": "code42username",
  "closeForm": false,
  "columns": null,
- "content": false,
+ "content": true,
  "defaultRows": null,
  "description": "",
  "editForm": true,
@@ -35,5 +35,6 @@
  "useAsKpi": false,
  "validatedError": "",
  "validationRegex": "",
- "version": -1
+ "version": -1,
+ "fromVersion": "5.0.0"
 }

@@ -8,7 +8,7 @@
   "cliName": "code42alertname",
   "closeForm": false,
   "columns": null,
-  "content": false,
+  "content": true,
   "defaultRows": null,
   "description": "",
   "editForm": true,
@@ -19,7 +19,7 @@
   "isReadOnly": false,
   "locked": false,
   "mergeStrategy": "",
-  "name": "Code42 Alert Name",
+  "name": "Code42 SecurityAlert Name",
   "neverSetAsRequired": false,
   "ownerOnly": false,
   "placeholder": "",
@@ -37,5 +37,6 @@
   "useAsKpi": false,
   "validatedError": "",
   "validationRegex": "",
-  "version": -1
+  "version": -1,
+  "fromVersion": "5.0.0"
 }

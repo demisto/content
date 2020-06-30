@@ -1,4 +1,4 @@
-id: a2335ce7-17b0-42d4-8f69-48bcfeb28a4d
+id: Code42 Change User Activation
 description: A simple playbook for deactivating or reactivating a user in Code42.
 inputs:
 - description: Either "deactivate" or "reactivate"; the action you want to be done
@@ -32,6 +32,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ""
     taskid: 94f6760d-eacc-498d-8b1c-0d9aff499a08
     timertriggers: []
     type: start
@@ -125,6 +126,7 @@ tasks:
       name: Is Deactivate or Reactivate?
       type: condition
       version: -1
+      description: ""
     taskid: 013b9275-f36c-49f4-8ad5-d3989cd6b088
     timertriggers: []
     type: condition
@@ -149,6 +151,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ""
     taskid: 7d22084e-bc48-4c9c-8af9-1e83d8901002
     timertriggers: []
     type: title
@@ -226,6 +229,9 @@ tasks:
         }
       }
 version: -1
+fromversion: 5.0.0
+tests:
+- No Test
 view: |-
   {
     "linkLabelsPosition": {

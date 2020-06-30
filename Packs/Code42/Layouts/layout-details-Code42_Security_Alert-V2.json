@@ -468,6 +468,6 @@
               }
        ],
        "typeId": "Code42 Security Alert",
-       "version": -1,
-       "fromVersion": "5.0.0"
+       "fromVersion": "5.0.0",
+       "version": -1
 }
