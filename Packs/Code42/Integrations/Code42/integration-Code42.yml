@@ -44,7 +44,7 @@ configuration:
   required: false
   type: 8
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
-display: Code42
+display: Code42 (Partner Contribution)
 name: Code42
 script:
   commands:
@@ -1153,61 +1153,62 @@ script:
 
     def alert_get_command(client, args):
         code42_securityalert_context = []
-        try:
-            alert = client.get_alert_details(args["id"])
-            if not alert:
-                return "No results found", {}, {}
-
-            code42_context = map_to_code42_alert_context(alert)
-            code42_securityalert_context.append(code42_context)
-            readable_outputs = tableToMarkdown(
-                "Code42 Security Alert Results",
-                code42_securityalert_context,
-                headers=SECURITY_ALERT_HEADERS,
-            )
+        alert = client.get_alert_details(args["id"])
+        if not alert:
             return CommandResults(
-                outputs_prefix="Code42.SecurityAlert",
+                readable_output="No results found",
+                outputs={},
                 outputs_key_field="ID",
-                outputs=code42_securityalert_context,
-                readable_output=readable_outputs,
-                raw_response=alert,
+                outputs_prefix="Code42.SecurityAlert",
+                raw_response={},
             )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+
+        code42_context = map_to_code42_alert_context(alert)
+        code42_securityalert_context.append(code42_context)
+        readable_outputs = tableToMarkdown(
+            "Code42 Security Alert Results",
+            code42_securityalert_context,
+            headers=SECURITY_ALERT_HEADERS,
+        )
+        return CommandResults(
+            outputs_prefix="Code42.SecurityAlert",
+            outputs_key_field="ID",
+            outputs=code42_securityalert_context,
+            readable_output=readable_outputs,
+            raw_response=alert,
+        )
 
 
     @logger
 
     def alert_resolve_command(client, args):
         code42_securityalert_context = []
-
-        try:
-            alert_id = client.resolve_alert(args["id"])
-
-            if not alert_id:
-                return "No results found", {}, {}
-
-            # Retrieve new alert details
-            alert_details = client.get_alert_details(alert_id)
-            if not alert_details:
-                return "Error retrieving updated alert", {}, {}
-
-            code42_context = map_to_code42_alert_context(alert_details)
-            code42_securityalert_context.append(code42_context)
-            readable_outputs = tableToMarkdown(
-                "Code42 Security Alert Resolved",
-                code42_securityalert_context,
-                headers=SECURITY_ALERT_HEADERS,
-            )
+        alert_id = client.resolve_alert(args["id"])
+        if not alert_id:
             return CommandResults(
-                outputs_prefix="Code42.SecurityAlert",
+                readable_output="No results found",
+                outputs={},
                 outputs_key_field="ID",
-                outputs=code42_securityalert_context,
-                readable_output=readable_outputs,
-                raw_response=alert_details,
+                outputs_prefix="Code42.SecurityAlert",
+                raw_response={},
             )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+
+        # Retrieve new alert details
+        alert_details = client.get_alert_details(alert_id)
+        code42_context = map_to_code42_alert_context(alert_details)
+        code42_securityalert_context.append(code42_context)
+        readable_outputs = tableToMarkdown(
+            "Code42 Security Alert Resolved",
+            code42_securityalert_context,
+            headers=SECURITY_ALERT_HEADERS,
+        )
+        return CommandResults(
+            outputs_prefix="Code42.SecurityAlert",
+            outputs_key_field="ID",
+            outputs=code42_securityalert_context,
+            readable_output=readable_outputs,
+            raw_response=alert_details,
+        )
 
 
     @logger
@@ -1216,75 +1217,64 @@ script:
         departing_date = args.get("departuredate")
         username = args["username"]
         note = args.get("note")
-        try:
-            user_id = client.add_user_to_departing_employee(username, departing_date, note)
-            # CaseID included but it deprecated.
-            de_context = {
-                "CaseID": user_id,
-                "UserID": user_id,
-                "Username": username,
-                "DepartureDate": departing_date,
-                "Note": note,
-            }
-            readable_outputs = tableToMarkdown("Code42 Departing Employee List User Added", de_context)
-            return CommandResults(
-                outputs_prefix="Code42.DepartingEmployee",
-                outputs_key_field="UserID",
-                outputs=de_context,
-                readable_output=readable_outputs,
-                raw_response=user_id,
-            )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+        user_id = client.add_user_to_departing_employee(username, departing_date, note)
+        # CaseID included but is deprecated.
+        de_context = {
+            "CaseID": user_id,
+            "UserID": user_id,
+            "Username": username,
+            "DepartureDate": departing_date,
+            "Note": note,
+        }
+        readable_outputs = tableToMarkdown("Code42 Departing Employee List User Added", de_context)
+        return CommandResults(
+            outputs_prefix="Code42.DepartingEmployee",
+            outputs_key_field="UserID",
+            outputs=de_context,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
 
 
     @logger
 
     def departingemployee_remove_command(client, args):
         username = args["username"]
-        try:
-            user_id = client.remove_user_from_departing_employee(username)
-            # CaseID included but is deprecated.
-            de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
-            readable_outputs = tableToMarkdown(
-                "Code42 Departing Employee List User Removed", de_context
-            )
-            return CommandResults(
-                outputs_prefix="Code42.DepartingEmployee",
-                outputs_key_field="UserID",
-                outputs=de_context,
-                readable_output=readable_outputs,
-                raw_response=user_id,
-            )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+        user_id = client.remove_user_from_departing_employee(username)
+        # CaseID included but is deprecated.
+        de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
+        readable_outputs = tableToMarkdown("Code42 Departing Employee List User Removed", de_context)
+        return CommandResults(
+            outputs_prefix="Code42.DepartingEmployee",
+            outputs_key_field="UserID",
+            outputs=de_context,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
 
 
     @logger
 
     def departingemployee_get_all_command(client, args):
         results = args.get("results") or 50
-        try:
-            employees = client.get_all_departing_employees(results)
-            employees_context = [
-                {
-                    "UserID": e["userId"],
-                    "Username": e["userName"],
-                    "DepartureDate": e.get("departureDate"),
-                    "Note": e["notes"],
-                }
-                for e in employees
-            ]
-            readable_outputs = tableToMarkdown("All Departing Employees", employees_context)
-            return CommandResults(
-                outputs_prefix="Code42.DepartingEmployee",
-                outputs_key_field="UserID",
-                outputs=employees_context,
-                readable_output=readable_outputs,
-                raw_response=employees,
-            )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+        employees = client.get_all_departing_employees(results)
+        employees_context = [
+            {
+                "UserID": e.get("userId"),
+                "Username": e.get("userName"),
+                "DepartureDate": e.get("departureDate"),
+                "Note": e.get("notes"),
+            }
+            for e in employees
+        ]
+        readable_outputs = tableToMarkdown("All Departing Employees", employees_context)
+        return CommandResults(
+            outputs_prefix="Code42.DepartingEmployee",
+            outputs_key_field="UserID",
+            outputs=employees_context,
+            readable_output=readable_outputs,
+            raw_response=employees,
+        )
 
 
     @logger
@@ -1292,40 +1282,32 @@ script:
     def highriskemployee_add_command(client, args):
         username = args["username"]
         note = args.get("note")
-        try:
-            user_id = client.add_user_to_high_risk_employee(username, note)
-            hr_context = {"UserID": user_id, "Username": username}
-            readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Added", hr_context)
-            return CommandResults(
-                outputs_prefix="Code42.HighRiskEmployee",
-                outputs_key_field="UserID",
-                outputs=hr_context,
-                readable_output=readable_outputs,
-                raw_response=user_id,
-            )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+        user_id = client.add_user_to_high_risk_employee(username, note)
+        hr_context = {"UserID": user_id, "Username": username}
+        readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Added", hr_context)
+        return CommandResults(
+            outputs_prefix="Code42.HighRiskEmployee",
+            outputs_key_field="UserID",
+            outputs=hr_context,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
 
 
     @logger
 
     def highriskemployee_remove_command(client, args):
         username = args["username"]
-        try:
-            user_id = client.remove_user_from_high_risk_employee(username)
-            hr_context = {"UserID": user_id, "Username": username}
-            readable_outputs = tableToMarkdown(
-                "Code42 High Risk Employee List User Removed", hr_context
-            )
-            return CommandResults(
-                outputs_prefix="Code42.HighRiskEmployee",
-                outputs_key_field="UserID",
-                outputs=hr_context,
-                readable_output=readable_outputs,
-                raw_response=user_id,
-            )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+        user_id = client.remove_user_from_high_risk_employee(username)
+        hr_context = {"UserID": user_id, "Username": username}
+        readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Removed", hr_context)
+        return CommandResults(
+            outputs_prefix="Code42.HighRiskEmployee",
+            outputs_key_field="UserID",
+            outputs=hr_context,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
 
 
     @logger
@@ -1333,23 +1315,19 @@ script:
     def highriskemployee_get_all_command(client, args):
         tags = args.get("risktags")
         results = args.get("results") or 50
-        try:
-            employees = client.get_all_high_risk_employees(tags, results)
-            employees_context = [
-                {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
-                for e in employees
-            ]
-            readable_outputs = tableToMarkdown("Retrieved All High Risk Employees", employees_context)
-            return CommandResults(
-                outputs_prefix="Code42.HighRiskEmployee",
-                outputs_key_field="UserID",
-                outputs=employees_context,
-                readable_output=readable_outputs,
-                raw_response=employees,
-            )
-
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+        employees = client.get_all_high_risk_employees(tags, results)
+        employees_context = [
+            {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
+            for e in employees
+        ]
+        readable_outputs = tableToMarkdown("Retrieved All High Risk Employees", employees_context)
+        return CommandResults(
+            outputs_prefix="Code42.HighRiskEmployee",
+            outputs_key_field="UserID",
+            outputs=employees_context,
+            readable_output=readable_outputs,
+            raw_response=employees,
+        )
 
 
     @logger
@@ -1357,19 +1335,16 @@ script:
     def highriskemployee_add_risk_tags_command(client, args):
         username = args.get("username")
         tags = args.get("risktags")
-        try:
-            user_id = client.add_user_risk_tags(username, tags)
-            rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-            readable_outputs = tableToMarkdown("Code42 Risk Tags Added", rt_context)
-            return CommandResults(
-                outputs_prefix="Code42.HighRiskEmployee",
-                outputs_key_field="UserID",
-                outputs=rt_context,
-                readable_output=readable_outputs,
-                raw_response=user_id,
-            )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+        user_id = client.add_user_risk_tags(username, tags)
+        rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
+        readable_outputs = tableToMarkdown("Code42 Risk Tags Added", rt_context)
+        return CommandResults(
+            outputs_prefix="Code42.HighRiskEmployee",
+            outputs_key_field="UserID",
+            outputs=rt_context,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
 
 
     @logger
@@ -1377,19 +1352,16 @@ script:
     def highriskemployee_remove_risk_tags_command(client, args):
         username = args.get("username")
         tags = args.get("risktags")
-        try:
-            user_id = client.remove_user_risk_tags(username, tags)
-            rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-            readable_outputs = tableToMarkdown("Code42 Risk Tags Removed", rt_context)
-            return CommandResults(
-                outputs_prefix="Code42.HighRiskEmployee",
-                outputs_key_field="UserID",
-                outputs=rt_context,
-                readable_output=readable_outputs,
-                raw_response=user_id,
-            )
-        except Exception as e:
-            return_error(create_command_error_message(demisto.command(), e))
+        user_id = client.remove_user_risk_tags(username, tags)
+        rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
+        readable_outputs = tableToMarkdown("Code42 Risk Tags Removed", rt_context)
+        return CommandResults(
+            outputs_prefix="Code42.HighRiskEmployee",
+            outputs_key_field="UserID",
+            outputs=rt_context,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
 
 
     @logger
@@ -1398,6 +1370,7 @@ script:
         code42_security_data_context = []
         _json = args.get("json")
         file_context = []
+
         # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
         if _json is not None:
             file_events = client.search_file_events(_json)
@@ -1429,7 +1402,13 @@ script:
             return code42_results, file_results
 
         else:
-            return "No results found", {}, {}
+            return CommandResults(
+                readable_output="No results found",
+                outputs={},
+                outputs_key_field="EventID",
+                outputs_prefix="Code42.SecurityData",
+                raw_response={},
+            )
 
 
     def user_create_command(client, args):
@@ -1438,7 +1417,7 @@ script:
         email = args.get("email")
         try:
             res = client.create_user(org_name, username, email)
-            outputs = {"Username": res["username"], "UserID": res["userUid"], "Email": res["email"]}
+            outputs = {"Username": res.get("username"), "UserID": res.get("userUid"), "Email": res.get("email")}
             readable_outputs = tableToMarkdown("Code42 User Created", outputs)
             return CommandResults(
                 outputs_prefix="Code42.User",
@@ -1524,7 +1503,7 @@ script:
 
 
     def _create_incident_from_alert_details(details):
-        return {"name": "Code42 - {}".format(details["name"]), "occurred": details["createdAt"]}
+        return {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
 
 
     def _stringify_lists_if_needed(event):
@@ -1663,26 +1642,8 @@ script:
             )
 
 
-    def main():
-        """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-        """
-        username = demisto.params().get("credentials").get("identifier")
-        password = demisto.params().get("credentials").get("password")
-        base_url = demisto.params().get("console_url")
-        # Remove trailing slash to prevent wrong URL path to service
-        verify_certificate = not demisto.params().get("insecure", False)
-        proxy = demisto.params().get("proxy", False)
-        LOG("Command being called is {0}.".format(demisto.command()))
-        try:
-            client = Code42Client(
-                base_url=base_url,
-                sdk=None,
-                auth=(username, password),
-                verify=verify_certificate,
-                proxy=proxy,
-            )
-            commands = {
+    def get_command_map():
+        return {
                 "code42-alert-get": alert_get_command,
                 "code42-alert-resolve": alert_resolve_command,
                 "code42-securitydata-search": securitydata_search_command,
@@ -1700,38 +1661,70 @@ script:
                 "code42-user-deactivate": user_deactivate_command,
                 "code42_user-reactivate": user_reactivate_command,
             }
-            command = demisto.command()
-            if command == "test-module":
-                # This is the call made when pressing the integration Test button.
-                result = test_module(client)
-                demisto.results(result)
-            elif command == "fetch-incidents":
-                integration_context = demisto.getIntegrationContext()
-                # Set and define the fetch incidents command to run after activated via integration settings.
-                next_run, incidents, remaining_incidents = fetch_incidents(
-                    client=client,
-                    last_run=demisto.getLastRun(),
-                    first_fetch_time=demisto.params().get("fetch_time"),
-                    event_severity_filter=demisto.params().get("alert_severity"),
-                    fetch_limit=int(demisto.params().get("fetch_limit")),
-                    include_files=demisto.params().get("include_files"),
-                    integration_context=integration_context,
-                )
-                demisto.setLastRun(next_run)
-                demisto.incidents(incidents)
-                # Store remaining incidents in integration context
-                integration_context["remaining_incidents"] = remaining_incidents
-                demisto.setIntegrationContext(integration_context)
-            elif command in commands:
-                results = commands[command](client, demisto.args())
-                if not isinstance(results, tuple) and not isinstance(results, list):
-                    results = [results]
-                for result in results:
-                    return_results(result)
 
-        # Log exceptions
+
+    def handle_test_command(client):
+        # This is the call made when pressing the integration Test button.
+        result = test_module(client)
+        demisto.results(result)
+
+
+    def handle_fetch_command(client):
+        integration_context = demisto.getIntegrationContext()
+        # Set and define the fetch incidents command to run after activated via integration settings.
+        next_run, incidents, remaining_incidents = fetch_incidents(
+            client=client,
+            last_run=demisto.getLastRun(),
+            first_fetch_time=demisto.params().get("fetch_time"),
+            event_severity_filter=demisto.params().get("alert_severity"),
+            fetch_limit=int(demisto.params().get("fetch_limit")),
+            include_files=demisto.params().get("include_files"),
+            integration_context=integration_context,
+        )
+        demisto.setLastRun(next_run)
+        demisto.incidents(incidents)
+        # Store remaining incidents in integration context
+        integration_context["remaining_incidents"] = remaining_incidents
+        demisto.setIntegrationContext(integration_context)
+
+
+    def try_run_command(command):
+        try:
+            results = command()
+            if not isinstance(results, tuple) and not isinstance(results, list):
+                results = [results]
+            for result in results:
+                return_results(result)
         except Exception as e:
-            return_error("Failed to execute {0} command. Error: {1}".format(demisto.command(), str(e)))
+            return_error(create_command_error_message(demisto.command(), e))
+
+
+    def run_code42_integration():
+        username = demisto.params().get("credentials").get("identifier")
+        password = demisto.params().get("credentials").get("password")
+        base_url = demisto.params().get("console_url")
+        verify_certificate = not demisto.params().get("insecure", False)
+        proxy = demisto.params().get("proxy", False)
+        LOG("Command being called is {0}.".format(demisto.command()))
+        client = Code42Client(
+            base_url=base_url,
+            sdk=None,
+            auth=(username, password),
+            verify=verify_certificate,
+            proxy=proxy,
+        )
+        commands = get_command_map()
+        command = demisto.command()
+        if command == "test-module":
+            handle_test_command(client)
+        elif command == "fetch-incidents":
+            handle_fetch_command(client)
+        elif command in commands:
+            try_run_command(lambda: commands[command](client, demisto.args()))
+
+
+    def main():
+        run_code42_integration()
 
 
     if __name__ in ("__main__", "__builtin__", "builtins"):
@@ -1740,6 +1733,16 @@ script:
   type: python
 image: data:image/png;base64,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
 detaileddescription: >
+  ### Partner Contributed Integration
+
+  #### Integration Author: Code42
+
+  Support and maintenance for this integration are provided by the author. Please use the following contact details:
+
+  - **URL**: [https://support.code42.com/Administrator/Cloud/Monitoring_and_managing](https://support.code42.com/Administrator/Cloud/Monitoring_and_managing)
+
+  ***
+
   ## Code42
 
 
