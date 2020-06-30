@@ -1,5 +1,5 @@
 
-from Utils.old_content_branch import handle_json_file, handle_yml_file
+from Utils.old_content_branch import should_keep_json_file, should_keep_yml_file, get_json, get_yaml
 
 TEST_VERSION = "4.1.0"
 JSON_SHOULD_STAY = '../../Packs/CommonReports/Reports/report-MTTRbyIncidentType2Quar.json'
@@ -14,12 +14,13 @@ def test_handle_json__should_say():
     - A path to a json file that should stay - lower fromVersion.
 
     When
-    - Running handle_json_file on it.
+    - Running should_keep_json_file on it.
 
     Then
     - function returns True (file should be updated).
     """
-    assert handle_json_file(JSON_SHOULD_STAY, TEST_VERSION, should_rewrite=False) is True
+    json_content = get_json(JSON_SHOULD_STAY)
+    assert should_keep_json_file(json_content, TEST_VERSION) is True
 
 
 def test_handle_json__should_delete():
@@ -28,12 +29,13 @@ def test_handle_json__should_delete():
     - A path to a json file that shouldn't stay - lower toVersion.
 
     When
-    - Running handle_json_file on it.
+    - Running should_keep_json_file on it.
 
     Then
     - function returns False (file should be deleted).
     """
-    assert handle_json_file(JSON_SHOULD_DELETE, TEST_VERSION, should_rewrite=False) is False
+    json_content = get_json(JSON_SHOULD_DELETE)
+    assert should_keep_json_file(json_content, TEST_VERSION, should_rewrite=False) is False
 
 
 def test_handle_yml__should_stay():
@@ -42,12 +44,13 @@ def test_handle_yml__should_stay():
     - A path to a yml file that should stay - no fromversion.
 
     When
-    - Running handle_yml_file on it.
+    - Running should_keep_yml_file on it.
 
     Then
     - function returns True (file should be updated)
     """
-    assert handle_yml_file(YML_SHOULD_STAY, TEST_VERSION, should_rewrite=False) is True
+    yml_content = get_yaml(YML_SHOULD_STAY)
+    assert should_keep_yml_file(yml_content, TEST_VERSION, should_rewrite=False) is True
 
 
 def test_handle_yml__should_delete():
@@ -56,9 +59,10 @@ def test_handle_yml__should_delete():
     - A path to a yml file that shouldn't stay - higher fromversion.
 
     When
-    - Running handle_yml_file on it.
+    - Running should_keep_yml_file on it.
 
     Then
     - function returns False (file should be deleted)
     """
-    assert handle_yml_file(YML_SHOULD_DELETE, TEST_VERSION, should_rewrite=False) is False
+    yml_content = get_yaml(YML_SHOULD_DELETE)
+    assert should_keep_yml_file(yml_content, TEST_VERSION, should_rewrite=False) is False

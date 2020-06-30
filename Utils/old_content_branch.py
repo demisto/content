@@ -34,33 +34,18 @@ def get_json(file_path):
     return get_file(json.load, file_path, 'json')
 
 
-def handle_yml_file(file_path, new_to_version, should_rewrite=True):
-    yml_content = get_yaml(file_path)
+def should_keep_yml_file(yml_content, new_to_version):
     if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(yml_content.get('fromversion', '0.0.0')) > parse_version(new_to_version):
         return False
 
-    yml_content['toversion'] = new_to_version
-    if should_rewrite:
-        with open(file_path, 'w') as f:
-            yaml.dump(yml_content, f)
-            print(f" - Updating {file_path}")
-
     return True
 
 
-def handle_json_file(file_path, new_to_version, should_rewrite=True):
-    json_content = get_json(file_path)
+def should_keep_json_file(json_content, new_to_version):
     if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(json_content.get('fromVersion', '0.0.0')) > parse_version(new_to_version):
         return False
-
-    json_content['toVersion'] = new_to_version
-
-    if should_rewrite:
-        with open(file_path, 'w') as f:
-            json.dump(json_content, f, indent=4)
-            print(f" - Updating {file_path}")
 
     return True
 
@@ -99,6 +84,107 @@ def delete_json(file_path):
         os.remove(changelog_file)
 
 
+def rewrite_json(file_path, json_content, new_to_version):
+    json_content['toVersion'] = new_to_version
+
+    with open(file_path, 'w') as f:
+        json.dump(json_content, f, indent=4)
+        print(f" - Updating {file_path}")
+
+
+def rewrite_yml(file_path, yml_content, new_to_version):
+    yml_content['toversion'] = new_to_version
+
+    with open(file_path, 'w') as f:
+        yaml.dump(yml_content, f)
+        print(f" - Updating {file_path}")
+
+
+def edit_json_content_entity_directory(new_to_version, dir_path):
+    for file_name in os.listdir(dir_path):
+        file_path = os.path.join(dir_path, file_name)
+        if os.path.isfile(file_path) and file_name.endswith('.json'):
+            json_content = get_json(file_path)
+            if should_keep_json_file(json_content, new_to_version):
+                rewrite_json(file_path, json_content, new_to_version)
+
+            else:
+                delete_json(file_path)
+
+
+def edit_scripts_or_integrations_directory(new_to_version, dir_path):
+    for script_name in os.listdir(dir_path):
+        package_path = os.path.join(dir_path, script_name)
+        if package_path.endswith('.md'):
+            continue
+
+        if os.path.isfile(package_path):
+            yml_file_path = package_path
+
+        else:
+            yml_file_path = os.path.join(package_path, script_name + '.yml')
+
+        yml_content = get_yaml(yml_file_path)
+        if should_keep_yml_file(yml_content, new_to_version):
+            rewrite_yml(yml_file_path, yml_content, new_to_version)
+
+        else:
+            delete_script_or_integration(package_path)
+
+
+def edit_playbooks_directory(new_to_version, dir_path):
+    for file_name in os.listdir(dir_path):
+        file_path = os.path.join(dir_path, file_name)
+        if file_path.endswith('md'):
+            continue
+
+        if os.path.isfile(file_path):
+            if file_path.endswith('.yml'):
+                yml_content = get_yaml(file_path)
+                if should_keep_yml_file(yml_content, new_to_version):
+                    rewrite_yml(file_path, yml_content, new_to_version)
+
+                else:
+                    delete_playbook(file_path)
+
+        else:
+            # in some cases test-playbooks are located in a directory within the TestPlaybooks directory.
+            # this part handles these files.
+            inner_dir_path = file_path
+            for inner_file_name in os.listdir(inner_dir_path):
+                file_path = os.path.join(inner_dir_path, inner_file_name)
+                if file_path.endswith('.yml'):
+                    yml_content = get_yaml(file_path)
+                    if should_keep_yml_file(yml_content, new_to_version):
+                        rewrite_yml(file_path, yml_content, new_to_version)
+
+                    else:
+                        delete_playbook(file_path)
+
+
+def edit_pack(new_to_version, pack_name):
+    pack_path = os.path.join('Packs', pack_name)
+    click.secho(f"Starting process for {pack_path}:")
+    for content_dir in os.listdir(pack_path):
+        dir_path = os.path.join(pack_path, content_dir)
+        if content_dir in ['Playbooks', 'TestPlaybooks']:
+            edit_playbooks_directory(new_to_version, dir_path)
+
+        elif content_dir in ['Scripts', 'Integrations']:
+            edit_scripts_or_integrations_directory(new_to_version, dir_path)
+
+        elif content_dir in ['IncidentFields', 'IncidentTypes', 'IndicatorFields', 'Layouts', 'Classifiers',
+                             'Connections', 'Dashboards', 'IndicatorTypes', 'Reports', 'Widgets']:
+            edit_json_content_entity_directory(new_to_version, dir_path)
+
+    click.secho(f"Finished process for {pack_path}\n")
+
+
+def edit_all_packs(new_to_version):
+    for pack_name in os.listdir('Packs'):
+        edit_pack(new_to_version, pack_name)
+
+
 parser = argparse.ArgumentParser("Alter the branch to assign a new toVersion to all relevant files.")
 parser.add_argument('-v', '--new-to-version', help='The new to version to assign.', required=True)
 
@@ -109,55 +195,7 @@ def main():
         new_to_version = new_to_version + ".9"
 
     click.secho("Starting Branch Editing")
-    for pack_name in os.listdir('Packs'):
-        pack_path = os.path.join('Packs', pack_name)
-        click.secho(f"Starting process for {pack_path}:")
-        for content_dir in os.listdir(pack_path):
-            dir_path = os.path.join(pack_path, content_dir)
-            if content_dir in ['Playbooks', 'TestPlaybooks']:
-                for file_name in os.listdir(dir_path):
-                    file_path = os.path.join(dir_path, file_name)
-                    if file_path.endswith('md'):
-                        continue
-
-                    if os.path.isfile(file_path):
-                        if file_path.endswith('.yml'):
-                            if not handle_yml_file(file_path, new_to_version):
-                                delete_playbook(file_path)
-
-                    else:
-                        # in some cases test-playbooks are located in a directory within the TestPlaybooks directory.
-                        # this part handles these files.
-                        inner_dir_path = file_path
-                        for inner_file_name in os.listdir(inner_dir_path):
-                            file_path = os.path.join(inner_dir_path, inner_file_name)
-                            if file_path.endswith('.yml'):
-                                if not handle_yml_file(file_path, new_to_version):
-                                    delete_playbook(file_path)
-
-            if content_dir in ['Scripts', 'Integrations']:
-                for script_name in os.listdir(dir_path):
-                    path = os.path.join(dir_path, script_name)
-                    if path.endswith('.md'):
-                        continue
-
-                    if os.path.isfile(path):
-                        yml_file_path = path
-
-                    else:
-                        yml_file_path = os.path.join(path, script_name + '.yml')
-                    if not handle_yml_file(yml_file_path, new_to_version):
-                        delete_script_or_integration(path)
-
-            elif content_dir in ['IncidentFields', 'IncidentTypes', 'IndicatorFields', 'Layouts', 'Classifiers',
-                                 'Connections', 'Dashboards', 'IndicatorTypes', 'Reports', 'Widgets']:
-                for file_name in os.listdir(dir_path):
-                    file_path = os.path.join(dir_path, file_name)
-                    if os.path.isfile(file_path) and file_name.endswith('.json'):
-                        if not handle_json_file(file_path, new_to_version):
-                            delete_json(file_path)
-
-        click.secho(f"Finished process for {pack_path}\n")
+    edit_all_packs(new_to_version)
 
     click.secho("Deleting empty directories\n")
     os.system("find Packs -type d -empty -delete")
