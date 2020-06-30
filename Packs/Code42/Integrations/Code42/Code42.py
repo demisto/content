@@ -327,7 +327,9 @@ class Code42Client(BaseClient):
 
 class Code42AlertNotFoundError(Exception):
     def __init__(self, alert_id):
-        super(Code42AlertNotFoundError, self).__init__("No alert found with ID {0}.".format(alert_id))
+        super(Code42AlertNotFoundError, self).__init__(
+            "No alert found with ID {0}.".format(alert_id)
+        )
 
 
 class Code42UserNotFoundError(Exception):
@@ -342,6 +344,7 @@ class Code42OrgNotFoundError(Exception):
         super(Code42OrgNotFoundError, self).__init__(
             "No organization found with name {0}.".format(org_name)
         )
+
 
 class Code42SearchFilters(object):
     def __init__(self):

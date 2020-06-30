@@ -303,16 +303,16 @@ Get all employees on the Departing Employee List.
 |DepartureDate|Note|UserID|Username|
 |---|---|---|---|
 |  | test | 921286907298179098 | user1@example.com |
-| 2020-07-20 | This is added using csv file to test bulk adding of users to high risk employee list | 948938588694228306 | sagar.patel+l2@code42.com |
+| 2020-07-20 | This is added using csv file to test bulk adding of users to high risk employee list | 948938588694228306 | user1@example.com |
 |  |  | 912249223544144039 | unicode@example.com |
 |  |  | 894165832411107815 | testuser@example.com |
-|  | L3 security risk | 949093399968329042 | sagar.patel+l3@code42.com |
-|  | tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
-|  |  | 906619740182876328 | resilient.ibm.user@example.com |
-|  |  | 906619632003387560 | resilient.ibm.admin@example.com |
-|  |  | 912338501981077099 | mike.mccollow+testair@code42.com |
-|  | leaving for competition | 951984198921509692 | john.anderson@qrstinc.com |
-|  | Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
+|  | L3 security risk | 949093399968329042 | user2@example.com |
+|  | tests and more tests | 942897397520286581 | user3@example.com |
+|  |  | 906619740182876328 | user4@example.com |
+|  |  | 906619632003387560 | user5@example.com |
+|  |  | 912338501981077099 | user6@example.com |
+|  | leaving for competition | 951984198921509692 | user7@example.com.com |
+|  | Leaving for competitor | 895005723650937319 | user8@example.com |
 
 
 ### code42-highriskemployee-add
@@ -465,11 +465,11 @@ Get all employees on the High Risk Employee List.
 ### Retrieved All High Risk Employees
 |Note|UserID|Username|
 |---|---|---|
-| tests and more tests | 942897397520286581 | kiran.chaudhary+partner@code42.com |
-| Leaving for competitor | 895005723650937319 | alan.grgic+sacumen@code42.com |
-| Test user addition from XSOAR | 912098363086307495 | spatel@code42.com |
-| test | 921286907298179098 | juliya.smith+partners@code42.com |
-| Risky activity | 942876157732602741 | partner.demisto@example.com |
+| tests and more tests | 942897397520286581 | user1@example.com |
+| Leaving for competitor | 895005723650937319 | user2@example.com |
+| Test user addition from XSOAR | 912098363086307495 | user3@example.com |
+| test | 921286907298179098 | user4@example.com |
+| Risky activity | 942876157732602741 | user5@example.com |
 
 
 ### code42-highriskemployee-add-risk-tags
