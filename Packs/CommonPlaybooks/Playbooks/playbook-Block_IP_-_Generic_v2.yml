@@ -9,6 +9,7 @@ description: |-
   * Palo Alto Networks Minemeld
   * Palo Alto Networks PAN-OS
   * Zscaler
+  * FortiGate
 starttaskid: "0"
 tasks:
   "0":
@@ -662,8 +663,8 @@ tasks:
       id: 8d1ccb6b-eade-48db-8c34-904dbcbf644c
       version: -1
       name: Use Static Address Group?
-      description: Verify if there static address group name is set as a playbook
-        input
+      description: Verify if there is a static address group name set as a playbook
+        input.
       type: condition
       iscommand: false
       brand: ""
@@ -702,7 +703,7 @@ tasks:
       id: 156aee26-31e3-4cba-8846-767ee8a2dc6a
       version: -1
       name: Use External Dynamic List?
-      description: Verify if there is an EDL Server IP as a playbook input
+      description: Verify if there is an EDL Server IP as a playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -747,8 +748,8 @@ tasks:
       id: 181b1519-8b3e-4296-8cb2-d0f91984b16b
       version: -1
       name: Use Dynamic Address Group?
-      description: Verify if there dynamic address group name is set as a playbook
-        input
+      description: Verify if there is a dynamic address group name set as a playbook
+        input.
       type: condition
       iscommand: false
       brand: ""
@@ -814,7 +815,7 @@ tasks:
     task:
       id: 5ec7ae21-1c50-4a72-8a86-daa39ac43f18
       version: -1
-      name: Is ForitGate enabled?
+      name: Is FortiGate enabled?
       description: Verify that there is a valid instance of FortiGate enabled.
       type: condition
       iscommand: false
