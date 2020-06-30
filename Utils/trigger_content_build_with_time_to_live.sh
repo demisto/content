@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+# There are two use-cases to use this script:
+# 1. Running the script on local branch
+# The script will get local_branch_name, circleCi token and time_to_live argument (in minutes) and set the instances in the build according to the given time.
+# For example:
+# ./Utils/trigger_content_build_with_time_to_live.sh my_branch_name <CircleCi token> 360
+# After running this command line  it will trigger a build on the given branch and all of the instances will live for 6 hours.
+# in this case, if you don’t specify time to live argument the default will be 180 minutes.
+
+# 2. Running the script with the contributor changes
+# The script will get local_branch_name, circleCi token, time to love argument(in minutes), contributor_user_name:contributor_branch_name and the pack path of the pack that has been changed/added.
+# For example:
+# ./Utils/trigger_content_build_with_time_to_live.sh content_branch_name <CircleCiToken> 420 contrib_name:contrib_branch_name Packs/New_Pack/
+# In this case, the script will trigger a build and the demisto-marketplace instance will live for 7 hours.
+# Notice that if you want to run a build on contributor branch you must specify time to live argument and the recommended time is 180 minutes.
+
 if [[ "$#" -lt 2 ]]; then
   echo "Usage: $0 <content branch name: such as master> <circle ci token> [time to live] [contributor branch: such as testUser:testBranch] [changed pack: such as Packs/test_pack/]"
   echo "You can get a circle ci token from: CircleCI -> User -> Personal API Tokens"
