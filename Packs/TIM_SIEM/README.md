@@ -7,3 +7,5 @@ With this content pack, you can significantly reduce the time and effort by auto
 The playbooks included in this pack help you automate repetitive tasks associated with with the handling of indicators:
 
 - Sending indicators of type IP, Domains, URLs and more to the customers SIEM product of choice.
+
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks)_
