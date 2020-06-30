@@ -651,7 +651,7 @@ script:
         username = args["username"]
         note = args.get("note")
         user_id = client.add_user_to_departing_employee(username, departing_date, note)
-        # CaseID included but it deprecated.
+        # CaseID included but is deprecated.
         de_context = {
             "CaseID": user_id,
             "UserID": user_id,
@@ -897,7 +897,7 @@ script:
             incidents = [self._create_incident_from_alert(a) for a in alerts]
             save_time = datetime.utcnow().timestamp()
             next_run = {"last_fetch": save_time}
-            return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit :]
+            return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
         def _fetch_remaining_incidents_from_last_run(self):
             if self._integration_context:
@@ -907,7 +907,7 @@ script:
                     return (
                         self._last_run,
                         remaining_incidents[: self._fetch_limit],
-                        remaining_incidents[self._fetch_limit :],
+                        remaining_incidents[self._fetch_limit:],
                     )
 
         def _get_start_query_time(self):
