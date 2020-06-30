@@ -165,7 +165,11 @@ class Code42Client(BaseClient):
         # Allow sdk parameter for unit testing.
         # Otherwise, lazily load the SDK so that the TEST Command can effectively check auth.
         self._sdk = sdk
-        self._sdk_factory = lambda: py42.sdk.from_local_account(base_url, auth[0], auth[1]) if not self._sdk else None
+        self._sdk_factory = (
+            lambda: py42.sdk.from_local_account(base_url, auth[0], auth[1])
+            if not self._sdk
+            else None
+        )
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
 
     def _get_sdk(self):
@@ -504,52 +508,61 @@ def create_command_error_message(cmd, ex):
 @logger
 def alert_get_command(client, args):
     code42_securityalert_context = []
-    try:
-        alert = client.get_alert_details(args["id"])
-        if not alert:
-            return "No results found", {}, {}
-
-        code42_context = map_to_code42_alert_context(alert)
-        code42_securityalert_context.append(code42_context)
-        readable_outputs = tableToMarkdown(
-            "Code42 Security Alert Results",
-            code42_securityalert_context,
-            headers=SECURITY_ALERT_HEADERS,
+    alert = client.get_alert_details(args["id"])
+    if not alert:
+        return CommandResults(
+            readable_output="No results found",
+            outputs={"Results": []},
+            outputs_key_field="ID",
+            outputs_prefix="Code42.SecurityAlert",
+            raw_response={},
         )
-        return readable_outputs, {"Code42.SecurityAlert": code42_securityalert_context}, alert
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+
+    code42_context = map_to_code42_alert_context(alert)
+    code42_securityalert_context.append(code42_context)
+    readable_outputs = tableToMarkdown(
+        "Code42 Security Alert Results",
+        code42_securityalert_context,
+        headers=SECURITY_ALERT_HEADERS,
+    )
+    return CommandResults(
+        outputs_prefix="Code42.SecurityAlert",
+        outputs_key_field="ID",
+        outputs=code42_securityalert_context,
+        readable_output=readable_outputs,
+        raw_response=alert,
+    )
 
 
 @logger
 def alert_resolve_command(client, args):
-    code42_security_alert_context = []
-
-    try:
-        alert_id = client.resolve_alert(args["id"])
-
-        if not alert_id:
-            return "No results found", {}, {}
-
-        # Retrieve new alert details
-        alert_details = client.get_alert_details(alert_id)
-        if not alert_details:
-            return "Error retrieving updated alert", {}, {}
-
-        code42_context = map_to_code42_alert_context(alert_details)
-        code42_security_alert_context.append(code42_context)
-        readable_outputs = tableToMarkdown(
-            "Code42 Security Alert Resolved",
-            code42_security_alert_context,
-            headers=SECURITY_ALERT_HEADERS,
+    code42_securityalert_context = []
+    alert_id = client.resolve_alert(args["id"])
+    if not alert_id:
+        return CommandResults(
+            readable_output="No results found",
+            outputs={"Results": []},
+            outputs_key_field="ID",
+            outputs_prefix="Code42.SecurityAlert",
+            raw_response={},
         )
-        return (
-            readable_outputs,
-            {"Code42.SecurityAlert": code42_security_alert_context},
-            alert_details,
-        )
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+
+    # Retrieve new alert details
+    alert_details = client.get_alert_details(alert_id)
+    code42_context = map_to_code42_alert_context(alert_details)
+    code42_securityalert_context.append(code42_context)
+    readable_outputs = tableToMarkdown(
+        "Code42 Security Alert Resolved",
+        code42_securityalert_context,
+        headers=SECURITY_ALERT_HEADERS,
+    )
+    return CommandResults(
+        outputs_prefix="Code42.SecurityAlert",
+        outputs_key_field="ID",
+        outputs=code42_securityalert_context,
+        readable_output=readable_outputs,
+        raw_response=alert_details,
+    )
 
 
 @logger
@@ -557,129 +570,161 @@ def departingemployee_add_command(client, args):
     departing_date = args.get("departuredate")
     username = args["username"]
     note = args.get("note")
-    try:
-        user_id = client.add_user_to_departing_employee(username, departing_date, note)
-        de_context = {
-            "UserID": user_id,
-            "Username": username,
-            "DepartureDate": departing_date,
-            "Note": note,
-        }
-        readable_outputs = tableToMarkdown("Code42 Departing Employee List User Added", de_context)
-        return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+    user_id = client.add_user_to_departing_employee(username, departing_date, note)
+    # CaseID included but is deprecated.
+    de_context = {
+        "CaseID": user_id,
+        "UserID": user_id,
+        "Username": username,
+        "DepartureDate": departing_date,
+        "Note": note,
+    }
+    readable_outputs = tableToMarkdown("Code42 Departing Employee List User Added", de_context)
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        outputs=de_context,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
 
 
 @logger
 def departingemployee_remove_command(client, args):
     username = args["username"]
-    try:
-        user_id = client.remove_user_from_departing_employee(username)
-        de_context = {"UserID": user_id, "Username": username}
-        readable_outputs = tableToMarkdown(
-            "Code42 Departing Employee List User Removed", de_context
-        )
-        return readable_outputs, {"Code42.DepartingEmployee": de_context}, user_id
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+    user_id = client.remove_user_from_departing_employee(username)
+    # CaseID included but is deprecated.
+    de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
+    readable_outputs = tableToMarkdown("Code42 Departing Employee List User Removed", de_context)
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        outputs=de_context,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
 
 
 @logger
 def departingemployee_get_all_command(client, args):
     results = args.get("results") or 50
-    try:
-        employees = client.get_all_departing_employees(results)
-        employees_context = [
-            {
-                "UserID": e["userId"],
-                "Username": e["userName"],
-                "DepartureDate": e.get("departureDate"),
-                "Note": e["notes"],
-            }
-            for e in employees
-        ]
-        readable_outputs = tableToMarkdown("All Departing Employees", employees_context)
-        return (
-            readable_outputs,
-            {"Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)": employees_context},
-            employees,
+    employees = client.get_all_departing_employees(results)
+    if not employees:
+        return CommandResults(
+            readable_output="No results found",
+            outputs_prefix="Code42.DepartingEmployee",
+            outputs_key_field="UserID",
+            outputs={"Results": []},
+            raw_response={}
         )
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+
+    employees_context = [
+        {
+            "UserID": e.get("userId"),
+            "Username": e.get("userName"),
+            "DepartureDate": e.get("departureDate"),
+            "Note": e.get("notes"),
+        }
+        for e in employees
+    ]
+    readable_outputs = tableToMarkdown("All Departing Employees", employees_context)
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        outputs=employees_context,
+        readable_output=readable_outputs,
+        raw_response=employees,
+    )
 
 
 @logger
 def highriskemployee_add_command(client, args):
     username = args["username"]
     note = args.get("note")
-    try:
-        user_id = client.add_user_to_high_risk_employee(username, note)
-        hr_context = {"UserID": user_id, "Username": username}
-        readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Added", hr_context)
-        return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+    user_id = client.add_user_to_high_risk_employee(username, note)
+    hr_context = {"UserID": user_id, "Username": username}
+    readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Added", hr_context)
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        outputs=hr_context,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
 
 
 @logger
 def highriskemployee_remove_command(client, args):
     username = args["username"]
-    try:
-        user_id = client.remove_user_from_high_risk_employee(username)
-        hr_context = {"UserID": user_id, "Username": username}
-        readable_outputs = tableToMarkdown(
-            "Code42 High Risk Employee List User Removed", hr_context
-        )
-        return readable_outputs, {"Code42.HighRiskEmployee": hr_context}, user_id
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+    user_id = client.remove_user_from_high_risk_employee(username)
+    hr_context = {"UserID": user_id, "Username": username}
+    readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Removed", hr_context)
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        outputs=hr_context,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
 
 
 @logger
 def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
     results = args.get("results") or 50
-    try:
-        employees = client.get_all_high_risk_employees(tags, results)
-        employees_context = [
-            {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
-            for e in employees
-        ]
-        readable_outputs = tableToMarkdown("Retrieved All High Risk Employees", employees_context)
-        return (
-            readable_outputs,
-            {"Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)": employees_context},
-            employees,
+    employees = client.get_all_high_risk_employees(tags, results)
+    if not employees:
+        return CommandResults(
+            readable_output="No results found",
+            outputs_prefix="Code42.HighRiskEmployee",
+            outputs_key_field="UserID",
+            outputs={"Results": []},
+            raw_response={}
         )
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+    employees_context = [
+        {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
+        for e in employees
+    ]
+    readable_outputs = tableToMarkdown("Retrieved All High Risk Employees", employees_context)
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        outputs=employees_context,
+        readable_output=readable_outputs,
+        raw_response=employees,
+    )
 
 
 @logger
 def highriskemployee_add_risk_tags_command(client, args):
     username = args.get("username")
     tags = args.get("risktags")
-    try:
-        user_id = client.add_user_risk_tags(username, tags)
-        rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-        readable_outputs = tableToMarkdown("Code42 Risk Tags Added", rt_context)
-        return readable_outputs, {"Code42.HighRiskEmployee": rt_context}, user_id
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+    user_id = client.add_user_risk_tags(username, tags)
+    rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
+    readable_outputs = tableToMarkdown("Code42 Risk Tags Added", rt_context)
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        outputs=rt_context,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
 
 
 @logger
 def highriskemployee_remove_risk_tags_command(client, args):
     username = args.get("username")
     tags = args.get("risktags")
-    try:
-        user_id = client.remove_user_risk_tags(username, tags)
-        rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-        readable_outputs = tableToMarkdown("Code42 Risk Tags Removed", rt_context)
-        return readable_outputs, {"Code42.HighRiskEmployee": rt_context}, user_id
-    except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+    user_id = client.remove_user_risk_tags(username, tags)
+    rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
+    readable_outputs = tableToMarkdown("Code42 Risk Tags Removed", rt_context)
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        outputs=rt_context,
+        readable_output=readable_outputs,
+        raw_response=user_id,
+    )
 
 
 @logger
@@ -687,6 +732,7 @@ def securitydata_search_command(client, args):
     code42_security_data_context = []
     _json = args.get("json")
     file_context = []
+
     # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
     if _json is not None:
         file_events = client.search_file_events(_json)
@@ -705,11 +751,29 @@ def securitydata_search_command(client, args):
             code42_security_data_context,
             headers=SECURITY_EVENT_HEADERS,
         )
-        security_data_context_key = "Code42.SecurityData(val.EventID && val.EventID == obj.EventID)"
-        context = {security_data_context_key: code42_security_data_context, "File": file_context}
-        return readable_outputs, context, file_events
+        code42_results = CommandResults(
+            outputs_prefix="Code42.SecurityData",
+            outputs_key_field="EventID",
+            outputs=code42_security_data_context,
+            readable_output=readable_outputs,
+            raw_response=file_events,
+        )
+        file_results = CommandResults(
+            outputs_prefix="File", outputs_key_field=None, outputs=file_context
+        )
+        return code42_results, file_results
+
     else:
-        return "No results found", {}, {}
+        return CommandResults(
+            readable_output="No results found",
+            outputs={"Results": []},
+            outputs_key_field="EventID",
+            outputs_prefix="Code42.SecurityData",
+            raw_response={},
+        )
+
+
+"""Fetching"""
 
 
 def _create_incident_from_alert_details(details):
@@ -770,7 +834,7 @@ class Code42SecurityIncidentFetcher(object):
             if remaining_incidents:
                 return (
                     self._last_run,
-                    remaining_incidents[:self._fetch_limit],
+                    remaining_incidents[: self._fetch_limit],
                     remaining_incidents[self._fetch_limit:],
                 )
 
@@ -835,6 +899,9 @@ def fetch_incidents(
     return fetcher.fetch()
 
 
+"""Main and test"""
+
+
 def test_module(client):
     try:
         # Will fail if unauthorized
@@ -848,65 +915,84 @@ def test_module(client):
         )
 
 
-def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
+def get_command_map():
+    return {
+        "code42-alert-get": alert_get_command,
+        "code42-alert-resolve": alert_resolve_command,
+        "code42-securitydata-search": securitydata_search_command,
+        "code42-departingemployee-add": departingemployee_add_command,
+        "code42-departingemployee-remove": departingemployee_remove_command,
+        "code42-departingemployee-get-all": departingemployee_get_all_command,
+        "code42-highriskemployee-add": highriskemployee_add_command,
+        "code42-highriskemployee-remove": highriskemployee_remove_command,
+        "code42-highriskemployee-get-all": highriskemployee_get_all_command,
+        "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
+        "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+    }
+
+
+def handle_test_command(client):
+    # This is the call made when pressing the integration Test button.
+    result = test_module(client)
+    demisto.results(result)
+
+
+def handle_fetch_command(client):
+    integration_context = demisto.getIntegrationContext()
+    # Set and define the fetch incidents command to run after activated via integration settings.
+    next_run, incidents, remaining_incidents = fetch_incidents(
+        client=client,
+        last_run=demisto.getLastRun(),
+        first_fetch_time=demisto.params().get("fetch_time"),
+        event_severity_filter=demisto.params().get("alert_severity"),
+        fetch_limit=int(demisto.params().get("fetch_limit")),
+        include_files=demisto.params().get("include_files"),
+        integration_context=integration_context,
+    )
+    demisto.setLastRun(next_run)
+    demisto.incidents(incidents)
+    # Store remaining incidents in integration context
+    integration_context["remaining_incidents"] = remaining_incidents
+    demisto.setIntegrationContext(integration_context)
+
+
+def try_run_command(command):
+    try:
+        results = command()
+        if not isinstance(results, tuple) and not isinstance(results, list):
+            results = [results]
+        for result in results:
+            return_results(result)
+    except Exception as e:
+        return_error(create_command_error_message(demisto.command(), e))
+
+
+def run_code42_integration():
     username = demisto.params().get("credentials").get("identifier")
     password = demisto.params().get("credentials").get("password")
     base_url = demisto.params().get("console_url")
-    # Remove trailing slash to prevent wrong URL path to service
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
     LOG("Command being called is {0}.".format(demisto.command()))
-    try:
-        client = Code42Client(
-            base_url=base_url,
-            sdk=None,
-            auth=(username, password),
-            verify=verify_certificate,
-            proxy=proxy,
-        )
-        commands = {
-            "code42-alert-get": alert_get_command,
-            "code42-alert-resolve": alert_resolve_command,
-            "code42-securitydata-search": securitydata_search_command,
-            "code42-departingemployee-add": departingemployee_add_command,
-            "code42-departingemployee-remove": departingemployee_remove_command,
-            "code42-departingemployee-get-all": departingemployee_get_all_command,
-            "code42-highriskemployee-add": highriskemployee_add_command,
-            "code42-highriskemployee-remove": highriskemployee_remove_command,
-            "code42-highriskemployee-get-all": highriskemployee_get_all_command,
-            "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
-            "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
-        }
-        command = demisto.command()
-        if command == "test-module":
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            demisto.results(result)
-        elif command == "fetch-incidents":
-            integration_context = demisto.getIntegrationContext()
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            next_run, incidents, remaining_incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=demisto.params().get("fetch_time"),
-                event_severity_filter=demisto.params().get("alert_severity"),
-                fetch_limit=int(demisto.params().get("fetch_limit")),
-                include_files=demisto.params().get("include_files"),
-                integration_context=integration_context,
-            )
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-            # Store remaining incidents in integration context
-            integration_context["remaining_incidents"] = remaining_incidents
-            demisto.setIntegrationContext(integration_context)
-        elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
-    # Log exceptions
-    except Exception as e:
-        return_error("Failed to execute {0} command. Error: {1}".format(demisto.command(), str(e)))
+    client = Code42Client(
+        base_url=base_url,
+        sdk=None,
+        auth=(username, password),
+        verify=verify_certificate,
+        proxy=proxy,
+    )
+    commands = get_command_map()
+    command = demisto.command()
+    if command == "test-module":
+        handle_test_command(client)
+    elif command == "fetch-incidents":
+        handle_fetch_command(client)
+    elif command in commands:
+        try_run_command(lambda: commands[command](client, demisto.args()))
+
+
+def main():
+    run_code42_integration()
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

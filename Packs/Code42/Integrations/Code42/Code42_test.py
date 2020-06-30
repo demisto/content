@@ -1167,52 +1167,63 @@ def test_map_to_file_context():
 
 def test_alert_get_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
-    _, outputs, res = alert_get_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
-    assert res["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
-    assert outputs == {"Code42.SecurityAlert": [MOCK_CODE42_ALERT_CONTEXT[0]]}
+    cmd_res = alert_get_command(client, {"id": "4576576e-13cb-4f88-be3a-ee77739de649"})
+    assert cmd_res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
+    assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
+    assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
+    assert cmd_res.outputs_key_field == "ID"
 
 
 def test_alert_resolve_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
-    _, outputs, res = alert_resolve_command(client, {"id": "36fb8ca5-0533-4d25-9763-e09d35d60610"})
-    assert res["id"] == "36fb8ca5-0533-4d25-9763-e09d35d60610"
-    assert outputs == {"Code42.SecurityAlert": [MOCK_CODE42_ALERT_CONTEXT[0]]}
+    cmd_res = alert_resolve_command(client, {"id": "4576576e-13cb-4f88-be3a-ee77739de649"})
+    assert cmd_res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
+    assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
+    assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
+    assert cmd_res.outputs_key_field == "ID"
 
 
 def test_departingemployee_add_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
     date = "2020-01-01"
     note = "Dummy note"
-    _, outputs, res = departingemployee_add_command(
-        client,
-        {"username": _TEST_USERNAME, "departuredate": date, "note": note},
+    cmd_res = departingemployee_add_command(
+        client, {"username": _TEST_USERNAME, "departuredate": date, "note": note}
     )
     add_func = code42_sdk_mock.detectionlists.departing_employee.add
-    assert res == _TEST_USER_ID
-    assert outputs["Code42.DepartingEmployee"]["DepartureDate"] == date
-    assert outputs["Code42.DepartingEmployee"]["Note"] == note
-    assert outputs["Code42.DepartingEmployee"]["Username"] == _TEST_USERNAME
-    assert outputs["Code42.DepartingEmployee"]["UserID"] == _TEST_USER_ID
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["DepartureDate"] == date
+    assert cmd_res.outputs["Note"] == note
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
     add_func.assert_called_once_with(_TEST_USER_ID, departure_date=date)
     code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(_TEST_USER_ID, note)
 
 
 def test_departingemployee_remove_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
-    _, outputs, res = departingemployee_remove_command(client, {"username": _TEST_USERNAME})
-    assert res == _TEST_USER_ID
+    cmd_res = departingemployee_remove_command(client, {"username": _TEST_USERNAME})
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
     code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(_TEST_USER_ID)
-    assert outputs["Code42.DepartingEmployee"]["Username"] == _TEST_USERNAME
-    assert outputs["Code42.DepartingEmployee"]["UserID"] == _TEST_USER_ID
 
 
 def test_departingemployee_get_all_command(code42_departing_employee_mock):
     client = create_client(code42_departing_employee_mock)
-    _, outputs, res = departingemployee_get_all_command(client, {})
-    outputs_list = outputs["Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)"]
-    expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
-    assert res == expected
-    assert_departingemployee_outputs_match_response(outputs_list, expected)
+    cmd_res = departingemployee_get_all_command(client, {})
+    expected_raw_response = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
+    # Tests outputs
+    assert_departingemployee_outputs_match_response(cmd_res.outputs, expected_raw_response)
 
 
 def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
@@ -1228,14 +1239,15 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
         employee_page_generator
     )
     client = create_client(code42_departing_employee_mock)
-    _, outputs, res = departingemployee_get_all_command(client, {})
-    outputs_list = outputs["Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)"]
+    cmd_res = departingemployee_get_all_command(client, {})
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
 
     # Expect to have employees from 3 pages in the result
     expected_page = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     expected = expected_page + expected_page + expected_page
-    assert res == expected
-    assert_departingemployee_outputs_match_response(outputs_list, res)
+    assert cmd_res.raw_response == expected
+    assert_departingemployee_outputs_match_response(cmd_res.outputs, cmd_res.raw_response)
 
 
 def test_departingemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
@@ -1253,8 +1265,9 @@ def test_departingemployee_get_all_command_gets_number_of_employees_equal_to_res
     )
     client = create_client(code42_departing_employee_mock)
 
-    _, _, res = departingemployee_get_all_command(client, {"results": 1})
-    assert len(res) == 1
+    cmd_res = departingemployee_get_all_command(client, {"results": 1})
+    assert len(cmd_res.raw_response) == 1
+    assert len(cmd_res.outputs) == 1
 
 
 def test_departingemployee_get_all_command_when_no_employees(
@@ -1267,7 +1280,7 @@ def test_departingemployee_get_all_command_when_no_employees(
         no_employees_response
     )
     client = create_client(code42_departing_employee_mock)
-    _, outputs, res = departingemployee_get_all_command(
+    cmd_res = departingemployee_get_all_command(
         client,
         {
             "risktags": [
@@ -1277,23 +1290,23 @@ def test_departingemployee_get_all_command_when_no_employees(
             ]
         },
     )
-    outputs_list = outputs["Code42.DepartingEmployee(val.UserID && val.UserID == obj.UserID)"]
-
-    # Only first employee has the given risk tags
-    expected = []
-    assert res == expected
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == []
+    assert cmd_res.outputs == []
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
-    assert_departingemployee_outputs_match_response(outputs_list, res)
 
 
 def test_highriskemployee_add_command(code42_high_risk_employee_mock):
     client = create_client(code42_high_risk_employee_mock)
-    _, outputs, res = highriskemployee_add_command(
+    cmd_res = highriskemployee_add_command(
         client, {"username": _TEST_USERNAME, "note": "Dummy note"}
     )
-    assert res == _TEST_USER_ID
-    assert outputs["Code42.HighRiskEmployee"]["UserID"] == _TEST_USER_ID
-    assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
     code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(
         _TEST_USER_ID
     )
@@ -1304,21 +1317,24 @@ def test_highriskemployee_add_command(code42_high_risk_employee_mock):
 
 def test_highriskemployee_remove_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
-    _, outputs, res = highriskemployee_remove_command(client, {"username": _TEST_USERNAME})
-    assert res == _TEST_USER_ID
-    assert outputs["Code42.HighRiskEmployee"]["UserID"] == _TEST_USER_ID
-    assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
+    cmd_res = highriskemployee_remove_command(client, {"username": _TEST_USERNAME})
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
     code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(_TEST_USER_ID)
 
 
 def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
     client = create_client(code42_high_risk_employee_mock)
-    _, outputs, res = highriskemployee_get_all_command(client, {})
-    outputs_list = outputs["Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)"]
-    expected = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
-    assert res == expected
+    cmd_res = highriskemployee_get_all_command(client, {})
+    expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.raw_response == expected_response
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
-    assert_detection_list_outputs_match_response_items(outputs_list, expected)
+    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
 
 
 def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
@@ -1335,30 +1351,28 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
     )
     client = create_client(code42_high_risk_employee_mock)
 
-    _, outputs, res = highriskemployee_get_all_command(client, {"username": _TEST_USERNAME})
-    outputs_list = outputs["Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)"]
-
-    # Expect to have employees from 3 pages in the result
-    expected_page = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
-    expected = expected_page + expected_page + expected_page
-    assert res == expected
-    assert_detection_list_outputs_match_response_items(outputs_list, expected)
+    cmd_res = highriskemployee_get_all_command(client, {"username": _TEST_USERNAME})
+    expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"] * 3
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == expected_response
+    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
 
 
 def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employees_with_tags(
     code42_high_risk_employee_mock
 ):
     client = create_client(code42_high_risk_employee_mock)
-    _, outputs, res = highriskemployee_get_all_command(
+    cmd_res = highriskemployee_get_all_command(
         client,
         {"risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"},
     )
-    outputs_list = outputs["Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)"]
-    # Only first employee has the given risk tags
-    expected = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
-    assert res == expected
+    expected_response = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.raw_response == expected_response
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
-    assert_detection_list_outputs_match_response_items(outputs_list, expected)
+    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
 
 
 def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
@@ -1374,8 +1388,9 @@ def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_resu
         employee_page_generator
     )
     client = create_client(code42_high_risk_employee_mock)
-    _, _, res = highriskemployee_get_all_command(client, {"results": 1})
-    assert len(res) == 1
+    cmd_res = highriskemployee_get_all_command(client, {"results": 1})
+    assert len(cmd_res.raw_response) == 1
+    assert len(cmd_res.outputs) == 1
 
 
 def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_employee_mock, mocker):
@@ -1386,30 +1401,29 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
         no_employees_response
     )
     client = create_client(code42_high_risk_employee_mock)
-    _, outputs, res = highriskemployee_get_all_command(
+    cmd_res = highriskemployee_get_all_command(
         client,
-        {
-            "risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"
-        },
+        {"risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"},
     )
-    outputs_list = outputs["Code42.HighRiskEmployee(val.UserID && val.UserID == obj.UserID)"]
-    # Only first employee has the given risk tags
-    expected = []
-    assert res == expected
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs == []
+    assert cmd_res.raw_response == []
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
-    assert_detection_list_outputs_match_response_items(outputs_list, expected)
 
 
 def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     tags = "FLIGHT_RISK"
     client = create_client(code42_sdk_mock)
-    _, outputs, res = highriskemployee_add_risk_tags_command(
+    cmd_res = highriskemployee_add_risk_tags_command(
         client, {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK"}
     )
-    assert res == _TEST_USER_ID
-    assert outputs["Code42.HighRiskEmployee"]["UserID"] == _TEST_USER_ID
-    assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
-    assert outputs["Code42.HighRiskEmployee"]["RiskTags"] == tags
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    assert cmd_res.outputs["RiskTags"] == tags
     code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(
         _TEST_USER_ID, ["FLIGHT_RISK"]
     )
@@ -1417,13 +1431,15 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
 
 def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
-    _, outputs, res = highriskemployee_remove_risk_tags_command(
+    cmd_res = highriskemployee_remove_risk_tags_command(
         client, {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK CONTRACT_EMPLOYEE"}
     )
-    assert res == _TEST_USER_ID
-    assert outputs["Code42.HighRiskEmployee"]["UserID"] == _TEST_USER_ID
-    assert outputs["Code42.HighRiskEmployee"]["Username"] == _TEST_USERNAME
-    assert outputs["Code42.HighRiskEmployee"]["RiskTags"] == "FLIGHT_RISK CONTRACT_EMPLOYEE"
+    assert cmd_res.raw_response == _TEST_USER_ID
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
+    assert cmd_res.outputs["Username"] == _TEST_USERNAME
+    assert cmd_res.outputs["RiskTags"] == "FLIGHT_RISK CONTRACT_EMPLOYEE"
     code42_sdk_mock.detectionlists.remove_user_risk_tags.assert_called_once_with(
         _TEST_USER_ID, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
     )
@@ -1431,15 +1447,21 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
 
 def test_security_data_search_command(code42_file_events_mock):
     client = create_client(code42_file_events_mock)
-    _, outputs, res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
-    outputs_list = outputs["Code42.SecurityData(val.EventID && val.EventID == obj.EventID)"]
+    cmd_res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
+    code42_res = cmd_res[0]
+    file_res = cmd_res[1]
+
+    assert code42_res.outputs_prefix == "Code42.SecurityData"
+    assert code42_res.outputs_key_field == "EventID"
+    assert file_res.outputs_prefix == "File"
+
     actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
     filter_groups = json.loads(str(actual_query))["groups"]
     expected_query_items = [
         ("md5Checksum", "d41d8cd98f00b204e9800998ecf8427e"),
         ("osHostName", "DESKTOP-0001"),
         ("deviceUserName", "user3@example.com"),
-        ("exposure", "ApplicationRead")
+        ("exposure", "ApplicationRead"),
     ]
     expected_file_events = json.loads(MOCK_SECURITY_EVENT_RESPONSE)["fileEvents"]
 
@@ -1450,13 +1472,13 @@ def test_security_data_search_command(code42_file_events_mock):
         assert _filter["term"] == expected_query_items[i][0]
         assert _filter["value"] == expected_query_items[i][1]
 
-    assert len(res) == len(outputs_list) == 3
-    assert res == expected_file_events
+    assert len(code42_res.raw_response) == len(code42_res.outputs) == 3
+    assert code42_res.raw_response == expected_file_events
 
     # Assert that the Outputs are mapped from the file events.
     for i in range(0, len(expected_file_events)):
         mapped_event = map_to_code42_event_context(expected_file_events[i])
-        output_item = outputs_list[i]
+        output_item = code42_res.outputs[i]
         assert output_item == mapped_event
 
 
