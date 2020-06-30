@@ -496,6 +496,7 @@ script:
       description: OS security patch.
       type: String
     - contextPath: Zimperium.Devices.osType
+      description: OS type of the phone.
       type: String
     - contextPath: Zimperium.Devices.osUpgradeable
       description: Whether the os is upgradable.
@@ -630,6 +631,7 @@ script:
       description: OS security patch.
       type: String
     - contextPath: Zimperium.Devices.osType
+      description: OS type of the phone.
       type: String
     - contextPath: Zimperium.Devices.osUpgradeable
       description: Whether the os is upgradable.
@@ -784,6 +786,7 @@ script:
       description: OS security patch.
       type: String
     - contextPath: Zimperium.Devices.osType
+      description: OS type of the phone.
       type: String
     - contextPath: Zimperium.Devices.osUpgradeable
       description: Whether the os is upgradable.
