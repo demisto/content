@@ -8,7 +8,8 @@ trigger_build_url=https://circleci.com/api/v1/project/demisto/content/tree/${_br
 post_data=$(cat <<EOF
 {
   "build_parameters": {
-    "NIGHTLY": "true"
+    "NIGHTLY": "true",
+    "TIME_TO_LIVE": 900
   }
 }
 EOF)
