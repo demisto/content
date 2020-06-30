@@ -568,7 +568,7 @@ script:
       isArray: false
       name: username
       required: false
-      secret: true
+      secret: false
     deprecated: false
     description: Reactivates the user with the given username.
     execution: false
