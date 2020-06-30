@@ -321,7 +321,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids, client, prints_man
         thread_index (int): the thread index.
 
     Returns (list, bool):
-        A list of the installed packs' ids, or an empty list if is_nightly == True. 
+        A list of the installed packs' ids, or an empty list if is_nightly == True.
         A flag that indicates if the operation succeeded or not.
     """
     host = client.api_client.configuration.host
