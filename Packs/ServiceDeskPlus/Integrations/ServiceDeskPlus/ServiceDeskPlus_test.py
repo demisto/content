@@ -44,7 +44,7 @@ def test_commands(command, args, response, expected_result, mocker):
     - create the context
     validate the entry context
     """
-    mocker.patch('ServiceDeskPlus.Client.update_access_token')
+    mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
@@ -88,7 +88,7 @@ def test_command_hr(command, args, response, expected_result, mocker):
     - convert the result to human readable table
     validate the human readable output
     """
-    mocker.patch('ServiceDeskPlus.Client.update_access_token')
+    mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
@@ -159,24 +159,24 @@ def test_create_requests_list_info():
 
 
 def test_create_fetch_list_info():
-    time_from, time_to, status, fetch_filter, fetch_limit = 'from', 'to', 'status', '', 10
+    time_from, time_to, status, fetch_filter = 'from', 'to', 'status', ''
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
                                                           'condition': 'between'},
                                                          {'field': 'status.name', 'values': ['status'],
                                                           'condition': 'is', 'logical_operator': 'AND'}],
-                                     'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 10}}
-    assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
+                                     'sort_field': 'created_time', 'sort_order': 'asc'}}
+    assert create_fetch_list_info(time_from, time_to, status, fetch_filter) == expected_output
 
-    time_from, time_to, status, fetch_limit = 'from', 'to', 'status', 15
+    time_from, time_to, status = 'from', 'to', 'status'
     fetch_filter = "{'field': 'technician.name', 'values': 'tech1,tech2', 'condition': 'is', 'logical_operator':'AND'}"
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
                                                           'condition': 'between'},
                                                          {'field': 'technician.name', 'condition': 'is',
                                                           'values': ['tech1', 'tech2'], 'logical_operator': 'AND'}],
-                                     'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 15}}
-    assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
+                                     'sort_field': 'created_time', 'sort_order': 'asc'}}
+    assert create_fetch_list_info(time_from, time_to, status, fetch_filter) == expected_output
 
-    time_from, time_to, status, fetch_limit = 'from', 'to', 'status', 20
+    time_from, time_to, status = 'from', 'to', 'status'
     fetch_filter = "{'field':'technician.name','values':'tech1,tech2','condition':'is','logical_operator':'AND'}," \
                    "{'field':'group.name','values':'group1','condition':'is','logical_operator':'AND'}"
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
@@ -185,8 +185,8 @@ def test_create_fetch_list_info():
                                                           'values': ['tech1', 'tech2'], 'logical_operator': 'AND'},
                                                          {'field': 'group.name', 'condition': 'is',
                                                           'values': ['group1'], 'logical_operator': 'AND'}],
-                                     'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 20}}
-    assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
+                                     'sort_field': 'created_time', 'sort_order': 'asc'}}
+    assert create_fetch_list_info(time_from, time_to, status, fetch_filter) == expected_output
 
 
 def test_fetch_incidents(mocker):
@@ -203,7 +203,7 @@ def test_fetch_incidents(mocker):
     - run the fetch incidents command using the Client.
     Validate the length of the results and the different fields of the fetched incidents.
     """
-    mocker.patch('ServiceDeskPlus.Client.update_access_token')
+    mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
     mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
     mocker.patch('ServiceDeskPlus.date_to_timestamp', return_value='1592918317168')
@@ -239,7 +239,7 @@ def test_test_module(mocker):
     Validate the content of the HumanReadable.
     """
     from ServiceDeskPlus import test_module as module
-    mocker.patch('ServiceDeskPlus.Client.update_access_token')
+    mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
 
     mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))

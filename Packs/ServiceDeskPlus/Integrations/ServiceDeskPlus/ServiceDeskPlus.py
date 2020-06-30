@@ -49,32 +49,44 @@ class Client(BaseClient):
             'Accept': 'application/v3+json'
         })
         if self.refresh_token:
-            self.update_access_token()  # Add a valid access token to the headers
+            self.get_access_token()  # Add a valid access token to the headers
 
-    def update_access_token(self):
+    def get_access_token(self):
         """
-        Generates an access token from the client id, client secret and refresh token
+        Gets an access token that was previously created if it is still valid, else, generates a new access token from
+        the client id, client secret and refresh token
         """
-        params = {
-            'refresh_token': self.refresh_token,
-            'grant_type': 'refresh_token',
-            'client_id': self.client_id,
-            'client_secret': self.client_secret
-        }
-        try:
-            res = self.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
-            if 'error' in res:
-                return_error(
-                    f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
-                    f'and Refresh Token - RES RETURNED.\n{res}')
-            if res.get('access_token'):
-                self._headers.update({
-                    'Authorization': 'Bearer ' + res.get('access_token')
-                })
-                # self.access_token_refreshed = True
-        except Exception as e:
-            return_error(f'Error occurred while creating an access token. Please check the Client ID, Client Secret and'
-                         f'Refresh Token\n\n{e.args[0]}')
+        previous_token = demisto.getIntegrationContext()
+        # Check if there is an existing valid access token
+        if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.now()):
+            access_token = previous_token.get('access_token')
+        else:
+            params = {
+                'refresh_token': self.refresh_token,
+                'grant_type': 'refresh_token',
+                'client_id': self.client_id,
+                'client_secret': self.client_secret
+            }
+            try:
+                res = self.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
+                if 'error' in res:
+                    return_error(
+                        f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
+                        f'and Refresh Token - RES RETURNED.\n{res}')
+                if res.get('access_token'):
+                    expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
+                    expiry_time += res.get('expires_in') * 1000 - 10
+                    new_token = {
+                        'access_token': res.get('access_token'), 'expiry_time': expiry_time
+                    }
+                    demisto.setIntegrationContext(new_token)
+                    access_token = res.get('access_token')
+            except Exception as e:
+                return_error(f'Error occurred while creating an access token. Please check the Client ID, Client Secret'
+                             f' and Refresh Token\n\n{e.args[0]}')
+        self._headers.update({
+            'Authorization': 'Bearer ' + access_token
+        })
 
     def http_request(self, method, url_suffix, full_url=None, params=None):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
@@ -90,10 +102,9 @@ class Client(BaseClient):
                                            .format(res.content), exception)
 
             if res.status_code in [401]:
-                # if not self.access_token_refreshed:  # todo: remove
-                #     return_error('got 401')
-                #     self.update_access_token()
-                #     return self.http_request(method, url_suffix, full_url=full_url, params=params)
+                if demisto.getIntegrationContext().get('expiry_time', 0) <= date_to_timestamp(datetime.now()):
+                    self.get_access_token()
+                    return self.http_request(method, url_suffix, full_url=full_url, params=params)
                 try:
                     err_msg = f'Unauthorized request - check domain location and the given credentials \n{str(res.json())}'
                 except ValueError:
@@ -252,7 +263,7 @@ def create_requests_list_info(start_index, row_count, search_fields, filter_by):
     }
 
 
-def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str, fetch_limit: int) -> dict:
+def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str) -> dict:
     """
     Returning the list_info dictionary that should be used to filter the requests that are being fetched
     The requests that will be returned when using this list_info are all requests created between 'time_from' and
@@ -282,12 +293,14 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
         if fetch_filter:
             filters = ast.literal_eval(fetch_filter)
             if isinstance(filters, dict):
-                query = {
-                    'field': str(filters.get('field')),
-                    'condition': str(filters.get('condition')),
+                query: Dict[str, Any] = {
+                    'field': filters.get('field'),
+                    'condition': filters.get('condition'),
                     'values': filters.get('values', '').split(','),
-                    'logical_operator': str(filters.get('logical_operator', 'AND'))
+                    'logical_operator': filters.get('logical_operator', 'AND')
                 }
+                if filters.get('logical_operator') == 'OR':
+                    raise Exception('Only "AND" is allowed as a logical_operator')
                 search_criteria.append(query)
             else:
                 for filter in filters:
@@ -297,6 +310,8 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
                         'values': filter.get('values', '').split(','),
                         'logical_operator': filter.get('logical_operator', 'AND')
                     }
+                    if filter.get('logical_operator') == 'OR':
+                        raise Exception('Only "AND" is allowed as a logical_operator')
                     search_criteria.append(query)
         else:
             query = {
@@ -310,11 +325,10 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
         list_info = {
             'search_criteria': search_criteria,
             'sort_field': 'created_time',
-            'sort_order': 'asc',
-            'row_count': fetch_limit
+            'sort_order': 'asc'
         }
-    except Exception:
-        return_error('Invalid input format. Please follow instructions for correct filter format.')
+    except Exception as e:
+        return_error(f'Invalid input format. Please see detailed information (?) for valid query format.\n{e.args[0]}')
     return {
         'list_info': list_info
     }
@@ -633,42 +647,47 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
             'time': date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
         }
     else:
+        demisto.debug(f'\n\n\nIN LAST RUN: {last_run}')
         new_last_run = last_run
     demisto_incidents: List = list()
     time_from = new_last_run.get('time')
     time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-    list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter, fetch_limit)
+    list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter)
     params = {
         'input_data': f'{list_info}'
     }
 
+    # Get incidents from Service Desk Plus
     demisto.info(f'Fetching ServiceDeskPlus incidents. with the query params: {str(params)}')
 
     incidents = client.get_requests(params=params).get('requests', [])
 
     if incidents:
         count = 0
+        last_run_id = last_run.get('id', '0')
         last_incident_id = last_run.get('id', '0')
-
-        # Prevent fetching twice the same incident (the last that was previously fetched and the current first)
-        first_incident = incidents[0]
-        if first_incident.get('id') == last_incident_id:
-            incidents = incidents[1:]
+        cur_time = new_last_run.get('time', 0)
+        incident_creation_time = new_last_run.get('time', 0)
 
         for incident in incidents:
-            if count < fetch_limit:
+            if count >= fetch_limit:
+                break
+            # Prevent fetching twice the same incident
+            if incident.get('id') == last_run_id:
+                continue
+            incident_creation_time = int(incident.get('created_time', {}).get('value'))
+            if incident_creation_time >= cur_time:
                 demisto_incidents.append({
-                    'name': f'{incident.get("subject")} - {incident.get("id")}',  # todo: check if id is necessary
-                    'occurred': timestamp_to_datestring(incident.get('created_time', {}).get('value')),
+                    'name': f'{incident.get("subject")} - {incident.get("id")}',
+                    'occurred': timestamp_to_datestring(incident_creation_time),
                     'rawJSON': json.dumps(incident)
                 })
                 count += 1
                 last_incident_id = incident.get('id')
 
         if demisto_incidents:
-            last_incident_time = date_to_timestamp(demisto_incidents[-1].get('occurred').split('.')[0])
             new_last_run.update({
-                'time': last_incident_time,
+                'time': incident_creation_time,
                 'id': last_incident_id
             })
 
@@ -676,6 +695,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
         new_last_run.update({
             'time': time_to
         })
+
     demisto.setLastRun(new_last_run)
     return demisto_incidents
 
@@ -702,12 +722,11 @@ def test_module(client: Client):
             fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
             fetch_status = str(params.get('fetch_status')) if params.get('fetch_status') else 'Open'
             fetch_filter = str(params.get('fetch_filter')) if params.get('fetch_filter') else ''
-            fetch_limit = int(params.get('fetch_limit', '10')) if params.get('fetch_limit') else 10
 
             date_format = '%Y-%m-%dT%H:%M:%S'
             time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
             time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter, fetch_limit)
+            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter)
             params = {
                 'input_data': f'{list_info}'
             }

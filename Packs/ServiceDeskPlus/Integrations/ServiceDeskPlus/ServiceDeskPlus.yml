@@ -59,13 +59,14 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- display: Use this field to filter the incidents that are being fetched according
-    to any of the request properties. Filter should be in the format "{field':<field_name>,
-    'condition':<condition>, 'values':'val_1,val_2', 'logical_operator':<op>}". Multiple
-    filters can be applied seperated with a comma, e.g. {"field":"technician.name",
-    "condition":"is", "values":"tech_1_name,tech_2_name", "logical_operator":"AND"},
-    {"field":"due_by_time", "condition":"greater than", "values":"1592946000000",
-    "logical_operator":"OR"}. Overrides the status filter, if given.
+- additionalinfo: Filter should be in the format "{field':<field_name>, 'condition':<condition>,
+    'values':'val_1,val_2', 'logical_operator':<op>}". Multiple filters can be applied
+    seperated with a comma, e.g. {"field":"technician.name", "condition":"is", "values":"tech_1_name,tech_2_name",
+    "logical_operator":"AND"}, {"field":"due_by_time", "condition":"greater than",
+    "values":"1592946000000", "logical_operator":"AND"}.
+  display: Use this field to filter the incidents that are being fetched according
+    to any of the request properties.  Please see additional information for exact
+    filter format. Overrides the status filter, if given.
   name: fetch_filter
   required: false
   type: 12
@@ -861,4 +862,4 @@ script:
   subtype: python3
   type: python
 tests:
-- Service Desk Plus
+- Service Desk Plus Test
