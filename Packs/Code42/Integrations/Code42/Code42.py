@@ -306,6 +306,16 @@ class Code42Client(BaseClient):
         res = self._get_sdk().securitydata.search_file_events(payload)
         return res["fileEvents"]
 
+    def download_file_by_hash(self, hash_arg):
+        security_module = self._get_sdk().securitydata
+        if _hash_is_md5(hash_arg):
+            return security_module.stream_file_by_md5(hash_arg)
+        elif _hash_is_sha256(hash_arg):
+            return security_module.stream_file_by_sha256(hash_arg)
+        else:
+            raise Exception("Unsupported hash. Must be SHA256 or MD5.")
+
+
     def _get_user_id(self, username):
         user_id = self.get_user(username).get("userUid")
         if user_id:
@@ -405,12 +415,18 @@ def build_query_payload(args):
     return query
 
 
+def _hash_is_sha256(hash_arg):
+    return hash_arg and len(hash_arg) == 64
+
+
+def _hash_is_md5(hash_arg):
+    return hash_arg and len(hash_arg) == 32
+
+
 def _create_hash_filter(hash_arg):
-    if not hash_arg:
-        return None
-    elif len(hash_arg) == 32:
+    if _hash_is_md5(hash_arg):
         return MD5.eq(hash_arg)
-    elif len(hash_arg) == 64:
+    elif _hash_is_sha256(hash_arg):
         return SHA256.eq(hash_arg)
 
 
@@ -936,6 +952,13 @@ def user_reactivate_command(client, args):
         return_error(create_command_error_message(demisto.command(), e))
 
 
+def download_file_command(client, args):
+    hash = args.get("hash")
+
+
+
+
+
 """Fetching"""
 
 
@@ -1096,6 +1119,7 @@ def get_command_map():
         "code42-user-unblock": user_unblock_command,
         "code42-user-deactivate": user_deactivate_command,
         "code42_user-reactivate": user_reactivate_command,
+        "code42-download-file": download_file_command,
     }
 
 
