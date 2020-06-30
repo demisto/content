@@ -310,13 +310,13 @@ class Code42Client(BaseClient):
         user_id = self.get_user(username).get("userUid")
         if user_id:
             return user_id
-        raise Exception("No user ID found for username {0}.".format(username))
+        raise Code42UserIDNotFoundError(username)
 
     def _get_legacy_user_id(self, username):
         user_id = self.get_user(username).get("userId")
         if user_id:
             return user_id
-        raise Exception("No user ID found for username {0}.".format(username))
+        raise Code42UserIDNotFoundError(username)
 
     def _get_org_id(self, org_name):
         org_uid = self.get_org(org_name).get("orgUid")
@@ -325,6 +325,9 @@ class Code42Client(BaseClient):
         raise Exception("No organization ID found for organization with name {0}.".format(org_name))
 
 
+class Code42UserIDNotFoundError(Exception):
+    def __init__(self, username):
+        super(Code42UserIDNotFoundError, self).__init__("No user ID found for username {0}.".format(username))
 class Code42SearchFilters(object):
     def __init__(self):
         self._filters = []
