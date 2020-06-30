@@ -1391,8 +1391,8 @@ def test_departingemployee_get_all_command_when_no_employees(
     )
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.raw_response == []
-    assert cmd_res.outputs == []
+    assert cmd_res.raw_response == {}
+    assert cmd_res.outputs == {"Results": []}
     assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
 
 
@@ -1506,8 +1506,8 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs == []
-    assert cmd_res.raw_response == []
+    assert cmd_res.outputs == {'Results': []}
+    assert cmd_res.raw_response == {}
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
 
 

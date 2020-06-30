@@ -510,8 +510,9 @@ def _convert_date_arg_to_epoch(date_arg):
 def map_to_code42_event_context(obj):
     code42_context = _map_obj_to_context(obj, CODE42_EVENT_CONTEXT_FIELD_MAPPER)
     # FileSharedWith is a special case and needs to be converted to a list
-    if code42_context.get("FileSharedWith"):
-        shared_list = [u["cloudUsername"] for u in code42_context["FileSharedWith"]]
+    shared_with_list = code42_context.get("FileSharedWith")
+    if shared_with_list:
+        shared_list = [u.get("cloudUsername") for u in shared_with_list if u.get("cloudUsername")]
         code42_context["FileSharedWith"] = str(shared_list)
     return code42_context
 
@@ -541,7 +542,7 @@ def create_command_error_message(cmd, ex):
 @logger
 def alert_get_command(client, args):
     code42_securityalert_context = []
-    alert = client.get_alert_details(args["id"])
+    alert = client.get_alert_details(args.get("id"))
     if not alert:
         return CommandResults(
             readable_output="No results found",
@@ -570,7 +571,7 @@ def alert_get_command(client, args):
 @logger
 def alert_resolve_command(client, args):
     code42_securityalert_context = []
-    alert_id = client.resolve_alert(args["id"])
+    alert_id = client.resolve_alert(args.get("id"))
     if not alert_id:
         return CommandResults(
             readable_output="No results found",
@@ -601,7 +602,7 @@ def alert_resolve_command(client, args):
 @logger
 def departingemployee_add_command(client, args):
     departing_date = args.get("departuredate")
-    username = args["username"]
+    username = args.get("username")
     note = args.get("note")
     user_id = client.add_user_to_departing_employee(username, departing_date, note)
     # CaseID included but is deprecated.
@@ -624,7 +625,7 @@ def departingemployee_add_command(client, args):
 
 @logger
 def departingemployee_remove_command(client, args):
-    username = args["username"]
+    username = args.get("username")
     user_id = client.remove_user_from_departing_employee(username)
     # CaseID included but is deprecated.
     de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
@@ -672,7 +673,7 @@ def departingemployee_get_all_command(client, args):
 
 @logger
 def highriskemployee_add_command(client, args):
-    username = args["username"]
+    username = args.get("username")
     note = args.get("note")
     user_id = client.add_user_to_high_risk_employee(username, note)
     hr_context = {"UserID": user_id, "Username": username}
@@ -688,7 +689,7 @@ def highriskemployee_add_command(client, args):
 
 @logger
 def highriskemployee_remove_command(client, args):
-    username = args["username"]
+    username = args.get("username")
     user_id = client.remove_user_from_high_risk_employee(username)
     hr_context = {"UserID": user_id, "Username": username}
     readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Removed", hr_context)
