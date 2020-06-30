@@ -5,6 +5,7 @@ import argparse
 import shutil
 import uuid
 import prettytable
+import subprocess
 import glob
 from datetime import datetime
 from zipfile import ZipFile
@@ -624,15 +625,19 @@ def main():
             pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
             pack.cleanup()
             continue
-
+        print_error(f'Before signature extract path: {os.listdir(extract_destination_path)}')
+        print_error(f'Before signature pack path: {os.listdir(pack._pack_path)}')
         task_status = pack.sign_pack(signature_key)
         if not task_status:
             pack.status = PackStatus.FAILED_SIGNING_PACKS.name
             pack.cleanup()
             continue
+        print_error(f'After signature extract path: {os.listdir(extract_destination_path)}')
+        print_error(f'After signature pack path:: {os.listdir(pack._pack_path)}')
 
         task_status, zip_pack_path = pack.zip_pack(extract_destination_path, should_encrypt_pack, enc_key)
-
+        print_error(f'After zip extract path: {os.listdir(extract_destination_path)}')
+        print_error(f'After zip pack path:: {os.listdir(pack._pack_path)}')
         if not task_status:
             pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
             pack.cleanup()
