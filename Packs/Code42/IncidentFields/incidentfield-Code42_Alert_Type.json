@@ -18,7 +18,7 @@
 	"id": "incident_code42alerttype",
 	"isReadOnly": false,
 	"locked": false,
-	"name": "Code42 SecurityAlert Type",
+	"name": "Code42 Alert Type",
 	"neverSetAsRequired": false,
 	"ownerOnly": false,
 	"placeholder": "",
