@@ -1,4 +1,4 @@
-
+import subprocess
 import argparse
 import os
 import click
@@ -72,7 +72,7 @@ def delete_script_or_integration(path):
             os.remove(changelog_file)
 
     else:
-        exec(f"rm -rf {path}")
+        subprocess.call(["rm", "-rf", path])
     print(f" - Deleting {path}")
 
 
@@ -199,7 +199,7 @@ def main():
     edit_all_packs(new_to_version)
 
     click.secho("Deleting empty directories\n")
-    exec("find Packs -type d -empty -delete")
+    subprocess.call(["find", "Packs", "-type", "d", "-empty", "-delete"])
 
     click.secho("Finished creating branch", fg="green")
 
