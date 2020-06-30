@@ -545,7 +545,7 @@ def alert_get_command(client, args):
     if not alert:
         return CommandResults(
             readable_output="No results found",
-            outputs={},
+            outputs={"Results": []},
             outputs_key_field="ID",
             outputs_prefix="Code42.SecurityAlert",
             raw_response={},
@@ -574,7 +574,7 @@ def alert_resolve_command(client, args):
     if not alert_id:
         return CommandResults(
             readable_output="No results found",
-            outputs={},
+            outputs={"Results": []},
             outputs_key_field="ID",
             outputs_prefix="Code42.SecurityAlert",
             raw_response={},
@@ -642,6 +642,15 @@ def departingemployee_remove_command(client, args):
 def departingemployee_get_all_command(client, args):
     results = args.get("results") or 50
     employees = client.get_all_departing_employees(results)
+    if not employees:
+        return CommandResults(
+            readable_output="No results found",
+            outputs_prefix="Code42.DepartingEmployee",
+            outputs_key_field="UserID",
+            outputs={"Results": []},
+            raw_response={}
+        )
+
     employees_context = [
         {
             "UserID": e.get("userId"),
@@ -697,6 +706,14 @@ def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
     results = args.get("results") or 50
     employees = client.get_all_high_risk_employees(tags, results)
+    if not employees:
+        return CommandResults(
+            readable_output="No results found",
+            outputs_prefix="Code42.HighRiskEmployee",
+            outputs_key_field="UserID",
+            outputs={"Results": []},
+            raw_response={}
+        )
     employees_context = [
         {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
         for e in employees
@@ -782,7 +799,7 @@ def securitydata_search_command(client, args):
     else:
         return CommandResults(
             readable_output="No results found",
-            outputs={},
+            outputs={"Results": []},
             outputs_key_field="EventID",
             outputs_prefix="Code42.SecurityData",
             raw_response={},
