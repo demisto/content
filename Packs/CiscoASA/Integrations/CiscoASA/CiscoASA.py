@@ -195,6 +195,8 @@ class Client(BaseClient):
 
 
 '''HELPER COMMANDS'''
+
+
 @logger
 def set_up_ip_kind(dict_body: dict, field_to_add: str, data: str) -> None:
     """
