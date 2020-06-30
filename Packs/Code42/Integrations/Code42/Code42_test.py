@@ -5,6 +5,7 @@ from py42.sdk import SDKClient
 from py42.response import Py42Response
 from Code42 import (
     Code42Client,
+    Code42UserIDNotFoundError,
     build_query_payload,
     map_observation_to_security_query,
     map_to_code42_event_context,
