@@ -19,7 +19,8 @@ def get_file(method, file_path, type_of_file):
             try:
                 data_dictionary = method(stream)
             except Exception as e:
-                click.secho("{} has a structure issue of file type{}. Error was: {}".format(file_path, type_of_file, str(e)), fg="red")
+                click.secho("{} has a structure issue of file type{}. Error was: {}".format(file_path, type_of_file,
+                                                                                            str(e)), fg="red")
                 return {}
     if type(data_dictionary) is dict:
         return data_dictionary
