@@ -77,7 +77,7 @@ references:
         git config diff.renameLimit 6000
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-          pip3 install git+https://github.com/demisto/demisto-sdk@master
+          pip3 install git+https://github.com/demisto/demisto-sdk.git@release-1-1-5
         fi
 
         echo "========== Build Parameters =========="
