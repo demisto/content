@@ -113,6 +113,11 @@ class Client(BaseClient):
             # if there are no parameters argument - try to gets the sensors from parse question api
             # for example, if the input text question is: `Get Folder Contents[c:\] from all machines`
             # after the regex is: `Get Folder Contents from all machines`
+            condition_sensor = re.findall(r'(?<=with)(.*)(?=\[)', text)
+            if condition_sensor and text.startswith('Get'):
+                text_parts = text.split("Get")
+                text = f'get {condition_sensor[0].strip()} and{text_parts[1]}'
+
             text_without_params = re.sub(r'\[(.*?)\]', '', text)
             res = self.do_request('POST', 'parse_question', {'text': text_without_params}).get('data')[0]
 
@@ -662,7 +667,7 @@ def get_question_metadata(client, data_args):
 
     context = createContext(question_data, removeNull=True)
     outputs = {'Tanium.Question(val.Tanium.ID && val.Tanium.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Question results', question_data)
+    human_readable = tableToMarkdown('Question metadata', question_data)
     return human_readable, outputs, raw_response
 
 
