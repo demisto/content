@@ -1,7 +1,7 @@
 id: Expanse Behavior Severity Update
 version: -1
 name: Expanse Behavior Severity Update
-description: 'This playbook will update the severity of an Expanse Behavior incident
+description: 'This playbook updates the severity of an Expanse Behavior incident
   based on the presence of other active Exposures for the IP address. '
 starttaskid: "0"
 fromversion: 5.0.0
@@ -74,7 +74,7 @@ tasks:
     task:
       id: 903caf3b-9015-4b10-80bd-de7ba4ed2c8d
       version: -1
-      name: Does IP have Critical Exposures?
+      name: Does the IP address have critical exposures?
       description: |-
         Checks if one number(float) as bigger than the other(float)
         Returns yes: if first > second
@@ -554,7 +554,7 @@ tasks:
     task:
       id: 3ed52387-4ba2-485e-8475-5a74395ee2af
       version: -1
-      name: Does IP have Warning Exposures?
+      name: Does the IP address have warning exposures?
       description: |-
         Checks if one number(float) as bigger than the other(float)
         Returns yes: if first > second
@@ -1472,7 +1472,7 @@ tasks:
     task:
       id: 063ebedf-ace3-41d4-8285-9ace74d18db6
       version: -1
-      name: Was IP Present?
+      name: Was an IP address present?
       description: This checks whether an IP was returned for the IP enrichment command
         in Expanse. If not, it means that the requested IP was not included in Expanse's
         list on "on-prem" IP Ranges.
@@ -1574,21 +1574,21 @@ inputs:
   value:
     simple: High
   required: false
-  description: Set's incident to this severity if there are any critical exposures
+  description: Sets incident to this severity if there are any critical exposures
     on the asset.
   playbookInputQuery: null
 - key: Warning Severity
   value:
     simple: Medium
   required: false
-  description: Set's incident to this severity if there are any critical exposures
+  description: Sets incident to this severity if there are any critical exposures
     on the asset.
   playbookInputQuery: null
 - key: Routine Severity
   value:
     simple: Low
   required: false
-  description: Set's incident to this severity if there are any critical exposures
+  description: Sets incident to this severity if there are any critical exposures
     on the asset.
   playbookInputQuery: null
 outputs: []
