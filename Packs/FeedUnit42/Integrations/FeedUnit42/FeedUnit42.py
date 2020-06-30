@@ -117,7 +117,7 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
             if reference:  # if there is a reference, get the relevant pivot
                 if reference.startswith('attack-pattern'):
                     field = 'external_references'
-                    field_type = 'relatedindicators'  # TODO - choose name
+                    field_type = 'feedrelatedindicators'  # TODO - choose name
                 elif reference.startswith('campaign'):
                     field = 'name'
                     field_type = 'campaign'
@@ -135,8 +135,14 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
                                 indicator['fields'][field_type].extend([pivot_field])
                             else:
                                 indicator['fields'][field_type] = [pivot_field]
-                        else:  # an external reference
-                            indicator['fields'][field_type] = pivot_field
+                        else:  # a feedrelatedindicators is a list of dict
+                            indicator['fields'][field_type] = {
+                                'type': 'MITRE ATT&CK'
+                            }
+                            external_ids = [item.get('external_id') for item in pivot_field if 'external_id' in item]
+                            indicator['fields'][field_type]['value'] = external_ids
+                            urls = [item.get('url') for item in pivot_field if 'url' in item]
+                            indicator['fields'][field_type]['description'] = urls
 
     return indicators
 
