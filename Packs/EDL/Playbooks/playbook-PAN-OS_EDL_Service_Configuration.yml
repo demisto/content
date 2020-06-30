@@ -1,18 +1,17 @@
 id: PAN-OS EDL Service Configuration
 version: -1
 name: PAN-OS EDL Service Configuration
-description: "This single-run playbook enables Cortex XSOAR built-in External Dynamic\
-  \ List (EDL) as a service for the system indicators, configures PAN-OS EDL Objects\
+description: "This single-run playbook enables Cortex XSOAR's built-in External Dynamic\
+  \ List (EDL) as a service for system indicators, and configures PAN-OS EDL Objects\
   \ and the respective firewall policy rules.\nThe EDLs will continuously update for\
-  \ each indicator that matches the query syntax inputted in the playbook\n(in order\
-  \ to validate to which indicators the query applied, you need to enter the query\
-  \ syntax from the indicator tab at the top of the playbook inputs window as well).\
+  \ each indicator that matches the query syntax input in the playbook \n(to validate to which indicators the query applied, 
+  \ you need to enter the query syntax from the indicator tab at the top of the playbook inputs window as well).\
   \ \nIf both the IP and URL indicator types exist in the query, it sorts the indicators\
   \ into two EDLs, IP and URL. If only one indicator type exists in the query, only\
   \ one EDL is created. \nThe playbook then creates EDL objects directing to the indicator\
   \ lists and firewall policy rules in PAN-OS. \n- It is recommended to configure\
-  \ a dedicated EDL Service instance for the usage of this playbook.\n- In case it\
-  \ is needed to edit or update the EDL query after this playbook run, use the panorama-edit-edl\
+  \ a dedicated EDL Service instance for the usage of this playbook.\n- If necessary\
+  \ to edit or update the EDL query after this playbook run, use the panorama-edit-edl\
   \ command and panorama integration to update the URL containing the indicator query\
   \ syntax."
 starttaskid: "0"
@@ -901,7 +900,7 @@ tasks:
       version: -1
       name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
+        as Panorama, it also pushes the policies to the specified Device Group in
         the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
@@ -932,7 +931,7 @@ tasks:
       version: -1
       name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
+        as Panorama, it also pushes the policies to the specified Device Group in
         the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
@@ -1701,16 +1700,16 @@ view: |-
 inputs:
 - key: ip-edl-object-name
   value:
-    simple: Demisto Remediation - IP EDL
+    simple: Cortex XSOAR Remediation - IP EDL
   required: false
-  description: Set a name for the EDL object that will be configured on pan-os. This
+  description: Set a name for the EDL object that will be configured on PAN-OS. This
     value is used to set the rule name as well.
   playbookInputQuery:
 - key: url-edl-object-name
   value:
-    simple: Demisto Remediation - URL EDL
+    simple: Cortex XSOAR Remediation - URL EDL
   required: false
-  description: Set a name for the EDL object that will be configured on pan-os. This
+  description: Set a name for the EDL object that will be configured on PAN-OS. This
     value is used to set the rule name as well.
   playbookInputQuery:
 - key: EDLServiceURL
