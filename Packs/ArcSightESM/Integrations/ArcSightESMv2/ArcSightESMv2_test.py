@@ -50,6 +50,8 @@ test_data = [
         'https://server/www/manager-service/services/ActiveListService/'
     )
 ]
+
+
 @pytest.mark.parametrize('use_rest, cmd_name, expected_rest_endpoint', test_data)
 def test_use_rest(mocker, use_rest, cmd_name, expected_rest_endpoint):
     '''Check that the correct endpoint is queried depending on the value of the 'use_rest' integration parameter.
