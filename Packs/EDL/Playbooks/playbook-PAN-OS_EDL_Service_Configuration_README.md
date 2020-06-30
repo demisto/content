@@ -14,8 +14,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PAN-OS Commit Configuration
 
 ### Integrations
-This playbook does not use any integrations.
-
+* Palo Alto Networks PAN-OS
+* Palo Alto Networks PAN-OS EDL Service
 ### Scripts
 * AreValuesEqual
 
@@ -82,4 +82,4 @@ allow/deny/drop
 
 ## Playbook Image
 ---
-![PAN-OS EDL Service Configuration](Insert the link to your image here)
+![PAN-OS EDL Service Configuration](https://raw.githubusercontent.com/demisto/content/master/Packs/EDL/doc_files/PAN-OS_EDL_Service_Configuration.png)
