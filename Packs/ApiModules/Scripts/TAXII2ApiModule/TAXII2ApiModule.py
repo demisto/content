@@ -72,7 +72,7 @@ class Taxii2FeedClient:
         password: Optional[str] = None,
         field_map: Optional[dict] = None,
         tags: Optional[list] = None,
-        limit_per_request: int = DFLT_LIMIT_PER_REQUEST
+        limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -168,7 +168,7 @@ class Taxii2FeedClient:
             self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
             # override _conn - api_root isn't initialized with the right _conn
             self.api_root._conn = self._conn  # type: ignore[attr-defined]
-        # (TAXIIServiceException, HTTPError) should suffice, but sometimes it throws another HTTPError
+        # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
             if "406 Client Error" not in str(e):
                 raise e
@@ -212,9 +212,7 @@ class Taxii2FeedClient:
         self.init_collections()
         self.init_collection_to_fetch()
 
-    def build_iterator(
-        self, limit: int = -1, **kwargs
-    ) -> List[Dict[str, str]]:
+    def build_iterator(self, limit: int = -1, **kwargs) -> List[Dict[str, str]]:
         """
         Polls the taxii server and builds a list of cortex indicators objects from the result
         :param limit: max amount of indicators to fetch
@@ -271,7 +269,9 @@ class Taxii2FeedClient:
             indicators = self.parse_indicators_list(indicators_list)
             while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
-                envelope = self.collection_to_fetch.get_objects(limit=page_size, next=envelope.get("next", ""))
+                envelope = self.collection_to_fetch.get_objects(
+                    limit=page_size, next=envelope.get("next", "")
+                )
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")
                     obj_cnt += len(stix_objects)
@@ -306,9 +306,7 @@ class Taxii2FeedClient:
         """
         get_objects = self.collection_to_fetch.get_objects
         if isinstance(self.collection_to_fetch, v20.Collection):
-            envelope = v20.as_pages(
-                get_objects, per_request=page_size, **kwargs
-            )
+            envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
         else:
             envelope = get_objects(limit=page_size, **kwargs)
         return envelope
@@ -357,10 +355,10 @@ class Taxii2FeedClient:
                 if self.last_fetched_indicator__modified is None:
                     self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
                 else:
-                    last_datetime = self.created_time_to_datetime(
+                    last_datetime = self.stix_time_to_datetime(
                         self.last_fetched_indicator__modified
                     )
-                    indicator_created_datetime = self.created_time_to_datetime(
+                    indicator_created_datetime = self.stix_time_to_datetime(
                         indicator_modified_str
                     )
                     if indicator_created_datetime > last_datetime:
@@ -504,7 +502,7 @@ class Taxii2FeedClient:
         return groups
 
     @staticmethod
-    def created_time_to_datetime(s_time):
+    def stix_time_to_datetime(s_time):
         """
         Converts datetime to str in "%Y-%m-%dT%H:%M:%S.%fZ" format
         :param s_time: time in string format

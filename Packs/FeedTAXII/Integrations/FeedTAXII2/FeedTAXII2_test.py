@@ -1,4 +1,5 @@
 import json
+import pytest
 from FeedTAXII2 import *
 
 with open('test_data/results.json', 'r') as f:
@@ -130,3 +131,106 @@ class TestFetchIndicators:
         indicators, last_run = fetch_indicators_command(mock_client, '1 day', len(CORTEX_IOCS_1), last_run)
         assert len(indicators) == len(CORTEX_IOCS_1)
         assert last_run.get(mock_client.collections[1]) == 'test'
+
+
+class TestHelperFunctions:
+    def test_try_parse_integer(self):
+        assert try_parse_integer(None, '') is None
+        assert try_parse_integer('8', '') == 8
+        assert try_parse_integer(8, '') == 8
+        with pytest.raises(DemistoException, match='parse failure'):
+            try_parse_integer('a', 'parse failure')
+
+    class TestGetAddedAfter:
+        """Scenario: Test get_added_after"""
+        def test_get_filter_added_after(self):
+            """
+            Scenario: User decides to override added_after filter param
+
+            Given:
+            - fetch_full_feed is false
+            - user overrides added_after filter
+            - last fetch time is set
+
+            When:
+            - calling get_added_after
+
+            Then:
+            - return user determined added_after
+            """
+            fetch_full_feed = False
+            last_fetch_time = 'last_fetch_mock'
+            initial_interval = 'initial_mock'
+            original_added_after = 'original added_after'
+            full_filter_args = {'added_after': original_added_after}
+
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
+                                   full_filter_args) == original_added_after
+
+        def test_get_last_fetch_time(self):
+            """
+            Scenario: Incremental feed and last fetch is set
+
+            Given:
+            - fetch_full_feed is false
+            - last fetch time is set
+
+            When:
+            - calling get_added_after
+
+            Then:
+            - return last fetch time
+            """
+            fetch_full_feed = False
+            last_fetch_time = 'last_fetch_mock'
+            initial_interval = 'initial_mock'
+            full_filter_args = {}
+
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
+                                   full_filter_args) == last_fetch_time
+
+        def test_get_initial_interval__fetch_full_feed_true(self):
+            """
+            Scenario: Full feed and last fetch is set
+
+            Given:
+            - fetch_full_feed is true
+            - initial interval is set
+            - last fetch time is set
+
+            When:
+            - calling get_added_after
+
+            Then:
+            - return initial interval
+            """
+            fetch_full_feed = True
+            last_fetch_time = 'last_fetch_mock'
+            initial_interval = 'initial_mock'
+            full_filter_args = {}
+
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
+                                   full_filter_args) == initial_interval
+
+        def test_get_initial_interval__fetch_full_feed_false(self):
+            """
+            Scenario: Incremental feed and last fetch is not set
+
+            Given:
+            - fetch_full_feed is true
+            - initial interval is set
+            - last fetch time is not set
+
+            When:
+            - calling get_added_after
+
+            Then:
+            - return initial interval
+            """
+            fetch_full_feed = False
+            last_fetch_time = None
+            initial_interval = 'initial_mock'
+            full_filter_args = {}
+
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
+                                   full_filter_args) == initial_interval

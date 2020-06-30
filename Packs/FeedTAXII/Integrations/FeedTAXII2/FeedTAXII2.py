@@ -68,13 +68,13 @@ def fetch_indicators_command(
         )
     if filter_args is None:
         filter_args = {}
-    col_to_fetch = (
+    last_fetch_time = (
         last_run_ctx.get(client.collection_to_fetch.id)
         if client.collection_to_fetch
-        else ""
+        else None
     )
     filter_args["added_after"] = get_added_after(
-        fetch_full_feed, initial_interval, col_to_fetch, filter_args
+        fetch_full_feed, initial_interval, last_fetch_time, filter_args
     )
 
     if client.collection_to_fetch is None:
@@ -84,13 +84,9 @@ def fetch_indicators_command(
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            if not fetch_full_feed:
-                # update added_after when not full feed fetch
-                filter_args["added_after"] = (
-                    last_run_ctx[collection.id]
-                    if collection.id in last_run_ctx
-                    else initial_interval
-                )
+            filter_args["added_after"] = get_added_after(
+                fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
+            )
             fetched_iocs = client.build_iterator(limit, **filter_args)
             indicators.extend(fetched_iocs)
             if limit >= 0:
@@ -99,8 +95,8 @@ def fetch_indicators_command(
                     break
             last_run_ctx[collection.id] = client.last_fetched_indicator__modified
     else:
+        # fetch from a single collection
         indicators = client.build_iterator(limit, **filter_args)
-        # in case no indicator was fetched
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
             if client.last_fetched_indicator__modified
@@ -109,7 +105,9 @@ def fetch_indicators_command(
     return indicators, last_run_ctx
 
 
-def get_added_after(fetch_full_feed, initial_interval, last_fetch_time, filter_args):
+def get_added_after(
+    fetch_full_feed, initial_interval, last_fetch_time=None, filter_args=None
+):
     """
     Creates the added_after param, or extracts it from the filter_args
     :param fetch_full_feed: when set to true, will limit added_after
@@ -118,15 +116,11 @@ def get_added_after(fetch_full_feed, initial_interval, last_fetch_time, filter_a
     :param filter_args: set of filter_args defined by the user to be merged with added_after
     :return: added_after
     """
-    if "added_after" not in filter_args:
-        if initial_interval:
-            added_after = initial_interval
-        elif not fetch_full_feed:
-            added_after = last_fetch_time if last_fetch_time else initial_interval
-        else:
-            # fetch full feed - no added_after
-            added_after = None
-        return added_after
+    if fetch_full_feed:
+        return initial_interval
+
+    if not filter_args or "added_after" not in filter_args:
+        return last_fetch_time or initial_interval
 
     return filter_args["added_after"]
 
@@ -218,8 +212,10 @@ def handle_filter_arg(filter_args=None, delimiter="="):
     Transforms filter arguments (str) to a dict to be used by build_iterator
     :param filter_args: filter_args as typed by the user in the filter_args param
     :param delimiter: delimiter to use between filter_key and filter_val
-    :return: filter_args dict {filter_key: filter_value}
+    :return: filter_args dict with type:indicator {filter_key: filter_value}
+
     """
+    # add filter for indicator types by default
     filter_dict = {"type": "indicator"}
     if filter_args:
         filter_args = argToList(filter_args)

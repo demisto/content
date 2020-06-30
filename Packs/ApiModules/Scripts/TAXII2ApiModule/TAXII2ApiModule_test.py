@@ -1,6 +1,7 @@
 from CommonServerPython import *
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
 from taxii2client import v20, v21
+import pytest
 import json
 
 with open('test_data/stix_envelope_no_indicators.json', 'r') as f:
@@ -86,13 +87,8 @@ class TestInitCollectionsToFetch:
         Then:
         - Ensure exception is raised with proper error message
         """
-        try:
-            exception_raised = False
+        with pytest.raises(DemistoException, match="Could not find the provided Collection name"):
             self.mock_client.init_collection_to_fetch('not_found')
-        except DemistoException as e:
-            exception_raised = True
-            assert "Could not find the provided Collection name" in str(e)
-        assert exception_raised
 
     def test_no_collections_available(self):
         """
@@ -109,13 +105,8 @@ class TestInitCollectionsToFetch:
         - Ensure exception is raised with proper error message
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False)
-        try:
-            exception_raised = False
+        with pytest.raises(DemistoException, match="No collection is available for this user"):
             mock_client.init_collection_to_fetch('not_found')
-        except DemistoException as e:
-            exception_raised = True
-            assert "No collection is available for this user" in str(e)
-        assert exception_raised
 
 
 class TestBuildIterator:
@@ -136,13 +127,8 @@ class TestBuildIterator:
         - Ensure exception is raised with proper error message
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False)
-        try:
-            exception_raised = False
+        with pytest.raises(DemistoException, match='Could not find a collection to fetch from.'):
             mock_client.build_iterator()
-        except DemistoException as e:
-            exception_raised = True
-            assert "Could not find a collection to fetch from." in str(e)
-        assert exception_raised
 
     def test_limit_0_v20(self, mocker):
         """
