@@ -26,7 +26,7 @@ class Client(BaseClient):
     def do_request(self, method, url_suffix, params=None, data=None, json_data=None, resp_type='json', files=None):
 
         res = self._http_request(method, url_suffix, params=params, data=data, json_data=json_data, files=files,
-                                 resp_type=resp_type, ok_codes=[200, 204], return_empty_response=True)
+                                 resp_type=resp_type, ok_codes=(200, 201, 204), return_empty_response=True)
 
         if resp_type == 'other' or isinstance(res, dict) or isinstance(res, list):
             return res
@@ -63,7 +63,7 @@ def objects_list_command(client, args):
 
     params = {'$orderby': 'CreatedDateTime desc'}
     filter_txt = generate_filter_param(rec_id, from_date, to_date)
-    print(filter_txt)
+
     if filter_txt:
         params['$filter'] = filter_txt
     if limit:
@@ -135,10 +135,52 @@ def upload_attachment_command(client, args):
     if raw_res:
         attachment = raw_res[0]
         attachment_id = attachment.get('Message')
-        file_name =attachment.get('FileName')
+        file_name = attachment.get('FileName')
         entry_context = {'ivantiHeat.Attachment':
-                        {'RecId': rec_id, 'AttachmentId':attachment_id, 'FileName': file_name}}
+                         {'RecId': rec_id, 'AttachmentId': attachment_id, 'FileName': file_name}}
         return f'{file_name} uploaded successfully, attachment ID: {attachment_id}', entry_context, raw_res
+
+
+@logger
+def perform_action_command(client, args):
+    object_type = args.get('object-type')
+    object_id = args.get('object-id')
+    action = args.get('action')
+    request_data = args.get('request-data')
+
+    try:
+        request_data = json.loads(request_data)
+    except Exception:
+        raise Exception('Failed to parese request-data argument')
+
+    raw_res = client.do_request('POST', f'odata/businessobject/{object_type}(\'{object_id}\')/{action}',
+                                json_data=request_data, resp_type='other')
+
+    return f'{action} action success', {}, raw_res
+
+
+@logger
+def create_object_command(client, args):
+    object_type = args.get('object-type')
+    fields = args.get('fields')
+
+    body = {}
+
+    try:
+        fields = json.loads(fields)
+    except Exception:
+        raise Exception('Failed to parese additional-fields data')
+
+    for key in fields.keys():
+        body[key] = fields[key]
+
+    raw_res = client.do_request('POST', f'odata/businessobject/{object_type}', json_data=body)
+
+    human_readable = tableToMarkdown(f'{object_type} object created successfully', t=raw_res, headers=OBJECT_HEADERS,
+                                     removeNull=True)
+
+    entry_context = {f'ivantiHeat.{object_type}(val.RecId===obj.RecId)': raw_res}
+    return human_readable, entry_context, raw_res
 
 
 def get_file(entry_id):
@@ -154,7 +196,6 @@ def get_file(entry_id):
 def fetch_incidents(client, last_run, first_fetch_time):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
-    object_type = demisto.params().get('incident_object_type')
     name_field = demisto.params().get('incident_name_field')
     # Handle first time fetch
     if last_fetch is None:
@@ -166,7 +207,7 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     params = {'$orderby': 'CreatedDateTime asc'}
     params['$filter'] = f'CreatedDateTime gt {last_fetch.strftime(DATE_FORMAT)}'
-    raw_res = client.do_request('GET', f'odata/businessobject/{object_type}', params=params)
+    raw_res = client.do_request('GET', 'odata/businessobject/incidents', params=params)
     if raw_res.get('value'):
         for item in raw_res['value']:
             incident_created_time = dateparser.parse(item.get('CreatedDateTime'))
@@ -203,7 +244,9 @@ def main():
         'ivanti-heat-objects-list': objects_list_command,
         'ivanti-heat-object-update': update_object_command,
         'ivanti-heat-object-delete': delete_object_command,
-        'ivanti-heat-object-attachment-upload': upload_attachment_command
+        'ivanti-heat-object-attachment-upload': upload_attachment_command,
+        'ivanti-heat-object-create': create_object_command,
+        'ivanti-heat-object-perform-action': perform_action_command
     }
 
     LOG(f'Command being called is {demisto.command()}')

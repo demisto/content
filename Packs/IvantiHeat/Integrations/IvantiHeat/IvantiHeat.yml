@@ -24,7 +24,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- hidden: false
+- display: API Token
+  hidden: false
   name: token
   required: true
   type: 4
@@ -34,12 +35,8 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: incidents
-  hidden: false
-  name: incident_object_type
-  required: true
-  type: 0
 - defaultvalue: subject
+  display: The object field to use for incident name
   hidden: false
   name: incident_name_field
   required: true
@@ -50,47 +47,57 @@ script:
   commands:
   - arguments:
     - default: false
+      description: Buisiness object Id
       isArray: false
       name: rec-id
       required: false
       secret: false
     - default: false
+      description: Start date of object records to return in the following format
+        2012-01-01T00:00:00Z.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
+      description: End date of object records to return in the following format 2012-01-01T00:00:00Z.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
       defaultValue: '25'
+      description: The maximum number of object records to return
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
+      description: Starting record index to begin retrieving object records from
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
+      description: Fetches business object records based on the defined search keyword
       isArray: false
       name: search-query
       required: false
       secret: false
     - default: false
+      description: Type of object record
       isArray: false
       name: object-type
       required: true
       secret: false
     deprecated: false
+    description: Fetches business object records based on the defined filter values
     execution: false
     name: ivanti-heat-objects-list
   - arguments:
     - default: false
+      description: Buisiness object Id to update
       isArray: false
       name: rec-id
       required: true
@@ -102,55 +109,114 @@ script:
       required: true
       secret: false
     - default: false
+      description: Type of object record
       isArray: false
       name: object-type
       required: true
       secret: false
     deprecated: false
+    description: Update details of a business object such as a change, problem, or
+      incident
     execution: false
     name: ivanti-heat-object-update
   - arguments:
     - default: false
+      description: Buisiness object Id
       isArray: false
       name: rec-id
       required: true
       secret: false
     - default: false
+      description: Type of object record
       isArray: false
       name: object-type
       required: true
       secret: false
     deprecated: false
+    description: Delete a business object such as a change, problem, or incident by
+      its RecID
     execution: false
     name: ivanti-heat-object-delete
   - arguments:
     - default: false
+      description: The attachment Id
       isArray: false
       name: attachment-id
       required: true
       secret: false
     deprecated: false
+    description: Get attachments from business objects by attachment Id
     execution: false
     name: ivanti-heat-object-attachment-download
   - arguments:
     - default: false
+      description: The entry id of the file in Demisto's context
       isArray: false
       name: entry-id
       required: true
       secret: false
     - default: false
+      description: Buisiness object Id
       isArray: false
       name: rec-id
       required: true
       secret: false
     - default: false
+      description: Type of object record
       isArray: false
       name: object-type
       required: true
       secret: false
     deprecated: false
+    description: Upload attachments to business objects
     execution: false
     name: ivanti-heat-object-attachment-upload
+  - arguments:
+    - default: false
+      description: Type of object record
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
+    - default: false
+      description: Buisiness object Id
+      isArray: false
+      name: object-id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: action
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: request-data
+      required: true
+      secret: false
+    deprecated: false
+    description: Performs quick actions for a business object. For example, close,
+      clone or resolve an incident or a problem
+    execution: false
+    name: ivanti-heat-object-perform-action
+  - arguments:
+    - default: false
+      description: Type of object record
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
+    - default: false
+      description: fields values in json format
+      isArray: false
+      name: fields
+      required: true
+      secret: false
+    deprecated: false
+    description: create business objects available out-of-the-box, such as a Change,
+      Problem, Incident, or any custom defined business object of your choice
+    execution: false
+    name: ivanti-heat-object-create
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
