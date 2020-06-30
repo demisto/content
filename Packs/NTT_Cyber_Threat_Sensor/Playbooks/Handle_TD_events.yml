@@ -1,0 +1,268 @@
+id: 3635efba-6320-42ed-84fa-4795a30c7308
+version: 38
+name: Handle TD events
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8d397612-7e3b-4938-8230-1bd29db8f2c0
+    type: start
+    task:
+      id: 8d397612-7e3b-4938-8230-1bd29db8f2c0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: dcbb7bc7-c01f-48ab-8959-32fce9fe738a
+    type: regular
+    task:
+      id: dcbb7bc7-c01f-48ab-8959-32fce9fe738a
+      version: -1
+      name: Fetch PCAP
+      description: Collecting blobs, most commonly pcap from an incident
+      script: NTT Cyber Threat Sensor|||fetch-blobs
+      type: regular
+      iscommand: true
+      brand: NTT Cyber Threat Sensor
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      event_id:
+        simple: ${incident.eventid}
+      timestamp:
+        simple: ${incident.occurred}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4c34590f-cbbd-46cf-8cf0-9d32f78b05b8
+    type: regular
+    task:
+      id: 4c34590f-cbbd-46cf-8cf0-9d32f78b05b8
+      version: -1
+      name: PCAPMiner
+      description: |-
+        PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
+        This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
+        a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
+        b) Copy the automation and change the `default timeout` parameter to match your needs.
+      scriptName: PcapMinerV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      convs_to_display: {}
+      custom_regex: {}
+      entry_id:
+        simple: ${File.EntryID}
+      extract_ips: {}
+      extract_strings: {}
+      filtered_file_name: {}
+      pcap_filter: {}
+      protocol_output: {}
+      rsa_decrypt_key_entry_id: {}
+      wpa_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: de6361f6-dd94-46be-8f9c-79d7c9f178aa
+    type: playbook
+    task:
+      id: de6361f6-dd94-46be-8f9c-79d7c9f178aa
+      version: -1
+      name: Extract Indicators From File - Generic v2
+      description: |-
+        Extracts indicators from a file.
+        Supported file types:
+        - CSV
+        - PDF
+        - TXT
+        - HTM, HTML
+        - DOC, DOCX
+        - PPT
+        - PPTX
+        - RTF
+        - XLS
+        - XLSX
+        - XML
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        simple: ${File}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 70c0d97d-dac0-4a85-8fae-25db0373e03f
+    type: condition
+    task:
+      id: 70c0d97d-dac0-4a85-8fae-25db0373e03f
+      version: -1
+      name: Check if the Incident has a blob
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: CTS.HasBlob
+            iscontext: true
+    - label: "NO"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: CTS.HasBlob
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: da50f0a1-e78d-4eeb-81ff-422db2fb3e0b
+    type: title
+    task:
+      id: da50f0a1-e78d-4eeb-81ff-422db2fb3e0b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 7d17eb07-b43a-4ce0-877f-cc066b03193f
+    type: regular
+    task:
+      id: 7d17eb07-b43a-4ce0-877f-cc066b03193f
+      version: -1
+      name: Mark PCAP as evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      desc: {}
+      description: {}
+      entryIDs:
+        simple: ${File.EntryID}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1120,
+        "width": 800,
+        "x": -40,
+        "y": 120
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: CTS.EventID
+  type: string
+- contextPath: CTS.OccuredTime
+  type: unknown

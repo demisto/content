@@ -1,0 +1,131 @@
+commonfields:
+  id: NTT Cyber Threat Sensor
+  version: -1
+name: NTT Cyber Threat Sensor
+display: NTT Cyber Threat Sensor
+category: Network Security
+description: Retrieve alerts and recommendations from NTT CTS
+configuration:
+- display: 'The API key for accessing CTS over AWS '
+  name: APIKEY
+  defaultvalue: <APIKEY>
+  type: 4
+  required: true
+- display: Tenant identification. UUID formatted string
+  name: TENANT_ID
+  defaultvalue: <TENANT_ID>
+  type: 0
+  required: true
+- display: Days to fetch for the first time this application runs
+  name: DAYS_BACK
+  defaultvalue: 3
+  type: 0
+  required: true
+- display: Number of items to fetch each iteration (1 to 100)
+  name: ITEMS_TO_FETCH
+  defaultvalue: 20
+  type: 0
+  required: true  
+- display: The unique key for accessing the alerts and active response recommendations
+  name: SOARTOKEN
+  defaultvalue: <SOARTOKEN>
+  type: 4
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: The base URL for the backend to consume from
+  name: BASEURL
+  defaultvalue: https://cts.eu1.nttsecurity.io/v1
+  type: 0
+  required: true
+
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: fetch_incidents
+    arguments: []
+    outputs:
+    - contextPath: CTS.DeviceName
+      description: Name of detecting device
+      type: string
+    - contextPath: CTS.Confidence
+      description: Confidence level
+      type: string
+    - contextPath: CTS.Severity
+      description: Severity level
+      type: string
+    - contextPath: CTS.ShortDescription
+      description: Short description of incident
+      type: string
+    - contextPath: CTS.ARAId
+      description: Id of this Active Response API
+      type: string
+    - contextPath: CTS.ARADetails
+      description: Details of the recommended actions
+    - contextPath: CTS.Signature
+      description: Signature name of detection
+    - contextPath: CTS.OccuredTime
+      description: Date and time of occurrence or detection
+    - contextPath: CTS.DeviceId
+      description: Id of detecting device
+    - contextPath: CTS.TenantId
+      description: Id of the tenant
+    - contextPath: CTS.EventID
+      description: Id of the event
+      type: string
+    description: Retrieve incidents since last poll
+  - name: fetch-blobs
+    arguments:
+    - name: event_id
+      required: true
+    - name: timestamp
+      description: ISO timestamp for when alert was triggered
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: The name of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: string
+    - contextPath: File.Info
+      description: File information.
+      type: string
+    - contextPath: File.Type
+      description: The file type.
+      type: string
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: string
+    - contextPath: File.Extension
+      description: The file extension.
+      type: string
+    - contextPath: CTS.HasBlob
+      description: If one or more blobs exist then True
+      type: boolean
+    description: Collecting blobs, most commonly pcap from an incident
+    execution: true
+  dockerimage: demisto/python3:3.8.1.6120
+  isfetch: true
+  runonce: false
+  subtype: python3

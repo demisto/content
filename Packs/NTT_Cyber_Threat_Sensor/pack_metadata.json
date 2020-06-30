@@ -1,0 +1,19 @@
+{
+    "name": "NTT Cyber Threat Sensor",
+    "description": "NTT Cyber Threat Sensor integration",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "NTT Ltd.",
+    "url": "https://github.com/secode",
+    "email": "johan.ryberg@global.ntt",
+    "created": "2020-06-25T07:27:48Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "pcap",
+        "alert"
+    ],
+    "useCases": [],
+    "keywords": []
+}
