@@ -11,7 +11,6 @@
     ],
     "tags": [
         "pcap",
-        "mine",
         "network",
         "forensics"
     ],
@@ -19,7 +18,11 @@
     "updated": "2020-05-14T06:21:02Z",
     "beta": false,
     "deprecated": false,
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "PCAP Analysis"
+    ],
+    "keywords": [
+        "mine"
+    ],
     "dependencies": {}
 }
