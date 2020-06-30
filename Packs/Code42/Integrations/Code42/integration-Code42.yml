@@ -1110,7 +1110,11 @@ script:
             """Determine if file categorization is significant"""
             observed_file_categories = self._observation_data.get("fileCategories")
             if observed_file_categories:
-                categories = [c.get("category").upper() for c in observed_file_categories if c.get("isSignificant") and c.get("category")]
+                categories = [
+                    c.get("category").upper()
+                    for c in observed_file_categories
+                    if c.get("isSignificant") and c.get("category")
+                ]
                 if categories:
                     return FileCategory.is_in(categories)
 
@@ -1280,7 +1284,7 @@ script:
                 outputs_prefix="Code42.DepartingEmployee",
                 outputs_key_field="UserID",
                 outputs={"Results": []},
-                raw_response={}
+                raw_response={},
             )
 
         employees_context = [
@@ -1347,7 +1351,7 @@ script:
                 outputs_prefix="Code42.HighRiskEmployee",
                 outputs_key_field="UserID",
                 outputs={"Results": []},
-                raw_response={}
+                raw_response={},
             )
         employees_context = [
             {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
@@ -1450,7 +1454,11 @@ script:
         email = args.get("email")
         try:
             res = client.create_user(org_name, username, email)
-            outputs = {"Username": res.get("username"), "UserID": res.get("userUid"), "Email": res.get("email")}
+            outputs = {
+                "Username": res.get("username"),
+                "UserID": res.get("userUid"),
+                "Email": res.get("email"),
+            }
             readable_outputs = tableToMarkdown("Code42 User Created", outputs)
             return CommandResults(
                 outputs_prefix="Code42.User",
@@ -1677,23 +1685,23 @@ script:
 
     def get_command_map():
         return {
-                "code42-alert-get": alert_get_command,
-                "code42-alert-resolve": alert_resolve_command,
-                "code42-securitydata-search": securitydata_search_command,
-                "code42-departingemployee-add": departingemployee_add_command,
-                "code42-departingemployee-remove": departingemployee_remove_command,
-                "code42-departingemployee-get-all": departingemployee_get_all_command,
-                "code42-highriskemployee-add": highriskemployee_add_command,
-                "code42-highriskemployee-remove": highriskemployee_remove_command,
-                "code42-highriskemployee-get-all": highriskemployee_get_all_command,
-                "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
-                "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
-                "code42-user-create": user_create_command,
-                "code42-user-block": user_block_command,
-                "code42-user-unblock": user_unblock_command,
-                "code42-user-deactivate": user_deactivate_command,
-                "code42_user-reactivate": user_reactivate_command,
-            }
+            "code42-alert-get": alert_get_command,
+            "code42-alert-resolve": alert_resolve_command,
+            "code42-securitydata-search": securitydata_search_command,
+            "code42-departingemployee-add": departingemployee_add_command,
+            "code42-departingemployee-remove": departingemployee_remove_command,
+            "code42-departingemployee-get-all": departingemployee_get_all_command,
+            "code42-highriskemployee-add": highriskemployee_add_command,
+            "code42-highriskemployee-remove": highriskemployee_remove_command,
+            "code42-highriskemployee-get-all": highriskemployee_get_all_command,
+            "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
+            "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+            "code42-user-create": user_create_command,
+            "code42-user-block": user_block_command,
+            "code42-user-unblock": user_unblock_command,
+            "code42-user-deactivate": user_deactivate_command,
+            "code42_user-reactivate": user_reactivate_command,
+        }
 
 
     def handle_test_command(client):
