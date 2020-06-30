@@ -306,7 +306,7 @@ class Code42Client(BaseClient):
         res = self._get_sdk().securitydata.search_file_events(payload)
         return res["fileEvents"]
 
-    def download_file_by_hash(self, hash_arg):
+    def download_file(self, hash_arg):
         security_module = self._get_sdk().securitydata
         if _hash_is_md5(hash_arg):
             return security_module.stream_file_by_md5(hash_arg)
@@ -938,10 +938,9 @@ def user_reactivate_command(client, args):
 
 
 def download_file_command(client, args):
-    hash = args.get("hash")
-
-
-
+    file_hash = args.get("hash")
+    file_bytes = client.download_file(file_hash)
+    return fileResult(file_hash, data=file_bytes)
 
 
 """Fetching"""

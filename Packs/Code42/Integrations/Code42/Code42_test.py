@@ -5,7 +5,6 @@ from py42.sdk import SDKClient
 from py42.response import Py42Response
 from Code42 import (
     Code42Client,
-    Code42UserIDNotFoundError,
     build_query_payload,
     map_observation_to_security_query,
     map_to_code42_event_context,
@@ -27,6 +26,7 @@ from Code42 import (
     user_unblock_command,
     user_deactivate_command,
     user_reactivate_command,
+    download_file_command,
     fetch_incidents,
 )
 import time
@@ -1634,6 +1634,25 @@ def test_security_data_search_command(code42_file_events_mock):
         mapped_event = map_to_code42_event_context(expected_file_events[i])
         output_item = code42_res.outputs[i]
         assert output_item == mapped_event
+
+
+def test_download_file_command_when_given_md5(code42_sdk_mock, mocker):
+    fr = mocker.patch("Code42.fileResult")
+    client = create_client(code42_sdk_mock)
+    _ = download_file_command(client, {"hash": "b6312dbe4aa4212da94523ccb28c5c16"})
+    code42_sdk_mock.securitydata.stream_file_by_md5.assert_called_once_with(
+        "b6312dbe4aa4212da94523ccb28c5c16"
+    )
+    assert fr.call_count == 1
+
+
+def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
+    fr = mocker.patch("Code42.fileResult")
+    _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c2149"
+    client = create_client(code42_sdk_mock)
+    _ = download_file_command(client, {"hash": _hash})
+    code42_sdk_mock.securitydata.stream_file_by_sha256.assert_called_once_with(_hash)
+    assert fr.call_count == 1
 
 
 def test_fetch_when_no_significant_file_categories_ignores_filter(

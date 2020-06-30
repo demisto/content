@@ -580,6 +580,17 @@ script:
     - contextPath: Code42.User.UserID
       description: The ID of a Code42 User.
       type: String
+  - arguments:
+    - default: false
+      description: Either the SHA256 or MD5 hash of the file.
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Downloads a file from Code42 servers.
+    execution: false
+    name: code42-download-file
   dockerimage: demisto/py42:1.0.0.9323
   feed: false
   isfetch: true
@@ -914,6 +925,16 @@ script:
             res = self._get_sdk().securitydata.search_file_events(payload)
             return res["fileEvents"]
 
+        def download_file(self, hash_arg):
+            security_module = self._get_sdk().securitydata
+            if _hash_is_md5(hash_arg):
+                return security_module.stream_file_by_md5(hash_arg)
+            elif _hash_is_sha256(hash_arg):
+                return security_module.stream_file_by_sha256(hash_arg)
+            else:
+                raise Exception("Unsupported hash. Must be SHA256 or MD5.")
+
+
         def _get_user_id(self, username):
             user_id = self.get_user(username).get("userUid")
             if user_id:
@@ -1014,12 +1035,18 @@ script:
         return query
 
 
+    def _hash_is_sha256(hash_arg):
+        return hash_arg and len(hash_arg) == 64
+
+
+    def _hash_is_md5(hash_arg):
+        return hash_arg and len(hash_arg) == 32
+
+
     def _create_hash_filter(hash_arg):
-        if not hash_arg:
-            return None
-        elif len(hash_arg) == 32:
+        if _hash_is_md5(hash_arg):
             return MD5.eq(hash_arg)
-        elif len(hash_arg) == 64:
+        elif _hash_is_sha256(hash_arg):
             return SHA256.eq(hash_arg)
 
 
@@ -1546,6 +1573,12 @@ script:
         )
 
 
+    def download_file_command(client, args):
+        file_hash = args.get("hash")
+        file_bytes = client.download_file(file_hash)
+        return fileResult(file_hash, data=file_bytes)
+
+
     """Fetching"""
 
 
@@ -1708,6 +1741,7 @@ script:
             "code42-user-unblock": user_unblock_command,
             "code42-user-deactivate": user_deactivate_command,
             "code42_user-reactivate": user_reactivate_command,
+            "code42-download-file": download_file_command,
         }
 
 
