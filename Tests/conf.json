@@ -2884,6 +2884,7 @@
         }
     ],
     "skipped_tests": {
+        "AlienVaultReputationFeed_Test": "Issue 26104",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
