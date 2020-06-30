@@ -1188,9 +1188,8 @@ def test_departingemployee_add_command(code42_sdk_mock):
     date = "2020-01-01"
     note = "Dummy note"
     cmd_res = departingemployee_add_command(
-        client,
-        {"username": _TEST_USERNAME, "departuredate": date, "note": note},
-     )
+        client, {"username": _TEST_USERNAME, "departuredate": date, "note": note}
+    )
     add_func = code42_sdk_mock.detectionlists.departing_employee.add
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
@@ -1332,7 +1331,7 @@ def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
     cmd_res = highriskemployee_get_all_command(client, {})
     expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
     assert cmd_res.outputs_key_field == "UserID"
-    assert  cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.raw_response == expected_response
     assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
     assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
@@ -1404,9 +1403,7 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     client = create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(
         client,
-        {
-            "risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"
-        },
+        {"risktags": "PERFORMANCE_CONCERNS SUSPICIOUS_SYSTEM_ACTIVITY POOR_SECURITY_PRACTICES"},
     )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
@@ -1464,7 +1461,7 @@ def test_security_data_search_command(code42_file_events_mock):
         ("md5Checksum", "d41d8cd98f00b204e9800998ecf8427e"),
         ("osHostName", "DESKTOP-0001"),
         ("deviceUserName", "user3@example.com"),
-        ("exposure", "ApplicationRead")
+        ("exposure", "ApplicationRead"),
     ]
     expected_file_events = json.loads(MOCK_SECURITY_EVENT_RESPONSE)["fileEvents"]
 
