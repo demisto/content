@@ -9,8 +9,15 @@ import threading
 import subprocess
 import traceback
 from time import sleep
-from datetime import datetime
+import datetime
 from distutils.version import LooseVersion
+
+import pytz
+
+from google.cloud import storage
+from google.api_core.exceptions import PreconditionFailed
+from queue import Queue
+from contextlib import contextmanager
 
 import urllib3
 import requests
@@ -35,7 +42,9 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, p
 
 SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
-
+LOCKS_PATH = 'content-locks'
+BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
+CIRCLE_BUILD_NUM = os.environ.get('CIRCLE_BUILD_NUM')
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
 
 
@@ -116,7 +125,7 @@ class ParallelPrintsManager:
     def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None,
                       include_timestamp=False):
         if include_timestamp:
-            message_to_print = f'[{datetime.now()}] {message_to_print}'
+            message_to_print = f'[{datetime.datetime.now()}] {message_to_print}'
 
         print_job = PrintJob(message_to_print, print_function_to_execute, message_color=message_color)
         self.threads_print_jobs[thread_index].append(print_job)
@@ -304,45 +313,55 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
     )
 
 
-def run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                   test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
-                   prints_manager, thread_index=0, is_mock_run=False):
-    status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
-                                      is_mock_run, thread_index=thread_index)
-    # c.api_client.pool.close()
-    if status == PB_Status.COMPLETED:
-        prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
-                                     message_color=LOG_COLORS.GREEN)
-        succeed_playbooks.append(playbook_id)
+def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations, playbook_id,
+                   succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
+                   build_name, prints_manager, thread_index=0, is_mock_run=False):
+    with acquire_test_lock(integrations,
+                           test_options.get('timeout'),
+                           prints_manager,
+                           thread_index,
+                           tests_settings.conf_path) as lock:
+        if lock:
+            status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                              is_mock_run, thread_index=thread_index)
+            # c.api_client.pool.close()
+            if status == PB_Status.COMPLETED:
+                prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
+                                             message_color=LOG_COLORS.GREEN)
+                succeed_playbooks.append(playbook_id)
 
-    elif status == PB_Status.NOT_SUPPORTED_VERSION:
-        not_supported_version_message = 'PASS: {} skipped - not supported version'.format(test_message)
-        prints_manager.add_print_job(not_supported_version_message, print, thread_index)
-        succeed_playbooks.append(playbook_id)
+            elif status == PB_Status.NOT_SUPPORTED_VERSION:
+                not_supported_version_message = 'PASS: {} skipped - not supported version'.format(test_message)
+                prints_manager.add_print_job(not_supported_version_message, print, thread_index)
+                succeed_playbooks.append(playbook_id)
 
-    else:
-        error_message = 'Failed: {} failed'.format(test_message)
-        prints_manager.add_print_job(error_message, print_error, thread_index)
-        playbook_id_with_mock = playbook_id
-        if not is_mock_run:
-            playbook_id_with_mock += " (Mock Disabled)"
-        failed_playbooks.append(playbook_id_with_mock)
-        if not tests_settings.is_local_run:
-            notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
+            else:
+                error_message = 'Failed: {} failed'.format(test_message)
+                prints_manager.add_print_job(error_message, print_error, thread_index)
+                playbook_id_with_mock = playbook_id
+                if not is_mock_run:
+                    playbook_id_with_mock += " (Mock Disabled)"
+                failed_playbooks.append(playbook_id_with_mock)
+                if not tests_settings.is_local_run:
+                    notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
 
-    succeed = status in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
+            succeed = status in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
+        else:
+            tests_queue.put(conf_json_test_details)
+            succeed = False
+
     return succeed
 
 
 # run the test using a real instance, record traffic.
-def run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                   test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
-                   prints_manager, thread_index=0):
+def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
+                   playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
+                   server_url, build_name, prints_manager, thread_index=0):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True, thread_index=thread_index, prints_manager=prints_manager)
-    succeed = run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                             test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
-                             prints_manager, thread_index=thread_index, is_mock_run=True)
+    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, failed_playbooks, integrations,
+                             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
+                             server_url, build_name, prints_manager, thread_index=thread_index, is_mock_run=True)
     proxy.stop(thread_index=thread_index, prints_manager=prints_manager)
     proxy.clean_mock_file(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
     if succeed:
@@ -352,9 +371,9 @@ def run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, pla
     return succeed
 
 
-def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
-             prints_manager, thread_index=0):
+def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks, integrations,
+             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number, server_url,
+             build_name, start_message, prints_manager, thread_index=0):
     rerecord = False
 
     if proxy.has_mock_file(playbook_id):
@@ -400,9 +419,9 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
     # Mock recording - no mock file or playback failure.
     c = demisto_client.configure(base_url=c.api_client.configuration.host,
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
-    succeed = run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                             test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
-                             prints_manager, thread_index=thread_index)
+    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, proxy, failed_playbooks,
+                             integrations, playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
+                             build_number, server_url, build_name, prints_manager, thread_index=thread_index)
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
@@ -410,24 +429,24 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
     prints_manager.add_print_job(test_end_message, print, thread_index, include_timestamp=True)
 
 
-def run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
-             server_url, build_name, prints_manager, is_ami=True, thread_index=0):
+def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_api_key, proxy, failed_playbooks,
+             integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message, test_options,
+             slack, circle_ci, build_number, server_url, build_name, prints_manager, is_ami=True, thread_index=0):
     start_message = f'------ Test {test_message} start ------'
     client = demisto_client.configure(base_url=server_url, api_key=demisto_api_key, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
-        run_test_logic(tests_settings, client, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                       test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
-                       prints_manager, thread_index=thread_index)
+        run_test_logic(conf_json_test_details, tests_queue, tests_settings, client, failed_playbooks, integrations,
+                       playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
+                       server_url, build_name, prints_manager, thread_index=thread_index)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index,
                                      include_timestamp=True)
 
         return
-    mock_run(tests_settings, client, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
-             prints_manager, thread_index=thread_index)
+    mock_run(conf_json_test_details, tests_queue, tests_settings, client, proxy, failed_playbooks, integrations,
+             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
+             server_url, build_name, start_message, prints_manager, thread_index=thread_index)
 
 
 def http_request(url, params_dict=None):
@@ -600,7 +619,7 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
                       filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
@@ -687,7 +706,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
+    run_test(t, tests_queue, tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
              playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
              build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
 
@@ -824,8 +843,15 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         # first run the mock tests to avoid mockless side effects in container
         if is_ami and mockable_tests:
             proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
-            for t in mockable_tests:
-                run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf,
+            executed_in_current_round, mockable_tests_queue = initialize_queue_and_executed_tests_set(mockable_tests)
+            while not mockable_tests_queue.empty():
+                t = mockable_tests_queue.get()
+                executed_in_current_round = update_round_set_and_sleep_if_round_completed(executed_in_current_round,
+                                                                                          prints_manager,
+                                                                                          t,
+                                                                                          thread_index,
+                                                                                          mockable_tests_queue)
+                run_test_scenario(mockable_tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf,
                                   nightly_integrations, skipped_integrations_conf, skipped_integration, is_nightly,
                                   run_all_tests, is_filter_configured, filtered_tests,
                                   skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
@@ -838,15 +864,20 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             reset_containers(server, demisto_api_key, prints_manager, thread_index)
 
         prints_manager.add_print_job("\nRunning mock-disabled tests", print, thread_index)
-        for t in unmockable_tests:
-            run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                              skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                              is_filter_configured, filtered_tests, skipped_tests, secret_params, failed_playbooks,
-                              playbook_skipped_integration,
-                              unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                              build_name, server_numeric_version, demisto_api_key,
-                              prints_manager, thread_index, is_ami)
-
+        executed_in_current_round, unmockable_tests_queue = initialize_queue_and_executed_tests_set(unmockable_tests)
+        while not unmockable_tests_queue.empty():
+            t = unmockable_tests_queue.get()
+            executed_in_current_round = update_round_set_and_sleep_if_round_completed(executed_in_current_round,
+                                                                                      prints_manager,
+                                                                                      t,
+                                                                                      thread_index,
+                                                                                      unmockable_tests_queue)
+            run_test_scenario(unmockable_tests_queue, tests_settings, t, proxy, default_test_timeout,
+                              skipped_tests_conf, nightly_integrations, skipped_integrations_conf, skipped_integration,
+                              is_nightly, run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
+                              secret_params, failed_playbooks, playbook_skipped_integration, unmockable_integrations,
+                              succeed_playbooks, slack, circle_ci, build_number, server, build_name,
+                              server_numeric_version, demisto_api_key, prints_manager, thread_index, is_ami)
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:
@@ -871,6 +902,49 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \
                 format('\n- '.join(playbook_skipped_integration))
             add_pr_comment(comment)
+
+
+def update_round_set_and_sleep_if_round_completed(executed_in_current_round: set,
+                                                  prints_manager: ParallelPrintsManager,
+                                                  t: dict,
+                                                  thread_index: int,
+                                                  unmockable_tests_queue: Queue) -> set:
+    """
+    Checks if the string representation of the current test configuration is already in
+    the executed_in_current_round set.
+    If it is- it means we have already executed this test and the we have reached a round and there are tests that
+    were not able to be locked by this execution..
+    In that case we want to start a new round monitoring by emptying the 'executed_in_current_round' set and sleep
+    in order to let the tests be unlocked
+    Args:
+        executed_in_current_round: A set containing the string representation of all tests configuration as they appear
+        in conf.json file that were already executed in the current round
+        prints_manager: ParallelPrintsManager object
+        t: test configuration as it appears in conf.json file
+        thread_index: Currently executing thread
+        unmockable_tests_queue: The queue of remaining tests
+
+    Returns:
+        A new executed_in_current_round set which contains only the current tests configuration if a round was completed
+        else it just adds the new test to the set.
+    """
+    if str(t) in executed_in_current_round:
+        prints_manager.add_print_job(
+            'all tests in the queue were executed, sleeping for 30 seconds to let locked tests get unlocked.',
+            print,
+            thread_index)
+        executed_in_current_round = set()
+        time.sleep(30)
+    executed_in_current_round.add(str(t))
+    return executed_in_current_round
+
+
+def initialize_queue_and_executed_tests_set(tests):
+    tests_queue = Queue()
+    already_executed_test_playbooks = set()
+    for t in tests:
+        tests_queue.put(t)
+    return already_executed_test_playbooks, tests_queue
 
 
 def get_unmockable_tests(tests_settings):
@@ -1038,14 +1112,288 @@ def handle_github_response(response):
     return res_dict
 
 
+@contextmanager
+def acquire_test_lock(integrations_details: list,
+                      test_timeout: int,
+                      prints_manager: ParallelPrintsManager,
+                      thread_index: int,
+                      conf_json_path: str) -> None:
+    """
+    This is a context manager that handles all the locking and unlocking of integrations.
+    Execution is as following:
+    * Attempts to lock the test's integrations and yields the result of this attempt
+    * If lock attempt has failed - yields False, if it succeeds - yields True
+    * Once the test is done- will unlock all integrations
+    Args:
+        integrations_details: test integrations details
+        test_timeout: test timeout in seconds
+        prints_manager: ParallelPrintsManager object
+        thread_index: The index of the thread that executes the unlocking
+        conf_json_path: Path to conf.json file
+    Yields:
+        A boolean indicating the lock attempt result
+    """
+    locked = safe_lock_integrations(test_timeout,
+                                    prints_manager,
+                                    integrations_details,
+                                    thread_index,
+                                    conf_json_path)
+    try:
+        yield locked
+    finally:
+        if not locked:
+            return
+        safe_unlock_integrations(prints_manager, integrations_details, thread_index)
+        prints_manager.execute_thread_prints(thread_index)
+
+
+def safe_unlock_integrations(prints_manager: ParallelPrintsManager, integrations_details: list, thread_index: int):
+    """
+    This integration safely unlocks the test's integrations.
+    If an unexpected error occurs - this method will log it's details and other tests execution will continue
+    Args:
+        prints_manager: ParallelPrintsManager object
+        integrations_details: Details of the currently executed test
+        thread_index: The index of the thread that executes the unlocking
+    """
+    try:
+        # executing the test could take a while, re-instancing the storage client
+        storage_client = storage.Client()
+        unlock_integrations(integrations_details, prints_manager, storage_client, thread_index)
+    except Exception as e:
+        prints_manager.add_print_job(f'attempt to unlock integration failed for unknown reason.\nError: {e}',
+                                     print_warning,
+                                     thread_index,
+                                     include_timestamp=True)
+
+
+def safe_lock_integrations(test_timeout: int,
+                           prints_manager: ParallelPrintsManager,
+                           integrations_details: list,
+                           thread_index: int,
+                           conf_json_path: str) -> bool:
+    """
+    This integration safely locks the test's integrations and return it's result
+    If an unexpected error occurs - this method will log it's details and return False
+    Args:
+        test_timeout: Test timeout in seconds
+        prints_manager: ParallelPrintsManager object
+        integrations_details: test integrations details
+        thread_index: The index of the thread that executes the unlocking
+        conf_json_path: Path to conf.json file
+
+    Returns:
+        A boolean indicating the lock attempt result
+    """
+    conf, _ = load_conf_files(conf_json_path, None)
+    parallel_integrations_names = conf['parallel_integrations']
+    filtered_integrations_details = [integration for integration in integrations_details if
+                                     integration['name'] not in parallel_integrations_names]
+    integration_names = get_integrations_list(filtered_integrations_details)
+    prints_manager.add_print_job(
+        f'Attempting to lock integrations {integration_names}, with timeout {test_timeout}',
+        print,
+        thread_index,
+        include_timestamp=True)
+    try:
+        storage_client = storage.Client()
+        locked = lock_integrations(filtered_integrations_details, test_timeout, storage_client, prints_manager, thread_index)
+    except Exception as e:
+        prints_manager.add_print_job(f'attempt to lock integration failed for unknown reason.\nError: {e}',
+                                     print_warning,
+                                     thread_index,
+                                     include_timestamp=True)
+        locked = False
+    return locked
+
+
+def lock_integrations(integrations_details: list,
+                      test_timeout: int,
+                      storage_client: storage.Client,
+                      prints_manager: ParallelPrintsManager,
+                      thread_index: int) -> bool:
+    """
+    Locks all the test's integrations
+    Args:
+        integrations_details: List of current test's integrations
+        test_timeout: Test timeout in seconds
+        storage_client: The GCP storage client
+        prints_manager: ParallelPrintsManager object
+        thread_index: The index of the thread that executes the unlocking
+
+    Returns:
+        True if all the test's integrations were successfully locked, else False
+    """
+    integrations = get_integrations_list(integrations_details)
+    if not integrations:
+        return True
+    existing_integrations_lock_files = get_locked_integrations(integrations, storage_client)
+    for integration, lock_file in existing_integrations_lock_files.items():
+        # Each file has content in the form of <circleci-build-number>:<timeout in seconds>
+        # If it has not expired - it means the integration is currently locked by another test.
+        build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
+        if not lock_expired(lock_file, lock_timeout):
+            # there is a locked integration for which the lock is not expired - test cannot be executed at the moment
+            prints_manager.add_print_job(
+                f'Could not lock integration {integration}, another lock file was exist with '
+                f'build number: {build_number}, timeout: {lock_timeout}, last update at {lock_file.updated}.\n'
+                f'Delaying test execution',
+                print,
+                thread_index,
+                include_timestamp=True)
+            return False
+    integrations_generation_number = {}
+    # Gathering generation number with which the new file will be created,
+    # See https://cloud.google.com/storage/docs/generations-preconditions for details.
+    for integration in integrations:
+        if integration in existing_integrations_lock_files:
+            integrations_generation_number[integration] = existing_integrations_lock_files[integration].generation
+        else:
+            integrations_generation_number[integration] = 0
+    return create_lock_files(integrations_generation_number, prints_manager,
+                             storage_client, integrations_details, test_timeout, thread_index)
+
+
+def get_integrations_list(test_integrations: list) -> list:
+    """
+    Since test details can have one integration as a string and sometimes a list of integrations- this methods
+    parses the test's integrations into a list of integration names.
+    Args:
+        test_integrations: List of current test's integrations
+    Returns:
+        the integration names in a list for all the integrations that takes place in the test
+        specified in test details.
+    """
+    return [integration['name'] for integration in test_integrations]
+
+
+def create_lock_files(integrations_generation_number: dict,
+                      prints_manager: ParallelPrintsManager,
+                      storage_client: storage.Client,
+                      integrations_details: list,
+                      test_timeout: int,
+                      thread_index: int) -> bool:
+    """
+    This method tries to create a lock files for all integrations specified in 'integrations_generation_number'.
+    Each file should contain <circle-ci-build-number>:<test-timeout>
+    where the <circle-ci-build-number> part is for debugging and troubleshooting
+    and the <test-timeout> part is to be able to unlock revoked test files.
+    If for any of the integrations, the lock file creation will fail- the already created files will be cleaned.
+    Args:
+        integrations_generation_number: A dict in the form of {<integration-name>:<integration-generation>}
+        prints_manager: ParallelPrintsManager object
+        storage_client: The GCP storage client
+        integrations_details: List of current test's integrations
+        test_timeout: The time out
+        thread_index:
+
+    Returns:
+
+    """
+    locked_integrations = []
+    bucket = storage_client.bucket(BUCKET_NAME)
+    for integration, generation_number in integrations_generation_number.items():
+        blob = bucket.blob(f'{LOCKS_PATH}/{integration}')
+        try:
+            blob.upload_from_string(f'{CIRCLE_BUILD_NUM}:{test_timeout + 30}', if_generation_match=generation_number)
+            prints_manager.add_print_job(f'integration {integration} locked',
+                                         print,
+                                         thread_index,
+                                         include_timestamp=True)
+            locked_integrations.append(integration)
+        except PreconditionFailed:
+            # if this exception occurs it means that another build has locked this integration
+            # before this build managed to do it.
+            # we need to unlock all the integrations we have already locked and try again later
+            prints_manager.add_print_job(
+                f'Could not lock integration {integration}, Create file with precondition failed.'
+                f'delaying test execution.',
+                print_warning,
+                thread_index,
+                include_timestamp=True)
+            unlock_integrations(integrations_details, prints_manager, storage_client, thread_index)
+            return False
+    return True
+
+
+def unlock_integrations(integrations_details: list,
+                        prints_manager: ParallelPrintsManager,
+                        storage_client: storage.Client,
+                        thread_index: int) -> None:
+    """
+    Delete all integration lock files for integrations specified in 'locked_integrations'
+    Args:
+        integrations_details: List of current test's integrations
+        prints_manager: ParallelPrintsManager object
+        storage_client: The GCP storage client
+        thread_index: The index of the thread that executes the unlocking
+    """
+    locked_integrations = get_integrations_list(integrations_details)
+    locked_integration_blobs = get_locked_integrations(locked_integrations, storage_client)
+    for integration, lock_file in locked_integration_blobs.items():
+        try:
+            # Verifying build number is the same as current build number to avoid deleting other tests lock files
+            build_number, _ = lock_file.download_as_string().decode().split(':')
+            if build_number == CIRCLE_BUILD_NUM:
+                lock_file.delete(if_generation_match=lock_file.generation)
+                prints_manager.add_print_job(
+                    f'Integration {integration} unlocked',
+                    print,
+                    thread_index,
+                    include_timestamp=True)
+        except PreconditionFailed:
+            prints_manager.add_print_job(f'Could not unlock integration {integration} precondition failure',
+                                         print_warning,
+                                         thread_index,
+                                         include_timestamp=True)
+
+
+def get_locked_integrations(integrations: list, storage_client: storage.Client) -> dict:
+    """
+    Getting all locked integrations files
+    Args:
+        integrations: Integrations that we want to get lock files for
+        storage_client: The GCP storage client
+
+    Returns:
+        A dict of the form {<integration-name>:<integration-blob-object>} for all integrations that has a blob object.
+    """
+    # Listing all files in lock folder
+    # Wrapping in 'list' operator because list_blobs return a generator which can only be iterated once
+    lock_files_ls = list(storage_client.list_blobs(BUCKET_NAME, prefix=f'{LOCKS_PATH}'))
+    current_integrations_lock_files = {}
+    # Getting all existing files details for integrations that we want to lock
+    for integration in integrations:
+        current_integrations_lock_files.update({integration: [lock_file_blob for lock_file_blob in lock_files_ls if
+                                                              lock_file_blob.name == f'{LOCKS_PATH}/{integration}']})
+    # Filtering 'current_integrations_lock_files' from integrations with no files
+    current_integrations_lock_files = {integration: blob_files[0] for integration, blob_files in
+                                       current_integrations_lock_files.items() if blob_files}
+    return current_integrations_lock_files
+
+
+def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
+    """
+    Checks if the time that passed since the creation of the 'lock_file' is more then 'lock_timeout'.
+    If not- it means that the integration represented by the lock file is currently locked and is tested in another build
+    Args:
+        lock_file: The lock file blob object
+        lock_timeout: The expiration timeout of the lock in seconds
+
+    Returns:
+        True if the lock has expired it's timeout, else False
+    """
+    return datetime.datetime.now(tz=pytz.utc) - lock_file.updated >= datetime.timedelta(seconds=int(lock_timeout))
+
+
 def main():
-    print("Time is: {}\n\n\n".format(datetime.now()))
+    print("Time is: {}\n\n\n".format(datetime.datetime.now()))
     tests_settings = options_handler()
 
     # should be removed after solving: https://github.com/demisto/etc/issues/21383
     # -------------
     if 'master' in tests_settings.serverVersion.lower():
-        print('[{}] sleeping for 30 secs'.format(datetime.now()))
+        print('[{}] sleeping for 30 secs'.format(datetime.datetime.now()))
         sleep(45)
     # -------------
     manage_tests(tests_settings)
