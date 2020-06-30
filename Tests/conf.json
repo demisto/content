@@ -53,7 +53,7 @@
             ],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
-            "timeout": 1000
+            "timeout": 600
         },
         {
             "integrations": "APIVoid",
@@ -108,7 +108,7 @@
         {
             "integrations": "GoogleKubernetesEngine",
             "playbookID": "GoogleKubernetesEngine_Test",
-            "timeout": 1200,
+            "timeout": 600,
             "fromversion": "5.5.0"
         },
         {
@@ -256,8 +256,7 @@
         },
         {
             "integrations": "CloudShark",
-            "playbookID": "CloudShark - Test Playbook",
-            "timeout": 500
+            "playbookID": "CloudShark - Test Playbook"
         },
         {
             "integrations": "Google Vision AI",
@@ -283,7 +282,7 @@
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
-            "timeout": 2000
+            "timeout": 400
         },
         {
             "integrations": "ThreatQ v2",
@@ -327,7 +326,7 @@
         {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
-            "timeout": 2400,
+            "timeout": 400,
             "pid_threshold": 5,
             "fromversion": "5.0.0"
         },
@@ -583,7 +582,7 @@
         {
             "integrations": "SNDBOX",
             "playbookID": "Detonate File - SNDBOX - Test",
-            "timeout": 2400,
+            "timeout": 600,
             "nightly": true
         },
         {
@@ -825,15 +824,13 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
-            "nightly": true,
-            "timeout": 500
+            "nightly": true
         },
         {
             "integrations": "IntSights",
             "playbookID": "IntSights Mssp Test",
             "instance_names": "intsights_mssp_account",
-            "nightly": true,
-            "timeout": 500
+            "nightly": true
         },
         {
             "integrations": "dnstwist",
@@ -1086,7 +1083,7 @@
             "integrations": "Intezer v2",
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
-            "timeout": 700
+            "timeout": 600
         },
         {
             "integrations": "FalconIntel",
@@ -1306,7 +1303,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test",
-            "memory_threshold": 500,
+            "memory_threshold": 200,
             "instance_names": "use_default_handler"
         },
         {
@@ -1893,7 +1890,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 1200,
+            "timeout": 600,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -1905,7 +1902,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 1200,
+            "timeout": 600,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -2064,7 +2061,7 @@
                 "Rasterize"
             ],
             "fromversion": "4.5.0",
-            "timeout": 1700
+            "timeout": 600
         },
         {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
@@ -2078,7 +2075,7 @@
             "integrations": ["TAXII Server", "TAXIIFeed"],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
-            "timeout": 600
+            "timeout": 300
         },
         {
             "integrations": "Traps",
@@ -2157,7 +2154,7 @@
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 1000
+            "timeout": 300
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
@@ -2169,7 +2166,7 @@
             "playbookID": "PAN-OS EDL Setup v3 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
-            "timeout": 1000
+            "timeout": 300
         },
         {
             "integrations": "Snowflake",
@@ -2539,7 +2536,7 @@
         {
             "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
-            "timeout": 1200,
+            "timeout": 600,
             "fromversion": "5.0.0"
         },
         {
