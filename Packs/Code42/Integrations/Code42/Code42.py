@@ -251,7 +251,7 @@ class Code42Client(BaseClient):
     def get_alert_details(self, alert_id):
         res = self._get_sdk().alerts.get_details(alert_id)["alerts"]
         if not res:
-            raise Exception("No alert found with ID {0}.".format(alert_id))
+            raise Code42AlertNotFoundError(alert_id)
         return res[0]
 
     def resolve_alert(self, id):
@@ -265,7 +265,7 @@ class Code42Client(BaseClient):
     def get_user(self, username):
         res = self._get_sdk().users.get_by_username(username)["users"]
         if not res:
-            raise Exception("No user found with username {0}.".format(username))
+            raise Code42UserNotFoundError(username)
         return res[0]
 
     def create_user(self, org_name, username, email):
@@ -300,7 +300,7 @@ class Code42Client(BaseClient):
             for org in orgs:
                 if org.get("orgName") == org_name:
                     return org
-        raise Exception("No org found with name {0}.".format(org_name))
+        raise Code42OrgNotFoundError(org_name)
 
     def search_file_events(self, payload):
         res = self._get_sdk().securitydata.search_file_events(payload)
@@ -310,27 +310,38 @@ class Code42Client(BaseClient):
         user_id = self.get_user(username).get("userUid")
         if user_id:
             return user_id
-        raise Code42UserIDNotFoundError(username)
+        raise Code42UserNotFoundError(username)
 
     def _get_legacy_user_id(self, username):
         user_id = self.get_user(username).get("userId")
         if user_id:
             return user_id
-        raise Code42UserIDNotFoundError(username)
+        raise Code42UserNotFoundError(username)
 
     def _get_org_id(self, org_name):
         org_uid = self.get_org(org_name).get("orgUid")
         if org_uid:
             return org_uid
-        raise Exception("No organization ID found for organization with name {0}.".format(org_name))
+        raise Code42OrgNotFoundError(org_name)
 
 
-class Code42UserIDNotFoundError(Exception):
+class Code42AlertNotFoundError(Exception):
+    def __init__(self, alert_id):
+        super(Code42AlertNotFoundError, self).__init__("No alert found with ID {0}.".format(alert_id))
+
+
+class Code42UserNotFoundError(Exception):
     def __init__(self, username):
-        super(Code42UserIDNotFoundError, self).__init__(
-            "No user ID found for username {0}.".format(username)
+        super(Code42UserNotFoundError, self).__init__(
+            "No user found with username {0}.".format(username)
         )
 
+
+class Code42OrgNotFoundError(Exception):
+    def __init__(self, org_name):
+        super(Code42OrgNotFoundError, self).__init__(
+            "No organization found with name {0}.".format(org_name)
+        )
 
 class Code42SearchFilters(object):
     def __init__(self):
