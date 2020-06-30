@@ -675,7 +675,10 @@ def main():
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as err:
-        return_error(str(err), err)
+        if 'Resource not found' in str(err):
+            demisto.results('Object was not found in Zimperium, please make sure your arguments are correct.')
+        else:
+            return_error(str(err), err)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
