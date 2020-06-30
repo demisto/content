@@ -186,10 +186,10 @@ script:
       description: Network SSID.
       type: String
     - contextPath: Zimperium.Events.tag1
-      description: TODO
+      description: User pre defined Zimperium Tag.
       type: String
     - contextPath: Zimperium.Events.tag2
-      description: TODO
+      description: User pre defined Zimperium Tag.
       type: String
     - contextPath: Zimperium.Events.typeDesc
       description: Event type description.
@@ -463,10 +463,10 @@ script:
       description: Email associated to the device.
       type: String
     - contextPath: Zimperium.Devices.externalTrackingId1
-      description: TODO
+      description: User pre defined Zimperium Tag.
       type: String
     - contextPath: Zimperium.Devices.externalTrackingId2
-      description: TODO
+      description: User pre defined Zimperium Tag.
       type: String
     - contextPath: Zimperium.Devices.firstName
       description: Device owner first name.
@@ -487,7 +487,7 @@ script:
       description: Device model
       type: String
     - contextPath: Zimperium.Devices.operatorAlpha
-      description: TODO
+      description: Name of the Mobile operator.
       type: String
     - contextPath: Zimperium.Devices.osBuild
       description: OS build.
@@ -598,10 +598,10 @@ script:
       description: Email associated to the device.
       type: String
     - contextPath: Zimperium.Devices.externalTrackingId1
-      description: TODO
+      description: User pre defined Zimperium Tag.
       type: String
     - contextPath: Zimperium.Devices.externalTrackingId2
-      description: TODO
+      description: User pre defined Zimperium Tag.
       type: String
     - contextPath: Zimperium.Devices.firstName
       description: Device owner first name.
@@ -622,7 +622,7 @@ script:
       description: Device model
       type: String
     - contextPath: Zimperium.Devices.operatorAlpha
-      description: TODO
+      description: Name of the Mobile operator.
       type: String
     - contextPath: Zimperium.Devices.osBuild
       description: OS build.
@@ -753,10 +753,10 @@ script:
       description: Email associated to the device.
       type: String
     - contextPath: Zimperium.Devices.externalTrackingId1
-      description: TODO
+      description: User pre defined Zimperium Tag.
       type: String
     - contextPath: Zimperium.Devices.externalTrackingId2
-      description: TODO
+      description: User pre defined Zimperium Tag.
       type: String
     - contextPath: Zimperium.Devices.firstName
       description: Device owner first name.
@@ -777,7 +777,7 @@ script:
       description: Device model
       type: String
     - contextPath: Zimperium.Devices.operatorAlpha
-      description: TODO
+      description: Name of the Mobile operator.
       type: String
     - contextPath: Zimperium.Devices.osBuild
       description: OS build.
@@ -957,7 +957,7 @@ script:
       description: TODO
       type: Unknown
     - contextPath: Zimperium.Reports.behavior.telephony
-      description: TODO
+      description: Standard permissions of the application.
       type: Unknown
     - contextPath: Zimperium.Reports.certificate.app_signature
       description: Application signature.
