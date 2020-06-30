@@ -200,11 +200,10 @@ class Code42Client(BaseClient):
         for page in pages:
             # Note: page is a `Py42Response` and has no `get()` method.
             employees = page["items"]
-            if employees:
-                for employee in employees:
-                    res.append(employee)
-                    if results and len(res) == results:
-                        return res
+            for employee in employees:
+                res.append(employee)
+                if results and len(res) == results:
+                    return res
         return res
 
     def add_user_to_high_risk_employee(self, username, note=None):
@@ -246,7 +245,8 @@ class Code42Client(BaseClient):
 
     def fetch_alerts(self, start_time, event_severity_filter):
         query = _create_alert_query(event_severity_filter, start_time)
-        return self._get_sdk().alerts.search(query)["alerts"]
+        res = self._get_sdk().alerts.search(query)
+        return res["alerts"]
 
     def get_alert_details(self, alert_id):
         res = self._get_sdk().alerts.get_details(alert_id)["alerts"]
@@ -296,9 +296,9 @@ class Code42Client(BaseClient):
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
         for org_page in org_pages:
-            orgs = org_page["orgs"] or []
+            orgs = org_page["orgs"]
             for org in orgs:
-                if org["orgName"] == org_name:
+                if org.get("orgName") == org_name:
                     return org
         raise Exception("No org found with name {0}.".format(org_name))
 
@@ -472,26 +472,20 @@ class ObservationToSecurityQueryMapper(object):
 
     def _create_search_args(self):
         filters = FileEventQueryFilters()
-        begin_time = None
-        end_time = None
         exposure_types = self._observation_data.get("exposureTypes")
         first_activity = self._observation_data.get("firstActivityAt")
         last_activity = self._observation_data.get("lastActivityAt")
-        if first_activity:
-            begin_time = _convert_date_arg_to_epoch(self._observation_data.get("firstActivityAt"))
-
-        if last_activity:
-            end_time = _convert_date_arg_to_epoch(self._observation_data["lastActivityAt"])
-
         filters.append(self._create_user_filter())
-
-        if begin_time:
-            filters.append(EventTimestamp.on_or_after(begin_time))
-        if end_time:
-            filters.append(EventTimestamp.on_or_before(end_time))
+        if first_activity:
+            begin_time = _convert_date_arg_to_epoch(first_activity)
+            if begin_time:
+                filters.append(EventTimestamp.on_or_after(begin_time))
+        if last_activity:
+            end_time = _convert_date_arg_to_epoch(last_activity)
+            if end_time:
+                filters.append(EventTimestamp.on_or_before(end_time))
         filters.extend(self._create_exposure_filters(exposure_types))
         filters.append(self._create_file_category_filters())
-
         return filters
 
     @logger
