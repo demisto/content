@@ -10,4 +10,6 @@
 !code42-highriskemployee-remove-risk-tags username="partner.demisto@example.com" risktags="PERFORMANCE_CONCERNS"
 !code42-user-create orgname="TestOrg" username="new.user@example.com" email="new.user@example.com"
 !code42-user-block username="partner.demisto@example.com"
+!code42-user-unblock username="partner.demisto@example.com"
 !code42-user-deactivate username="partner.demisto@example.com"
+!code42-user-reactivate username="partner.demisto@example.com"
