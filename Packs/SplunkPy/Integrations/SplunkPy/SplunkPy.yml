@@ -381,7 +381,7 @@ script:
       description: Status of the job.
       type: String
   dockerimage45: demisto/splunksdk:1.0
-  dockerimage: demisto/splunksdk:1.0.0.6822
+  dockerimage: demisto/splunksdk:1.0.0.8854
   feed: false
   isfetch: true
   longRunning: false
