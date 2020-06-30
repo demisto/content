@@ -81,7 +81,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        echo "Parameters: NIGHTLY: $NIGHTLY, INSTANCE_TESTS: $INSTANCE_TESTS, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, ARTIFACT_BUILD_NUM: $ARTIFACT_BUILD_NUM, DEMISTO_SDK_NIGHTLY: $DEMISTO_SDK_NIGHTLY"
+        echo "Parameters: NIGHTLY: $NIGHTLY, INSTANCE_TESTS: $INSTANCE_TESTS, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, ARTIFACT_BUILD_NUM: $ARTIFACT_BUILD_NUM, DEMISTO_SDK_NIGHTLY: $DEMISTO_SDK_NIGHTLY, TIME_TO_LIVE: $TIME_TO_LIVE, CONTRIB_BRANCH: $CONTRIB_BRANCH"
         python --version
         python3 --version
         demisto-sdk --version
@@ -143,6 +143,26 @@ jobs:
           fingerprints:
             - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
             - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+      - run:
+          name: Get Contributor pack
+          when: always
+          command: |
+            if [ -z $CONTRIB_BRANCH ]
+            then
+              echo "Skipping, contributor branch not given."
+              exit 0
+            else
+              USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+              BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+              PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
+
+              echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
+              git remote add $USER git@github.com:$USER/content.git
+              git fetch $USER $BRANCH
+              git checkout $USER/$BRANCH $PACK
+              exit 0
+            fi
+
       - run:
           name: Check if CircleCI's config file is up to date
           when: always
@@ -418,6 +438,8 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
+
             if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
               echo "Skipping instance tests for sdk nightly build"
               exit 0
@@ -441,14 +463,18 @@ jobs:
                   then
                     export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
 
+                elif [ -n "${CONTRIB_BRANCH}" ] ;
+                  then
+                    export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+
                   else
                     export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -outfile ./env_results.json
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
 
               else
                 . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -outfile ./env_results.json
+                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
             fi
       - run:
           name: Setup Instance
@@ -489,9 +515,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ] || [ -n "${CONTRIB_BRANCH}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container, Nightly run or contributor branch"
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
@@ -522,9 +548,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ] || [ -n "${CONTRIB_BRANCH}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container, Nightly run or contributor branch"
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto one before GA"')
@@ -555,9 +581,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ] || [ -n "${CONTRIB_BRANCH}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container, Nightly run or on contributor branch"
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
@@ -588,9 +614,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ]  || [ -n "${CONTRIB_BRANCH}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or Nightly run"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container, Nightly run or contributor branch"
                 exit 0
             fi
             export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
@@ -625,7 +651,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ];
               then
                 echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
@@ -692,6 +718,11 @@ jobs:
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
+            fi
+            if [ -n "${TIME_TO_LIVE}" ]
+            then
+                echo "Skipping - Time to live was set to $TIME_TO_LIVE minutes"
+                exit 0
             fi
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
