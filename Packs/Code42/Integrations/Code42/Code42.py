@@ -180,7 +180,7 @@ class Code42Client(BaseClient):
         return self._sdk
 
     def add_user_to_departing_employee(self, username, departure_date=None, note=None):
-        user_id = self.get_user(username).get("userUid")
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.departing_employee.add(
             user_id, departure_date=departure_date
         )
@@ -189,7 +189,7 @@ class Code42Client(BaseClient):
         return user_id
 
     def remove_user_from_departing_employee(self, username):
-        user_id = self.get_user(username).get("userUid")
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.departing_employee.remove(user_id)
         return user_id
 
@@ -208,26 +208,26 @@ class Code42Client(BaseClient):
         return res
 
     def add_user_to_high_risk_employee(self, username, note=None):
-        user_id = self.get_user(username).get("userUid")
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.high_risk_employee.add(user_id)
         if note:
             self._get_sdk().detectionlists.update_user_notes(user_id, note)
         return user_id
 
     def remove_user_from_high_risk_employee(self, username):
-        user_id = self.get_user(username).get("userUid")
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.high_risk_employee.remove(user_id)
         return user_id
 
     def add_user_risk_tags(self, username, risk_tags):
         risk_tags = _try_convert_str_list_to_list(risk_tags)
-        user_id = self.get_user(username).get("userUid")
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.add_user_risk_tags(user_id, risk_tags)
         return user_id
 
     def remove_user_risk_tags(self, username, risk_tags):
         risk_tags = _try_convert_str_list_to_list(risk_tags)
-        user_id = self.get_user(username).get("userUid")
+        user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.remove_user_risk_tags(user_id, risk_tags)
         return user_id
 
@@ -246,8 +246,7 @@ class Code42Client(BaseClient):
 
     def fetch_alerts(self, start_time, event_severity_filter):
         query = _create_alert_query(event_severity_filter, start_time)
-        res = self._get_sdk().alerts.search(query)
-        return res["alerts"]
+        return self._get_sdk().alerts.search(query)["alerts"]
 
     def get_alert_details(self, alert_id):
         res = self._get_sdk().alerts.get_details(alert_id)["alerts"]
@@ -270,34 +269,35 @@ class Code42Client(BaseClient):
         return res[0]
 
     def create_user(self, org_name, username, email):
-        org_uid = self.get_org(org_name)["orgUid"]
+        org_uid = self._get_org_id(org_name)
         response = self._get_sdk().users.create_user(org_uid, username, email)
         return json.loads(response.text)
 
     def block_user(self, username):
-        user_id = self.get_user(username)["userId"]
+        user_id = self._get_legacy_user_id(username)
         self._get_sdk().users.block(user_id)
         return user_id
 
     def unblock_user(self, username):
-        user_id = self.get_user(username)["userId"]
+        user_id = self._get_legacy_user_id(username)
         self._get_sdk().users.unblock(user_id)
         return user_id
 
     def deactivate_user(self, username):
-        user_id = self.get_user(username)["userId"]
+        user_id = self._get_legacy_user_id(username)
         self._get_sdk().users.deactivate(user_id)
         return user_id
 
     def reactivate_user(self, username):
-        user_id = self.get_user(username)["userId"]
+        user_id = self._get_legacy_user_id(username)
         self._get_sdk().users.reactivate(user_id)
         return user_id
 
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
         for org_page in org_pages:
-            for org in org_page["orgs"]:
+            orgs = org_page["orgs"] or []
+            for org in orgs:
                 if org["orgName"] == org_name:
                     return org
         raise Exception("No org found with name {0}.".format(org_name))
@@ -305,6 +305,24 @@ class Code42Client(BaseClient):
     def search_file_events(self, payload):
         res = self._get_sdk().securitydata.search_file_events(payload)
         return res["fileEvents"]
+
+    def _get_user_id(self, username):
+        user_id = self.get_user(username).get("userUid")
+        if user_id:
+            return user_id
+        raise Exception("No user ID found for username {0}.".format(username))
+
+    def _get_legacy_user_id(self, username):
+        user_id = self.get_user(username).get("userId")
+        if user_id:
+            return user_id
+        raise Exception("No user ID found for username {0}.".format(username))
+
+    def _get_org_id(self, org_name):
+        org_uid = self.get_org(org_name).get("orgUid")
+        if org_uid:
+            return org_uid
+        raise Exception("No organization ID found for organization with name {0}.".format(org_name))
 
 
 class Code42SearchFilters(object):
