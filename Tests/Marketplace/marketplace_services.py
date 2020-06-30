@@ -136,8 +136,10 @@ class PackStatus(enum.Enum):
     FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
+    PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
+    FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
 
 
 class Pack(object):
@@ -353,8 +355,8 @@ class Pack(object):
         return pack_integration_images
 
     @staticmethod
-    def _clean_release_notes(changelog_lines):
-        return re.sub(r'<\!--.*?-->', '', changelog_lines, flags=re.DOTALL)
+    def _clean_release_notes(release_notes_lines):
+        return re.sub(r'<\!--.*?-->', '', release_notes_lines, flags=re.DOTALL)
 
     @staticmethod
     def _parse_pack_dependencies(first_level_dependencies, all_level_pack_dependencies_data):
@@ -454,7 +456,7 @@ class Pack(object):
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version, build_number):
+                             dependencies_data, server_min_version, build_number, commit_hash):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -466,6 +468,7 @@ class Pack(object):
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
             server_min_version (str): server minimum version found during the iteration over content items.
             build_number (str): circleCI build number.
+            commit_hash (str): current commit hash.
 
         Returns:
             dict: parsed pack metadata.
@@ -492,6 +495,7 @@ class Pack(object):
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['versionInfo'] = build_number
+        pack_metadata['commit'] = commit_hash
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
@@ -536,6 +540,29 @@ class Pack(object):
                 continue
 
         return dependencies_data_result
+
+    @staticmethod
+    def _create_changelog_entry(release_notes, version_display_name, build_number, new_version=True):
+        """ Creates dictionary entry for changelog.
+
+        Args:
+            release_notes (str): release notes md.
+            version_display_name (str): display name version.
+            build_number (srt): current build number.
+            new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
+
+        Returns:
+            dict: release notes entry of changelog
+
+        """
+        if new_version:
+            return {'releaseNotes': release_notes,
+                    'displayName': f'{version_display_name} - {build_number}',
+                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+        else:
+            return {'releaseNotes': release_notes,
+                    'displayName': f'{version_display_name} - R{build_number}',
+                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
     def remove_unwanted_files(self, delete_test_playbooks=True):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
@@ -626,9 +653,60 @@ class Pack(object):
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
         except Exception as e:
-            print_error(f"Failed in zipping {self._pack_name} folder.\n Additional info: {e}")
+            print_error(f"Failed in zipping {self._pack_name} folder. Additional info:\n {e}")
         finally:
             return task_status, zip_pack_path
+
+    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, remote_previous_commit_hash):
+        """ Detects pack modified files.
+
+        The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
+        index. In case that no commit was found in index (initial run), the default value will be set to previous commit
+        from origin/master.
+
+        Args:
+            content_repo (git.repo.base.Repo): content repo object.
+            index_folder_path (str): full path to downloaded index folder.
+            current_commit_hash (str): last commit hash of head.
+            remote_previous_commit_hash (str): previous commit of origin/master (origin/master~1)
+
+        Returns:
+            bool: whether the operation succeeded.
+            bool: whether pack was modified and override will be required.
+        """
+        task_status = False
+        pack_was_modified = False
+
+        try:
+            pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
+
+            if not os.path.exists(pack_index_metadata_path):
+                print(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
+                task_status = True
+                return
+
+            with open(pack_index_metadata_path, 'r') as metadata_file:
+                downloaded_metadata = json.load(metadata_file)
+
+            previous_commit_hash = downloaded_metadata.get('commit', remote_previous_commit_hash)
+            # set 2 commits by hash value in order to check the modified files of the diff
+            current_commit = content_repo.commit(current_commit_hash)
+            previous_commit = content_repo.commit(previous_commit_hash)
+
+            for modified_file in current_commit.diff(previous_commit).iter_change_type('M'):
+                if modified_file.a_path.startswith(PACKS_FOLDER):
+                    modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
+
+                    if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
+                        print(f"Detected modified files in {self._pack_name} pack")
+                        task_status, pack_was_modified = True, True
+                        return
+
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed in detecting modified files of {self._pack_name} pack. Additional info:\n {e}")
+        finally:
+            return task_status, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
@@ -683,12 +761,19 @@ class Pack(object):
             build_number (str): circleCI build number.
         Returns:
             bool: whether the operation succeeded.
+            bool: whether running build has not updated pack release notes.
         """
         task_status = False
+        not_updated_build = False
+
         try:
             if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
                 print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
+                # load changelog from downloaded index
                 changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+                with open(changelog_index_path, "r") as changelog_file:
+                    changelog = json.load(changelog_file)
+
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
                 if os.path.exists(release_notes_dir):
@@ -701,85 +786,78 @@ class Pack(object):
                     latest_release_notes = found_versions[0].vstring
 
                     print_color(f"Latest ReleaseNotes version is: {latest_release_notes}", LOG_COLORS.GREEN)
+                    # load latest release notes
+                    latest_rn_file = latest_release_notes.replace('.', '_')
+                    latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
+
+                    with open(latest_rn_path, 'r') as changelog_md:
+                        release_notes_lines = changelog_md.read()
+                    release_notes_lines = self._clean_release_notes(release_notes_lines)
+
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
                         print_error(f"Version mismatch detected between current version: {self._current_version} "
                                     f"and latest release notes version: {latest_release_notes}")
                         task_status = False
-                        return task_status
+                        return task_status, not_updated_build
                     else:
-                        with open(changelog_index_path, "r") as changelog_file:
-                            changelog = json.load(changelog_file)
+                        if latest_release_notes in changelog:
+                            print(f"Found existing release notes for version: {latest_release_notes}")
+                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                                                                             version_display_name=latest_release_notes,
+                                                                             build_number=build_number,
+                                                                             new_version=False)
 
-                            if latest_release_notes in changelog:
-                                changelog[latest_release_notes][  # update latest release notes build numbers
-                                    'displayName'] = f'{latest_release_notes} - {build_number}'
-                                # write back the updated build number to the changelog in pack the folder
-                                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
-                                    json.dump(changelog, pack_changelog, indent=4)
+                        else:
+                            print(f"Created new release notes for version: {latest_release_notes}")
+                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                                                                             version_display_name=latest_release_notes,
+                                                                             build_number=build_number,
+                                                                             new_version=True)
 
-                                print(f"Found existing release notes for version: {latest_release_notes} "
-                                      f"in the {self._pack_name} pack.")
-                                task_status = True
-                                return task_status
-
-                        latest_rn_file = latest_release_notes.replace('.', '_')
-                        latest_rn_path = os.path.join(release_notes_dir, latest_rn_file + '.md')
-
-                        with open(latest_rn_path, 'r') as changelog_md:
-                            changelog_lines = changelog_md.read()
-                            changelog_lines = self._clean_release_notes(changelog_lines)
-                        version_changelog = {'releaseNotes': changelog_lines,
-                                             'displayName': f'{latest_release_notes} - {build_number}',
-                                             'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
                         changelog[latest_release_notes] = version_changelog
-
-                        with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
-                            json.dump(changelog, f, indent=4)
-
                 else:  # will enter only on initial version and release notes folder still was not created
-                    with open(changelog_index_path, "r") as changelog_file:
-                        changelog = json.load(changelog_file)
-
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
-                        print_error(
+                        print_warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
-                        task_status = False
-                        return task_status
+                        task_status, not_updated_build = True, True
+                        return task_status, not_updated_build
 
-                    changelog[Pack.PACK_INITIAL_VERSION][  # update latest release notes build numbers
-                        'displayName'] = f'{Pack.PACK_INITIAL_VERSION} - {build_number}'
-                    # write back the updated build number to the changelog in pack the folder
-                    with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), 'w') as pack_changelog:
-                        json.dump(changelog, pack_changelog, indent=4)
+                    changelog[Pack.PACK_INITIAL_VERSION] = Pack._create_changelog_entry(
+                        release_notes=self.description,
+                        version_display_name=Pack.PACK_INITIAL_VERSION,
+                        build_number=build_number,
+                        new_version=False)
 
                     print(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
                           f"in the {self._pack_name} pack.")
 
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
-                changelog = {}
-                version_changelog = {'releaseNotes': self._description,
-                                     'displayName': f'{Pack.PACK_INITIAL_VERSION} - {build_number}',
-                                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
-                changelog[Pack.PACK_INITIAL_VERSION] = version_changelog
-
-                with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as f:
-                    json.dump(changelog, f, indent=4)
-
+                version_changelog = Pack._create_changelog_entry(
+                    release_notes=self.description,
+                    version_display_name=Pack.PACK_INITIAL_VERSION,
+                    build_number=build_number,
+                    new_version=True
+                )
+                changelog = {
+                    Pack.PACK_INITIAL_VERSION: version_changelog
+                }
             else:
                 print_error(f"No release notes found for: {self._pack_name}")
                 task_status = False
-                return task_status
+                return task_status, not_updated_build
+
+            # write back changelog with changes to pack folder
+            with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
+                json.dump(changelog, pack_changelog, indent=4)
 
             task_status = True
-            print_color(
-                f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)
+            print_color(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}", LOG_COLORS.GREEN)
         except Exception as e:
-            print_error(
-                f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
-                f"Additional info: {e}")
+            print_error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
+                        f"Additional info: {e}")
         finally:
-            return task_status
+            return task_status, not_updated_build
 
     def collect_content_items(self):
         """ Iterates over content items folders inside pack and collects content items data.
@@ -974,7 +1052,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number):
+                        packs_dependencies_mapping, build_number, commit_hash):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -987,6 +1065,7 @@ class Pack(object):
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
+            commit_hash (str): current commit hash.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -1017,7 +1096,7 @@ class Pack(object):
                                                            author_image=author_image,
                                                            dependencies_data=dependencies_data,
                                                            server_min_version=self.server_min_version,
-                                                           build_number=build_number)
+                                                           build_number=build_number, commit_hash=commit_hash)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
