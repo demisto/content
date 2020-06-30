@@ -1,6 +1,5 @@
 id: Process Email - Generic - Test - Incident Starter
 version: -1
-fromversion: 6.0.0
 name: Process Email - Generic - Test - Incident Starter
 description: The reason for having a "starter" test and an "actual incident" test
   is so that we can create a new incident which will have the right incident type
@@ -12,13 +11,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 47bc9bfd-59d6-49b4-895a-f1ce7334df3d
+    taskid: f75a674b-0bda-4ea3-85a2-2241722cbe29
     type: start
     task:
-      id: 47bc9bfd-59d6-49b4-895a-f1ce7334df3d
+      id: f75a674b-0bda-4ea3-85a2-2241722cbe29
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -39,13 +37,12 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9d4cb848-b8fa-4cdf-828f-dcdf94fb4a53
+    taskid: 273875ba-fbcb-4b69-8145-1c388f5dfcff
     type: title
     task:
-      id: 9d4cb848-b8fa-4cdf-828f-dcdf94fb4a53
+      id: 273875ba-fbcb-4b69-8145-1c388f5dfcff
       version: -1
       name: Begin Real Incident
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -54,7 +51,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 745
+          "y": 905
         }
       }
     note: false
@@ -64,13 +61,12 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: fdc6605b-d55f-44f0-8a35-2b4e9d748f2d
+    taskid: 0797a6a4-8aa3-493d-8654-8b775136bce8
     type: regular
     task:
-      id: fdc6605b-d55f-44f0-8a35-2b4e9d748f2d
+      id: 0797a6a4-8aa3-493d-8654-8b775136bce8
       version: -1
       name: Delete Context
-      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -100,10 +96,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: b9e23e06-3d4b-4304-8bab-3df02d3af597
+    taskid: b93114ae-779d-4c8b-8720-f448e22c2423
     type: regular
     task:
-      id: b9e23e06-3d4b-4304-8bab-3df02d3af597
+      id: b93114ae-779d-4c8b-8720-f448e22c2423
       version: -1
       name: Create new Phishing incident
       description: commands.local.cmd.create.inc
@@ -278,10 +274,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: e529d1ed-fec1-4c3b-8d45-bf599f95c164
+    taskid: b203f285-eacf-469d-8cd8-326b4eaa13fa
     type: regular
     task:
-      id: e529d1ed-fec1-4c3b-8d45-bf599f95c164
+      id: b203f285-eacf-469d-8cd8-326b4eaa13fa
       version: -1
       name: Set playbook for new incident
       description: commands.local.cmd.set.playbook
@@ -303,7 +299,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 550
+          "y": 730
         }
       }
     note: false
@@ -313,10 +309,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 512efd7f-08bd-4663-8012-cef18eb091f5
+    taskid: 95976e00-e8d6-4a95-8c55-491b547cbddf
     type: regular
     task:
-      id: 512efd7f-08bd-4663-8012-cef18eb091f5
+      id: 95976e00-e8d6-4a95-8c55-491b547cbddf
       version: -1
       name: Begin investigating the incident
       description: Start investigation of the incident, so that we can later set the
@@ -327,7 +323,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "24"
+      - "26"
     scriptarguments:
       id:
         complex:
@@ -345,12 +341,45 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "26":
+    id: "26"
+    taskid: 7f63f321-da44-4a4d-8d0b-0067a34cc71d
+    type: regular
+    task:
+      id: 7f63f321-da44-4a4d-8d0b-0067a34cc71d
+      version: -1
+      name: Wait for investigation to begin
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      seconds:
+        simple: "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 950,
+        "height": 1110,
         "width": 380,
         "x": 265,
         "y": -140

@@ -1,6 +1,5 @@
 id: Phishing - Core - Test - Incident Starter
 version: -1
-fromversion: 6.0.0
 name: Phishing - Core - Test - Incident Starter
 description: The reason for having a "starter" test and a "real" test is so that we
   can create a new incident which will have the right incident type ("Phishing" incident
@@ -12,10 +11,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 70008b8c-dcc8-482a-8b8e-05148b0a6226
+    taskid: c10cc2d0-2d08-4e83-8cef-3acff176eb32
     type: start
     task:
-      id: 70008b8c-dcc8-482a-8b8e-05148b0a6226
+      id: c10cc2d0-2d08-4e83-8cef-3acff176eb32
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +38,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 0b042d65-058e-41e4-832c-6eadc052e71f
+    taskid: d2e05e61-823a-4e8a-8ad5-98db4ec51bcd
     type: title
     task:
-      id: 0b042d65-058e-41e4-832c-6eadc052e71f
+      id: d2e05e61-823a-4e8a-8ad5-98db4ec51bcd
       version: -1
       name: Begin Real Incident
       type: title
@@ -54,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 745
+          "y": 865
         }
       }
     note: false
@@ -64,13 +63,12 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 7221bf85-9793-48ff-8e49-2c32e19382d3
+    taskid: 430f0d57-fdd1-4ae2-87b3-aea5e61eddad
     type: regular
     task:
-      id: 7221bf85-9793-48ff-8e49-2c32e19382d3
+      id: 430f0d57-fdd1-4ae2-87b3-aea5e61eddad
       version: -1
       name: Delete Context
-      description: ""
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -100,10 +98,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 4a88d7bd-0304-4ba6-850c-66e205a84992
+    taskid: 36c5b17f-3046-41f1-82f5-d0ad1715fcd5
     type: regular
     task:
-      id: 4a88d7bd-0304-4ba6-850c-66e205a84992
+      id: 36c5b17f-3046-41f1-82f5-d0ad1715fcd5
       version: -1
       name: Create new Phishing incident
       description: commands.local.cmd.create.inc
@@ -278,10 +276,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 36a23c30-8152-43fa-8f1f-cb87bb3fb411
+    taskid: f9f633a8-e323-4f77-8bd5-e4b3b6b9c4e5
     type: regular
     task:
-      id: 36a23c30-8152-43fa-8f1f-cb87bb3fb411
+      id: f9f633a8-e323-4f77-8bd5-e4b3b6b9c4e5
       version: -1
       name: Set playbook for new incident
       description: commands.local.cmd.set.playbook
@@ -303,7 +301,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 550
+          "y": 700
         }
       }
     note: false
@@ -313,10 +311,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 2883fb92-6bae-40c7-8d8b-ec1bc3071b06
+    taskid: fcbb144b-8703-4614-842f-f034bcbe1ff6
     type: regular
     task:
-      id: 2883fb92-6bae-40c7-8d8b-ec1bc3071b06
+      id: fcbb144b-8703-4614-842f-f034bcbe1ff6
       version: -1
       name: Begin investigating the incident
       description: Start investigation of the incident, so that we can later set the
@@ -347,10 +345,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 49031b8b-6fb7-4594-8961-7d5952783aa3
+    taskid: ff5aa02e-7a8f-4dd3-8cae-c44de53793a6
     type: regular
     task:
-      id: 49031b8b-6fb7-4594-8961-7d5952783aa3
+      id: ff5aa02e-7a8f-4dd3-8cae-c44de53793a6
       version: -1
       name: Wait for investigation to begin
       description: Sleep for X seconds
@@ -384,7 +382,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 950,
+        "height": 1070,
         "width": 380,
         "x": 265,
         "y": -140
@@ -393,3 +391,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
