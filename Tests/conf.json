@@ -19,7 +19,8 @@
         },
         {
             "integrations": "MITRE ATT&CK",
-            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "URLhaus",
@@ -2604,6 +2605,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "AutoFocus Daily Feed",
+            "playbookID": "playbook-FeedAutofocus_daily_test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         },
@@ -3047,6 +3053,7 @@
 
 
          "_comment5": "~~~ OTHER ~~~",
+        "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
