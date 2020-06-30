@@ -228,18 +228,30 @@ def users_search(client: Client, args: Dict) -> CommandResults:
     Returns:
         Outputs.
     """
-    query = str(args.get('query', 'objectId==*'))
+    email = str(args.get('email', ''))
+    query = str(args.get('query', ''))
     size = str(args.get('size', '10'))
     page = str(args.get('page', '0'))
 
-    users = client.users_search_request(query, size, page)
+    if email and query:
+        raise Exception('Provide either the email or the query arguments.')
+    elif email:
+        search_query = f'email=={email}'
+    elif query:
+        search_query = query
+    else:
+        search_query = 'objectId==*'
+
+    users = client.users_search_request(search_query, size, page)
 
     users_data = users.get('content')
+    total_elements = users.get('totalElements', '0')
     table_name = ''
     if not users.get('last'):
-        table_name = f' (To get the next users, run the command with the next page)'
+        table_name = f' More users are available in the next page.'
     headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
-    readable_output = tableToMarkdown(name=f"Users{table_name}:", t=users_data, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(name=f"Number of users found {total_elements}. {table_name}:",
+                                      t=users_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.Users',
@@ -297,11 +309,13 @@ def devices_search(client: Client, args: Dict) -> CommandResults:
     devices = client.devices_search_request(query, size, page)
 
     devices_data = devices.get('content')
+    total_elements = devices.get('totalElements', '0')
     table_name = ''
     if not devices.get('last'):
-        table_name = f' (To get the next devices, run the command with the next page)'
+        table_name = f' More Devices are available in the next page.'
     headers = ['deviceId', 'zdid', 'deviceHash', 'model', 'osType', 'osVersion', 'updatedDate']
-    readable_output = tableToMarkdown(name=f"Devices{table_name}:", t=devices_data, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(name=f"Number of devices found {total_elements}. {table_name}:",
+                                      t=devices_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.Devices',
@@ -363,12 +377,13 @@ def devices_get_last_updated(client: Client, args: Dict) -> CommandResults:
     devices = client.devices_get_last_updated_request(last_updated, exclude_deleted, size, page)
 
     devices_data = devices.get('content')
+    total_elements = devices.get('totalElements', '0')
     table_name = ''
     if not devices.get('last'):
-        table_name = f' (To get the next devices, run the command with the next page)'
+        table_name = f' More Devices are available in the next page.'
     headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
-    readable_output = tableToMarkdown(name=f"Last updated devices{table_name}:", t=devices_data, headers=headers,
-                                      removeNull=True)
+    readable_output = tableToMarkdown(name=f"Number of devices found {total_elements}. {table_name}:",
+                                      t=devices_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.Devices',
@@ -505,6 +520,7 @@ def events_search(client: Client, args: Dict) -> CommandResults:
 
     events = client.events_search_request(query, size, page, verbose)
     events_data = events.get('content')
+    total_elements = events.get('totalElements')
 
     if not verbose:
         for event_data in events_data:
@@ -512,9 +528,10 @@ def events_search(client: Client, args: Dict) -> CommandResults:
 
     table_name = ''
     if not events.get('last'):
-        table_name = f' (To get the next events, run the command with the next page)'
+        table_name = f' More events are available in the next page.'
     headers = ['eventId', 'eventName', 'eventState', 'incidentSummary', 'severity', 'persistedTime']
-    readable_output = tableToMarkdown(name=f"Users{table_name}:", t=events_data, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(name=f"Number of events found {total_elements}. {table_name}:",
+                                      t=events_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.Events',
