@@ -1,7 +1,6 @@
 Threat Intelligence is core to incident response. If you integrate it into your incident response workflow, you can then map external threat data to what’s happening internally.  As hundreds of thousands of indicators may be created or updated on a daily basis, Cortex XSOAR provides the automations that allow you to perform many tasks related to threat intelligence indicators.
-The TIM Processing pack includes playbooks that automate the processing of indicators for many use cases such as tagging, checking for existence in various exclusion or other lists of interest, running enrichment for specific indicators and preparing indicators if necessary for a manual review in case additional approval is required. This helps you quickly separate relevant indicators from irrelevant ones. 
+The TIM - Indicator Auto-Processing pack includes playbooks that automate the processing of indicators for many use cases such as tagging, checking for existence in various exclusion or other lists of interest, running enrichment for specific indicators and preparing indicators if necessary for a manual review in case additional approval is required. This helps you quickly separate relevant indicators from irrelevant ones. 
 With this content pack, you can significantly reduce the time your threat intelligence analysts spend on reviewing hundreds of thousands of indicators by performing many pre-defined logics and processing tasks automatically.
-
 
 ##### What does this pack do?
 
@@ -14,5 +13,5 @@ The playbooks included in this pack help you automate repetitive tasks associate
 - Check Whois to validate domains registrant and time of creation.
 
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)_
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks)_
 
