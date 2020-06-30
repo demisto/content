@@ -38,4 +38,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Code42 Exfiltration Playbook](Insert the link to your image here)
+![Code42 Exfiltration Playbook](../Integrations/Code42/Code42_image.png)

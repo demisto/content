@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Code42 Change Blocked Status](Insert the link to your image here)
+![Code42 Change Blocked Status](../Integrations/Code42/Code42_image.png)

@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Code42 Change User Activation](Insert the link to your image here)
+![Code42 Change User Activation](../Integrations/Code42/Code42_image.png)
