@@ -30,7 +30,7 @@ then
     exit 1
 fi
 
-if [ -n $_contrib_branch ] && [ -z $_changed_pack ]
+if [ -n "$_contrib_branch" ] && [ -z $_changed_pack ]
 then
     echo "You must specify the pack name"
     exit 1
