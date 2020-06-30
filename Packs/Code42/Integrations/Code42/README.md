@@ -591,7 +591,7 @@ Creates a Code42 user.
 | Email | UserID | Username |
 | ----- | ------ | -------- |
 | created.in.cortex.xsoar@example.com | 1111158111459014270 | created.in.cortex.xsoar@example.com |
-
+ 
 
 ### code42-user-block
 ***
@@ -622,7 +622,39 @@ Blocks a user in Code42.  A blocked user is not allowed to log in or restore fil
 ### Code42 User Blocked
 |UserID|
 | --- |
-| C2345 | 
+| C2345 |
+
+
+### code42-user-unblock
+***
+Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
+
+#### Base Command
+
+`code42-user-unblock`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the user to unblock. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.User.UserID | String | An ID for a Code42 user. | 
+
+
+#### Command Example
+```!code42-user-unblock username="partner.demisto@example.com"```
+
+#### Human Readable Output
+### Code42 User Blocked
+|UserID|
+| --- |
+| C2345 |
+
 
 ### code42-user-deactivate
 ***
@@ -648,6 +680,37 @@ Deactivate a user in Code42; signing them out of their devices. Backups disconti
 
 #### Command Example
 ```!code42-user-deactivate username="partner.demisto@example.com"```
+
+#### Human Readable Output
+### Code42 User Deactivated
+| UserID |
+| ------ |
+| 123456790 |
+
+
+### code42-user-reactivate
+***
+Reactivates the user with the given username.
+
+#### Base Command
+
+`code42-user-reactivate`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the user to reactivate. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.User.UserID | String | The ID of a Code42 User. | 
+
+
+#### Command Example
+```!code42-user-reactivate username="partner.demisto@example.com"```
 
 #### Human Readable Output
 ### Code42 User Deactivated

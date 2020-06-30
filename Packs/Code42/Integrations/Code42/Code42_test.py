@@ -23,7 +23,9 @@ from Code42 import (
     securitydata_search_command,
     user_create_command,
     user_block_command,
+    user_unblock_command,
     user_deactivate_command,
+    user_reactivate_command,
     fetch_incidents,
 )
 import time
@@ -1566,6 +1568,16 @@ def test_user_block_command(code42_users_mock):
     assert cmd_res.raw_response == 123456
     assert cmd_res.outputs["UserID"] == 123456
     assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.block.assert_called_once_with(123456)
+
+
+def test_user_unblock_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_unblock_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.unblock.assert_called_once_with(123456)
 
 
 def test_user_deactivate_command(code42_users_mock):
@@ -1574,6 +1586,16 @@ def test_user_deactivate_command(code42_users_mock):
     assert cmd_res.raw_response == 123456
     assert cmd_res.outputs["UserID"] == 123456
     assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.deactivate.assert_called_once_with(123456)
+
+
+def test_user_reactivate_command(code42_users_mock):
+    client = create_client(code42_users_mock)
+    cmd_res = user_reactivate_command(client, {"username": "new.user@example.com"})
+    assert cmd_res.raw_response == 123456
+    assert cmd_res.outputs["UserID"] == 123456
+    assert cmd_res.outputs_prefix == "Code42.User"
+    code42_users_mock.users.reactivate.assert_called_once_with(123456)
 
 
 def test_security_data_search_command(code42_file_events_mock):

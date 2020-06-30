@@ -275,9 +275,19 @@ class Code42Client(BaseClient):
         self._get_sdk().users.block(user_id)
         return user_id
 
+    def unblock_user(self, username):
+        user_id = self.get_user(username)["userId"]
+        self._get_sdk().users.unblock(user_id)
+        return user_id
+
     def deactivate_user(self, username):
         user_id = self.get_user(username)["userId"]
         self._get_sdk().users.deactivate(user_id)
+        return user_id
+
+    def reactivate_user(self, username):
+        user_id = self.get_user(username)["userId"]
+        self._get_sdk().users.reactivate(user_id)
         return user_id
 
     def get_org(self, org_name):
@@ -836,12 +846,46 @@ def user_block_command(client, args):
         return_error(create_command_error_message(demisto.command(), e))
 
 
+def user_unblock_command(client, args):
+    username = args.get("username")
+    try:
+        user_id = client.unblock_user(username)
+        outputs = {"UserID": user_id}
+        readable_outputs = tableToMarkdown("Code42 User Unblocked", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
+    except Exception as e:
+        return_error(create_command_error_message(demisto.command(), e))
+
+
 def user_deactivate_command(client, args):
     username = args.get("username")
     try:
         user_id = client.deactivate_user(username)
         outputs = {"UserID": user_id}
         readable_outputs = tableToMarkdown("Code42 User Deactivated", outputs)
+        return CommandResults(
+            outputs_prefix="Code42.User",
+            outputs_key_field="UserID",
+            outputs=outputs,
+            readable_output=readable_outputs,
+            raw_response=user_id,
+        )
+    except Exception as e:
+        return_error(create_command_error_message(demisto.command(), e))
+
+
+def user_reactivate_command(client, args):
+    username = args.get("username")
+    try:
+        user_id = client.reactivate_user(username)
+        outputs = {"UserID": user_id}
+        readable_outputs = tableToMarkdown("Code42 User Reactivated", outputs)
         return CommandResults(
             outputs_prefix="Code42.User",
             outputs_key_field="UserID",
@@ -1028,7 +1072,9 @@ def main():
             "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
             "code42-user-create": user_create_command,
             "code42-user-block": user_block_command,
+            "code42-user-unblock": user_unblock_command,
             "code42-user-deactivate": user_deactivate_command,
+            "code42_user-reactivate": user_reactivate_command,
         }
         command = demisto.command()
         if command == "test-module":

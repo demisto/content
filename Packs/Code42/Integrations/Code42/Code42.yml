@@ -311,7 +311,8 @@ script:
     name: code42-departingemployee-add
     outputs:
     - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated.
+        Use Code42.DepartingEmployee.UserID.
       type: string
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -338,7 +339,8 @@ script:
     name: code42-departingemployee-remove
     outputs:
     - contextPath: Code42.DepartingEmployee.CaseID
-      description: Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID.
+      description: Internal Code42 Case ID for the Departing Employee. Deprecated.
+        Use Code42.DepartingEmployee.UserID.
       type: string
     - contextPath: Code42.DepartingEmployee.UserID
       description: Internal Code42 User ID for the Departing Employee.
@@ -556,6 +558,37 @@ script:
       discontinue for a deactivated user, and their archives go to cold storage.
     execution: false
     name: code42-user-deactivate
+    outputs:
+    - contextPath: Code42.User.UserID
+      description: The ID of a Code42 User.
+      type: String
+  - arguments:
+    - default: false
+      description: The username of the user to unblock.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a block, if one exists, on the user with the given user ID.
+      Unblocked users are allowed to log in and restore.
+    execution: false
+    name: code42-user-unblock
+    outputs:
+    - contextPath: Code42.User.UserID
+      description: An ID for a Code42 user.
+      type: String
+  - arguments:
+    - default: false
+      description: The username of the user to reactivate.
+      isArray: false
+      name: username
+      required: false
+      secret: true
+    deprecated: false
+    description: Reactivates the user with the given username.
+    execution: false
+    name: code42-user-reactivate
     outputs:
     - contextPath: Code42.User.UserID
       description: The ID of a Code42 User.
