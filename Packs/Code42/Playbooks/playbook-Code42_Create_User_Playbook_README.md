@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Code42 Create User Playbook](Insert the link to your image here)
+![Code42 Create User Playbook](../Integrations/Code42/Code42_image.png)

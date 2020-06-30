@@ -75,4 +75,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Code42 File Search](Insert the link to your image here)
+![Code42 File Search](../Integrations/Code42/Code42_image.png)
