@@ -808,7 +808,7 @@ class Code42SecurityIncidentFetcher(object):
         incidents = [self._create_incident_from_alert(a) for a in alerts]
         save_time = datetime.utcnow().timestamp()
         next_run = {"last_fetch": save_time}
-        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit :]
+        return next_run, incidents[: self._fetch_limit], incidents[self._fetch_limit:]
 
     def _fetch_remaining_incidents_from_last_run(self):
         if self._integration_context:
@@ -818,7 +818,7 @@ class Code42SecurityIncidentFetcher(object):
                 return (
                     self._last_run,
                     remaining_incidents[: self._fetch_limit],
-                    remaining_incidents[self._fetch_limit :],
+                    remaining_incidents[self._fetch_limit:],
                 )
 
     def _get_start_query_time(self):
