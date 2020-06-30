@@ -250,7 +250,7 @@ def users_search(client: Client, args: Dict) -> CommandResults:
     if not users.get('last'):
         table_name = f' More users are available in the next page.'
     headers = ['objectId', 'alias', 'firstName', 'middleName', 'lastName', 'email']
-    readable_output = tableToMarkdown(name=f"Number of users found {total_elements}. {table_name}:",
+    readable_output = tableToMarkdown(name=f"Number of users found: {total_elements}. {table_name}",
                                       t=users_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
@@ -314,7 +314,7 @@ def devices_search(client: Client, args: Dict) -> CommandResults:
     if not devices.get('last'):
         table_name = f' More Devices are available in the next page.'
     headers = ['deviceId', 'zdid', 'deviceHash', 'model', 'osType', 'osVersion', 'updatedDate']
-    readable_output = tableToMarkdown(name=f"Number of devices found {total_elements}. {table_name}:",
+    readable_output = tableToMarkdown(name=f"Number of devices found: {total_elements}. {table_name}",
                                       t=devices_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
@@ -382,7 +382,7 @@ def devices_get_last_updated(client: Client, args: Dict) -> CommandResults:
     if not devices.get('last'):
         table_name = f' More Devices are available in the next page.'
     headers = ['deviceId', 'zdid', 'model', 'osType', 'osVersion', 'updatedDate', 'deviceHash']
-    readable_output = tableToMarkdown(name=f"Number of devices found {total_elements}. {table_name}:",
+    readable_output = tableToMarkdown(name=f"Number of devices found: {total_elements}. {table_name}",
                                       t=devices_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
@@ -530,7 +530,7 @@ def events_search(client: Client, args: Dict) -> CommandResults:
     if not events.get('last'):
         table_name = f' More events are available in the next page.'
     headers = ['eventId', 'eventName', 'eventState', 'incidentSummary', 'severity', 'persistedTime']
-    readable_output = tableToMarkdown(name=f"Number of events found {total_elements}. {table_name}:",
+    readable_output = tableToMarkdown(name=f"Number of events found: {total_elements}. {table_name}",
                                       t=events_data, headers=headers, removeNull=True)
 
     command_results = CommandResults(
@@ -544,13 +544,15 @@ def events_search(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: str = '50') -> Tuple[dict, list]:
+def fetch_incidents(client: Client, last_run: dict, fetch_query: str, first_fetch_time: str, max_fetch: str = '50')\
+        -> Tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
 
     Args:
         client (Client): Zimperium client
         last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
+        fetch_query: fetch query to append to the persistedtime
         first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
         max_fetch: max events to fetch
 
@@ -567,11 +569,13 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     else:
         next_run = last_run
 
-    incidents = []
+    query = f"persistedTime=gt={next_run.get('time')}"
+    if fetch_query:
+        query += f";{fetch_query}"
 
-    events = client.events_search_request(query=f"persistedTime=gt={next_run.get('time')}",
-                                          size=max_fetch, page='0', verbose=False)
+    events = client.events_search_request(query=query, size=max_fetch, page='0', verbose=False)
     events_data = events.get('content')
+    incidents = []
 
     if events_data:
         last_event_ids = last_run.get('last_event_ids', [])
@@ -636,8 +640,9 @@ def main():
     verify = not params.get('insecure', False)
 
     # fetch params
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    fetch_query = params.get('fetch_query')
     max_fetch = min('50', params.get('max_fetch', '50'))
+    first_fetch_time = params.get('fetch_time', '3 days').strip()
 
     command = demisto.command()
     LOG(f'Command being called is {demisto.command()}')
@@ -662,8 +667,9 @@ def main():
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
+                fetch_query=fetch_query,
                 first_fetch_time=first_fetch_time,
-                max_fetch=max_fetch,
+                max_fetch=max_fetch
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

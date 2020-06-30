@@ -60,7 +60,7 @@ def test_fetch_incidents(mocker):
     """
     client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
     mocker.patch.object(Client, '_http_request', return_value=RESPONSE_MULTIPLE_EVENTS_FETCH)
-    _, incidents = fetch_incidents(client, last_run={}, first_fetch_time='3 days', max_fetch='50')
+    _, incidents = fetch_incidents(client, last_run={}, fetch_query='', first_fetch_time='3 days', max_fetch='50')
     assert len(incidents) == 14
     assert incidents[0].get('name') == "Detected network scan after connecting to Free Wi-Fi. No active attacks were" \
                                        " detected and this network will continue to be monitored. It is safe to" \
@@ -101,5 +101,5 @@ def test_fetch_incidents_last_event_ids(mocker):
             'e696ad05-32d5-43e8-95c3-5060b0ee468e',
         ]
     }
-    _, incidents = fetch_incidents(client, last_run=last_run, first_fetch_time='3 days', max_fetch='50')
+    _, incidents = fetch_incidents(client, last_run=last_run, fetch_query='', first_fetch_time='3 days', max_fetch='50')
     assert len(incidents) == 0

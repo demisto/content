@@ -16,6 +16,10 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- display: Fetch Query. e.g, severity==CRITICAL
+  name: fetch_query
+  required: false
+  type: 0
 - defaultvalue: '50'
   display: Max fetch
   name: max_fetch
