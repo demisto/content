@@ -5,7 +5,7 @@ Supported integrations for this playbook:
 * Palo Alto Networks Minemeld
 * Palo Alto Networks PAN-OS
 * Zscaler
-* ForitGate
+* FortiGate
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
