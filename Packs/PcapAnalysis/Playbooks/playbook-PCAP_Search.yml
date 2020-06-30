@@ -2,19 +2,19 @@ id: PCAP Search
 version: -1
 fromversion: 5.5.0
 name: PCAP Search
-description: The playbook is used to parse and search in PCAP files. Supported type
-  files are pcap, cap, pcapng. The playboko can handle one PCAP file per incident.
+description: This playbook is used to parse and search within PCAP files. Supported file 
+  types are pcap, cap, pcapng. The playbook can handle one PCAP file per incident.
   The user inputs which objects the playbook should search for in the PCAP. The values
-  to search are IP addresses, CIDR ranges, TCP or UDP ports or protocols. The user
-  can specify in the QueryOperator input in case more than one input type was specified
+  to search are IP addresses, CIDR ranges, and TCP or UDP ports or protocols. In the 
+  event that more than one input type was specified, specify in the QueryOperator input 
   (such as IP addresses and TCP ports) if the PCAP filter query will use an AND or
   an OR operator between the inputs.  Another option is to use advanced filters just
-  like in Wireshark to use more fine grained filters or for objects not specified
+  like in Wireshark to use refined filters or for objects not specified
   in other inputs. Additional inputs allow the user to provide the WPA password for
   decrypting 802.11 (wireless) traffic and adding an RSA certificate to decrypt SSL
-  traffic. In order to display the results within the relevant incident fields the
+  traffic. To display the results within the relevant incident fields, the
   playbook needs to run in a PCAP Analysis incident type. For handling of PCAP files
-  larger than 30 MB please refer to the PcapMinerV2 documentation.
+  larger than 30 MB, refer to the PcapMinerV2 documentation.
 starttaskid: "0"
 tasks:
   "0":
@@ -252,7 +252,7 @@ tasks:
       version: -1
       name: Create TCP ports query
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -314,7 +314,7 @@ tasks:
       version: -1
       name: Set protocols to array
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -374,9 +374,9 @@ tasks:
       version: -1
       name: PCAP Miner execution
       description: |-
-        PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
+        PcapMIner V2 is used to parse PCAP files by displaying all of the relevant data within the PCAP,  including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted traffic and more.
         This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
-        a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
+        a) Use the `pcap_filter` parameter to filter your PCAP file and thus make it smaller.
         b) Copy the automation and change the `default timeout` parameter to match your needs.
       tags:
       - breakdown
@@ -599,7 +599,7 @@ tasks:
       version: -1
       name: Create UDP ports query
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -659,7 +659,7 @@ tasks:
     task:
       id: 8decf688-bcb1-49a8-8e5e-18bc70217801
       version: -1
-      name: Is there value to search?
+      name: Is there a value to search?
       type: condition
       iscommand: false
       brand: ""
@@ -728,7 +728,7 @@ tasks:
       version: -1
       name: Create free text query
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -777,7 +777,7 @@ tasks:
       version: -1
       name: Create IP query
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1066,8 +1066,8 @@ tasks:
       id: 83feb993-32d0-4340-87ff-b8dc9984619c
       version: -1
       name: Check if IP addresses are internal or external
-      description: Returns yes if the IP is in one of the ranges provided, returns
-        no otherwise.
+      description: Returns yes if the IP is in one of the ranges provided, otherwise, returns
+        no.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -1148,7 +1148,7 @@ tasks:
       version: -1
       name: Set internal IP addresses
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1199,7 +1199,7 @@ tasks:
       version: -1
       name: Set external IP addresses
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1250,7 +1250,7 @@ tasks:
       version: -1
       name: Set destination TCP ports
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1301,7 +1301,7 @@ tasks:
       version: -1
       name: Set destination UDP ports
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1352,7 +1352,7 @@ tasks:
       version: -1
       name: Set detected protocols
       description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+        it will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1404,7 +1404,7 @@ inputs:
   required: true
   description: |-
     In case the playbook has several search inputs provided such as IPAddressToSearch, TCPPortsToSearch ,UDPPortsToSearch, ProtocolToSearch and AdvancedSearchFilter. This input will specify if the inputs will be treated as an AND or an OR search for all the PCAP search filter.
-    Values can be "and" or "or" and the default value is "and"
+    value can be "and" or "or". The default value is "and",
     If the IPAddressToSearch was defined as 192.168.1.1,192.168.1.2
     The TCPPortsToSearch was defined as 445,443
     And the QueryOperator was defined as "and"
@@ -1434,9 +1434,9 @@ inputs:
 - key: ProtocolToSearch
   value: {}
   required: false
-  description: The protocols so search for within the PCAP file. Can be a single protocol
+  description: The protocols to search for within the PCAP file. Can be a single protocol
     or a comma delimited list of protocols. The protocol names should be the same
-    as searching for in Wireshark. For example smb2,dns etc.  All protocols will be
+    as searching in Wireshark. For example smb2, dns etc.  All protocols will be
     treated with the OR operator.
   playbookInputQuery:
 - key: WpaPassword
