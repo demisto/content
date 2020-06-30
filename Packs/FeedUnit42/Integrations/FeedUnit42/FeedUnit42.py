@@ -141,7 +141,7 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
     return indicators
 
 
-def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -149,9 +149,8 @@ def test_module(client: Client) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any]]:
     Returns:
         Outputs.
     """
-    objects: list = client.get_stix_objects()
-    _ = parse_indicators(objects)
-    return 'ok', {}, {}
+    client.get_stix_objects()
+    return 'ok'
 
 
 def fetch_indicators(client: Client, feed_tags: list = []) -> List[Dict]:
@@ -218,8 +217,8 @@ def main():
         client = Client(api_key, verify)
 
         if command == 'test-module':
-            md_, ec_, raw = test_module(client)
-            return_outputs(md_, ec_, raw)
+            result = test_module(client)
+            demisto.results(result)
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators(client, feed_tags)
