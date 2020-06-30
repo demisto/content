@@ -1734,6 +1734,16 @@
 <td style="width: 72px;">Optional</td>
 </tr>
 <tr>
+<td style="width: 144px;">source_zone</td>
+<td style="width: 524px;">A comma-separated list of source zones..</td>
+<td style="width: 72px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">destination_zone</td>
+<td style="width: 524px;">A comma-separated list of source zones..</td>
+<td style="width: 72px;">Optional</td>
+</tr>
+<tr>
 <td style="width: 144px;">negate_source</td>
 <td style="width: 524px;">Whether to negate the source (address, address group); "Yes" or "No".</td>
 <td style="width: 72px;">Optional</td>
