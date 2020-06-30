@@ -745,6 +745,7 @@ def fetch_incidents_command():
         if len(incidents) == 0 and no_events_found:
             # return and try again later, API may not have updated.
             demisto.debug("Will retry - no events returned")
+            demisto.incidents([])
             return
         elif len(incidents) > PAGE_LIMIT:
             incidents_to_send = incidents[:PAGE_LIMIT]
