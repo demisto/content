@@ -44,8 +44,7 @@ def clear_version_cache():
     Clear the version cache at end of the test (in case we mocked demisto.serverVersion)
     """
     yield
-    if hasattr(get_demisto_version, '_version'):
-        delattr(get_demisto_version, '_version')
+    get_demisto_version._version = None
 
 
 def test_xml():
@@ -460,11 +459,18 @@ def test_argToList():
     test2 = 'a,b,c'
     test3 = '["a","b","c"]'
     test4 = 'a;b;c'
+    test5 = 1
+    test6 = '1'
+    test7 = True
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
     for result in results:
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
+
+    assert argToList(test5) == [1]
+    assert argToList(test6) == ['1']
+    assert argToList(test7) == [True]
 
 
 def test_remove_nulls():
@@ -820,7 +826,7 @@ def test_get_demisto_version(mocker, clear_version_cache):
     assert not is_demisto_version_ge('5.5.0')
 
 
-def test_is_demisto_version_ge_4_5(mocker):
+def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
     get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
     get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
     assert not is_demisto_version_ge('5.0.0')
@@ -952,7 +958,7 @@ class TestCommandResults:
         context = res.to_context()
         assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
 
-    def test_return_command_results(self):
+    def test_return_command_results(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
 
         dbot_score = Common.DBotScore(
@@ -1007,7 +1013,7 @@ class TestCommandResults:
             }
         }
 
-    def test_multiple_indicators(self):
+    def test_multiple_indicators(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
         dbot_score1 = Common.DBotScore(
             indicator='8.8.8.8',
@@ -1090,7 +1096,7 @@ class TestCommandResults:
             }
         }
 
-    def test_return_list_of_items(self):
+    def test_return_list_of_items(self, clear_version_cache):
         from CommonServerPython import CommandResults, EntryFormat, EntryType
         tickets = [
             {
@@ -2255,8 +2261,9 @@ def test_set_latest_integration_context_fail(mocker):
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
     int_context = get_integration_context_versioned()
-    mocker.patch.object(CommonServerPython, 'update_integration_context', return_value=(int_context['context'],
-                                                                            int_context['version']))
+    mocker.patch.object(CommonServerPython, 'update_integration_context', return_value=(
+        int_context['context'], int_context['version']
+    ))
     mocker.patch.object(CommonServerPython, 'set_integration_context', side_effect=ValueError)
 
     # Arrange
@@ -2267,4 +2274,3 @@ def test_set_latest_integration_context_fail(mocker):
 
     # Assert
     assert int_context_calls == CommonServerPython.CONTEXT_UPDATE_RETRY_TIMES
-

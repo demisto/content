@@ -882,7 +882,9 @@ def main():
                     client = demisto_client.configure(base_url=server_url, username=username, password=password,
                                                       verify_ssl=False)
 
-                    search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                    _, flag = search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+                    if not flag:
+                        raise Exception('Failed to search and install packs.')
                 except Exception as exc:
                     prints_manager.add_print_job(str(exc), print_error, 0)
                     prints_manager.execute_thread_prints(0)
