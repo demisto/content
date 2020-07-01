@@ -19,7 +19,8 @@
         },
         {
             "integrations": "MITRE ATT&CK",
-            "playbookID": "Mitre Attack List 10 Indicators Feed Test"
+            "playbookID": "Mitre Attack List 10 Indicators Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "URLhaus",
@@ -52,7 +53,7 @@
             ],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
-            "timeout": 1000
+            "timeout": 600
         },
         {
             "integrations": "APIVoid",
@@ -107,7 +108,7 @@
         {
             "integrations": "GoogleKubernetesEngine",
             "playbookID": "GoogleKubernetesEngine_Test",
-            "timeout": 1200,
+            "timeout": 600,
             "fromversion": "5.5.0"
         },
         {
@@ -231,11 +232,6 @@
             "instance_names": "ms_azure_sc_prod"
         },
         {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
-        },
-        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
         },
@@ -260,8 +256,7 @@
         },
         {
             "integrations": "CloudShark",
-            "playbookID": "CloudShark - Test Playbook",
-            "timeout": 500
+            "playbookID": "CloudShark - Test Playbook"
         },
         {
             "integrations": "Google Vision AI",
@@ -287,7 +282,7 @@
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
-            "timeout": 2000
+            "timeout": 400
         },
         {
             "integrations": "ThreatQ v2",
@@ -331,7 +326,7 @@
         {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
-            "timeout": 2400,
+            "timeout": 400,
             "pid_threshold": 5,
             "fromversion": "5.0.0"
         },
@@ -587,7 +582,7 @@
         {
             "integrations": "SNDBOX",
             "playbookID": "Detonate File - SNDBOX - Test",
-            "timeout": 2400,
+            "timeout": 600,
             "nightly": true
         },
         {
@@ -829,15 +824,13 @@
             "integrations": "IntSights",
             "instance_names": "intsights_standard_account",
             "playbookID": "IntSights Test",
-            "nightly": true,
-            "timeout": 500
+            "nightly": true
         },
         {
             "integrations": "IntSights",
             "playbookID": "IntSights Mssp Test",
             "instance_names": "intsights_mssp_account",
-            "nightly": true,
-            "timeout": 500
+            "nightly": true
         },
         {
             "integrations": "dnstwist",
@@ -1090,7 +1083,7 @@
             "integrations": "Intezer v2",
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
-            "timeout": 700
+            "timeout": 600
         },
         {
             "integrations": "FalconIntel",
@@ -1310,7 +1303,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test",
-            "memory_threshold": 500,
+            "memory_threshold": 200,
             "instance_names": "use_default_handler"
         },
         {
@@ -1858,9 +1851,6 @@
             ]
         },
         {
-            "playbookID": "ReadPDFFile-Test"
-        },
-        {
             "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
@@ -1900,7 +1890,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 1200,
+            "timeout": 600,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -1912,7 +1902,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 1200,
+            "timeout": 600,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -2071,7 +2061,7 @@
                 "Rasterize"
             ],
             "fromversion": "4.5.0",
-            "timeout": 1700
+            "timeout": 600
         },
         {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
@@ -2085,7 +2075,7 @@
             "integrations": ["TAXII Server", "TAXIIFeed"],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
-            "timeout": 600
+            "timeout": 300
         },
         {
             "integrations": "Traps",
@@ -2112,9 +2102,6 @@
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
-        },
-        {
-            "playbookID": "ExtractDomainFromEmailTest"
         },
         {
             "playbookID": "Account Enrichment - Generic v2 - Test",
@@ -2167,7 +2154,7 @@
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 1000
+            "timeout": 300
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
@@ -2179,7 +2166,7 @@
             "playbookID": "PAN-OS EDL Setup v3 Test",
             "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_firewall_9.0",
-            "timeout": 1000
+            "timeout": 300
         },
         {
             "integrations": "Snowflake",
@@ -2335,7 +2322,8 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
+            "playbookID": "RasterizeImageTest",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Ipstack",
@@ -2548,7 +2536,7 @@
         {
             "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
-            "timeout": 1200,
+            "timeout": 600,
             "fromversion": "5.0.0"
         },
         {
@@ -2611,6 +2599,11 @@
         {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AutoFocus Daily Feed",
+            "playbookID": "playbook-FeedAutofocus_daily_test",
             "fromversion": "5.5.0"
         },
         {
@@ -2883,9 +2876,15 @@
             "integrations": "Workday",
             "playbookID": "Workday - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "hashIncidentFields-test",
+            "fromversion": "4.5.0",
+            "timeout": 60000
         }
     ],
     "skipped_tests": {
+        "AlienVaultReputationFeed_Test": "Issue 26104",
         "Workday - Test": "Issue 25896",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
@@ -2899,12 +2898,10 @@
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance",
         "Test-Shodan_v2": "Issue 23370",
-        "PAN-OS EDL Setup V2 Test": "Issue 23854",
-        "PAN-OS - Block IP and URL - External Dynamic List Test": "Issue 23854",
         "Symantec Deepsight Test": "Issue 22971",
         "Cybereason Test": "Issue 22683",
         "Bluecat Address Manager test": "Issue 22616",
-        "test-Expanse": "Expanse should provide domain that they have in their system",
+        "test-Expanse": "Expanse should provide domain thaPlaybook-Create Phishing Classifier V2 ML Tet they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2918,6 +2915,7 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "RecordedFutureFeed - Test": "Issue 18922",
+        "Recorded Future Test": "Quota issues",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
@@ -2984,11 +2982,9 @@
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
         "ExtraHop v2": "No instance",
-        "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "Silverfort": "contribution",
-        "Nozomi_Guardian": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
@@ -3058,6 +3054,7 @@
 
 
          "_comment5": "~~~ OTHER ~~~",
+        "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
@@ -3165,6 +3162,49 @@
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK"
     },
+    "parallel_integrations": [
+        "Whois",
+        "Rasterize",
+        "CVE Search v2",
+        "VulnDB",
+        "VirusTotal",
+        "CheckPhish",
+        "Tanium",
+        "LogRhythmRest",
+        "ipinfo",
+        "Demisto REST API",
+        "syslog",
+        "ElasticsearchFeed",
+        "MITRE ATT&CK",
+        "Microsoft Intune Feed",
+        "JSON Feed",
+        "Plain Text Feed",
+        "Fastly Feed",
+        "Malware Domain List Active IPs Feed",
+        "Blocklist_de Feed",
+        "Cloudflare Feed",
+        "AzureFeed",
+        "SpamhausFeed",
+        "Cofense Feed",
+        "Bambenek Consulting Feed",
+        "AWS Feed",
+        "CSVFeed",
+        "ProofpointFeed",
+        "abuse.ch SSL Blacklist Feed",
+        "TAXIIFeed",
+        "Office 365 Feed",
+        "AutoFocus Feed",
+        "Recorded Future Feed",
+        "DShield Feed",
+        "AlienVault Reputation Feed",
+        "BruteForceBlocker Feed",
+        "Feodo Tracker Hashes Feed",
+        "Feodo Tracker IP Blocklist Feed",
+        "Feodo Tracker IP Blocklist Feed",
+        "AlienVault OTX TAXII Feed",
+        "Prisma Access Egress IP feed",
+        "GCP Whitelist Feed"
+    ],
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
