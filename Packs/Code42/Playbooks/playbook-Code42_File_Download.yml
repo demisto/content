@@ -1,5 +1,5 @@
 description: This playbook downloads a file via Code42 by either MD5 or SHA256 hash.
-id: Code42 Exfiltration Playbook
+id: Code42 File Download
 inputs:
 - description: MD5 hash to search for
   key: MD5
