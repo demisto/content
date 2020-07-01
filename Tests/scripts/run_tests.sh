@@ -36,8 +36,8 @@ if [ $code_1 -ne 1 ] ; then
   fi
 fi
 
-rm $GOOGLE_APPLICATION_CREDENTIALS
 code_2=$?
 let "exit_code = $code_1 + $code_2"
+rm $GOOGLE_APPLICATION_CREDENTIALS
 
 exit $exit_code

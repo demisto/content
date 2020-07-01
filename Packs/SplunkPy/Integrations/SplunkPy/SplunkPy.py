@@ -232,7 +232,7 @@ def request(url, message):
 
     try:
         response = urllib2.urlopen(req, context=context)  # guardrails-disable-line
-    except urllib2.HTTPError as response:
+    except urllib2.HTTPError as response:  # noqa: F841
         pass  # Propagate HTTP errors via the returned response message
     return {
         'status': response.code,  # type: ignore
