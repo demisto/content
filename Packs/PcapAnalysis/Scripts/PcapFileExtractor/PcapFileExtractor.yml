@@ -1,0 +1,57 @@
+args:
+- default: false
+  description: The EntryID of the PCAP file to extract the files from.
+  isArray: false
+  name: entry_id
+  required: true
+  secret: false
+comment: This automation extracts all possible files from a PCAP file.
+commonfields:
+  id: PcapFileExtractor
+  version: -1
+enabled: false
+name: PcapFileExtractor
+outputs:
+- contextPath: PcapExtractedFiles.FileName
+  description: File name.
+  type: String
+- contextPath: PcapExtractedFiles.FileNewEntryID
+  description: The entry ID of the extracted file.
+  type: String
+- contextPath: PcapExtractedFiles.FileSize
+  description: File size.
+  type: Number
+- contextPath: PcapExtractedFiles.FileType
+  description: File type.
+  type: String
+- contextPath: PcapExtractedFiles.EntryID
+  description: The entry ID of the file.
+  type: String
+- contextPath: PcapExtractedFiles.SourceIP
+  description: Extracted file source IP.
+  type: String
+- contextPath: PcapExtractedFiles.DestinationIP
+  description: Extracted file destination IP.
+  type: String
+- contextPath: PcapExtractedFiles.DetectedInProtocol
+  description: Detected protocol.
+  type: String
+- contextPath: PcapExtractedFiles.FileMD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: PcapExtractedFiles.FileSHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: PcapExtractedFiles.FileSHA256
+  description: The SHA256 hash of the file.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- pcap
+- file
+- Utility
+timeout: '0'
+type: python
+dockerimage: demisto/pcap-miner:1.0.0.9360
