@@ -271,6 +271,11 @@ tasks:
         }
       }
   "5":
+    continueonerror: true
+    evidencedata:
+      customfields: {}
+      description:
+        simple: The file that caused the alert.
     id: "5"
     ignoreworker: false
     nexttasks:
@@ -286,13 +291,13 @@ tasks:
     task:
       brand: Code42
       description: Downloads a file from Code42 servers.
-      id: 4e1746f8-d275-4799-8af2-6ef87500a69b
+      id: c83baa5d-207c-44de-868c-8b131dc0357b
       iscommand: true
       name: Code42 Download by SHA256
       script: Code42|||code42-download-file
       type: regular
       version: -1
-    taskid: 4e1746f8-d275-4799-8af2-6ef87500a69b
+    taskid: c83baa5d-207c-44de-868c-8b131dc0357b
     timertriggers: []
     type: regular
     view: |-
@@ -303,6 +308,11 @@ tasks:
         }
       }
   "6":
+    continueonerror: true
+    evidencedata:
+      customfields: {}
+      description:
+        simple: The file that caused the alert.
     id: "6"
     ignoreworker: false
     nexttasks:
@@ -311,24 +321,20 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      exposure: {}
       hash:
         simple: ${inputs.MD5}
-      hostname: {}
-      json: {}
-      results: {}
-      username: {}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      id: cea50fb7-6903-4650-8172-5d6a324da237
+      brand: Code42
+      description: Downloads a file from Code42 servers.
+      id: 687edce2-d09d-4ad1-845e-a3ed7b7b7d4a
       iscommand: true
       name: Code42 Download by MD5
-      script: '|||code42-securitydata-search'
+      script: Code42|||code42-download-file
       type: regular
       version: -1
-    taskid: cea50fb7-6903-4650-8172-5d6a324da237
+    taskid: 687edce2-d09d-4ad1-845e-a3ed7b7b7d4a
     timertriggers: []
     type: regular
     view: |-
