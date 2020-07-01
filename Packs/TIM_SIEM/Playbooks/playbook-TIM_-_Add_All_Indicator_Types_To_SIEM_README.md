@@ -6,10 +6,10 @@ In case more indicator types need to be sent to the SIEM, the query must be edit
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* TIM - Add Bad Hash Indicators To SIEM
 * TIM - Add IP Indicators To SIEM
-* TIM - Add Url Indicators To SIEM
+* TIM - Add Bad Hash Indicators To SIEM
 * TIM - Add Domain Indicators To SIEM
+* TIM - Add Url Indicators To SIEM
 
 ### Integrations
 This playbook does not use any integrations.
@@ -23,9 +23,9 @@ This playbook does not use any commands.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| From indicators Query | The types of indicators and their tags that will be sent to SIEM | (type:ip or type:file or type:Domain or type:URL) -tags:pending_review and (tags:approved_black or tags:approved_white or tags:approved_watchlist) |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input | (type:ip or type:file or type:Domain or type:URL) -tags:pending_review and (tags:approved_black or tags:approved_white or tags:approved_watchlist) | Optional |
 
 ## Playbook Outputs
 ---

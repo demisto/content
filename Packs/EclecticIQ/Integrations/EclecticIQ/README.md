@@ -119,7 +119,7 @@
 <td style="width: 470px;">Observable last updated date</td>
 </tr>
 <tr>
-<td style="width: 201px;"><a href="http://eclecticiq.ip.id/">EclecticIQ.IP.ID</a></td>
+<td style="width: 201px;">EclecticIQ.IP.ID</td>
 <td style="width: 69px;">Number</td>
 <td style="width: 470px;">Observable ID</td>
 </tr>
@@ -300,7 +300,7 @@
 <td style="width: 476px;">Observable last updated date</td>
 </tr>
 <tr>
-<td style="width: 199px;"><a href="http://eclecticiq.url.id/">EclecticIQ.URL.ID</a></td>
+<td style="width: 199px;">EclecticIQ.URL.ID</td>
 <td style="width: 65px;">Number</td>
 <td style="width: 476px;">Observable ID</td>
 </tr>
@@ -528,7 +528,7 @@
 <td style="width: 476px;">Observable last updated date</td>
 </tr>
 <tr>
-<td style="width: 201px;"><a href="http://eclecticiq.file.id/">EclecticIQ.File.ID</a></td>
+<td style="width: 201px;">EclecticIQ.File.ID</td>
 <td style="width: 63px;">Number</td>
 <td style="width: 476px;">Observable ID</td>
 </tr>
@@ -695,12 +695,12 @@
 <td style="width: 391px;">The time it takes an entity to decay in intelligence value, expressed in the number of days until a 50% decay</td>
 </tr>
 <tr>
-<td style="width: 278px;"><a href="http://eclecticiq.entity.id/">EclecticIQ.Entity.ID</a></td>
+<td style="width: 278px;">EclecticIQ.Entity.ID</td>
 <td style="width: 71px;">String</td>
 <td style="width: 391px;">Entity ID</td>
 </tr>
 <tr>
-<td style="width: 278px;"><a href="http://eclecticiq.entity.source.name/">EclecticIQ.Entity.Source.Name</a></td>
+<td style="width: 278px;">EclecticIQ.Entity.Source.Name</td>
 <td style="width: 71px;">String</td>
 <td style="width: 391px;">Entity source name</td>
 </tr>
@@ -912,7 +912,7 @@
 <td style="width: 435px;">Observable last updated date</td>
 </tr>
 <tr>
-<td style="width: 240px;"><a href="http://eclecticiq.email.id/">EclecticIQ.Email.ID</a></td>
+<td style="width: 240px;">EclecticIQ.Email.ID</td>
 <td style="width: 65px;">Number</td>
 <td style="width: 435px;">Observable ID</td>
 </tr>
@@ -1096,7 +1096,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 229px;"><a href="http://eclecticiq.domain.name/">EclecticIQ.Domain.Name</a></td>
+<td style="width: 229px;">EclecticIQ.Domain.Name</td>
 <td style="width: 62px;">String</td>
 <td style="width: 449px;">Domain name that was tested</td>
 </tr>
@@ -1111,7 +1111,7 @@
 <td style="width: 449px;">Observable last updated date</td>
 </tr>
 <tr>
-<td style="width: 229px;"><a href="http://eclecticiq.domain.id/">EclecticIQ.Domain.ID</a></td>
+<td style="width: 229px;">EclecticIQ.Domain.ID</td>
 <td style="width: 62px;">Number</td>
 <td style="width: 449px;">Observable ID</td>
 </tr>

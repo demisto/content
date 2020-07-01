@@ -1,3 +1,4 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
@@ -11,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS '''
 handle_proxy()
 params = demisto.params()
-server = params["server"]
+server = params["server"].rstrip('/')
 prefix = server + "/awakeapi/v1"
 verify = not params.get('unsecure', False)
 credentials = params["credentials"]
@@ -87,7 +88,7 @@ def returnResults(contents, outerKey, innerKey, humanReadable, dbotScore, generi
         "AwakeSecurity": contents,
     }
     entryContext = {
-        ("AwakeSecurity." + outerKey + "(val." + innerKey + "===obj." + innerKey + ")"): contents,
+        ("AwakeSecurity." + outerKey + "(val." + innerKey + "== obj." + innerKey + ")"): contents,
     }
     if dbotScore is not None:
         machineReadable["DBotScore"] = dbotScore
@@ -310,7 +311,7 @@ def queryActivities():
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
         content["query"] = q
-    returnResults(contents, "Activities", "query", humanReadable, None)
+    returnResults(contents, "Activities", "activityId", humanReadable, None)
 
 
 def queryDevices():
@@ -331,7 +332,7 @@ def queryDevices():
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
         content["query"] = q
-    returnResults(contents, "Devices", "query", humanReadable, None)
+    returnResults(contents, "Devices", "deviceId", humanReadable, None)
 
 
 def queryDomains():
@@ -353,7 +354,7 @@ def queryDomains():
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
         content["query"] = q
-    returnResults(contents, "Domains", "query", humanReadable, None)
+    returnResults(contents, "Domains", "name", humanReadable, None)
 
 
 def pcapDownload():

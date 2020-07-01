@@ -1,6 +1,6 @@
 commonfields:
   id: 5d44a5d9-d91a-4420-801f-755f26b60c47
-  version: 31
+  version: -1
 name: cveLatest
 script: |2
 
@@ -34,3 +34,5 @@ dependson:
   must:
   - cve-latest
 timeout: 0s
+tests:
+- No tests (auto formatted)

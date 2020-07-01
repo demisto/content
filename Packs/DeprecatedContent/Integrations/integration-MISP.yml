@@ -818,3 +818,4 @@ script:
     description: Add attribute to existing MISP event
 tests:
   - No tests
+fromversion: 4.1.0

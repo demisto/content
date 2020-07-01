@@ -7,7 +7,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
 * ArcSight ESM v2
 
 ### Scripts
@@ -20,15 +19,15 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| ArcSightBlackListIPActiveListID | ID of the black list IP Active List resource as appears in ArcSight. |  |  | Optional |
-| ArcsightBlackIPValueFieldName | The name of the black list Active List field to insert the IP value to. |  |  | Optional |
-| ArcSightWhiteListIPActiveListID | ID of the white list IP Active List resource as appears in ArcSight. |  |  | Optional |
-| ArcsightWhiteListIPValueFieldName | The name of the white list Active List field to insert the IP value to. |  |  | Optional |
-| ArcSightWatchListIPActiveListID | ID of the watch list IP Active List resource as appears in ArcSight. |  |  | Optional |
-| ArcsightWatchListIPValueFieldName | The name of the watch list Active List field to insert the IP value to. |  |  | Optional |
-|  |  |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| ArcSightBlackListIPActiveListID | ID of the black list IP Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightBlackListIPValueFieldName | The name of the black list Active List field to insert the IP value to. |  | Optional |
+| ArcSightWhiteListIPActiveListID | ID of the white list IP Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightWhiteListIPValueFieldName | The name of the white list Active List field to insert the IP value to. |  | Optional |
+| ArcSightWatchListIPActiveListID | ID of the watch list IP Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightWatchListIPValueFieldName | The name of the watch list Active List field to insert the IP value to. |  | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 
 ## Playbook Outputs
 ---

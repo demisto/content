@@ -1,6 +1,5 @@
 id: Process Email - Core
 version: -1
-fromversion: 4.5.0
 name: Process Email - Core
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
@@ -14,9 +13,9 @@ tasks:
       id: ccd00127-175c-4a93-8edb-14e71f7d47ea
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -40,10 +39,10 @@ tasks:
       version: -1
       name: Is there an email file attached?
       description: Identifies whether the incident includes an email message attached
-        as an eml or msg file, and returns the answer to the playbook. Also saves the identified
-        entry ID to context for later use. Commonly used in automated playbooks
-        that handle phishing reports sent to a special phishing mailbox set up by
-        the security team.
+        as an eml or msg file, and returns the answer to the playbook. Also saves
+        the identified entry ID to context for later use. Commonly used in automated
+        playbooks that handle phishing reports sent to a special phishing mailbox
+        set up by the security team.
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
@@ -128,7 +127,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "22"
     scriptarguments:
       entryid:
         complex:
@@ -159,16 +158,16 @@ tasks:
       id: dd0d5106-965e-4a81-8e67-79392ea47d7f
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 1060
         }
       }
     note: false
@@ -572,23 +571,134 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 1250,
+          "y": 680
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+  "20":
+    id: "20"
+    taskid: c5bbf8a9-443c-4f8c-8956-536f0db06c6f
+    type: condition
+    task:
+      id: c5bbf8a9-443c-4f8c-8956-536f0db06c6f
+      version: -1
+      name: Were email headers extracted successfully?
+      description: Checks whether the email headers were extracted from the original
+        email that was either attached or retrieved using available email integrations.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 645,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: a19ab098-63a2-4411-8555-4702efde181b
+    type: regular
+    task:
+      id: a19ab098-63a2-4411-8555-4702efde181b
+      version: -1
+      name: Display email headers in layout
+      description: Fills the "Email Headers" grid field in the incident layout with
+        the email attachment's headers.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      columns:
+        simple: headername,headervalue
+      context_path:
+        simple: Email.HeadersMap
+      grid_id:
+        simple: emailheaders
+      keys: {}
+      overwrite:
+        simple: "true"
+      sort_by:
+        simple: headername
+      unpack_nested_elements:
+        simple: "true"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 392db71e-012e-4790-8e1e-b17400e369aa
+    type: title
+    task:
+      id: 392db71e-012e-4790-8e1e-b17400e369aa
+      version: -1
+      name: incident Layout Display
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "1_2_no": 0.28,
-      "1_3_yes": 0.3
+      "1_3_yes": 0.3,
+      "20_21_yes": 0.41
     },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 810,
+        "height": 1075,
+        "width": 1580,
         "x": 50,
         "y": 50
       }
@@ -691,5 +801,6 @@ outputs:
 - contextPath: File
   description: The File object
   type: unknown
+fromversion: 4.5.0
 tests:
-  - Phishing - Core - Test
+- Phishing - Core - Test

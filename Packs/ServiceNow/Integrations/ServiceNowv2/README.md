@@ -39,8 +39,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | sysparm_query | The query to use when fetching incidents | False |
 | fetch_limit | How many incidents to fetch each time | False |
 | fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
-| timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\)
-This is how the filter is applied to the query: “ORDERBYopened\_at^opened\_at&gt;\[Last Run\]. To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
+| timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\) This is how the filter is applied to the query: "ORDERBYopened\_at^opened\_at&gt;\[Last Run\]". To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
 

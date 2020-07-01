@@ -14,13 +14,15 @@ class TestHelperFunctions:
     @pytest.mark.get_edl_ioc_values
     def test_get_edl_ioc_values_1(self, mocker):
         """Test on_demand"""
-        from EDL import get_edl_ioc_values
+        from EDL import get_edl_ioc_values, RequestArguments
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
-            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
+            integration_context = {"last_output": iocs_text_dict}
+            request_args = RequestArguments(query='', limit=50, offset=0)
             ioc_list = get_edl_ioc_values(
                 on_demand=True,
-                limit=50
+                request_args=request_args,
+                integration_context=integration_context
             )
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
@@ -33,12 +35,13 @@ class TestHelperFunctions:
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
-            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
             mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            request_args = edl.RequestArguments(query='', limit=50, offset=0)
             ioc_list = edl.get_edl_ioc_values(
                 on_demand=False,
-                limit=50,
+                request_args=request_args,
+                integration_context=iocs_text_dict,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -53,11 +56,12 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
             mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
-            mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
+            request_args = edl.RequestArguments(query='', limit=50, offset=0)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
             ioc_list = edl.get_edl_ioc_values(
                 on_demand=False,
-                limit=50,
+                request_args=request_args,
+                integration_context=iocs_text_dict,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -118,15 +122,20 @@ class TestHelperFunctions:
 
     @pytest.mark.refresh_edl_context
     def test_refresh_edl_context_1(self, mocker):
-        """Test out_format=text"""
+        """Sanity"""
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            edl_vals = edl.refresh_edl_context(indicator_query='')
+            request_args = edl.RequestArguments(query='', limit=38, url_port_stripping=True)
+            edl_vals = edl.refresh_edl_context(request_args)
             for ioc in iocs_json:
                 ip = ioc.get('value')
-                assert ip in edl_vals
+                stripped_ip = edl._PORT_REMOVAL.sub(edl._URL_WITHOUT_PORT, ip)
+                if stripped_ip != ip:
+                    assert stripped_ip.replace('https://', '') in edl_vals
+                else:
+                    assert ip in edl_vals
 
     @pytest.mark.find_indicators_to_limit
     def test_find_indicators_to_limit_1(self, mocker):
@@ -140,75 +149,18 @@ class TestHelperFunctions:
             assert len(edl_vals) == limit
 
     @pytest.mark.find_indicators_to_limit
-    def test_find_indicators_to_limit_2(self, mocker):
-        """Test url port stripping"""
+    def test_find_indicators_to_limit_and_offset_1(self, mocker):
+        """Test find indicators limit and offset"""
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 50
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            # disable-secrets-detection-start
-            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
-                                                    panos_compatible=False, url_port_stripping=True)
-            # disable-secrets-detection-end
-            indicator_vals = [item.get('value', '') for item in edl_vals]
-            assert 'https://www.example.com/path/to/something.html' in indicator_vals
-            assert 'https://www.example.com:9999/path/to/something.html' not in indicator_vals
-
-    @pytest.mark.find_indicators_to_limit
-    def test_find_indicators_to_limit_3(self, mocker):
-        """Test panos compatibility and url port stripping together"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 50
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            # disable-secrets-detection-start
-            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
-                                                    panos_compatible=True, url_port_stripping=True)
-            # disable-secrets-detection-end
-            indicator_vals = [item.get('value', '') for item in edl_vals]
-            # should have no protocol and no port
-            assert 'www.example.com/path/to/something.html' in indicator_vals
-            assert 'https://www.example.com:9999/path/to/something.html' not in indicator_vals
-
-    @pytest.mark.find_indicators_to_limit
-    def test_find_indicators_to_limit_4(self, mocker):
-        """Test panos compatibility for domain with wildcard/text mixed field"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 50
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            # disable-secrets-detection-start
-            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
-                                                    panos_compatible=True, url_port_stripping=True)
-            # disable-secrets-detection-end
-            indicator_vals = [item.get('value', '') for item in edl_vals]
-
-            # reformatting `*-blah.demisto.com` to be panos compatible should output two indicators,
-            # `*.demisto.com` and `demisto.com`
-            assert len(indicator_vals) == len(iocs_dict.get('iocs', [])) + 1
-            assert '*.demisto.com' in indicator_vals
-            assert 'demisto.com' in indicator_vals  # lgtm [py/incomplete-url-substring-sanitization]
-            assert '*-blah.demisto.com' not in indicator_vals
-
-    @pytest.mark.find_indicators_to_limit
-    def test_find_indicators_to_limit_5(self, mocker):
-        """Test panos compatibility and url port stripping both False"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 50
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            # disable-secrets-detection-start
-            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
-                                                    panos_compatible=False, url_port_stripping=False)
-            # disable-secrets-detection-end
-            indicator_vals = [item.get('value', '') for item in edl_vals]
-            # should have protocol and port
-            assert 'www.example.com/path/to/something.html' not in indicator_vals
-            assert 'https://www.example.com:9999/path/to/something.html' in indicator_vals
+            iocs_json = json.loads(iocs_json_f.read())
+            limit = 30
+            offset = 1
+            mocker.patch.object(edl, 'find_indicators_to_limit_loop', return_value=(iocs_json, 1))
+            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit, offset=offset)
+            assert len(edl_vals) == limit
+            # check that the first value is the second on the list
+            assert edl_vals[0].get('value') == '212.115.110.19'
 
     @pytest.mark.find_indicators_to_limit_loop
     def test_find_indicators_to_limit_loop_1(self, mocker):
@@ -234,18 +186,32 @@ class TestHelperFunctions:
                                                                  last_found_len=IOC_RES_LEN)
             assert nxt_pg == 1  # assert entered into loop
 
-    @pytest.mark.create_values_for_returned_dict
-    def test_create_values_for_returned_dict_1(self):
-        """Test TEXT out"""
-        from EDL import create_values_for_returned_dict, EDL_VALUES_KEY
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+    @pytest.mark.validate_basic_authentication
+    def test_create_values_for_returned_dict(self):
+        from EDL import create_values_for_returned_dict, EDL_VALUES_KEY, RequestArguments
+        with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            result_dict, _ = create_values_for_returned_dict(iocs_json)
-            text_out = result_dict.get(EDL_VALUES_KEY)
-            with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_txt_f:
-                iocs_txt_json = json.load(iocs_txt_f)
-                for line in text_out.split('\n'):
-                    assert line in iocs_txt_json
+
+            # strips port numbers
+            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
+            returned_dict, num_of_indicators = create_values_for_returned_dict(iocs_json, request_args)
+            returned_output = returned_dict.get(EDL_VALUES_KEY)
+            assert returned_output == "1.2.3.4/wget\nwww.demisto.com/cool"
+            assert num_of_indicators == 2
+
+            # should ignore indicators with port numbers
+            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=False)
+            returned_dict, num_of_indicators = create_values_for_returned_dict(iocs_json, request_args)
+            returned_output = returned_dict.get(EDL_VALUES_KEY)
+            assert returned_output == 'www.demisto.com/cool'
+            assert num_of_indicators == 1
+
+            # should not ignore indicators with '*' in them
+            request_args = RequestArguments(query='', drop_invalids=False, url_port_stripping=False)
+            returned_dict, num_of_indicators = create_values_for_returned_dict(iocs_json, request_args)
+            returned_output = returned_dict.get(EDL_VALUES_KEY)
+            assert returned_output == 'www.demisto.com/cool\nwww.demisto.com/*'
+            assert num_of_indicators == 2
 
     @pytest.mark.validate_basic_authentication
     def test_validate_basic_authentication(self):

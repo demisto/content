@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.5.2] - 2020-05-26
+Fixed an issue where incidents with numbered keys raised an error.
+
 ## [20.5.0] - 2020-05-12
 -
 

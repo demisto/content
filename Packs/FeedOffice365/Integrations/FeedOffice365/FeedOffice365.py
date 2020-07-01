@@ -45,14 +45,14 @@ class Client(BaseClient):
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
 
-    def __init__(self, urls_list: list, insecure: bool = False, proxy: bool = False):
+    def __init__(self, urls_list: list, insecure: bool = False):
         """
         Implements class for Office 365 feeds.
         :param urls_list: List of url, regions and service of each service.
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-        :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
-        super().__init__(base_url=urls_list, verify=not insecure, proxy=proxy)
+        super().__init__(base_url=urls_list, verify=not insecure)
+        self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -68,7 +68,8 @@ class Client(BaseClient):
             try:
                 response = requests.get(
                     url=feed_url,
-                    verify=self._verify
+                    verify=self._verify,
+                    proxies=self._proxies,
                 )
                 response.raise_for_status()
                 data = response.json()
@@ -230,13 +231,12 @@ def main():
     services_list = argToList(demisto.params().get('services'))
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
     insecure = demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(urls_list, insecure, proxy)
+        client = Client(urls_list, insecure)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'office365-get-indicators': get_indicators_command

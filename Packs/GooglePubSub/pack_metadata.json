@@ -1,12 +1,12 @@
 {
     "name": "Google Cloud Pub / Sub",
     "description": "Google Cloud Pub / Sub is a fully-managed real-time messaging service that allows you to send and receive messages between independent applications.",
-    "support": "demisto",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2020-04-01T11:06:27Z",
     "categories": [
         "Messaging"
     ],
@@ -15,13 +15,6 @@
         "pub",
         "sub"
     ],
-    "created": "2020-04-01T11:06:27Z",
-    "updated": "2020-04-01T11:06:27Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
     "useCases": [],
-    "keywords": [],
-    "price": "0",
-    "dependencies": {}
+    "keywords": []
 }

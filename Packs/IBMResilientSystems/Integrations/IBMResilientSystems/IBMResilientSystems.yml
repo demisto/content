@@ -31,6 +31,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
+  name: fetch_time
+  defaultvalue: ""
+  type: 0
+  required: false
 description: Case management that enables visibility across your tools for continual
   IR improvement
 display: IBM Resilient Systems
@@ -580,7 +585,7 @@ script:
     - contextPath: Resilient.Incidents.Tasks.Status
       description: Task status (Open/Closed)
       type: string
-  dockerimage: demisto/resilient
+  dockerimage: demisto/resilient:1.0.0.7764
   feed: false
   isfetch: true
   longRunning: false

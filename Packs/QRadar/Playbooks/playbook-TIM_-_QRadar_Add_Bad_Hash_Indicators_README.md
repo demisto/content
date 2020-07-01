@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Builtin
+* QRadar
 
 ### Scripts
 This playbook does not use any scripts.
@@ -19,12 +19,12 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| QRadarMd5ReferenceSetName | The name of the QRadar Md5 reference set to insert the data in to. |  |  | Optional |
-| QRadarSha1ReferenceSetName | The name of the QRadar Sha1 reference set to insert the data in to. |  |  | Optional |
-| QRadarSha256ReferenceSetName | The name of the QRadar Sha256 reference set to insert the data in to. | Demisto Demo Sha256 |  | Optional |
-|  |  |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| QRadarMd5ReferenceSetName | The name of the QRadar Md5 reference set to insert the data in to. |  | Optional |
+| QRadarSha1ReferenceSetName | The name of the QRadar Sha1 reference set to insert the data in to. |  | Optional |
+| QRadarSha256ReferenceSetName | The name of the QRadar Sha256 reference set to insert the data in to. | Demisto Demo Sha256 | Optional |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 
 ## Playbook Outputs
 ---

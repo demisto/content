@@ -8,7 +8,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * TIM - QRadar Add Domain Indicators
 
 ### Integrations
-This playbook does not use any integrations.
+* ArcSight ESM v2
+* QRadar
 
 ### Scripts
 This playbook does not use any scripts.
@@ -19,9 +20,9 @@ This playbook does not use any commands.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-|  |  |  |  | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 
 ## Playbook Outputs
 ---

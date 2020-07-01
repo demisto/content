@@ -1,6 +1,3 @@
-## Overview
----
-
 Analyze suspicious hashes, URLs, domains and IP addresses
 This integration was integrated and tested with version 1.0.0-oas3 of Maltiverse
 
@@ -248,12 +245,3 @@ For additional information please visit: https://whatis.maltiverse.com/
   Please see https://maltiverse.com/plans for more information about the different plans.
 - URL command: When running the !url command, an URL may be followed by a '/' at the end. Maltiverse requires this 
   '/' but it might cause the indicator to not show in the war room. 
-
-## Troubleshooting
----
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
-* 'The given IP was invalid'
-* 'Command not found.'
-* f'Failed to execute {command} command. Error: {e}'

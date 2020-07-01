@@ -31,7 +31,7 @@
 <h3>Fetched incidents data:</h3>
 <p>This integration does not fetch incidents </p>
 <h3>
-<a id="user-content-top-2-3-use-cases" class="anchor" href="https://github.com/demisto/server/wiki/Document-structure:-Integrations#top-2-3-use-cases" aria-hidden="true"></a>Use-cases:</h3>
+Use-cases:</h3>
 <ul>
 <li>
 <strong>Assigning an analyst based on the current on-call schedule</strong><br>When an incident enters Demisto, a playbook task can get the current on-call analyst, based on the on-call schedule.<br>This can be done by using the opsgenie-get-on-call command, using the SOC analysts rotation schedule in OpsGenie.</li>
@@ -161,8 +161,7 @@
 </tr>
 </tbody>
 </table>
-<h3>
-<a id="user-content-troubleshooting" class="anchor" href="https://github.com/demisto/server/wiki/Document-structure:-Integrations#troubleshooting" aria-hidden="true"></a><br>Troubleshooting</h3>
+<h3>Troubleshooting</h3>
 <ul>
 <li>Make sure to have the web-proxy open to the OpsGenie API URL (<a href="https://api.opsgenie.com/v2">https://api.opsgenie.com/v2</a>)</li>
 <li>Make sure API Key is enabled in the OpsGenie interface, and it is copies correctly</li>

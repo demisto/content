@@ -3,13 +3,12 @@
 	"associatedTypes": [
 		"Code42 Security Alert"
 	],
-	"associatedTypes": null,
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "exfiltratedfiles",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "",
 	"editForm": true,
