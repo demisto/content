@@ -3,7 +3,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import urllib3
-import requests
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,7 +21,7 @@ class Client(BaseClient):
 
     auth_token = ''
 
-    def login(self, username, password, api_version='2', auth_type='cyberark'):
+    def login(self, username, password, auth_type='cyberark'):
         body = {
             "username": username,
             "password": password,
@@ -164,8 +163,8 @@ def add_account(client, args):
                                       automatic_management_enabled=args.get('automatic-management-enabled'),
                                       manual_management_reason=args.get('manual-management-reason'),
                                       remote_machines=args.get('remote-machines'),
-                                      access_restricted_to_remote_machines=
-                                      args.get('access-restricted-to-remote-machines'))
+                                      access_restricted_to_remote_machines=args.get('access-restricted-'
+                                                                                    'to-remote-machines'))
     if raw_response:
         raws.append(raw_response)
         cyberark_ec.append({
@@ -196,7 +195,6 @@ def main():
     username = params.get('credentials', {}).get('identifier', '')
     password = params.get('credentials', {}).get('password', '')
     base_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
-    api_verion = params.get('apiVersion')
     auth_type = params.get('authType')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -211,7 +209,7 @@ def main():
             ok_codes=(200, 201, 204),
             headers={'accept': "application/json"}
         )
-        client.login(username=username, password=password, api_version=api_verion, auth_type=auth_type)
+        client.login(username=username, password=password, auth_type=auth_type)
 
         if demisto.command() == 'test-module':
             result = test_module(client)
@@ -224,7 +222,6 @@ def main():
         elif demisto.command() == 'cyberark-add-account':
             result = add_account(client, args=demisto.args())
             return_outputs(*result)
-
 
     except Exception as e:
         return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))

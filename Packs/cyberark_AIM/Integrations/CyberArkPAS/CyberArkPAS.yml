@@ -20,12 +20,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '2'
-  display: CyberArk PAS API Version
-  hidden: false
-  name: apiVersion
-  required: false
-  type: 0
 - defaultvalue: cyberark
   display: Authentication Type
   hidden: false
@@ -167,6 +161,7 @@ script:
     name: cyberark-add-account
     outputs:
     - contextPath: CyberArk.Accounts
+      description: CyberArk Accounts
       type: Unknown
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
