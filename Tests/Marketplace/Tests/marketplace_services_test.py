@@ -565,7 +565,6 @@ class TestSetDependencies:
         from Tests.Marketplace.marketplace_services import Pack
 
         metadata = self.get_pack_metadata()
-        
         generated_dependencies = {
             'ImpossibleTraveler': {
                 'dependencies': {
