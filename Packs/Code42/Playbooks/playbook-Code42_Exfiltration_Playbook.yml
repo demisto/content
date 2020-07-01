@@ -8,15 +8,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ab4c0d6a-996e-415c-8f44-8a76d279ca15
+    taskid: 11508213-8fce-4682-8536-65ed426d2664
     type: start
     task:
-      id: ab4c0d6a-996e-415c-8f44-8a76d279ca15
+      id: 11508213-8fce-4682-8536-65ed426d2664
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -35,16 +34,16 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: e588a1bf-ad9e-4755-8e55-efba11ad1aff
+    taskid: 77e2b71f-78fb-467e-8e87-416fd03967d7
     type: title
     task:
-      id: e588a1bf-ad9e-4755-8e55-efba11ad1aff
+      id: 77e2b71f-78fb-467e-8e87-416fd03967d7
       version: -1
       name: Start Remediation Timer
+      description: Starts a timer to track how long it takes to resolve the alert.
       type: title
       iscommand: false
       brand: ""
-      description: "Starts a timer to track how long it takes to resolve the alert."
     nexttasks:
       '#none#':
       - "25"
@@ -66,16 +65,16 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: e0da957a-46bb-44b9-8ea6-408e043cae88
+    taskid: 64d02f6f-5a06-40f8-8552-c98b4b959286
     type: condition
     task:
-      id: e0da957a-46bb-44b9-8ea6-408e043cae88
+      id: 64d02f6f-5a06-40f8-8552-c98b4b959286
       version: -1
       name: Review Evidence for Malicious Behavior
+      description: Searches the related files for malicious behavior.
       type: condition
       iscommand: false
       brand: ""
-      description: "Searches the related files for malicious behavior."
     nexttasks:
       '#default#':
       - "7"
@@ -96,16 +95,15 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: b6a7b214-a52b-48cc-8c0b-bc966c11ff90
+    taskid: 617588ed-c8d8-4b5a-87ed-ed84204058fc
     type: title
     task:
-      id: b6a7b214-a52b-48cc-8c0b-bc966c11ff90
+      id: 617588ed-c8d8-4b5a-87ed-ed84204058fc
       version: -1
       name: Malicious Behavior Determined
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "19"
@@ -126,16 +124,15 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 2c7eb57c-ee9b-4059-8b73-34bdb9963ca0
+    taskid: 7187278b-d996-465a-8c9a-3ad518285299
     type: title
     task:
-      id: 2c7eb57c-ee9b-4059-8b73-34bdb9963ca0
+      id: 7187278b-d996-465a-8c9a-3ad518285299
       version: -1
       name: Benign Behavior Determined
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -154,17 +151,16 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: b8a80acb-a2f7-4899-88e7-16382828b9b4
+    taskid: f37b26ac-38c5-40c6-800d-4cfc9692c1a8
     type: regular
     task:
-      id: b8a80acb-a2f7-4899-88e7-16382828b9b4
+      id: f37b26ac-38c5-40c6-800d-4cfc9692c1a8
       version: -1
       name: Resolve Code42 Alert
       script: Code42|||code42-alert-resolve
       type: regular
       iscommand: true
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "26"
@@ -186,16 +182,15 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 1905e906-499f-4c14-8ec1-9c02eb6ef22a
+    taskid: 16012eb4-0937-44b0-833b-560ec34de44d
     type: title
     task:
-      id: 1905e906-499f-4c14-8ec1-9c02eb6ef22a
+      id: 16012eb4-0937-44b0-833b-560ec34de44d
       version: -1
       name: Stop Remediation Timer
       type: title
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "8"
@@ -216,16 +211,15 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 2b0168b7-3d35-470d-8902-5517dc8e9164
+    taskid: 51669a43-475a-44d1-81fe-20207c26598e
     type: title
     task:
-      id: 2b0168b7-3d35-470d-8902-5517dc8e9164
+      id: 51669a43-475a-44d1-81fe-20207c26598e
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
@@ -241,17 +235,16 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 99490d9a-6acf-41de-8d77-1266f5d63d7f
+    taskid: d03df5b6-28c0-4df7-85ae-aa6b74d2b5dd
     type: regular
     task:
-      id: 99490d9a-6acf-41de-8d77-1266f5d63d7f
+      id: d03df5b6-28c0-4df7-85ae-aa6b74d2b5dd
       version: -1
       name: Locate CrowdStrike Host
       script: CrowdstrikeFalcon|||cs-falcon-search-device
       type: regular
       iscommand: true
       brand: CrowdstrikeFalcon
-      description: ""
     nexttasks:
       '#none#':
       - "31"
@@ -283,16 +276,15 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 9bfcad2c-62a7-4c59-8140-1e5ba45199bd
+    taskid: 434d094a-f26e-4e94-81df-fa5227beacf7
     type: condition
     task:
-      id: 9bfcad2c-62a7-4c59-8140-1e5ba45199bd
+      id: 434d094a-f26e-4e94-81df-fa5227beacf7
       version: -1
       name: Is Jira Enabled?
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -340,17 +332,16 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 47b1400e-6d83-483c-875f-7cac4b335481
+    taskid: e109fde4-4b66-4e1f-8734-fadd49886a5e
     type: regular
     task:
-      id: 47b1400e-6d83-483c-875f-7cac4b335481
+      id: e109fde4-4b66-4e1f-8734-fadd49886a5e
       version: -1
       name: Create Jira Incident Ticket
       script: jira-v2|||jira-create-issue
       type: regular
       iscommand: true
       brand: jira-v2
-      description: ""
     nexttasks:
       '#none#':
       - "30"
@@ -387,16 +378,15 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 86aaec3f-7f38-4d4d-800b-406ca59605bd
+    taskid: f04b92f6-4e78-460e-8aab-6445d3c500c9
     type: condition
     task:
-      id: 86aaec3f-7f38-4d4d-800b-406ca59605bd
+      id: f04b92f6-4e78-460e-8aab-6445d3c500c9
       version: -1
       name: Can host be contained?
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -448,16 +438,15 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: ce5fa797-bd44-48ba-8ebe-62cbe6f986e5
+    taskid: 278d6243-3d8c-4d31-8491-b6168ebffb99
     type: condition
     task:
-      id: ce5fa797-bd44-48ba-8ebe-62cbe6f986e5
+      id: 278d6243-3d8c-4d31-8491-b6168ebffb99
       version: -1
       name: Does Manager Email Exist?
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -486,17 +475,16 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 9bccb9d7-118b-4a63-8e1d-288a4fe993a2
+    taskid: eccca7ff-aaa7-4864-8345-fc65108a2230
     type: playbook
     task:
-      id: 9bccb9d7-118b-4a63-8e1d-288a4fe993a2
+      id: eccca7ff-aaa7-4864-8345-fc65108a2230
       version: -1
       name: Active Directory - Get User Manager Details
       playbookName: Active Directory - Get User Manager Details
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -524,17 +512,16 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 335b248d-7a04-4514-8890-57e3913dcdfa
+    taskid: 5db26724-aad0-4316-82f2-c2a6635d5200
     type: regular
     task:
-      id: 335b248d-7a04-4514-8890-57e3913dcdfa
+      id: 5db26724-aad0-4316-82f2-c2a6635d5200
       version: -1
       name: Close Incident
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
-      description: ""
     nexttasks:
       '#none#':
       - "10"
@@ -561,16 +548,15 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 10331857-eb12-46fa-8f1d-6f6239d4ac61
+    taskid: ab9f4c32-a0e4-41e9-8228-22724cecae76
     type: condition
     task:
-      id: 10331857-eb12-46fa-8f1d-6f6239d4ac61
+      id: ab9f4c32-a0e4-41e9-8228-22724cecae76
       version: -1
       name: Confirm Network Contain
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -591,17 +577,16 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 7387a45c-92d3-44ca-8f63-f66ec2b6ebaa
+    taskid: 136c085e-aa37-4bc5-807c-5b7ff981c140
     type: regular
     task:
-      id: 7387a45c-92d3-44ca-8f63-f66ec2b6ebaa
+      id: 136c085e-aa37-4bc5-807c-5b7ff981c140
       version: -1
       name: Send email to manager
       script: '|||send-mail'
       type: regular
       iscommand: true
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "30"
@@ -653,16 +638,15 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: ea60127b-366c-4a94-85db-339b32ca66c5
+    taskid: 877d11e9-c080-4db3-87ec-76bab3b69cd8
     type: regular
     task:
-      id: ea60127b-366c-4a94-85db-339b32ca66c5
+      id: 877d11e9-c080-4db3-87ec-76bab3b69cd8
       version: -1
       name: Confirm Remediation Is Complete
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -681,16 +665,15 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: a7815436-cc18-4236-8833-318204036b2a
+    taskid: 4f1b2a83-bf99-4f7b-8ac1-58fff1dd8e73
     type: condition
     task:
-      id: a7815436-cc18-4236-8833-318204036b2a
+      id: 4f1b2a83-bf99-4f7b-8ac1-58fff1dd8e73
       version: -1
       name: Determine if network contain should be bypassed based on host count
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "27"
@@ -732,16 +715,15 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 9e908ce6-7623-4a06-865b-3725d5bab3e1
+    taskid: d515a4bf-42b6-4aa4-89ea-33125635ca98
     type: regular
     task:
-      id: 9e908ce6-7623-4a06-865b-3725d5bab3e1
+      id: d515a4bf-42b6-4aa4-89ea-33125635ca98
       version: -1
       name: CrowdStrike Network Contain
       script: '|||cs-falcon-contain-host'
       type: regular
       iscommand: true
-      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -765,15 +747,14 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: df73e338-6ae3-4d35-8d01-76e97fc62866
+    taskid: 44c4cdc8-8740-456e-8559-3e3c35286d83
     type: condition
     task:
-      id: df73e338-6ae3-4d35-8d01-76e97fc62866
+      id: 44c4cdc8-8740-456e-8559-3e3c35286d83
       version: -1
       name: Is email integration enabled?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -867,15 +848,12 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: e079cdf0-deb2-41a6-8b02-9e670600835b
+    taskid: 8ef0e565-aa9b-4866-8cae-ec8dcc9a15c9
     type: playbook
     task:
-      id: e079cdf0-deb2-41a6-8b02-9e670600835b
+      id: 8ef0e565-aa9b-4866-8cae-ec8dcc9a15c9
       version: -1
       name: Code42 File Download
-      description: This playbook searches for files via Code42 security events by
-        either MD5 or SHA256 hash. The data is output to the Code42.SecurityData context
-        for use.
       playbookName: Code42 File Download
       type: playbook
       iscommand: false
@@ -887,8 +865,9 @@ tasks:
       MD5:
         complex:
           root: incident
-          accessor: code42eventid
+          accessor: code42fileevents
           transformers:
+          - operator: uniq
           - operator: getField
             args:
               field:
@@ -899,6 +878,7 @@ tasks:
           root: incident
           accessor: code42fileevents
           transformers:
+          - operator: uniq
           - operator: getField
             args:
               field:
@@ -966,7 +946,6 @@ inputs:
   required: false
   description: URL of Demisto instance for emails.
   playbookInputQuery: null
-fromversion: "5.0.0"
 tests:
 - No Test
 outputs: []
