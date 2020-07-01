@@ -1214,7 +1214,8 @@
             "timeout": 500
         },
         {
-            "playbookID": "process_email_-_generic_-_test",
+            "playbookID": "Process Email - Generic - Test - Incident Starter",
+            "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240
         },
@@ -1889,26 +1890,26 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 600,
+            "playbookID": "Phishing v2 - Test - Incident Starter",
+            "fromversion": "6.0.0",
+            "timeout": 1200,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Have I Been Pwned? V2",
                 "Demisto REST API",
-                "Palo Alto Minemeld",
                 "Rasterize"
             ]
         },
-        {
-            "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 600,
+                {
+            "playbookID": "Phishing - Core - Test - Incident Starter",
+            "fromversion": "6.0.0",
+            "timeout": 1700,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Have I Been Pwned? V2",
                 "Demisto REST API",
-                "Palo Alto Minemeld",
                 "Rasterize"
             ]
         },
@@ -2051,17 +2052,6 @@
             "integrations": ["epo", "McAfee Active Response"],
             "playbookID": "Endpoint data collection test",
             "timeout": 500
-        },
-        {
-            "playbookID": "Phishing - Core - Test",
-            "integrations": [
-                "EWS Mail Sender",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ],
-            "fromversion": "4.5.0",
-            "timeout": 600
         },
         {"integrations": ["epo", "McAfee Active Response"],
             "playbookID": "MAR - Endpoint data collection test",
@@ -2921,6 +2911,9 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
+        "Process Email - Generic - Test - Actual Incident": "Should never run as standalone. Issue #25947",
+        "Phishing v2 - Test - Actual Incident": "Should never run as standalone. Issue #25947",
+        "Phishing - Core - Test - Actual Incident": "Should never run as standalone. Issue #25947",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "PAN-OS Query Logs For Indicators Test": "Issue #23505",
