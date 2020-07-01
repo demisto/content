@@ -211,7 +211,7 @@ tasks:
     - incidentfield: PCAP Number Of Streams
       output:
         simple: ${PCAPResults.StreamCount}
-    - incidentfield: File Name
+    - incidentfield: PCAP File Name
       output:
         complex:
           root: File
@@ -226,7 +226,7 @@ tasks:
                   simple: inputs.PcapFileEntryID
                 iscontext: true
           accessor: Name
-    - incidentfield: File Size
+    - incidentfield: PCAP File Size
       output:
         complex:
           root: File

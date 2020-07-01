@@ -146,7 +146,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "filename",
+								"fieldId": "pcapfilename",
 								"height": 53,
 								"id": "a1daac90-b469-11ea-9b75-4d808d055f05",
 								"index": 3,
@@ -173,7 +173,7 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "filesize",
+								"fieldId": "pcapfilesize",
 								"height": 22,
 								"id": "a76a9fd0-b469-11ea-9b75-4d808d055f05",
 								"index": 2,
