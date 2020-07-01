@@ -79,7 +79,7 @@ configuration:
   name: fetch_full_feed
   required: false
   type: 8
-- additionalinfo: Limit the number of indicators that can be fetched for every fetch.
+- additionalinfo: The maximum number of indicators that can be fetched per fetch.
     If this field is left empty, there will be no limit on the number of indicators
     fetched.
   display: Max Indicators Per Fetch (disabled for Full Feed Fetch)
@@ -95,7 +95,7 @@ configuration:
   name: initial_interval
   required: false
   type: 0
-- additionalinfo: "TAXII 2 filter arguments. Comma separated values e.g.: `added_after=<date>,revoked=true`."
+- additionalinfo: "TAXII 2 filter arguments. Comma-separated values, e.g.: `added_after=<date>,revoked=true`."
   display: Filter Arguments
   hidden: false
   name: filter_args
@@ -131,7 +131,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Comma separated list of tags, that'll be added to indicators created
+- additionalinfo: Comma-separated list of tags, which will be added to indicators created
     by this feed.
   display: Tags
   hidden: false
@@ -157,13 +157,13 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Max amount of indicators to fetch
+      description: Maximum number of indicators to fetch.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Fetch only indicators that were added to the server after the given  time.
+      description: Fetch only indicators that were added to the server after the given time.
         Please provide a <number> and <time unit> of type minute/hour/day. For example,
         1 minute, 12 hour, 24 days.
       isArray: false
@@ -171,14 +171,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'TAXII filter arguments. Comma separated values e.g.: "added_after=<date>,revoked=true".'
+      description: 'TAXII filter arguments. Comma-separated values, e.g.: "added_after=<date>,revoked=true".'
       isArray: false
       name: filter_args
       required: false
       secret: false
     deprecated: false
-    description: Allows you to test your feed, and to make sure you can fetch indicators
-      successfuly .
+    description: Allows you to test your feed and to make sure you can fetch indicators
+      successfuly.
     execution: false
     name: taxii2-get-indicators
     outputs:
@@ -192,7 +192,7 @@ script:
       description: Indicator rawJSON.
       type: String
   - deprecated: false
-    description: Get the list of collections from the discovery service.
+    description: Gets the list of collections from the discovery service.
     execution: false
     name: taxii2-get-collections
     outputs:
