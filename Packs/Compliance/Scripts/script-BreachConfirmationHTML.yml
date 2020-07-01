@@ -34,3 +34,5 @@ comment: ''
 tags:
 - dynamic-section
 type: python
+tests:
+- no tests
