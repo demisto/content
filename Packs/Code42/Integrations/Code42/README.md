@@ -730,7 +730,7 @@ Adds a Code42 user to a legal hold matter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | The username of the user to add to the given legal hold matter. | Required | 
-| matterid | The ID of the legal hold matter to which to which the user will be added. | Required | 
+| mattername | The name of the legal hold matter to which to which the user will be added. | Required | 
 
 
 #### Context Output
@@ -744,7 +744,7 @@ Adds a Code42 user to a legal hold matter.
 
 
 #### Command Example
-```!code42-legalhold-add-user username="partner.demisto@example.com" matterid="932880202064992021"```
+```!code42-legalhold-add-user username="partner.demisto@example.com" mattername="test"```
 
 #### Context Example
 ```

@@ -13,4 +13,4 @@
 !code42-user-unblock username="partner.demisto@example.com"
 !code42-user-deactivate username="partner.demisto@example.com"
 !code42-user-reactivate username="partner.demisto@example.com"
-!code42-legalhold-add-user username="partner.demisto@example.com" matterid="932880202064992021"
+!code42-legalhold-add-user username="partner.demisto@example.com" mattername="test"

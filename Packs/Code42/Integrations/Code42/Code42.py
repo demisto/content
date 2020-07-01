@@ -293,8 +293,17 @@ class Code42Client(BaseClient):
         self._get_sdk().users.reactivate(user_id)
         return user_id
 
-    def add_user_to_legal_hold_matter(self, username, matter_id):
+    def get_legal_hold_matter(self, matter_name):
+        matter_pages = self._get_sdk().legalhold.get_all_matters(name=matter_name)
+        for matter_page in matter_pages:
+            matters = matter_page["legalHolds"]
+            for matter in matters:
+                return matter
+        raise Code42LegalHoldMatterNotFoundError(matter_name)
+
+    def add_user_to_legal_hold_matter(self, username, matter_name):
         user_uid = self._get_user_id(username)
+        matter_id = self._get_legal_hold_matter_id(matter_name)
         response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
         return json.loads(response.text)
 
@@ -332,6 +341,11 @@ class Code42Client(BaseClient):
             return org_uid
         raise Code42OrgNotFoundError(org_name)
 
+    def _get_legal_hold_matter_id(self, matter_name):
+        matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
+        return matter_id
+
+
 
 class Code42AlertNotFoundError(Exception):
     def __init__(self, alert_id):
@@ -351,6 +365,13 @@ class Code42OrgNotFoundError(Exception):
     def __init__(self, org_name):
         super(Code42OrgNotFoundError, self).__init__(
             "No organization found with name {0}.".format(org_name)
+        )
+
+
+class Code42LegalHoldMatterNotFoundError(Exception):
+    def __init__(self, matter_name):
+        super(Code42LegalHoldMatterNotFoundError, self).__init__(
+            "No legal hold matter found with name {0}.".format(matter_name)
         )
 
 

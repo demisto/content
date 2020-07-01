@@ -604,9 +604,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the legal hold matter to which to which the user will be added.
+      description: The name of the legal hold matter to which to which the user will be added.
       isArray: false
-      name: matterid
+      name: mattername
       required: true
       secret: false
     deprecated: false

@@ -3,7 +3,7 @@ import pytest
 from requests import Response
 from py42.sdk import SDKClient
 from py42.response import Py42Response
-from Code42 import (
+from .Code42 import (
     Code42Client,
     build_query_payload,
     map_observation_to_security_query,
@@ -26,6 +26,7 @@ from Code42 import (
     user_unblock_command,
     user_deactivate_command,
     user_reactivate_command,
+    legal_hold_add_user_command,
     fetch_incidents,
 )
 import time
@@ -69,8 +70,8 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"HOSTNAME",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
-            "privateIpAddresses":["172.20.128.36","127.0.0.1"],
+            "publicIpAddress":"127.0.0.1",
+            "privateIpAddresses":["127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
             "actor":null,
@@ -133,7 +134,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"TEST'S MAC",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
+            "publicIpAddress":"127.0.0.1",
             "privateIpAddresses":["127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
@@ -197,7 +198,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
             "deviceUserName":"test@example.com",
             "osHostName":"Test's Windows",
             "domainName":"host.docker.internal",
-            "publicIpAddress":"162.222.47.183",
+            "publicIpAddress":"127.0.0.1",
             "privateIpAddresses":["0:0:0:0:0:0:0:1","127.0.0.1"],
             "deviceUid":"935873453596901068",
             "userUid":"912098363086307495",
@@ -247,7 +248,7 @@ MOCK_SECURITY_EVENT_RESPONSE = """
 MOCK_CODE42_EVENT_CONTEXT = [
     {
         "ApplicationTabURL": "example.com",
-        "DevicePrivateIPAddress": ["172.20.128.36", "127.0.0.1"],
+        "DevicePrivateIPAddress": ["127.0.0.1"],
         "DeviceUsername": "test@example.com",
         "EndpointID": "935873453596901068",
         "EventID": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
@@ -1074,6 +1075,8 @@ MOCK_CREATE_USER_RESPONSE = """
 }
 """
 
+
+MOCK_ADD_USER_TO_LEGAL_HOLD_RESPONSE = ""
 
 _TEST_USER_ID = "123412341234123412"  # value found in GET_USER_RESPONSE
 _TEST_USERNAME = "user1@example.com"
