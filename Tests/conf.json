@@ -3167,6 +3167,7 @@
         "GoogleKubernetesEngine": "SDK"
     },
     "parallel_integrations": [
+        "SNDBOX",
         "Whois",
         "Rasterize",
         "CVE Search v2",
