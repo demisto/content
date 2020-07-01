@@ -618,8 +618,8 @@ class Pack(object):
         current_working_dir = os.getcwd()
         os.chdir(extract_destination_path)
         # zip_and_encrypt_script_path = os.path.join(extract_destination_path, 'zipAndEncryptDirectory')
-        output_file = zip_pack_path
-        full_command = f'./encryptor ./{pack_name}.zip {output_file} "{encryption_key}"'
+        output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+        full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
         subprocess.call(full_command, shell=True)
         os.chdir(current_working_dir)
 
@@ -630,7 +630,7 @@ class Pack(object):
             bool: whether the operation succeeded.
             str: full path to created pack zip.
         """
-        zip_pack_path = f"{self._pack_path}.zip"
+        zip_pack_path = f"{self._pack_path}.zip" if not should_encrypt else f"{self._pack_path}_not_encrypted.zip"
         task_status = False
 
         try:
