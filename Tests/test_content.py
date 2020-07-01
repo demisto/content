@@ -45,6 +45,8 @@ SERVICE_RESTART_POLLING_INTERVAL = 5
 LOCKS_PATH = 'content-locks'
 BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
 CIRCLE_BUILD_NUM = os.environ.get('CIRCLE_BUILD_NUM')
+WORKFLOW_ID = os.environ.get('CIRCLE_WORKFLOW_ID')
+CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
 
 
@@ -1207,6 +1209,32 @@ def safe_lock_integrations(test_timeout: int,
     return locked
 
 
+def workflow_still_running(workflow_id: str) -> bool:
+    """
+    This method takes a workflow id and checks if the workflow is still running
+    If given workflow ID is the same as the current workflow, will simply return True
+    else it will query circleci api for the workflow and return the status
+    Args:
+        workflow_id: The ID of the workflow
+
+    Returns:
+        True if the workflow is running, else False
+    """
+    # If this is the current workflow_id
+    if workflow_id == WORKFLOW_ID:
+        return True
+    else:
+        try:
+            workflow_details_response = requests.get(f'https://circleci.com/api/v2/workflow/{workflow_id}',
+                                                     headers={'Accept': 'application/json'},
+                                                     auth=(CIRCLE_STATUS_TOKEN, ''))
+            workflow_details_response.raise_for_status()
+        except Exception as e:
+            print(f'Failed to get circleci response about workflow with id {workflow_id}, error is: {e}')
+            return True
+        return workflow_details_response.json().get('status') not in ('canceled', 'success', 'failed')
+
+
 def lock_integrations(integrations_details: list,
                       test_timeout: int,
                       storage_client: storage.Client,
@@ -1231,8 +1259,8 @@ def lock_integrations(integrations_details: list,
     for integration, lock_file in existing_integrations_lock_files.items():
         # Each file has content in the form of <circleci-build-number>:<timeout in seconds>
         # If it has not expired - it means the integration is currently locked by another test.
-        build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
-        if not lock_expired(lock_file, lock_timeout):
+        workflow_id, build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
+        if not lock_expired(lock_file, lock_timeout) and workflow_still_running(workflow_id):
             # there is a locked integration for which the lock is not expired - test cannot be executed at the moment
             prints_manager.add_print_job(
                 f'Could not lock integration {integration}, another lock file was exist with '
@@ -1295,7 +1323,8 @@ def create_lock_files(integrations_generation_number: dict,
     for integration, generation_number in integrations_generation_number.items():
         blob = bucket.blob(f'{LOCKS_PATH}/{integration}')
         try:
-            blob.upload_from_string(f'{CIRCLE_BUILD_NUM}:{test_timeout + 30}', if_generation_match=generation_number)
+            blob.upload_from_string(f'{WORKFLOW_ID}:{CIRCLE_BUILD_NUM}:{test_timeout + 30}',
+                                    if_generation_match=generation_number)
             prints_manager.add_print_job(f'integration {integration} locked',
                                          print,
                                          thread_index,
@@ -1333,7 +1362,7 @@ def unlock_integrations(integrations_details: list,
     for integration, lock_file in locked_integration_blobs.items():
         try:
             # Verifying build number is the same as current build number to avoid deleting other tests lock files
-            build_number, _ = lock_file.download_as_string().decode().split(':')
+            _, build_number, _ = lock_file.download_as_string().decode().split(':')
             if build_number == CIRCLE_BUILD_NUM:
                 lock_file.delete(if_generation_match=lock_file.generation)
                 prints_manager.add_print_job(
