@@ -832,9 +832,9 @@ def add_policy_content_request(uuid, content_type, change_description, schema_ve
                     'comment': description
                 })
             found_existing_category = False
-            for index, existing_category in enumerate(content['content']['categories']):
+            for existing_category in content['content']['categories']:
                 if existing_category.get('name') == category:
-                    content['content']['categories'][index]['entries'].extend(entries)
+                    existing_category['entries'].extend(entries)
                     found_existing_category = True
                     break
             if not found_existing_category:
