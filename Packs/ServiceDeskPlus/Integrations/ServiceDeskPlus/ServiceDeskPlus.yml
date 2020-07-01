@@ -59,12 +59,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- additionalinfo: Filter should be in the format "{field':<field_name>, 'condition':<condition>,
-    'values':'val_1,val_2', 'logical_operator':<op>}". Multiple filters can be applied
-    seperated with a comma, e.g. {"field":"technician.name", "condition":"is", "values":"tech_1_name,tech_2_name",
-    "logical_operator":"AND"}, {"field":"due_by_time", "condition":"greater than",
-    "values":"1592946000000", "logical_operator":"AND"}.
-  display: Use this field to filter the incidents that are being fetched according
+- display: Use this field to filter the incidents that are being fetched according
     to any of the request properties.  Please see additional information for exact
     filter format. Overrides the status filter, if given.
   name: fetch_filter
@@ -356,8 +351,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Holds udf fields' values associated with the request. Fill in a
-        dictionary with the udf fileds and values.
+      description: 'Holds udf fields'' values associated with the request. Input format:
+        "key1;value1,key2;value2"'
       isArray: false
       name: udf_fields
       required: false
@@ -552,7 +547,7 @@ script:
       secret: false
     - default: false
       description: Technician assigned to this request. Type the name of the technician
-        or a dictoinary representing a technician object.
+        or a dictionary representing a technician object.
       isArray: false
       name: technician
       required: false
@@ -579,7 +574,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Array of Email ids, which nedds to be notified about the happenings
+      description: Array of Email ids, which needs to be notified about the happenings
         of this request
       isArray: false
       name: email_ids_to_notify
@@ -599,8 +594,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Holds udf fields' values associated with the request. Fill in a
-        dictionary with the udf fileds and values.
+      description: 'Holds udf fields'' values associated with the request. Input format:
+        "key1;value1,key2;value2"'
       isArray: false
       name: udf_fields
       required: false
@@ -758,7 +753,7 @@ script:
       description: The content of the resolution of the request
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.Resolution.SubmittedBy
-      description: The detailes of who submitted the resolution
+      description: The details of who submitted the resolution
       type: Unknown
     - contextPath: ServiceDeskPlus.Request.Resolution.SubmittedOn
       description: The date the resolution was submitted
@@ -797,7 +792,7 @@ script:
       secret: false
     - default: false
       description: The IDs of the requests that should be linked to the given request.
-        Multiple IDs can be passed, seperated by a comma
+        Multiple IDs can be passed, separated by a comma
       isArray: false
       name: linked_requests_id
       required: true

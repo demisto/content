@@ -189,15 +189,18 @@ Create new requests
 | assets | Array of asset objects associated to this request | Optional | 
 | site | Denotes the site to which this request belongs. Type a site name or provide a dictionary representing a site object. | Optional | 
 | group | Group to which this request belongs. Type the name of the group or a dictionary representing a group object. | Optional | 
-| technician | Technician assigned to this request. Type the name of the technician or a dictoinary representing a technician object. | Optional | 
+| technician | Technician assigned to this request. Type the name of the technician or a dictionary representing a technician object. | Optional | 
 | category | Category to which the request belongs. Fill in the name of the category or a dictionary representing a category object. | Optional | 
 | subcategory | Subcategory to which this request belongs. Fill in the name of the subcategory or a dictionary representing a subcategory object. | Optional | 
 | item | Item of this request. Fill in the item's name or a dictionary representing an item object. | Optional | 
-| email_ids_to_notify | Array of Email ids, which nedds to be notified about the happenings of this request | Optional | 
+| email_ids_to_notify | Array of Email ids, which needs to be notified about the happenings of this request | Optional | 
 | is_fcr | Boolean value indicating if the request has been marked as First Call Resolution | Optional | 
 | resources | Holds the resource data mapped to the request | Optional | 
-| udf_fields | Holds udf fields' values associated with the request. Fill in a dictionary with the udf fileds and values. | Optional | 
+| udf_fields | Holds udf fields' values associated with the request. Input format: "key1;value1,key2;value2". | Optional | 
 
+**Note:**
+>Fields that represent an object can be filled either by providing the name only or the entire object. For example, the technician parameter can be defined either by filling 
+>*technician="First Last"* or *technician="{'name':'First Last', 'id':'12345', 'email_id':'email@paloaltonetworks.com'}"*
 
 #### Context Output
 
@@ -219,7 +222,7 @@ Create new requests
 
 
 #### Command Example
-```!service-desk-plus-request-create subject="Create New Request" requester="First Last"```
+```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}"```
 
 #### Context Example
 ```
@@ -320,14 +323,14 @@ Update the request with the given request id.
 | assets | Array of asset objects associated to this request | Optional | 
 | site | Denotes the site to which this request belongs. Type a site name or provide a dictionary representing a site object. | Optional | 
 | group | Group to which this request belongs. Type the name of the group or a dictionary representing a group object. | Optional | 
-| technician | Technician assigned to this request. Type the name of the technician or a dictoinary representing a technician object. | Optional | 
+| technician | Technician assigned to this request. Type the name of the technician or a dictionary representing a technician object. | Optional | 
 | category | Category to which the request belongs. Fill in the name of the category or a dictionary representing a category object. | Optional | 
 | subcategory | Subcategory to which this request belongs. Fill in the name of the subcategory or a dictionary representing a subcategory object. | Optional | 
 | item | Item of this request. Fill in the item's name or a dictionary representing an item object. | Optional | 
-| email_ids_to_notify | Array of Email ids, which nedds to be notified about the happenings of this request | Optional | 
+| email_ids_to_notify | Array of Email ids, which needs to be notified about the happenings of this request | Optional | 
 | is_fcr | Boolean value indicating if the request has been marked as First Call Resolution | Optional | 
 | resources | Holds the resource data mapped to the request | Optional | 
-| udf_fields | Holds udf fields' values associated with the request. Fill in a dictionary with the udf fileds and values. | Optional | 
+| udf_fields | Holds udf fields' values associated with the request. Input format: "key1;value1,key2;value2". | Optional | 
 | update_reason | The reason for updating this request | Optional | 
 | status_change_comments | Comments added while changing the request's status | Optional | 
 
@@ -611,7 +614,7 @@ Gets the resolution to the given request
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ServiceDeskPlus.Request.Resolution.Content | Unknown | The content of the resolution of the request | 
-| ServiceDeskPlus.Request.Resolution.SubmittedBy | Unknown | The detailes of who submitted the resolution | 
+| ServiceDeskPlus.Request.Resolution.SubmittedBy | Unknown | The details of who submitted the resolution | 
 | ServiceDeskPlus.Request.Resolution.SubmittedOn | Unknown | The date the resolution was submitted | 
 | ServiceDeskPlus.Request.Resolution.ResolutionAttachments | Unknown | The attachments that were added to the resolution | 
 
@@ -699,7 +702,7 @@ Link or Unlink multiple commands
 | --- | --- | --- |
 | request_id | The id of the request for which the links should be modified | Required | 
 | action | Link / Unlink this request with the given requests | Required | 
-| linked_requests_id | The IDs of the requests that should be linked to the given request. Multiple IDs can be passed, seperated by a comma | Required | 
+| linked_requests_id | The IDs of the requests that should be linked to the given request. Multiple IDs can be passed, separated by a comma | Required | 
 | comment | The comment that should be added when linking requests (optional). | Optional | 
 
 

@@ -156,11 +156,13 @@ def args_to_query(args: dict) -> dict:
         A dictionary containing all valid valid query field that were passed in the args, converted into the format
         required for the http_request.
     """
-    request_fields = {}
+    request_fields: Dict[str, Any] = {}
     for field in REQUEST_FIELDS:
         value = args.get(field, None)
         if value:
-            if field not in FIELDS_WITH_NAME or 'name' in value:
+            if field == 'udf_fields':
+                request_fields[field] = f"{create_udf_field(value)}"
+            elif field not in FIELDS_WITH_NAME or (value[0] == '{' and value[-1] == '}'):
                 request_fields[field] = value
             else:
                 request_fields[field] = {
@@ -169,6 +171,32 @@ def args_to_query(args: dict) -> dict:
     return {
         'request': request_fields
     }
+
+
+def create_udf_field(udf_input: str):
+    """
+    Converts the given string with udf keys and values to a valid dictionary for the query.
+
+    Args:
+        udf_input: the string representing the udf values as given by the user.
+
+    Returns:
+        A dictionary where every key is the udf_field key and the value given by the user.
+    """
+    try:
+        fields = udf_input.split(',')
+        udf_dict = {}
+        for field in fields:
+            if field:
+                field_key_value = field.split(';')
+                if field_key_value[0] and field_key_value[1]:
+                    udf_dict[field_key_value[0]] = field_key_value[1]
+                else:
+                    raise Exception('Invalid input')
+        return udf_dict
+    except Exception:
+        raise Exception('Illegal udf fields format. Input format should be a string of key and value separated by ; '
+                        'Multiple key;value pairs can be given, separated with a comma')
 
 
 def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> dict:
@@ -263,7 +291,7 @@ def create_requests_list_info(start_index, row_count, search_fields, filter_by):
     }
 
 
-def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str) -> dict:
+def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filter: str, fetch_limit: int) -> dict:
     """
     Returning the list_info dictionary that should be used to filter the requests that are being fetched
     The requests that will be returned when using this list_info are all requests created between 'time_from' and
@@ -325,7 +353,8 @@ def create_fetch_list_info(time_from: str, time_to: str, status: str, fetch_filt
         list_info = {
             'search_criteria': search_criteria,
             'sort_field': 'created_time',
-            'sort_order': 'asc'
+            'sort_order': 'asc',
+            'row_count': fetch_limit
         }
     except Exception as e:
         return_error(f'Invalid input format. Please see detailed information (?) for valid query format.\n{e.args[0]}')
@@ -647,12 +676,11 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, status: s
             'time': date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
         }
     else:
-        demisto.debug(f'\n\n\nIN LAST RUN: {last_run}')
         new_last_run = last_run
     demisto_incidents: List = list()
     time_from = new_last_run.get('time')
     time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-    list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter)
+    list_info = create_fetch_list_info(str(time_from), str(time_to), status, fetch_filter, fetch_limit + 1)
     params = {
         'input_data': f'{list_info}'
     }
@@ -722,11 +750,12 @@ def test_module(client: Client):
             fetch_time = params.get('fetch_time') if params.get('fetch_time') else '1 day'
             fetch_status = str(params.get('fetch_status')) if params.get('fetch_status') else 'Open'
             fetch_filter = str(params.get('fetch_filter')) if params.get('fetch_filter') else ''
+            fetch_limit = int(params.get('fetch_limit', '10')) if params.get('fetch_limit') else 10
 
             date_format = '%Y-%m-%dT%H:%M:%S'
             time_from = date_to_timestamp(parse_date_range(fetch_time, date_format=date_format, utc=False)[0])
             time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter)
+            list_info = create_fetch_list_info(str(time_from), str(time_to), fetch_status, fetch_filter, fetch_limit + 1)
             params = {
                 'input_data': f'{list_info}'
             }
@@ -815,8 +844,7 @@ def main():
         else:
             return_error('Command not found.')
     except Exception as e:
-        raise e
-        # return_error(f'Failed to execute {command} command. Error: {e}')
+        return_error(f'Failed to execute {command} command. Error: {e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

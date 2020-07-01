@@ -3,7 +3,7 @@ from ServiceDeskPlus import Client, create_request_command, update_request_comma
     linked_request_command, get_resolutions_list_command, delete_request_command, assign_request_command, \
     pickup_request_command, modify_linked_request_command, add_resolution_command, generate_refresh_token, \
     create_output, args_to_query, create_modify_linked_input_data, create_human_readable, resolution_human_readable, \
-    create_requests_list_info, create_fetch_list_info, fetch_incidents, close_request_command
+    create_requests_list_info, create_fetch_list_info, fetch_incidents, close_request_command, create_udf_field
 from test_data.response_constants import RESPONSE_CREATE_REQUEST, RESPONSE_UPDATE_REQUEST, \
     RESPONSE_LIST_SINGLE_REQUEST, RESPONSE_LIST_MULTIPLE_REQUESTS, RESPONSE_LINKED_REQUEST_LIST, \
     RESPONSE_RESOLUTION_LIST, RESPONSE_NO_RESOLUTION_LIST, RESPONSE_LINK_REQUEST, RESPONSE_UNLINK_REQUEST, \
@@ -103,13 +103,13 @@ def test_create_output():
 
 
 def test_args_to_query():
-    assign_input = {'group': 'group1', 'technician': 'tech1'}
-    expected_assign_output = {'request': {'group': {'name': 'group1'}, 'technician': {'name': 'tech1'}}}
+    assign_input = {'group': 'group1', 'technician': 'tech name'}
+    expected_assign_output = {'request': {'group': {'name': 'group1'}, 'technician': {'name': 'tech name'}}}
     assert args_to_query(assign_input) == expected_assign_output
 
-    create_input = {'subject': 'request subject', 'group': 'group1', 'impact': 'Affects Business', 'requester': 'req1'}
+    create_input = {'subject': 'request subject', 'group': 'group1', 'impact': 'Affects Business', 'requester': 'name'}
     expected_create_output = {'request': {'subject': 'request subject', 'group': {'name': 'group1'},
-                                          'impact': {'name': 'Affects Business'}, 'requester': {'name': 'req1'}}}
+                                          'impact': {'name': 'Affects Business'}, 'requester': {'name': 'name'}}}
     assert args_to_query(create_input) == expected_create_output
 
 
@@ -159,24 +159,24 @@ def test_create_requests_list_info():
 
 
 def test_create_fetch_list_info():
-    time_from, time_to, status, fetch_filter = 'from', 'to', 'status', ''
+    time_from, time_to, status, fetch_filter, fetch_limit = 'from', 'to', 'status', '', 10
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
                                                           'condition': 'between'},
                                                          {'field': 'status.name', 'values': ['status'],
                                                           'condition': 'is', 'logical_operator': 'AND'}],
-                                     'sort_field': 'created_time', 'sort_order': 'asc'}}
-    assert create_fetch_list_info(time_from, time_to, status, fetch_filter) == expected_output
+                                     'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 10}}
+    assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
 
-    time_from, time_to, status = 'from', 'to', 'status'
+    time_from, time_to, status, fetch_limit = 'from', 'to', 'status', 15
     fetch_filter = "{'field': 'technician.name', 'values': 'tech1,tech2', 'condition': 'is', 'logical_operator':'AND'}"
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
                                                           'condition': 'between'},
                                                          {'field': 'technician.name', 'condition': 'is',
                                                           'values': ['tech1', 'tech2'], 'logical_operator': 'AND'}],
-                                     'sort_field': 'created_time', 'sort_order': 'asc'}}
-    assert create_fetch_list_info(time_from, time_to, status, fetch_filter) == expected_output
+                                     'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 15}}
+    assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
 
-    time_from, time_to, status = 'from', 'to', 'status'
+    time_from, time_to, status, fetch_limit = 'from', 'to', 'status', 20
     fetch_filter = "{'field':'technician.name','values':'tech1,tech2','condition':'is','logical_operator':'AND'}," \
                    "{'field':'group.name','values':'group1','condition':'is','logical_operator':'AND'}"
     expected_output = {'list_info': {'search_criteria': [{'field': 'created_time', 'values': ['from', 'to'],
@@ -185,8 +185,25 @@ def test_create_fetch_list_info():
                                                           'values': ['tech1', 'tech2'], 'logical_operator': 'AND'},
                                                          {'field': 'group.name', 'condition': 'is',
                                                           'values': ['group1'], 'logical_operator': 'AND'}],
-                                     'sort_field': 'created_time', 'sort_order': 'asc'}}
-    assert create_fetch_list_info(time_from, time_to, status, fetch_filter) == expected_output
+                                     'sort_field': 'created_time', 'sort_order': 'asc', 'row_count': 20}}
+    assert create_fetch_list_info(time_from, time_to, status, fetch_filter, fetch_limit) == expected_output
+
+
+def test_create_udf_field():
+    udf_input = 'key1;val1'
+    expected_output = {'key1': 'val1'}
+    assert create_udf_field(udf_input) == expected_output
+
+    udf_input = 'key1;val1,key2;val2'
+    expected_output = {'key1': 'val1', 'key2': 'val2'}
+    assert create_udf_field(udf_input) == expected_output
+
+    invalid_udf_inputs = ['key1;val1,key2', 'key1,val1', 'key1', ';val1']
+    for udf_input in invalid_udf_inputs:
+        try:
+            create_udf_field(udf_input)
+        except Exception as e:
+            assert 'Illegal udf fields format' in e.args[0]
 
 
 def test_fetch_incidents(mocker):
