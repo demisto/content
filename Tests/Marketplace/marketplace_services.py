@@ -1106,6 +1106,20 @@ class Pack(object):
         finally:
             return task_status
 
+    def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
+        pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
+
+        # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
+        if self._pack_name in GCPConfig.CORE_PACKS_LIST:
+            mandatory_dependencies = [k for k, v in pack_dependencies.items()
+                                      if v.get('mandatory', False) is True and k not in GCPConfig.CORE_PACKS_LIST]
+            if mandatory_dependencies:
+                raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
+                                f'found in the core pack {self._pack_name}')
+        if 'dependencies' not in user_metadata:
+            user_metadata['dependencies'] = {}
+        user_metadata['dependencies'].update(pack_dependencies)
+
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
 
@@ -1448,16 +1462,3 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
                     f"Additional info:\n {e}")
     finally:
         return higher_version_result
-
-
-def set_pack_dependencies(pack_name, user_metadata, packs_dependencies_mapping):
-    pack_dependencies = packs_dependencies_mapping.get(pack_name, {}).get('dependencies', {})
-    if pack_name in GCPConfig.CORE_PACKS_LIST:
-        mandatory_dependencies = [dependency for dependency in pack_dependencies
-                                  if dependency.get('mandatory', False) is True]
-        if mandatory_dependencies:
-            raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
-                            f'found in the core pack {pack_name}')
-    if 'dependencies' not in user_metadata:
-        user_metadata['dependencies'] = {}
-    user_metadata['dependencies'].update(pack_dependencies)
